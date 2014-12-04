@@ -1,63 +1,94 @@
-<?php
-/**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @package       app.View.Layouts
- * @since         CakePHP(tm) v 0.10.0.1076
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
- */
-
-$cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework');
-$cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
-?>
 <!DOCTYPE html>
 <html>
 <head>
-	<?php echo $this->Html->charset(); ?>
-	<title>
-		<?php echo $cakeDescription ?>:
-		<?php echo $this->fetch('title'); ?>
-	</title>
-	<?php
-		echo $this->Html->meta('icon');
+<?php 
+		if(empty($title_for_layout)) {
+			$title_for_layout = __('ERP RJTM | Dashboard');	
+		}
 
-		echo $this->Html->css('cake.generic');
-
-		echo $this->fetch('meta');
-		echo $this->fetch('css');
-		echo $this->fetch('script');
-	?>
+		echo $this->Html->charset().PHP_EOL;
+		echo $this->Html->tag('title', $title_for_layout).PHP_EOL;
+		echo $this->Html->meta(array(
+			'name' => 'viewport', 
+			'content' => 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'
+		)).PHP_EOL;
+		echo $this->Html->css(array(
+			'bootstrap.min',
+			'font-awesome.min', 
+			'ionicons.min', 
+			'morris/morris',
+			'jvectormap/jquery-jvectormap-1.2.2',
+			'datepicker/datepicker3',
+			'daterangepicker/daterangepicker-bs3',
+			'bootstrap-wysihtml5/bootstrap3-wysihtml5.min',
+			'style',
+		)).PHP_EOL;
+?>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
 </head>
-<body>
-	<div id="container">
-		<div id="header">
-			<h1><?php echo $this->Html->link($cakeDescription, 'http://cakephp.org'); ?></h1>
-		</div>
-		<div id="content">
+<body class="skin-blue">
+    <?php
+			echo $this->element('headers/menu');
+	?>
+    <div class="wrapper row-offcanvas row-offcanvas-left">
+        <?php
+				echo $this->element('sidebars/menu');
+		?>
+        <!-- Right side column. Contains the navbar and content of the page -->
+        <aside class="right-side">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+            	<?php 
+            			if( !empty($module_title) ) {
+            				if( !empty($sub_module_title) ) {
+            					$module_title .= $this->Html->tag('small', $sub_module_title);
+            				}
 
-			<?php echo $this->Session->flash(); ?>
+            				echo $this->Html->tag('h1', $module_title);
+            			}
 
-			<?php echo $this->fetch('content'); ?>
-		</div>
-		<div id="footer">
-			<?php echo $this->Html->link(
-					$this->Html->image('cake.power.gif', array('alt' => $cakeDescription, 'border' => '0')),
-					'http://www.cakephp.org/',
-					array('target' => '_blank', 'escape' => false, 'id' => 'cake-powered')
-				);
-			?>
-			<p>
-				<?php echo $cakeVersion; ?>
-			</p>
-		</div>
-	</div>
-	<?php echo $this->element('sql_dump'); ?>
+            			echo $this->element('headers/breadcrumb');
+            	?>
+            </section>
+
+            <!-- Main content -->
+            <?php 
+            		echo $this->Html->tag('section', $this->fetch('content'), array(
+							'class' => 'content',
+						));
+            ?>
+            <!-- /.content -->
+        </aside><!-- /.right-side -->
+    </div><!-- ./wrapper -->
+
+    <!-- add new calendar event modal -->
+
+    <?php 
+    		echo $this->Html->script(array(
+				'jquery.2.0.2.min',
+				'jquery-ui-1.10.3.min',
+				'bootstrap.min', 
+				'raphael.2.1.0.min',
+				'plugins/morris/morris.min',
+				'plugins/sparkline/jquery.sparkline.min',
+				'plugins/jvectormap/jquery-jvectormap-1.2.2.min',
+				'plugins/jvectormap/jquery-jvectormap-world-mill-en',
+				'plugins/jqueryKnob/jquery.knob',
+				'plugins/daterangepicker/daterangepicker',
+				'plugins/datepicker/bootstrap-datepicker',
+				'plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min',
+				'plugins/iCheck/icheck.min',
+				'functions/app',
+				'functions/dashboard',
+				'functions/demo',
+			)).PHP_EOL;
+
+			echo $this->element('sql_dump');
+	?>
 </body>
 </html>
