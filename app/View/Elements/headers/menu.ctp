@@ -1,6 +1,6 @@
 <header class="header">
     <?php 
-            echo $this->Html->link('RJTM ERP', 'index.html', array(
+            echo $this->Html->link('RJTM ERP', '/', array(
                 'class' => 'logo'
             ));
     ?>

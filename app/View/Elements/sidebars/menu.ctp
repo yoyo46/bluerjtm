@@ -25,10 +25,33 @@
         <!-- /.search form -->
         <!-- sidebar menu: : style can be found in sidebar.less -->
         <ul class="sidebar-menu">
-            <li class="active">
-                <a href="index.html">
-                    <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+            <?php 
+                    echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-dashboard"></i> <span>Dashboard</span>', '/', array(
+                        'escape' => false
+                    )), array(
+                        'class' => ( !empty($active_menu) && $active_menu == 'dashboard' )?'active':'',
+                    ));
+            ?>
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-truck"></i>
+                    <span>Truk</span>
+                    <i class="fa fa-angle-left pull-right"></i>
                 </a>
+                <ul class="treeview-menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Truk', array(
+                                'controller' => 'trucks',
+                                'action' => 'index',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
+                            ));
+                    ?>
+                    <li><a href="pages/charts/flot.html"><i class="fa fa-angle-double-right"></i> Perpanjang STNK</a></li>
+                    <li><a href="pages/charts/inline.html"><i class="fa fa-angle-double-right"></i> Perpanjang KIR</a></li>
+                </ul>
             </li>
             <li>
                 <a href="pages/widgets.html">
