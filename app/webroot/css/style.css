@@ -3537,3 +3537,11 @@ fieldset[disabled] .btn-vk.active {
 .clear {
   clear: both;
 }
+.error-message{
+  border-color: #f56954 !important;
+  display: block;
+  border: 1px solid;
+  color: #f56954 !important;
+  padding: 5px;
+  font-weight: bold;
+}
