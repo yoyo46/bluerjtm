@@ -122,6 +122,10 @@ class Truck extends AppModel {
             'className' => 'Siup',
             'foreignKey' => 'truck_id',
         ),
+        'TruckAlocation' => array(
+            'className' => 'TruckAlocation',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
 	function getData($find, $options = false){

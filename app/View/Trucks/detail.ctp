@@ -62,8 +62,6 @@
 	            </dd>
 	            <dt><?php echo __('No. Kontrak')?></dt>
                 <dd><?php echo $truck['Truck']['no_contract'];?></dd>
-                <dt><?php echo __('BPKB')?></dt>
-                <dd><?php echo $truck['Truck']['bpkb'];?></dd>
                 <dt><?php echo __('Tanggal BPKB')?></dt>
                 <dd><?php echo $this->Common->customDate($truck['Truck']['tgl_bpkb'], 'd-m-Y');?></dd>
                 <dt><?php echo __('Tahun')?></dt>

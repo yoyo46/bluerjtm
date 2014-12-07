@@ -2,10 +2,10 @@
 class TruckAlocation extends AppModel {
 	var $name = 'TruckAlocation';
 	var $validate = array(
-		'truck_id' => array(
+		'city_id' => array(
 			'notempty' => array(
 				'rule' => array('notempty'),
-                'message' => 'Truck must be fill'
+                'message' => 'kota harap diisi.'
 			),
 		)
 	);

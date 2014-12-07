@@ -990,4 +990,157 @@ class TrucksController extends AppController {
         $this->set(compact('truck_id', 'sub_module_title'));
         $this->render('siup_form');
     }
+
+    function alocations($id = false){
+        if(!empty($id)){
+            $truck = $this->Truck->getTruck($id);
+
+            if(!empty($truck)){
+                $this->paginate = $this->Truck->TruckAlocation->getData('paginate', array(
+                    'conditions' => array(
+                        'truck_id' => $id
+                    ),
+                    'order' => array(
+                        'TruckAlocation.created'
+                    )
+                ));
+                $alocations = $this->paginate('TruckAlocation');
+
+                if(!empty($alocations)){
+                    $this->loadModel('City');
+                    foreach ($alocations as $key => $alocation) {
+                        $alocations[$key] = $this->City->getMerge($alocation, $alocation['TruckAlocation']['city_id']);
+                    }
+                }
+
+                $sub_module_title = __('Alokasi Truk');
+                $this->set(compact('truck', 'alocations', 'sub_module_title', 'id'));
+            }else{
+                $this->MkCommon->setCustomFlash(__('Alokasi truk tidak ditemukan.'), 'error');
+                $this->redirect($this->referer());
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Alokasi truk tidak ditemukan.'), 'error');
+            $this->redirect($this->referer());
+        }
+    }
+
+    function alocation_add($truck_id){
+        $this->set('sub_module_title', 'Tambah Alokasi Truk');
+
+        $truck = $this->Truck->find('first', array(
+            'conditions' => array(
+                'truck.id' => $truck_id
+            )
+        ));
+
+        if(!empty($truck)){
+            $this->doTruckAlocation($truck_id);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Alokasi truk tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'trucks',
+                'action' => 'alocations'
+            ));
+        }
+    }
+
+    function alocation_edit($truck_id, $id){
+        $this->loadModel('TruckAlocation');
+        $this->set('sub_module_title', 'Rubah alokasi Truk');
+        $TruckAlocation = $this->TruckAlocation->find('first', array(
+            'conditions' => array(
+                'TruckAlocation.id' => $id,
+                'TruckAlocation.truck_id' => $truck_id
+            )
+        ));
+
+        if(!empty($TruckAlocation)){
+            $this->doTruckAlocation($truck_id, $id, $TruckAlocation);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Alokasi Truk tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'trucks',
+                'action' => 'alocations',
+                $truck_id
+            ));
+        }
+    }
+
+    function doTruckAlocation($truck_id, $id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->TruckAlocation->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('TruckAlocation');
+                $this->TruckAlocation->create();
+                $msg = 'menambah';
+            }
+
+            $truck = $this->Truck->find('first', array(
+                'conditions' => array(
+                    'truck.id' => $truck_id
+                )
+            ));
+            
+            $data['TruckAlocation']['truck_id'] = $truck_id;
+            $check = true;
+            if(!$id && !empty($data['TruckAlocation']['city_id'])){
+                $check = false;
+                $alokasi = $this->Truck->TruckAlocation->getData('first', array(
+                    'conditions' => array(
+                        'truck_id' => $truck_id,
+                        'city_id' => $data['TruckAlocation']['city_id']
+                    )
+                ));
+
+                if(empty($alokasi)){
+                    $check = true;
+                }
+            }
+
+            $this->TruckAlocation->set($data);
+
+            if($this->TruckAlocation->validates($data) && $check){
+                if($this->TruckAlocation->save($data)){
+
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s alokasi Truk'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'trucks',
+                        'action' => 'alocations',
+                        $truck_id
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s alokasi Truk'), $msg), 'error');  
+                }
+            }else{
+                $text = sprintf(__('Gagal %s alokasi Truk'), $msg);
+                if(!$check){
+                    $text .= ', alokasi untuk lokasi ini sudah tersedia untuk truk ini.';
+                }
+                $this->MkCommon->setCustomFlash($text, 'error');
+            }
+        }else{
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->loadModel('City');
+        $cities = $this->City->getData('list', array(
+            'conditions' => array(
+                'status' => 1
+            ),
+            'fields' => array(
+                'City.id', 'City.name'
+            )
+        ));
+
+        $sub_module_title = __('Alokasi Truk');
+        $this->set(compact('truck_id', 'sub_module_title', 'cities'));
+        $this->render('alocation_form');
+    }
 }

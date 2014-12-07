@@ -39,6 +39,13 @@
                     'escape' => false,
                     'class' => 'btn btn-app pull-right'
                 ));
+                echo $this->Html->link('<i class="fa fa-truck"></i> Merek Truk', array(
+                    'controller' => 'trucks',
+                    'action' => 'brands'
+                ), array(
+                    'escape' => false,
+                    'class' => 'btn btn-app pull-right'
+                ));
                 echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Truk', array(
                     'controller' => 'trucks',
                     'action' => 'add'
@@ -148,6 +155,13 @@
                         ), array(
                             'class' => 'btn btn-warning btn-sm'
                         ));
+                        echo $this->Html->link('Alokasi', array(
+                            'controller' => 'trucks',
+                            'action' => 'alocations',
+                            $id
+                        ), array(
+                            'class' => 'btn btn-warning btn-sm'
+                        ));
                     ?>
                 </td>
             </tr>
@@ -155,7 +169,7 @@
                     }
                 }else{
             ?>
-            <tr><td colspan="5"><?php echo __('Data tidak ditemukan.');?></tr>
+            <tr><td colspan="9"><?php echo __('Data tidak ditemukan.');?></tr>
             <?php
                 }
             ?>
