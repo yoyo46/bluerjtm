@@ -1,11 +1,11 @@
 <?php
-class TruckCategory extends AppModel {
-	var $name = 'TruckCategory';
+class Siup extends AppModel {
+	var $name = 'Siup';
 	var $validate = array(
-		'name' => array(
+		'tgl_siup' => array(
 			'notempty' => array(
 				'rule' => array('notempty'),
-                'message' => 'Category name must be fill'
+                'message' => 'tanggal SIUP must be fill'
 			),
 		)
 	);
@@ -45,22 +45,6 @@ class TruckCategory extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
-    }
-
-    function getMerge($data, $id){
-        if(empty($data['TruckCategory'])){
-            $data_merge = $this->find('first', array(
-                'conditions' => array(
-                    'id' => $id
-                )
-            ));
-
-            if(!empty($data_merge)){
-                $data = array_merge($data, $data_merge);
-            }
-        }
-
-        return $data;
     }
 }
 ?>

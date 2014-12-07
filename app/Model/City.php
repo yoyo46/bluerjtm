@@ -1,19 +1,19 @@
 <?php
-class TruckCategory extends AppModel {
-	var $name = 'TruckCategory';
+class City extends AppModel {
+	var $name = 'City';
 	var $validate = array(
 		'name' => array(
 			'notempty' => array(
 				'rule' => array('notempty'),
-                'message' => 'Category name must be fill'
+                'message' => 'City name must be fill'
 			),
 		)
 	);
 
 	var $belongsTo = array(
-		'Truck' => array(
-			'className' => 'Truck',
-			'foreignKey' => 'truck_brand_id',
+		'TruckAlocation' => array(
+			'className' => 'TruckAlocation',
+			'foreignKey' => 'city_id',
 		)
 	);
 
@@ -45,22 +45,6 @@ class TruckCategory extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
-    }
-
-    function getMerge($data, $id){
-        if(empty($data['TruckCategory'])){
-            $data_merge = $this->find('first', array(
-                'conditions' => array(
-                    'id' => $id
-                )
-            ));
-
-            if(!empty($data_merge)){
-                $data = array_merge($data, $data_merge);
-            }
-        }
-
-        return $data;
     }
 }
 ?>

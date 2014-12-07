@@ -1,7 +1,12 @@
 <?php
-	$this->Html->addCrumb(__('Kategori Truk'), array(
+	$this->Html->addCrumb(__('Data Truk'), array(
 		'controller' => 'trucks',
-		'action' => 'categories'
+		'action' => 'index'
+	));
+	$this->Html->addCrumb('Histori KIR Truk', array(
+		'controller' => 'trucks',
+		'action' => 'kir',
+		$truck_id
 	));
 	$this->Html->addCrumb($sub_module_title);
 ?>
@@ -10,7 +15,7 @@
         <h3 class="box-title"><?php echo $sub_module_title?></h3>
     </div>
     <?php 
-		echo $this->Form->create('TruckCategory', array(
+		echo $this->Form->create('Kir', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
@@ -19,13 +24,12 @@
     <div class="box-body">
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('name',__('Nama Kategori *')); 
-
-				echo $this->Form->input('name',array(
-					'label'=> false, 
-					'class'=>'form-control',
+				echo $this->Form->input('tgl_kir', array(
+					'type' => 'text',
+					'label'=> __('Tanggal KIR *'), 
+					'class'=>'form-control custom-date',
 					'required' => false,
-					'placeholder' => __('Nama Kategori')
+					'placeholder' => __('Tanggal KIR')
 				));
 			?>
         </div>

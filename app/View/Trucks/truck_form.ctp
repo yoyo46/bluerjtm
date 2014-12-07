@@ -1,0 +1,238 @@
+<?php
+	$this->Html->addCrumb(__('Truk'), array(
+		'controller' => 'trucks',
+		'action' => 'index'
+	));
+	$this->Html->addCrumb($sub_module_title);
+?>
+<div class="box box-primary">
+    <div class="box-header">
+        <h3 class="box-title"><?php echo $sub_module_title?></h3>
+    </div>
+    <?php 
+		echo $this->Form->create('Truck', array(
+			'url'=> $this->Html->url( null, true ), 
+			'role' => 'form',
+			'inputDefaults' => array('div' => false),
+		));
+	?>
+    <div class="box-body">
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('nopol',__('Nopol *')); 
+
+				echo $this->Form->input('nopol',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Nopol')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('truck_brand_id',__('Merek Truk *')); 
+
+				echo $this->Form->input('truck_brand_id',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Merek Truk'),
+					'options' => $truck_brands
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('truck_category_id',__('Kategori Truk *')); 
+
+				echo $this->Form->input('truck_category_id',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Kategori Truk'),
+					'options' => $truck_categories
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('company_id',__('Perusahaan Truk *')); 
+
+				echo $this->Form->input('company_id',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Perusahaan Truk'),
+					'options' => $truck_companies
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('driver_id',__('Supir Truk *')); 
+
+				echo $this->Form->input('driver_id',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Perusahaan Truk'),
+					'options' => $drivers
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('no_contract',__('No Kontrak *')); 
+
+				echo $this->Form->input('no_contract',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('No Kontrak')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('bpkb',__('BPKB *')); 
+
+				echo $this->Form->input('bpkb',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('BPKB')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('atas_nama',__('Atas Nama *')); 
+
+				echo $this->Form->input('atas_nama',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Atas Nama')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('no_stnk',__('No STNK *')); 
+
+				echo $this->Form->input('no_stnk',array(
+					'type' => 'text',
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('No STNK')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('no_rangka',__('No Rangka *')); 
+
+				echo $this->Form->input('no_rangka',array(
+					'type' => 'text',
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('No STNK')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('no_rangka',__('No Rangka *')); 
+
+				echo $this->Form->input('no_rangka',array(
+					'type' => 'text',
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('No STNK')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('no_machine',__('No Mesin *')); 
+
+				echo $this->Form->input('no_machine',array(
+					'type' => 'text',
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('No Mesin')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('capacity',__('Kapasitas *')); 
+
+				echo $this->Form->input('capacity',array(
+					'type' => 'text',
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Kapasitas')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('tahun',__('Tahun *')); 
+
+				echo $this->Form->input('tahun',array(
+					'type' => 'text',
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Tahun')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('tahun_neraca',__('Tahun Neraca *')); 
+
+				echo $this->Form->input('tahun_neraca',array(
+					'type' => 'text',
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Tahun Neraca')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('tgl_bpkb',__('Tanggal BPKB *')); 
+
+				echo $this->Form->input('tgl_bpkb',array(
+					'type' => 'text',
+					'label'=> false, 
+					'class'=>'form-control custom-date',
+					'required' => false,
+					'placeholder' => __('Tanggal BPKB')
+				));
+			?>
+        </div>
+    </div>
+
+    <div class="box-footer">
+    	<?php
+    		echo $this->Form->button(__('Submit'), array(
+				'div' => false, 
+				'class'=> 'btn btn-primary',
+				'type' => 'submit',
+			));
+    	?>
+    </div>
+	<?php
+		echo $this->Form->end();
+	?>
+</div>

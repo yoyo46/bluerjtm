@@ -6,9 +6,9 @@
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Merek Truk', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Kota', array(
                     'controller' => 'trucks',
-                    'action' => 'brand_add'
+                    'action' => 'city_add'
                 ), array(
                     'escape' => false,
                     'class' => 'btn btn-app pull-right'
@@ -20,16 +20,16 @@
         <table class="table table-hover">
             <tr>
                 <th>No.</th>
-                <th>Merek Truk</th>
+                <th>Kota</th>
                 <th>Dibuat</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
             <?php
                 $i = 1;
-                if(!empty($truck_brands)){
-                    foreach ($truck_brands as $key => $value) {
-                        $value_data = $value['TruckBrand'];
+                if(!empty($cities)){
+                    foreach ($cities as $key => $value) {
+                        $value_data = $value['City'];
                         $id = $value_data['id'];
             ?>
             <tr>
@@ -50,7 +50,7 @@
                     <?php 
                         echo $this->Html->link('Edit', array(
                             'controller' => 'trucks',
-                            'action' => 'brand_edit',
+                            'action' => 'city_edit',
                             $id
                         ), array(
                             'class' => 'btn btn-primary btn-sm'
@@ -59,7 +59,7 @@
                         if(!empty($value_data['status'])){
                             echo $this->Html->link('Disable', array(
                                 'controller' => 'trucks',
-                                'action' => 'brand_toggle',
+                                'action' => 'city_toggle',
                                 $id
                             ), array(
                                 'class' => 'btn btn-danger btn-sm',
@@ -68,7 +68,7 @@
                         }else{
                             echo $this->Html->link('Enable', array(
                                 'controller' => 'trucks',
-                                'action' => 'brand_toggle',
+                                'action' => 'city_toggle',
                                 $id
                             ), array(
                                 'class' => 'btn btn-success btn-sm',

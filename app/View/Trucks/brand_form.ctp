@@ -1,13 +1,13 @@
 <?php
-	$this->Html->addCrumb(__('Brands'), array(
+	$this->Html->addCrumb(__('Merek Truk'), array(
 		'controller' => 'trucks',
 		'action' => 'brands'
 	));
-	$this->Html->addCrumb($module_title);
+	$this->Html->addCrumb($sub_module_title);
 ?>
 <div class="box box-primary">
     <div class="box-header">
-        <h3 class="box-title"><?php echo $module_title?></h3>
+        <h3 class="box-title"><?php echo $sub_module_title?></h3>
     </div>
     <?php 
 		echo $this->Form->create('TruckBrand', array(
@@ -19,13 +19,13 @@
     <div class="box-body">
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('name',__('Brand name *')); 
+				echo $this->Form->label('name',__('Merek *')); 
 
 				echo $this->Form->input('name',array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('Brand Name')
+					'placeholder' => __('Merek')
 				));
 			?>
         </div>

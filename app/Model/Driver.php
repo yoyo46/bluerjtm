@@ -1,19 +1,51 @@
 <?php
-class TruckCategory extends AppModel {
-	var $name = 'TruckCategory';
+class Driver extends AppModel {
+	var $name = 'Driver';
 	var $validate = array(
-		'name' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-                'message' => 'Category name must be fill'
-			),
-		)
+        'name' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Driver name must be fill'
+            ),
+        ),
+        'identity_number' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Identity number must be fill'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'Identity number must be number'
+            ),
+        ),
+        'address' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Address must be fill'
+            ),
+        ),
+        'phone' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Phone must be fill'
+            ),
+        ),
+        'uang_makan' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Uang makan must be fill'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'Uang makan must be number'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(
 		'Truck' => array(
 			'className' => 'Truck',
-			'foreignKey' => 'truck_brand_id',
+			'foreignKey' => 'driver_id',
 		)
 	);
 
@@ -48,7 +80,7 @@ class TruckCategory extends AppModel {
     }
 
     function getMerge($data, $id){
-        if(empty($data['TruckCategory'])){
+        if(empty($data['Driver'])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
                     'id' => $id

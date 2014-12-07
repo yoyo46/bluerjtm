@@ -1,19 +1,31 @@
 <?php
-class TruckCategory extends AppModel {
-	var $name = 'TruckCategory';
+class Company extends AppModel {
+	var $name = 'Company';
 	var $validate = array(
-		'name' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-                'message' => 'Category name must be fill'
-			),
-		)
+        'name' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Company name must be fill'
+            ),
+        ),
+        'address' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Address must be fill'
+            ),
+        ),
+        'phone_number' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Phone must be fill'
+            ),
+        )
 	);
 
 	var $belongsTo = array(
 		'Truck' => array(
 			'className' => 'Truck',
-			'foreignKey' => 'truck_brand_id',
+			'foreignKey' => 'driver_id',
 		)
 	);
 
@@ -48,7 +60,7 @@ class TruckCategory extends AppModel {
     }
 
     function getMerge($data, $id){
-        if(empty($data['TruckCategory'])){
+        if(empty($data['Company'])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
                     'id' => $id

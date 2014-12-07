@@ -49,8 +49,6 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
                             ));
                     ?>
-                    <li><a href="pages/charts/flot.html"><i class="fa fa-angle-double-right"></i> Perpanjang STNK</a></li>
-                    <li><a href="pages/charts/inline.html"><i class="fa fa-angle-double-right"></i> Perpanjang KIR</a></li>
                 </ul>
             </li>
             <li>

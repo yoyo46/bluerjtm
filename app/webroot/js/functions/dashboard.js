@@ -117,6 +117,9 @@ $(function() {
 
     //The Calender
     $("#calendar").datepicker();
+    $( ".custom-date" ).datepicker({
+      dateFormat: "yy-mm-dd"
+    });
 
     //SLIMSCROLL FOR CHAT WIDGET
     $('#chat-box').slimScroll({
