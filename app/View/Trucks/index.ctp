@@ -1,5 +1,6 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
+        echo $this->element('blocks/trucks/search_truck');
 ?>
 <div class="box">
     <div class="box-header">

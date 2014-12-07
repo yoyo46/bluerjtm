@@ -1,5 +1,6 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
+        echo $this->element('blocks/trucks/search_supir');
 ?>
 <div class="box">
     <div class="box-header">
@@ -97,7 +98,7 @@
                     }
                 }else{
             ?>
-            <tr><td colspan="5"><?php echo __('Data tidak ditemukan.');?></tr>
+            <tr><td colspan="9"><?php echo __('Data tidak ditemukan.');?></tr>
             <?php
                 }
             ?>

@@ -3,10 +3,26 @@ App::uses('AppController', 'Controller');
 class TrucksController extends AppController {
 	public $uses = array();
 
+    public $components = array(
+        'RjTruck'
+    );
+
     function beforeFilter() {
         parent::beforeFilter();
         $this->set('title_for_layout', __('ERP RJTM | Data Truk'));
         $this->set('module_title', __('Truk'));
+    }
+
+    function search( $index = 'index' ){
+        $refine = array();
+        if(!empty($this->request->data)) {
+            $refine = $this->RjTruck->processRefine($this->request->data);
+            $params = $this->RjTruck->generateSearchURL($refine);
+            $params['action'] = $index;
+
+            $this->redirect($params);
+        }
+        $this->redirect('/');
     }
 
 	public function index() {
@@ -14,7 +30,20 @@ class TrucksController extends AppController {
 		$this->set('active_menu', 'trucks');
 		$this->set('sub_module_title', __('Data Truk'));
 
-        $this->paginate = $this->Truck->getData('paginate');
+        $conditions = array();
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $this->request->data['Truck']['nopol'] = $nopol;
+                $conditions['Truck.nopol LIKE '] = '%'.$nopol.'%';
+            }
+        }
+
+        $this->paginate = $this->Truck->getData('paginate', array(
+            'conditions' => $conditions
+        ));
         $trucks = $this->paginate('Truck');
 
         if(!empty($trucks)){
@@ -476,7 +505,21 @@ class TrucksController extends AppController {
 
     function drivers(){
         $this->loadModel('Driver');
-        $this->paginate = $this->Driver->getData('paginate');
+
+        $conditions = array();
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['Driver']['name'] = $name;
+                $conditions['Driver.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+        $this->paginate = $this->Driver->getData('paginate', array(
+            'conditions' => $conditions
+        ));
         $truck_drivers = $this->paginate('Driver');
 
         $this->set('sub_module_title', 'Supir Truk');
