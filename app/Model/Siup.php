@@ -5,7 +5,7 @@ class Siup extends AppModel {
 		'tgl_siup' => array(
 			'notempty' => array(
 				'rule' => array('notempty'),
-                'message' => 'tanggal SIUP must be fill'
+                'message' => 'tanggal SIUP harap diisi'
 			),
 		)
 	);

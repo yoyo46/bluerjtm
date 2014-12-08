@@ -5,7 +5,7 @@ class TruckCategory extends AppModel {
 		'name' => array(
 			'notempty' => array(
 				'rule' => array('notempty'),
-                'message' => 'Category name must be fill'
+                'message' => 'Category name harap diisi'
 			),
 		)
 	);

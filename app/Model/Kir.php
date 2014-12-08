@@ -5,7 +5,7 @@ class Kir extends AppModel {
 		'tgl_kir' => array(
 			'notempty' => array(
 				'rule' => array('notempty'),
-                'message' => 'tanggal KIR must be fill'
+                'message' => 'tanggal KIR harap diisi'
 			),
 		)
 	);

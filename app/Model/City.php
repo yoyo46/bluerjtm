@@ -5,7 +5,7 @@ class City extends AppModel {
 		'name' => array(
 			'notempty' => array(
 				'rule' => array('notempty'),
-                'message' => 'City name must be fill'
+                'message' => 'City name harap diisi'
 			),
 		)
 	);

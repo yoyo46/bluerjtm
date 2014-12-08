@@ -5,19 +5,19 @@ class Company extends AppModel {
         'name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Company name must be fill'
+                'message' => 'Company name harap diisi'
             ),
         ),
         'address' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Address must be fill'
+                'message' => 'Address harap diisi'
             ),
         ),
         'phone_number' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Phone must be fill'
+                'message' => 'Phone harap diisi'
             ),
         )
 	);

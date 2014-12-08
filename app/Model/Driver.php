@@ -5,39 +5,39 @@ class Driver extends AppModel {
         'name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Driver name must be fill'
+                'message' => 'Nama supir harap diisi'
             ),
         ),
         'identity_number' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Identity number must be fill'
+                'message' => 'nomor identitas harap diisi'
             ),
             'numeric' => array(
                 'rule' => array('numeric'),
-                'message' => 'Identity number must be number'
+                'message' => 'nomor identitas harus berupa angka'
             ),
         ),
         'address' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Address must be fill'
+                'message' => 'alamat harap diisi'
             ),
         ),
         'phone' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Phone must be fill'
+                'message' => 'telepon harap diisi'
             ),
         ),
         'uang_makan' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Uang makan must be fill'
+                'message' => 'Uang makan harap diisi'
             ),
             'numeric' => array(
                 'rule' => array('numeric'),
-                'message' => 'Uang makan must be number'
+                'message' => 'Uang makan harus berupa angka'
             ),
         ),
 	);

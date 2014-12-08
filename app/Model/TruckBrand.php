@@ -5,7 +5,7 @@ class TruckBrand extends AppModel {
 		'name' => array(
 			'notempty' => array(
 				'rule' => array('notempty'),
-                'message' => 'Brand name must be fill'
+                'message' => 'Brand name harap diisi'
 			),
 		)
 	);
