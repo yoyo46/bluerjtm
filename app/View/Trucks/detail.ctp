@@ -1,5 +1,5 @@
 <?php 
-	$this->Html->addCrumb(__('Data Truk'), array(
+	$this->Html->addCrumb(__('Truk'), array(
 		'controller' => 'trucks',
 		'action' => 'index'
 	));
@@ -41,33 +41,47 @@
 	            <dt><?php echo __('KIR')?></dt>
 	            <dd>
 	            	<?php 
-	            		$link = $this->Html->link(__('Perpanjang KIR ?'), array(
-	            			'controller' => 'trucks',
-	            			'action' => 'kir',
-	            			$truck['Truck']['id']
-	            		));
-	            		echo $this->Common->customDate($truck['Truck']['kir']).', '.$link;
+		            		$link = $this->Html->link(__('Perpanjang KIR ?'), array(
+		            			'controller' => 'trucks',
+		            			'action' => 'kir',
+		            			$truck['Truck']['id']
+		            		));
+
+		            		if( !empty($truck['Truck']['kir']) ) {
+		            			$truckKir = $this->Common->customDate($truck['Truck']['kir']);
+		            		} else {
+		            			$truckKir = '';
+		            		}
+
+		            		echo trim(sprintf('%s %s', $truckKir, $link));
 	            	?>
 	            </dd>
 	            <dt><?php echo __('SIUP')?></dt>
 	            <dd>
 	            	<?php 
-	            		$link = $this->Html->link(__('Perpanjang SIUP ?'), array(
-	            			'controller' => 'trucks',
-	            			'action' => 'siup',
-	            			$truck['Truck']['id']
-	            		));
-	            		echo $this->Common->customDate($truck['Truck']['siup']).', '.$link;
+		            		$link = $this->Html->link(__('Perpanjang SIUP ?'), array(
+		            			'controller' => 'trucks',
+		            			'action' => 'siup',
+		            			$truck['Truck']['id']
+		            		));
+
+		            		if( !empty($truck['Truck']['siup']) ) {
+		            			$truckSiup = $this->Common->customDate($truck['Truck']['siup']);
+		            		} else {
+		            			$truckSiup = '';
+		            		}
+
+		            		echo trim(sprintf('%s %s', $truckSiup, $link));
 	            	?>
 	            </dd>
 	            <dt><?php echo __('No. Kontrak')?></dt>
                 <dd><?php echo $truck['Truck']['no_contract'];?></dd>
                 <dt><?php echo __('Tanggal BPKB')?></dt>
-                <dd><?php echo $this->Common->customDate($truck['Truck']['tgl_bpkb'], 'd-m-Y');?></dd>
+                <dd><?php echo $this->Common->customDate($truck['Truck']['tgl_bpkb'], 'd F Y');?></dd>
                 <dt><?php echo __('Tahun')?></dt>
-                <dd><?php echo $this->Common->customDate($truck['Truck']['tahun']);?></dd>
+                <dd><?php echo $this->Common->customDate($truck['Truck']['tahun'], 'Y');?></dd>
                 <dt><?php echo __('Tahun Neraca')?></dt>
-                <dd><?php echo $this->Common->customDate($truck['Truck']['tahun_neraca']);?></dd>
+                <dd><?php echo $this->Common->customDate($truck['Truck']['tahun_neraca'], 'Y');?></dd>
                 <dt><?php echo __('Aset')?></dt>
                 <dd>
                     <?php 
@@ -90,6 +104,21 @@
                     ?>
                 </dd>
 	        </dl>
+	        <div class="form-group text-center action">
+	            <?php
+	                    echo $this->Form->button(__('Rubah'), array(
+	                        'div' => false, 
+	                        'class'=> 'btn btn-primary btn-sm',
+	                        'type' => 'submit',
+	                    ));
+	                    echo $this->Html->link(__('Kembali'), array(
+	                        'action' => 'index', 
+	                    ), array(
+	                        'escape' => false, 
+	                        'class'=> 'btn btn-default btn-sm',
+	                    ));
+	            ?>
+	        </div>
 	    </div>
 	</div>
 </div>

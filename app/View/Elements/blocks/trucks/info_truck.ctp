@@ -27,9 +27,29 @@
             <dt><?php echo __('Atas Nama')?></dt>
             <dd><?php echo $truck['Truck']['atas_nama'];?></dd>
             <dt><?php echo __('KIR')?></dt>
-            <dd><?php echo $truck['Truck']['kir'];?></dd>
+            <dd>
+                <?php 
+                        if( !empty($truck['Truck']['kir']) ) {
+                            $truckKir = $this->Common->customDate($truck['Truck']['kir']);
+                        } else {
+                            $truckKir = '-';
+                        }
+
+                        echo $truckKir;
+                ?>
+            </dd>
             <dt><?php echo __('SIUP')?></dt>
-            <dd><?php echo $truck['Truck']['siup'];?></dd>
+            <dd>
+                <?php 
+                        if( !empty($truck['Truck']['siup']) ) {
+                            $truckSiup = $this->Common->customDate($truck['Truck']['siup']);
+                        } else {
+                            $truckSiup = '-';
+                        }
+
+                        echo $truckSiup;
+                ?>
+            </dd>
         </dl>
     </div>
 </div>

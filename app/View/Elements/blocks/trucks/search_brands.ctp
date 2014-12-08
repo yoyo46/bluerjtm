@@ -7,11 +7,11 @@
     </div>
     <div class="box-body">
         <?php 
-            echo $this->Form->create('Driver', array(
+            echo $this->Form->create('TruckBrand', array(
                 'url'=> $this->Html->url( array(
                     'controller' => 'trucks',
                     'action' => 'search',
-                    'drivers'
+                    'brands'
                 )), 
                 'role' => 'form',
                 'inputDefaults' => array('div' => false),
@@ -20,30 +20,30 @@
         <div class="form-group">
             <?php 
                 echo $this->Form->input('name',array(
-                    'label'=> __('Nama Supir'),
+                    'label'=> __('Nama Merk'),
                     'class'=>'form-control',
                     'required' => false,
-                    'placeholder' => __('Nama Supir')
+                    'placeholder' => __('Nama Merk')
                 ));
             ?>
         </div>
         <div class="form-group action">
             <?php
-                    echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
+                    echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
                         'div' => false, 
                         'class'=> 'btn btn-success btn-sm',
                         'type' => 'submit',
                     ));
                     echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                        'action' => 'drivers', 
+                        'action' => 'brands', 
                     ), array(
                         'escape' => false, 
                         'class'=> 'btn btn-default btn-sm',
                     ));
             ?>
         </div>
-        <?php 
-            echo $this->Form->end();
+        <?php
+                echo $this->Form->end();
         ?>
     </div>
 </div>

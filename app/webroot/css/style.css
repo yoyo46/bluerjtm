@@ -3545,3 +3545,14 @@ fieldset[disabled] .btn-vk.active {
   padding: 5px;
   font-weight: bold;
 }
+
+table tr td.action .btn,
+.box-footer .btn,
+.form-group.action .btn {
+  margin-right: 5px;
+}
+
+.dl-horizontal dt {
+  font-size: 16px;
+  margin-bottom: 7px;
+}

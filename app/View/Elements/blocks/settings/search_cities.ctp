@@ -7,11 +7,11 @@
     </div>
     <div class="box-body">
         <?php 
-            echo $this->Form->create('Driver', array(
+            echo $this->Form->create('City', array(
                 'url'=> $this->Html->url( array(
-                    'controller' => 'trucks',
+                    'controller' => 'settings',
                     'action' => 'search',
-                    'drivers'
+                    'cities'
                 )), 
                 'role' => 'form',
                 'inputDefaults' => array('div' => false),
@@ -20,10 +20,10 @@
         <div class="form-group">
             <?php 
                 echo $this->Form->input('name',array(
-                    'label'=> __('Nama Supir'),
+                    'label'=> __('Nama Kota'),
                     'class'=>'form-control',
                     'required' => false,
-                    'placeholder' => __('Nama Supir')
+                    'placeholder' => __('Nama Kota')
                 ));
             ?>
         </div>
@@ -35,7 +35,7 @@
                         'type' => 'submit',
                     ));
                     echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                        'action' => 'drivers', 
+                        'action' => 'cities', 
                     ), array(
                         'escape' => false, 
                         'class'=> 'btn btn-default btn-sm',

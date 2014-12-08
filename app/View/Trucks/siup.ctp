@@ -1,5 +1,5 @@
 <?php 
-	$this->Html->addCrumb(__('Data Truk'), array(
+	$this->Html->addCrumb(__('Truk'), array(
 		'controller' => 'trucks',
 		'action' => 'index'
 	));
@@ -53,18 +53,19 @@
                             $value_truck['truck_id'],
                             $id
                         ), array(
-                            'class' => 'btn btn-primary btn-sm'
+                            'class' => 'btn btn-primary btn-xs'
                         ));
                     ?>
                 </td>
             </tr>
             <?php
+                        }
+                    } else {
+                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
+                            'class' => 'alert alert-warning text-center',
+                            'colspan' => '3'
+                        )));
                     }
-                }else{
-            ?>
-            <tr><td colspan="3"><?php echo __('Data tidak ditemukan.');?></tr>
-            <?php
-                }
             ?>
         </table>
     </div><!-- /.box-body -->

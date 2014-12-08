@@ -27,13 +27,19 @@
                 ));
             ?>
         </div>
-        <div class="box-footer">
+        <div class="form-group action">
             <?php
-                echo $this->Form->button(__('Submit'), array(
-                    'div' => false, 
-                    'class'=> 'btn btn-primary',
-                    'type' => 'submit',
-                ));
+                    echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
+                        'div' => false, 
+                        'class'=> 'btn btn-success btn-sm',
+                        'type' => 'submit',
+                    ));
+                    echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                        'action' => 'index', 
+                    ), array(
+                        'escape' => false, 
+                        'class'=> 'btn btn-default btn-sm',
+                    ));
             ?>
         </div>
         <?php 

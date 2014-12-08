@@ -1,18 +1,22 @@
 <?php 
+        $this->Html->addCrumb(__('Truk'), array(
+            'action' => 'index',
+        ));
         $this->Html->addCrumb($sub_module_title);
+        echo $this->element('blocks/trucks/search_brands');
 ?>
 <div class="box">
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Merek Truk', array(
-                    'controller' => 'trucks',
-                    'action' => 'brand_add'
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app pull-right'
-                ));
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Merek Truk', array(
+                        'controller' => 'trucks',
+                        'action' => 'brand_add'
+                    ), array(
+                        'escape' => false,
+                        'class' => 'btn btn-app pull-right'
+                    ));
             ?>
         </div>
     </div><!-- /.box-header -->
@@ -26,11 +30,11 @@
                 <th>Action</th>
             </tr>
             <?php
-                $i = 1;
-                if(!empty($truck_brands)){
-                    foreach ($truck_brands as $key => $value) {
-                        $value_data = $value['TruckBrand'];
-                        $id = $value_data['id'];
+                    $i = 1;
+                    if(!empty($truck_brands)){
+                        foreach ($truck_brands as $key => $value) {
+                            $value_data = $value['TruckBrand'];
+                            $id = $value_data['id'];
             ?>
             <tr>
                 <td><?php echo $i++;?></td>
@@ -46,45 +50,46 @@
                         
                     ?>
                 </td>
-                <td>
+                <td class="action">
                     <?php 
-                        echo $this->Html->link('Edit', array(
-                            'controller' => 'trucks',
-                            'action' => 'brand_edit',
-                            $id
-                        ), array(
-                            'class' => 'btn btn-primary btn-sm'
-                        ));
+                            echo $this->Html->link('Edit', array(
+                                'controller' => 'trucks',
+                                'action' => 'brand_edit',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-primary btn-xs'
+                            ));
 
-                        if(!empty($value_data['status'])){
-                            echo $this->Html->link('Disable', array(
-                                'controller' => 'trucks',
-                                'action' => 'brand_toggle',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-danger btn-sm',
-                                'title' => 'disable status brand'
-                            ));
-                        }else{
-                            echo $this->Html->link('Enable', array(
-                                'controller' => 'trucks',
-                                'action' => 'brand_toggle',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-success btn-sm',
-                                'title' => 'enable status brand'
-                            ));
-                        }
+                            if(!empty($value_data['status'])){
+                                echo $this->Html->link('Disable', array(
+                                    'controller' => 'trucks',
+                                    'action' => 'brand_toggle',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs',
+                                    'title' => 'disable status brand'
+                                ));
+                            }else{
+                                echo $this->Html->link('Enable', array(
+                                    'controller' => 'trucks',
+                                    'action' => 'brand_toggle',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-success btn-xs',
+                                    'title' => 'enable status brand'
+                                ));
+                            }
                     ?>
                 </td>
             </tr>
             <?php
+                        }
+                    } else {
+                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
+                            'class' => 'alert alert-warning text-center',
+                            'colspan' => '5'
+                        )));
                     }
-                }else{
-            ?>
-            <tr><td colspan="5"><?php echo __('Data tidak ditemukan.');?></tr>
-            <?php
-                }
             ?>
         </table>
     </div><!-- /.box-body -->

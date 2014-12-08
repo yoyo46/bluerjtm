@@ -1,13 +1,14 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
+        echo $this->element('blocks/settings/search_companies');
 ?>
 <div class="box">
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Perusahaan', array(
-                    'controller' => 'trucks',
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Customer', array(
+                    'controller' => 'settings',
                     'action' => 'company_add'
                 ), array(
                     'escape' => false,
@@ -20,7 +21,7 @@
         <table class="table table-hover">
             <tr>
                 <th>No.</th>
-                <th>Perusahaan</th>
+                <th>Customer</th>
                 <th>Alamat</th>
                 <th>Telepon</th>
                 <th>Dibuat</th>
@@ -54,45 +55,46 @@
                         
                     ?>
                 </td>
-                <td>
+                <td class="action">
                     <?php 
-                        echo $this->Html->link('Edit', array(
-                            'controller' => 'trucks',
-                            'action' => 'company_edit',
-                            $id
-                        ), array(
-                            'class' => 'btn btn-primary btn-sm'
-                        ));
+                            echo $this->Html->link('Edit', array(
+                                'controller' => 'settings',
+                                'action' => 'company_edit',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-primary btn-xs'
+                            ));
 
-                        if(!empty($value_data['status'])){
-                            echo $this->Html->link('Disable', array(
-                                'controller' => 'trucks',
-                                'action' => 'company_toggle',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-danger btn-sm',
-                                'title' => 'disable status brand'
-                            ));
-                        }else{
-                            echo $this->Html->link('Enable', array(
-                                'controller' => 'trucks',
-                                'action' => 'company_toggle',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-success btn-sm',
-                                'title' => 'enable status brand'
-                            ));
-                        }
+                            if(!empty($value_data['status'])){
+                                echo $this->Html->link('Disable', array(
+                                    'controller' => 'settings',
+                                    'action' => 'company_toggle',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs',
+                                    'title' => 'disable status brand'
+                                ));
+                            }else{
+                                echo $this->Html->link('Enable', array(
+                                    'controller' => 'settings',
+                                    'action' => 'company_toggle',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-success btn-xs',
+                                    'title' => 'enable status brand'
+                                ));
+                            }
                     ?>
                 </td>
             </tr>
             <?php
+                        }
+                    } else {
+                        echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
+                            'class' => 'alert alert-warning text-center',
+                            'colspan' => '7'
+                        )));
                     }
-                }else{
-            ?>
-            <tr><td colspan="5"><?php echo __('Data tidak ditemukan.');?></tr>
-            <?php
-                }
             ?>
         </table>
     </div>

@@ -11,48 +11,27 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-list-alt"></i> Kategori', array(
-                    'controller' => 'trucks',
-                    'action' => 'categories'
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app pull-right'
-                ));
-                echo $this->Html->link('<i class="fa fa-building-o"></i> Perusahaan', array(
-                    'controller' => 'trucks',
-                    'action' => 'companies'
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app pull-right'
-                ));
-                echo $this->Html->link('<i class="fa fa-map-marker"></i> Kota', array(
-                    'controller' => 'trucks',
-                    'action' => 'cities'
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app pull-right'
-                ));
-                echo $this->Html->link('<i class="fa fa-user"></i> Supir', array(
-                    'controller' => 'trucks',
-                    'action' => 'drivers'
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app pull-right'
-                ));
-                echo $this->Html->link('<i class="fa fa-truck"></i> Merek Truk', array(
-                    'controller' => 'trucks',
-                    'action' => 'brands'
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app pull-right'
-                ));
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Truk', array(
-                    'controller' => 'trucks',
-                    'action' => 'add'
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app pull-right'
-                ));
+                    echo $this->Html->link('<i class="fa fa-list-alt"></i> Kategori Truk', array(
+                        'controller' => 'trucks',
+                        'action' => 'categories'
+                    ), array(
+                        'escape' => false,
+                        'class' => 'btn btn-app pull-right'
+                    ));
+                    echo $this->Html->link('<i class="fa fa-truck"></i> Merek Truk', array(
+                        'controller' => 'trucks',
+                        'action' => 'brands'
+                    ), array(
+                        'escape' => false,
+                        'class' => 'btn btn-app pull-right'
+                    ));
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Truk', array(
+                        'controller' => 'trucks',
+                        'action' => 'add'
+                    ), array(
+                        'escape' => false,
+                        'class' => 'btn btn-app btn-success pull-right'
+                    ));
             ?>
             <div class="clear"></div>
         </div>
@@ -71,11 +50,11 @@
                 <th>Action</th>
             </tr>
             <?php
-                $i = 1;
-                if(!empty($trucks)){
-                    foreach ($trucks as $key => $value) {
-                        $value_truck = $value['Truck'];
-                        $id = $value_truck['id'];
+                    $i = 1;
+                    if(!empty($trucks)){
+                        foreach ($trucks as $key => $value) {
+                            $value_truck = $value['Truck'];
+                            $id = $value_truck['id'];
             ?>
             <tr>
                 <td><?php echo $id;?></td>
@@ -86,7 +65,7 @@
                 <td><?php echo $value_truck['nopol'];?></td>
                 <td>
                     <?php 
-                        if(!empty($value_data['is_asset'])){
+                        if(!empty($value_truck['is_asset'])){
                             echo '<span class="label label-success">Ya</span>'; 
                         }else{
                             echo '<span class="label label-danger">Tidak</span>';  
@@ -103,14 +82,14 @@
                         
                     ?>
                 </td>
-                <td>
+                <td class="action">
                     <?php
                         echo $this->Html->link('Detail', array(
                             'controller' => 'trucks',
                             'action' => 'detail',
                             $id
                         ), array(
-                            'class' => 'btn btn-info btn-sm'
+                            'class' => 'btn btn-info btn-xs'
                         ));
 
                         echo $this->Html->link('Rubah', array(
@@ -118,16 +97,16 @@
                             'action' => 'edit',
                             $id
                         ), array(
-                            'class' => 'btn btn-primary btn-sm'
+                            'class' => 'btn btn-primary btn-xs'
                         ));
 
-                        if(!empty($value_data['status'])){
+                        if(!empty($value_truck['status'])){
                             echo $this->Html->link('Disable', array(
                                 'controller' => 'trucks',
                                 'action' => 'toggle',
                                 $id
                             ), array(
-                                'class' => 'btn btn-danger btn-sm',
+                                'class' => 'btn btn-danger btn-xs',
                                 'title' => 'disable status brand'
                             ));
                         }else{
@@ -136,7 +115,7 @@
                                 'action' => 'toggle',
                                 $id
                             ), array(
-                                'class' => 'btn btn-success btn-sm',
+                                'class' => 'btn btn-success btn-xs',
                                 'title' => 'enable status brand'
                             ));
                         }
@@ -146,32 +125,33 @@
                             'action' => 'kir',
                             $id
                         ), array(
-                            'class' => 'btn btn-warning btn-sm'
+                            'class' => 'btn bg-olive btn-xs'
                         ));
                         echo $this->Html->link('SIUP', array(
                             'controller' => 'trucks',
                             'action' => 'siup',
                             $id
                         ), array(
-                            'class' => 'btn btn-warning btn-sm'
+                            'class' => 'btn bg-purple btn-xs'
                         ));
                         echo $this->Html->link('Alokasi', array(
                             'controller' => 'trucks',
                             'action' => 'alocations',
                             $id
                         ), array(
-                            'class' => 'btn btn-warning btn-sm'
+                            'class' => 'btn bg-navy btn-xs'
                         ));
                     ?>
                 </td>
             </tr>
             <?php
+                        }
+                    }else{
+                        echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
+                            'class' => 'alert alert-warning text-center',
+                            'colspan' => '9'
+                        )));
                     }
-                }else{
-            ?>
-            <tr><td colspan="9"><?php echo __('Data tidak ditemukan.');?></tr>
-            <?php
-                }
             ?>
         </table>
     </div><!-- /.box-body -->

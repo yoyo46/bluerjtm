@@ -1,9 +1,9 @@
 <?php
-	$this->Html->addCrumb(__('Company'), array(
-		'controller' => 'trucks',
-		'action' => 'companies'
-	));
-	$this->Html->addCrumb($sub_module_title);
+		$this->Html->addCrumb(__('Customer'), array(
+			'controller' => 'trucks',
+			'action' => 'companies'
+		));
+		$this->Html->addCrumb($sub_module_title);
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -19,13 +19,13 @@
     <div class="box-body">
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('name',__('Nama Perusahaan *')); 
+				echo $this->Form->label('name',__('Nama Customer *')); 
 
 				echo $this->Form->input('name',array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('Nama Perusahaan')
+					'placeholder' => __('Nama Customer')
 				));
 			?>
         </div>
@@ -55,13 +55,18 @@
         </div>
     </div>
 
-    <div class="box-footer">
+    <div class="box-footer text-center action">
     	<?php
-    		echo $this->Form->button(__('Submit'), array(
-				'div' => false, 
-				'class'=> 'btn btn-primary',
-				'type' => 'submit',
-			));
+	    		echo $this->Form->button(__('Simpan'), array(
+					'div' => false, 
+					'class'=> 'btn btn-success',
+					'type' => 'submit',
+				));
+	    		echo $this->Html->link(__('Kembali'), array(
+					'action' => 'companies', 
+				), array(
+					'class'=> 'btn btn-default',
+				));
     	?>
     </div>
 	<?php

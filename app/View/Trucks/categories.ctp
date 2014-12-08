@@ -1,5 +1,9 @@
 <?php 
+        $this->Html->addCrumb(__('Truk'), array(
+            'action' => 'index',
+        ));
         $this->Html->addCrumb($sub_module_title);
+        echo $this->element('blocks/trucks/search_categories');
 ?>
 <div class="box">
     <div class="box-header">
@@ -46,14 +50,14 @@
                         
                     ?>
                 </td>
-                <td>
+                <td class="action">
                     <?php 
                         echo $this->Html->link('Edit', array(
                             'controller' => 'trucks',
                             'action' => 'category_edit',
                             $id
                         ), array(
-                            'class' => 'btn btn-primary btn-sm'
+                            'class' => 'btn btn-primary btn-xs'
                         ));
 
                         if(!empty($value_data['status'])){
@@ -62,7 +66,7 @@
                                 'action' => 'category_toggle',
                                 $id
                             ), array(
-                                'class' => 'btn btn-danger btn-sm',
+                                'class' => 'btn btn-danger btn-xs',
                                 'title' => 'disable status brand'
                             ));
                         }else{
@@ -71,7 +75,7 @@
                                 'action' => 'category_toggle',
                                 $id
                             ), array(
-                                'class' => 'btn btn-success btn-sm',
+                                'class' => 'btn btn-success btn-xs',
                                 'title' => 'enable status brand'
                             ));
                         }
@@ -79,12 +83,13 @@
                 </td>
             </tr>
             <?php
+                        }
+                    } else {
+                        echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
+                            'class' => 'alert alert-warning text-center',
+                            'colspan' => '5'
+                        )));
                     }
-                }else{
-            ?>
-            <tr><td colspan="5"><?php echo __('Data tidak ditemukan.');?></tr>
-            <?php
-                }
             ?>
         </table>
     </div><!-- /.box-body -->

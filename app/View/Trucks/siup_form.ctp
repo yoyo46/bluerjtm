@@ -1,14 +1,14 @@
 <?php
-	$this->Html->addCrumb(__('Data Truk'), array(
-		'controller' => 'trucks',
-		'action' => 'index'
-	));
-	$this->Html->addCrumb('Histori SIUP Truk', array(
-		'controller' => 'trucks',
-		'action' => 'kir',
-		$truck_id
-	));
-	$this->Html->addCrumb($sub_module_title);
+		$this->Html->addCrumb(__('Truk'), array(
+			'controller' => 'trucks',
+			'action' => 'index'
+		));
+		$this->Html->addCrumb('Histori SIUP Truk', array(
+			'controller' => 'trucks',
+			'action' => 'kir',
+			$truck_id
+		));
+		$this->Html->addCrumb($sub_module_title);
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -35,13 +35,19 @@
         </div>
     </div>
 
-    <div class="box-footer">
+    <div class="box-footer text-center action">
     	<?php
-    		echo $this->Form->button(__('Submit'), array(
-				'div' => false, 
-				'class'=> 'btn btn-primary',
-				'type' => 'submit',
-			));
+	    		echo $this->Form->button(__('Simpan'), array(
+					'div' => false, 
+					'class'=> 'btn btn-success',
+					'type' => 'submit',
+				));
+	    		echo $this->Html->link(__('Kembali'), array(
+					'action' => 'siup', 
+					$truck['Truck']['id'],
+				), array(
+					'class'=> 'btn btn-default',
+				));
     	?>
     </div>
 	<?php

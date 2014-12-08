@@ -1,9 +1,9 @@
 <?php
-	$this->Html->addCrumb(__('Truk'), array(
-		'controller' => 'trucks',
-		'action' => 'index'
-	));
-	$this->Html->addCrumb($sub_module_title);
+		$this->Html->addCrumb(__('Truk'), array(
+			'controller' => 'trucks',
+			'action' => 'index'
+		));
+		$this->Html->addCrumb($sub_module_title);
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -145,7 +145,7 @@
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('no_rangka',__('No Rangka *')); 
+				echo $this->Form->label('no_rangka',__('No STNK *')); 
 
 				echo $this->Form->input('no_rangka',array(
 					'type' => 'text',
@@ -223,13 +223,18 @@
         </div>
     </div>
 
-    <div class="box-footer">
+    <div class="box-footer text-center action">
     	<?php
-    		echo $this->Form->button(__('Submit'), array(
-				'div' => false, 
-				'class'=> 'btn btn-primary',
-				'type' => 'submit',
-			));
+	    		echo $this->Form->button(__('Simpan'), array(
+					'div' => false, 
+					'class'=> 'btn btn-success',
+					'type' => 'submit',
+				));
+	    		echo $this->Html->link(__('Kembali'), array(
+					'action' => 'index', 
+				), array(
+					'class'=> 'btn btn-default',
+				));
     	?>
     </div>
 	<?php
