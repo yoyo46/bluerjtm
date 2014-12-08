@@ -21,6 +21,8 @@
             <tr>
                 <th>No.</th>
                 <th>Rute</th>
+                <th>Jarak Tempuh</th>
+                <th>Bahan Bakar</th>
                 <th>Dibuat</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -33,11 +35,13 @@
             ?>
             <tr>
                 <td><?php echo $i++;?></td>
-                <td><?php echo $value_data['CityFrom']['name'].' - '.$value_data['CityTo']['name'];?></td>
-                <td><?php echo $this->Common->customDate($value_data['created']);?></td>
+                <td><?php echo $value['CityFrom']['name'].' sampai '.$value['CityTo']['name'];?></td>
+                <td><?php echo $value['Direction']['distance'].' Km';?></td>
+                <td><?php echo $value['Direction']['gas'].' liter';?></td>
+                <td><?php echo $this->Common->customDate($value['Direction']['created']);?></td>
                 <td>
                     <?php 
-                        if(!empty($value_data['status'])){
+                        if(!empty($value['Direction']['status'])){
                             echo '<span class="label label-success">Active</span>'; 
                         }else{
                             echo '<span class="label label-danger">Non Active</span>';  
@@ -55,7 +59,7 @@
                             'class' => 'btn btn-primary btn-sm'
                         ));
 
-                        if(!empty($value_data['status'])){
+                        if(!empty($value['Direction']['status'])){
                             echo $this->Html->link('Disable', array(
                                 'controller' => 'trucks',
                                 'action' => 'direction_toggle',

@@ -2,19 +2,38 @@
 class Direction extends AppModel {
 	var $name = 'Direction';
 	var $validate = array(
-		'name' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-                'message' => 'rute truk harap diisi'
-			),
-		)
-	);
-
-	var $belongsTo = array(
-		'TruckAlocation' => array(
-			'className' => 'TruckAlocation',
-			'foreignKey' => 'city_id',
-		)
+        'from_city_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'dari kota harap diisi'
+            ),
+        ),
+        'to_city_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'ke kota harap diisi'
+            ),
+        ),
+        'distance' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'jumlah jarak tempuh harap diisi'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'jumlah jarak tempuh harus berupa angka'
+            ),
+        ),
+        'gas' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'jumlah bahan bakar harap diisi'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'jumlah bahan bakar harus berupa angka'
+            ),
+        ),
 	);
 
 	function getData($find, $options = false){

@@ -64,5 +64,38 @@ class City extends AppModel {
 
         return $data;
     }
+
+    function getMergeDirection($data){
+        $result = array();
+        if( !empty($data['Direction']['from_city_id'])){
+            $data_merge_from = $this->find('first', array(
+                'conditions' => array(
+                    'id' => $data['Direction']['from_city_id']
+                )
+            ));
+
+            if(!empty($data_merge_from)){
+                $result['CityFrom'] = $data_merge_from['City'];
+            }
+        }
+
+        if( !empty($data['Direction']['to_city_id'])){
+            $data_merge_to = $this->find('first', array(
+                'conditions' => array(
+                    'id' => $data['Direction']['to_city_id']
+                )
+            ));
+
+            if(!empty($data_merge_to)){
+                $result['CityTo'] = $data_merge_to['City'];
+            }
+        }
+
+        if(!empty($result)){
+            $data = array_merge($data, $result);
+        }
+
+        return $data;
+    }
 }
 ?>

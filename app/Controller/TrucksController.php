@@ -968,6 +968,13 @@ class TrucksController extends AppController {
         $this->paginate = $this->Direction->getData('paginate');
         $directions = $this->paginate('Direction');
 
+        if(!empty($directions)){
+            $this->loadModel('City');
+            foreach ($directions as $key => $direction) {
+                $directions[$key] = $this->City->getMergeDirection($direction);
+            }
+        }
+
         $sub_module_title = __('Rute Truk');
         $this->set(compact('sub_module_title', 'directions'));
     }
@@ -1009,9 +1016,31 @@ class TrucksController extends AppController {
                 $msg = 'menambah';
             }
 
+            $check = false;
+            if(!empty($data['Direction']['from_city_id']) && !empty($data['Direction']['to_city_id'])){
+                $defaul_condition = array(
+                    'from_city_id' => $data['Direction']['from_city_id'],
+                    'to_city_id' => $data['Direction']['to_city_id']
+                );
+                if( !empty($id) ){
+                    $defaul_condition['id'] = $id;
+                }
+                $rute = $this->Direction->getData('first', array(
+                    'conditions' => $defaul_condition
+                ));
+
+                if( !empty($id) && !empty($rute) ){
+                    $check = true;
+                }else{
+                    if(empty($rute)){
+                        $check = true;
+                    }
+                }
+            }
+
             $this->Direction->set($data);
 
-            if($this->Direction->validates($data)){
+            if($this->Direction->validates($data) && $check){
                 if($this->Direction->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Rute Truk'), $msg), 'success');
                     $this->redirect(array(
@@ -1024,7 +1053,7 @@ class TrucksController extends AppController {
             }else{
                 $text = sprintf(__('Gagal %s Rute Truk'), $msg);
                 if(!$check){
-                    $text .= ', alokasi untuk lokasi ini sudah tersedia untuk truk ini.';
+                    $text .= ', rute ini sudah tersedia.';
                 }
                 $this->MkCommon->setCustomFlash($text, 'error');
             }

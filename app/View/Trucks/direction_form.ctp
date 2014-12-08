@@ -43,6 +43,32 @@
 				));
 			?>
         </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('distance',__('Jumlah Jarak Tempuh *')); 
+
+				echo $this->Form->input('distance',array(
+					'type' => 'text',
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Jarak Tempuh'),
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('gas',__('Jumlah Bahan Bakar *')); 
+
+				echo $this->Form->input('gas',array(
+					'type' => 'text',
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Bahan Bakar'),
+				));
+			?>
+        </div>
     </div>
 
     <div class="box-footer">
