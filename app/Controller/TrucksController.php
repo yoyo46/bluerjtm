@@ -1106,4 +1106,43 @@ class TrucksController extends AppController {
 
         $this->redirect($this->referer());
     }
+
+
+    function gas_edit(){
+        $this->loadModel('Gases');
+        $gas = $this->Gases->find('first', array('conditions' => array('status' => 1)));
+        
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if(!empty($gas)){
+                $this->Gases->id = $gas['Gases']['id'];
+                $msg = 'merubah';
+            }else{
+                $this->Gases->create();
+                $msg = 'menambah';
+            }
+
+            $this->Gases->set($data);
+
+            if($this->Gases->validates($data)){
+                if($this->Gases->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s rincian bahan bakar'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'trucks',
+                        'action' => 'gas_edit'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s rincian bahan bakar'), $msg), 'error');  
+                }
+            }else{
+                $text = sprintf(__('Gagal %s rincian bahan bakar'), $msg);
+                $this->MkCommon->setCustomFlash($text, 'error');
+            }
+        }else{
+            $this->request->data = $gas;
+        }
+
+        $sub_module_title = __('rincian bahan bakar');
+        $this->set(compact('sub_module_title'));
+    }
 }

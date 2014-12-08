@@ -11,6 +11,13 @@
         ?>
         <div class="box-tools">
             <?php
+                    echo $this->Html->link('<i class="fa fa-tint"></i> Bahan Bakar', array(
+                        'controller' => 'trucks',
+                        'action' => 'gas_edit'
+                    ), array(
+                        'escape' => false,
+                        'class' => 'btn btn-app pull-right'
+                    ));
                     echo $this->Html->link('<i class="fa fa-list-alt"></i> Kategori Truk', array(
                         'controller' => 'trucks',
                         'action' => 'categories'
