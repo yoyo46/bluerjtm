@@ -131,7 +131,9 @@ class Truck extends AppModel {
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(),
-            'order'=> array(),
+            'order'=> array(
+                'status' => 'DESC'
+            ),
             'contain' => array(),
         );
 

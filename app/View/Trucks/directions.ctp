@@ -63,7 +63,7 @@
                             ), array(
                                 'class' => 'btn btn-danger btn-sm',
                                 'title' => 'disable status brand'
-                            ));
+                            ), __('Apakah Anda yakin akan menon-aktifkan?'));
                         }else{
                             echo $this->Html->link('Enable', array(
                                 'controller' => 'trucks',
@@ -72,7 +72,7 @@
                             ), array(
                                 'class' => 'btn btn-success btn-sm',
                                 'title' => 'enable status brand'
-                            ));
+                            ), __('Apakah Anda yakin akan mengaktifkan?'));
                         }
                     ?>
                 </td>

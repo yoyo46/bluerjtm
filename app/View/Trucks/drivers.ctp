@@ -83,7 +83,7 @@
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs',
                                     'title' => 'disable status brand'
-                                ));
+                                ), sprintf(__('Apakah Anda yakin akan menon-aktifkan %s?'), $value_data['name']));
                             }else{
                                 echo $this->Html->link('Enable', array(
                                     'controller' => 'trucks',
@@ -92,7 +92,7 @@
                                 ), array(
                                     'class' => 'btn btn-success btn-xs',
                                     'title' => 'enable status brand'
-                                ));
+                                ), sprintf(__('Apakah Anda yakin akan mengaktifkan %s?'), $value_data['name']));
                             }
                     ?>
                 </td>
