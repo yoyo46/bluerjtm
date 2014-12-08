@@ -174,7 +174,15 @@ class TrucksController extends AppController {
             )
         ));
 
-        $this->set(compact('truck_brands', 'truck_categories', 'truck_brands', 'truck_companies', 'drivers'));
+        $now_year = date('Y');
+        $start_year = 1984;
+
+        $years = array();
+        for($now_year;$now_year >= $start_year;$now_year--){
+            $years[$now_year] = $now_year;
+        }
+
+        $this->set(compact('truck_brands', 'truck_categories', 'truck_brands', 'truck_companies', 'drivers', 'years'));
         $this->render('truck_form');
     }
 

@@ -187,11 +187,11 @@
 				echo $this->Form->label('tahun',__('Tahun *')); 
 
 				echo $this->Form->input('tahun',array(
-					'type' => 'text',
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('Tahun')
+					'empty' => __('Pilih Tahun'),
+					'options' => $years
 				));
 			?>
         </div>
@@ -200,11 +200,11 @@
 				echo $this->Form->label('tahun_neraca',__('Tahun Neraca *')); 
 
 				echo $this->Form->input('tahun_neraca',array(
-					'type' => 'text',
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('Tahun Neraca')
+					'empty' => __('Pilih Tahun Neraca'),
+					'options' => $years
 				));
 			?>
         </div>
