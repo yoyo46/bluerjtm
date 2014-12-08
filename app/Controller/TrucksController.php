@@ -1143,4 +1143,119 @@ class TrucksController extends AppController {
         $this->set(compact('truck_id', 'sub_module_title', 'cities'));
         $this->render('alocation_form');
     }
+
+    function directions($id = false){
+        $this->loadModel('Direction');
+        $this->paginate = $this->Direction->getData('paginate');
+        $directions = $this->paginate('Direction');
+
+        $sub_module_title = __('Rute Truk');
+        $this->set(compact('sub_module_title', 'directions'));
+    }
+
+    function direction_add(){
+        $this->set('sub_module_title', 'Tambah Rute Truk');
+        $this->doDirection();
+    }
+
+    function direction_edit($id){
+        $this->loadModel('Direction');
+        $this->set('sub_module_title', 'Rubah Rute Truk');
+        $Direction = $this->Direction->find('first', array(
+            'conditions' => array(
+                'Direction.id' => $id
+            )
+        ));
+
+        if(!empty($Direction)){
+            $this->doDirection($id, $Direction);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Rute Truk tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'trucks',
+                'action' => 'directions'
+            ));
+        }
+    }
+
+    function doDirection($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->Direction->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('Direction');
+                $this->Direction->create();
+                $msg = 'menambah';
+            }
+
+            $this->Direction->set($data);
+
+            if($this->Direction->validates($data)){
+                if($this->Direction->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Rute Truk'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'trucks',
+                        'action' => 'directions'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Rute Truk'), $msg), 'error');  
+                }
+            }else{
+                $text = sprintf(__('Gagal %s Rute Truk'), $msg);
+                if(!$check){
+                    $text .= ', alokasi untuk lokasi ini sudah tersedia untuk truk ini.';
+                }
+                $this->MkCommon->setCustomFlash($text, 'error');
+            }
+        }else{
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->loadModel('City');
+        $cities = $this->City->getData('list', array(
+            'conditions' => array(
+                'status' => 1
+            ),
+            'fields' => array(
+                'City.id', 'City.name'
+            )
+        ));
+
+        $sub_module_title = __('Rute Truk');
+        $this->set(compact('sub_module_title', 'cities'));
+        $this->render('direction_form');
+    }
+
+    function direction_toggle($id){
+        $this->loadModel('Direction');
+        $locale = $this->Direction->getData('first', array(
+            'conditions' => array(
+                'Direction.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['Direction']['status']){
+                $value = false;
+            }
+
+            $this->Direction->id = $id;
+            $this->Direction->set('status', $value);
+            if($this->Direction->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Kota tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
 }
