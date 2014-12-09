@@ -31,11 +31,48 @@ App::uses('Controller', 'Controller');
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
-	public $components = array(
-		'MkCommon'
-	);
+	var $components = array('Acl', 'Auth', 'Session', 'MkCommon');
 
 	var $helpers = array(
 		'Common', 'Html'
 	);
+
+	function beforeFilter() {
+	    //Configure AuthComponent
+	    $this->Auth->authorize = array(
+	        'Controller',
+	        'Actions' => array('actionPath' => 'controllers')
+	    );
+	    // $this->Auth->authenticate = array(
+	    //     'Form' => array(
+	    //         'fields' => array(
+	    //             'username' => 'login',
+	    //             'password' => 'password'
+	    //         )
+	    //     )
+	    // );
+	    $this->Auth->loginAction = array(
+	        'controller' => 'users',
+	        'action' => 'login',
+	        'admin' => false,
+	        'plugin' => false
+	    );
+	    $this->Auth->logoutRedirect = array(
+	        'controller' => 'users',
+	        'action' => 'login',
+	        'admin' => false,
+	        'plugin' => false
+	    );
+	    $this->Auth->loginRedirect = array(
+	        'controller' => 'trucks',
+	        'action' => 'index',
+	        'admin' => false,
+	        'plugin' => false
+	    );
+	}
+
+	function isAuthorized($user) {
+	    // return false;
+	    return $this->Auth->loggedIn();
+	}
 }

@@ -25,5 +25,13 @@ class MkCommonComponent extends Component {
 			$this->controller->set('status', $status);
 		}
 	}
+
+	function loggedIn() {
+		$logged_in = false;
+		if($this->controller->Auth->user()) {
+			$logged_in = true;
+		}
+		return $logged_in;
+	}
 }
 ?>
