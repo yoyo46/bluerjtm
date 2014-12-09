@@ -1,37 +1,24 @@
 <?php
-class Company extends AppModel {
-	var $name = 'Company';
+class Vendor extends AppModel {
+	var $name = 'Vendor';
 	var $validate = array(
-        'company_type_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tipe Customer harap dipilih'
-            ),
-        ),
         'name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Customer name harap diisi'
+                'message' => 'Nama Vendor harap diisi'
             ),
         ),
         'address' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Address harap diisi'
+                'message' => 'Alamat harap diisi'
             ),
         ),
         'phone_number' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Phone harap diisi'
+                'message' => 'Nomor telepon harap diisi'
             ),
-        )
-	);
-
-	var $belongsTo = array(
-        'CompanyType' => array(
-            'className' => 'CompanyType',
-            'foreignKey' => 'company_type_id',
         )
 	);
 
@@ -39,11 +26,9 @@ class Company extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'Company.status' => 'DESC'
+                'status' => 'DESC'
             ),
-            'contain' => array(
-                'CompanyType'
-            ),
+            'contain' => array(),
         );
 
         if(!empty($options)){
@@ -67,22 +52,6 @@ class Company extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
-    }
-
-    function getMerge($data, $id){
-        if(empty($data['Company'])){
-            $data_merge = $this->find('first', array(
-                'conditions' => array(
-                    'id' => $id
-                )
-            ));
-
-            if(!empty($data_merge)){
-                $data = array_merge($data, $data_merge);
-            }
-        }
-
-        return $data;
     }
 }
 ?>

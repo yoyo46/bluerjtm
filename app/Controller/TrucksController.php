@@ -182,7 +182,11 @@ class TrucksController extends AppController {
             $years[$now_year] = $now_year;
         }
 
-        $this->set(compact('truck_brands', 'truck_categories', 'truck_brands', 'truck_companies', 'drivers', 'years'));
+        $this->set('active_menu', 'trucks');
+        $this->set(compact(
+            'truck_brands', 'truck_categories', 'truck_brands', 
+            'truck_companies', 'drivers', 'years'
+        ));
         $this->render('truck_form');
     }
 
@@ -231,6 +235,7 @@ class TrucksController extends AppController {
 		$this->paginate = $this->TruckBrand->getData('paginate', $options);
 		$truck_brands = $this->paginate('TruckBrand');
 
+        $this->set('active_menu', 'trucks');
 		$this->set('sub_module_title', 'Merek Truk');
 		$this->set('truck_brands', $truck_brands);
 	}
@@ -294,6 +299,7 @@ class TrucksController extends AppController {
             }
         }
 
+        $this->set('active_menu', 'trucks');
         $this->render('brand_form');
     }
 
@@ -341,6 +347,7 @@ class TrucksController extends AppController {
 		$this->paginate = $this->TruckCategory->getData('paginate', $options);
 		$truck_categories = $this->paginate('TruckCategory');
 
+        $this->set('active_menu', 'trucks');
 		$this->set('sub_module_title', 'Kategori Truk');
 		$this->set('truck_categories', $truck_categories);
 	}
@@ -404,6 +411,7 @@ class TrucksController extends AppController {
             }
         }
 
+        $this->set('active_menu', 'trucks');
         $this->render('category_form');
     }
 
@@ -454,6 +462,7 @@ class TrucksController extends AppController {
         ));
         $truck_drivers = $this->paginate('Driver');
 
+        $this->set('active_menu', 'drivers');
         $this->set('sub_module_title', 'Supir Truk');
         $this->set('truck_drivers', $truck_drivers);
     }
@@ -522,6 +531,7 @@ class TrucksController extends AppController {
             }
         }
 
+        $this->set('active_menu', 'drivers');
         $this->render('driver_form');
     }
 
@@ -568,6 +578,7 @@ class TrucksController extends AppController {
                 ));
                 $kir = $this->paginate('Kir');
 
+                $this->set('active_menu', 'trucks');
                 $sub_module_title = __('Histori KIR Truk');
                 $this->set(compact('truck', 'kir', 'sub_module_title', 'id'));
             }else{
@@ -670,6 +681,7 @@ class TrucksController extends AppController {
                 }
             }
 
+            $this->set('active_menu', 'trucks');
             $sub_module_title = __('Histori KIR Truk');
             $this->set(compact('truck_id', 'sub_module_title', 'truck'));
             $this->render('kir_form');
@@ -697,6 +709,7 @@ class TrucksController extends AppController {
                 ));
                 $siup = $this->paginate('Siup');
 
+                $this->set('active_menu', 'trucks');
                 $sub_module_title = __('Histori SIUP Truk');
                 $this->set(compact('truck', 'siup', 'sub_module_title', 'id'));
             }else{
@@ -798,6 +811,7 @@ class TrucksController extends AppController {
                 }
             }
 
+            $this->set('active_menu', 'trucks');
             $sub_module_title = __('Histori SIUP Truk');
             $this->set(compact('truck_id', 'sub_module_title', 'truck'));
             $this->render('siup_form');
@@ -832,6 +846,7 @@ class TrucksController extends AppController {
                     }
                 }
 
+                $this->set('active_menu', 'trucks');
                 $sub_module_title = __('Alokasi Truk');
                 $this->set(compact('truck', 'alocations', 'sub_module_title', 'id'));
             }else{
@@ -958,6 +973,7 @@ class TrucksController extends AppController {
             )
         ));
 
+        $this->set('active_menu', 'trucks');
         $sub_module_title = __('Alokasi Truk');
         $this->set(compact('truck_id', 'sub_module_title', 'cities'));
         $this->render('alocation_form');
@@ -975,6 +991,7 @@ class TrucksController extends AppController {
             }
         }
 
+        $this->set('active_menu', 'directions');
         $sub_module_title = __('Rute Truk');
         $this->set(compact('sub_module_title', 'directions'));
     }
@@ -1074,6 +1091,7 @@ class TrucksController extends AppController {
             )
         ));
 
+        $this->set('active_menu', 'directions');
         $sub_module_title = __('Rute Truk');
         $this->set(compact('sub_module_title', 'cities'));
         $this->render('direction_form');

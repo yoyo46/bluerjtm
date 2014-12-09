@@ -90,6 +90,7 @@
 				'plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min',
 				'plugins/iCheck/icheck.min',
 				'functions/app',
+				'functions/defaults',
 				'functions/dashboard',
 				'functions/demo',
 			)).PHP_EOL;

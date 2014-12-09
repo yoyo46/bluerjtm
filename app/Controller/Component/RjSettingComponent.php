@@ -18,6 +18,21 @@ class RjSettingComponent extends Component {
 					$refine_conditions['Company']['name'] = $refine['Company']['name'];
 				}
 			}
+			if(!empty($refine)) {
+				if( !empty($refine['Company']['company_type_id']) ) {
+					$refine_conditions['Company']['company_type_id'] = $refine['Company']['company_type_id'];
+				}
+			}
+			if(!empty($refine)) {
+				if( !empty($refine['CompanyType']['name']) ) {
+					$refine_conditions['CompanyType']['name'] = $refine['CompanyType']['name'];
+				}
+			}
+			if(!empty($refine)) {
+				if( !empty($refine['Vendor']['name']) ) {
+					$refine_conditions['Vendor']['name'] = $refine['Vendor']['name'];
+				}
+			}
 				
 			return $refine_conditions;
 		}
@@ -34,6 +49,20 @@ class RjSettingComponent extends Component {
 		}
 		if(isset($refine['Company']) && !empty($refine['Company'])) {
 			foreach($refine['Company'] as $param => $value) {
+				if($value) {
+					$parameters[trim($param)] = rawurlencode($value);
+				}
+			}
+		}
+		if(isset($refine['CompanyType']) && !empty($refine['CompanyType'])) {
+			foreach($refine['CompanyType'] as $param => $value) {
+				if($value) {
+					$parameters[trim($param)] = rawurlencode($value);
+				}
+			}
+		}
+		if(isset($refine['Vendor']) && !empty($refine['Vendor'])) {
+			foreach($refine['Vendor'] as $param => $value) {
 				if($value) {
 					$parameters[trim($param)] = rawurlencode($value);
 				}

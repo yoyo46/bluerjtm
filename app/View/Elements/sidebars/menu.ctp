@@ -31,8 +31,17 @@
                     )), array(
                         'class' => ( !empty($active_menu) && $active_menu == 'dashboard' )?'active':'',
                     ));
+
+                    $activeTruck = false;
+                    $truckMenu = array(
+                        'drivers', 'trucks', 'directions'
+                    );
+
+                    if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
+                        $activeTruck = 'active';
+                    }
             ?>
-            <li class="treeview">
+            <li class="treeview <?php echo $activeTruck; ?>">
                 <a href="#">
                     <i class="fa fa-truck"></i>
                     <span>Truk</span>
@@ -69,7 +78,18 @@
                     ?>
                 </ul>
             </li>
-            <li class="treeview">
+            <?php 
+                    $activeSetting = false;
+                    $settingMenu = array(
+                        'cities', 'company_types', 'companies',
+                        'vendors'
+                    );
+
+                    if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
+                        $activeSetting = 'active';
+                    }
+            ?>
+            <li class="treeview <?php echo $activeSetting; ?>">
                 <a href="#">
                     <i class="fa fa-wrench"></i>
                     <span>Data Master</span>
@@ -77,6 +97,14 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> COA', array(
+                                'controller' => 'settings',
+                                'action' => 'coas',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'coas' )?'active':'',
+                            ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kota', array(
                                 'controller' => 'settings',
                                 'action' => 'cities',
@@ -100,6 +128,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'companies' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Vendor', array(
+                                'controller' => 'settings',
+                                'action' => 'vendors',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'vendors' )?'active':'',
                             ));
                     ?>
                 </ul>

@@ -1,7 +1,7 @@
 <?php
-		$this->Html->addCrumb(__('Customer'), array(
+		$this->Html->addCrumb(__('Vendor'), array(
 			'controller' => 'settings',
-			'action' => 'companies'
+			'action' => 'vendors'
 		));
 		$this->Html->addCrumb($sub_module_title);
 ?>
@@ -10,7 +10,7 @@
         <h3 class="box-title"><?php echo $sub_module_title?></h3>
     </div>
     <?php 
-		echo $this->Form->create('Company', array(
+		echo $this->Form->create('Vendor', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
@@ -18,19 +18,11 @@
 	?>
     <div class="box-body">
     	<?php 
-				echo $this->Html->tag('div', $this->Form->input('company_type_id',array(
-					'label'=> __('Tipe Customer'), 
-					'class'=>'form-control',
-					'required' => false,
-					'empty' => __('Pilih Tipe Customer')
-				)), array(
-					'class' => 'form-group'
-				));
 				echo $this->Html->tag('div', $this->Form->input('name',array(
-					'label'=> __('Nama Customer *'), 
+					'label'=> __('Nama Vendor *'), 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('Nama Customer')
+					'placeholder' => __('Nama Vendor')
 				)), array(
 					'class' => 'form-group'
 				));
@@ -61,7 +53,7 @@
 					'type' => 'submit',
 				));
 	    		echo $this->Html->link(__('Kembali'), array(
-					'action' => 'companies', 
+					'action' => 'vendors', 
 				), array(
 					'class'=> 'btn btn-default',
 				));

@@ -7,41 +7,25 @@
     </div>
     <div class="box-body">
         <?php 
-                echo $this->Form->create('Company', array(
+                echo $this->Form->create('Vendor', array(
                     'url'=> $this->Html->url( array(
                         'controller' => 'settings',
                         'action' => 'search',
-                        'companies'
+                        'vendors'
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
                 ));
         ?>
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php 
-                        echo $this->Form->input('name',array(
-                            'label'=> __('Nama Customer'),
-                            'class'=>'form-control',
-                            'required' => false,
-                            'placeholder' => __('Nama Customer')
-                        ));
-                    ?>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php 
-                        echo $this->Form->input('Company.company_type_id',array(
-                            'label'=> __('Tipe Customer'),
-                            'class'=>'form-control',
-                            'required' => false,
-                            'empty' => __('Pilih Tipe Customer'),
-                        ));
-                    ?>
-                </div>
-            </div>
+        <div class="form-group">
+            <?php 
+                echo $this->Form->input('name',array(
+                    'label'=> __('Nama Vendor'),
+                    'class'=>'form-control',
+                    'required' => false,
+                    'placeholder' => __('Nama Vendor')
+                ));
+            ?>
         </div>
         <div class="form-group action">
             <?php
@@ -51,7 +35,7 @@
                         'type' => 'submit',
                     ));
                     echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                        'action' => 'companies', 
+                        'action' => 'vendors', 
                     ), array(
                         'escape' => false, 
                         'class'=> 'btn btn-default btn-sm',
