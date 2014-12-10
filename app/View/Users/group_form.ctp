@@ -2,10 +2,6 @@
 		$this->Html->addCrumb(__('Group'), array(
             'action' => 'index',
         ));
-		$this->Html->addCrumb(__('Group'), array(
-			'controller' => 'trucks',
-			'action' => 'brands'
-		));
 		$this->Html->addCrumb($sub_module_title);
 ?>
 <div class="box box-primary">

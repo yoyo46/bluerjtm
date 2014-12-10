@@ -1,5 +1,8 @@
 <?php
-	$this->Html->addCrumb($sub_module_title);
+		$this->Html->addCrumb(__('User'), array(
+            'action' => 'list_user',
+        ));
+		$this->Html->addCrumb($sub_module_title);
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -7,10 +10,7 @@
     </div>
     <?php
 		echo $this->Form->create('User', array(
-			'url'=> array(
-				'controller'=> 'users', 
-				'action'=> 'profile'
-			),
+			'url'=> $this->Html->url(null, false),
 			'class'=> 'form-horizontal'
 		));
 	?>
@@ -29,6 +29,25 @@
 						'placeholder' => $title,
 						'required' => false,
 						'class' => 'form-control',
+					)); 
+			?>
+			</div>
+		</div>
+		<div class="form-group">
+			<?php 
+					$title = __('Group *');
+					echo $this->Form->label('group_id', $title, array(
+						'class'=>'control-label col-sm-2'
+					)); 
+			?>
+			<div class="col-sm-8">
+			<?php 
+					echo $this->Form->input('group_id',array(
+						'label'=>false,
+						'required' => false,
+						'class' => 'form-control',
+						'empty' => __('Pilih Group'),
+						'options' => $groups
 					)); 
 			?>
 			</div>
@@ -126,26 +145,6 @@
 						'class' => 'form-control custom-date',
 					)); 
 			?>
-			</div>
-		</div>
-
-		<div class="form-group">
-			<?php 
-					$title = __('Password *');
-					echo $this->Form->label('old_password', $title, array(
-						'class'=>'control-label col-sm-2'
-					)); 
-			?>
-			<div class="col-sm-8">
-				<?php
-						echo $this->Form->input('old_password', array(
-							'type' => 'password',
-							'placeholder' => $title,
-							'class' => 'form-control',
-							'label' => false,
-							'required' => false,
-						));
-				?>    
 			</div>
 		</div>
 		<div class="box-footer text-center action">
