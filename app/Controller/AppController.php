@@ -43,14 +43,6 @@ class AppController extends Controller {
 	        'Controller',
 	        'Actions' => array('actionPath' => 'controllers')
 	    );
-	    // $this->Auth->authenticate = array(
-	    //     'Form' => array(
-	    //         'fields' => array(
-	    //             'username' => 'login',
-	    //             'password' => 'password'
-	    //         )
-	    //     )
-	    // );
 	    $this->Auth->loginAction = array(
 	        'controller' => 'users',
 	        'action' => 'login',
@@ -69,6 +61,18 @@ class AppController extends Controller {
 	        'admin' => false,
 	        'plugin' => false
 	    );
+
+	    $logged_in = $this->MkCommon->loggedIn();
+	    $this->user_id = false;
+	    $GroupId = false;
+	    $User = array();
+	    if($logged_in){
+			$this->user_id = $this->Auth->user('id');
+			$GroupId = $this->Auth->user('group_id');
+			$User = $this->Auth->user();
+		}
+
+	    $this->set(compact('logged_in', 'GroupId', 'User'));
 	}
 
 	function isAuthorized($user) {

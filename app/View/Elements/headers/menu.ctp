@@ -212,29 +212,46 @@
                         <li class="user-header bg-light-blue">
                             <img src="img/avatar3.png" class="img-circle" alt="User Image" />
                             <p>
-                                Jane Doe - Web Developer
-                                <small>Member since Nov. 2012</small>
+                                <?php
+                                    echo $User['first_name'];
+                                    if(!empty($User['last_name'])){
+                                        echo ' '.$User['last_name'];
+                                    }
+
+                                    printf(__('<small>Pegawai sejak %s</small>'), $this->Common->customDate($User['last_name'], 'F, Y'));
+                                ?>
                             </p>
                         </li>
                         <!-- Menu Body -->
                         <li class="user-body">
-                            <div class="col-xs-4 text-center">
-                                <a href="#">Followers</a>
+                            <div class="col-xs-6 text-center">
+                                <?php
+                                    echo $this->Html->link(__('Rubah Password'), array(
+                                        'controller' => 'users',
+                                        'action' => 'authorization'
+                                    ));
+                                ?>
                             </div>
-                            <div class="col-xs-4 text-center">
-                                <a href="#">Sales</a>
-                            </div>
-                            <div class="col-xs-4 text-center">
-                                <a href="#">Friends</a>
+                            <div class="col-xs-6 text-center">
+                                <?php
+                                    echo $this->Html->link(__('Rubah Profile'), array(
+                                        'controller' => 'users',
+                                        'action' => 'profile'
+                                    ));
+                                ?>
                             </div>
                         </li>
                         <!-- Menu Footer-->
                         <li class="user-footer">
-                            <div class="pull-left">
-                                <a href="#" class="btn btn-default btn-flat">Profile</a>
-                            </div>
                             <div class="pull-right">
-                                <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                <?php
+                                    echo $this->Html->link(__('Sign out'), array(
+                                        'controller' => 'users',
+                                        'action' => 'logout'
+                                    ), array(
+                                        'class' => 'btn btn-default btn-fla'
+                                    ));
+                                ?>
                             </div>
                         </li>
                     </ul>
