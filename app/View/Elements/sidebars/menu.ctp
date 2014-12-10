@@ -31,6 +31,51 @@
                     )), array(
                         'class' => ( !empty($active_menu) && $active_menu == 'dashboard' )?'active':'',
                     ));
+            ?>
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-user"></i>
+                    <span>User</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> list user', array(
+                                'controller' => 'users',
+                                'action' => 'list_user',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'user' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> group', array(
+                                'controller' => 'users',
+                                'action' => 'groups',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'user' )?'active':'',
+                            ));
+
+                            if(in_array($GroupId, array('3'))){
+                                $link_text = '<i class="fa fa-angle-double-right"></i> '.$this->Html->tag('span', 'Access List Manager');
+                                echo $this->Html->tag('li', $this->Html->link($link_text, array(
+                                    'controller' => 'acl_manager',
+                                    'action' => 'acl',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'acl' )?'active':'',
+                                ));
+                            }
+                    ?>
+                </ul>
+                <?php
+                    
+                ?>
+            </li>
+            <?php
 
                     $activeTruck = false;
                     $truckMenu = array(
@@ -139,49 +184,6 @@
                             ));
                     ?>
                 </ul>
-            </li>
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-th"></i>
-                    <span>User</span>
-                    <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <?php 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> list user', array(
-                                'controller' => 'users',
-                                'action' => 'list_user',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'user' )?'active':'',
-                            ));
-
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> group', array(
-                                'controller' => 'users',
-                                'action' => 'groups',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'user' )?'active':'',
-                            ));
-
-                            if(in_array($GroupId, array('3'))){
-                                $link_text = '<i class="fa fa-th"></i> '.$this->Html->tag('span', 'Access List Manager');
-                                echo $this->Html->tag('li', $this->Html->link($link_text, array(
-                                    'controller' => 'acl_manager',
-                                    'action' => 'acl',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'acl' )?'active':'',
-                                ));
-                            }
-                    ?>
-                </ul>
-                <?php
-                    
-                ?>
             </li>
         </ul>
     </section>
