@@ -99,6 +99,7 @@
 				'functions/dashboard',
 				'functions/demo',
 				'jquery.library',
+				'functions/functions',
 			)).PHP_EOL;
 
 			echo $this->element('sql_dump');
