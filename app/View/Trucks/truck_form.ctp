@@ -44,27 +44,26 @@
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('truck_category_id',__('Kategori Truk *')); 
+				echo $this->Form->label('truck_category_id',__('Jenis Truk *')); 
 
 				echo $this->Form->input('truck_category_id',array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'empty' => __('Pilih Kategori Truk'),
+					'empty' => __('Pilih Jenis Truk'),
 					'options' => $truck_categories
 				));
 			?>
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('company_id',__('Perusahaan Truk *')); 
+				echo $this->Form->label('company_id',__('Pemilik Truk *')); 
 
 				echo $this->Form->input('company_id',array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'empty' => __('Pilih Perusahaan Truk'),
-					'options' => $truck_companies
+					'empty' => __('Pilih Pemilik Truk'),
 				));
 			?>
         </div>
@@ -119,19 +118,6 @@
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('no_stnk',__('No STNK *')); 
-
-				echo $this->Form->input('no_stnk',array(
-					'type' => 'text',
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'placeholder' => __('No STNK')
-				));
-			?>
-        </div>
-        <div class="form-group">
-        	<?php 
 				echo $this->Form->label('no_rangka',__('No Rangka *')); 
 
 				echo $this->Form->input('no_rangka',array(
@@ -139,15 +125,15 @@
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('No STNK')
+					'placeholder' => __('No Rangka')
 				));
 			?>
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('no_rangka',__('No STNK *')); 
+				echo $this->Form->label('no_stnk',__('No STNK *')); 
 
-				echo $this->Form->input('no_rangka',array(
+				echo $this->Form->input('no_stnk',array(
 					'type' => 'text',
 					'label'=> false, 
 					'class'=>'form-control',

@@ -2,7 +2,7 @@
         $this->Html->addCrumb($sub_module_title);
         echo $this->element('blocks/trucks/search_truck');
 ?>
-<div class="box">
+<div class="box box-success">
     <div class="box-header">
         <?php 
                 echo $this->Html->tag('h3', $sub_module_title, array(
@@ -11,14 +11,14 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-tint"></i> Bahan Bakar', array(
-                        'controller' => 'trucks',
-                        'action' => 'gas_edit'
-                    ), array(
-                        'escape' => false,
-                        'class' => 'btn btn-app pull-right'
-                    ));
-                    echo $this->Html->link('<i class="fa fa-list-alt"></i> Kategori Truk', array(
+                    // echo $this->Html->link('<i class="fa fa-tint"></i> Bahan Bakar', array(
+                    //     'controller' => 'trucks',
+                    //     'action' => 'gas_edit'
+                    // ), array(
+                    //     'escape' => false,
+                    //     'class' => 'btn btn-app pull-right'
+                    // ));
+                    echo $this->Html->link('<i class="fa fa-list-alt"></i> Jenis Truk', array(
                         'controller' => 'trucks',
                         'action' => 'categories'
                     ), array(
@@ -46,10 +46,9 @@
     <div class="box-body table-responsive no-padding">
         <table class="table table-hover">
             <tr>
-                <th>ID</th>
                 <th>Merek</th>
-                <th>Perusahaan</th>
-                <th>Kategori</th>
+                <th>Pemilik</th>
+                <th>Jenis</th>
                 <th>Supir</th>
                 <th>Nopol</th>
                 <th>Aset</th>
@@ -57,14 +56,12 @@
                 <th>Action</th>
             </tr>
             <?php
-                    $i = 1;
                     if(!empty($trucks)){
                         foreach ($trucks as $key => $value) {
                             $value_truck = $value['Truck'];
                             $id = $value_truck['id'];
             ?>
             <tr>
-                <td><?php echo $id;?></td>
                 <td><?php echo $value['TruckBrand']['name'];?></td>
                 <td><?php echo $value['Company']['name'];?></td>
                 <td><?php echo $value['TruckCategory']['name'];?></td>

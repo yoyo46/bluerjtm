@@ -13,10 +13,6 @@ class Driver extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'nomor identitas harap diisi'
             ),
-            'numeric' => array(
-                'rule' => array('numeric'),
-                'message' => 'nomor identitas harus berupa angka'
-            ),
         ),
         'address' => array(
             'notempty' => array(
@@ -30,14 +26,16 @@ class Driver extends AppModel {
                 'message' => 'telepon harap diisi'
             ),
         ),
-        'uang_makan' => array(
+        'no_sim' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Uang makan harap diisi'
+                'message' => 'Nomor SIM harap diisi'
             ),
-            'numeric' => array(
-                'rule' => array('numeric'),
-                'message' => 'Uang makan harus berupa angka'
+        ),
+        'expired_date_sim' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl Berakhir SIM harap diisi'
             ),
         ),
 	);

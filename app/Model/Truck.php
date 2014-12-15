@@ -17,7 +17,7 @@ class Truck extends AppModel {
         'truck_category_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'kategori truk harap diisi'
+                'message' => 'Jenis truk harap diisi'
             ),
         ),
         'driver_id' => array(

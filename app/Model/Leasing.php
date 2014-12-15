@@ -1,32 +1,56 @@
 <?php
-class Company extends AppModel {
-	var $name = 'Company';
+class Leasing extends AppModel {
+	var $name = 'Leasing';
 	var $validate = array(
-        'name' => array(
+        'truck_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Customer name harap diisi'
+                'message' => 'Truk harap dipilih'
             ),
         ),
-        'address' => array(
+        'installment' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Address harap diisi'
+                'message' => 'Cicilan perbulan harap diisi'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'Cicilan perbulan harap diisi dengan angka',
             ),
         ),
-        'phone_number' => array(
+        'paid_date' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Phone harap diisi'
+                'message' => 'Tgl bayar harap dipilih'
             ),
-        )
+        ),
+        'fine' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Denda harap diisi'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'Denda harap diisi dengan angka',
+            ),
+        ),
 	);
+
+    var $belongsTo = array(
+        'Truck' => array(
+            'className' => 'Truck',
+            'foreignKey' => 'truck_id',
+        ),
+    );
 
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'Company.status' => 'DESC'
+                'Leasing.status' => 'DESC'
+            ),
+            'contain' => array(
+                'Truck'
             ),
         );
 
@@ -51,22 +75,6 @@ class Company extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
-    }
-
-    function getMerge($data, $id){
-        if(empty($data['Company'])){
-            $data_merge = $this->find('first', array(
-                'conditions' => array(
-                    'id' => $id
-                )
-            ));
-
-            if(!empty($data_merge)){
-                $data = array_merge($data, $data_merge);
-            }
-        }
-
-        return $data;
     }
 }
 ?>

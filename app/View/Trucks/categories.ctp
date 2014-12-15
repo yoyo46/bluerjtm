@@ -10,7 +10,7 @@
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Kategori Truk', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Jenis Truk', array(
                     'controller' => 'trucks',
                     'action' => 'category_add'
                 ), array(
@@ -23,8 +23,7 @@
     <div class="box-body table-responsive no-padding">
         <table class="table table-hover">
             <tr>
-                <th>No.</th>
-                <th>Kategori Truk</th>
+                <th>Jenis Truk</th>
                 <th>Dibuat</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -37,7 +36,6 @@
                         $id = $value_data['id'];
             ?>
             <tr>
-                <td><?php echo $i++;?></td>
                 <th><?php echo $value_data['name'];?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td>

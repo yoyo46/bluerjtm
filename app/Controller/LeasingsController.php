@@ -1,23 +1,23 @@
 <?php
 App::uses('AppController', 'Controller');
-class TrucksController extends AppController {
+class LeasingsController extends AppController {
 	public $uses = array();
 
     public $components = array(
-        'RjTruck'
+        'RjLeasing'
     );
 
     function beforeFilter() {
         parent::beforeFilter();
-        $this->set('title_for_layout', __('ERP RJTM | Data Truk'));
-        $this->set('module_title', __('Truk'));
+        $this->set('title_for_layout', __('ERP RJTM | Leasing'));
+        $this->set('module_title', __('Leasing'));
     }
 
     function search( $index = 'index' ){
         $refine = array();
         if(!empty($this->request->data)) {
-            $refine = $this->RjTruck->processRefine($this->request->data);
-            $params = $this->RjTruck->generateSearchURL($refine);
+            $refine = $this->RjLeasing->processRefine($this->request->data);
+            $params = $this->RjLeasing->generateSearchURL($refine);
             $params['action'] = $index;
 
             $this->redirect($params);
@@ -26,9 +26,10 @@ class TrucksController extends AppController {
     }
 
 	public function index() {
+        $this->loadModel('Leasing');
         $this->loadModel('Truck');
-		$this->set('active_menu', 'trucks');
-		$this->set('sub_module_title', __('Data Truk'));
+		$this->set('active_menu', 'leasings');
+		$this->set('sub_module_title', __('Leasing'));
 
         $conditions = array();
         if(!empty($this->params['named'])){
@@ -41,25 +42,23 @@ class TrucksController extends AppController {
             }
         }
 
-        $this->paginate = $this->Truck->getData('paginate', array(
+        $this->paginate = $this->Leasing->getData('paginate', array(
             'conditions' => $conditions
         ));
-        $trucks = $this->paginate('Truck');
+        $leasings = $this->paginate('Leasing');
 
-        if(!empty($trucks)){
-            foreach ($trucks as $key => $truck) {
-                $data = $truck['Truck'];
+        if(!empty($leasings)){
+            foreach ($leasings as $key => $leasing) {
+                $data = $leasing['Leasing'];
 
-                $truck = $this->Truck->TruckCategory->getMerge($truck, $data['truck_category_id']);
-                $truck = $this->Truck->TruckBrand->getMerge($truck, $data['truck_brand_id']);
-                $truck = $this->Truck->Company->getMerge($truck, $data['company_id']);
-                $truck = $this->Truck->Driver->getMerge($truck, $data['driver_id']);
+                $truck = $this->Truck->getTruck($data['truck_id']);
+                debug($truck);die();
 
                 $trucks[$key] = $truck;
             }
         }
 
-        $this->set('trucks', $trucks);
+        $this->set('leasings', $leasings);
 	}
 
     function detail($id = false){

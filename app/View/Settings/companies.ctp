@@ -7,7 +7,7 @@
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Customer', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Company', array(
                     'controller' => 'settings',
                     'action' => 'company_add'
                 ), array(
@@ -21,11 +21,7 @@
         <table class="table table-hover">
             <tr>
                 <?php
-                        echo $this->Html->tag('th', __('No.'));
-                        echo $this->Html->tag('th', $this->Paginator->sort('CompanyType.name', __('Tipe'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Company.name', __('Customer'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Company.name', __('Company'), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Company.address', __('Alamat'), array(
@@ -45,14 +41,12 @@
             </tr>
             <?php
                     $i = 1;
-                    if(!empty($truck_companies)){
-                        foreach ($truck_companies as $key => $value) {
+                    if(!empty($companies)){
+                        foreach ($companies as $key => $value) {
                             $value_data = $value['Company'];
                             $id = $value_data['id'];
             ?>
             <tr>
-                <td><?php echo $i++;?></td>
-                <td><?php echo $value['CompanyType']['name'];?></td>
                 <td><?php echo $value_data['name'];?></td>
                 <td><?php echo $value_data['address'];?></td>
                 <td>

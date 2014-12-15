@@ -23,12 +23,11 @@
     <div class="box-body table-responsive no-padding">
         <table class="table table-hover">
             <tr>
-                <th>No.</th>
-                <th>Supir</th>
+                <th>Nama Supir</th>
+                <th>Panggilan</th>
                 <th>No. Identitas</th>
                 <th>Alamat</th>
                 <th>Telepon</th>
-                <th>Uang makan</th>
                 <th>Dibuat</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -41,8 +40,8 @@
                         $id = $value_data['id'];
             ?>
             <tr>
-                <td><?php echo $i++;?></td>
                 <td><?php echo $value_data['name'];?></td>
+                <td><?php echo !empty($value_data['alias'])?$value_data['alias']:'-';?></td>
                 <td><?php echo $value_data['identity_number'];?></td>
                 <td><?php echo $value_data['address'];?></td>
                 <td>
@@ -53,7 +52,6 @@
                         }
                     ?>
                 </td>
-                <td><?php echo $this->Number->currency($value_data['uang_makan'], 'Rp. ');?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td>
                     <?php 

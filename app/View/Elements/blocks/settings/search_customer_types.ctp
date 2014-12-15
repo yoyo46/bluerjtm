@@ -7,11 +7,11 @@
     </div>
     <div class="box-body">
         <?php 
-                echo $this->Form->create('Company', array(
+                echo $this->Form->create('CustomerType', array(
                     'url'=> $this->Html->url( array(
                         'controller' => 'settings',
                         'action' => 'search',
-                        'companies'
+                        'customer_types'
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
@@ -20,10 +20,10 @@
         <div class="form-group">
             <?php 
                 echo $this->Form->input('name',array(
-                    'label'=> __('Nama Company'),
+                    'label'=> __('Tipe Customer'),
                     'class'=>'form-control',
                     'required' => false,
-                    'placeholder' => __('Nama Company')
+                    'placeholder' => __('Tipe Customer')
                 ));
             ?>
         </div>
@@ -35,7 +35,7 @@
                         'type' => 'submit',
                     ));
                     echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                        'action' => 'companies', 
+                        'action' => 'customer_types', 
                     ), array(
                         'escape' => false, 
                         'class'=> 'btn btn-default btn-sm',

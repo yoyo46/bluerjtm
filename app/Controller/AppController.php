@@ -39,6 +39,7 @@ class AppController extends Controller {
 
 	function beforeFilter() {
 	    //Configure AuthComponent
+		Configure::write('__Site.config_currency_code', 'IDR ');
 	    $this->Auth->authorize = array(
 	        'Controller',
 	        'Actions' => array('actionPath' => 'controllers')

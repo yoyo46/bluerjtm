@@ -139,8 +139,8 @@ class SettingsController extends AppController {
         $this->redirect($this->referer());
     }
 
-    function companies(){
-        $this->loadModel('Company');
+    function customers(){
+        $this->loadModel('Customer');
         $options = array();
 
         if(!empty($this->params['named'])){
@@ -148,72 +148,72 @@ class SettingsController extends AppController {
 
             if(!empty($refine['name'])){
                 $name = urldecode($refine['name']);
-                $this->request->data['Company']['name'] = $name;
-                $options['conditions']['Company.name LIKE '] = '%'.$name.'%';
+                $this->request->data['Customer']['name'] = $name;
+                $options['conditions']['Customer.name LIKE '] = '%'.$name.'%';
             }
-            if(!empty($refine['company_type_id'])){
-                $company_type_id = urldecode($refine['company_type_id']);
-                $this->request->data['Company']['company_type_id'] = $company_type_id;
-                $options['conditions']['Company.company_type_id '] = $company_type_id;
+            if(!empty($refine['customer_type_id'])){
+                $customer_type_id = urldecode($refine['customer_type_id']);
+                $this->request->data['Customer']['customer_type_id'] = $customer_type_id;
+                $options['conditions']['Customer.customer_type_id '] = $customer_type_id;
             }
         }
-        $this->paginate = $this->Company->getData('paginate', $options);
-        $truck_companies = $this->paginate('Company');
-        $companyTypes  = $this->Company->CompanyType->getData('list', false, true);
+        $this->paginate = $this->Customer->getData('paginate', $options);
+        $truck_customers = $this->paginate('Customer');
+        $customerTypes  = $this->Customer->CustomerType->getData('list', false, true);
 
-        $this->set('active_menu', 'companies');
+        $this->set('active_menu', 'customers');
         $this->set('module_title', 'Data Master');
         $this->set('sub_module_title', 'Customer');
         $this->set(compact(
-            'companyTypes', 'truck_companies'
+            'customerTypes', 'truck_customers'
         ));
     }
 
-    function company_add(){
-        $this->loadModel('Company');
+    function customer_add(){
+        $this->loadModel('Customer');
         $this->set('sub_module_title', 'Tambah Customer');
-        $this->doCompany();
+        $this->doCustomer();
     }
 
-    function company_edit($id){
-        $this->loadModel('Company');
+    function customer_edit($id){
+        $this->loadModel('Customer');
         $this->set('sub_module_title', 'Rubah Customer');
-        $company = $this->Company->find('first', array(
+        $customer = $this->Customer->find('first', array(
             'conditions' => array(
-                'Company.id' => $id
+                'Customer.id' => $id
             )
         ));
 
-        if(!empty($company)){
-            $this->doCompany($id, $company);
+        if(!empty($customer)){
+            $this->doCustomer($id, $customer);
         }else{
             $this->MkCommon->setCustomFlash(__('Customer tidak ditemukan'), 'error');  
             $this->redirect(array(
                 'controller' => 'settings',
-                'action' => 'companies'
+                'action' => 'customers'
             ));
         }
     }
 
-    function doCompany($id = false, $data_local = false){
+    function doCustomer($id = false, $data_local = false){
         if(!empty($this->request->data)){
             $data = $this->request->data;
             if($id && $data_local){
-                $this->Company->id = $id;
+                $this->Customer->id = $id;
                 $msg = 'merubah';
             }else{
-                $this->Company->create();
+                $this->Customer->create();
                 $msg = 'menambah';
             }
             
-            $this->Company->set($data);
+            $this->Customer->set($data);
 
-            if($this->Company->validates($data)){
-                if($this->Company->save($data)){
+            if($this->Customer->validates($data)){
+                if($this->Customer->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Customer'), $msg), 'success');
                     $this->redirect(array(
                         'controller' => 'settings',
-                        'action' => 'companies'
+                        'action' => 'customers'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Customer'), $msg), 'error');  
@@ -229,32 +229,32 @@ class SettingsController extends AppController {
             }
         }
 
-        $companyTypes  = $this->Company->CompanyType->getData('list', false, true);
-        $this->set('active_menu', 'companies');
+        $customerTypes  = $this->Customer->CustomerType->getData('list', false, true);
+        $this->set('active_menu', 'customers');
         $this->set('module_title', 'Data Master');
         $this->set(compact(
-            'companyTypes'
+            'customerTypes'
         ));
-        $this->render('company_form');
+        $this->render('customer_form');
     }
 
-    function company_toggle($id){
-        $this->loadModel('Company');
-        $locale = $this->Company->getData('first', array(
+    function customer_toggle($id){
+        $this->loadModel('Customer');
+        $locale = $this->Customer->getData('first', array(
             'conditions' => array(
-                'Company.id' => $id
+                'Customer.id' => $id
             )
         ));
 
         if($locale){
             $value = true;
-            if($locale['Company']['status']){
+            if($locale['Customer']['status']){
                 $value = false;
             }
 
-            $this->Company->id = $id;
-            $this->Company->set('status', $value);
-            if($this->Company->save()){
+            $this->Customer->id = $id;
+            $this->Customer->set('status', $value);
+            if($this->Customer->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
@@ -266,8 +266,8 @@ class SettingsController extends AppController {
         $this->redirect($this->referer());
     }
 
-    public function company_types() {
-        $this->loadModel('CompanyType');
+    public function customer_types() {
+        $this->loadModel('CustomerType');
         $options = array();
 
         if(!empty($this->params['named'])){
@@ -275,64 +275,64 @@ class SettingsController extends AppController {
 
             if(!empty($refine['name'])){
                 $name = urldecode($refine['name']);
-                $this->request->data['CompanyType']['name'] = $name;
-                $options['conditions']['CompanyType.name LIKE '] = '%'.$name.'%';
+                $this->request->data['CustomerType']['name'] = $name;
+                $options['conditions']['CustomerType.name LIKE '] = '%'.$name.'%';
             }
         }
-        $this->paginate = $this->CompanyType->getData('paginate', $options);
-        $companyTypes = $this->paginate('CompanyType');
+        $this->paginate = $this->CustomerType->getData('paginate', $options);
+        $customerTypes = $this->paginate('CustomerType');
 
-        $this->set('active_menu', 'company_types');
+        $this->set('active_menu', 'customer_types');
         $this->set('module_title', 'Data Master');
         $this->set('sub_module_title', 'Tipe Customer');
-        $this->set('companyTypes', $companyTypes);        
+        $this->set('customerTypes', $customerTypes);        
     }
 
-    function company_type_add(){
+    function customer_type_add(){
         $this->set('sub_module_title', 'Tambah Tipe Customer');
-        $this->doCompanyType();
+        $this->doCustomerType();
     }
 
-    function company_type_edit($id){
-        $this->loadModel('CompanyType');
+    function customer_type_edit($id){
+        $this->loadModel('CustomerType');
         $this->set('sub_module_title', 'Rubah Tipe Customer');
-        $companyType = $this->CompanyType->find('first', array(
+        $customerType = $this->CustomerType->find('first', array(
             'conditions' => array(
-                'CompanyType.id' => $id
+                'CustomerType.id' => $id
             )
         ));
 
-        if(!empty($companyType)){
-            $this->doCompanyType($id, $companyType);
+        if(!empty($customerType)){
+            $this->doCustomerType($id, $customerType);
         }else{
             $this->MkCommon->setCustomFlash(__('Tipe Customer tidak ditemukan'), 'error');  
             $this->redirect(array(
                 'controller' => 'settings',
-                'action' => 'company_types'
+                'action' => 'customer_types'
             ));
         }
     }
 
-    function doCompanyType($id = false, $data_local = false){
+    function doCustomerType($id = false, $data_local = false){
         if(!empty($this->request->data)){
             $data = $this->request->data;
             if($id && $data_local){
-                $this->CompanyType->id = $id;
+                $this->CustomerType->id = $id;
                 $msg = 'merubah';
             }else{
-                $this->loadModel('CompanyType');
-                $this->CompanyType->create();
+                $this->loadModel('CustomerType');
+                $this->CustomerType->create();
                 $msg = 'menambah';
             }
             
-            $this->CompanyType->set($data);
+            $this->CustomerType->set($data);
 
-            if($this->CompanyType->validates($data)){
-                if($this->CompanyType->save($data)){
+            if($this->CustomerType->validates($data)){
+                if($this->CustomerType->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Tipe Customer'), $msg), 'success');
                     $this->redirect(array(
                         'controller' => 'settings',
-                        'action' => 'company_types'
+                        'action' => 'customer_types'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Tipe Customer'), $msg), 'error');  
@@ -346,28 +346,28 @@ class SettingsController extends AppController {
             }
         }
 
-        $this->set('active_menu', 'company_types');
+        $this->set('active_menu', 'customer_types');
         $this->set('module_title', 'Data Master');
-        $this->render('company_type_form');
+        $this->render('customer_type_form');
     }
 
-    function company_type_toggle($id){
-        $this->loadModel('CompanyType');
-        $locale = $this->CompanyType->getData('first', array(
+    function customer_type_toggle($id){
+        $this->loadModel('CustomerType');
+        $locale = $this->CustomerType->getData('first', array(
             'conditions' => array(
-                'CompanyType.id' => $id
+                'CustomerType.id' => $id
             )
         ));
 
         if($locale){
             $value = true;
-            if($locale['CompanyType']['status']){
+            if($locale['CustomerType']['status']){
                 $value = false;
             }
 
-            $this->CompanyType->id = $id;
-            $this->CompanyType->set('status', $value);
-            if($this->CompanyType->save()){
+            $this->CustomerType->id = $id;
+            $this->CustomerType->set('status', $value);
+            if($this->CustomerType->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
@@ -577,5 +577,122 @@ class SettingsController extends AppController {
         $this->set('active_menu', 'coas');
         $this->set('module_title', 'Data Master');
         $this->render('coa_form');
+    }
+
+    function companies(){
+        $this->loadModel('Company');
+        $options = array();
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['Company']['name'] = $name;
+                $options['conditions']['Company.name LIKE '] = '%'.$name.'%';
+            }
+        }
+        $this->paginate = $this->Company->getData('paginate', $options);
+        $companies = $this->paginate('Company');
+
+        $this->set('active_menu', 'companies');
+        $this->set('module_title', 'Data Master');
+        $this->set('sub_module_title', 'Company');
+        $this->set(compact(
+            'companies'
+        ));
+    }
+
+    function company_add(){
+        $this->loadModel('Company');
+        $this->set('sub_module_title', 'Tambah Company');
+        $this->doCompany();
+    }
+
+    function company_edit($id){
+        $this->loadModel('Company');
+        $this->set('sub_module_title', 'Rubah Company');
+        $company = $this->Company->find('first', array(
+            'conditions' => array(
+                'Company.id' => $id
+            )
+        ));
+
+        if(!empty($company)){
+            $this->doCompany($id, $company);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Company tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'companies'
+            ));
+        }
+    }
+
+    function doCompany($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->Company->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->Company->create();
+                $msg = 'menambah';
+            }
+            
+            $this->Company->set($data);
+
+            if($this->Company->validates($data)){
+                if($this->Company->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Company'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'companies'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Company'), $msg), 'error');  
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Company'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->set('active_menu', 'companies');
+        $this->set('module_title', 'Data Master');
+        $this->render('company_form');
+    }
+
+    function company_toggle($id){
+        $this->loadModel('Company');
+        $locale = $this->Company->getData('first', array(
+            'conditions' => array(
+                'Company.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['Company']['status']){
+                $value = false;
+            }
+
+            $this->Company->id = $id;
+            $this->Company->set('status', $value);
+            if($this->Company->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Company tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
     }
 }

@@ -1,6 +1,6 @@
 <?php
-class CompanyType extends AppModel {
-	var $name = 'CompanyType';
+class CustomerType extends AppModel {
+	var $name = 'CustomerType';
 	var $validate = array(
         'name' => array(
             'notempty' => array(
@@ -35,7 +35,7 @@ class CompanyType extends AppModel {
         }
 
         if( !empty($isActive) ) {
-            $default_options['conditions']['CompanyType.status'] = 1;
+            $default_options['conditions']['CustomerType.status'] = 1;
         }
 
         if( $find == 'paginate' ) {

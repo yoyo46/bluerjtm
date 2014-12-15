@@ -1,7 +1,13 @@
 <?php
-class Company extends AppModel {
-	var $name = 'Company';
+class Customer extends AppModel {
+	var $name = 'Customer';
 	var $validate = array(
+        'customer_type_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tipe Customer harap dipilih'
+            ),
+        ),
         'name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -22,11 +28,21 @@ class Company extends AppModel {
         )
 	);
 
+	var $belongsTo = array(
+        'CustomerType' => array(
+            'className' => 'CustomerType',
+            'foreignKey' => 'customer_type_id',
+        )
+	);
+
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'Company.status' => 'DESC'
+                'Customer.status' => 'DESC'
+            ),
+            'contain' => array(
+                'CustomerType'
             ),
         );
 
@@ -54,7 +70,7 @@ class Company extends AppModel {
     }
 
     function getMerge($data, $id){
-        if(empty($data['Company'])){
+        if(empty($data['Customer'])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
                     'id' => $id
