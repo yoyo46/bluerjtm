@@ -202,10 +202,16 @@
                     </ul>
                 </li>
                 <!-- User Account: style can be found in dropdown.less -->
+                <?php
+                    $name = $User['first_name'];
+                    if(!empty($User['last_name'])){
+                        $name .= ' '.$User['last_name'];
+                    }
+                ?>
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <i class="glyphicon glyphicon-user"></i>
-                        <span>Jane Doe <i class="caret"></i></span>
+                        <span><?php echo $name;?> <i class="caret"></i></span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->
@@ -213,12 +219,9 @@
                             <img src="img/avatar3.png" class="img-circle" alt="User Image" />
                             <p>
                                 <?php
-                                    echo $User['first_name'];
-                                    if(!empty($User['last_name'])){
-                                        echo ' '.$User['last_name'];
-                                    }
+                                    echo $name;
 
-                                    printf(__('<small>Pegawai sejak %s</small>'), $this->Common->customDate($User['last_name'], 'F, Y'));
+                                    printf(__('<small>Pegawai sejak %s</small>'), $this->Common->customDate($User['created'], 'F, Y'));
                                 ?>
                             </p>
                         </li>
