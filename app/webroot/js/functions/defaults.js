@@ -11,4 +11,22 @@ $(function() {
         }
         e.stopPropagation();
     });
+
+    $('#UangJalanPerUnit input[type="checkbox"]').click(function() {
+        var self = $(this);
+
+        if( self.is(':checked') ) {
+            $('#UangJalanForm .per-unit').removeClass('hide');
+        } else {
+            $('#UangJalanForm .per-unit').addClass('hide');
+        }
+    });
+
+    $('.input_price').priceFormat({
+        doneFunc: function(obj, val) {
+            currencyVal = val;
+            currencyVal = currencyVal.replace(/,/gi, "")
+            obj.next(".input_hidden").val(currencyVal);
+        }
+    });
 });

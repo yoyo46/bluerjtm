@@ -156,7 +156,7 @@
                     $activeSetting = false;
                     $settingMenu = array(
                         'cities', 'customer_types', 'customers',
-                        'vendors', 'companies'
+                        'vendors', 'companies', 'uang_jalan'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -218,6 +218,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'vendors' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Jalan', array(
+                                'controller' => 'settings',
+                                'action' => 'uang_jalan',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan' )?'active':'',
                             ));
                     ?>
                 </ul>

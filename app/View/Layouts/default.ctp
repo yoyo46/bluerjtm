@@ -23,6 +23,12 @@
 			'bootstrap-wysihtml5/bootstrap3-wysihtml5.min',
 			'style',
 		)).PHP_EOL;
+
+		if(isset($layout_css) && !empty($layout_css)){
+			foreach ($layout_css as $key => $value) {
+				echo $this->Html->css($value).PHP_EOL;
+			}
+		}
 ?>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -88,11 +94,11 @@
 				'plugins/daterangepicker/daterangepicker',
 				'plugins/datepicker/bootstrap-datepicker',
 				'plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min',
-				'plugins/iCheck/icheck.min',
 				'functions/app',
 				'functions/defaults',
 				'functions/dashboard',
 				'functions/demo',
+				'jquery.library',
 			)).PHP_EOL;
 
 			echo $this->element('sql_dump');

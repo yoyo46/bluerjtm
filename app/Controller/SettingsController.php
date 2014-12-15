@@ -695,4 +695,121 @@ class SettingsController extends AppController {
 
         $this->redirect($this->referer());
     }
+
+    public function uang_jalan() {
+        $this->loadModel('UangJalan');
+        $options = array();
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['Company']['name'] = $name;
+                $options['conditions']['Company.name LIKE '] = '%'.$name.'%';
+            }
+        }
+        $this->paginate = $this->UangJalan->getData('paginate', $options);
+        $uangJalans = $this->paginate('UangJalan');
+
+        $this->set('active_menu', 'uang_jalan');
+        $this->set('module_title', 'Data Master');
+        $this->set('sub_module_title', 'Uang Jalan');
+        $this->set(compact(
+            'uangJalans'
+        ));
+    }
+
+    public function uang_jalan_add() {
+        $this->loadModel('UangJalan');
+        $this->set('sub_module_title', 'Tambah Uang Jalan');
+        $this->doUangJalan();
+    }
+
+    function doUangJalan($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->UangJalan->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->UangJalan->create();
+                $msg = 'menambah';
+            }
+
+            $data['UangJalan']['commission'] = !empty($data['UangJalan']['commission'])?str_replace(',', '', $data['UangJalan']['commission']):false;
+            $data['UangJalan']['uang_jalan_1'] = !empty($data['UangJalan']['uang_jalan_1'])?str_replace(',', '', $data['UangJalan']['uang_jalan_1']):false;
+            $data['UangJalan']['uang_jalan_2'] = !empty($data['UangJalan']['uang_jalan_2'])?str_replace(',', '', $data['UangJalan']['uang_jalan_2']):false;
+            $data['UangJalan']['uang_kuli_muat'] = !empty($data['UangJalan']['uang_kuli_muat'])?str_replace(',', '', $data['UangJalan']['uang_kuli_muat']):false;
+            $data['UangJalan']['uang_kuli_bongkar'] = !empty($data['UangJalan']['uang_kuli_bongkar'])?str_replace(',', '', $data['UangJalan']['uang_kuli_bongkar']):false;
+            $data['UangJalan']['asdp'] = !empty($data['UangJalan']['asdp'])?str_replace(',', '', $data['UangJalan']['asdp']):false;
+            $data['UangJalan']['uang_kawal'] = !empty($data['UangJalan']['uang_kawal'])?str_replace(',', '', $data['UangJalan']['uang_kawal']):false;
+            $data['UangJalan']['uang_keamanan'] = !empty($data['UangJalan']['uang_keamanan'])?str_replace(',', '', $data['UangJalan']['uang_keamanan']):false;
+            $data['UangJalan']['uang_jalan_extra'] = !empty($data['UangJalan']['uang_jalan_extra'])?str_replace(',', '', $data['UangJalan']['uang_jalan_extra']):false;
+            
+            $this->UangJalan->set($data);
+
+            if($this->UangJalan->validates($data)){
+                if($this->UangJalan->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Uang jalan'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'uang_jalan'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Uang jalan'), $msg), 'error');  
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Uang jalan'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+        $customers = $this->UangJalan->Customer->getData('list', array(
+            'conditions' => array(
+                'Customer.status' => 1
+            ),
+        ));
+        $cities = $this->UangJalan->FromCity->getData('list', array(
+            'conditions' => array(
+                'status' => 1
+            ),
+        ));
+        $groupClassifications = $this->UangJalan->GroupClassification->find('list', array(
+            'conditions' => array(
+                'status' => 1
+            ),
+        ));
+
+        $this->set('active_menu', 'uang_jalan');
+        $this->set('module_title', 'Data Master');
+        $this->set(compact(
+            'customers', 'cities', 'groupClassifications'
+        ));
+        $this->render('uang_jalan_form');
+    }
+
+    function uang_jalan_edit($id){
+        $this->loadModel('UangJalan');
+        $this->set('sub_module_title', 'Rubah Uang Jalan');
+        $uangJalan = $this->UangJalan->find('first', array(
+            'conditions' => array(
+                'UangJalan.id' => $id
+            )
+        ));
+
+        if(!empty($uangJalan)){
+            $this->doUangJalan($id, $uangJalan);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Uang jalan tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'uang_jalan'
+            ));
+        }
+    }
 }
