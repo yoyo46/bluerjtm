@@ -107,6 +107,9 @@ class Truck extends AppModel {
             'className' => 'TruckCategory',
             'foreignKey' => 'truck_category_id',
         ),
+    );
+
+    var $belongsTo = array(
         'Driver' => array(
             'className' => 'Driver',
             'foreignKey' => 'driver_id',
@@ -132,9 +135,10 @@ class Truck extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'status' => 'DESC'
+                'Truck.status' => 'DESC'
             ),
             'contain' => array(),
+            'fields' => array(),
         );
 
         if(!empty($options)){
@@ -149,6 +153,9 @@ class Truck extends AppModel {
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
+            }
+            if(!empty($options['fields'])){
+                $default_options['fields'] = $options['fields'];
             }
         }
 

@@ -76,6 +76,36 @@
                 ?>
             </li>
             <?php
+
+                    $activeTtuj = false;
+                    $ttujMenu = array(
+                        'ttuj'
+                    );
+
+                    if( !empty($active_menu) && in_array($active_menu, $ttujMenu) ) {
+                        $activeTtuj = 'active';
+                    }
+            ?>
+            <li class="treeview <?php echo $activeTtuj; ?>">
+                <a href="#">
+                    <i class="fa fa-tag"></i>
+                    <span>TTUJ</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> TTUJ', array(
+                                'controller' => 'revenues',
+                                'action' => 'ttuj',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'ttuj' )?'active':'',
+                            ));
+                    ?>
+                </ul>
+            </li>
+            <?php
                     $activeLeasing = false;
                     $leasingMenu = array(
                         'drivers', 'trucks', 'directions'

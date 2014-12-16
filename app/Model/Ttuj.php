@@ -1,59 +1,69 @@
 <?php
-class Driver extends AppModel {
-	var $name = 'Driver';
+class Ttuj extends AppModel {
+	var $name = 'Ttuj';
 	var $validate = array(
-        'name' => array(
+        'no_ttuj' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Nama supir harap diisi'
+                'message' => 'No TTUJ harap diisi'
+            ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'No TTUJ telah terdaftar',
             ),
         ),
-        'identity_number' => array(
+        'ttuj_date' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'nomor identitas harap diisi'
+                'message' => 'Tgl TTUJ harap dipilih'
             ),
         ),
-        'address' => array(
+        'truck_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'alamat harap diisi'
+                'message' => 'Truk harap dipilih'
             ),
         ),
-        'phone' => array(
+        'uang_jalan_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'telepon harap diisi'
-            ),
-        ),
-        'no_sim' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Nomor SIM harap diisi'
-            ),
-        ),
-        'expired_date_sim' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tgl Berakhir SIM harap diisi'
+                'message' => 'Customer dan Tujuan harap diisi'
             ),
         ),
 	);
 
-	var $hasOne = array(
-		'Truck' => array(
-			'className' => 'Truck',
-			'foreignKey' => 'driver_id',
-		)
-	);
+    var $belongsTo = array(
+        'Truck' => array(
+            'className' => 'Truck',
+            'foreignKey' => 'truck_id',
+        ),
+        'DriverPenganti' => array(
+            'className' => 'Driver',
+            'foreignKey' => 'driver_penganti_id',
+        ),
+        'UangJalan' => array(
+            'className' => 'UangJalan',
+            'foreignKey' => 'uang_jalan_id',
+        ),
+        'Customer' => array(
+            'className' => 'Customer',
+            'foreignKey' => 'customer_id',
+        ),
+    );
 
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'Driver.status' => 'DESC'
+                'Leasing.status' => 'DESC',
+                'Leasing.created' => 'DESC',
+                'Leasing.id' => 'DESC',
             ),
-            'contain' => array(),
+            'contain' => array(
+                'Truck',
+                'DriverPenganti',
+                'UangJalan',
+            ),
         );
 
         if(!empty($options)){
@@ -77,22 +87,6 @@ class Driver extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
-    }
-
-    function getMerge($data, $id){
-        if(empty($data['Driver'])){
-            $data_merge = $this->find('first', array(
-                'conditions' => array(
-                    'id' => $id
-                )
-            ));
-
-            if(!empty($data_merge)){
-                $data = array_merge($data, $data_merge);
-            }
-        }
-
-        return $data;
     }
 }
 ?>

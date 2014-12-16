@@ -181,6 +181,7 @@ class UangJalan extends AppModel {
 
 	function getData($find, $options = false){
         $default_options = array(
+            'fields'=> array(),
             'conditions'=> array(),
             'order'=> array(
                 'UangJalan.status' => 'DESC'
@@ -202,6 +203,9 @@ class UangJalan extends AppModel {
             }
             if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
+            }
+            if(!empty($options['fields'])){
+                $default_options['fields'] = $options['fields'];
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];

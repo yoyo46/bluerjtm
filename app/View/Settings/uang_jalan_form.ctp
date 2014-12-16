@@ -54,6 +54,13 @@
 						)), array(
 							'class' => 'form-group'
 						));
+						echo $this->Html->tag('div', $this->Form->input('capacity',array(
+							'label'=> __('Kapasitas Truk *'), 
+							'class'=>'form-control',
+							'required' => false,
+						)), array(
+							'class' => 'form-group'
+						));
 				?>
 		    	<div class="form-group">
 		    		<?php 
