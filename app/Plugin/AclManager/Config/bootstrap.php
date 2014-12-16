@@ -17,7 +17,7 @@
  * List of AROs (Class aliases)
  * Order is important! Parent to Children
  */
-Configure::write('AclManager.aros', array('Group', 'User'));
+Configure::write('AclManager.aros', array('Role', 'User'));
 
 /**
  * Limit used to paginate AROs

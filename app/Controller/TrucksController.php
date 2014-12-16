@@ -1220,7 +1220,7 @@ class TrucksController extends AppController {
                 }else{
                     if(!empty($perlengkapans)){
                         foreach ($perlengkapans as $key => $value) {
-                            $this->request->data['Perlengkapan']['name'][] = $value['Perlengkapan']['name'];
+                            $this->request->data['Perlengkapan']['name'][$key] = $value['Perlengkapan']['name'];
                         }
                     }
                 }

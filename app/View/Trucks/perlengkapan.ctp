@@ -23,8 +23,19 @@
 			'inputDefaults' => array('div' => false),
 		));
 	?>
-    <div class="box-body">
-        <div class="form-group">
+	<?php 
+		echo $this->Html->link('Tambah field', 'javascript:', array(
+			'class' => 'add-custom-field btn btn-success'
+		));
+		echo $this->Html->link('Hapus field', 'javascript:', array(
+			'class' => 'delete-custom-field btn btn-danger'
+		));
+	?>
+    <div class="box-body" id="box-field-input">
+    	<?php
+    		if( empty($this->request->data) ){
+    	?>
+    	<div class="form-group" id="perlengkapan1">
         	<?php 
 				echo $this->Form->label('name.0', __('perlengkapan 1')); 
 
@@ -36,7 +47,7 @@
 				));
 			?>
         </div>
-        <div class="form-group">
+        <div class="form-group"  id="perlengkapan2">
         	<?php 
 				echo $this->Form->label('name.1', __('perlengkapan 2')); 
 
@@ -48,7 +59,7 @@
 				));
 			?>
         </div>
-        <div class="form-group">
+        <div class="form-group"  id="perlengkapan1">
         	<?php 
 				echo $this->Form->label('name.2', __('perlengkapan 3')); 
 
@@ -60,6 +71,27 @@
 				));
 			?>
         </div>
+    	<?php
+    		}else{
+    			foreach ($this->request->data['Perlengkapan']['name'] as $key => $value) {
+    	?>
+    	<div class="form-group"  id="perlengkapan<?php echo $key;?>">
+        	<?php 
+				echo $this->Form->label('Perlengkapan.name.'.$key, __('perlengkapan '.($key+1))); 
+
+				echo $this->Form->input('Perlengkapan.name.'.$key,array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('perlengkapan'),
+					'value' => $value
+				));
+			?>
+        </div>	
+    	<?php
+    			}
+    		}
+    	?>
     </div>
 
     <div class="box-footer text-center action">

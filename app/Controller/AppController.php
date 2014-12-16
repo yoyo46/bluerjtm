@@ -31,7 +31,9 @@ App::uses('Controller', 'Controller');
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
-	var $components = array('Acl', 'Auth', 'Session', 'MkCommon');
+	public $components = array(
+		'MkCommon', 'Auth', 'Acl', 'Session'
+	);
 
 	var $helpers = array(
 		'Common', 'Html'
@@ -40,6 +42,7 @@ class AppController extends Controller {
 	function beforeFilter() {
 	    //Configure AuthComponent
 		Configure::write('__Site.config_currency_code', 'IDR ');
+	    $this->Auth->userModel = 'User';
 	    $this->Auth->authorize = array(
 	        'Controller',
 	        'Actions' => array('actionPath' => 'controllers')
@@ -57,7 +60,7 @@ class AppController extends Controller {
 	        'plugin' => false
 	    );
 	    $this->Auth->loginRedirect = array(
-	        'controller' => 'trucks',
+	        'controller' => 'products',
 	        'action' => 'index',
 	        'admin' => false,
 	        'plugin' => false

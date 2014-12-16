@@ -85,6 +85,7 @@
 				'jquery.2.0.2.min',
 				'jquery-ui-1.10.3.min',
 				'bootstrap.min', 
+				'functions/functions',
 				'raphael.2.1.0.min',
 				'plugins/morris/morris.min',
 				'plugins/sparkline/jquery.sparkline.min',
@@ -99,7 +100,6 @@
 				'functions/dashboard',
 				'functions/demo',
 				'jquery.library',
-				'functions/functions',
 			)).PHP_EOL;
 
 			echo $this->element('sql_dump');

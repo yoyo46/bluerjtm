@@ -3,7 +3,7 @@ App::uses('AppController', 'Controller');
 class UsersController extends AppController {
 
 	public $name = 'Users';
-	public $uses = array('User');
+	public $uses = array('Contact', 'User');
 	
 	function beforeFilter() {
 		parent::beforeFilter();
@@ -29,8 +29,8 @@ class UsersController extends AppController {
 
     function login() {
         // debug($this->Auth->password('admin'));die();
+        $this->layout = 'login';
     	if(!$this->MkCommon->loggedIn()){
-    		$this->layout = 'login';
 			if(!empty($this->request->data)){			
 				if($this->Auth->login()){
 					$this->redirect($this->Auth->redirect());	
