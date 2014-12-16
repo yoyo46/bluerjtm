@@ -2,12 +2,30 @@
 class Kir extends AppModel {
 	var $name = 'Kir';
 	var $validate = array(
-		'tgl_kir' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
+        'tgl_kir' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
                 'message' => 'tanggal KIR harap diisi'
-			),
-		)
+            ),
+        ),
+        'price' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'biaya KIR harap diisi'
+            ),
+        ),
+        'tgl_next_kir' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'tanggal KIR selanjutnya harap diisi'
+            ),
+        ),
+        'price_next_estimate' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'biaya KIR lanjutan harap diisi'
+            ),
+        )
 	);
 
 	var $belongsTo = array(

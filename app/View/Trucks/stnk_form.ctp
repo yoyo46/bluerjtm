@@ -3,9 +3,9 @@
 			'controller' => 'trucks',
 			'action' => 'index'
 		));
-		$this->Html->addCrumb('Histori KIR Truk', array(
+		$this->Html->addCrumb('Histori STNK Truk', array(
 			'controller' => 'trucks',
-			'action' => 'kir',
+			'action' => 'STNK',
 			$truck_id
 		));
 		$this->Html->addCrumb($sub_module_title);
@@ -15,7 +15,7 @@
         <h3 class="box-title"><?php echo $sub_module_title?></h3>
     </div>
     <?php 
-		echo $this->Form->create('Kir', array(
+		echo $this->Form->create('Stnk', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
@@ -24,12 +24,23 @@
     <div class="box-body">
         <div class="form-group">
         	<?php 
-				echo $this->Form->input('tgl_kir', array(
+				echo $this->Form->input('tgl_bayar', array(
 					'type' => 'text',
-					'label'=> __('Tanggal KIR *'), 
+					'label'=> __('Tanggal Bayar *'), 
 					'class'=>'form-control custom-date',
 					'required' => false,
-					'placeholder' => __('Tanggal KIR')
+					'placeholder' => __('Tanggal Bayar')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->input('tgl_berakhir', array(
+					'type' => 'text',
+					'label'=> __('Tanggal Berakhir *'), 
+					'class'=>'form-control custom-date',
+					'required' => false,
+					'placeholder' => __('Tanggal Berakhir')
 				));
 			?>
         </div>
@@ -37,21 +48,10 @@
         	<?php 
 				echo $this->Form->input('price', array(
 					'type' => 'text',
-					'label'=> __('Biaya KIR *'), 
+					'label'=> __('Harga Perpanjang STNK *'), 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('Biaya KIR')
-				));
-			?>
-        </div>
-        <div class="form-group">
-        	<?php 
-				echo $this->Form->input('tgl_next_kir', array(
-					'type' => 'text',
-					'label'=> __('Tanggal KIR selanjutnya *'), 
-					'class'=>'form-control custom-date',
-					'required' => false,
-					'placeholder' => __('Tanggal KIR selanjutnya')
+					'placeholder' => __('Harga Perpanjang STNK')
 				));
 			?>
         </div>
@@ -59,10 +59,10 @@
         	<?php 
 				echo $this->Form->input('price_next_estimate', array(
 					'type' => 'text',
-					'label'=> __('Prakiraan Biaya KIR selanjutnya *'), 
+					'label'=> __('Prakiraan Harga Perpanjang berikutnya *'), 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('Biaya KIR selanjutnya')
+					'placeholder' => __('Prakiraan Harga Perpanjang berikutnya')
 				));
 			?>
         </div>
@@ -70,10 +70,10 @@
 	        <div class="checkbox aset-handling">
                 <label>
                     <?php 
-						echo $this->Form->checkbox('paid',array(
+						echo $this->Form->checkbox('is_change_plat',array(
 							'label'=> false, 
 							'required' => false,
-						)).__('status bayar?');
+						)).__('pergantian plat nomor truk?');
 					?>
                 </label>
             </div>
@@ -88,7 +88,7 @@
 					'type' => 'submit',
 				));
 	    		echo $this->Html->link(__('Kembali'), array(
-					'action' => 'kir', 
+					'action' => 'STNK', 
 					$truck['Truck']['id'],
 				), array(
 					'class'=> 'btn btn-default',

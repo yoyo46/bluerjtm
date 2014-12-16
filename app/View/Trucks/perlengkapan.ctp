@@ -25,10 +25,12 @@
 	?>
 	<?php 
 		echo $this->Html->link('Tambah field', 'javascript:', array(
-			'class' => 'add-custom-field btn btn-success'
+			'class' => 'add-custom-field btn btn-success',
+			'type_action' => 'perlengkapan'
 		));
 		echo $this->Html->link('Hapus field', 'javascript:', array(
-			'class' => 'delete-custom-field btn btn-danger'
+			'class' => 'delete-custom-field btn btn-danger',
+			'type_action' => 'perlengkapan'
 		));
 	?>
     <div class="box-body" id="box-field-input">

@@ -90,6 +90,10 @@ class TrucksController extends AppController {
         $truck = $this->Truck->find('first', array(
             'conditions' => array(
                 'Truck.id' => $id
+            ),
+            'contain' => array(
+                'TruckCustomer',
+                'Leasing'
             )
         ));
 
@@ -107,8 +111,13 @@ class TrucksController extends AppController {
     function doTruck($id = false, $data_local = false){
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $leasing_id = 0;
+
             if($id && $data_local){
                 $this->Truck->id = $id;
+                if(!empty($data['Leasing']['id'])){
+                    $leasing_id = $data['Leasing']['id'];
+                }
                 $msg = 'merubah';
             }else{
                 $this->loadModel('Truck');
@@ -117,11 +126,48 @@ class TrucksController extends AppController {
             }
             
             $data['Truck']['tgl_bpkb'] = (!empty($data['Truck']['tgl_bpkb'])) ? date('Y-m-d', strtotime($data['Truck']['tgl_bpkb'])) : '';
+            $data['Leasing']['paid_date'] = (!empty($data['Leasing']['paid_date'])) ? date('Y-m-d', strtotime($data['Leasing']['paid_date'])) : '';
 
             $this->Truck->set($data);
+            $check_alokasi = false;
+            if( !empty($data['TruckCustomer']['customer_id']) ){
+                foreach ($data['TruckCustomer']['customer_id'] as $key => $value) {
+                    if($value){
+                        $check_alokasi = true;
+                        break;
+                    }
+                }
+            }
 
-            if($this->Truck->validates($data)){
+            if($this->Truck->validates($data) && $check_alokasi){
                 if($this->Truck->save($data)){
+                    $truck_id = $this->Truck->id;
+                    
+                    /*Begin Alokasi*/
+                    $this->Truck->TruckCustomer->deleteAll(array(
+                        'truck_id' => $truck_id
+                    ));
+                    $data_customer = array();
+                    foreach ($data['TruckCustomer']['customer_id'] as $key => $value) {
+                        if(!empty($value)){
+                            $data_customer[$key]['TruckCustomer']['customer_id'] = $value;
+                            $data_customer[$key]['TruckCustomer']['truck_id'] = $truck_id;
+                        }
+                    }
+                    $this->Truck->TruckCustomer->saveMany($data_customer);
+                    /*End Alokasi*/
+
+                    /*Begin Leasing*/
+                    $data['Leasing']['truck_id'] = $truck_id;
+                    if($leasing_id){
+                        $this->Truck->Leasing->id = $leasing_id;
+                    }else{
+                        $this->Truck->Leasing->create();
+                    }
+                    $this->Truck->Leasing->set($data);
+                    $this->Truck->Leasing->save();
+                    /*End Leasing*/
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s truk'), $msg), 'success');
                     $this->redirect(array(
                         'controller' => 'trucks',
@@ -132,12 +178,23 @@ class TrucksController extends AppController {
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s truk'), $msg), 'error');  
                 }
             }else{
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s truk'), $msg), 'error');
+                $text_error = '';
+                if(!$check_alokasi){
+                    $text_error = 'minimal 1 alokasi setiap truk';
+                }
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s truk, %s'), $msg, $text_error), 'error');
             }
         }else{
             if($id && $data_local){
-                
                 $this->request->data = $data_local;
+
+                if(!empty($data_local['TruckCustomer'])){
+                    $data_temp = $data_local['TruckCustomer'];
+                    unset($this->request->data['TruckCustomer']);
+                    foreach ($data_temp as $key => $value) {
+                        $this->request->data['TruckCustomer']['customer_id'][$key] = $value['customer_id'];
+                    }
+                }
             }
         }
 
@@ -177,12 +234,14 @@ class TrucksController extends AppController {
                 'Truck'
             )
         ));
-        $drivers = $this->Truck->Driver->getData('list', array(
+
+        $this->loadModel('Customer');
+        $customers = $this->Customer->getData('list', array(
             'conditions' => array(
-                'Driver.status' => 1
+                'Customer.status' => 1
             ),
             'fields' => array(
-                'Driver.id', 'Driver.name'
+                'Customer.id', 'Customer.name'
             )
         ));
 
@@ -197,7 +256,7 @@ class TrucksController extends AppController {
         $this->set('active_menu', 'trucks');
         $this->set(compact(
             'truck_brands', 'truck_categories', 'truck_brands', 
-            'companies', 'drivers', 'years'
+            'companies', 'drivers', 'years', 'customers'
         ));
         $this->render('truck_form');
     }
@@ -1243,6 +1302,136 @@ class TrucksController extends AppController {
             $this->redirect(array(
                 'controller' => 'trucks',
                 'action' => 'index'
+            ));
+        }
+    }
+
+    function stnk($id = false){
+        if(!empty($id)){
+            $truck = $this->Truck->getTruck($id);
+
+            if(!empty($truck)){
+                $this->paginate = $this->Truck->Stnk->getData('paginate', array(
+                    'conditions' => array(
+                        'truck_id' => $id
+                    ),
+                    'order' => array(
+                        'Stnk.created'
+                    )
+                ));
+                $stnk = $this->paginate('Stnk');
+
+                $this->set('active_menu', 'trucks');
+                $sub_module_title = __('Histori STNK Truk');
+                $this->set(compact('truck', 'stnk', 'sub_module_title', 'id'));
+            }else{
+                $this->MkCommon->setCustomFlash(__('Truk tidak ditemukan.'), 'error');
+                $this->redirect($this->referer());
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Truk tidak ditemukan.'), 'error');
+            $this->redirect($this->referer());
+        }
+    }
+
+    function stnk_add($truck_id){
+        $this->set('sub_module_title', 'Perpanjang STNK Truk');
+        $this->doStnk($truck_id);
+    }
+
+    function stnk_edit($truck_id, $id){
+        $this->loadModel('Stnk');
+        $this->set('sub_module_title', 'Rubah STNK Truk');
+        $Stnk = $this->Stnk->find('first', array(
+            'conditions' => array(
+                'Stnk.id' => $id,
+                'Stnk.truck_id' => $truck_id
+            )
+        ));
+
+        if(!empty($Stnk)){
+            $this->doStnk($truck_id, $id, $Stnk);
+            $this->set(compact('truck'));
+        }else{
+            $this->MkCommon->setCustomFlash(__('STNK Truk tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'trucks',
+                'action' => 'stnk',
+                $truck_id
+            ));
+        }
+    }
+
+    function doStnk($truck_id, $id = false, $data_local = false){
+        $truck = $this->Truck->find('first', array(
+            'conditions' => array(
+                'truck.id' => $truck_id
+            )
+        ));
+
+        if(!empty($truck)){
+            if(!empty($this->request->data)){
+                $data = $this->request->data;
+                if($id && $data_local){
+                    $this->Stnk->id = $id;
+                    $msg = 'merubah';
+                }else{
+                    $this->loadModel('Stnk');
+                    $this->Stnk->create();
+                    $msg = 'perpanjang';
+                }
+                
+                $data['Stnk']['truck_id'] = $truck_id;
+                $data['Stnk']['user_id'] = $this->user_id;
+                $data['Stnk']['tgl_bayar'] = (!empty($data['Stnk']['tgl_bayar'])) ? date('Y-m-d', strtotime($data['Stnk']['tgl_bayar'])) : '';
+                $data['Stnk']['tgl_berakhir'] = (!empty($data['Stnk']['tgl_berakhir'])) ? date('Y-m-d', strtotime($data['Stnk']['tgl_berakhir'])) : '';
+
+                $date_old = strtotime($truck['Truck']['no_stnk']);
+                $date_new = strtotime($data['Stnk']['tgl_bayar']);
+                
+                $check = false;
+                if($date_new >= $date_old){
+                    $check = true;
+                }
+
+                $this->Stnk->set($data);
+
+                if($this->Stnk->validates($data) && $check){
+                    if($this->Stnk->save($data)){
+
+                        $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s STNK Truk'), $msg), 'success');
+                        $this->redirect(array(
+                            'controller' => 'trucks',
+                            'action' => 'stnk',
+                            $truck_id
+                        ));
+                    }else{
+                        $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s STNK Truk'), $msg), 'error');  
+                    }
+                }else{
+                    $text = sprintf(__('Gagal %s STNK Truk'), $msg);
+                    if( !$check ){
+                        $text .= ', tanggal STNK harus lebih besar dari sebelumnya';
+                    }
+                    $this->MkCommon->setCustomFlash($text, 'error');
+                }
+            }else{
+                
+                if($id && $data_local){
+                    
+                    $this->request->data = $data_local;
+                }
+            }
+
+            $this->set('active_menu', 'trucks');
+            $sub_module_title = __('Histori STNK Truk');
+            $this->set(compact('truck_id', 'sub_module_title', 'truck'));
+            $this->render('stnk_form');
+        }else{
+            $this->MkCommon->setCustomFlash(__('Truk tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'trucks',
+                'action' => 'index',
             ));
         }
     }

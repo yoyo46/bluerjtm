@@ -114,6 +114,14 @@ class Truck extends AppModel {
             'className' => 'Driver',
             'foreignKey' => 'driver_id',
         ),
+        'Leasing' => array(
+            'className' => 'Leasing',
+            'foreignKey' => 'truck_id',
+        ),
+        'Stnk' => array(
+            'className' => 'Stnk',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
     var $hasMany = array(
@@ -127,6 +135,14 @@ class Truck extends AppModel {
         ),
         'TruckAlocation' => array(
             'className' => 'TruckAlocation',
+            'foreignKey' => 'truck_id',
+        ),
+        'Stnk' => array(
+            'className' => 'Stnk',
+            'foreignKey' => 'truck_id',
+        ),
+        'TruckCustomer' => array(
+            'className' => 'TruckCustomer',
             'foreignKey' => 'truck_id',
         ),
     );

@@ -16,9 +16,9 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-truck"></i> Perpanjang KIR', array(
+                echo $this->Html->link('<i class="fa fa-truck"></i> Perpanjang STNK', array(
                     'controller' => 'trucks',
-                    'action' => 'kir_add',
+                    'action' => 'stnk_add',
                     $id
                 ), array(
                     'escape' => false,
@@ -32,36 +32,32 @@
         <table class="table table-hover">
             <tr>
                 <th>ID</th>
-                <th>Tanggal KIR</th>
-                <th>Tanggal KIR Lanjutan</th>
-                <th>Biaya KIR</th>
-                <th>prakiraan Biaya <br>KIR selanjutnya</th>
-                <th>Status Bayar</th>
+                <th>Tanggal Bayar</th>
+                <th>Tanggal Berakhir</th>
+                <th>Harga</th>
+                <th>Prakiraan Harga<br> Perpanjang selanjutnya</th>
+                <th>Status</th>
                 <th>Action</th>
             </tr>
             <?php
                 $i = 1;
-                if(!empty($kir)){
-                    foreach ($kir as $key => $value) {
-                        $value_truck = $value['Kir'];
+                if(!empty($stnk)){
+                    foreach ($stnk as $key => $value) {
+                        $value_truck = $value['Stnk'];
                         $id = $value_truck['id'];
             ?>
             <tr>
                 <td><?php echo $id;?></td>
-                <td><?php echo $this->Common->customDate($value_truck['tgl_kir']);?></td>
-                <td><?php echo $this->Common->customDate($value_truck['tgl_next_kir']);?></td>
+                <td><?php echo $this->Common->customDate($value_truck['tgl_bayar']);?></td>
+                <td><?php echo $this->Common->customDate($value_truck['tgl_berakhir']);?></td>
+                <td><?php echo $this->Number->currency($value_truck['price'], 'Rp. ');?></td>
+                <td><?php echo $this->Number->currency($value_truck['price_next_estimate'], 'Rp. ');?></td>
                 <td>
-                    <?php echo $this->Number->currency($value_truck['price'], 'Rp. ');?>
-                </td>
-                <td>
-                    <?php echo $this->Number->currency($value_truck['price_next_estimate'], 'Rp. ');?>
-                </td>
-                <td>
-                    <?php 
-                        if(!empty($value_truck['paid'])){
-                            echo '<span class="label label-success">Sudah Bayar</span>'; 
+                    <?php
+                        if($value_truck['is_change_plat']){
+                            echo '<span class="label label-success">Pergantian Plat</span>'; 
                         }else{
-                            echo '<span class="label label-danger">Belum Bayar</span>';  
+                            echo '-';
                         }
                     ?>
                 </td>
@@ -69,7 +65,7 @@
                     <?php
                         echo $this->Html->link('Rubah', array(
                             'controller' => 'trucks',
-                            'action' => 'kir_edit',
+                            'action' => 'stnk_edit',
                             $value_truck['truck_id'],
                             $id
                         ), array(
