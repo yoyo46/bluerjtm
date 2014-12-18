@@ -812,4 +812,244 @@ class SettingsController extends AppController {
             ));
         }
     }
+
+    function type_motors(){
+        $this->loadModel('TipeMotor');
+        $options = array();
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['TipeMotor']['name'] = $name;
+                $options['conditions']['TipeMotor.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+        $this->paginate = $this->TipeMotor->getData('paginate', $options);
+        $type_motors = $this->paginate('TipeMotor');
+
+        $this->set('active_menu', 'type_motor');
+        $this->set('sub_module_title', 'Tipe Motor');
+        $this->set('type_motors', $type_motors);
+    }
+
+    function type_motor_add(){
+        $this->set('sub_module_title', 'Tambah Tipe Motor');
+        $this->doTipeMotor();
+    }
+
+    function type_motor_edit($id){
+        $this->loadModel('TipeMotor');
+        $this->set('sub_module_title', 'Rubah Tipe Motor');
+        $TipeMotor = $this->TipeMotor->find('first', array(
+            'conditions' => array(
+                'TipeMotor.id' => $id
+            )
+        ));
+
+        if(!empty($TipeMotor)){
+            $this->doTipeMotor($id, $TipeMotor);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Tipe Motor tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'type_motors'
+            ));
+        }
+    }
+
+    function doTipeMotor($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->TipeMotor->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('TipeMotor');
+                $this->TipeMotor->create();
+                $msg = 'menambah';
+            }
+            $this->TipeMotor->set($data);
+
+            if($this->TipeMotor->validates($data)){
+                if($this->TipeMotor->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Tipe Motor'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'type_motors'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Tipe Motor'), $msg), 'error');  
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Tipe Motor'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->loadModel('ColorMotor');
+        $colors = $this->ColorMotor->getData('list', array(
+            'conditions' => array(
+                'ColorMotor.status' => 1
+            ),
+            'fields' => array(
+                'ColorMotor.id', 'ColorMotor.name'
+            )
+        ));
+        $this->set('colors', $colors);
+        $this->set('active_menu', 'type_motor');
+        $this->render('type_motor_form');
+    }
+
+    function type_motor_toggle($id){
+        $this->loadModel('TipeMotor');
+        $locale = $this->TipeMotor->getData('first', array(
+            'conditions' => array(
+                'TipeMotor.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['TipeMotor']['status']){
+                $value = false;
+            }
+
+            $this->TipeMotor->id = $id;
+            $this->TipeMotor->set('status', $value);
+            if($this->TipeMotor->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Tipe Motor tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
+
+    function colors(){
+        $this->loadModel('ColorMotor');
+        $options = array(
+            'conditions' => array(
+                'status' => 1
+            )
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['ColorMotor']['name'] = $name;
+                $options['conditions']['ColorMotor.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+        $this->paginate = $this->ColorMotor->getData('paginate', $options);
+        $colors = $this->paginate('ColorMotor');
+
+        $this->set('active_menu', 'type_motor');
+        $this->set('sub_module_title', 'Warna Motor');
+        $this->set('colors', $colors);
+    }
+
+    function color_motor_add(){
+        $this->set('sub_module_title', 'Tambah Warna Motor');
+        $this->doColorMotor();
+    }
+
+    function color_motor_edit($id){
+        $this->loadModel('ColorMotor');
+        $this->set('sub_module_title', 'Rubah Warna Motor');
+        $ColorMotor = $this->ColorMotor->find('first', array(
+            'conditions' => array(
+                'ColorMotor.id' => $id
+            )
+        ));
+
+        if(!empty($ColorMotor)){
+            $this->doColorMotor($id, $ColorMotor);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Warna Motor tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'colors'
+            ));
+        }
+    }
+
+    function doColorMotor($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->ColorMotor->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('ColorMotor');
+                $this->ColorMotor->create();
+                $msg = 'menambah';
+            }
+            $this->ColorMotor->set($data);
+
+            if($this->ColorMotor->validates($data)){
+                if($this->ColorMotor->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Warna Motor'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'colors'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Warna Motor'), $msg), 'error');  
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Warna Motor'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->set('active_menu', 'type_motor');
+        $this->render('color_motor_form');
+    }
+
+    function color_motor_toggle($id){
+        $this->loadModel('ColorMotor');
+        $locale = $this->ColorMotor->getData('first', array(
+            'conditions' => array(
+                'ColorMotor.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['ColorMotor']['status']){
+                $value = false;
+            }
+
+            $this->ColorMotor->id = $id;
+            $this->ColorMotor->set('status', $value);
+            if($this->ColorMotor->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Warna Motor tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
 }

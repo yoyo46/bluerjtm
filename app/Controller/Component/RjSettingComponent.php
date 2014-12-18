@@ -38,6 +38,11 @@ class RjSettingComponent extends Component {
 					$refine_conditions['Company']['name'] = $refine['Company']['name'];
 				}
 			}
+			if(!empty($refine)) {
+				if( !empty($refine['TipeMotor']['name']) ) {
+					$refine_conditions['TipeMotor']['name'] = $refine['TipeMotor']['name'];
+				}
+			}
 				
 			return $refine_conditions;
 		}
@@ -75,6 +80,12 @@ class RjSettingComponent extends Component {
 		}
 		if(isset($refine['Company']) && !empty($refine['Company'])) {
 			foreach($refine['Company'] as $param => $value) {
+				if($value) {
+					$parameters[trim($param)] = rawurlencode($value);
+				}
+			}
+		}if(isset($refine['TipeMotor']) && !empty($refine['TipeMotor'])) {
+			foreach($refine['TipeMotor'] as $param => $value) {
 				if($value) {
 					$parameters[trim($param)] = rawurlencode($value);
 				}

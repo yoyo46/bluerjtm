@@ -214,6 +214,14 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan' )?'active':'',
                             ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Tipe Motor', array(
+                                'controller' => 'settings',
+                                'action' => 'type_motors',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'type_motor' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>
