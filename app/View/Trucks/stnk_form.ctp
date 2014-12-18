@@ -46,25 +46,42 @@
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->input('price', array(
-					'type' => 'text',
-					'label'=> __('Harga Perpanjang STNK *'), 
-					'class'=>'form-control',
-					'required' => false,
-					'placeholder' => __('Harga Perpanjang STNK')
-				));
+				echo $this->Form->label('price', __('Harga Perpanjang STNK *')); 
 			?>
+			<div class="input-group">
+	        	<?php 
+	        		echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+	    				'class' => 'input-group-addon'
+    				));
+
+					echo $this->Form->input('price', array(
+						'type' => 'text',
+						'label'=> false, 
+						'class'=>'form-control',
+						'required' => false,
+						'placeholder' => __('Harga Perpanjang STNK')
+					));
+				?>
+			</div>
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->input('price_next_estimate', array(
-					'type' => 'text',
-					'label'=> __('Prakiraan Harga Perpanjang berikutnya *'), 
-					'class'=>'form-control',
-					'required' => false,
-					'placeholder' => __('Prakiraan Harga Perpanjang berikutnya')
-				));
+				echo $this->Form->label('price_next_estimate', __('Prakiraan Harga Perpanjang berikutnya *')); 
 			?>
+			<div class="input-group">
+	        	<?php 
+	        		echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+	    				'class' => 'input-group-addon'
+    				));
+					echo $this->Form->input('price_next_estimate', array(
+						'type' => 'text',
+						'label'=> false, 
+						'class'=>'form-control',
+						'required' => false,
+						'placeholder' => __('Prakiraan Harga Perpanjang berikutnya')
+					));
+				?>
+			</div>
         </div>
         <div class="form-group">
 	        <div class="checkbox aset-handling">

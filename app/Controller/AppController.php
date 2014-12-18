@@ -60,7 +60,7 @@ class AppController extends Controller {
 	        'plugin' => false
 	    );
 	    $this->Auth->loginRedirect = array(
-	        'controller' => 'products',
+	        'controller' => 'trucks',
 	        'action' => 'index',
 	        'admin' => false,
 	        'plugin' => false

@@ -8,13 +8,8 @@
 				'bootstrap-responsive.min',
 			));
 
-			echo $this->Html->script(array(
-				'jquery',
-			));
-
 			echo $this->fetch('meta');
 			echo $this->fetch('css');
-			echo $this->fetch('script');
 	?>
 	<style>
 		body {

@@ -711,6 +711,7 @@ class TrucksController extends AppController {
                 $data['Kir']['truck_id'] = $truck_id;
                 $data['Kir']['user_id'] = $this->user_id;
                 $data['Kir']['tgl_kir'] = (!empty($data['Kir']['tgl_kir'])) ? date('Y-m-d', strtotime($data['Kir']['tgl_kir'])) : '';
+                $data['Kir']['tgl_next_kir'] = (!empty($data['Kir']['tgl_next_kir'])) ? date('Y-m-d', strtotime($data['Kir']['tgl_next_kir'])) : '';
 
                 $date_old = strtotime($truck['Truck']['kir']);
                 $date_new = strtotime($data['Kir']['tgl_kir']);
@@ -842,6 +843,7 @@ class TrucksController extends AppController {
                 $data['Siup']['truck_id'] = $truck_id;
                 $data['Siup']['user_id'] = $this->user_id;
                 $data['Siup']['tgl_siup'] = (!empty($data['Siup']['tgl_siup'])) ? date('Y-m-d', strtotime($data['Siup']['tgl_siup'])) : '';
+                $data['Siup']['tgl_next_siup'] = (!empty($data['Siup']['tgl_next_siup'])) ? date('Y-m-d', strtotime($data['Siup']['tgl_next_siup'])) : '';
 
                 $date_old = (!empty($truck['Truck']['siup'])) ? strtotime($truck['Truck']['siup']) : 0;
                 $date_new = strtotime($data['Siup']['tgl_siup']);

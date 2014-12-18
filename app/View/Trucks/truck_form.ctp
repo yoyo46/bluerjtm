@@ -170,16 +170,22 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('Leasing.installment',__('Biaya Leasing *')); 
-
-						echo $this->Form->input('Leasing.installment',array(
-							'type' => 'text',
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'placeholder' => __('Leasing Cicilan')
-						));
+						echo $this->Form->label('Leasing.installment', __('Biaya Leasing *')); 
 					?>
+					<div class="input-group">
+						<?php
+							echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+				    				'class' => 'input-group-addon'
+			    				));
+							echo $this->Form->input('Leasing.installment',array(
+								'type' => 'text',
+								'label'=> false, 
+								'class'=>'form-control',
+								'required' => false,
+								'placeholder' => __('Leasing Cicilan')
+							));
+						?>
+					</div>
 		        </div>
 		        <div class="form-group">
 		        	<?php 

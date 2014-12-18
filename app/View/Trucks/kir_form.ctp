@@ -35,17 +35,25 @@
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->input('price', array(
-					'type' => 'text',
-					'label'=> __('Biaya KIR *'), 
-					'class'=>'form-control',
-					'required' => false,
-					'placeholder' => __('Biaya KIR')
-				));
+				echo $this->Form->label('price', __('Biaya KIR *')); 
 			?>
+			<div class="input-group">
+				<?php 
+					echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+	    				'class' => 'input-group-addon'
+    				));
+					echo $this->Form->input('price', array(
+						'type' => 'text',
+						'label'=> false, 
+						'class'=>'form-control',
+						'required' => false,
+						'placeholder' => __('Biaya KIR')
+					));
+				?>
+			</div>
         </div>
         <div class="form-group">
-        	<?php 
+			<?php 
 				echo $this->Form->input('tgl_next_kir', array(
 					'type' => 'text',
 					'label'=> __('Tanggal KIR selanjutnya *'), 
@@ -57,14 +65,23 @@
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->input('price_next_estimate', array(
-					'type' => 'text',
-					'label'=> __('Prakiraan Biaya KIR selanjutnya *'), 
-					'class'=>'form-control',
-					'required' => false,
-					'placeholder' => __('Biaya KIR selanjutnya')
-				));
+				echo $this->Form->label('price_next_estimate', __('Biaya KIR selanjutnya*')); 
 			?>
+			<div class="input-group">
+	        	<?php 
+	        		echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+	    				'class' => 'input-group-addon'
+    				));
+
+					echo $this->Form->input('price_next_estimate', array(
+						'type' => 'text',
+						'label'=> false, 
+						'class'=>'form-control',
+						'required' => false,
+						'placeholder' => __('Biaya KIR selanjutnya')
+					));
+				?>
+			</div>
         </div>
         <div class="form-group">
 	        <div class="checkbox aset-handling">

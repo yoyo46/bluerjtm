@@ -33,6 +33,68 @@
 				));
 			?>
         </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->input('tgl_next_siup', array(
+					'type' => 'text',
+					'label'=> __('Tanggal SIUP selanjutnya *'), 
+					'class'=>'form-control custom-date',
+					'required' => false,
+					'placeholder' => __('Tanggal SIUP selanjutnya')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('price', __('Biaya SIUP *')); 
+			?>
+			<div class="input-group">
+				<?php 
+					echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+	    				'class' => 'input-group-addon'
+    				));
+					echo $this->Form->input('price', array(
+						'type' => 'text',
+						'label'=> false, 
+						'class'=>'form-control',
+						'required' => false,
+						'placeholder' => __('Biaya SIUP')
+					));
+				?>
+			</div>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('price_next_estimate', __('Biaya SIUP selanjutnya*')); 
+			?>
+			<div class="input-group">
+	        	<?php 
+	        		echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+	    				'class' => 'input-group-addon'
+    				));
+
+					echo $this->Form->input('price_next_estimate', array(
+						'type' => 'text',
+						'label'=> false, 
+						'class'=>'form-control',
+						'required' => false,
+						'placeholder' => __('Biaya SIUP selanjutnya')
+					));
+				?>
+			</div>
+        </div>
+        <div class="form-group">
+	        <div class="checkbox aset-handling">
+                <label>
+                    <?php 
+						echo $this->Form->checkbox('paid',array(
+							'label'=> false, 
+							'required' => false,
+						)).__('status bayar?');
+					?>
+                </label>
+            </div>
+        </div>
     </div>
 
     <div class="box-footer text-center action">

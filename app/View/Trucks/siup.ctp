@@ -33,6 +33,10 @@
             <tr>
                 <th>ID</th>
                 <th>Tanggal SIUP</th>
+                <th>Tanggal SIUP Lanjutan</th>
+                <th>Biaya SIUP</th>
+                <th>prakiraan Biaya <br>SIUP selanjutnya</th>
+                <th>Status Bayar</th>
                 <th>Action</th>
             </tr>
             <?php
@@ -45,6 +49,22 @@
             <tr>
                 <td><?php echo $id;?></td>
                 <td><?php echo $this->Common->customDate($value_truck['tgl_siup'], 'd-m-Y');?></td>
+                <td><?php echo $this->Common->customDate($value_truck['tgl_next_siup']);?></td>
+                <td>
+                    <?php echo $this->Number->currency($value_truck['price'], 'Rp. ');?>
+                </td>
+                <td>
+                    <?php echo $this->Number->currency($value_truck['price_next_estimate'], 'Rp. ');?>
+                </td>
+                <td>
+                    <?php 
+                        if(!empty($value_truck['paid'])){
+                            echo '<span class="label label-success">Sudah Bayar</span>'; 
+                        }else{
+                            echo '<span class="label label-danger">Belum Bayar</span>';  
+                        }
+                    ?>
+                </td>
                 <td>
                     <?php
                         echo $this->Html->link('Rubah', array(

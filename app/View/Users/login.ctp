@@ -19,56 +19,42 @@
 	echo $this->Session->flash('info');
 	echo $this->Session->flash('email');
 ?>
-<div class="input-control text" data-role="input-control">
-	<?php
-		echo $this->Form->input('User.username', array(
-			'placeholder' => 'Username',
-			'label' => false,
-			'div' => false,				
-			'required' => true,			
-		));
-	?>
-</div>
-<div class="input-control password" data-role="input-control">
-	<?php
-		echo $this->Form->input('User.password', array(
-			'type' => 'password',
-			'placeholder' => 'Password',
-			'class' => 'form-control',
-			'label' => false,
-			'div' => false,
-			'required' => true,
-		));
-	?>
-</div>
-<div class="input-control checkbox" data-role="input-control">
-	<label>
+<div class="form-group">
+	<div class="input-control text" data-role="input-control">
 		<?php
-			echo $this->Form->input('User.remember_me', array(
-				'type' => 'checkbox',
+			echo $this->Form->input('User.username', array(
+				'placeholder' => 'Username',
 				'label' => false,
-				'div' => false,
-				'required' => false,
+				'div' => false,				
+				'required' => true,	
+				'class' => 'form-control',
 			));
 		?>
-		<span class="check"></span>
-		Remember me
-	</label>
+	</div>
 </div>
-<br>
-<?php
-	echo $this->Html->link('Lupa password?', array(
-		'controller' => 'users',
-		'action' => 'forgot',
-		'admin' => false
-	));
-?>
-<br><br>
-<?php
-	echo $this->Form->button(__('Sign in'), array(
-		'type' => 'submit', 
-		'class'=>'btn large default',
-	));
+<div class="form-group">
+	<div class="input-control password" data-role="input-control">
+		<?php
+			echo $this->Form->input('User.password', array(
+				'type' => 'password',
+				'placeholder' => 'Password',
+				'class' => 'form-control',
+				'label' => false,
+				'div' => false,
+				'required' => true,
+			));
+		?>
+	</div>
+</div>
+<div class="form-group">
+	<?php
+		echo $this->Form->button(__('Sign in'), array(
+			'type' => 'submit', 
+			'class'=>'btn large default',
+		));
+	?>
+</div>
 
+<?php
 	echo $this->Form->end();
 ?>
