@@ -25,11 +25,16 @@ class TipeMotor extends AppModel {
 
 	function getData($find, $options = false){
         $default_options = array(
-            'conditions'=> array(),
-            'order'=> array(
-                'status' => 'DESC'
+            'conditions'=> array(
+                'TipeMotor.status' => 1,
             ),
-            'contain' => array(),
+            'order'=> array(
+                'TipeMotor.name' => 'ASC'
+            ),
+            'contain' => array(
+                'ColorMotor'
+            ),
+            'fields' => array()
         );
 
         if(!empty($options)){
@@ -41,6 +46,9 @@ class TipeMotor extends AppModel {
             }
             if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
+            }
+            if(!empty($options['fields'])){
+                $default_options['fields'] = $options['fields'];
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
@@ -71,5 +79,9 @@ class TipeMotor extends AppModel {
         return $data;
     }
 
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['tipe_motor_color'] = sprintf('CONCAT(%s.name, " - ", ColorMotor.name)', $this->alias);
+    }
 }
 ?>

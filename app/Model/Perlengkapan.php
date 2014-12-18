@@ -15,7 +15,7 @@ class Perlengkapan extends AppModel {
                 'Perlengkapan.status' => 1,
             ),
             'order'=> array(
-                'status' => 'DESC'
+                'Perlengkapan.name' => 'ASC'
             ),
             'contain' => array(),
             'fields' => array(),

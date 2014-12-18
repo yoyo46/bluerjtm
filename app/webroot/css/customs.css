@@ -4,6 +4,10 @@
 .ttuj-form #step2 {
 	display: none;
 }
+
+#ttuj-perlengkapan .checkbox {
+	margin: 0;
+}
 /*
 **	END TTUJ
 */
