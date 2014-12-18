@@ -1277,22 +1277,26 @@ class TrucksController extends AppController {
 
                     $result_data = array();
 
-                    foreach ($data['TruckPerlengkapan']['perlengkapan_id'] as $key => $perlengkapan_id) {
-                        if(!empty($perlengkapan_id)){
-                            $result_data[$key]['TruckPerlengkapan']['perlengkapan_id'] = $perlengkapan_id;
-                            $result_data[$key]['TruckPerlengkapan']['truck_id'] = $truck_id;
+                    if( !empty($data['TruckPerlengkapan']['perlengkapan_id']) ) {
+                        foreach ($data['TruckPerlengkapan']['perlengkapan_id'] as $key => $perlengkapan_id) {
+                            if(!empty($perlengkapan_id)){
+                                $result_data[$key]['TruckPerlengkapan']['perlengkapan_id'] = $perlengkapan_id;
+                                $result_data[$key]['TruckPerlengkapan']['truck_id'] = $truck_id;
+                            }
                         }
-                    }
                     
-                    $this->TruckPerlengkapan->create();
+                        $this->TruckPerlengkapan->create();
 
-                    if($this->TruckPerlengkapan->saveMany($result_data)){
-                        $this->MkCommon->setCustomFlash(sprintf(__('kelengkapan truk berhasil %s'), $message), 'success'); 
-                        $this->redirect(array(
-                            'controller' => 'trucks',
-                            'action' => 'index'
-                        ));
-                    }else{
+                        if($this->TruckPerlengkapan->saveMany($result_data)){
+                            $this->MkCommon->setCustomFlash(sprintf(__('kelengkapan truk berhasil %s'), $message), 'success'); 
+                            $this->redirect(array(
+                                'controller' => 'trucks',
+                                'action' => 'index'
+                            ));
+                        } else {
+                            $this->MkCommon->setCustomFlash(sprintf(__('kelengkapan truk gagal %s'), $message), 'error'); 
+                        }
+                    } else {
                         $this->MkCommon->setCustomFlash(sprintf(__('kelengkapan truk gagal %s'), $message), 'error'); 
                     }
                 }else{
