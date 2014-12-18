@@ -83,10 +83,11 @@
             </tr>
             <?php
                     }
-                }else{
-            ?>
-            <tr><td colspan="5"><?php echo __('Data tidak ditemukan.');?></tr>
-            <?php
+                }else {
+                    echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
+                        'class' => 'alert alert-warning text-center',
+                        'colspan' => '7'
+                    )));
                 }
             ?>
         </table>

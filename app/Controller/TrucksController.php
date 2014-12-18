@@ -301,7 +301,11 @@ class TrucksController extends AppController {
 
 	function brands(){
 		$this->loadModel('TruckBrand');
-        $options = array();
+        $options = array(
+            'conditions' => array(
+                'TruckBrand.status' => 1
+            )
+        );
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -414,7 +418,11 @@ class TrucksController extends AppController {
 
     function categories(){
 		$this->loadModel('TruckCategory');
-        $options = array();
+        $options = array(
+            'conditions' => array(
+                'TruckCategory.status' => 1
+            )
+        );
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -527,7 +535,9 @@ class TrucksController extends AppController {
     function drivers(){
         $this->loadModel('Driver');
 
-        $conditions = array();
+        $conditions = array(
+            'Driver.status' => 1
+        );
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
 
@@ -783,7 +793,8 @@ class TrucksController extends AppController {
             if(!empty($truck)){
                 $this->paginate = $this->Truck->Siup->getData('paginate', array(
                     'conditions' => array(
-                        'truck_id' => $id
+                        'truck_id' => $id,
+                        'status' => 1
                     ),
                     'order' => array(
                         'Siup.created'

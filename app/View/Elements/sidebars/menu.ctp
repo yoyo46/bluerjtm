@@ -127,15 +127,6 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
                             ));
-
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Rute', array(
-                                'controller' => 'trucks',
-                                'action' => 'directions',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'directions' )?'active':'',
-                            ));
                     ?>
                 </ul>
             </li>
@@ -182,14 +173,6 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'cities' )?'active':'',
-                            ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Tipe Customer', array(
-                                'controller' => 'settings',
-                                'action' => 'customer_types',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'customer_types' )?'active':'',
                             ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Customer', array(
                                 'controller' => 'settings',

@@ -74,7 +74,7 @@
                             ));
 
                             if(!empty($value_data['status'])){
-                                echo $this->Html->link('Disable', array(
+                                echo $this->Html->link('Hapus', array(
                                     'controller' => 'trucks',
                                     'action' => 'driver_toggle',
                                     $id
