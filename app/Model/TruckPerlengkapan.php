@@ -19,7 +19,7 @@ class TruckPerlengkapan extends AppModel {
     var $belongsTo = array(
         'Perlengkapan' => array(
             'className' => 'Perlengkapan',
-            'foreignKey' => 'user_id',
+            'foreignKey' => 'perlengkapan_id',
             'conditions' => '',
             'fields' => '',
             'order' => ''

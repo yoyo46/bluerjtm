@@ -109,6 +109,11 @@ class TrucksController extends AppController {
     }
 
     function doTruck($id = false, $data_local = false){
+        $driverConditions = array(
+            'Driver.status' => 1,
+            'Truck.id' => NULL,
+        );
+
         if(!empty($this->request->data)){
             $data = $this->request->data;
             $leasing_id = 0;
@@ -195,6 +200,14 @@ class TrucksController extends AppController {
                         $this->request->data['TruckCustomer']['customer_id'][$key] = $value['customer_id'];
                     }
                 }
+
+                if( $data_local['Truck']['driver_id'] ) {
+                    unset($driverConditions['Truck.id']);
+                    $driverConditions['OR'] = array(
+                        'Truck.id' => NULL,
+                        'Driver.id' => $data_local['Truck']['driver_id'],
+                    );
+                }
             }
         }
 
@@ -223,10 +236,7 @@ class TrucksController extends AppController {
             )
         ));
         $drivers = $this->Truck->Driver->getData('list', array(
-           'conditions' => array(
-                'Driver.status' => 1,
-                'Truck.id' => NULL,
-            ),
+           'conditions' => $driverConditions,
             'fields' => array(
                 'Driver.id', 'Driver.name'
             ),
@@ -1266,10 +1276,10 @@ class TrucksController extends AppController {
                     )); 
 
                     $result_data = array();
-                    
-                    foreach ($data['TruckPerlengkapan']['name'] as $key => $value) {
-                        if(!empty($value)){
-                            $result_data[$key]['TruckPerlengkapan']['name'] = $value;
+
+                    foreach ($data['TruckPerlengkapan']['perlengkapan_id'] as $key => $perlengkapan_id) {
+                        if(!empty($perlengkapan_id)){
+                            $result_data[$key]['TruckPerlengkapan']['perlengkapan_id'] = $perlengkapan_id;
                             $result_data[$key]['TruckPerlengkapan']['truck_id'] = $truck_id;
                         }
                     }
@@ -1288,7 +1298,7 @@ class TrucksController extends AppController {
                 }else{
                     if(!empty($truckPerlengkapans)){
                         foreach ($truckPerlengkapans as $key => $value) {
-                            $this->request->data['TruckPerlengkapan']['name'][$key] = $value['TruckPerlengkapan']['name'];
+                            $this->request->data['TruckPerlengkapan']['perlengkapan_id'][$key] = $value['TruckPerlengkapan']['perlengkapan_id'];
                         }
                     }
                 }

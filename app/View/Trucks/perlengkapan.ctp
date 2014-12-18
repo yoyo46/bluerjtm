@@ -43,9 +43,9 @@
     	?>
     	<div class="form-group" id="perlengkapan1">
         	<?php 
-				echo $this->Form->label('name.0', __('Perlengkapan 1')); 
+				echo $this->Form->label('perlengkapan_id.0', __('Perlengkapan 1')); 
 
-				echo $this->Form->input('name.',array(
+				echo $this->Form->input('perlengkapan_id.0',array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
@@ -56,9 +56,9 @@
         </div>
         <div class="form-group"  id="perlengkapan2">
         	<?php 
-				echo $this->Form->label('name.1', __('Perlengkapan 2')); 
+				echo $this->Form->label('perlengkapan_id.1', __('Perlengkapan 2')); 
 
-				echo $this->Form->input('name.',array(
+				echo $this->Form->input('perlengkapan_id.',array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
@@ -69,9 +69,9 @@
         </div>
         <div class="form-group"  id="perlengkapan1">
         	<?php 
-				echo $this->Form->label('name.2', __('Perlengkapan 3')); 
+				echo $this->Form->label('perlengkapan_id.2', __('Perlengkapan 3')); 
 
-				echo $this->Form->input('name.',array(
+				echo $this->Form->input('perlengkapan_id.',array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
@@ -81,19 +81,20 @@
 			?>
         </div>
     	<?php
-    		}else{
-    			foreach ($this->request->data['Perlengkapan']['name'] as $key => $value) {
+    			} else if( !empty($this->request->data['TruckPerlengkapan']['perlengkapan_id']) ){
+    				foreach ($this->request->data['TruckPerlengkapan']['perlengkapan_id'] as $key => $value) {
     	?>
     	<div class="form-group"  id="perlengkapan<?php echo $key;?>">
         	<?php 
-				echo $this->Form->label('Perlengkapan.name.'.$key, __('Perlengkapan '.($key+1))); 
+				echo $this->Form->label('TruckPerlengkapan.perlengkapan_id.'.$key, __('Perlengkapan '.($key+1))); 
 
-				echo $this->Form->input('Perlengkapan.name.'.$key,array(
+				echo $this->Form->input('TruckPerlengkapan.perlengkapan_id.'.$key,array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
 					'value' => $value,
 					'empty' => __('Pilih Perlengkapan --'),
+					'options' => $perlengkapans,
 				));
 			?>
         </div>	
