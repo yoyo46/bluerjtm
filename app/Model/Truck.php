@@ -107,16 +107,16 @@ class Truck extends AppModel {
             'className' => 'TruckCategory',
             'foreignKey' => 'truck_category_id',
         ),
+        'Leasing' => array(
+            'className' => 'Leasing',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
     var $belongsTo = array(
         'Driver' => array(
             'className' => 'Driver',
             'foreignKey' => 'driver_id',
-        ),
-        'Leasing' => array(
-            'className' => 'Leasing',
-            'foreignKey' => 'truck_id',
         ),
         'Stnk' => array(
             'className' => 'Stnk',
@@ -143,6 +143,10 @@ class Truck extends AppModel {
         ),
         'TruckCustomer' => array(
             'className' => 'TruckCustomer',
+            'foreignKey' => 'truck_id',
+        ),
+        'TruckPerlengkapan' => array(
+            'className' => 'TruckPerlengkapan',
             'foreignKey' => 'truck_id',
         ),
     );
@@ -186,8 +190,8 @@ class Truck extends AppModel {
     function getTruck($id){
         $truck = $this->find('first', array(
             'conditions' => array(
-                'status' => 1,
-                'id' => $id
+                'Truck.status' => 1,
+                'Truck.id' => $id
             )
         ));
 

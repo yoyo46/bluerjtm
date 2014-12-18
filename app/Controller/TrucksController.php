@@ -1243,37 +1243,40 @@ class TrucksController extends AppController {
             $truck = $this->Truck->getTruck($truck_id);
 
             if(!empty($truck)){
-                $this->loadModel('Perlengkapan');
+                $this->loadModel('TruckPerlengkapan');
                 
-                $perlengkapans = $this->Perlengkapan->getData('all', array(
+                $truckPerlengkapans = $this->TruckPerlengkapan->getData('all', array(
                     'conditions' => array(
-                        'truck_id' => $truck_id
+                        'TruckPerlengkapan.truck_id' => $truck_id
                     )
                 ));
 
                 $message = 'dimasukkan';
-                if(!empty($perlengkapans)){
+                if(!empty($truckPerlengkapans)){
                     $message = 'dirubah';
                 }
 
                 if(!empty($this->request->data)){
                     $data = $this->request->data;
                     
-                    $this->Perlengkapan->deleteAll(array(
-                        'truck_id' => $truck_id
+                    $this->TruckPerlengkapan->updateAll( array(
+                        'TruckPerlengkapan.status' => 0,
+                    ), array(
+                        'TruckPerlengkapan.truck_id' => $truck_id
                     )); 
 
                     $result_data = array();
-                    foreach ($data['Perlengkapan']['name'] as $key => $value) {
+                    
+                    foreach ($data['TruckPerlengkapan']['name'] as $key => $value) {
                         if(!empty($value)){
-                            $result_data[$key]['Perlengkapan']['name'] = $value;
-                            $result_data[$key]['Perlengkapan']['truck_id'] = $truck_id;
+                            $result_data[$key]['TruckPerlengkapan']['name'] = $value;
+                            $result_data[$key]['TruckPerlengkapan']['truck_id'] = $truck_id;
                         }
                     }
                     
-                    $this->Perlengkapan->create();
+                    $this->TruckPerlengkapan->create();
 
-                    if($this->Perlengkapan->saveMany($result_data)){
+                    if($this->TruckPerlengkapan->saveMany($result_data)){
                         $this->MkCommon->setCustomFlash(sprintf(__('kelengkapan truk berhasil %s'), $message), 'success'); 
                         $this->redirect(array(
                             'controller' => 'trucks',
@@ -1283,9 +1286,9 @@ class TrucksController extends AppController {
                         $this->MkCommon->setCustomFlash(sprintf(__('kelengkapan truk gagal %s'), $message), 'error'); 
                     }
                 }else{
-                    if(!empty($perlengkapans)){
-                        foreach ($perlengkapans as $key => $value) {
-                            $this->request->data['Perlengkapan']['name'][$key] = $value['Perlengkapan']['name'];
+                    if(!empty($truckPerlengkapans)){
+                        foreach ($truckPerlengkapans as $key => $value) {
+                            $this->request->data['TruckPerlengkapan']['name'][$key] = $value['TruckPerlengkapan']['name'];
                         }
                     }
                 }
@@ -1297,8 +1300,21 @@ class TrucksController extends AppController {
                 ));
             }
 
+            $this->loadModel('Perlengkapan');
+            $perlengkapans = $this->Perlengkapan->getData('list', array(
+                'conditions' => array(
+                    'Perlengkapan.status' => 1
+                ),
+                'fields' => array(
+                    'Perlengkapan.id', 'Perlengkapan.name'
+                )
+            ));
+
             $sub_module_title = __('Perlengkapan Truk');
-            $this->set(compact('truck_id', 'sub_module_title', 'truck'));
+            $this->set(compact(
+                'truck_id', 'sub_module_title', 'truck',
+                'perlengkapans'
+            ));
         }else{
             $this->MkCommon->setCustomFlash(__('ID Truk tidak ditemukan'), 'error');  
             $this->redirect(array(

@@ -3546,9 +3546,8 @@ fieldset[disabled] .btn-vk.active {
   font-weight: bold;
 }
 
-table tr td.action .btn,
 .box-footer .btn,
-.form-group.action .btn {
+.action .btn {
   margin-right: 5px;
 }
 
@@ -3626,4 +3625,12 @@ table tr td.action .btn,
     background:#eee;
     border:1px solid #94a0b4;
     color:#000
+}
+
+.radio input[type="radio"], 
+.radio-inline input[type="radio"], 
+.checkbox input[type="checkbox"], 
+.checkbox-inline input[type="checkbox"] {
+  margin-left: 0;
+  margin-right: 5px;
 }

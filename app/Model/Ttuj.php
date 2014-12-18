@@ -18,16 +18,34 @@ class Ttuj extends AppModel {
                 'message' => 'Tgl TTUJ harap dipilih'
             ),
         ),
-        'truck_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Truk harap dipilih'
-            ),
-        ),
         'uang_jalan_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Customer dan Tujuan harap diisi'
+            ),
+        ),
+        'customer_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Customer harap dipilih'
+            ),
+        ),
+        'from_city_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Dari kota harap dipilih'
+            ),
+        ),
+        'to_city_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Kota tujuan harap dipilih'
+            ),
+        ),
+        'truck_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Truk harap dipilih'
             ),
         ),
 	);

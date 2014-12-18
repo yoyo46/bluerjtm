@@ -13,7 +13,7 @@
             <?php
                     echo $this->Html->link('<i class="fa fa-plus"></i> Tambah TTUJ', array(
                         'controller' => 'revenues',
-                        'action' => 'add'
+                        'action' => 'ttuj_add'
                     ), array(
                         'escape' => false,
                         'class' => 'btn btn-app btn-success pull-right'
@@ -81,7 +81,7 @@
                     <?php
                             echo $this->Html->link('Rubah', array(
                                 'controller' => 'revenues',
-                                'action' => 'edit',
+                                'action' => 'ttuj_edit',
                                 $id
                             ), array(
                                 'class' => 'btn btn-primary btn-xs'
@@ -89,7 +89,7 @@
 
                             echo $this->Html->link(__('Hapus'), array(
                                 'controller' => 'revenues',
-                                'action' => 'delete',
+                                'action' => 'ttuj_delete',
                                 $id
                             ), array(
                                 'class' => 'btn btn-danger btn-xs',

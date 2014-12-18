@@ -143,7 +143,8 @@
                     $activeSetting = false;
                     $settingMenu = array(
                         'cities', 'customer_types', 'customers',
-                        'vendors', 'companies', 'uang_jalan'
+                        'vendors', 'companies', 'uang_jalan',
+                        'perlengkapan'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -158,6 +159,14 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Perlengkapan', array(
+                                'controller' => 'settings',
+                                'action' => 'perlengkapan',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'perlengkapan' )?'active':'',
+                            ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> COA', array(
                                 'controller' => 'settings',
                                 'action' => 'coas',

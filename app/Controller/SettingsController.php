@@ -813,6 +813,125 @@ class SettingsController extends AppController {
         }
     }
 
+    function perlengkapan(){
+        $this->loadModel('Perlengkapan');
+        $options = array(
+            'order' => array(
+                'Perlengkapan.name' => 'ASC'
+            ),
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['Perlengkapan']['name'] = $name;
+                $options['conditions']['Perlengkapan.name LIKE '] = '%'.$name.'%';
+            }
+        }
+        $this->paginate = $this->Perlengkapan->getData('paginate', $options);
+        $perlengkapans = $this->paginate('Perlengkapan');
+
+        $this->set('active_menu', 'perlengkapan');
+        $this->set('module_title', 'Data Master');
+        $this->set('sub_module_title', 'Perlengkapan');
+        $this->set(compact(
+            'perlengkapans'
+        ));
+    }
+
+    function perlengkapan_add(){
+        $this->loadModel('Perlengkapan');
+        $this->set('sub_module_title', 'Tambah Perlengkapan');
+        $this->doPerlengkapan();
+    }
+
+    function perlengkapan_edit($id){
+        $this->loadModel('Perlengkapan');
+        $this->set('sub_module_title', 'Rubah Perlengkapan');
+        $perlengkapan = $this->Perlengkapan->find('first', array(
+            'conditions' => array(
+                'Perlengkapan.id' => $id
+            )
+        ));
+
+        if(!empty($perlengkapan)){
+            $this->doPerlengkapan($id, $perlengkapan);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Perlengkapan tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'perlengkapan'
+            ));
+        }
+    }
+
+    function doPerlengkapan($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->Perlengkapan->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->Perlengkapan->create();
+                $msg = 'menambah';
+            }
+            
+            $this->Perlengkapan->set($data);
+
+            if($this->Perlengkapan->validates($data)){
+                if($this->Perlengkapan->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Perlengkapan'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'perlengkapan'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Perlengkapan'), $msg), 'error');  
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Perlengkapan'), $msg), 'error');
+            }
+        }else{
+            if($id && $data_local){
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->set('active_menu', 'perlengkapan');
+        $this->set('module_title', 'Data Master');
+        $this->render('perlengkapan_form');
+    }
+
+    function perlengkapan_toggle($id){
+        $this->loadModel('Perlengkapan');
+        $locale = $this->Perlengkapan->getData('first', array(
+            'conditions' => array(
+                'Perlengkapan.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['Perlengkapan']['status']){
+                $value = false;
+            }
+
+            $this->Perlengkapan->id = $id;
+            $this->Perlengkapan->set('status', $value);
+            if($this->Perlengkapan->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Perlengkapan tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
+
     function type_motors(){
         $this->loadModel('TipeMotor');
         $options = array(

@@ -17,59 +17,66 @@
         <h3 class="box-title"><?php echo $sub_module_title?></h3>
     </div>
     <?php 
-		echo $this->Form->create('Perlengkapan', array(
+		echo $this->Form->create('TruckPerlengkapan', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
 		));
 	?>
-	<?php 
-		echo $this->Html->link('Tambah field', 'javascript:', array(
-			'class' => 'add-custom-field btn btn-success',
-			'type_action' => 'perlengkapan'
-		));
-		echo $this->Html->link('Hapus field', 'javascript:', array(
-			'class' => 'delete-custom-field btn btn-danger',
-			'type_action' => 'perlengkapan'
-		));
-	?>
     <div class="box-body" id="box-field-input">
+    	<div class="form-group">
+			<div class="action">
+				<?php 
+						echo $this->Html->link('Tambah field', 'javascript:', array(
+							'class' => 'add-custom-field btn btn-success btn-xs',
+							'type_action' => 'perlengkapan'
+						));
+						echo $this->Html->link('Hapus field', 'javascript:', array(
+							'class' => 'delete-custom-field btn btn-danger btn-xs',
+							'type_action' => 'perlengkapan'
+						));
+				?>
+			</div>
+		</div>
     	<?php
     		if( empty($this->request->data) ){
     	?>
     	<div class="form-group" id="perlengkapan1">
         	<?php 
-				echo $this->Form->label('name.0', __('perlengkapan 1')); 
+				echo $this->Form->label('name.0', __('Perlengkapan 1')); 
 
 				echo $this->Form->input('name.',array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('perlengkapan')
+					'options' => $perlengkapans,
+					'empty' => __('Pilih Perlengkapan --'),
 				));
 			?>
         </div>
         <div class="form-group"  id="perlengkapan2">
         	<?php 
-				echo $this->Form->label('name.1', __('perlengkapan 2')); 
+				echo $this->Form->label('name.1', __('Perlengkapan 2')); 
 
 				echo $this->Form->input('name.',array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('perlengkapan')
+					'options' => $perlengkapans,
+					'empty' => __('Pilih Perlengkapan --'),
 				));
 			?>
         </div>
         <div class="form-group"  id="perlengkapan1">
         	<?php 
-				echo $this->Form->label('name.2', __('perlengkapan 3')); 
+				echo $this->Form->label('name.2', __('Perlengkapan 3')); 
 
 				echo $this->Form->input('name.',array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('perlengkapan')
+					'options' => $perlengkapans,
+					'empty' => __('Pilih Perlengkapan --'),
 				));
 			?>
         </div>
@@ -79,14 +86,14 @@
     	?>
     	<div class="form-group"  id="perlengkapan<?php echo $key;?>">
         	<?php 
-				echo $this->Form->label('Perlengkapan.name.'.$key, __('perlengkapan '.($key+1))); 
+				echo $this->Form->label('Perlengkapan.name.'.$key, __('Perlengkapan '.($key+1))); 
 
 				echo $this->Form->input('Perlengkapan.name.'.$key,array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('perlengkapan'),
-					'value' => $value
+					'value' => $value,
+					'empty' => __('Pilih Perlengkapan --'),
 				));
 			?>
         </div>	

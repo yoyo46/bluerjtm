@@ -1,24 +1,44 @@
 <?php
-class Perlengkapan extends AppModel {
-	var $name = 'Perlengkapan';
-
-	var $belongsTo = array(
-		'TruckPerlengkapan' => array(
-			'className' => 'TruckPerlengkapan',
-			'foreignKey' => 'truck_id',
-		)
+class TruckPerlengkapan extends AppModel {
+	var $name = 'TruckPerlengkapan';
+	var $validate = array(
+		'truck_id' => array(
+			'notempty' => array(
+				'rule' => array('notempty'),
+                'message' => 'Truk harap dipilih.'
+			),
+		),
+        'perlengkapan_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Perlengkapan harap dipilih.'
+            ),
+        ),
 	);
+    
+    var $belongsTo = array(
+        'Perlengkapan' => array(
+            'className' => 'Perlengkapan',
+            'foreignKey' => 'user_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
+        'Truck' => array(
+            'className' => 'Truck',
+            'foreignKey' => 'truck_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
+    );
 
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(
-                'Perlengkapan.status' => 1,
-            ),
-            'order'=> array(
-                'status' => 'DESC'
+                'TruckPerlengkapan.status' => 1,
             ),
             'contain' => array(),
-            'fields' => array(),
         );
 
         if(!empty($options)){
@@ -30,9 +50,6 @@ class Perlengkapan extends AppModel {
             }
             if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
-            }
-            if(!empty($options['fields'])){
-                $default_options['fields'] = $options['fields'];
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];

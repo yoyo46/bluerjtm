@@ -46,7 +46,9 @@ $(function() {
                 }
             });
         } else {
-
+            $('#getKotaTujuan').val('').attr('disabled', true);
+            $('#getTruck').val('').attr('disabled', true);
+            $('#getInfoTruck').val('').attr('disabled', true);
         }
     });
 

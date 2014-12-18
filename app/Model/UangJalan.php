@@ -243,5 +243,90 @@ class UangJalan extends AppModel {
             return true; 
         }
     }
+
+    function getKotaAsal ($customer_id) {
+        $fromCity = $this->getData('all', array(
+            'conditions' => array(
+                'UangJalan.status' => 1,
+                'UangJalan.customer_id' => $customer_id,
+            ),
+            'group' => array(
+                'UangJalan.from_city_id'
+            ),
+            'fields' => array(
+                'UangJalan.from_city_id', 'FromCity.name'
+            ),
+            'contain' => array(
+                'FromCity'
+            ),
+        ));
+        $resultCity = array();
+
+        if( !empty($fromCity) ) {
+            foreach ($fromCity as $key => $city) {
+                $resultCity[$city['UangJalan']['from_city_id']] = $city['FromCity']['name'];
+            }
+        }
+
+        return $resultCity;
+    }
+
+    function getKotaTujuan ($customer_id, $from_city_id) {
+        $toCity = $this->getData('all', array(
+            'conditions' => array(
+                'UangJalan.status' => 1,
+                'UangJalan.customer_id' => $customer_id,
+                'UangJalan.from_city_id' => $from_city_id,
+            ),
+            'group' => array(
+                'UangJalan.to_city_id'
+            ),
+            'fields' => array(
+                'UangJalan.to_city_id', 'ToCity.name'
+            ),
+            'contain' => array(
+                'ToCity'
+            ),
+        ));
+        $resultCity = array();
+
+        if( !empty($toCity) ) {
+            foreach ($toCity as $key => $city) {
+                $resultCity[$city['UangJalan']['to_city_id']] = $city['ToCity']['name'];
+            }
+        }
+
+        return $resultCity;
+    }
+
+    function getNopol ($customer_id, $from_city_id, $to_city_id) {
+        $result = false;
+        $this->Truck = ClassRegistry::init('Truck');
+        $uangJalan = $this->getData('first', array(
+            'conditions' => array(
+                'UangJalan.status' => 1,
+                'UangJalan.customer_id' => $customer_id,
+                'UangJalan.from_city_id' => $from_city_id,
+                'UangJalan.to_city_id' => $to_city_id,
+            ),
+        ));
+
+        if( !empty($uangJalan) ) {
+            $result = $this->Truck->getData('list', array(
+                'conditions' => array(
+                    'Truck.status' => 1,
+                    'Truck.capacity' => $uangJalan['UangJalan']['capacity'],
+                ),
+                'fields' => array(
+                    'Truck.id', 'Truck.nopol'
+                ),
+            ));
+        }
+
+        return array(
+            'result' => $result,
+            'uangJalan' => $uangJalan,
+        );
+    }
 }
 ?>
