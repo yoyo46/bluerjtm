@@ -2,12 +2,18 @@
 class TipeMotor extends AppModel {
 	var $name = 'TipeMotor';
 	var $validate = array(
-		'name' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-                'message' => 'Brand name harap diisi'
-			),
-		)
+        'name' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tipe motor harap diisi'
+            ),
+        ),
+        'color_motor_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Warna motor harap diisi'
+            ),
+        )
 	);
 
 	var $hasOne = array(

@@ -5,7 +5,7 @@ class ColorMotor extends AppModel {
 		'name' => array(
 			'notempty' => array(
 				'rule' => array('notempty'),
-                'message' => 'Brand name harap diisi'
+                'message' => 'Warna motor harap diisi'
 			),
 		)
 	);
