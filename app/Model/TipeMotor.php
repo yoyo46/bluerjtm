@@ -16,7 +16,7 @@ class TipeMotor extends AppModel {
         )
 	);
 
-	var $hasOne = array(
+	var $belongsTo = array(
 		'ColorMotor' => array(
 			'className' => 'ColorMotor',
 			'foreignKey' => 'color_motor_id',

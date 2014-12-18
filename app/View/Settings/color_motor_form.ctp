@@ -41,7 +41,7 @@
 					'type' => 'submit',
 				));
 	    		echo $this->Html->link(__('Kembali'), array(
-					'action' => 'brands', 
+					'action' => 'colors', 
 				), array(
 					'class'=> 'btn btn-default',
 				));

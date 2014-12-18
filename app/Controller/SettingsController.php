@@ -815,7 +815,11 @@ class SettingsController extends AppController {
 
     function type_motors(){
         $this->loadModel('TipeMotor');
-        $options = array();
+        $options = array(
+            'contain' => array(
+                'ColorMotor'
+            )
+        );
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];

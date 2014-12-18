@@ -51,7 +51,7 @@
 					'type' => 'submit',
 				));
 	    		echo $this->Html->link(__('Kembali'), array(
-					'action' => 'brands', 
+					'action' => 'type_motors', 
 				), array(
 					'class'=> 'btn btn-default',
 				));
