@@ -8,6 +8,25 @@
 #ttuj-perlengkapan .checkbox {
 	margin: 0;
 }
+
+.ttuj-form .form-control-feedback {
+	width: auto;
+	right: 10px;
+}
 /*
 **	END TTUJ
+*/
+
+/*
+**	Truck
+*/
+/*#main-alocation .has-feedback .form-control {
+	width: 90%;
+}*/
+
+/*#main-alocation .has-feedback a {
+	pointer-events: visible;
+}*/
+/*
+**	END Truck
 */

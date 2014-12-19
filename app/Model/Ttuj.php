@@ -69,18 +69,35 @@ class Ttuj extends AppModel {
         ),
     );
 
+    var $hasMany = array(
+        'TtujTipeMotor' => array(
+            'className' => 'TtujTipeMotor',
+            'foreignKey' => 'ttuj_id',
+            'conditions' => array(
+                'TtujTipeMotor.status' => 1,
+            ),
+        ),
+        'TtujPerlengkapan' => array(
+            'className' => 'TtujPerlengkapan',
+            'foreignKey' => 'ttuj_id',
+            'conditions' => array(
+                'TtujPerlengkapan.status' => 1,
+            ),
+        ),
+    );
+
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'Leasing.status' => 'DESC',
-                'Leasing.created' => 'DESC',
-                'Leasing.id' => 'DESC',
+                'Ttuj.status' => 'DESC',
+                'Ttuj.created' => 'DESC',
+                'Ttuj.id' => 'DESC',
             ),
             'contain' => array(
-                'Truck',
                 'DriverPenganti',
-                'UangJalan',
+                'TtujTipeMotor',
+                'TtujPerlengkapan',
             ),
         );
 

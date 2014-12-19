@@ -9,29 +9,44 @@ $(function() {
 
 	$('.add-custom-field').click(function (e) {
 		var self = $(this);
-		var type_action = self.attr('type_action');
-		var class_count = $('#box-field-input .form-group');
-		var length = parseInt(class_count.length);
-		var idx = length+1;
+		var action_type = self.attr('action_type');
 
-		switch(type_action) {
+		switch(action_type) {
 		    case 'perlengkapan':
-		        $('#box-field-input').append('<div class="form-group" id="'+type_action+idx+'">'+
+                var class_count = $('#box-field-input .form-group');
+                var length = parseInt(class_count.length);
+                var idx = length+1;
+
+		        $('#box-field-input').append('<div class="form-group" id="'+action_type+idx+'">'+
 		        	'<label for="PerlengkapanName'+idx+'">perlengkapan '+idx+'</label>'+
 		        	'<input name="data[Perlengkapan][name]['+(idx-1)+']" class="form-control" placeholder="perlengkapan" type="text" id="name'+idx+'">'+
 		        	'</div>');
 		    break;
+            case 'ttuj':
+                var idx = $('#ttujDetail tbody tr').length;
+                var optionTipeMotor = $('#tipe_motor_id select').html();
+
+                $('#ttujDetail tbody').append(''+
+                '<tr rel="'+idx+'">'+
+                    '<td>'+
+                        '<select name="data[TtujTipeMotor][tipe_motor_id]['+idx+']" class="form-control">'+
+                        optionTipeMotor +
+                        '</select>'+
+                    '</td>'+
+                    '<td>'+
+                        '<input name="data[TtujTipeMotor][qty]['+idx+']" class="form-control" type="text">'+
+                    '</td>'+
+                    '<td>'+
+                        '<a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="ttuj"><i class="fa fa-times"></i> Hapus</a>'+
+                    '</td>'+
+                '</tr>');
+
+                delete_custom_field( $('#ttujDetail tbody tr:last-child .delete-custom-field') );
+            break;
 		    case 'alocation':
 		    	$('#box-field-input #main-alocation .form-group').clone().appendTo('#advance-box-field-input');
 		    break;
 		}
-    });
-
-    $('.delete-custom-field').click(function (e) {
-	 	var length = parseInt($('#box-field-input .form-group').length);
-	 	var type_action = self.attr('type_action');
-	 	var idx = length;
- 		$('#'+type_action+(idx-1)).remove();
     });
 
     $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Collapse this branch');
@@ -73,7 +88,7 @@ $(function() {
                 url: '/ajax/getKotaAsal/'+self.val()+'/',
                 type: 'POST',
                 success: function(response, status) {
-                    $('.from_city #getKotaTujuan').attr('disabled', false).html($(response).filter('#from_city_id').html());
+                    $('.from_city #getKotaTujuan').attr('readonly', false).html($(response).filter('#from_city_id').html());
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
@@ -81,9 +96,12 @@ $(function() {
                 }
             });
         } else {
-            $('#getKotaTujuan').val('').attr('disabled', true);
-            $('#getTruck').val('').attr('disabled', true);
-            $('#getInfoTruck').val('').attr('disabled', true);
+            $('#getKotaTujuan').val('').attr('readonly', true);
+            $('#getTruck').val('').attr('readonly', true);
+            $('#getInfoTruck').val('').attr('readonly', true);
+            $('.driver_name').val('');
+            $('.truck_capacity').val('');
+            $('#biaya-uang-jalan input').val('');
         }
     });
 
@@ -96,7 +114,7 @@ $(function() {
                 url: '/ajax/getKotaTujuan/'+self.val()+'/'+customer_id+'/',
                 type: 'POST',
                 success: function(response, status) {
-                    $('.to_city #getTruck').attr('disabled', false).html($(response).filter('#to_city_id').html());
+                    $('.to_city #getTruck').attr('readonly', false).html($(response).filter('#to_city_id').html());
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
@@ -104,7 +122,11 @@ $(function() {
                 }
             });
         } else {
-
+            $('#getTruck').val('').attr('readonly', true);
+            $('#getInfoTruck').val('').attr('readonly', true);
+            $('.driver_name').val('');
+            $('.truck_capacity').val('');
+            $('#biaya-uang-jalan input').val('');
         }
     });
 
@@ -118,7 +140,7 @@ $(function() {
                 url: '/ajax/getNopol/'+from_city_id+'/'+self.val()+'/'+'/'+customer_id+'/',
                 type: 'POST',
                 success: function(response, status) {
-                    $('.truck_id #getInfoTruck').attr('disabled', false).html($(response).filter('#truck_id').html());
+                    $('.truck_id #getInfoTruck').attr('readonly', false).html($(response).filter('#truck_id').html());
                     $('.uang_jalan_1').val($(response).filter('#uang_jalan_1').html());
                     $('.uang_jalan_2').val($(response).filter('#uang_jalan_2').html());
                     $('.commission').val($(response).filter('#commission').html());
@@ -134,7 +156,10 @@ $(function() {
                 }
             });
         } else {
-
+            $('#getInfoTruck').val('').attr('readonly', true);
+            $('.driver_name').val('');
+            $('.truck_capacity').val('');
+            $('#biaya-uang-jalan input').val('');
         }
     });
 
@@ -155,7 +180,8 @@ $(function() {
                 }
             });
         } else {
-
+            $('.driver_name').val('');
+            $('.truck_capacity').val('');
         }
     });
 
@@ -176,193 +202,27 @@ $(function() {
         });
     });
 
-    $('.add-custom-field').click(function (e) {
-        var action_type = $(this).attr('action_type');
-
-        if( action_type == 'transaction' ) {
-            var voucher_number = $('#voucherNumber').val();
-            var voucher_code = $('#voucherCode').val();
-            var alias = $('#aliasHouse').val();
-            var noted = $('#noted').val();
-            var amount = $('#amount').val();
-
-            if( amount == 0 || amount == '' ) {
-                alert('Mohon masukan jumlah');
-            } else if( noted == '' ) {
-                alert('Mohon masukan keterangan');
-            } else {
-                if( voucher_number != '' ) {
-                    voucher_code = voucher_number + '/' + voucher_code;
-                }
-
-                $('tr.removed').remove();
-                var idx = $('#transDetail tbody tr').length;
-
-                $('#transDetail tbody').append(''+
-                '<tr>'+
-                    '<td>'+
-                        '<input name="data[TransactionDetail]['+idx+'][voucher_number]" class="form-control" type="text" value="'+voucher_code+'">'+
-                    '</td>'+
-                    '<td>'+
-                        '<select name="data[TransactionDetail]['+idx+'][kiosk_id]" class="form-control chosen-select kioskList">'+$('#aliasHouse').html()+'</select>'+
-                    '</td>'+
-                    '<td>'+
-                        '<input name="data[TransactionDetail]['+idx+'][note]" class="form-control" type="text" value="'+noted+'">'+
-                    '</td>'+
-                    '<td>'+
-                        '<input name="data[TransactionDetail]['+idx+'][amount]" class="form-control input_price" type="text" value="'+amount+'">'+
-                    '</td>'+
-                    '<td>'+
-                        '<a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="transaction"><i class="fa fa-times"></i> Hapus</a>'+
-                    '</td>'+
-                '</tr>');
-
-                $('#voucherCode').val('');
-                $('#noted').val('');
-                $('#amount').val('');
-                $('#transDetail tbody tr:last-child select').val(alias);
-                $('#transDetail tbody tr:last-child .chosen-select').chosen({});
-
-                amount_transaction('#transDetail tbody tr:last-child .input_price');
-                $('#transDetail tbody tr:last-child .input_price').trigger('blur');
-                delete_custom_field();
-            }
-        } else if( action_type == 'rent_pays' ) {
-            var customer_id = $('#customerId').val();
-
-            if( customer_id == '' ) {
-                alert('Mohon pilih nama penyewa terlebih dahulu');
-            } else {
-                var transCode = $('#transCode').val();
-                var alias = $('#aliasHouse').val();
-                var noted = $('#noted').val();
-                var amount = $('#amount').val();
-                var monthFrom = $('#monthFrom').val();
-                var monthTo = $('#monthTo').val();
-                var noteDetail = $('#noteDetail').val();
-                var url = '/ajax/getValidateKiosk/' + alias + '/' + customer_id + '/' + monthFrom + '/' + monthTo + '/' + '/' + transCode + '/';
-
-                $.ajax({
-                    url: url,
-                    success: function(result) {
-                        var message = $(result).filter('#message').html();
-                        var status = $(result).filter('#status').html();
-
-                        if( status == 'error' ) {
-                            alert(message);
-                        } else {
-                            if( transCode == 0 || transCode == '' ) {
-                                alert('Mohon pilih kode transaksi');
-                            } else if( alias == 0 || alias == '' ) {
-                                alert('Mohon pilih blok dan nomor');
-                            } else if( amount == 0 || amount == '' ) {
-                                alert('Mohon masukan jumlah');
-                            } else if( monthFrom == '' || monthTo == '' ) {
-                                alert('Mohon tanggal pembayaran');
-                            } else if( noteDetail == '' ) {
-                                alert('Mohon masukan keterangan');
-                            } else {
-                                $('tr.removed').remove();
-                                var idx = $('#rentPaysDetail tbody tr').length;
-
-                                $('#rentPaysDetail tbody').append(''+
-                                '<tr>'+
-                                    '<td>'+
-                                        '<select name="data[RentPayDetail]['+idx+'][transaction_code_id]" class="form-control en-select trans_code">'+$('#transCode').html()+'</select>'+
-                                    '</td>'+
-                                    '<td>'+
-                                        '<select name="data[RentPayDetail]['+idx+'][kiosk_id]" class="form-control chosen-select house kioskList">'+$('#aliasHouse').html()+'</select>'+
-                                    '</td>'+
-                                    '<td>'+
-                                        '<input name="data[RentPayDetail]['+idx+'][amount]" class="form-control input_price" type="text" value="'+amount+'">'+
-                                    '</td>'+
-                                    '<td>'+
-                                        '<input name="data[RentPayDetail]['+idx+'][paid_from_date]" class="form-control fromdatepicker" type="text" value="'+monthFrom+'">'+
-                                    '</td>'+
-                                    '<td>'+
-                                        '<input name="data[RentPayDetail]['+idx+'][paid_to_date]" class="form-control todatepicker" type="text" value="'+monthTo+'">'+
-                                    '</td>'+
-                                    '<td>'+
-                                        '<input name="data[RentPayDetail]['+idx+'][note]" class="form-control" type="text" value="'+noteDetail+'">'+
-                                    '</td>'+
-                                    '<td>'+
-                                        '<a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="rent_pays"><i class="fa fa-times"></i> Hapus</a>'+
-                                    '</td>'+
-                                '</tr>');
-
-                                $('#amount').val('');
-                                $('#monthFrom').val('');
-                                $('#monthTo').val('');
-                                $('#noteDetail').val('');
-                                $('#rentPaysDetail tbody tr:last-child select.trans_code').val(transCode);
-                                $('#rentPaysDetail tbody tr:last-child select.house').val(alias);
-                                $('#rentPaysDetail tbody tr:last-child .chosen-select').chosen({});
-
-                                amount_rent_pay('#rentPaysDetail tbody tr:last-child .input_price');
-                                classTodatepicker();
-                                // monthYear('#rentPaysDetail tbody tr:last-child .monthYear');
-                                classFromdatepicker( "#rentPaysDetail tbody tr:last-child .fromdatepicker", "#rentPaysDetail tbody tr:last-child .todatepicker" );
-                                classTodatepicker( '#rentPaysDetail tbody tr:last-child .todatepicker', "#rentPaysDetail tbody tr:last-child .fromdatepicker" );
-                                $('#rentPaysDetail tbody tr:last-child .input_price').trigger('blur');
-                                delete_custom_field();
-                            }
-                        }
-                    },
-                });
-            }
+    var delete_custom_field = function( obj ) {
+        if( typeof obj == 'undefined' ) {
+            obj = $('.delete-custom-field');
         }
-    });
 
-    var delete_custom_field = function() {
-        $('.delete-custom-field').click(function (e) {
+        obj.click(function (e) {
             var action_type = $(this).attr('action_type');
 
-            if( action_type == 'transaction' ) {
-                var lengthTable = $('#transDetail tbody tr').length;
-                $(this).parents('tr').remove();
-
-                if( lengthTable == 1 ) {
-                    $('#transDetail tbody').append(''+
-                    '<tr>'+
-                        '<td>&nbsp;</td>'+
-                        '<td>&nbsp;</td>'+
-                        '<td>&nbsp;</td>'+
-                        '<td>&nbsp;</td>'+
-                        '<td>&nbsp;</td>'+
-                    '</tr>');
+            if( confirm('Anda yakin ingin menghapus data ini?') ) {
+                if( action_type == 'ttuj' ) {
+                    var lengthTable = $('#ttujDetail tbody tr').length;
+                    $(this).parents('tr').remove();
+                } else if( action_type == 'perlengkapan' ) {
+                    var length = parseInt($('#box-field-input .form-group').length);
+                    var action_type = self.attr('action_type');
+                    var idx = length;
+                    $('#'+action_type+(idx-1)).remove();
                 }
-                // $('#transaction-'+(idx-1)).remove();
-                // if( $('#transaction-0 .amount').html() != null ) {
-                //  $('#transaction-0 .amount').trigger('blur');
-                // }
-                // $('.percent').trigger('blur');
-                // grandtotal();
-            } else if( action_type == 'rent_pays' ) {
-                var lengthTable = $('#rentPaysDetail tbody tr').length;
-                $(this).parents('tr').remove();
-
-                if( lengthTable == 1 ) {
-                    $('#rentPaysDetail tbody').append(''+
-                    '<tr class="removed">'+
-                        '<td>&nbsp;</td>'+
-                        '<td>&nbsp;</td>'+
-                        '<td>&nbsp;</td>'+
-                        '<td>&nbsp;</td>'+
-                        '<td>&nbsp;</td>'+
-                        '<td>&nbsp;</td>'+
-                        '<td>&nbsp;</td>'+
-                    '</tr>');
-                    $('.grandtotal').val(0);
-                } else {
-                    $('#rentPaysDetail tbody tr:last-child .input_price').trigger('blur');
-                }
-                // $('#transaction-'+(idx-1)).remove();
-                // if( $('#transaction-0 .amount').html() != null ) {
-                //  $('#transaction-0 .amount').trigger('blur');
-                // }
-                // $('.percent').trigger('blur');
-                // grandtotal();
             }
+
+            return false;
         });
     }
     delete_custom_field();

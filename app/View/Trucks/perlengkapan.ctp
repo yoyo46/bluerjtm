@@ -29,11 +29,11 @@
 				<?php 
 						echo $this->Html->link('Tambah field', 'javascript:', array(
 							'class' => 'add-custom-field btn btn-success btn-xs',
-							'type_action' => 'perlengkapan'
+							'action_type' => 'perlengkapan'
 						));
 						echo $this->Html->link('Hapus field', 'javascript:', array(
 							'class' => 'delete-custom-field btn btn-danger btn-xs',
-							'type_action' => 'perlengkapan'
+							'action_type' => 'perlengkapan'
 						));
 				?>
 			</div>

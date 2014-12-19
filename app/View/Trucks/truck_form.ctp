@@ -276,26 +276,31 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php
-		        		echo $this->Html->link('Tambah Alokasi', 'javascript:', array(
-							'class' => 'add-custom-field btn btn-success',
-							'type_action' => 'alocation'
+		        		echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah Alokasi'), 'javascript:', array(
+							'class' => 'add-custom-field btn btn-success btn-xs',
+							'action_type' => 'alocation',
+							'escape' => false,
 						));
 		        	?>
 		        </div>
 		        <div id="box-field-input">
 		        	<div id="main-alocation">
-		        		<div class="form-group">
+		        		<div class="form-group has-feedback">
 		        			<?php 
-								echo $this->Form->label('TruckCustomer.customer_id.',__('Alokasi')); 
-
-								echo $this->Form->input('TruckCustomer.customer_id.',array(
-									'label'=> false, 
-									'class'=> 'form-control',
-									'required' => false,
-									'empty' => __('Pilih'),
-									'options' => $customers,
-									'value' => (!empty($this->request->data['TruckCustomer']['customer_id'][0])) ? $this->request->data['TruckCustomer']['customer_id'][0] : ''
-								));
+									echo $this->Form->label('TruckCustomer.customer_id.',__('Alokasi')); 
+									echo $this->Form->input('TruckCustomer.customer_id.',array(
+										'label'=> false, 
+										'class'=> 'form-control',
+										'required' => false,
+										'empty' => __('Pilih'),
+										'options' => $customers,
+										'value' => (!empty($this->request->data['TruckCustomer']['customer_id'][0])) ? $this->request->data['TruckCustomer']['customer_id'][0] : ''
+									));
+									// echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
+									// 	'class' => 'delete-custom-field has-danger form-control-feedback',
+									// 	'action_type' => 'truck',
+									// 	'escape' => false
+									// ));
 							?>
 				        </div>
 		        	</div>

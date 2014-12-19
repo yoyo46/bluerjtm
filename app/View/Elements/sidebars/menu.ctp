@@ -44,17 +44,17 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'user' )?'active':'',
                             ));
 
-                            if(in_array($GroupId, array('3'))){
-                                $link_text = '<i class="fa fa-angle-double-right"></i> '.$this->Html->tag('span', 'Access List Manager');
-                                echo $this->Html->tag('li', $this->Html->link($link_text, array(
-                                    'controller' => 'acl_manager',
-                                    'action' => 'acl',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'acl' )?'active':'',
-                                ));
-                            }
+                            // if(in_array($GroupId, array('3'))){
+                            //     $link_text = '<i class="fa fa-angle-double-right"></i> '.$this->Html->tag('span', 'Access List Manager');
+                            //     echo $this->Html->tag('li', $this->Html->link($link_text, array(
+                            //         'controller' => 'acl_manager',
+                            //         'action' => 'acl',
+                            //     ), array(
+                            //         'escape' => false
+                            //     )), array(
+                            //         'class' => ( !empty($active_menu) && $active_menu == 'acl' )?'active':'',
+                            //     ));
+                            // }
                     ?>
                 </ul>
                 <?php
@@ -135,7 +135,7 @@
                     $settingMenu = array(
                         'cities', 'customer_types', 'customers',
                         'vendors', 'companies', 'uang_jalan',
-                        'perlengkapan'
+                        'perlengkapan', 'coas', 'type_motor'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -188,7 +188,7 @@
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'customers' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'companies' )?'active':'',
                             ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Vendor', array(
                                 'controller' => 'settings',

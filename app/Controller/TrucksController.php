@@ -200,15 +200,15 @@ class TrucksController extends AppController {
                         $this->request->data['TruckCustomer']['customer_id'][$key] = $value['customer_id'];
                     }
                 }
-
-                if( $data_local['Truck']['driver_id'] ) {
-                    unset($driverConditions['Truck.id']);
-                    $driverConditions['OR'] = array(
-                        'Truck.id' => NULL,
-                        'Driver.id' => $data_local['Truck']['driver_id'],
-                    );
-                }
             }
+        }
+
+        if( !empty($data_local)) {
+            unset($driverConditions['Truck.id']);
+            $driverConditions['OR'] = array(
+                'Truck.id' => NULL,
+                'Driver.id' => $data_local['Truck']['driver_id'],
+            );
         }
 
         $truck_brands = $this->Truck->TruckBrand->getData('list', array(
@@ -1284,7 +1284,7 @@ class TrucksController extends AppController {
                         'TruckPerlengkapan.status' => 0,
                     ), array(
                         'TruckPerlengkapan.truck_id' => $truck_id
-                    )); 
+                    ));
 
                     $result_data = array();
 

@@ -209,7 +209,7 @@ class UsersController extends AppController {
         $this->loadModel('User');
         $default_options = array(
             'conditions' => array(
-                'group_id <>' => 3
+                'User.status' => 1
             ),
             'contain' => array(
                 'Group'

@@ -44,15 +44,7 @@ class AjaxController extends AppController {
 
 	function getInfoTruck( $truck_id = false ) {
 		$this->loadModel('Truck');
-		$result = $this->Truck->getData('first', array(
-			'conditions' => array(
-				'Truck.status' => 1,
-				'Truck.id' => $truck_id,
-			),
-			'contain' => array(
-				'Driver'
-			),
-		));
+		$result = $this->Truck->getInfoTruck($truck_id);
 
 		$this->set(compact(
 			'result'

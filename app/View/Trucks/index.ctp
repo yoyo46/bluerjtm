@@ -43,7 +43,7 @@
             <div class="clear"></div>
         </div>
     </div>
-    <div class="box-body table-responsive no-padding">
+    <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>
                 <th>Merek</th>

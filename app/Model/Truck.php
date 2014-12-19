@@ -205,5 +205,21 @@ class Truck extends AppModel {
         }
         return $truck;
     }
+
+
+
+    function getInfoTruck( $truck_id ) {
+        $result = $this->getData('first', array(
+            'conditions' => array(
+                'Truck.status' => 1,
+                'Truck.id' => $truck_id,
+            ),
+            'contain' => array(
+                'Driver'
+            ),
+        ));
+
+        return $result;
+    }
 }
 ?>

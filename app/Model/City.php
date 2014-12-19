@@ -21,7 +21,7 @@ class City extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'status' => 'DESC'
+                'name' => 'ASC'
             ),
             'contain' => array(),
             'fields' => array(),

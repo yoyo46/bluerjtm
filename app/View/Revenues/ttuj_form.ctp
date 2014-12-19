@@ -1,4 +1,12 @@
+<?php 
+		if( !empty($step) ) {
+?>
+<script type="text/javascript">
+	window.location.hash = '<?php echo $step; ?>';
+</script>
 <?php
+		}
+
 		$this->Html->addCrumb(__('TTUJ'), array(
 			'controller' => 'revenues',
 			'action' => 'ttuj'
@@ -67,7 +75,7 @@
 												'div' => array(
 													'class' => 'from_city'
 												),
-												'disabled' => $disabled,
+												'readonly' => $disabled,
 												'id' => 'getKotaTujuan',
 											));
 									?>
@@ -80,7 +88,7 @@
 												'class'=>'form-control',
 												'required' => false,
 												'empty' => __('Kota Tujuan --'),
-												'disabled' => $disabled,
+												'readonly' => $disabled,
 												'div' => array(
 													'class' => 'to_city'
 												),
@@ -98,7 +106,7 @@
 										'class'=>'form-control',
 										'required' => false,
 										'empty' => __('Pilih No. Pol --'),
-										'disabled' => $disabled,
+										'readonly' => $disabled,
 										'div' => array(
 											'class' => 'truck_id'
 										),
@@ -112,7 +120,7 @@
 										'label'=> __('Supir'), 
 										'class'=>'form-control driver_name',
 										'required' => false,
-										'disabled' => true,
+										'readonly' => true,
 									));
 							?>
 				        </div>
@@ -122,7 +130,7 @@
 										'label'=> __('Kapasitas Truk'), 
 										'class'=>'form-control truck_capacity',
 										'required' => false,
-										'disabled' => true,
+										'readonly' => true,
 									));
 							?>
 				        </div>
@@ -150,7 +158,7 @@
 			</div>
 			<div class="col-sm-6">
 
-				<div class="box box-primary">
+				<div class="box box-primary" id="biaya-uang-jalan">
 				    <div class="box-header">
 				        <h3 class="box-title"><?php echo __('Biaya Perjalanan');?></h3>
 				    </div>
@@ -169,8 +177,7 @@
 											'class'=>'form-control uang_jalan_1',
 											'required' => false,
 											'type' => 'text',
-											'disabled' => true,
-											'value' => !empty($uangJalan['UangJalan']['uang_jalan_1'])?number_format($uangJalan['UangJalan']['uang_jalan_1'], 0):false,
+											'readonly' => true,
 										));
 								?>
 							</div>
@@ -189,8 +196,7 @@
 											'class'=>'form-control uang_jalan_2',
 											'required' => false,
 											'type' => 'text',
-											'disabled' => true,
-											'value' => !empty($uangJalan['UangJalan']['uang_jalan_2'])?number_format($uangJalan['UangJalan']['uang_jalan_2'], 0):false,
+											'readonly' => true,
 										));
 								?>
 							</div>
@@ -210,8 +216,7 @@
 											'required' => false,
 											'empty' => __('Uang Kuli Muat'),
 											'type' => 'text',
-											'disabled' => true,
-											'value' => !empty($uangJalan['UangJalan']['uang_kuli_muat'])?number_format($uangJalan['UangJalan']['uang_kuli_muat'], 0):false,
+											'readonly' => true,
 										));
 								?>
 							</div>
@@ -231,8 +236,7 @@
 											'required' => false,
 											'empty' => __('Uang Kuli Bongkar'),
 											'type' => 'text',
-											'disabled' => true,
-											'value' => !empty($uangJalan['UangJalan']['uang_kuli_bongkar'])?number_format($uangJalan['UangJalan']['uang_kuli_bongkar'], 0):false,
+											'readonly' => true,
 										));
 								?>
 							</div>
@@ -252,8 +256,7 @@
 											'required' => false,
 											'empty' => __('Uang Penyebrangan'),
 											'type' => 'text',
-											'disabled' => true,
-											'value' => !empty($uangJalan['UangJalan']['asdp'])?number_format($uangJalan['UangJalan']['asdp'], 0):false,
+											'readonly' => true,
 										));
 								?>
 							</div>
@@ -273,8 +276,7 @@
 											'required' => false,
 											'empty' => __('Uang Kawal'),
 											'type' => 'text',
-											'disabled' => true,
-											'value' => !empty($uangJalan['UangJalan']['uang_kawal'])?number_format($uangJalan['UangJalan']['uang_kawal'], 0):false,
+											'readonly' => true,
 										));
 								?>
 							</div>
@@ -294,8 +296,7 @@
 											'required' => false,
 											'empty' => __('Uang Keamanan'),
 											'type' => 'text',
-											'disabled' => true,
-											'value' => !empty($uangJalan['UangJalan']['uang_keamanan'])?number_format($uangJalan['UangJalan']['uang_keamanan'], 0):false,
+											'readonly' => true,
 										));
 								?>
 							</div>
@@ -330,62 +331,46 @@
 							<?php
 									echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
 										'class' => 'add-custom-field btn btn-success btn-xs',
-										'action_type' => 'transaction',
+										'action_type' => 'ttuj',
 										'escape' => false
 									));
 							?>
 						</div>
-				        <table class="table table-bordered table-striped" id="transDetail">
+				        <table class="table table-bordered table-striped" id="ttujDetail">
 							<thead>
 								<tr>
 									<th><?php echo __('Tipe Motor'); ?></th>
-									<th><?php echo __('Warna'); ?></th>
 									<th><?php echo __('Jumlah Unit'); ?></th>
+									<th><?php echo __('Action'); ?></th>
 								</tr>
 							</thead>
 							<tbody>
 								<?php 
-										if( !empty($this->request->data['TransactionDetail']) ) {
-											foreach ($this->request->data['TransactionDetail'] as $key => $detail) {
+										if( !empty($this->request->data['TtujTipeMotor']['tipe_motor_id']) ) {
+											foreach ($this->request->data['TtujTipeMotor']['tipe_motor_id'] as $key => $tipe_motor_id) {
+												$qty = !empty($this->request->data['TtujTipeMotor']['qty'][$key])?$this->request->data['TtujTipeMotor']['qty'][$key]:false;
 								?>
 								<tr>
 									<td>
 										<?php
-												echo $this->Form->input('TransactionDetail.'.$key.'.voucher_number', array(
-													'type' => 'text',
+												echo $this->Form->input('TtujTipeMotor.tipe_motor_id.'.$key, array(
 													'class' => 'form-control',
-													'label' => false
+													'label' => false,
+													'empty' => __('Pilih Tipe Motor --'),
+													'options' => $tipeMotors,
+													'value' => $tipe_motor_id,
+													'required' => false,
 												));
 										?>
 									</td>
 									<td>
 										<?php
-												echo $this->Form->input('TransactionDetail.'.$key.'.kiosk_id', array(
-													'class' => 'form-control chosen-select',
+												echo $this->Form->input('TtujTipeMotor.qty.'.$key, array(
+													'class' => 'form-control',
 													'label' => false,
 													'required' => false,
 													'div' => false,
-													'options' => $kiosks,
-													'empty' => __('Pilih Blok & Nomor'),
-												));
-										?>
-									</th>
-									<td>
-										<?php
-												echo $this->Form->input('TransactionDetail.'.$key.'.note', array(
-													'type' => 'text',
-													'class' => 'form-control',
-													'label' => false
-												));
-										?>
-									</th>
-									<td>
-										<?php
-												echo $this->Form->input('TransactionDetail.'.$key.'.amount', array(
-													'value' => $this->Number->currency(str_replace(',', '', $detail['amount']), '', array('places' => 0)),
-													'type' => 'text',
-													'class' => 'form-control input_price',
-													'label' => false
+													'value' => $qty,
 												));
 										?>
 									</th>
@@ -393,7 +378,7 @@
 										<?php
 												echo $this->Html->link('<i class="fa fa-times"></i> '.__('Hapus'), 'javascript:', array(
 													'class' => 'delete-custom-field btn btn-danger btn-xs',
-													'action_type' => 'transaction',
+													'action_type' => 'ttuj',
 													'escape' => false
 												));
 										?>
@@ -411,21 +396,10 @@
 													'class'=>'form-control',
 													'required' => false,
 													'empty' => __('Pilih Tipe Motor --'),
-													'options' => array()
+													'options' => $tipeMotors
 												));
 										?>
 									</td>
-									<td>
-										<?php 
-												echo $this->Form->input('TtujTipeMotor.color_motor_id.0',array(
-													'label'=> false, 
-													'class'=>'form-control',
-													'required' => false,
-													'type' => 'text',
-													'disabled' => true
-												));
-										?>
-									</th>
 									<td>
 										<?php 
 												echo $this->Form->input('TtujTipeMotor.qty.0',array(
@@ -433,7 +407,15 @@
 													'class'=>'form-control',
 													'required' => false,
 													'type' => 'text',
-													'disabled' => true
+												));
+										?>
+									</th>
+									<td>
+										<?php
+												echo $this->Html->link('<i class="fa fa-times"></i> '.__('Hapus'), 'javascript:', array(
+													'class' => 'delete-custom-field btn btn-danger btn-xs',
+													'action_type' => 'ttuj',
+													'escape' => false
 												));
 										?>
 									</th>
@@ -446,160 +428,47 @@
 				    </div>
 				</div>
 			</div>
+			<?php 
+					if( !empty($perlengkapans) ) {
+			?>
 			<div class="col-sm-6">
 				<div class="box box-primary">
 				    <div class="box-header">
 				        <h3 class="box-title"><?php echo __('Perlengkapan');?></h3>
 				    </div>
 				    <div class="box-body">
-				    	<div class="form-group">
-				    		<?php 
-				    				echo $this->Form->label('uang_jalan_1', __('Uang Jalan Pertama'));
-				    		?>
-				            <div class="input-group">
-						    	<?php 
-						    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-						    				'class' => 'input-group-addon'
-					    				));
-										echo $this->Form->input('uang_jalan_1',array(
-											'label'=> false, 
-											'class'=>'form-control uang_jalan_1',
-											'required' => false,
-											'type' => 'text',
-											'disabled' => true,
-											'value' => !empty($uangJalan['UangJalan']['uang_jalan_1'])?number_format($uangJalan['UangJalan']['uang_jalan_1'], 0):false,
-										));
-								?>
-							</div>
-						</div>
-				    	<div class="form-group">
-				    		<?php 
-				    				echo $this->Form->label('uang_jalan_2', __('Uang Jalan Kedua'));
-				    		?>
-				            <div class="input-group">
-						    	<?php 
-						    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-						    				'class' => 'input-group-addon'
-					    				));
-										echo $this->Form->input('uang_jalan_2',array(
-											'label'=> false, 
-											'class'=>'form-control uang_jalan_2',
-											'required' => false,
-											'type' => 'text',
-											'disabled' => true,
-											'value' => !empty($uangJalan['UangJalan']['uang_jalan_2'])?number_format($uangJalan['UangJalan']['uang_jalan_2'], 0):false,
-										));
-								?>
-							</div>
-						</div>
-				    	<div class="form-group">
-				    		<?php 
-				    				echo $this->Form->label('uang_kuli_muat', __('Uang Kuli Muat'));
-				    		?>
-				            <div class="input-group">
-						    	<?php 
-						    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-						    				'class' => 'input-group-addon'
-					    				));
-										echo $this->Form->input('uang_kuli_muat',array(
-											'label'=> false, 
-											'class'=>'form-control uang_kuli_muat',
-											'required' => false,
-											'empty' => __('Uang Kuli Muat'),
-											'type' => 'text',
-											'disabled' => true,
-											'value' => !empty($uangJalan['UangJalan']['uang_kuli_muat'])?number_format($uangJalan['UangJalan']['uang_kuli_muat'], 0):false,
-										));
-								?>
-							</div>
-						</div>
-				    	<div class="form-group">
-				    		<?php 
-				    				echo $this->Form->label('uang_kuli_bongkar', __('Uang Kuli Bongkar'));
-				    		?>
-				            <div class="input-group">
-						    	<?php 
-						    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-						    				'class' => 'input-group-addon'
-					    				));
-										echo $this->Form->input('uang_kuli_bongkar',array(
-											'label'=> false, 
-											'class'=>'form-control uang_kuli_bongkar',
-											'required' => false,
-											'empty' => __('Uang Kuli Bongkar'),
-											'type' => 'text',
-											'disabled' => true,
-											'value' => !empty($uangJalan['UangJalan']['uang_kuli_bongkar'])?number_format($uangJalan['UangJalan']['uang_kuli_bongkar'], 0):false,
-										));
-								?>
-							</div>
-						</div>
-				    	<div class="form-group">
-				    		<?php 
-				    				echo $this->Form->label('asdp', __('Uang Penyebrangan'));
-				    		?>
-				            <div class="input-group">
-						    	<?php 
-						    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-						    				'class' => 'input-group-addon'
-					    				));
-										echo $this->Form->input('asdp',array(
-											'label'=> false, 
-											'class'=>'form-control asdp',
-											'required' => false,
-											'empty' => __('Uang Penyebrangan'),
-											'type' => 'text',
-											'disabled' => true,
-											'value' => !empty($uangJalan['UangJalan']['asdp'])?number_format($uangJalan['UangJalan']['asdp'], 0):false,
-										));
-								?>
-							</div>
-						</div>
-				    	<div class="form-group">
-				    		<?php 
-				    				echo $this->Form->label('uang_kawal', __('Uang Kawal'));
-				    		?>
-				            <div class="input-group">
-						    	<?php 
-						    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-						    				'class' => 'input-group-addon'
-					    				));
-										echo $this->Form->input('uang_kawal',array(
-											'label'=> false, 
-											'class'=>'form-control uang_kawal',
-											'required' => false,
-											'empty' => __('Uang Kawal'),
-											'type' => 'text',
-											'disabled' => true,
-											'value' => !empty($uangJalan['UangJalan']['uang_kawal'])?number_format($uangJalan['UangJalan']['uang_kawal'], 0):false,
-										));
-								?>
-							</div>
-						</div>
-				    	<div class="form-group">
-				    		<?php 
-				    				echo $this->Form->label('uang_keamanan', __('Uang Keamanan'));
-				    		?>
-				            <div class="input-group">
-						    	<?php 
-						    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-						    				'class' => 'input-group-addon'
-					    				));
-										echo $this->Form->input('uang_keamanan',array(
-											'label'=> false, 
-											'class'=>'form-control uang_keamanan',
-											'required' => false,
-											'empty' => __('Uang Keamanan'),
-											'type' => 'text',
-											'disabled' => true,
-											'value' => !empty($uangJalan['UangJalan']['uang_keamanan'])?number_format($uangJalan['UangJalan']['uang_keamanan'], 0):false,
-										));
-								?>
-							</div>
-						</div>
+				        <div class="row" id="ttuj-perlengkapan">
+				        	<?php 
+				        			$i = 0;
+				        			foreach ($perlengkapans as $perlengkapanid => $perlengkapan) {
+				        	?>
+				        	<div class="col-sm-6">
+				        		<div class="form-group has-feedback">
+				                    <?php 
+											echo $this->Form->input('TtujPerlengkapan.qty.'.$i,array(
+												'label'=> false, 
+												'required' => false,
+												'class' => 'form-control',
+												'value' => !empty($this->request->data['TtujPerlengkapan'][$perlengkapanid])?$this->request->data['TtujPerlengkapan'][$perlengkapanid]:false,
+											));
+											echo $this->Form->hidden('TtujPerlengkapan.id.'.$i,array(
+												'value' => $perlengkapanid,
+											));
+									?>
+									<span class="form-control-feedback"><?php echo $perlengkapan; ?></span>
+						        </div>
+				        	</div>
+				        	<?php 
+				        				$i++;
+				        			}
+				        	?>
+				        </div>
 				    </div>
 				</div>
 			</div>
+			<?php 
+					}
+			?>
 		</div>
 		<div class="box-footer text-center action">
 			<?php
@@ -607,9 +476,9 @@
 						'class'=> 'btn btn-default',
 						'id' => 'backTTUJ'
 					));
-		    		echo $this->Html->link(__('Next'), '#step2', array(
+		    		echo $this->Form->button(__('Simpan'), array(
 						'class'=> 'btn btn-success',
-						'id' => 'nextTTUJ'
+						'type' => 'submit'
 					));
 			?>
 		</div>
@@ -618,3 +487,16 @@
 <?php
 		echo $this->Form->end();
 ?>
+<div class="hide">
+	<div id="tipe_motor_id">
+		<?php 
+				echo $this->Form->input('tipe_motor_id',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Tipe Motor --'),
+					'options' => $tipeMotors
+				));
+		?>
+	</div>
+</div>

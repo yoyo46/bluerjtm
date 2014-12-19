@@ -3634,3 +3634,7 @@ fieldset[disabled] .btn-vk.active {
   margin-left: 0;
   margin-right: 5px;
 }
+
+.has-danger {
+    color: #a94442;
+}
