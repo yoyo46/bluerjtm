@@ -67,8 +67,10 @@ $(function() {
 
         if( self.is(':checked') ) {
             $('#UangJalanForm .per-unit').removeClass('hide');
+            $('.uang_jalan_2').addClass('hide');
         } else {
             $('#UangJalanForm .per-unit').addClass('hide');
+            $('.uang_jalan_2').removeClass('hide');
         }
     });
 
@@ -149,6 +151,15 @@ $(function() {
                     $('.asdp').val($(response).filter('#asdp').html());
                     $('.uang_kawal').val($(response).filter('#uang_kawal').html());
                     $('.uang_keamanan').val($(response).filter('#uang_keamanan').html());
+                    $('.uang_jalan_extra').val($(response).filter('#uang_jalan_extra').html());
+                    $('.min_capacity').val($(response).filter('#min_capacity').html());
+                    $('.is_unit').val($(response).filter('#is_unit').html());
+
+                    if( $(response).filter('#is_unit').html() == 1 ) {
+                        $('.wrapper_uang_jalan_2').addClass('hide');
+                    } else {
+                        $('.wrapper_uang_jalan_2').removeClass('hide');
+                    }
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
@@ -226,4 +237,22 @@ $(function() {
         });
     }
     delete_custom_field();
+
+    if( $('.timepicker').length > 0 ) {
+        $('.timepicker').timepicker({
+            showMeridian: false
+        });
+    }
+
+    $('.submit-form').click(function() {
+        var action_type = $(this).attr('action_type');
+
+        if( action_type == 'commit' ) {
+            if( confirm('Anda yakin ingin mengunci data ini?') ) {
+                $('#is_draft').val(0);
+            } else {
+                return false;
+            }
+        }
+    });
 });

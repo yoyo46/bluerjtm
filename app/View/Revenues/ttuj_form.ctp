@@ -17,6 +17,7 @@
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
+    		'autocomplete'=> 'off', 
 		));
 ?>
 <div class="ttuj-form">
@@ -126,6 +127,46 @@
 				        </div>
 				        <div class="form-group">
 				        	<?php 
+									echo $this->Form->label('tgljam_berangkat', __('Tgl & Jam Berangkat'));
+							?>
+				        	<div class="row">
+				        		<div class="col-sm-8">
+				        			<?php 
+											echo $this->Form->input('tgl_berangkat',array(
+												'label'=> false, 
+												'class'=>'form-control custom-date',
+												'required' => false,
+												'type' => 'text'
+											));
+									?>
+				        		</div>
+				        		<div class="col-sm-4">
+				        			<div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-clock-o"></i>
+                                        </div>
+					        			<?php 
+												echo $this->Form->input('jam_berangkat',array(
+													'label'=> false, 
+													'class'=>'form-control pull-right timepicker',
+													'required' => false,
+													'type' => 'text'
+												));
+										?>
+                                    </div>
+				        		</div>
+				        	</div>
+				        	<?php 
+									echo $this->Form->error('tgljam_berangkat', array(
+										'notempty' => __('Tgl & Jam Berangkat harap dipilih'),
+									), array(
+										'wrap' => 'div', 
+										'class' => 'error-message',
+									));
+				        	?>
+				        </div>
+				        <div class="form-group">
+				        	<?php 
 									echo $this->Form->input('truck_capacity',array(
 										'label'=> __('Kapasitas Truk'), 
 										'class'=>'form-control truck_capacity',
@@ -174,7 +215,7 @@
 					    				));
 										echo $this->Form->input('uang_jalan_1',array(
 											'label'=> false, 
-											'class'=>'form-control uang_jalan_1',
+											'class'=>'form-control uang_jalan_1 input_price',
 											'required' => false,
 											'type' => 'text',
 											'readonly' => true,
@@ -182,7 +223,7 @@
 								?>
 							</div>
 						</div>
-				    	<div class="form-group">
+				    	<div class="form-group wrapper_uang_jalan_2 <?php echo (isset($this->request->data['Ttuj']['uang_jalan_2']) && !$this->request->data['Ttuj']['uang_jalan_2'])?'hide':''; ?>">
 				    		<?php 
 				    				echo $this->Form->label('uang_jalan_2', __('Uang Jalan Kedua'));
 				    		?>
@@ -193,7 +234,7 @@
 					    				));
 										echo $this->Form->input('uang_jalan_2',array(
 											'label'=> false, 
-											'class'=>'form-control uang_jalan_2',
+											'class'=>'form-control uang_jalan_2 input_price',
 											'required' => false,
 											'type' => 'text',
 											'readonly' => true,
@@ -212,7 +253,7 @@
 					    				));
 										echo $this->Form->input('uang_kuli_muat',array(
 											'label'=> false, 
-											'class'=>'form-control uang_kuli_muat',
+											'class'=>'form-control uang_kuli_muat input_price',
 											'required' => false,
 											'empty' => __('Uang Kuli Muat'),
 											'type' => 'text',
@@ -232,7 +273,7 @@
 					    				));
 										echo $this->Form->input('uang_kuli_bongkar',array(
 											'label'=> false, 
-											'class'=>'form-control uang_kuli_bongkar',
+											'class'=>'form-control uang_kuli_bongkar input_price',
 											'required' => false,
 											'empty' => __('Uang Kuli Bongkar'),
 											'type' => 'text',
@@ -252,7 +293,7 @@
 					    				));
 										echo $this->Form->input('asdp',array(
 											'label'=> false, 
-											'class'=>'form-control asdp',
+											'class'=>'form-control asdp input_price',
 											'required' => false,
 											'empty' => __('Uang Penyebrangan'),
 											'type' => 'text',
@@ -272,7 +313,7 @@
 					    				));
 										echo $this->Form->input('uang_kawal',array(
 											'label'=> false, 
-											'class'=>'form-control uang_kawal',
+											'class'=>'form-control uang_kawal input_price',
 											'required' => false,
 											'empty' => __('Uang Kawal'),
 											'type' => 'text',
@@ -292,9 +333,46 @@
 					    				));
 										echo $this->Form->input('uang_keamanan',array(
 											'label'=> false, 
-											'class'=>'form-control uang_keamanan',
+											'class'=>'form-control uang_keamanan input_price',
 											'required' => false,
 											'empty' => __('Uang Keamanan'),
+											'type' => 'text',
+											'readonly' => true,
+										));
+								?>
+							</div>
+						</div>
+				    	<div class="form-group">
+				    		<?php 
+				    				echo $this->Form->label('uang_jalan_extra', __('Uang Jalan Extra *'));
+				    		?>
+		                    <div class="input-group">
+						    	<?php 
+						    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+						    				'class' => 'input-group-addon'
+					    				));
+										echo $this->Form->input('uang_jalan_extra',array(
+											'label'=> false, 
+											'class'=>'form-control input_price uang_jalan_extra',
+											'required' => false,
+											'empty' => __('Uang Jalan Extra'),
+											'type' => 'text',
+											'readonly' => true,
+										));
+								?>
+							</div>
+						</div>
+				    	<div class="form-group">
+				    		<?php 
+				    				echo $this->Form->label('min_capacity', __('Minimum Kapasitas *'));
+				    		?>
+		                    <div class="input-group">
+						    	<?php 
+										echo $this->Form->input('min_capacity',array(
+											'label'=> false, 
+											'class'=>'form-control min_capacity',
+											'required' => false,
+											'empty' => __('Minimum Kapasitas'),
 											'type' => 'text',
 											'readonly' => true,
 										));
@@ -308,7 +386,7 @@
 		<div class="box-footer text-center action">
 			<?php
 		    		echo $this->Html->link(__('Kembali'), array(
-						'action' => 'index', 
+						'action' => 'ttuj', 
 					), array(
 						'class'=> 'btn btn-default',
 					));
@@ -476,9 +554,26 @@
 						'class'=> 'btn btn-default',
 						'id' => 'backTTUJ'
 					));
-		    		echo $this->Form->button(__('Simpan'), array(
-						'class'=> 'btn btn-success',
-						'type' => 'submit'
+
+					if( !empty($data_local['Ttuj']['is_draft']) || empty($data_local) ) {
+			    		echo $this->Form->button(__('Commit'), array(
+							'class'=> 'btn btn-success submit-form btn-lg',
+							'type' => 'submit',
+							'action_type' => 'commit'
+						));
+			    		echo $this->Form->button(__('Draft'), array(
+							'class'=> 'btn btn-primary submit-form',
+							'type' => 'submit',
+							'action_type' => 'draft'
+						));
+			    		echo $this->Form->hidden('is_draft', array(
+							'value'=> 1,
+							'id' => 'is_draft'
+						));
+			    	}
+		    		echo $this->Form->hidden('is_unit', array(
+						'value'=> 1,
+						'class' => 'is_unit'
 					));
 			?>
 		</div>

@@ -94,7 +94,7 @@
 									'empty' => __('Lead Time'),
 									'type' => 'text',
 								));
-				    			echo $this->Html->tag('span', __('Hari'), array(
+				    			echo $this->Html->tag('span', __('Jam'), array(
 				    				'class' => 'input-group-addon'
 			    				));
 						?>
@@ -113,12 +113,25 @@
 									'empty' => __('Lead Time'),
 									'type' => 'text',
 								));
-				    			echo $this->Html->tag('span', __('Hari'), array(
+				    			echo $this->Html->tag('span', __('Jam'), array(
 				    				'class' => 'input-group-addon'
 			    				));
 						?>
 					</div>
 				</div>
+                <div class="form-group" id="UangJalanPerUnit">
+                    <label>
+                    	<?php 
+                    			echo $this->Form->input('is_unit',array(
+									'label'=> false, 
+									'required' => false,
+									'type' => 'checkbox',
+									'value' => 1
+								));
+								echo __('Per Unit ?');
+						?>
+                    </label>
+                </div>
 		    </div>
 		</div>
 	</div>
@@ -166,7 +179,7 @@
 						?>
 					</div>
 				</div>
-		    	<div class="form-group">
+		    	<div class="form-group uang_jalan_2 <?php echo !empty($this->request->data['UangJalan']['is_unit'])?'hide':''; ?>">
 		    		<?php 
 		    				echo $this->Form->label('uang_jalan_2', __('Uang Jalan Kedua *'));
 		    		?>
@@ -280,19 +293,6 @@
 						?>
 					</div>
 				</div>
-                <div class="form-group" id="UangJalanPerUnit">
-                    <label>
-                    	<?php 
-                    			echo $this->Form->input('is_unit',array(
-									'label'=> false, 
-									'required' => false,
-									'type' => 'checkbox',
-									'value' => 1
-								));
-								echo __('Per Unit ?');
-						?>
-                    </label>
-                </div>
                 <div class="per-unit <?php echo !empty($this->request->data['UangJalan']['is_unit'])?'':'hide'; ?>">
 			    	<div class="form-group">
 			    		<?php 

@@ -21,6 +21,7 @@
 			'datepicker/datepicker3',
 			'daterangepicker/daterangepicker-bs3',
 			'bootstrap-wysihtml5/bootstrap3-wysihtml5.min',
+			'jquery',
 			'style',
 			'customs',
 		)).PHP_EOL;
@@ -101,6 +102,12 @@
 				'functions/demo',
 				'jquery.library',
 			)).PHP_EOL;
+
+			if(isset($layout_js) && !empty($layout_js)){
+				foreach ($layout_js as $key => $value) {
+					echo $this->Html->script($value).PHP_EOL;
+				}
+			}
 
 			echo $this->element('sql_dump');
 	?>

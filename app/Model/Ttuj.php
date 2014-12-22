@@ -48,6 +48,12 @@ class Ttuj extends AppModel {
                 'message' => 'Truk harap dipilih'
             ),
         ),
+        'tgljam_berangkat' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl & Jam Berangkat harap dipilih'
+            ),
+        ),
 	);
 
     var $belongsTo = array(

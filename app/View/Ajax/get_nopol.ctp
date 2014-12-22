@@ -40,4 +40,16 @@
 		echo $this->Html->tag('div', number_format($uangJalan['UangJalan']['uang_keamanan'], 0), array(
 			'id' => 'uang_keamanan',
 		));
+
+		echo $this->Html->tag('div', number_format($uangJalan['UangJalan']['uang_jalan_extra'], 0), array(
+			'id' => 'uang_jalan_extra',
+		));
+
+		echo $this->Html->tag('div', $uangJalan['UangJalan']['min_capacity'], array(
+			'id' => 'min_capacity',
+		));
+
+		echo $this->Html->tag('div', number_format($uangJalan['UangJalan']['is_unit'], 0), array(
+			'id' => 'is_unit',
+		));
 ?>

@@ -156,8 +156,9 @@ class RevenuesController extends AppController {
         $this->loadModel('Perlengkapan');
         $this->loadModel('Truck');
         $step = false;
+        $is_draft = isset($data_local['Ttuj']['is_draft'])?$data_local['Ttuj']['is_draft']:true;
 
-        if(!empty($this->request->data)){
+        if( !empty($this->request->data) && $is_draft ){
             $data = $this->request->data;
             if($id && $data_local){
                 $this->Ttuj->id = $id;
@@ -197,7 +198,26 @@ class RevenuesController extends AppController {
             $data['Ttuj']['nopol'] = !empty($truck['Truck']['nopol'])?$truck['Truck']['nopol']:false;
             $data['Ttuj']['ttuj_date'] = !empty($data['Ttuj']['ttuj_date'])?date('Y-m-d', strtotime($data['Ttuj']['ttuj_date'])):false;
             $data['Ttuj']['driver_penganti_id'] = !empty($data['Ttuj']['driver_penganti_id'])?$data['Ttuj']['driver_penganti_id']:0;
-            
+            $data['Ttuj']['uang_jalan_1'] = !empty($data['Ttuj']['uang_jalan_1'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_jalan_1']):0;
+            $data['Ttuj']['uang_jalan_2'] = !empty($data['Ttuj']['uang_jalan_2'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_jalan_2']):0;
+            $data['Ttuj']['uang_kuli_muat'] = !empty($data['Ttuj']['uang_kuli_muat'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_kuli_muat']):0;
+            $data['Ttuj']['uang_kuli_bongkar'] = !empty($data['Ttuj']['uang_kuli_bongkar'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_kuli_bongkar']):0;
+            $data['Ttuj']['asdp'] = !empty($data['Ttuj']['asdp'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['asdp']):0;
+            $data['Ttuj']['uang_kawal'] = !empty($data['Ttuj']['uang_kawal'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_kawal']):0;
+            $data['Ttuj']['uang_keamanan'] = !empty($data['Ttuj']['uang_keamanan'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_keamanan']):0;
+            $data['Ttuj']['uang_jalan_extra'] = !empty($data['Ttuj']['uang_jalan_extra'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_jalan_extra']):0;
+            $data['Ttuj']['min_capacity'] = !empty($data['Ttuj']['min_capacity'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['min_capacity']):0;
+            $data['Ttuj']['tgljam_berangkat'] = '';
+
+            if( !empty($data['Ttuj']['tgl_berangkat']) ) {
+                $data['Ttuj']['tgl_berangkat'] = date('Y-m-d', strtotime($data['Ttuj']['tgl_berangkat']));
+
+                if( !empty($data['Ttuj']['jam_berangkat']) ) {
+                    $data['Ttuj']['jam_berangkat'] = date('H:i', strtotime($data['Ttuj']['jam_berangkat']));
+                    $data['Ttuj']['tgljam_berangkat'] = sprintf('%s %s', $data['Ttuj']['tgl_berangkat'], $data['Ttuj']['jam_berangkat']);
+                }
+            }
+
             $this->Ttuj->set($data);
 
             if($this->Ttuj->validates($data)){
@@ -295,7 +315,9 @@ class RevenuesController extends AppController {
                     }
                 }
 
-                $this->request->data['TtujPerlengkapan'] = $tempPerlengkapan['TtujPerlengkapan'];
+                if( !empty($tempPerlengkapan['TtujPerlengkapan']) ) {
+                    $this->request->data['TtujPerlengkapan'] = $tempPerlengkapan['TtujPerlengkapan'];
+                }
             }
         }else{
             if($id && $data_local){
@@ -320,6 +342,11 @@ class RevenuesController extends AppController {
 
                     unset($data_local['TtujPerlengkapan']);
                     $data_local['TtujPerlengkapan'] = $tempPerlengkapan['TtujPerlengkapan'];
+                }
+
+                if( !empty($data_local['Ttuj']['tgljam_berangkat']) ) {
+                    $data_local['Ttuj']['tgl_berangkat'] = date('m/d/Y', strtotime($data_local['Ttuj']['tgljam_berangkat']));
+                    $data_local['Ttuj']['jam_berangkat'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_berangkat']));
                 }
                 $this->request->data = $data_local;
             }
@@ -379,12 +406,22 @@ class RevenuesController extends AppController {
             }
         }
 
+        $layout_js = array(
+            'moment',
+            'bootstrap-datetimepicker',
+            'ru',
+        );
+        $layout_css = array(
+            'bootstrap-datetimepicker.min',
+        );
+
         $this->set('active_menu', 'ttuj');
         $this->set(compact(
             'trucks', 'customers', 'driverPengantis',
             'fromCities', 'toCities', 'uangJalan',
             'tipeMotors', 'perlengkapans', 'step',
-            'truckInfo'
+            'truckInfo', 'layout_js', 'layout_css',
+            'data_local'
         ));
         $this->render('ttuj_form');
     }

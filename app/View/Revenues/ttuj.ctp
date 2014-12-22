@@ -70,9 +70,9 @@
                 <td>
                     <?php 
                             if(!empty($value['Ttuj']['is_draft'])){
-                                echo '<span class="label label-success">Draft</span>'; 
+                                echo '<span class="label label-primary">Draft</span>'; 
                             }else{
-                                echo '<span class="label label-danger">Commit</span>';  
+                                echo '<span class="label label-success">Commit</span>';  
                             }
                     ?>
                 </td>
