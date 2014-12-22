@@ -41,6 +41,32 @@
 				));
 			?>
         </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('code_motor_id',__('Kode Motor *')); 
+
+				echo $this->Form->input('code_motor_id',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Kode Motor'),
+					'options' => $code_motors
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('group_motor_id',__('Grup Motor*')); 
+
+				echo $this->Form->input('group_motor_id',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Grup Motor'),
+					'options' => $group_motors
+				));
+			?>
+        </div>
     </div>
 
     <div class="box-footer text-center action">

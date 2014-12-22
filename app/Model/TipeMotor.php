@@ -13,7 +13,19 @@ class TipeMotor extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Warna motor harap diisi'
             ),
-        )
+        ),
+        'code_motor_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Kode motor harap diisi'
+            ),
+        ),
+        'group_motor_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Grup motor harap diisi'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(

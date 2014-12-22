@@ -1040,6 +1040,9 @@ class SettingsController extends AppController {
         }
 
         $this->loadModel('ColorMotor');
+        $this->loadModel('CodeMotor');
+        $this->loadModel('GroupMotor');
+
         $colors = $this->ColorMotor->getData('list', array(
             'conditions' => array(
                 'ColorMotor.status' => 1
@@ -1049,6 +1052,28 @@ class SettingsController extends AppController {
             )
         ));
         $this->set('colors', $colors);
+
+        $group_motors = $this->GroupMotor->getData('list', array(
+            'conditions' => array(
+                'GroupMotor.status' => 1
+            ),
+            'fields' => array(
+                'GroupMotor.id', 'GroupMotor.name'
+            )
+        ));
+        $this->set('group_motors', $group_motors);
+
+        $code_motors = $this->CodeMotor->getData('list', array(
+            'conditions' => array(
+                'CodeMotor.status' => 1
+            ),
+            'fields' => array(
+                'CodeMotor.id', 'CodeMotor.name'
+            )
+        ));
+        $this->set('code_motors', $code_motors);
+
+
         $this->set('active_menu', 'type_motor');
         $this->render('type_motor_form');
     }
@@ -1306,6 +1331,240 @@ class SettingsController extends AppController {
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Provinsi tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
+
+    function group_motors(){
+        $this->loadModel('GroupMotor');
+        $options = array(
+            'conditions' => array(
+                'status' => 1
+            )
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['GroupMotor']['name'] = $name;
+                $options['conditions']['GroupMotor.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+        $this->paginate = $this->GroupMotor->getData('paginate', $options);
+        $group_motors = $this->paginate('GroupMotor');
+
+        $this->set('active_menu', 'type_motor');
+        $this->set('sub_module_title', 'Grup Motor');
+        $this->set('group_motors', $group_motors);
+    }
+
+    function group_motor_add(){
+        $this->set('sub_module_title', 'Tambah Grup Motor');
+        $this->doGroupMotor();
+    }
+
+    function group_motor_edit($id){
+        $this->loadModel('GroupMotor');
+        $this->set('sub_module_title', 'Rubah Grup Motor');
+        $GroupMotor = $this->GroupMotor->find('first', array(
+            'conditions' => array(
+                'GroupMotor.id' => $id
+            )
+        ));
+
+        if(!empty($GroupMotor)){
+            $this->doGroupMotor($id, $GroupMotor);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Grup Motor tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'group_motors'
+            ));
+        }
+    }
+
+    function doGroupMotor($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->GroupMotor->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('GroupMotor');
+                $this->GroupMotor->create();
+                $msg = 'menambah';
+            }
+            $this->GroupMotor->set($data);
+
+            if($this->GroupMotor->validates($data)){
+                if($this->GroupMotor->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Grup Motor'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'group_motors'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Grup Motor'), $msg), 'error');  
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Grup Motor'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->set('active_menu', 'type_motor');
+        $this->render('group_motor_form');
+    }
+
+    function group_motor_toggle($id){
+        $this->loadModel('GroupMotor');
+        $locale = $this->GroupMotor->getData('first', array(
+            'conditions' => array(
+                'GroupMotor.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['GroupMotor']['status']){
+                $value = false;
+            }
+
+            $this->GroupMotor->id = $id;
+            $this->GroupMotor->set('status', $value);
+            if($this->GroupMotor->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Grup Motor tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
+
+    function code_motors(){
+        $this->loadModel('CodeMotor');
+        $options = array(
+            'conditions' => array(
+                'status' => 1
+            )
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['CodeMotor']['name'] = $name;
+                $options['conditions']['CodeMotor.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+        $this->paginate = $this->CodeMotor->getData('paginate', $options);
+        $code_motors = $this->paginate('CodeMotor');
+
+        $this->set('active_menu', 'code_motor');
+        $this->set('sub_module_title', 'Kode Motor');
+        $this->set('code_motors', $code_motors);
+    }
+
+    function code_motor_add(){
+        $this->set('sub_module_title', 'Tambah Kode Motor');
+        $this->doCodeMotor();
+    }
+
+    function code_motor_edit($id){
+        $this->loadModel('CodeMotor');
+        $this->set('sub_module_title', 'Rubah Kode Motor');
+        $CodeMotor = $this->CodeMotor->find('first', array(
+            'conditions' => array(
+                'CodeMotor.id' => $id
+            )
+        ));
+
+        if(!empty($CodeMotor)){
+            $this->doCodeMotor($id, $CodeMotor);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Kode Motor tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'code_motors'
+            ));
+        }
+    }
+
+    function doCodeMotor($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->CodeMotor->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('CodeMotor');
+                $this->CodeMotor->create();
+                $msg = 'menambah';
+            }
+            $this->CodeMotor->set($data);
+
+            if($this->CodeMotor->validates($data)){
+                if($this->CodeMotor->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Kode Motor'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'code_motors'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Kode Motor'), $msg), 'error');  
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Kode Motor'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->set('active_menu', 'code_motor');
+        $this->render('code_motor_form');
+    }
+
+    function code_motor_toggle($id){
+        $this->loadModel('CodeMotor');
+        $locale = $this->CodeMotor->getData('first', array(
+            'conditions' => array(
+                'CodeMotor.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['CodeMotor']['status']){
+                $value = false;
+            }
+
+            $this->CodeMotor->id = $id;
+            $this->CodeMotor->set('status', $value);
+            if($this->CodeMotor->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Kode Motor tidak ditemukan.'), 'error');
         }
 
         $this->redirect($this->referer());
