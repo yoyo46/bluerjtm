@@ -19,6 +19,18 @@ class Vendor extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Nomor telepon harap diisi'
             ),
+        ),
+        'pic' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Nama PIC harap diisi'
+            ),
+        ),
+        'pic_phone' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Nomor telepon PIC harap diisi'
+            ),
         )
 	);
 

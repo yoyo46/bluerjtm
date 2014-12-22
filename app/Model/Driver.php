@@ -1,6 +1,25 @@
 <?php
 class Driver extends AppModel {
 	var $name = 'Driver';
+
+    var $actsAs = array(
+        'MeioUpload.MeioUpload' => array(
+            'photo' => array( 
+                'dir' => 'images/drivers', 
+                'create_directory' => true, 
+                'allowed_mime' => array('image/jpeg', 'image/pjpeg', 'image/gif', 'image/png'), 
+                'allowed_ext' => array('.jpg', '.jpeg', '.png', '.gif'), 
+                'maxSize' => 5242880, // 5 mb
+                'thumbsizes' => array(
+                    'small' => array(
+                        'width' => 85,
+                        'height' => 113
+                    ),
+                )
+            ),
+        )
+    );
+
 	var $validate = array(
         'name' => array(
             'notempty' => array(
@@ -38,6 +57,14 @@ class Driver extends AppModel {
                 'message' => 'Tgl Berakhir SIM harap diisi'
             ),
         ),
+        'photo' => array(
+            'MeioUpload' => array(
+                'Empty' => array(
+                    'rule' => array('Empty'),
+                    'message' => 'Foto harap diisi'
+                )
+            ),
+        )
 	);
 
 	var $hasOne = array(

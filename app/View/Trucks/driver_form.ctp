@@ -12,6 +12,7 @@
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
+			'type' => 'file'
 		));
 ?>
 <div class="row">
@@ -21,6 +22,28 @@
 		        <h3 class="box-title"><?php echo __('Informasi Supir'); ?></h3>
 		    </div>
 		    <div class="box-body">
+		    	<?php
+		    		if(!empty($this->request->data['Driver']['photo'])){
+		    	?>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Common->getImage('drivers', $this->request->data['Driver']['photo'], true, 'small');
+					?>
+		        </div>
+		        <?php
+		    		}
+		    	?>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('photo',array(
+								'type' => 'file',
+								'label'=> __('Foto Supir *'), 
+								'class'=>'form-control',
+								'required' => false,
+								'placeholder' => __('Foto Supir')
+							));
+					?>
+		        </div>
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('name',array(

@@ -2,6 +2,44 @@
 class CommonHelper extends AppHelper {
 	var $helpers = array('Html', 'Number');
 
+    function getImage($path_model, $name, $thumb = true, $size = false, $options = array()) {
+
+        $cek_url = false;
+
+        if(!empty($name)){
+            if($thumb){
+                if($size){
+                    $cek_url = WWW_ROOT.'/images/'.$path_model.'/thumb/'.$size.'/'.$name;
+                    $image = '/images/'.$path_model.'/thumb/'.$size.'/'.$name;
+                }else{
+                    $cek_url = WWW_ROOT.'/images/'.$path_model.'/'.$name;
+                    $image = '/images/'.$path_model.'/thumb/'.$size.'/'.$name;
+                }
+            }else{
+                $cek_url = WWW_ROOT.'/images/'.$path_model.'/'.$name;
+                $image = '/images/'.$path_model.'/'.$name;
+            }           
+        }
+
+        $result = '';
+        if(file_exists($cek_url) && $cek_url){
+            $result = $image;
+        }else{
+            if($thumb && $size && $size != 'logo'){
+                $result = '/images/error/thumb/'.$size.'/error.png';    
+            }else{
+                if($size != 'logo'){
+                    $result = '/images/error/error.png';    
+                }else{
+                    $result = '/images/error/thumb/small/error.png';    
+                }
+                
+            }
+        }
+        
+        return $this->Html->image($result, $options);
+    }
+
 	function customDate($dateString, $format = 'd F Y') {
 		return date($format, strtotime($dateString));
 	}

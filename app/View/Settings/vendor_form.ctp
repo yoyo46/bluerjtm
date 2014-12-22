@@ -42,6 +42,22 @@
 				)), array(
 					'class' => 'form-group'
 				));
+				echo $this->Html->tag('div', $this->Form->input('pic',array(
+					'label'=> __('Nama PIC *'), 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Nama PIC')
+				)), array(
+					'class' => 'form-group'
+				));
+				echo $this->Html->tag('div', $this->Form->input('pic_phone',array(
+					'label'=> __('Telepon PIC *'), 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('phone')
+				)), array(
+					'class' => 'form-group'
+				));
 		?>
     </div>
 
