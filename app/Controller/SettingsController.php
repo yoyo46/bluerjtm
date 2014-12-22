@@ -43,6 +43,13 @@ class SettingsController extends AppController {
         $this->paginate = $this->City->getData('paginate', $options);
         $cities = $this->paginate('City');
 
+        if(!empty($cities)){
+            $this->loadModel('Region');
+            foreach ($cities as $key => $city) {
+                $cities[$key] = $this->Region->getMerge($city, $city['City']['region_id']);
+            }
+        }
+
         $this->set('active_menu', 'cities');
         $this->set('sub_module_title', 'Kota');
         $this->set('cities', $cities);
@@ -107,7 +114,18 @@ class SettingsController extends AppController {
             }
         }
 
+        $this->loadModel('Region');
+        $regions = $this->Region->find('list', array(
+            'conditions' => array(
+                'Region.status' => 1
+            ),
+            'fields' => array(
+                'Region.id', 'Region.name'
+            )
+        ));
+
         $this->set('active_menu', 'cities');
+        $this->set('regions', $regions);
         $this->render('city_form');
     }
 
@@ -1175,6 +1193,119 @@ class SettingsController extends AppController {
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Warna Motor tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
+
+    function regions(){
+        $this->loadModel('Region');
+        $options = array();
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['Region']['name'] = $name;
+                $options['conditions']['Region.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+        $this->paginate = $this->Region->getData('paginate', $options);
+        $regions = $this->paginate('Region');
+
+        $this->set('active_menu', 'regions');
+        $this->set('sub_module_title', 'Provinsi');
+        $this->set('regions', $regions);
+    }
+
+    function region_add(){
+        $this->set('sub_module_title', 'Tambah Provinsi');
+        $this->doRegion();
+    }
+
+    function region_edit($id){
+        $this->loadModel('Region');
+        $this->set('sub_module_title', 'Rubah Provinsi');
+        $type_property = $this->Region->find('first', array(
+            'conditions' => array(
+                'Region.id' => $id
+            )
+        ));
+
+        if(!empty($type_property)){
+            $this->doRegion($id, $type_property);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Provinsi tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'citys'
+            ));
+        }
+    }
+
+    function doRegion($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->Region->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('Region');
+                $this->Region->create();
+                $msg = 'menambah';
+            }
+            $this->Region->set($data);
+
+            if($this->Region->validates($data)){
+                if($this->Region->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Provinsi'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'regions'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Provinsi'), $msg), 'error');  
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Provinsi'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->set('active_menu', 'regions');
+        $this->render('region_form');
+    }
+
+    function regions_toggle($id){
+        $this->loadModel('Region');
+        $locale = $this->Region->getData('first', array(
+            'conditions' => array(
+                'Region.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['Region']['status']){
+                $value = false;
+            }
+
+            $this->Region->id = $id;
+            $this->Region->set('status', $value);
+            if($this->Region->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Provinsi tidak ditemukan.'), 'error');
         }
 
         $this->redirect($this->referer());

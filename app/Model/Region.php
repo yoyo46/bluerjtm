@@ -1,25 +1,12 @@
 <?php
-class City extends AppModel {
-	var $name = 'City';
+class Region extends AppModel {
+	var $name = 'Region';
 	var $validate = array(
-        'name' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'City name harap diisi'
-            ),
-        ),
-        'region_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Provinsi harap diisi'
-            ),
-        )
-	);
-
-	var $belongsTo = array(
-		'TruckAlocation' => array(
-			'className' => 'TruckAlocation',
-			'foreignKey' => 'city_id',
+		'name' => array(
+			'notempty' => array(
+				'rule' => array('notempty'),
+                'message' => 'Provinsi name harap diisi'
+			),
 		)
 	);
 
@@ -60,7 +47,7 @@ class City extends AppModel {
     }
 
     function getMerge($data, $id){
-        if(empty($data['City'])){
+        if(empty($data['Region'])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
                     'id' => $id
@@ -70,39 +57,6 @@ class City extends AppModel {
             if(!empty($data_merge)){
                 $data = array_merge($data, $data_merge);
             }
-        }
-
-        return $data;
-    }
-
-    function getMergeDirection($data){
-        $result = array();
-        if( !empty($data['Direction']['from_city_id'])){
-            $data_merge_from = $this->find('first', array(
-                'conditions' => array(
-                    'id' => $data['Direction']['from_city_id']
-                )
-            ));
-
-            if(!empty($data_merge_from)){
-                $result['CityFrom'] = $data_merge_from['City'];
-            }
-        }
-
-        if( !empty($data['Direction']['to_city_id'])){
-            $data_merge_to = $this->find('first', array(
-                'conditions' => array(
-                    'id' => $data['Direction']['to_city_id']
-                )
-            ));
-
-            if(!empty($data_merge_to)){
-                $result['CityTo'] = $data_merge_to['City'];
-            }
-        }
-
-        if(!empty($result)){
-            $data = array_merge($data, $result);
         }
 
         return $data;

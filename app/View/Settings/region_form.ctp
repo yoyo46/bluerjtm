@@ -1,6 +1,6 @@
 <?php
-		$this->Html->addCrumb(__('Kota'), array(
-			'action' => 'cities'
+		$this->Html->addCrumb(__('Provinsi'), array(
+			'action' => 'regions'
 		));
 		$this->Html->addCrumb($sub_module_title);
 ?>
@@ -9,7 +9,7 @@
         <h3 class="box-title"><?php echo $sub_module_title?></h3>
     </div>
     <?php 
-		echo $this->Form->create('City', array(
+		echo $this->Form->create('Region', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
@@ -18,26 +18,13 @@
     <div class="box-body">
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('name',__('Nama Kota *')); 
+				echo $this->Form->label('name',__('Nama Provinsi *')); 
 
 				echo $this->Form->input('name',array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('Nama Kota')
-				));
-			?>
-        </div>
-        <div class="form-group">
-        	<?php 
-				echo $this->Form->label('region_id',__('Provinsi *')); 
-
-				echo $this->Form->input('region_id',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'empty' => __('Pilih Provinsi'),
-					'options' => $regions
+					'placeholder' => __('Nama Provinsi')
 				));
 			?>
         </div>
@@ -51,7 +38,7 @@
 					'type' => 'submit',
 				));
 	    		echo $this->Html->link(__('Kembali'), array(
-					'action' => 'cities', 
+					'action' => 'regions', 
 				), array(
 					'class'=> 'btn btn-default',
 				));
