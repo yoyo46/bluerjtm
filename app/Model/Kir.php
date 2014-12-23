@@ -2,6 +2,12 @@
 class Kir extends AppModel {
 	var $name = 'Kir';
 	var $validate = array(
+        'truck_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Truk harap diisi'
+            ),
+        ),
         'tgl_kir' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -18,12 +24,6 @@ class Kir extends AppModel {
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'tanggal KIR selanjutnya harap diisi'
-            ),
-        ),
-        'price_next_estimate' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'biaya KIR lanjutan harap diisi'
             ),
         )
 	);

@@ -1,11 +1,5 @@
 <?php 
-	$this->Html->addCrumb(__('Truk'), array(
-		'controller' => 'trucks',
-		'action' => 'index'
-	));
     $this->Html->addCrumb($sub_module_title);
-
-    echo $this->element('blocks/trucks/info_truck');
 ?>
 <div class="box">
     <div class="box-header">
@@ -14,28 +8,15 @@
                     'class' => 'box-title'
                 ));
         ?>
-        <div class="box-tools">
-            <?php
-                echo $this->Html->link('<i class="fa fa-truck"></i> Perpanjang STNK', array(
-                    'controller' => 'trucks',
-                    'action' => 'stnk_add',
-                    $id
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app pull-right'
-                ));
-            ?>
-            <div class="clear"></div>
-        </div>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>
                 <th>ID</th>
+                <th>Truk</th>
                 <th>Tanggal Bayar</th>
                 <th>Tanggal Berakhir</th>
                 <th>Harga</th>
-                <th>Prakiraan Harga<br> Perpanjang selanjutnya</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -48,10 +29,10 @@
             ?>
             <tr>
                 <td><?php echo $id;?></td>
+                <td><?php echo $value['Truck']['nopol'];?></td>
                 <td><?php echo $this->Common->customDate($value_truck['tgl_bayar']);?></td>
                 <td><?php echo $this->Common->customDate($value_truck['tgl_berakhir']);?></td>
                 <td><?php echo $this->Number->currency($value_truck['price'], 'Rp. ');?></td>
-                <td><?php echo $this->Number->currency($value_truck['price_next_estimate'], 'Rp. ');?></td>
                 <td>
                     <?php
                         if($value_truck['is_change_plat']){

@@ -124,27 +124,6 @@
                             ), sprintf(__('Apakah Anda yakin akan mengaktifkan truk dengan nopol %s?'), $value_truck['nopol']));
                         }
 
-                        echo $this->Html->link('KIR', array(
-                            'controller' => 'trucks',
-                            'action' => 'kir',
-                            $id
-                        ), array(
-                            'class' => 'btn bg-olive btn-xs'
-                        ));
-                        echo $this->Html->link('STNK', array(
-                            'controller' => 'trucks',
-                            'action' => 'stnk',
-                            $id
-                        ), array(
-                            'class' => 'btn bg-olive btn-xs'
-                        ));
-                        echo $this->Html->link('SIUP', array(
-                            'controller' => 'trucks',
-                            'action' => 'siup',
-                            $id
-                        ), array(
-                            'class' => 'btn bg-purple btn-xs'
-                        ));
                         echo $this->Html->link('Alokasi', array(
                             'controller' => 'trucks',
                             'action' => 'alocations',

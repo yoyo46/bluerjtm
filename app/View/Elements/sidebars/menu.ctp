@@ -130,6 +130,73 @@
                     ?>
                 </ul>
             </li>
+            <?php
+
+                    $activePayment = false;
+            ?>
+            <li class="treeview <?php echo $activePayment; ?>">
+                <a href="#">
+                    <i class="fa fa-dollar"></i>
+                    <span>Pembayaran</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Histori KIR', array(
+                                'controller' => 'trucks',
+                                'action' => 'kir',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'drivers' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran KIR', array(
+                                'controller' => 'trucks',
+                                'action' => 'kir_add',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'drivers' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Histori STNK', array(
+                                'controller' => 'trucks',
+                                'action' => 'stnk',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
+                            ));
+
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran STNK', array(
+                                'controller' => 'trucks',
+                                'action' => 'stnk_add',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
+                            ));
+
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Histori SIUP', array(
+                                'controller' => 'trucks',
+                                'action' => 'siup',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
+                            ));
+
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran SIUP', array(
+                                'controller' => 'trucks',
+                                'action' => 'siup_add',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
+                            ));
+                    ?>
+                </ul>
+            </li>
             <?php 
                     $activeSetting = false;
                     $settingMenu = array(

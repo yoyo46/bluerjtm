@@ -1,12 +1,7 @@
 <?php
-		$this->Html->addCrumb(__('Truk'), array(
-			'controller' => 'trucks',
-			'action' => 'index'
-		));
 		$this->Html->addCrumb('Histori SIUP Truk', array(
 			'controller' => 'trucks',
-			'action' => 'kir',
-			$truck_id
+			'action' => 'kir'
 		));
 		$this->Html->addCrumb($sub_module_title);
 ?>
@@ -22,6 +17,17 @@
 		));
 	?>
     <div class="box-body">
+    	<div class="form-group">
+        	<?php 
+				echo $this->Form->input('truck_id', array(
+					'label'=> __('Truk *'), 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Truk'),
+					'options' => $trucks
+				));
+			?>
+        </div>
         <div class="form-group">
         	<?php 
 				echo $this->Form->input('tgl_siup', array(
@@ -63,38 +69,6 @@
 				?>
 			</div>
         </div>
-        <div class="form-group">
-        	<?php 
-				echo $this->Form->label('price_next_estimate', __('Biaya SIUP selanjutnya*')); 
-			?>
-			<div class="input-group">
-	        	<?php 
-	        		echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-	    				'class' => 'input-group-addon'
-    				));
-
-					echo $this->Form->input('price_next_estimate', array(
-						'type' => 'text',
-						'label'=> false, 
-						'class'=>'form-control',
-						'required' => false,
-						'placeholder' => __('Biaya SIUP selanjutnya')
-					));
-				?>
-			</div>
-        </div>
-        <div class="form-group">
-	        <div class="checkbox aset-handling">
-                <label>
-                    <?php 
-						echo $this->Form->checkbox('paid',array(
-							'label'=> false, 
-							'required' => false,
-						)).__('status bayar?');
-					?>
-                </label>
-            </div>
-        </div>
     </div>
 
     <div class="box-footer text-center action">
@@ -105,8 +79,7 @@
 					'type' => 'submit',
 				));
 	    		echo $this->Html->link(__('Kembali'), array(
-					'action' => 'siup', 
-					$truck['Truck']['id'],
+					'action' => 'siup'
 				), array(
 					'class'=> 'btn btn-default',
 				));

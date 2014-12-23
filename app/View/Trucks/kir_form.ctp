@@ -1,12 +1,7 @@
 <?php
-		$this->Html->addCrumb(__('Truk'), array(
-			'controller' => 'trucks',
-			'action' => 'index'
-		));
 		$this->Html->addCrumb('Histori KIR Truk', array(
 			'controller' => 'trucks',
-			'action' => 'kir',
-			$truck_id
+			'action' => 'kir'
 		));
 		$this->Html->addCrumb($sub_module_title);
 ?>
@@ -22,6 +17,17 @@
 		));
 	?>
     <div class="box-body">
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->input('truck_id', array(
+					'label'=> __('Truk *'), 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Truk'),
+					'options' => $trucks
+				));
+			?>
+        </div>
         <div class="form-group">
         	<?php 
 				echo $this->Form->input('tgl_kir', array(
@@ -64,26 +70,6 @@
 			?>
         </div>
         <div class="form-group">
-        	<?php 
-				echo $this->Form->label('price_next_estimate', __('Biaya KIR selanjutnya*')); 
-			?>
-			<div class="input-group">
-	        	<?php 
-	        		echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-	    				'class' => 'input-group-addon'
-    				));
-
-					echo $this->Form->input('price_next_estimate', array(
-						'type' => 'text',
-						'label'=> false, 
-						'class'=>'form-control',
-						'required' => false,
-						'placeholder' => __('Biaya KIR selanjutnya')
-					));
-				?>
-			</div>
-        </div>
-        <div class="form-group">
 	        <div class="checkbox aset-handling">
                 <label>
                     <?php 
@@ -105,8 +91,7 @@
 					'type' => 'submit',
 				));
 	    		echo $this->Html->link(__('Kembali'), array(
-					'action' => 'kir', 
-					$truck['Truck']['id'],
+					'action' => 'kir'
 				), array(
 					'class'=> 'btn btn-default',
 				));

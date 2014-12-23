@@ -1,11 +1,5 @@
 <?php 
-	$this->Html->addCrumb(__('Truk'), array(
-		'controller' => 'trucks',
-		'action' => 'index'
-	));
     $this->Html->addCrumb($sub_module_title);
-
-    echo $this->element('blocks/trucks/info_truck');
 ?>
 <div class="box">
     <div class="box-header">
@@ -14,28 +8,15 @@
                     'class' => 'box-title'
                 ));
         ?>
-        <div class="box-tools">
-            <?php
-                echo $this->Html->link('<i class="fa fa-truck"></i> Perpanjang KIR', array(
-                    'controller' => 'trucks',
-                    'action' => 'kir_add',
-                    $id
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app pull-right'
-                ));
-            ?>
-            <div class="clear"></div>
-        </div>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>
                 <th>ID</th>
+                <th>Truk</th>
                 <th>Tanggal KIR</th>
                 <th>Tanggal KIR Lanjutan</th>
                 <th>Biaya KIR</th>
-                <th>prakiraan Biaya <br>KIR selanjutnya</th>
                 <th>Status Bayar</th>
                 <th>Action</th>
             </tr>
@@ -48,13 +29,11 @@
             ?>
             <tr>
                 <td><?php echo $id;?></td>
+                <td><?php echo $value['Truck']['nopol'];?></td>
                 <td><?php echo $this->Common->customDate($value_truck['tgl_kir']);?></td>
                 <td><?php echo $this->Common->customDate($value_truck['tgl_next_kir']);?></td>
                 <td>
                     <?php echo $this->Number->currency($value_truck['price'], 'Rp. ');?>
-                </td>
-                <td>
-                    <?php echo $this->Number->currency($value_truck['price_next_estimate'], 'Rp. ');?>
                 </td>
                 <td>
                     <?php 

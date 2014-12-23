@@ -2,6 +2,12 @@
 class Stnk extends AppModel {
 	var $name = 'Stnk';
 	var $validate = array(
+        'truck_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Truk harap diisi'
+            ),
+        ),
         'tgl_bayar' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -19,20 +25,6 @@ class Stnk extends AppModel {
             ) 
         ),
         'price' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Harga perpanjang Stnk harap diisi'
-            ),
-            'numeric' => array(
-                'rule' => array('numeric'),
-                'message' => 'Harga harus berupa angka'
-            ),
-            'validPrice' => array(
-                'rule' => array('validPrice'),
-                'message' => 'Harga harus lebih besar dari 0'
-            ),
-        ),
-        'price_next_estimate' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Harga perpanjang Stnk harap diisi'

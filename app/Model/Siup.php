@@ -2,12 +2,24 @@
 class Siup extends AppModel {
 	var $name = 'Siup';
 	var $validate = array(
-		'tgl_siup' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
+        'truck_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'truk harap diisi'
+            ),
+        ),
+        'tgl_siup' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
                 'message' => 'tanggal SIUP harap diisi'
-			),
-		)
+            ),
+        ),
+        'tgl_next_siup' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'tanggal SIUP selanjutnya harap diisi'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(
