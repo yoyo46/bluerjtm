@@ -3633,6 +3633,7 @@ fieldset[disabled] .btn-vk.active {
 .checkbox-inline input[type="checkbox"] {
   margin-left: 0;
   margin-right: 5px;
+  left: 0;
 }
 
 .has-danger {

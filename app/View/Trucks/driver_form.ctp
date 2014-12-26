@@ -19,19 +19,15 @@
 	<div class="col-sm-6">
 		<div class="box box-primary">
 		    <div class="box-header">
-		        <h3 class="box-title"><?php echo __('Informasi Supir'); ?></h3>
+		        <h3 class="box-title"><?php echo __('Data Pribadi'); ?></h3>
 		    </div>
 		    <div class="box-body">
 		    	<?php
-		    		if(!empty($this->request->data['Driver']['photo'])){
-		    	?>
-		        <div class="form-group">
-		        	<?php 
-							echo $this->Common->getImage('drivers', $this->request->data['Driver']['photo'], true, 'small');
-					?>
-		        </div>
-		        <?php
-		    		}
+		    			if(!empty($this->request->data['Driver']['photo'])){
+							echo $this->Html->tag('div', $this->Common->getImage('drivers', $this->request->data['Driver']['photo'], true, 'small'), array(
+								'class' => 'form-group',
+							));
+		    			}
 		    	?>
 		        <div class="form-group">
 		        	<?php 
@@ -47,10 +43,10 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('name',array(
-								'label'=> __('Nama Supir *'), 
+								'label'=> __('Nama Lengkap *'), 
 								'class'=>'form-control',
 								'required' => false,
-								'placeholder' => __('Nama Supir')
+								'placeholder' => __('Nama Lengkap')
 							));
 					?>
 		        </div>
@@ -66,33 +62,124 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-							echo $this->Form->input('address',array(
-								'label'=> __('Alamat *'), 
+							echo $this->Form->input('identity_number',array(
+								'label'=> __('No. KTP *'), 
 								'class'=>'form-control',
 								'required' => false,
-								'placeholder' => __('Address')
+								'placeholder' => __('No. KTP')
 							));
 					?>
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->input('phone',array(
-							'label'=> __('Telepon *'), 
+							echo $this->Form->input('address',array(
+								'label'=> __('Alamat Rumah *'), 
+								'class'=>'form-control',
+								'required' => false,
+								'placeholder' => __('Address KTP')
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('city',array(
+								'label'=> __('Kota *'), 
+								'class'=>'form-control',
+								'required' => false,
+								'placeholder' => __('Kota')
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('provinsi',array(
+								'label'=> __('Provinsi *'), 
+								'class'=>'form-control',
+								'required' => false,
+								'placeholder' => __('Provinsi')
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+						echo $this->Form->input('no_hp',array(
+							'label'=> __('No. HP'), 
 							'class'=>'form-control',
 							'required' => false,
-							'placeholder' => __('Telepon')
+							'placeholder' => __('No. HP')
 						));
 					?>
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->input('phone_2',array(
-							'label'=> __('Telepon 2'), 
+						echo $this->Form->input('phone',array(
+							'label'=> __('No. Telp'), 
 							'class'=>'form-control',
 							'required' => false,
-							'placeholder' => __('Telepon 2')
+							'placeholder' => __('No. Telp')
 						));
 					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('tempat_lahir',array(
+								'label'=> __('Tempat Lahir'), 
+								'class'=>'form-control',
+								'required' => false,
+								'placeholder' => __('Tempat Lahir')
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->label('tgl_lahir', __('Tgl Lahir'));
+					?>
+					<div class="row">
+						<div class="col-sm-4">
+				        	<?php 
+									echo $this->Form->day('tgl_lahir', array(
+										'label'=> false, 
+										'class'=>'form-control selectbox-date',
+										'required' => false,
+										'empty' => __('Hari'),
+										'id' => 'day',
+										'required' => false,
+									));
+							?>
+						</div>
+						<div class="col-sm-4">
+				        	<?php 
+									echo $this->Form->month('tgl_lahir', array(
+										'label'=> false, 
+										'class'=>'form-control selectbox-date',
+										'required' => false,
+										'empty' => __('Bulan'),
+										'id' => 'month',
+										'required' => false,
+									));
+							?>
+						</div>
+						<div class="col-sm-4">
+				        	<?php 
+									echo $this->Form->year('tgl_lahir', 1949, date('Y') - 12, array(
+										'label'=> false, 
+										'class'=>'form-control selectbox-date',
+										'empty' => __('Tahun'),
+										'id' => 'year',
+										'required' => false,
+									));
+							?>
+						</div>
+					</div>
+		        	<?php 
+							echo $this->Form->error('birth_date', array(
+								'notempty' => __('Tgl Lahir harap dipilih'),
+								'date' => __('Tgl Lahir tidak benar'),
+							), array(
+								'wrap' => 'div', 
+								'class' => 'error-message',
+							));
+		        	?>
 		        </div>
 		    </div>
 		</div>
@@ -100,19 +187,9 @@
 	<div class="col-sm-6">
 		<div class="box box-primary">
 		    <div class="box-header">
-		        <h3 class="box-title"><?php echo __('Informasi Dokumen'); ?></h3>
+		        <h3 class="box-title"><?php echo __('Data SIM'); ?></h3>
 		    </div>
 		    <div class="box-body">
-		        <div class="form-group">
-		        	<?php 
-							echo $this->Form->input('identity_number',array(
-								'label'=> __('No. Identitas *'), 
-								'class'=>'form-control',
-								'required' => false,
-								'placeholder' => __('No. Identitas')
-							));
-					?>
-		        </div>
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('no_sim',array(
@@ -125,12 +202,171 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-							echo $this->Form->input('expired_date_sim',array(
-								'label'=> __('Tgl Berakhir SIM *'), 
+							echo $this->Form->label('tgl_expire_sim', __('Tgl Berakhir SIM *'));
+					?>
+					<div class="row">
+						<div class="col-sm-4">
+				        	<?php 
+									echo $this->Form->day('tgl_expire_sim', array(
+										'label'=> false, 
+										'class'=>'form-control selectbox-date',
+										'required' => false,
+										'empty' => __('Hari'),
+										'id' => 'day',
+										'required' => false,
+									));
+							?>
+						</div>
+						<div class="col-sm-4">
+				        	<?php 
+									echo $this->Form->month('tgl_expire_sim', array(
+										'label'=> false, 
+										'class'=>'form-control selectbox-date',
+										'required' => false,
+										'empty' => __('Bulan'),
+										'id' => 'month',
+										'required' => false,
+									));
+							?>
+						</div>
+						<div class="col-sm-4">
+				        	<?php 
+									echo $this->Form->year('tgl_expire_sim', date('Y')-15, date('Y')+5, array(
+										'label'=> false, 
+										'class'=>'form-control selectbox-date',
+										'empty' => __('Tahun'),
+										'id' => 'year',
+										'required' => false,
+									));
+							?>
+						</div>
+					</div>
+		        	<?php 
+							echo $this->Form->error('expired_date_sim', array(
+								'notempty' => __('Tgl Berakhir SIM harap dipilih'),
+								'date' => __('Tgl Berakhir SIM tidak benar'),
+							), array(
+								'wrap' => 'div', 
+								'class' => 'error-message',
+							));
+		        	?>
+		        </div>
+		    </div>
+		</div>
+		<div class="box box-primary">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Data Kontak Darurat'); ?></h3>
+		    </div>
+		    <div class="box-body">
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('kontak_darurat_name',array(
+								'label'=> __('Nama Lengkap *'), 
+								'class'=>'form-control',
+								'required' => false,
+								'placeholder' => __('Nama Lengkap')
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('kontak_darurat_no_hp',array(
+								'label'=> __('No. Hp *'), 
+								'class'=>'form-control',
+								'required' => false,
+								'placeholder' => __('No. Hp'),
+								'type' => 'text'
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('kontak_darurat_phone',array(
+								'label'=> __('No. Telp'), 
 								'class'=>'form-control custom-date',
 								'required' => false,
-								'placeholder' => __('Tgl Berakhir SIM'),
+								'placeholder' => __('No. Telp'),
 								'type' => 'text'
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('driver_relation_id',array(
+								'label'=> __('Hubungan'), 
+								'class'=>'form-control',
+								'required' => false,
+								'empty' => __('Pilih Hubungan --'),
+							));
+					?>
+		        </div>
+		    </div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="box box-primary">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Penerimaan'); ?></h3>
+		    </div>
+		    <div class="box-body">
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->label('tgl_penerimaan', __('Tgl Penerimaan'));
+					?>
+					<div class="row">
+						<div class="col-sm-4">
+				        	<?php 
+									echo $this->Form->day('tgl_penerimaan', array(
+										'label'=> false, 
+										'class'=>'form-control selectbox-date',
+										'required' => false,
+										'empty' => __('Hari'),
+										'id' => 'day',
+										'required' => false,
+									));
+							?>
+						</div>
+						<div class="col-sm-4">
+				        	<?php 
+									echo $this->Form->month('tgl_penerimaan', array(
+										'label'=> false, 
+										'class'=>'form-control selectbox-date',
+										'required' => false,
+										'empty' => __('Bulan'),
+										'id' => 'month',
+										'required' => false,
+									));
+							?>
+						</div>
+						<div class="col-sm-4">
+				        	<?php 
+									echo $this->Form->year('tgl_penerimaan', 1949, date('Y'), array(
+										'label'=> false, 
+										'class'=>'form-control selectbox-date',
+										'empty' => __('Tahun'),
+										'id' => 'year',
+										'required' => false,
+									));
+							?>
+						</div>
+					</div>
+		        	<?php 
+							echo $this->Form->error('join_date', array(
+								'notempty' => __('Tgl Penerimaan harap dipilih'),
+								'date' => __('Tgl Penerimaan tidak benar'),
+							), array(
+								'wrap' => 'div', 
+								'class' => 'error-message',
+							));
+		        	?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('branch_id',array(
+								'label'=> __('Cabang Penerimaan *'), 
+								'class'=>'form-control',
+								'required' => false,
+								'empty' => __('Pilih Cabang'),
 							));
 					?>
 		        </div>

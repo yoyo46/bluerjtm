@@ -33,5 +33,25 @@ class MkCommonComponent extends Component {
 		}
 		return $logged_in;
 	}
+
+	function getDateSelectbox ( $tgl ) {
+		$result = false;
+
+		if( !empty($tgl['day']) && !empty($tgl['month']) && !empty($tgl['year']) ) {
+			$result = sprintf('%s-%s-%s', $tgl['year'], $tgl['month'], $tgl['day']);
+		}
+
+		return $result;
+	}
+
+	function getFilePhoto ( $filePhoto ) {
+		$result = $filePhoto;
+
+		if( empty($filePhoto['name']) ) {
+			$result = false;
+		}
+
+		return $result;
+	}
 }
 ?>

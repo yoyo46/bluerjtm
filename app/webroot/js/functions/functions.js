@@ -255,4 +255,12 @@ $(function() {
             }
         }
     });
+
+    if( $('#month').length > 0 && $('#day').length > 0 && $('#year').length > 0 ) {
+        $().dateSelectBoxes({
+            monthElement: $('#month'),
+            dayElement: $('#day'),
+            yearElement: $('#year'),
+        });
+    }
 });

@@ -1569,4 +1569,115 @@ class SettingsController extends AppController {
 
         $this->redirect($this->referer());
     }
+
+    function branches(){
+        $this->loadModel('Branch');
+        $options = array();
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['Branch']['name'] = $name;
+                $options['conditions']['Branch.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+        $this->paginate = $this->Branch->getData('paginate', $options);
+        $branches = $this->paginate('Branch');
+
+        $this->set('active_menu', 'branches');
+        $this->set('sub_module_title', 'Cabang Perusahaan');
+        $this->set('branches', $branches);
+    }
+
+    function branch_add(){
+        $this->loadModel('Branch');
+        $this->set('sub_module_title', 'Tambah Cabang');
+        $this->doBranch();
+    }
+
+    function branch_edit($id){
+        $this->loadModel('Branch');
+        $this->set('sub_module_title', 'Rubah Cabang');
+        $branch = $this->Branch->find('first', array(
+            'conditions' => array(
+                'Branch.id' => $id
+            )
+        ));
+
+        if(!empty($branch)){
+            $this->doBranch($id, $branch);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Cabang tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'branches'
+            ));
+        }
+    }
+
+    function doBranch($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+
+            if($id && $data_local){
+                $this->Branch->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->Branch->create();
+                $msg = 'menambah';
+            }
+            $this->Branch->set($data);
+
+            if($this->Branch->validates($data)){
+                if($this->Branch->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Cabang'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'branches'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Branch'), $msg), 'error');  
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Branch'), $msg), 'error');
+            }
+        } else if($id && $data_local){
+            $this->request->data = $data_local;
+        }
+
+        $this->set('active_menu', 'branches');
+        $this->render('branch_form');
+    }
+
+    function branch_toggle($id){
+        $this->loadModel('Branch');
+        $locale = $this->Branch->getData('first', array(
+            'conditions' => array(
+                'Branch.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['Branch']['status']){
+                $value = false;
+            }
+
+            $this->Branch->id = $id;
+            $this->Branch->set('status', 0);
+
+            if($this->Branch->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses menghapus data cabang.'), 'success');
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal menghapus data cabang.'), 'error');
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Cabang tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
 }

@@ -29,8 +29,8 @@ class TrucksController extends AppController {
         $this->loadModel('Truck');
 		$this->set('active_menu', 'trucks');
 		$this->set('sub_module_title', __('Data Truk'));
-
         $conditions = array();
+        
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
 
@@ -286,7 +286,9 @@ class TrucksController extends AppController {
             }
 
             $this->Truck->id = $id;
-            $this->Truck->set('status', $value);
+            $this->Truck->set('status', 0);
+            // $this->Truck->set('status', $value);
+
             if($this->Truck->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
             }else{
@@ -598,7 +600,11 @@ class TrucksController extends AppController {
             $data['Driver']['phone'] = (!empty($data['Driver']['phone'])) ? Sanitize::paranoid($data['Driver']['phone']) : '';
             $data['Driver']['phone_2'] = (!empty($data['Driver']['phone_2'])) ? Sanitize::paranoid($data['Driver']['phone_2']) : '';
             $data['Driver']['expired_date_sim'] = (!empty($data['Driver']['expired_date_sim'])) ? date('Y-m-d', strtotime($data['Driver']['expired_date_sim'])) : '';
-            
+            $data['Driver']['birth_date'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_lahir']);
+            $data['Driver']['join_date'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_penerimaan']);
+            $data['Driver']['expired_date_sim'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_expire_sim']);
+            // $data['Driver']['photo'] = $this->MkCommon->getFilePhoto($data['Driver']['photo']);
+
             $this->Driver->set($data);
 
             if($this->Driver->validates($data)){
@@ -618,10 +624,35 @@ class TrucksController extends AppController {
             if( !empty($data_local['Driver']['expired_date_sim']) && $data_local['Driver']['expired_date_sim'] == '0000-00-00' ) {
                 unset($data_local['Driver']['expired_date_sim']);
             }
+
+            $data_local = $this->Driver->getGenerateDate($data_local);
             $this->request->data = $data_local;
         }
 
+        $this->loadModel('DriverRelation');
+        $this->loadModel('Branch');
+
+        $driverRelations = $this->DriverRelation->find('list', array(
+            'conditions' => array(
+                'DriverRelation.status' => 1
+            ),
+            'fields' => array(
+                'DriverRelation.id', 'DriverRelation.name'
+            )
+        ));
+        $branches = $this->Branch->getData('list', array(
+            'conditions' => array(
+                'Branch.status' => 1
+            ),
+            'fields' => array(
+                'Branch.id', 'Branch.name'
+            )
+        ));
+
         $this->set('active_menu', 'drivers');
+        $this->set(compact(
+            'driverRelations', 'branches'
+        ));
         $this->render('driver_form');
     }
 

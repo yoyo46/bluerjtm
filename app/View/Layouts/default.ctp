@@ -96,11 +96,11 @@
 				'plugins/daterangepicker/daterangepicker',
 				'plugins/datepicker/bootstrap-datepicker',
 				'plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min',
+				'jquery.library',
 				'functions/app',
 				'functions/functions',
 				'functions/dashboard',
 				'functions/demo',
-				'jquery.library',
 			)).PHP_EOL;
 
 			if(isset($layout_js) && !empty($layout_js)){

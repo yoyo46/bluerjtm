@@ -62,10 +62,10 @@
                             $id = $value_truck['id'];
             ?>
             <tr>
-                <td><?php echo $value['TruckBrand']['name'];?></td>
-                <td><?php echo $value['Company']['name'];?></td>
-                <td><?php echo $value['TruckCategory']['name'];?></td>
-                <td><?php echo $value['Driver']['name'];?></td>
+                <td><?php echo !empty($value['TruckBrand']['name'])?$value['TruckBrand']['name']:'-';?></td>
+                <td><?php echo !empty($value['Company']['name'])?$value['Company']['name']:'-';?></td>
+                <td><?php echo !empty($value['TruckCategory']['name'])?$value['TruckCategory']['name']:'-';?></td>
+                <td><?php echo !empty($value['Driver']['name'])?$value['Driver']['name']:'-';?></td>
                 <td><?php echo $value_truck['nopol'];?></td>
                 <td>
                     <?php 
@@ -104,25 +104,14 @@
                             'class' => 'btn btn-primary btn-xs'
                         ));
 
-                        if(!empty($value_truck['status'])){
-                            echo $this->Html->link('Disable', array(
-                                'controller' => 'trucks',
-                                'action' => 'toggle',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                                'title' => 'disable status brand'
-                            ), sprintf(__('Apakah Anda yakin akan menon-aktifkan truk dengan nopol %s?'), $value_truck['nopol']));
-                        }else{
-                            echo $this->Html->link('Enable', array(
-                                'controller' => 'trucks',
-                                'action' => 'toggle',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-success btn-xs',
-                                'title' => 'enable status brand'
-                            ), sprintf(__('Apakah Anda yakin akan mengaktifkan truk dengan nopol %s?'), $value_truck['nopol']));
-                        }
+                        echo $this->Html->link(__('Hapus'), array(
+                            'controller' => 'trucks',
+                            'action' => 'toggle',
+                            $id
+                        ), array(
+                            'class' => 'btn btn-danger btn-xs',
+                            'title' => 'disable status brand'
+                        ), sprintf(__('Apakah Anda yakin akan menghapus truk dengan nopol %s?'), $value_truck['nopol']));
 
                         echo $this->Html->link('Alokasi', array(
                             'controller' => 'trucks',
