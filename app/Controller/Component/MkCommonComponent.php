@@ -53,5 +53,36 @@ class MkCommonComponent extends Component {
 
 		return $result;
 	}
+
+    function getTtujTipeMotor ( $data ) {
+        if( !empty($data['TtujTipeMotor']) ) {
+            $tempTipeMotor = array();
+
+            foreach ($data['TtujTipeMotor'] as $key => $tipeMotor) {
+                $tempTipeMotor['TtujTipeMotor']['tipe_motor_id'][$key] = $tipeMotor['tipe_motor_id'];
+                $tempTipeMotor['TtujTipeMotor']['qty'][$key] = $tipeMotor['qty'];
+            }
+
+            unset($data['TtujTipeMotor']);
+            $data['TtujTipeMotor'] = $tempTipeMotor['TtujTipeMotor'];
+        }
+
+        return $data;
+    }
+
+    function getTtujPerlengkapan ( $data ) {
+        if( !empty($data['TtujPerlengkapan']) ) {
+            $tempPerlengkapan = array();
+
+            foreach ($data['TtujPerlengkapan'] as $key => $dataPerlengkapan) {
+                $tempPerlengkapan['TtujPerlengkapan'][$dataPerlengkapan['perlengkapan_id']] = $dataPerlengkapan['qty'];
+            }
+
+            unset($data['TtujPerlengkapan']);
+            $data['TtujPerlengkapan'] = $tempPerlengkapan['TtujPerlengkapan'];
+        }
+
+        return $data;
+    }
 }
 ?>

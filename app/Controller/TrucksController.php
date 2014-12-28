@@ -885,8 +885,8 @@ class TrucksController extends AppController {
             $data['Siup']['tgl_next_siup'] = (!empty($data['Siup']['tgl_next_siup'])) ? date('Y-m-d', strtotime($data['Siup']['tgl_next_siup'])) : '';
 
             $date_old = '';
-            if(!empty($value['Siup']['truck_id'])){
-                $truck = $this->Truck->getInfoTruck($value['Siup']['truck_id']);
+            if(!empty($data['Siup']['truck_id'])){
+                $truck = $this->Truck->getInfoTruck($data['Siup']['truck_id']);
                 $date_old = strtotime($truck['Truck']['siup']);
             }
             
@@ -904,7 +904,7 @@ class TrucksController extends AppController {
             if($this->Siup->validates($data) && $check){
                 if($this->Siup->save($data)){
 
-                    $this->Truck->id = $value['Siup']['truck_id'];
+                    $this->Truck->id = $data['Siup']['truck_id'];
                     $this->Truck->set('siup', $data['Siup']['tgl_siup']);
                     $this->Truck->save();
 

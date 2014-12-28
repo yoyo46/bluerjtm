@@ -11,13 +11,37 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah TTUJ', array(
-                        'controller' => 'revenues',
-                        'action' => 'ttuj_add'
-                    ), array(
-                        'escape' => false,
-                        'class' => 'btn btn-app btn-success pull-right'
-                    ));
+                    switch ($active_menu) {
+                        case 'truk_tiba':
+                            echo $this->Html->link('<i class="fa fa-plus"></i> Truk Tiba', array(
+                                'controller' => 'revenues',
+                                'action' => 'truk_tiba_add'
+                            ), array(
+                                'escape' => false,
+                                'class' => 'btn btn-app btn-success pull-right'
+                            ));
+                            break;
+
+                        case 'bongkaran':
+                            echo $this->Html->link('<i class="fa fa-plus"></i> Bongkaran Truk', array(
+                                'controller' => 'revenues',
+                                'action' => 'bongkaran_add'
+                            ), array(
+                                'escape' => false,
+                                'class' => 'btn btn-app btn-success pull-right'
+                            ));
+                            break;
+                        
+                        default:
+                            echo $this->Html->link('<i class="fa fa-plus"></i> Tambah TTUJ', array(
+                                'controller' => 'revenues',
+                                'action' => 'ttuj_add'
+                            ), array(
+                                'escape' => false,
+                                'class' => 'btn btn-app btn-success pull-right'
+                            ));
+                            break;
+                    }
             ?>
             <div class="clear"></div>
         </div>
@@ -29,9 +53,14 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.no_ttuj', __('No TTUJ'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.ttuj_date', __('Tgl TTUJ'), array(
-                            'escape' => false
-                        )));
+
+                        if( $active_menu == 'ttuj' ) {
+                            echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.ttuj_date', __('Tgl TTUJ'), array(
+                                'escape' => false
+                            )));
+
+                        }
+
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.nopol', __('No Pol'), array(
                             'escape' => false
                         )));
@@ -44,9 +73,20 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.to_city_name', __('Tujuan'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.is_draft', __('Status'), array(
-                            'escape' => false
-                        )));
+
+                        if( $active_menu == 'truk_tiba' ) {
+                            echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_berangkat', __('Tgl Berangkat'), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_tiba', __('Tgl Tiba'), array(
+                                'escape' => false
+                            )));
+                        } else {
+                            echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.is_draft', __('Status'), array(
+                                'escape' => false
+                            )));
+                        }
+
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.created', __('Dibuat'), array(
                             'escape' => false
                         )));
@@ -62,39 +102,72 @@
             ?>
             <tr>
                 <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
-                <td><?php echo date('d M Y', strtotime($value['Ttuj']['ttuj_date']));?></td>
+                <?php 
+                        if( $active_menu == 'ttuj' ) {
+                            echo $this->Html->tag('td', date('d M Y', strtotime($value['Ttuj']['ttuj_date'])));
+                        }
+                ?>
                 <td><?php echo $value['Ttuj']['nopol'];?></td>
                 <td><?php echo $value['Ttuj']['customer_name'];?></td>
                 <td><?php echo $value['Ttuj']['from_city_name'];?></td>
                 <td><?php echo $value['Ttuj']['to_city_name'];?></td>
-                <td>
-                    <?php 
-                            if(!empty($value['Ttuj']['is_draft'])){
-                                echo '<span class="label label-primary">Draft</span>'; 
-                            }else{
-                                echo '<span class="label label-success">Commit</span>';  
+                <?php 
+                        if( $active_menu == 'truk_tiba' ) {
+                            echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_berangkat'])));
+                            echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_tiba'])));
+                        } else {
+                            if(!empty($value['Ttuj']['is_arrive'])){
+                                echo $this->Html->tag('td', '<span class="label label-info">Tiba</span>');
+                            } else if(!empty($value['Ttuj']['is_draft'])){
+                                echo $this->Html->tag('td', '<span class="label label-primary">Draft</span>');
+                            } else{
+                                echo $this->Html->tag('td', '<span class="label label-default">Commit</span>');
                             }
-                    ?>
-                </td>
+                        }
+                ?>
                 <td><?php echo $this->Common->customDate($value['Ttuj']['created']);?></td>
                 <td class="action">
                     <?php
-                            echo $this->Html->link('Rubah', array(
-                                'controller' => 'revenues',
-                                'action' => 'ttuj_edit',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-primary btn-xs'
-                            ));
+                            switch ($active_menu) {
+                                case 'truk_tiba':
+                                    echo $this->Html->link('Info', array(
+                                        'controller' => 'revenues',
+                                        'action' => 'info_truk_tiba',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-primary btn-xs'
+                                    ));
 
-                            echo $this->Html->link(__('Hapus'), array(
-                                'controller' => 'revenues',
-                                'action' => 'ttuj_delete',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                                'title' => 'disable status brand'
-                            ), __('Apakah Anda yakin akan menghapus ttuj ini?'));
+                                    echo $this->Html->link(__('Batalkan'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'ttuj_toggle',
+                                        $id,
+                                        'arrive'
+                                    ), array(
+                                        'class' => 'btn btn-danger btn-xs',
+                                        'title' => 'disable status brand'
+                                    ), __('Apakah Anda yakin akan menghapus data ini?'));
+                                    break;
+                                
+                                default:
+                                    echo $this->Html->link('Rubah', array(
+                                        'controller' => 'revenues',
+                                        'action' => 'ttuj_edit',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-primary btn-xs'
+                                    ));
+
+                                    echo $this->Html->link(__('Hapus'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'ttuj_toggle',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-danger btn-xs',
+                                        'title' => 'disable status brand'
+                                    ), __('Apakah Anda yakin akan menghapus data ini?'));
+                                    break;
+                            }
                     ?>
                 </td>
             </tr>

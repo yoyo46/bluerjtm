@@ -54,6 +54,12 @@ class Ttuj extends AppModel {
                 'message' => 'Tgl & Jam Berangkat harap dipilih'
             ),
         ),
+        'tgljam_tiba' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl & Jam Tiba harap dipilih'
+            ),
+        ),
 	);
 
     var $belongsTo = array(
@@ -94,9 +100,10 @@ class Ttuj extends AppModel {
 
 	function getData($find, $options = false){
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'Ttuj.status' => 1,
+            ),
             'order'=> array(
-                'Ttuj.status' => 'DESC',
                 'Ttuj.created' => 'DESC',
                 'Ttuj.id' => 'DESC',
             ),
@@ -105,6 +112,7 @@ class Ttuj extends AppModel {
                 'TtujTipeMotor',
                 'TtujPerlengkapan',
             ),
+            'fields' => array(),
         );
 
         if(!empty($options)){
@@ -119,6 +127,9 @@ class Ttuj extends AppModel {
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
+            }
+            if(!empty($options['fields'])){
+                $default_options['fields'] = $options['fields'];
             }
         }
 

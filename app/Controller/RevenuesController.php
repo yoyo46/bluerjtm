@@ -16,8 +16,8 @@ class RevenuesController extends AppController {
     function search( $index = 'index' ){
         $refine = array();
         if(!empty($this->request->data)) {
-            $refine = $this->RjLeasing->processRefine($this->request->data);
-            $params = $this->RjLeasing->generateSearchURL($refine);
+            $refine = $this->RjRevenue->processRefine($this->request->data);
+            $params = $this->RjRevenue->generateSearchURL($refine);
             $params['action'] = $index;
 
             $this->redirect($params);
@@ -321,28 +321,8 @@ class RevenuesController extends AppController {
             }
         }else{
             if($id && $data_local){
-                if( !empty($data_local['TtujTipeMotor']) ) {
-                    $tempTipeMotor = array();
-
-                    foreach ($data_local['TtujTipeMotor'] as $key => $tipeMotor) {
-                        $tempTipeMotor['TtujTipeMotor']['tipe_motor_id'][$key] = $tipeMotor['tipe_motor_id'];
-                        $tempTipeMotor['TtujTipeMotor']['qty'][$key] = $tipeMotor['qty'];
-                    }
-
-                    unset($data_local['TtujTipeMotor']);
-                    $data_local['TtujTipeMotor'] = $tempTipeMotor['TtujTipeMotor'];
-                }
-
-                if( !empty($data_local['TtujPerlengkapan']) ) {
-                    $tempPerlengkapan = array();
-
-                    foreach ($data_local['TtujPerlengkapan'] as $key => $dataPerlengkapan) {
-                        $tempPerlengkapan['TtujPerlengkapan'][$dataPerlengkapan['perlengkapan_id']] = $dataPerlengkapan['qty'];
-                    }
-
-                    unset($data_local['TtujPerlengkapan']);
-                    $data_local['TtujPerlengkapan'] = $tempPerlengkapan['TtujPerlengkapan'];
-                }
+                $data_local = $this->MkCommon->getTtujTipeMotor($data_local);
+                $data_local = $this->MkCommon->getTtujPerlengkapan($data_local);
 
                 if( !empty($data_local['Ttuj']['tgljam_berangkat']) ) {
                     $data_local['Ttuj']['tgl_berangkat'] = date('m/d/Y', strtotime($data_local['Ttuj']['tgljam_berangkat']));
@@ -406,51 +386,330 @@ class RevenuesController extends AppController {
             }
         }
 
-        $layout_js = array(
-            'moment',
-            'bootstrap-datetimepicker',
-            'ru',
-        );
-        $layout_css = array(
-            'bootstrap-datetimepicker.min',
-        );
-
         $this->set('active_menu', 'ttuj');
         $this->set(compact(
             'trucks', 'customers', 'driverPengantis',
             'fromCities', 'toCities', 'uangJalan',
             'tipeMotors', 'perlengkapans', 'step',
-            'truckInfo', 'layout_js', 'layout_css',
-            'data_local'
+            'truckInfo', 'data_local'
         ));
         $this->render('ttuj_form');
     }
 
-    function ttuj_toggle($id){
-        $this->loadModel('Truck');
-        $locale = $this->Truck->getData('first', array(
+    function ttuj_toggle( $id, $action_type = 'status' ){
+        $this->loadModel('Ttuj');
+        $locale = $this->Ttuj->getData('first', array(
             'conditions' => array(
-                'Truck.id' => $id
+                'Ttuj.id' => $id
             )
         ));
 
         if($locale){
             $value = true;
-            if($locale['Truck']['status']){
+            if($locale['Ttuj']['status']){
                 $value = false;
             }
 
-            $this->Truck->id = $id;
-            $this->Truck->set('status', $value);
-            if($this->Truck->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+            $this->Ttuj->id = $id;
+
+            switch ($action_type) {
+                case 'arrive':
+                    $this->Ttuj->set('is_arrive', 0);
+                    break;
+                
+                default:
+                    $this->Ttuj->set('status', 0);
+                    break;
+            }
+
+            if($this->Ttuj->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses menghapus ttuj.'), 'success');
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->MkCommon->setCustomFlash(__('Gagal menghapus ttuj.'), 'error');
             }
         }else{
             $this->MkCommon->setCustomFlash(__('truk tidak ditemukan.'), 'error');
         }
 
         $this->redirect($this->referer());
+    }
+
+    public function truk_tiba() {
+        $this->loadModel('Ttuj');
+        $this->set('active_menu', 'truk_tiba');
+        $this->set('sub_module_title', __('Truk Tiba'));
+        $conditions = array(
+            'Ttuj.is_arrive' => 1,
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $this->request->data['Truck']['nopol'] = $nopol;
+                $conditions['Truck.nopol LIKE '] = '%'.$nopol.'%';
+            }
+        }
+
+        $this->paginate = $this->Ttuj->getData('paginate', array(
+            'conditions' => $conditions
+        ));
+        $ttujs = $this->paginate('Ttuj');
+
+        $this->set('ttujs', $ttujs);
+        $this->render('ttuj');
+    }
+
+    public function truk_tiba_add() {
+        $this->loadModel('Ttuj');
+        $this->set('sub_module_title', __('Tambah Tiba'));
+        $this->set('active_menu', 'truk_tiba');
+        $this->doTTUJLanjutan();
+    }
+
+    function doTTUJLanjutan( $action_type = 'truk_tiba' ){
+        $this->loadModel('TipeMotor');
+        $this->loadModel('Perlengkapan');
+        $this->loadModel('Truck');
+
+        if( !empty($this->params['named']['no_ttuj']) ) {
+            $conditionsDataLocal = array(
+                'Ttuj.id' => $this->params['named']['no_ttuj'],
+                'Ttuj.is_draft' => 0,
+                'Ttuj.status' => 1,
+            );
+
+            switch ($action_type) {
+                case 'bongkaran':
+                    $conditionsDataLocal['Ttuj.is_arrive'] = 1;
+                    break;
+                
+                default:
+                    $conditionsDataLocal['Ttuj.is_arrive'] = 0;
+                    break;
+            }
+            $data_local = $this->Ttuj->getData('first', array(
+                'conditions' => $conditionsDataLocal
+            ));
+        }
+
+        if( !empty($this->request->data) && !empty($data_local) ){
+            $data = $this->request->data;
+
+            $this->Ttuj->id = $data_local['Ttuj']['id'];
+
+            switch ($action_type) {
+                case 'bongkaran':
+                    $dataTiba['Ttuj']['is_bongkaran'] = 1;
+                    $dataTiba['Ttuj']['tgljam_bongkaran'] = '';
+                    $dataTiba['Ttuj']['note_bongkaran'] = !empty($data['Ttuj']['note_bongkaran'])?$data['Ttuj']['note_bongkaran']:'';
+
+                    if( !empty($data['Ttuj']['tgl_bongkaran']) ) {
+                        $data['Ttuj']['tgl_bongkaran'] = date('Y-m-d', strtotime($data['Ttuj']['tgl_bongkaran']));
+
+                        if( !empty($data['Ttuj']['jam_bongkaran']) ) {
+                            $data['Ttuj']['jam_bongkaran'] = date('H:i', strtotime($data['Ttuj']['jam_bongkaran']));
+                            $dataTiba['Ttuj']['tgljam_bongkaran'] = sprintf('%s %s', $data['Ttuj']['tgl_bongkaran'], $data['Ttuj']['jam_bongkaran']);
+                        }
+                    }
+                    $referer = 'bongkaran';
+                    break;
+                
+                default:
+                    $dataTiba['Ttuj']['is_arrive'] = 1;
+                    $dataTiba['Ttuj']['tgljam_tiba'] = '';
+                    $dataTiba['Ttuj']['note_tiba'] = !empty($data['Ttuj']['note_tiba'])?$data['Ttuj']['note_tiba']:'';
+
+                    if( !empty($data['Ttuj']['tgl_tiba']) ) {
+                        $data['Ttuj']['tgl_tiba'] = date('Y-m-d', strtotime($data['Ttuj']['tgl_tiba']));
+
+                        if( !empty($data['Ttuj']['jam_tiba']) ) {
+                            $data['Ttuj']['jam_tiba'] = date('H:i', strtotime($data['Ttuj']['jam_tiba']));
+                            $dataTiba['Ttuj']['tgljam_tiba'] = sprintf('%s %s', $data['Ttuj']['tgl_tiba'], $data['Ttuj']['jam_tiba']);
+                        }
+                    }
+                    $referer = 'truk_tiba';
+                    break;
+            }
+
+            $data_local = $this->Ttuj->getData('first', array(
+                'conditions' => $conditionsDataLocal
+            ));
+
+            $this->Ttuj->set($dataTiba);
+
+            if($this->Ttuj->validates($dataTiba)){
+                if($this->Ttuj->save($dataTiba)){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah TTUJ'), 'success');
+                    $this->redirect(array(
+                        'controller' => 'revenues',
+                        'action' => $referer
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah Ttuj'), 'error');  
+                }
+            }
+        }
+
+        if( !empty($data_local) ){
+            $data_local = $this->MkCommon->getTtujTipeMotor($data_local);
+            $data_local = $this->MkCommon->getTtujPerlengkapan($data_local);
+
+            if( !empty($data_local['Ttuj']['tgljam_berangkat']) && $data_local['Ttuj']['tgljam_berangkat'] != '0000-00-00 00:00:00' ) {
+                $data_local['Ttuj']['tgl_berangkat'] = date('m/d/Y', strtotime($data_local['Ttuj']['tgljam_berangkat']));
+                $data_local['Ttuj']['jam_berangkat'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_berangkat']));
+            }
+            if( !empty($data_local['Ttuj']['tgljam_tiba']) && $data_local['Ttuj']['tgljam_tiba'] != '0000-00-00 00:00:00' ) {
+                $data_local['Ttuj']['tgl_tiba'] = date('m/d/Y', strtotime($data_local['Ttuj']['tgljam_tiba']));
+                $data_local['Ttuj']['jam_tiba'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_tiba']));
+            }
+            $this->request->data = $data_local;
+        }
+
+        if( !empty($this->params['named']['no_ttuj']) ) {
+            $this->request->data['Ttuj']['no_ttuj'] = $this->params['named']['no_ttuj'];
+        }
+
+        $conditionsTtuj = array(
+            'Ttuj.status' => 1,
+            'Ttuj.is_draft' => 0,
+        );
+
+        switch ($action_type) {
+            case 'bongkaran':
+                $conditionsTtuj['Ttuj.is_arrive'] = 1;
+                break;
+            
+            default:
+                $conditionsTtuj['Ttuj.is_arrive'] = 0;
+                break;
+        }
+
+        $ttujs = $this->Ttuj->getData('list', array(
+            'conditions' => $conditionsTtuj,
+            'fields' => array(
+                'Ttuj.id', 'Ttuj.no_ttuj'
+            )
+        ));
+        $perlengkapans = $this->Perlengkapan->getData('list', array(
+            'fields' => array(
+                'Perlengkapan.id', 'Perlengkapan.name',
+            ),
+        ));
+        $tipeMotorsTmp = $this->TipeMotor->getData('all', array(
+            'fields' => array(
+                'TipeMotor.id', 'TipeMotor.tipe_motor_color',
+            ),
+        ));
+        $tipeMotors = array();
+
+        if( !empty($tipeMotorsTmp) ) {
+            foreach ($tipeMotorsTmp as $key => $tipeMotor) {
+                $tipeMotors[$tipeMotor['TipeMotor']['id']] = $tipeMotor['TipeMotor']['tipe_motor_color'];
+            }
+        }
+
+        $this->set(compact(
+            'ttujs', 'data_local', 'perlengkapans', 
+            'tipeMotors', 'action_type'
+        ));
+        $this->render('ttuj_lanjutan_form');
+    }
+
+    public function info_truk_tiba( $ttuj_id = false ) {
+        $this->loadModel('Ttuj');
+        $this->loadModel('TipeMotor');
+        $this->loadModel('Perlengkapan');
+
+        $data_local = $this->Ttuj->getData('first', array(
+            'conditions' => array(
+                'Ttuj.id' => $ttuj_id,
+                'Ttuj.is_draft' => 0,
+                'Ttuj.is_arrive' => 1,
+                'Ttuj.status' => 1,
+            )
+        ));
+
+        if( !empty($data_local) ){
+            $data_local = $this->MkCommon->getTtujTipeMotor($data_local);
+            $data_local = $this->MkCommon->getTtujPerlengkapan($data_local);
+
+            if( !empty($data_local['Ttuj']['tgljam_berangkat']) && $data_local['Ttuj']['tgljam_berangkat'] != '0000-00-00 00:00:00' ) {
+                $data_local['Ttuj']['tgl_berangkat'] = date('m/d/Y', strtotime($data_local['Ttuj']['tgljam_berangkat']));
+                $data_local['Ttuj']['jam_berangkat'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_berangkat']));
+            }
+            if( !empty($data_local['Ttuj']['tgljam_tiba']) && $data_local['Ttuj']['tgljam_tiba'] != '0000-00-00 00:00:00' ) {
+                $data_local['Ttuj']['tgl_tiba'] = date('m/d/Y', strtotime($data_local['Ttuj']['tgljam_tiba']));
+                $data_local['Ttuj']['jam_tiba'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_tiba']));
+            }
+            $this->request->data = $data_local;
+            $perlengkapans = $this->Perlengkapan->getData('list', array(
+                'fields' => array(
+                    'Perlengkapan.id', 'Perlengkapan.name',
+                ),
+            ));
+            $tipeMotorsTmp = $this->TipeMotor->getData('all', array(
+                'fields' => array(
+                    'TipeMotor.id', 'TipeMotor.tipe_motor_color',
+                ),
+            ));
+            $tipeMotors = array();
+
+            if( !empty($tipeMotorsTmp) ) {
+                foreach ($tipeMotorsTmp as $key => $tipeMotor) {
+                    $tipeMotors[$tipeMotor['TipeMotor']['id']] = $tipeMotor['TipeMotor']['tipe_motor_color'];
+                }
+            }
+
+            $this->set('sub_module_title', __('Informasi Truk Tiba'));
+            $this->set('active_menu', 'truk_tiba');
+            $this->set(compact(
+                'ttujs', 'data_local', 'perlengkapans', 
+                'tipeMotors', 'ttuj_id'
+            ));
+            $this->render('ttuj_lanjutan_form');
+        } else {
+            $this->MkCommon->setCustomFlash(__('TTUJ tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'revenues',
+                'action' => 'truk_tiba'
+            ));
+        }
+    }
+
+    public function bongkaran() {
+        $this->loadModel('Ttuj');
+        $this->set('active_menu', 'bongkaran');
+        $this->set('sub_module_title', __('Bongkaran'));
+        $conditions = array(
+            'Ttuj.is_arrive' => 1,
+            'Ttuj.is_bongkaran' => 1,
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $this->request->data['Truck']['nopol'] = $nopol;
+                $conditions['Truck.nopol LIKE '] = '%'.$nopol.'%';
+            }
+        }
+
+        $this->paginate = $this->Ttuj->getData('paginate', array(
+            'conditions' => $conditions
+        ));
+        $ttujs = $this->paginate('Ttuj');
+
+        $this->set('ttujs', $ttujs);
+        $this->render('ttuj');
+    }
+
+    public function bongkaran_add() {
+        $this->loadModel('Ttuj');
+        $this->set('sub_module_title', __('Tambah Tiba'));
+        $this->set('active_menu', 'bongkaran');
+        $this->doTTUJLanjutan( 'bongkaran' );
     }
 }

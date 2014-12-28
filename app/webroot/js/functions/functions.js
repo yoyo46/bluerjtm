@@ -263,4 +263,16 @@ $(function() {
             yearElement: $('#year'),
         });
     }
+
+    $('#no_ttuj').change(function() {
+        var frm = $(this).parents('form');
+        var action_type = $(this).attr('action_type');
+
+        if( action_type == 'bongkaran' ) {
+            frm.attr('action', '/revenues/search/bongkaran_add/')
+        } else {
+            frm.attr('action', '/revenues/search/truk_tiba_add/')
+        }
+        frm.submit();
+    });
 });

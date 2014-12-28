@@ -65,7 +65,7 @@
 
                     $activeTtuj = false;
                     $ttujMenu = array(
-                        'ttuj'
+                        'ttuj', 'truk_tiba', 'bongkaran'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $ttujMenu) ) {
@@ -87,6 +87,22 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'ttuj' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Truk Tiba', array(
+                                'controller' => 'revenues',
+                                'action' => 'truk_tiba',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'truk_tiba' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Bongkaran', array(
+                                'controller' => 'revenues',
+                                'action' => 'bongkaran',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'bongkaran' )?'active':'',
                             ));
                     ?>
                 </ul>
