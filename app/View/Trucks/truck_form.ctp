@@ -102,7 +102,7 @@
 							'label'=> false, 
 							'class'=>'form-control',
 							'required' => false,
-							'empty' => __('Pilih Perusahaan Truk'),
+							'empty' => __('Pilih Supir Truk'),
 							'options' => $drivers
 						));
 					?>
