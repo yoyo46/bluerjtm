@@ -39,9 +39,6 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('UangJalan.created', __('Dibuat'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('UangJalan.status', __('Status'), array(
-                            'escape' => false
-                        )));
                         echo $this->Html->tag('th', __('Action'));
                 ?>
             </tr>
@@ -58,16 +55,6 @@
                 <td><?php echo $value['ToCity']['name'];?></td>
                 <td><?php echo $value['UangJalan']['distance'];?></td>
                 <td><?php echo $this->Common->customDate($value['UangJalan']['created']);?></td>
-                <td>
-                    <?php 
-                        if(!empty($value['UangJalan']['status'])){
-                            echo '<span class="label label-success">Active</span>'; 
-                        }else{
-                            echo '<span class="label label-danger">Non Active</span>';  
-                        }
-                        
-                    ?>
-                </td>
                 <td class="action">
                     <?php 
                             echo $this->Html->link('Edit', array(
@@ -78,25 +65,14 @@
                                 'class' => 'btn btn-primary btn-xs'
                             ));
 
-                            if(!empty($value['UangJalan']['status'])){
-                                echo $this->Html->link('Disable', array(
-                                    'controller' => 'settings',
-                                    'action' => 'uang_jalan_toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs',
-                                    'title' => 'disable status brand'
-                                ));
-                            }else{
-                                echo $this->Html->link('Enable', array(
-                                    'controller' => 'settings',
-                                    'action' => 'uang_jalan_toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-success btn-xs',
-                                    'title' => 'enable status brand'
-                                ));
-                            }
+                            echo $this->Html->link(__('Hapus'), array(
+                                'controller' => 'settings',
+                                'action' => 'uang_jalan_toggle',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-danger btn-xs',
+                                'title' => 'disable status brand'
+                            ), __('Anda yakin ingin menghapus data Uang Jalan ini?'));
                     ?>
                 </td>
             </tr>

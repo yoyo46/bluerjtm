@@ -111,6 +111,18 @@ class Truck extends AppModel {
             'className' => 'Leasing',
             'foreignKey' => 'truck_id',
         ),
+        'Kir' => array(
+            'className' => 'Kir',
+            'foreignKey' => 'truck_id',
+            'conditions' => array(
+                'Kir.status' => 1,
+                'Kir.paid' => 1,
+            ),
+            'order' => array(
+                'Kir.tgl_kir' => 'DESC',
+                'Kir.id' => 'DESC',
+            )
+        ),
     );
 
     var $belongsTo = array(
@@ -125,10 +137,6 @@ class Truck extends AppModel {
     );
 
     var $hasMany = array(
-        'Kir' => array(
-            'className' => 'Kir',
-            'foreignKey' => 'truck_id',
-        ),
         'Siup' => array(
             'className' => 'Siup',
             'foreignKey' => 'truck_id',
@@ -159,7 +167,9 @@ class Truck extends AppModel {
             'order'=> array(
                 'Truck.status' => 'DESC'
             ),
-            'contain' => array(),
+            'contain' => array(
+                'Kir'
+            ),
             'fields' => array(),
         );
 
@@ -190,7 +200,7 @@ class Truck extends AppModel {
     }
 
     function getTruck($id){
-        $truck = $this->find('first', array(
+        $truck = $this->getData('first', array(
             'conditions' => array(
                 'Truck.status' => 1,
                 'Truck.id' => $id

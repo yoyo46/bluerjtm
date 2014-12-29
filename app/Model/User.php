@@ -81,6 +81,7 @@ class User extends AppModel {
                 'status' => 'DESC'
             ),
             'contain' => array(),
+            'fields' => array(),
         );
 
         if(!empty($options)){
@@ -95,6 +96,9 @@ class User extends AppModel {
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
+            }
+            if(!empty($options['fields'])){
+                $default_options['fields'] = $options['fields'];
             }
         }
 

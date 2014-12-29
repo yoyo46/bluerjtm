@@ -63,7 +63,7 @@ class SettingsController extends AppController {
     function city_edit($id){
         $this->loadModel('City');
         $this->set('sub_module_title', 'Rubah Kota');
-        $type_property = $this->City->find('first', array(
+        $type_property = $this->City->getData('first', array(
             'conditions' => array(
                 'City.id' => $id
             )
@@ -115,7 +115,7 @@ class SettingsController extends AppController {
         }
 
         $this->loadModel('Region');
-        $regions = $this->Region->find('list', array(
+        $regions = $this->Region->getData('list', array(
             'conditions' => array(
                 'Region.status' => 1
             ),
@@ -203,7 +203,7 @@ class SettingsController extends AppController {
     function customer_edit($id){
         $this->loadModel('Customer');
         $this->set('sub_module_title', 'Rubah Customer');
-        $customer = $this->Customer->find('first', array(
+        $customer = $this->Customer->getData('first', array(
             'conditions' => array(
                 'Customer.id' => $id
             )
@@ -325,7 +325,7 @@ class SettingsController extends AppController {
     function customer_type_edit($id){
         $this->loadModel('CustomerType');
         $this->set('sub_module_title', 'Rubah Tipe Customer');
-        $customerType = $this->CustomerType->find('first', array(
+        $customerType = $this->CustomerType->getData('first', array(
             'conditions' => array(
                 'CustomerType.id' => $id
             )
@@ -441,7 +441,7 @@ class SettingsController extends AppController {
     function vendor_edit($id){
         $this->loadModel('Vendor');
         $this->set('sub_module_title', 'Rubah Vendor');
-        $vendor = $this->Vendor->find('first', array(
+        $vendor = $this->Vendor->getData('first', array(
             'conditions' => array(
                 'Vendor.id' => $id
             )
@@ -641,7 +641,7 @@ class SettingsController extends AppController {
     function company_edit($id){
         $this->loadModel('Company');
         $this->set('sub_module_title', 'Rubah Company');
-        $company = $this->Company->find('first', array(
+        $company = $this->Company->getData('first', array(
             'conditions' => array(
                 'Company.id' => $id
             )
@@ -829,7 +829,7 @@ class SettingsController extends AppController {
     function uang_jalan_edit($id){
         $this->loadModel('UangJalan');
         $this->set('sub_module_title', 'Rubah Uang Jalan');
-        $uangJalan = $this->UangJalan->find('first', array(
+        $uangJalan = $this->UangJalan->getData('first', array(
             'conditions' => array(
                 'UangJalan.id' => $id
             )
@@ -883,7 +883,7 @@ class SettingsController extends AppController {
     function perlengkapan_edit($id){
         $this->loadModel('Perlengkapan');
         $this->set('sub_module_title', 'Rubah Perlengkapan');
-        $perlengkapan = $this->Perlengkapan->find('first', array(
+        $perlengkapan = $this->Perlengkapan->getData('first', array(
             'conditions' => array(
                 'Perlengkapan.id' => $id
             )
@@ -999,7 +999,7 @@ class SettingsController extends AppController {
     function type_motor_edit($id){
         $this->loadModel('TipeMotor');
         $this->set('sub_module_title', 'Rubah Tipe Motor');
-        $TipeMotor = $this->TipeMotor->find('first', array(
+        $TipeMotor = $this->TipeMotor->getData('first', array(
             'conditions' => array(
                 'TipeMotor.id' => $id
             )
@@ -1151,7 +1151,7 @@ class SettingsController extends AppController {
     function color_motor_edit($id){
         $this->loadModel('ColorMotor');
         $this->set('sub_module_title', 'Rubah Warna Motor');
-        $ColorMotor = $this->ColorMotor->find('first', array(
+        $ColorMotor = $this->ColorMotor->getData('first', array(
             'conditions' => array(
                 'ColorMotor.id' => $id
             )
@@ -1264,7 +1264,7 @@ class SettingsController extends AppController {
     function region_edit($id){
         $this->loadModel('Region');
         $this->set('sub_module_title', 'Rubah Provinsi');
-        $type_property = $this->Region->find('first', array(
+        $type_property = $this->Region->getData('first', array(
             'conditions' => array(
                 'Region.id' => $id
             )
@@ -1381,7 +1381,7 @@ class SettingsController extends AppController {
     function group_motor_edit($id){
         $this->loadModel('GroupMotor');
         $this->set('sub_module_title', 'Rubah Grup Motor');
-        $GroupMotor = $this->GroupMotor->find('first', array(
+        $GroupMotor = $this->GroupMotor->getData('first', array(
             'conditions' => array(
                 'GroupMotor.id' => $id
             )
@@ -1498,7 +1498,7 @@ class SettingsController extends AppController {
     function code_motor_edit($id){
         $this->loadModel('CodeMotor');
         $this->set('sub_module_title', 'Rubah Kode Motor');
-        $CodeMotor = $this->CodeMotor->find('first', array(
+        $CodeMotor = $this->CodeMotor->getData('first', array(
             'conditions' => array(
                 'CodeMotor.id' => $id
             )
@@ -1612,7 +1612,7 @@ class SettingsController extends AppController {
     function branch_edit($id){
         $this->loadModel('Branch');
         $this->set('sub_module_title', 'Rubah Cabang');
-        $branch = $this->Branch->find('first', array(
+        $branch = $this->Branch->getData('first', array(
             'conditions' => array(
                 'Branch.id' => $id
             )
@@ -1723,7 +1723,7 @@ class SettingsController extends AppController {
     function customer_group_edit($id){
         $this->loadModel('CustomerGroup');
         $this->set('sub_module_title', 'Rubah Grup Customer');
-        $customerGroup = $this->CustomerGroup->find('first', array(
+        $customerGroup = $this->CustomerGroup->getData('first', array(
             'conditions' => array(
                 'CustomerGroup.id' => $id
             )

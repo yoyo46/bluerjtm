@@ -27,9 +27,6 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Perlengkapan.created', __('Dibuat'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Perlengkapan.status', __('Status'), array(
-                            'escape' => false
-                        )));
                         echo $this->Html->tag('th', __('Action'));
                 ?>
             </tr>
@@ -43,16 +40,6 @@
             <tr>
                 <td><?php echo $value_data['name'];?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
-                <td>
-                    <?php 
-                        if(!empty($value_data['status'])){
-                            echo '<span class="label label-success">Active</span>'; 
-                        }else{
-                            echo '<span class="label label-danger">Non Active</span>';  
-                        }
-                        
-                    ?>
-                </td>
                 <td class="action">
                     <?php 
                             echo $this->Html->link('Edit', array(

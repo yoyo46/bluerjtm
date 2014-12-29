@@ -66,7 +66,7 @@ class UsersController extends AppController {
 				$data['User']['current_password'] = '';
 			}
 
-            $user = $this->User->find('first', array(
+            $user = $this->User->getData('first', array(
                 'conditions' => array(
                     'User.id' => $this->Auth->user('id')
                 ),
@@ -97,7 +97,7 @@ class UsersController extends AppController {
 
 	function profile(){
 		$this->set('sub_module_title', 'Profile');
-        $user = $this->User->find('first', array(
+        $user = $this->User->getData('first', array(
             'conditions' => array(
                 'User.id' => $this->Auth->user('id')
             )
@@ -108,7 +108,7 @@ class UsersController extends AppController {
 
 			if($user['User']['password'] == $this->Auth->password($data['User']['old_password'])){
                 $data['User']['username'] = (!empty($data['User']['email'])) ? $data['User']['email'] : '';
-                $data['User']['birthdate'] = (!empty($data['User']['birthdate'])) ? date('Y-m-d', strtotime($data['User']['birthdate'])) : '';
+                $data['User']['birthdate'] = (!empty($data['User']['birthdate'])) ? $this->MkCommon->getDate($data['User']['birthdate']) : '';
                 
                 $this->User->id = $this->Auth->user('id');
 				$this->User->set($data);
@@ -131,6 +131,12 @@ class UsersController extends AppController {
 			}
 		}else{
             $this->request->data = $user;
+        }
+
+        if( !empty($this->request->data['User']['birthdate']) && $this->request->data['User']['birthdate'] != '0000-00-00' ) {
+            $this->request->data['User']['birthdate'] = date('d/m/Y', strtotime($this->request->data['User']['birthdate']));
+        } else {
+            $this->request->data['User']['birthdate'] = '';
         }
 	}
 
@@ -231,7 +237,7 @@ class UsersController extends AppController {
     function edit($id){
         $this->loadModel('User');
         $this->set('sub_module_title', 'Rubah User');
-        $User = $this->User->find('first', array(
+        $User = $this->User->getData('first', array(
             'conditions' => array(
                 'User.id' => $id
             )
@@ -264,7 +270,7 @@ class UsersController extends AppController {
 
             if($this->User->validates($data)){
                 $data['User']['username'] = (!empty($data['User']['email'])) ? $data['User']['email'] : '';
-                $data['User']['birthdate'] = (!empty($data['User']['birthdate'])) ? date('Y-m-d', strtotime($data['User']['birthdate'])) : '';
+                $data['User']['birthdate'] = (!empty($data['User']['birthdate'])) ? $this->MkCommon->getDate($data['User']['birthdate']) : '';
                 $data['User']['password'] = $this->Auth->password($default_password);
                 
                 if($id){
@@ -283,13 +289,16 @@ class UsersController extends AppController {
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s User'), $msg), 'error');
             }
-        }else{
-            
-            if($id && $data_local){
-                
-                $this->request->data = $data_local;
+        } else if($id && $data_local){
+            $this->request->data = $data_local;
+
+            if( !empty($this->request->data['User']['birthdate']) && $this->request->data['User']['birthdate'] != '0000-00-00' ) {
+                $this->request->data['User']['birthdate'] = date('d/m/Y', strtotime($this->request->data['User']['birthdate']));
+            } else {
+                $this->request->data['User']['birthdate'] = '';
             }
         }
+
         $this->loadModel('Group');
         $groups = $this->Group->find('list', array(
             'conditions' => array(
@@ -302,7 +311,7 @@ class UsersController extends AppController {
 
     function toggle($id){
         $this->loadModel('User');
-        $locale = $this->User->find('first', array(
+        $locale = $this->User->getData('first', array(
             'conditions' => array(
                 'User.id' => $id
             )

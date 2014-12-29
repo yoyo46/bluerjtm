@@ -19,9 +19,11 @@ class TruckBrand extends AppModel {
 
 	function getData($find, $options = false){
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'TruckBrand.status' => 1,
+            ),
             'order'=> array(
-                'status' => 'DESC'
+                'TruckBrand.name' => 'ASC'
             ),
             'contain' => array(),
         );

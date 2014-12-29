@@ -21,6 +21,9 @@ class RjTruckComponent extends Component {
 				if( !empty($refine['TruckCategory']['name']) ) {
 					$refine_conditions['TruckCategory']['name'] = $refine['TruckCategory']['name'];
 				}
+				if( !empty($refine['Truck']['nopol']) ) {
+					$refine_conditions['Truck']['nopol'] = $refine['Truck']['nopol'];
+				}
 			}
 				
 			return $refine_conditions;

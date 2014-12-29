@@ -1,22 +1,22 @@
 <?php
-class TruckAlocation extends AppModel {
-	var $name = 'TruckAlocation';
+class CustomerGroup extends AppModel {
+	var $name = 'CustomerGroup';
 	var $validate = array(
-		'city_id' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-                'message' => 'kota harap diisi.'
-			),
-		)
+        'name' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Nama Grup Customer harap diisi'
+            ),
+        ),
 	);
 
-	function getData($find, $options = false){
+	function getData( $find, $options = false ){
         $default_options = array(
             'conditions'=> array(
-                'TruckAlocation.status' => 1,
+                'CustomerGroup.status' => 1,
             ),
             'order'=> array(
-                'TruckAlocation.created' => 'DESC'
+                'CustomerGroup.name' => 'ASC'
             ),
             'contain' => array(),
         );

@@ -38,17 +38,16 @@
 	            <dd><?php echo $truck['Truck']['capacity'];?></dd>
 	            <dt><?php echo __('Atas Nama')?></dt>
 	            <dd><?php echo $truck['Truck']['atas_nama'];?></dd>
-	            <dt><?php echo __('KIR')?></dt>
+	            <dt><?php echo __('KIR Berlaku Hingga')?></dt>
 	            <dd>
 	            	<?php 
 		            		$link = $this->Html->link(__('Perpanjang KIR ?'), array(
 		            			'controller' => 'trucks',
 		            			'action' => 'kir',
-		            			$truck['Truck']['id']
 		            		));
 
-		            		if( !empty($truck['Truck']['kir']) ) {
-		            			$truckKir = $this->Common->customDate($truck['Truck']['kir']);
+		            		if( !empty($truck['Kir']['to_date']) ) {
+		            			$truckKir = $this->Common->customDate($truck['Kir']['to_date']);
 		            		} else {
 		            			$truckKir = '';
 		            		}

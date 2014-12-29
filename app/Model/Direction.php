@@ -38,9 +38,12 @@ class Direction extends AppModel {
 
 	function getData($find, $options = false){
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'Direction.status' => 1,
+            ),
             'order'=> array(
-                'status' => 'DESC'
+                'Direction.created' => 'DESC',
+                'Direction.id' => 'DESC'
             ),
             'contain' => array(),
         );

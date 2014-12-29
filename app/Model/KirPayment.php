@@ -1,24 +1,41 @@
 <?php
-class TruckAlocation extends AppModel {
-	var $name = 'TruckAlocation';
+class KirPayment extends AppModel {
+	var $name = 'KirPayment';
 	var $validate = array(
-		'city_id' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-                'message' => 'kota harap diisi.'
-			),
+        'kir_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Ni. Pol Truk harap dipilih'
+            ),
+        ),
+        'user_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Anda tidak memiliki otoritas pada halaman ini'
+            ),
+        ),
+	);
+
+	var $belongsTo = array(
+		'Kir' => array(
+			'className' => 'Kir',
+			'foreignKey' => 'kir_id',
 		)
 	);
 
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(
-                'TruckAlocation.status' => 1,
+                'KirPayment.status' => 1,
             ),
             'order'=> array(
-                'TruckAlocation.created' => 'DESC'
+                'KirPayment.created' => 'DESC',
+                'KirPayment.id' => 'DESC',
             ),
-            'contain' => array(),
+            'contain' => array(
+                'Kir'
+            ),
+            'fields' => array(),
         );
 
         if(!empty($options)){
@@ -30,6 +47,9 @@ class TruckAlocation extends AppModel {
             }
             if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
+            }
+            if(!empty($options['fields'])){
+                $default_options['fields'] = $options['fields'];
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];

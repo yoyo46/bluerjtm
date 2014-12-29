@@ -36,9 +36,11 @@ class Vendor extends AppModel {
 
 	function getData($find, $options = false){
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'Vendor.status' => 1,
+            ),
             'order'=> array(
-                'status' => 'DESC'
+                'Vendor.name' => 'ASC'
             ),
             'contain' => array(),
         );

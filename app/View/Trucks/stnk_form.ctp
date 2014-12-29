@@ -1,5 +1,5 @@
 <?php
-		$this->Html->addCrumb('Histori STNK Truk', array(
+		$this->Html->addCrumb('STNK Truk', array(
 			'controller' => 'trucks',
 			'action' => 'stnk'
 		));
@@ -30,29 +30,107 @@
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->input('tgl_bayar', array(
-					'type' => 'text',
-					'label'=> __('Tanggal Bayar *'), 
-					'class'=>'form-control custom-date',
-					'required' => false,
-					'placeholder' => __('Tanggal Bayar')
-				));
+					echo $this->Form->label('tgl_bayar', __('Tanggal Perpanjang *'));
 			?>
+			<div class="row">
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->day('tgl_bayar', array(
+								'label'=> false, 
+								'class'=>'form-control selectbox-date',
+								'required' => false,
+								'empty' => __('Hari'),
+								'id' => 'day',
+								'required' => false,
+							));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->month('tgl_bayar', array(
+								'label'=> false, 
+								'class'=>'form-control selectbox-date',
+								'required' => false,
+								'empty' => __('Bulan'),
+								'id' => 'month',
+								'required' => false,
+							));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->year('tgl_bayar', date('Y') - 10, date('Y') + 10, array(
+								'label'=> false, 
+								'class'=>'form-control selectbox-date',
+								'empty' => __('Tahun'),
+								'id' => 'year',
+								'required' => false,
+							));
+					?>
+				</div>
+			</div>
+        	<?php 
+					echo $this->Form->error('tgl_bayar', array(
+						'notempty' => __('Tanggal Perpanjang harap diisi'),
+					), array(
+						'wrap' => 'div', 
+						'class' => 'error-message',
+					));
+        	?>
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->input('tgl_berakhir', array(
-					'type' => 'text',
-					'label'=> __('Tanggal Berakhir *'), 
-					'class'=>'form-control custom-date',
-					'required' => false,
-					'placeholder' => __('Tanggal Berakhir')
-				));
+					echo $this->Form->label('tgl_berakhir', __('Tanggal Expired *'));
 			?>
+			<div class="row">
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->day('tgl_berakhir', array(
+								'label'=> false, 
+								'class'=>'form-control selectbox-date',
+								'required' => false,
+								'empty' => __('Hari'),
+								'id' => 'day',
+								'required' => false,
+							));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->month('tgl_berakhir', array(
+								'label'=> false, 
+								'class'=>'form-control selectbox-date',
+								'required' => false,
+								'empty' => __('Bulan'),
+								'id' => 'month',
+								'required' => false,
+							));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->year('tgl_berakhir', date('Y') - 10, date('Y') + 10, array(
+								'label'=> false, 
+								'class'=>'form-control selectbox-date',
+								'empty' => __('Tahun'),
+								'id' => 'year',
+								'required' => false,
+							));
+					?>
+				</div>
+			</div>
+        	<?php 
+					echo $this->Form->error('tgl_berakhir', array(
+						'notempty' => __('Tanggal Expired harap diisi'),
+					), array(
+						'wrap' => 'div', 
+						'class' => 'error-message',
+					));
+        	?>
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('price', __('Harga Perpanjang STNK *')); 
+				echo $this->Form->label('price', __('Biaya Perpanjang STNK *')); 
 			?>
 			<div class="input-group">
 	        	<?php 
@@ -63,9 +141,8 @@
 					echo $this->Form->input('price', array(
 						'type' => 'text',
 						'label'=> false, 
-						'class'=>'form-control',
+						'class'=>'form-control input_price',
 						'required' => false,
-						'placeholder' => __('Harga Perpanjang STNK')
 					));
 				?>
 			</div>

@@ -1,6 +1,6 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
-        echo $this->element('blocks/trucks/search_kir');
+        echo $this->element('blocks/trucks/search_kir_payments');
 ?>
 <div class="box">
     <div class="box-header">
@@ -11,9 +11,9 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Perpanjang KIR', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Bayar KIR', array(
                     'controller' => 'trucks',
-                    'action' => 'kir_add'
+                    'action' => 'kir_payment_add'
                 ), array(
                     'escape' => false,
                     'class' => 'btn btn-app pull-right'
@@ -40,7 +40,7 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Kir.paid', __('Status'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Kir.created', __('Dibuat'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('KirPayment.created', __('Dibuat'), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', __('Action'));
@@ -48,12 +48,12 @@
             </tr>
             <?php
                     $i = 1;
-                    if(!empty($kir)){
-                        foreach ($kir as $key => $value) {
-                            $id = $value['Kir']['id'];
+                    if(!empty($kirPayments)){
+                        foreach ($kirPayments as $key => $value) {
+                            $id = $value['KirPayment']['id'];
             ?>
             <tr>
-                <td><?php echo $value['Truck']['nopol'];?></td>
+                <td><?php echo $value['Kir']['no_pol'];?></td>
                 <td><?php echo $this->Common->customDate($value['Kir']['tgl_kir']);?></td>
                 <td><?php echo $this->Common->customDate($value['Kir']['to_date']);?></td>
                 <td>
@@ -70,26 +70,16 @@
                             }
                     ?>
                 </td>
-                <td><?php echo $this->Time->niceShort($value['Kir']['created']);?></td>
+                <td><?php echo $this->Time->niceShort($value['KirPayment']['created']);?></td>
                 <td class="action">
                     <?php
-                            if( empty($value['Kir']['paid']) && empty($value['Kir']['rejected']) ){
-                                echo $this->Html->link('Rubah', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'kir_edit',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs'
-                                ));
-
-                                echo $this->Html->link(__('Hapus'), array(
-                                    'controller' => 'trucks',
-                                    'action' => 'kir_delete',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs'
-                                ), __('Anda yakin ingin menghapus data Perpanjang KIR ini?'));
-                            }
+                            echo $this->Html->link(__('Detail'), array(
+                                'controller' => 'trucks',
+                                'action' => 'kir_detail',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-primary btn-xs'
+                            ));
                     ?>
                 </td>
             </tr>

@@ -30,12 +30,22 @@
         </div>
         <div class="form-group">
         	<?php 
-					echo $this->Form->label('tgl_kir', __('Tanggal Perpanjang *'));
+					echo $this->Form->input('tgl_kir', array(
+						'label'=> __('Tanggal Perpanjang *'), 
+						'class'=>'form-control custom-date',
+						'type' => 'text',
+						'required' => false,
+					));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+					echo $this->Form->label('from_date', __('Tanggal Kir ditetapkan *'));
 			?>
 			<div class="row">
 				<div class="col-sm-4">
 		        	<?php 
-							echo $this->Form->day('tgl_kir', array(
+							echo $this->Form->day('from_date', array(
 								'label'=> false, 
 								'class'=>'form-control selectbox-date',
 								'required' => false,
@@ -47,7 +57,7 @@
 				</div>
 				<div class="col-sm-4">
 		        	<?php 
-							echo $this->Form->month('tgl_kir', array(
+							echo $this->Form->month('from_date', array(
 								'label'=> false, 
 								'class'=>'form-control selectbox-date',
 								'required' => false,
@@ -59,7 +69,7 @@
 				</div>
 				<div class="col-sm-4">
 		        	<?php 
-							echo $this->Form->year('tgl_kir', date('Y') - 10, date('Y') + 10, array(
+							echo $this->Form->year('from_date', date('Y') - 10, date('Y') + 10, array(
 								'label'=> false, 
 								'class'=>'form-control selectbox-date',
 								'empty' => __('Tahun'),
@@ -70,7 +80,7 @@
 				</div>
 			</div>
         	<?php 
-					echo $this->Form->error('tgl_kir', array(
+					echo $this->Form->error('from_date', array(
 						'notempty' => __('Tanggal Perpanjang harap diisi'),
 					), array(
 						'wrap' => 'div', 
@@ -80,12 +90,12 @@
         </div>
         <div class="form-group">
         	<?php 
-					echo $this->Form->label('tgl_next_kir', __('Tanggal Expired *'));
+					echo $this->Form->label('to_date', __('Tgl Berlaku Kir *'));
 			?>
 			<div class="row">
 				<div class="col-sm-4">
 		        	<?php 
-							echo $this->Form->day('tgl_next_kir', array(
+							echo $this->Form->day('to_date', array(
 								'label'=> false, 
 								'class'=>'form-control selectbox-date',
 								'required' => false,
@@ -97,7 +107,7 @@
 				</div>
 				<div class="col-sm-4">
 		        	<?php 
-							echo $this->Form->month('tgl_next_kir', array(
+							echo $this->Form->month('to_date', array(
 								'label'=> false, 
 								'class'=>'form-control selectbox-date',
 								'required' => false,
@@ -109,7 +119,7 @@
 				</div>
 				<div class="col-sm-4">
 		        	<?php 
-							echo $this->Form->year('tgl_next_kir', date('Y') - 10, date('Y') + 10, array(
+							echo $this->Form->year('to_date', date('Y') - 10, date('Y') + 10, array(
 								'label'=> false, 
 								'class'=>'form-control selectbox-date',
 								'empty' => __('Tahun'),
@@ -120,8 +130,8 @@
 				</div>
 			</div>
         	<?php 
-					echo $this->Form->error('tgl_next_kir', array(
-						'notempty' => __('Tanggal KIR harap diisi'),
+					echo $this->Form->error('to_date', array(
+						'notempty' => __('Tanggal Expired harap diisi'),
 					), array(
 						'wrap' => 'div', 
 						'class' => 'error-message',

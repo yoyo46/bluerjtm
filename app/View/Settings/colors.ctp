@@ -25,7 +25,6 @@
                 <th>No.</th>
                 <th>Warna Motor</th>
                 <th>Dibuat</th>
-                <th>Status</th>
                 <th>Action</th>
             </tr>
             <?php
@@ -39,16 +38,6 @@
                 <td><?php echo $i++;?></td>
                 <td><?php echo $value_data['name'];?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
-                <td>
-                    <?php 
-                        if(!empty($value_data['status'])){
-                            echo '<span class="label label-success">Active</span>'; 
-                        }else{
-                            echo '<span class="label label-danger">Non Active</span>';  
-                        }
-                        
-                    ?>
-                </td>
                 <td class="action">
                     <?php 
                             echo $this->Html->link('Edit', array(
@@ -59,25 +48,14 @@
                                 'class' => 'btn btn-primary btn-xs'
                             ));
 
-                            if(!empty($value_data['status'])){
-                                echo $this->Html->link('Hapus', array(
-                                    'controller' => 'settings',
-                                    'action' => 'color_motor_toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs',
-                                    'title' => 'disable status brand'
-                                ), sprintf(__('Apakah Anda yakin akan menon-aktifkan %s?'), $value_data['name']));
-                            }else{
-                                echo $this->Html->link('Enable', array(
-                                    'controller' => 'settings',
-                                    'action' => 'color_motor_toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-success btn-xs',
-                                    'title' => 'enable status brand'
-                                ), sprintf(__('Apakah Anda yakin akan mengaktifkan %s?'), $value_data['name']));
-                            }
+                            echo $this->Html->link('Hapus', array(
+                                'controller' => 'settings',
+                                'action' => 'color_motor_toggle',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-danger btn-xs',
+                                'title' => 'disable status brand'
+                            ), sprintf(__('Apakah Anda yakin akan menon-aktifkan %s?'), $value_data['name']));
                     ?>
                 </td>
             </tr>

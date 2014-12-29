@@ -87,7 +87,7 @@ class TrucksController extends AppController {
     function edit($id){
         $this->loadModel('Truck');
         $this->set('sub_module_title', 'Rubah truk');
-        $truck = $this->Truck->find('first', array(
+        $truck = $this->Truck->getData('first', array(
             'conditions' => array(
                 'Truck.id' => $id
             ),
@@ -130,8 +130,8 @@ class TrucksController extends AppController {
                 $msg = 'menambah';
             }
             
-            $data['Truck']['tgl_bpkb'] = (!empty($data['Truck']['tgl_bpkb'])) ? date('Y-m-d', strtotime($data['Truck']['tgl_bpkb'])) : '';
-            $data['Leasing']['paid_date'] = (!empty($data['Leasing']['paid_date'])) ? date('Y-m-d', strtotime($data['Leasing']['paid_date'])) : '';
+            $data['Truck']['tgl_bpkb'] = (!empty($data['Truck']['tgl_bpkb'])) ? $this->MkCommon->getDate($data['Truck']['tgl_bpkb']) : '';
+            $data['Leasing']['paid_date'] = (!empty($data['Leasing']['paid_date'])) ? $this->MkCommon->getDate($data['Leasing']['paid_date']) : '';
 
             $this->Truck->set($data);
             $check_alokasi = false;
@@ -189,17 +189,27 @@ class TrucksController extends AppController {
                 }
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s truk, %s'), $msg, $text_error), 'error');
             }
-        }else{
-            if($id && $data_local){
-                $this->request->data = $data_local;
+        } else if($id && $data_local){
+            $this->request->data= $data_local;
 
-                if(!empty($data_local['TruckCustomer'])){
-                    $data_temp = $data_local['TruckCustomer'];
-                    unset($this->request->data['TruckCustomer']);
-                    foreach ($data_temp as $key => $value) {
-                        $this->request->data['TruckCustomer']['customer_id'][$key] = $value['customer_id'];
-                    }
+            if(!empty($data_local['TruckCustomer'])){
+                $data_temp = $data_local['TruckCustomer'];
+                unset($this->request->data['TruckCustomer']);
+                foreach ($data_temp as $key => $value) {
+                    $this->request->data['TruckCustomer']['customer_id'][$key] = $value['customer_id'];
                 }
+            }
+
+            if( !empty($this->request->data['Truck']['tgl_bpkb']) && $this->request->data['Truck']['tgl_bpkb'] != '0000-00-00' ) {
+                $this->request->data['Truck']['tgl_bpkb'] = date('d/m/Y', strtotime($this->request->data['Truck']['tgl_bpkb']));
+            } else {
+                $this->request->data['Truck']['tgl_bpkb'] = '';
+            }
+
+            if( !empty($this->request->data['Leasing']['paid_date']) && $this->request->data['Leasing']['paid_date'] != '0000-00-00' ) {
+                $this->request->data['Leasing']['paid_date'] = date('d/m/Y', strtotime($this->request->data['Leasing']['paid_date']));
+            } else {
+                $this->request->data['Leasing']['paid_date'] = '';
             }
         }
 
@@ -335,7 +345,7 @@ class TrucksController extends AppController {
     function brand_edit($id){
     	$this->loadModel('TruckBrand');
         $this->set('sub_module_title', 'Rubah Merek Truk');
-        $TruckBrand = $this->TruckBrand->find('first', array(
+        $TruckBrand = $this->TruckBrand->getData('first', array(
             'conditions' => array(
                 'TruckBrand.id' => $id
             )
@@ -382,7 +392,7 @@ class TrucksController extends AppController {
             
             if($id && $data_local){
                 
-                $this->request->data = $data_local;
+                $this->request->data= $data_local;
             }
         }
 
@@ -451,7 +461,7 @@ class TrucksController extends AppController {
     function category_edit($id){
     	$this->loadModel('TruckCategory');
         $this->set('sub_module_title', 'Rubah Jenis Truk');
-        $type_property = $this->TruckCategory->find('first', array(
+        $type_property = $this->TruckCategory->getData('first', array(
             'conditions' => array(
                 'TruckCategory.id' => $id
             )
@@ -498,7 +508,7 @@ class TrucksController extends AppController {
             
             if($id && $data_local){
                 
-                $this->request->data = $data_local;
+                $this->request->data= $data_local;
             }
         }
 
@@ -568,7 +578,7 @@ class TrucksController extends AppController {
     function driver_edit($id){
         $this->loadModel('Driver');
         $this->set('sub_module_title', 'Rubah Supir Truk');
-        $driver = $this->Driver->find('first', array(
+        $driver = $this->Driver->getData('first', array(
             'conditions' => array(
                 'Driver.id' => $id
             )
@@ -599,7 +609,7 @@ class TrucksController extends AppController {
 
             $data['Driver']['phone'] = (!empty($data['Driver']['phone'])) ? Sanitize::paranoid($data['Driver']['phone']) : '';
             $data['Driver']['phone_2'] = (!empty($data['Driver']['phone_2'])) ? Sanitize::paranoid($data['Driver']['phone_2']) : '';
-            $data['Driver']['expired_date_sim'] = (!empty($data['Driver']['expired_date_sim'])) ? date('Y-m-d', strtotime($data['Driver']['expired_date_sim'])) : '';
+            $data['Driver']['expired_date_sim'] = (!empty($data['Driver']['expired_date_sim'])) ? $this->MkCommon->getDate($data['Driver']['expired_date_sim']) : '';
             $data['Driver']['birth_date'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_lahir']);
             $data['Driver']['join_date'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_penerimaan']);
             $data['Driver']['expired_date_sim'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_expire_sim']);
@@ -626,7 +636,13 @@ class TrucksController extends AppController {
             }
 
             $data_local = $this->Driver->getGenerateDate($data_local);
-            $this->request->data = $data_local;
+            $this->request->data= $data_local;
+
+            if( !empty($this->request->data['Driver']['expired_date_sim']) && $this->request->data['Driver']['expired_date_sim'] != '0000-00-00' ) {
+                $this->request->data['Driver']['expired_date_sim'] = date('d/m/Y', strtotime($this->request->data['Driver']['expired_date_sim']));
+            } else {
+                $this->request->data['Driver']['expired_date_sim'] = '';
+            }
         }
 
         $this->loadModel('DriverRelation');
@@ -685,20 +701,25 @@ class TrucksController extends AppController {
     }
 
     function kir($id = false){
-        $this->paginate = $this->Truck->Kir->getData('paginate');
-        $kir = $this->paginate('Kir');
-        
-        if(!empty($kir)){
-            foreach ($kir as $key => $value) {
-                $truck = $this->Truck->getInfoTruck($value['Kir']['truck_id']);
-                
-                if(!empty($truck)){
-                    $kir[$key] = array_merge($value, $truck);
-                }else{
-                    $kir[$key]['Truck'] = array();
-                }
+        $this->loadModel('Kir');
+        $conditions = array(
+            'Kir.paid' => 0,
+            'Kir.rejected' => 0,
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['nopol'])){
+                $name = urldecode($refine['nopol']);
+                $this->request->data['Truck']['nopol'] = $name;
+                $conditions['Kir.no_pol LIKE'] = '%'.$name.'%';
             }
         }
+        $this->paginate = $this->Kir->getData('paginate', array(
+            'conditions' => $conditions
+        ));
+        $kir = $this->paginate('Kir');
         
         $this->set('active_menu', 'kir');
         $sub_module_title = __('KIR');
@@ -715,9 +736,11 @@ class TrucksController extends AppController {
     function kir_edit($id){
         $this->loadModel('Kir');
         $this->set('sub_module_title', 'Rubah KIR Truk');
-        $Kir = $this->Kir->find('first', array(
+        $Kir = $this->Kir->getData('first', array(
             'conditions' => array(
-                'Kir.id' => $id
+                'Kir.id' => $id,
+                'Kir.paid' => 0,
+                'Kir.rejected' => 0,
             )
         ));
 
@@ -745,15 +768,26 @@ class TrucksController extends AppController {
                 $msg = 'menambah';
             }
             
+            $price = trim($data['Kir']['price']);
             $data['Kir']['user_id'] = $this->user_id;
-            $data['Kir']['tgl_kir'] = $this->MkCommon->getDateSelectbox($data['Kir']['tgl_kir']);
-            $data['Kir']['tgl_next_kir'] = $this->MkCommon->getDateSelectbox($data['Kir']['tgl_next_kir']);
-            $data['Kir']['price'] = !empty($data['Kir']['price'])?str_replace(array(',', ' '), array('', ''), $data['Kir']['price']):0;
+            $data['Kir']['tgl_kir'] = $this->MkCommon->getDate($data['Kir']['tgl_kir']);
+            $data['Kir']['from_date'] = $this->MkCommon->getDateSelectbox($data['Kir']['from_date']);
+            $data['Kir']['to_date'] = $this->MkCommon->getDateSelectbox($data['Kir']['to_date']);
+            $data['Kir']['price'] = !empty($price)?str_replace(array(',', ' '), array('', ''), $price):'';
 
             if( !empty($data['Kir']['truck_id']) ) {
-                $truck = $this->Truck->find('first', array(
+                $truck = $this->Truck->getData('first', array(
                     'conditions' => array(
                         'Truck.id' => $data['Kir']['truck_id']
+                    ),
+                ));
+                $kir = $this->Kir->getData('first', array(
+                    'conditions' => array(
+                        'Kir.rejected' => 0,
+                        'Kir.truck_id' => $data['Kir']['truck_id'],
+                        'Kir.from_date >=' => $data['Kir']['from_date'],
+                        'Kir.to_date >' => $data['Kir']['from_date'],
+                        'Kir.id <>' => $id,
                     ),
                 ));
 
@@ -761,24 +795,10 @@ class TrucksController extends AppController {
                     $data['Kir']['no_pol'] = $truck['Truck']['nopol'];
                 }
             }
-
-            // $date_old = '';
-            // if(!empty($value['Kir']['truck_id'])){
-            //     $truck = $this->Truck->getInfoTruck($value['Kir']['truck_id']);
-            //     $date_old = strtotime($truck['Truck']['kir']);
-            // }
             
-            // $date_new = strtotime($data['Kir']['tgl_kir']);
-            
-            // $check = false;
-            // if($date_new >= $date_old){
-            //     $check = true;
-            // }else if(empty($date_old)){
-                $check = true;
-            // }
             $this->Kir->set($data);
 
-            if($this->Kir->validates($data) && $check){
+            if( $this->Kir->validates($data) && empty($kir) ){
                 if($this->Kir->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s KIR Truk'), $msg), 'success');
                     $this->redirect(array(
@@ -790,13 +810,19 @@ class TrucksController extends AppController {
                 }
             }else{
                 $text = sprintf(__('Gagal %s KIR Truk'), $msg);
-                // if( !$check ){
-                //     $text .= ', tanggal KIR harus lebih besar dari sebelumnya';
-                // }
+                if( !empty($kir) ){
+                    $text .= ', tanggal KIR telah diperpanjang sebelumnya';
+                }
                 $this->MkCommon->setCustomFlash($text, 'error');
             }
         } else if($id && $data_local){
-            $this->request->data = $data_local;
+            $this->request->data= $data_local;
+
+            if( !empty($this->request->data['Kir']['tgl_kir']) && $this->request->data['Kir']['tgl_kir'] != '0000-00-00' ) {
+                $this->request->data['Kir']['tgl_kir'] = date('d/m/Y', strtotime($this->request->data['Kir']['tgl_kir']));
+            } else {
+                $this->request->data['Kir']['tgl_kir'] = '';
+            }
         }
 
         $this->loadModel('Truck');
@@ -816,8 +842,38 @@ class TrucksController extends AppController {
         $this->render('kir_form');
     }
 
-    function kir_payments( $kir_id = false ){
+    function kir_payments(){
+        $this->loadModel('KirPayment');
+        $conditions = array(
+            'OR' => array(
+                'Kir.paid' => 1,
+                'Kir.rejected' => 1,
+            ),
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['nopol'])){
+                $name = urldecode($refine['nopol']);
+                $this->request->data['Truck']['nopol'] = $name;
+                $conditions['Kir.no_pol LIKE'] = '%'.$name.'%';
+            }
+        }
+        $this->paginate = $this->KirPayment->getData('paginate', array(
+            'conditions' => $conditions,
+            'limit' => Configure::read('__Site.config_pagination'),
+        ));
+        $kirPayments = $this->paginate('KirPayment');
+
+        $this->set('active_menu', 'kir_payments');
+        $sub_module_title = __('Pembayaran KIR');
+        $this->set(compact('kirPayments', 'sub_module_title'));
+    }
+
+    function kir_payment_add( $kir_id = false ){
         $this->loadModel('Kir');
+        $kir = false;
         
         if( !empty($kir_id) ) {
             $kir = $this->Kir->getData('first', array(
@@ -828,7 +884,44 @@ class TrucksController extends AppController {
                 ),
             ));
         }
+
+        $this->doKirPayment($kir_id, $kir);
+        $kirs = $this->Kir->getData('list', array(
+            'conditions' => array(
+                'Kir.status' => 1,
+                'Kir.paid' => 0,
+                'Kir.rejected' => 0,
+            ),
+            'fields' => array(
+                'Kir.id', 'Kir.no_pol'
+            )
+        ));
         
+        $sub_module_title = __('Pembayaran KIR');
+        $this->set(compact(
+            'kirs', 'sub_module_title'
+        ));
+        $this->render('kir_payment_form');
+    }
+
+    public function kir_detail( $id = false ) {
+        $this->loadModel('KirPayment');
+        $kir = $this->KirPayment->getData('first', array(
+            'conditions' => array(
+                'KirPayment.id' => $id,
+            ),
+        ));
+
+        if( !empty($kir) ) {
+            $this->doKirPayment($id, $kir);
+            $this->set('sub_module_title', __('Detail Pembayaran KIR'));
+        } else {
+            $this->MkCommon->setCustomFlash(__('Data Pembayaran KIR tidak ditemukan'), 'error');
+            $this->redirect($this->referer());
+        }
+    }
+
+    public function doKirPayment( $id = false, $kir = false ) {
         if(!empty($this->request->data)){
             if( !empty($this->request->data['KirPayment']['kir_id']) && !empty($kir) ){
                 $kir_id = $this->request->data['KirPayment']['kir_id'];
@@ -843,7 +936,12 @@ class TrucksController extends AppController {
                 if( $this->KirPayment->validates($data) ){
                     if($this->KirPayment->save($data)){
                         $this->Kir->id = $kir_id;
-                        $this->Kir->set('paid', 1);
+
+                        if( !empty($data['KirPayment']['rejected']) ) {
+                            $this->Kir->set('rejected', 1);
+                        } else {
+                            $this->Kir->set('paid', 1);
+                        }
 
                         if($this->Kir->save()){
                             $this->MkCommon->setCustomFlash(sprintf(__('KIR Truk %s telah dibayar'), $kir['Kir']['no_pol']), 'success');
@@ -864,59 +962,42 @@ class TrucksController extends AppController {
                 $this->MkCommon->setCustomFlash(__('Mohon pilih No. Pol Truk'), 'error');
             }
         } else if( !empty($kir) ) {
-            $this->request->data['KirPayment']['kir_id'] = $kir_id;
-            $this->request->data['KirPayment']['tgl_kir'] = date('d-m-Y', strtotime($kir['Kir']['tgl_kir']));
-            $this->request->data['KirPayment']['tgl_next_kir'] = date('d-m-Y', strtotime($kir['Kir']['tgl_next_kir']));
+            $this->request->data['KirPayment']['kir_id'] = $id;
+            $this->request->data['KirPayment']['from_date'] = date('d/m/Y', strtotime($kir['Kir']['from_date']));
+            $this->request->data['KirPayment']['to_date'] = date('d/m/Y', strtotime($kir['Kir']['to_date']));
             $this->request->data['KirPayment']['price'] = $kir['Kir']['price'];
         }
 
-        $kirs = $this->Kir->getData('list', array(
-            'conditions' => array(
-                'Kir.status' => 1,
-                'Kir.paid' => 0,
-                'Kir.rejected' => 0,
-            ),
-            'fields' => array(
-                'Kir.id', 'Kir.no_pol'
-            )
-        ));
-        
         $this->set('active_menu', 'kir_payments');
-        $sub_module_title = __('Pembayaran KIR');
         $this->set(compact(
-            'kirs', 'sub_module_title', 'kir_id',
-            'kir'
+            'id', 'kir', 'sub_module_title'
         ));
     }
 
-    public function kir_reject( $kir_id = false ) {
+    public function kir_delete( $id ) {
         $this->loadModel('Kir');
         $kir = $this->Kir->getData('first', array(
             'conditions' => array(
                 'Kir.paid' => 0,
                 'Kir.rejected' => 0,
-                'Kir.id' => $kir_id,
+                'Kir.id' => $id,
             ),
         ));
 
         if( !empty($kir) ) {
-            $this->Kir->id = $kir_id;
-            $this->Kir->set('paid', 0);
-            $this->Kir->set('rejected', 1);
+            $this->Kir->id = $id;
+            $this->Kir->set('status', 0);
 
             if($this->Kir->save()){
-                $this->MkCommon->setCustomFlash(sprintf(__('KIR Truk %s telah ditolak'), $kir['Kir']['no_pol']), 'success');
+                $this->MkCommon->setCustomFlash(sprintf(__('KIR Truk %s telah berhasil dihapus'), $kir['Kir']['no_pol']), 'success');
             } else {
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal menolak KIR Truk %s'), $kir['Kir']['no_pol']), 'error');  
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal menghapus KIR Truk %s'), $kir['Kir']['no_pol']), 'error');  
             }
         } else {
-            $this->MkCommon->setCustomFlash(__('Mohon pilih No. Pol Truk'), 'error');
+            $this->MkCommon->setCustomFlash(__('Data KIR tidak ditemukan'), 'error');
         }
 
-        $this->redirect(array(
-            'controller' => 'trucks',
-            'action' => 'kir_payments'
-        ));
+        $this->redirect($this->referer());
     }
 
     function siup($id = false){
@@ -954,7 +1035,7 @@ class TrucksController extends AppController {
     function siup_edit($id){
         $this->loadModel('Siup');
         $this->set('sub_module_title', 'Rubah SIUP Truk');
-        $Siup = $this->Siup->find('first', array(
+        $Siup = $this->Siup->getData('first', array(
             'conditions' => array(
                 'Siup.id' => $id
             )
@@ -984,8 +1065,8 @@ class TrucksController extends AppController {
             }
             
             $data['Siup']['user_id'] = $this->user_id;
-            $data['Siup']['tgl_siup'] = (!empty($data['Siup']['tgl_siup'])) ? date('Y-m-d', strtotime($data['Siup']['tgl_siup'])) : '';
-            $data['Siup']['tgl_next_siup'] = (!empty($data['Siup']['tgl_next_siup'])) ? date('Y-m-d', strtotime($data['Siup']['tgl_next_siup'])) : '';
+            $data['Siup']['tgl_siup'] = (!empty($data['Siup']['tgl_siup'])) ? $this->MkCommon->getDate($data['Siup']['tgl_siup']) : '';
+            $data['Siup']['tgl_next_siup'] = (!empty($data['Siup']['tgl_next_siup'])) ? $this->MkCommon->getDate($data['Siup']['tgl_next_siup']) : '';
 
             $date_old = '';
             if(!empty($data['Siup']['truck_id'])){
@@ -1026,11 +1107,19 @@ class TrucksController extends AppController {
                 }
                 $this->MkCommon->setCustomFlash($text, 'error');
             }
-        }else{
-            
-            if($id && $data_local){
-                
-                $this->request->data = $data_local;
+        } else if($id && $data_local){
+            $this->request->data= $data_local;
+
+            if( !empty($this->request->data['Siup']['tgl_siup']) && $this->request->data['Siup']['tgl_siup'] != '0000-00-00' ) {
+                $this->request->data['Siup']['tgl_siup'] = date('d/m/Y', strtotime($this->request->data['Siup']['tgl_siup']));
+            } else {
+                $this->request->data['Siup']['tgl_siup'] = '';
+            }
+
+            if( !empty($this->request->data['Siup']['tgl_next_siup']) && $this->request->data['Siup']['tgl_next_siup'] != '0000-00-00' ) {
+                $this->request->data['Siup']['tgl_next_siup'] = date('d/m/Y', strtotime($this->request->data['Siup']['tgl_next_siup']));
+            } else {
+                $this->request->data['Siup']['tgl_next_siup'] = '';
             }
         }
 
@@ -1088,7 +1177,7 @@ class TrucksController extends AppController {
     function alocation_add($truck_id){
         $this->set('sub_module_title', 'Tambah Alokasi Truk');
 
-        $truck = $this->Truck->find('first', array(
+        $truck = $this->Truck->getData('first', array(
             'conditions' => array(
                 'truck.id' => $truck_id
             )
@@ -1108,7 +1197,7 @@ class TrucksController extends AppController {
     function alocation_edit($truck_id, $id){
         $this->loadModel('TruckAlocation');
         $this->set('sub_module_title', 'Rubah alokasi Truk');
-        $TruckAlocation = $this->TruckAlocation->find('first', array(
+        $TruckAlocation = $this->TruckAlocation->getData('first', array(
             'conditions' => array(
                 'TruckAlocation.id' => $id,
                 'TruckAlocation.truck_id' => $truck_id
@@ -1139,7 +1228,7 @@ class TrucksController extends AppController {
                 $msg = 'menambah';
             }
 
-            $truck = $this->Truck->find('first', array(
+            $truck = $this->Truck->getData('first', array(
                 'conditions' => array(
                     'truck.id' => $truck_id
                 )
@@ -1185,7 +1274,7 @@ class TrucksController extends AppController {
         }else{
             if($id && $data_local){
                 
-                $this->request->data = $data_local;
+                $this->request->data= $data_local;
             }
         }
 
@@ -1230,7 +1319,7 @@ class TrucksController extends AppController {
     function direction_edit($id){
         $this->loadModel('Direction');
         $this->set('sub_module_title', 'Rubah Rute Truk');
-        $Direction = $this->Direction->find('first', array(
+        $Direction = $this->Direction->getData('first', array(
             'conditions' => array(
                 'Direction.id' => $id
             )
@@ -1303,7 +1392,7 @@ class TrucksController extends AppController {
         }else{
             if($id && $data_local){
                 
-                $this->request->data = $data_local;
+                $this->request->data= $data_local;
             }
         }
 
@@ -1383,7 +1472,7 @@ class TrucksController extends AppController {
                 $this->MkCommon->setCustomFlash($text, 'error');
             }
         }else{
-            $this->request->data = $gas;
+            $this->request->data= $gas;
         }
 
         $sub_module_title = __('rincian bahan bakar');
@@ -1480,45 +1569,49 @@ class TrucksController extends AppController {
         }
     }
 
-    function stnk(){
-        $this->paginate = $this->Truck->Stnk->getData('paginate', array(
-            'conditions' => array(
-                'Stnk.status' => 1
-            ),
-            'order' => array(
-                'Stnk.created'
-            )
-        ));
-        $stnk = $this->paginate('Stnk');
-        
-        if(!empty($stnk)){
-            foreach ($stnk as $key => $value) {
-                $truck = $this->Truck->getInfoTruck($value['Stnk']['truck_id']);
-                
-                if(!empty($truck)){
-                    $stnk[$key] = array_merge($value, $truck);
-                }else{
-                    $stnk[$key]['Truck'] = array();
-                }
+    
+
+    function stnk( $id = false ) {
+        $this->loadModel('Stnk');
+        $conditions = array(
+            'Stnk.paid' => 0,
+            'Stnk.rejected' => 0,
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['nopol'])){
+                $name = urldecode($refine['nopol']);
+                $this->request->data['Truck']['nopol'] = $name;
+                $conditions['Stnk.no_pol LIKE'] = '%'.$name.'%';
             }
         }
+        $this->paginate = $this->Stnk->getData('paginate', array(
+            'conditions' => $conditions
+        ));
+        $stnks = $this->paginate('Stnk');
         
-        $sub_module_title = __('STNK');
         $this->set('active_menu', 'stnk');
-        $this->set(compact('stnk', 'sub_module_title'));
+        $sub_module_title = __('STNK');
+        $this->set(compact('stnks', 'sub_module_title'));
     }
 
     function stnk_add(){
-        $this->set('sub_module_title', 'Perpanjang STNK Truk');
+        $this->loadModel('Stnk');
+        $this->set('active_menu', 'stnk');
+        $this->set('sub_module_title', 'Tambah STNK');
         $this->doStnk();
     }
 
     function stnk_edit($id){
         $this->loadModel('Stnk');
-        $this->set('sub_module_title', 'Rubah STNK Truk');
-        $Stnk = $this->Stnk->find('first', array(
+        $this->set('sub_module_title', 'Rubah Perpanjang STNK');
+        $Stnk = $this->Stnk->getData('first', array(
             'conditions' => array(
-                'Stnk.id' => $id
+                'Stnk.id' => $id,
+                'Stnk.paid' => 0,
+                'Stnk.rejected' => 0,
             )
         ));
 
@@ -1537,52 +1630,50 @@ class TrucksController extends AppController {
     function doStnk($id = false, $data_local = false){
         if(!empty($this->request->data)){
             $data = $this->request->data;
+
             if($id && $data_local){
                 $this->Stnk->id = $id;
                 $msg = 'merubah';
             }else{
-                $this->loadModel('Stnk');
                 $this->Stnk->create();
                 $msg = 'perpanjang';
             }
             
             $temp_data = $data;
 
+            $price = trim($data['Stnk']['price']);
             $data['Stnk']['user_id'] = $this->user_id;
-            $data['Stnk']['tgl_bayar'] = (!empty($data['Stnk']['tgl_bayar'])) ? date('Y-m-d', strtotime($data['Stnk']['tgl_bayar'])) : '';
-            $data['Stnk']['tgl_berakhir'] = (!empty($data['Stnk']['tgl_berakhir'])) ? date('Y-m-d', strtotime($data['Stnk']['tgl_berakhir'])) : '';
-            
-            unset($data['Stnk']['is_change_plat']);
+            $data['Stnk']['tgl_bayar'] = $this->MkCommon->getDateSelectbox($data['Stnk']['tgl_bayar']);
+            $data['Stnk']['tgl_berakhir'] = $this->MkCommon->getDateSelectbox($data['Stnk']['tgl_berakhir']);
+            $data['Stnk']['price'] = !empty($price)?str_replace(array(',', ' '), array('', ''), $price):'';
 
-            $date_old = '';
-            if(!empty($value['Stnk']['truck_id'])){
-                $last_pay = $this->Stnk->getData('first', array(
+            if(!empty($data['Stnk']['truck_id'])){
+                $this->loadModel('Truck');
+                $truck = $this->Truck->getData('first', array(
                     'conditions' => array(
-                        'Stnk.truck_id' => $value['Stnk']['truck_id'],
+                        'Truck.id' => $data['Stnk']['truck_id']
                     ),
-                    'order' => array(
-                        'Stnk.id' => 'DESC'
-                    )
                 ));
-                $date_old = strtotime($last_pay['Stnk']['tgl_bayar']);
-            }
-            
-            $date_new = strtotime($data['Stnk']['tgl_bayar']);
-            
-            $check = false;
-            if($date_new >= $date_old){
-                $check = true;
-            }else if(empty($date_old)){
-                $check = true;
-            }
+                $stnk = $this->Stnk->getData('first', array(
+                    'conditions' => array(
+                        'Stnk.rejected' => 0,
+                        'Stnk.truck_id' => $data['Stnk']['truck_id'],
+                        'Stnk.tgl_bayar >=' => $data['Stnk']['tgl_bayar'],
+                        'Stnk.tgl_berakhir >' => $data['Stnk']['tgl_bayar'],
+                    ),
+                ));
 
+                if( !empty($truck['Truck']['nopol']) ) {
+                    $data['Stnk']['no_pol'] = $truck['Truck']['nopol'];
+                }
+            }
+            debug($data);die();
             $this->Stnk->set($data);
 
-            if($this->Stnk->validates($data) && $check){
+            if( $this->Stnk->validates($data) && empty($kir) ){
                 if($this->Stnk->save($data)){
-                    
                     if(!empty($temp_data['Stnk']['is_change_plat'])){
-                        $data['Stnk']['tgl_berakhir'] = date('Y-m-d', strtotime('+5 years', strtotime($data['Stnk']['tgl_bayar'])));
+                        $data['Stnk']['tgl_berakhir'] = date('Y-m-d', strtotime('+5 years', $this->MkCommon->getDate($data['Stnk']['tgl_bayar'])));
                         $data['Stnk']['is_change_plat'] = 1;
                         $this->Stnk->create();
                         $this->Stnk->set($data);
@@ -1604,12 +1695,8 @@ class TrucksController extends AppController {
                 }
                 $this->MkCommon->setCustomFlash($text, 'error');
             }
-        }else{
-            
-            if($id && $data_local){
-                
-                $this->request->data = $data_local;
-            }
+        } else if($id && $data_local){
+            $this->request->data= $data_local;
         }
 
         $this->loadModel('Truck');
@@ -1622,8 +1709,8 @@ class TrucksController extends AppController {
             )
         ));
 
-        $this->set('active_menu', 'truck');
-        $sub_module_title = __('STNK Truk');
+        $this->set('active_menu', 'stnk');
+        $sub_module_title = __('Perpanjang STNK');
         $this->set(compact('truck_id', 'sub_module_title', 'trucks'));
         $this->render('stnk_form');
     }

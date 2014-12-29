@@ -22,7 +22,6 @@
             <tr>
                 <th>Provinsi</th>
                 <th>Dibuat</th>
-                <th>Status</th>
                 <th>Action</th>
             </tr>
             <?php
@@ -35,16 +34,6 @@
             <tr>
                 <td><?php echo $value_data['name'];?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
-                <td>
-                    <?php 
-                        if(!empty($value_data['status'])){
-                            echo '<span class="label label-success">Active</span>'; 
-                        }else{
-                            echo '<span class="label label-danger">Non Active</span>';  
-                        }
-                        
-                    ?>
-                </td>
                 <td class="action">
                     <?php 
                             echo $this->Html->link('Edit', array(
@@ -55,25 +44,14 @@
                                 'class' => 'btn btn-primary btn-xs'
                             ));
 
-                            if(!empty($value_data['status'])){
-                                echo $this->Html->link('hapus', array(
-                                    'controller' => 'settings',
-                                    'action' => 'region_toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs',
-                                    'title' => 'disable status brand'
-                                ));
-                            }else{
-                                echo $this->Html->link('Enable', array(
-                                    'controller' => 'settings',
-                                    'action' => 'region_toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-success btn-xs',
-                                    'title' => 'enable status brand'
-                                ));
-                            }
+                            echo $this->Html->link('hapus', array(
+                                'controller' => 'settings',
+                                'action' => 'region_toggle',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-danger btn-xs',
+                                'title' => 'disable status brand'
+                            ), __('Anda yakin ingin menghapus data Provinsi ini?'));
                     ?>
                 </td>
             </tr>

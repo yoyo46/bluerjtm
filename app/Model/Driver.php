@@ -150,9 +150,11 @@ class Driver extends AppModel {
 
 	function getData($find, $options = false){
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'Driver.status' => 1,
+            ),
             'order'=> array(
-                'Driver.status' => 'DESC'
+                'Driver.name' => 'ASC'
             ),
             'contain' => array(),
         );

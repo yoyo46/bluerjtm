@@ -84,5 +84,25 @@ class MkCommonComponent extends Component {
 
         return $data;
     }
+
+    function getDate ( $date ) {
+    	$dtString = false;
+
+    	if( !empty($date) ) {
+    		$dtArr = explode('/', $date);
+
+    		if( count($dtArr) == 3 ) {
+    			$dtString = date('Y-m-d', strtotime(sprintf('%s-%s-%s', $dtArr[2], $dtArr[1], $dtArr[0])));
+    		} else {
+    			$dtArr = explode('-', $date);
+
+	    		if( count($dtArr) == 3 ) {
+	    			$dtString = date('Y-m-d', strtotime(sprintf('%s-%s-%s', $dtArr[2], $dtArr[1], $dtArr[0])));
+	    		}
+    		}
+    	}
+    	
+    	return $dtString;
+    }
 }
 ?>

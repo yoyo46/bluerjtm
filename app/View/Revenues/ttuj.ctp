@@ -116,7 +116,9 @@
                             echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_berangkat'])));
                             echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_tiba'])));
                         } else {
-                            if(!empty($value['Ttuj']['is_arrive'])){
+                            if(!empty($value['Ttuj']['is_bongkaran'])){
+                                echo $this->Html->tag('td', '<span class="label label-warning">Bongkaran</span>');
+                            } else if(!empty($value['Ttuj']['is_arrive'])){
                                 echo $this->Html->tag('td', '<span class="label label-info">Tiba</span>');
                             } else if(!empty($value['Ttuj']['is_draft'])){
                                 echo $this->Html->tag('td', '<span class="label label-primary">Draft</span>');
@@ -132,7 +134,8 @@
                                 case 'truk_tiba':
                                     echo $this->Html->link('Info', array(
                                         'controller' => 'revenues',
-                                        'action' => 'info_truk_tiba',
+                                        'action' => 'info_truk',
+                                        'tiba',
                                         $id
                                     ), array(
                                         'class' => 'btn btn-primary btn-xs'
@@ -143,6 +146,27 @@
                                         'action' => 'ttuj_toggle',
                                         $id,
                                         'arrive'
+                                    ), array(
+                                        'class' => 'btn btn-danger btn-xs',
+                                        'title' => 'disable status brand'
+                                    ), __('Apakah Anda yakin akan menghapus data ini?'));
+                                    break;
+
+                                case 'bongkaran':
+                                    echo $this->Html->link('Info', array(
+                                        'controller' => 'revenues',
+                                        'action' => 'info_truk',
+                                        'bongkaran',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-primary btn-xs'
+                                    ));
+
+                                    echo $this->Html->link(__('Batalkan'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'ttuj_toggle',
+                                        $id,
+                                        'bongkaran'
                                     ), array(
                                         'class' => 'btn btn-danger btn-xs',
                                         'title' => 'disable status brand'

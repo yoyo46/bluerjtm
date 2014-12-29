@@ -36,38 +36,29 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Stnk.price', __('Biaya Perpanjang'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Kir.paid', __('Status'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Stnk.paid', __('Status'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Kir.created', __('Dibuat'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Stnk.created', __('Dibuat'), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', __('Action'));
                 ?>
-                <th>ID</th>
-                <th>Truk</th>
-                <th>Tanggal Bayar</th>
-                <th>Tanggal Berakhir</th>
-                <th>Harga</th>
-                <th>Status</th>
-                <th>Action</th>
             </tr>
             <?php
                 $i = 1;
-                if(!empty($stnk)){
-                    foreach ($stnk as $key => $value) {
-                        $value_truck = $value['Stnk'];
-                        $id = $value_truck['id'];
+                if(!empty($stnks)){
+                    foreach ($stnks as $key => $value) {
+                        $id = $value['Stnk']['id'];
             ?>
             <tr>
-                <td><?php echo $id;?></td>
-                <td><?php echo $value['Truck']['nopol'];?></td>
-                <td><?php echo $this->Common->customDate($value_truck['tgl_bayar']);?></td>
-                <td><?php echo $this->Common->customDate($value_truck['tgl_berakhir']);?></td>
-                <td><?php echo $this->Number->currency($value_truck['price'], 'Rp. ');?></td>
+                <td><?php echo $value['Stnk']['no_pol'];?></td>
+                <td><?php echo $this->Common->customDate($value['Stnk']['tgl_bayar']);?></td>
+                <td><?php echo $this->Common->customDate($value['Stnk']['tgl_berakhir']);?></td>
+                <td><?php echo $this->Number->currency($value['Stnk']['price'], 'Rp. ');?></td>
                 <td>
                     <?php
-                        if($value_truck['is_change_plat']){
+                        if($value['Stnk']['is_change_plat']){
                             echo '<span class="label label-success">Pergantian Plat</span>'; 
                         }else{
                             echo '-';
@@ -76,14 +67,14 @@
                 </td>
                 <td>
                     <?php
-                        echo $this->Html->link('Rubah', array(
-                            'controller' => 'trucks',
-                            'action' => 'stnk_edit',
-                            $value_truck['truck_id'],
-                            $id
-                        ), array(
-                            'class' => 'btn btn-primary btn-xs'
-                        ));
+                            echo $this->Html->link('Rubah', array(
+                                'controller' => 'trucks',
+                                'action' => 'stnk_edit',
+                                $value['Stnk']['id'],
+                                $id
+                            ), array(
+                                'class' => 'btn btn-primary btn-xs'
+                            ));
                     ?>
                 </td>
             </tr>

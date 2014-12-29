@@ -24,9 +24,11 @@ class Company extends AppModel {
 
 	function getData($find, $options = false){
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'Company.status' => 1,
+            ),
             'order'=> array(
-                'Company.status' => 'DESC'
+                'Company.name' => 'ASC'
             ),
         );
 

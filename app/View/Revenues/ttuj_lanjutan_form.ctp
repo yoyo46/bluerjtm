@@ -5,8 +5,13 @@
 					'controller' => 'revenues',
 					'action' => 'bongkaran'
 				));
+    			$disabledTglJamBongkaran = false;
     			$disabledTglJamTiba = true;
     			$classJamTiba = '';
+
+    			if( !empty($ttuj_id) ) {
+        			$disabledTglJamBongkaran = true;
+    			}
 				break;
 			
 			default:
@@ -242,6 +247,7 @@
 												'class'=>'form-control custom-date',
 												'required' => false,
 												'type' => 'text',
+												'disabled' => $disabledTglJamBongkaran,
 											));
 									?>
 				        		</div>
@@ -256,6 +262,7 @@
 													'class'=>'form-control pull-right timepicker',
 													'required' => false,
 													'type' => 'text',
+													'disabled' => $disabledTglJamBongkaran,
 												));
 										?>
                                     </div>
@@ -275,6 +282,7 @@
 											'label'=> __('Keterangan'), 
 											'class'=>'form-control',
 											'required' => false,
+											'disabled' => $disabledTglJamBongkaran,
 										)), array(
 											'class'=>'form-group',
 										));

@@ -20,24 +20,24 @@ class Kir extends AppModel {
                 'message' => 'Tanggal KIR harap diisi'
             ),
         ),
-        'price' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'biaya KIR harap diisi'
-            ),
-        ),
         'tgl_next_kir' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'tanggal KIR selanjutnya harap diisi'
             ),
-        )
+        ),
+        'price' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Biaya KIR harap diisi'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(
 		'Truck' => array(
 			'className' => 'Truck',
-			'foreignKey' => 'truck_brand_id',
+			'foreignKey' => 'truck_id',
 		)
 	);
 
@@ -51,7 +51,9 @@ class Kir extends AppModel {
                 'Kir.paid' => 'ASC',
                 'Kir.tgl_kir' => 'DESC',
             ),
-            'contain' => array(),
+            'contain' => array(
+                'Truck'
+            ),
             'fields' => array(),
         );
 

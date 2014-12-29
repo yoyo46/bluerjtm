@@ -12,9 +12,11 @@ class CustomerType extends AppModel {
 
 	function getData($find, $options = false, $isActive = false){
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'CustomerType.status' => 1,
+            ),
             'order'=> array(
-                'status' => 'DESC'
+                'CustomerType.name' => 'ASC'
             ),
             'contain' => array(),
         );

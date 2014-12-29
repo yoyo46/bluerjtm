@@ -196,7 +196,7 @@ class RevenuesController extends AppController {
             $data['Ttuj']['customer_name'] = !empty($uangJalan['Customer']['name'])?$uangJalan['Customer']['name']:0;
             $data['Ttuj']['uang_jalan_id'] = !empty($uangJalan['UangJalan']['id'])?$uangJalan['UangJalan']['id']:false;
             $data['Ttuj']['nopol'] = !empty($truck['Truck']['nopol'])?$truck['Truck']['nopol']:false;
-            $data['Ttuj']['ttuj_date'] = !empty($data['Ttuj']['ttuj_date'])?date('Y-m-d', strtotime($data['Ttuj']['ttuj_date'])):false;
+            $data['Ttuj']['ttuj_date'] = $this->MkCommon->getDate($data['Ttuj']['ttuj_date']);
             $data['Ttuj']['driver_penganti_id'] = !empty($data['Ttuj']['driver_penganti_id'])?$data['Ttuj']['driver_penganti_id']:0;
             $data['Ttuj']['uang_jalan_1'] = !empty($data['Ttuj']['uang_jalan_1'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_jalan_1']):0;
             $data['Ttuj']['uang_jalan_2'] = !empty($data['Ttuj']['uang_jalan_2'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_jalan_2']):0;
@@ -210,7 +210,7 @@ class RevenuesController extends AppController {
             $data['Ttuj']['tgljam_berangkat'] = '';
 
             if( !empty($data['Ttuj']['tgl_berangkat']) ) {
-                $data['Ttuj']['tgl_berangkat'] = date('Y-m-d', strtotime($data['Ttuj']['tgl_berangkat']));
+                $data['Ttuj']['tgl_berangkat'] = $this->MkCommon->getDate($data['Ttuj']['tgl_berangkat']);
 
                 if( !empty($data['Ttuj']['jam_berangkat']) ) {
                     $data['Ttuj']['jam_berangkat'] = date('H:i', strtotime($data['Ttuj']['jam_berangkat']));
@@ -304,7 +304,7 @@ class RevenuesController extends AppController {
                 }
             }
 
-            $this->request->data['Ttuj']['ttuj_date'] = !empty($data['Ttuj']['ttuj_date'])?date('m/d/Y', strtotime($data['Ttuj']['ttuj_date'])):false;
+            $this->request->data['Ttuj']['ttuj_date'] = !empty($data['Ttuj']['ttuj_date'])?date('d/m/Y', strtotime($data['Ttuj']['ttuj_date'])):false;
 
             if( !empty($data['TtujPerlengkapan']['qty']) ) {
                 $tempPerlengkapan = array();
@@ -325,10 +325,16 @@ class RevenuesController extends AppController {
                 $data_local = $this->MkCommon->getTtujPerlengkapan($data_local);
 
                 if( !empty($data_local['Ttuj']['tgljam_berangkat']) ) {
-                    $data_local['Ttuj']['tgl_berangkat'] = date('m/d/Y', strtotime($data_local['Ttuj']['tgljam_berangkat']));
+                    $data_local['Ttuj']['tgl_berangkat'] = date('d/m/Y', strtotime($data_local['Ttuj']['tgljam_berangkat']));
                     $data_local['Ttuj']['jam_berangkat'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_berangkat']));
                 }
                 $this->request->data = $data_local;
+
+                if( !empty($this->request->data['Ttuj']['ttuj_date']) && $this->request->data['Ttuj']['ttuj_date'] != '0000-00-00' ) {
+                    $this->request->data['Ttuj']['ttuj_date'] = date('d/m/Y', strtotime($this->request->data['Ttuj']['ttuj_date']));
+                } else {
+                    $this->request->data['Ttuj']['ttuj_date'] = '';
+                }
             }
 
             if( !empty($this->request->data['Ttuj']['customer_id']) ) {
@@ -506,7 +512,7 @@ class RevenuesController extends AppController {
                     $dataTiba['Ttuj']['note_bongkaran'] = !empty($data['Ttuj']['note_bongkaran'])?$data['Ttuj']['note_bongkaran']:'';
 
                     if( !empty($data['Ttuj']['tgl_bongkaran']) ) {
-                        $data['Ttuj']['tgl_bongkaran'] = date('Y-m-d', strtotime($data['Ttuj']['tgl_bongkaran']));
+                        $data['Ttuj']['tgl_bongkaran'] = $this->MkCommon->getDate($data['Ttuj']['tgl_bongkaran']);
 
                         if( !empty($data['Ttuj']['jam_bongkaran']) ) {
                             $data['Ttuj']['jam_bongkaran'] = date('H:i', strtotime($data['Ttuj']['jam_bongkaran']));
@@ -522,7 +528,7 @@ class RevenuesController extends AppController {
                     $dataTiba['Ttuj']['note_tiba'] = !empty($data['Ttuj']['note_tiba'])?$data['Ttuj']['note_tiba']:'';
 
                     if( !empty($data['Ttuj']['tgl_tiba']) ) {
-                        $data['Ttuj']['tgl_tiba'] = date('Y-m-d', strtotime($data['Ttuj']['tgl_tiba']));
+                        $data['Ttuj']['tgl_tiba'] = $this->MkCommon->getDate($data['Ttuj']['tgl_tiba']);
 
                         if( !empty($data['Ttuj']['jam_tiba']) ) {
                             $data['Ttuj']['jam_tiba'] = date('H:i', strtotime($data['Ttuj']['jam_tiba']));
@@ -557,11 +563,11 @@ class RevenuesController extends AppController {
             $data_local = $this->MkCommon->getTtujPerlengkapan($data_local);
 
             if( !empty($data_local['Ttuj']['tgljam_berangkat']) && $data_local['Ttuj']['tgljam_berangkat'] != '0000-00-00 00:00:00' ) {
-                $data_local['Ttuj']['tgl_berangkat'] = date('m/d/Y', strtotime($data_local['Ttuj']['tgljam_berangkat']));
+                $data_local['Ttuj']['tgl_berangkat'] = date('d/m/Y', strtotime($data_local['Ttuj']['tgljam_berangkat']));
                 $data_local['Ttuj']['jam_berangkat'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_berangkat']));
             }
             if( !empty($data_local['Ttuj']['tgljam_tiba']) && $data_local['Ttuj']['tgljam_tiba'] != '0000-00-00 00:00:00' ) {
-                $data_local['Ttuj']['tgl_tiba'] = date('m/d/Y', strtotime($data_local['Ttuj']['tgljam_tiba']));
+                $data_local['Ttuj']['tgl_tiba'] = date('d/m/Y', strtotime($data_local['Ttuj']['tgljam_tiba']));
                 $data_local['Ttuj']['jam_tiba'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_tiba']));
             }
             $this->request->data = $data_local;
@@ -617,18 +623,29 @@ class RevenuesController extends AppController {
         $this->render('ttuj_lanjutan_form');
     }
 
-    public function info_truk_tiba( $ttuj_id = false ) {
+    public function info_truk( $action_type = 'tiba', $ttuj_id = false ) {
         $this->loadModel('Ttuj');
         $this->loadModel('TipeMotor');
         $this->loadModel('Perlengkapan');
+        $conditions = array(
+            'Ttuj.id' => $ttuj_id,
+            'Ttuj.is_draft' => 0,
+            'Ttuj.status' => 1,
+        );
+
+        switch ($action_type) {
+            case 'bongkaran':
+                $conditions['Ttuj.is_arrive'] = 1;
+                $conditions['Ttuj.is_bongkaran'] = 1;
+                break;
+            
+            default:
+                $conditions['Ttuj.is_arrive'] = 1;
+                break;
+        }
 
         $data_local = $this->Ttuj->getData('first', array(
-            'conditions' => array(
-                'Ttuj.id' => $ttuj_id,
-                'Ttuj.is_draft' => 0,
-                'Ttuj.is_arrive' => 1,
-                'Ttuj.status' => 1,
-            )
+            'conditions' => $conditions
         ));
 
         if( !empty($data_local) ){
@@ -636,12 +653,16 @@ class RevenuesController extends AppController {
             $data_local = $this->MkCommon->getTtujPerlengkapan($data_local);
 
             if( !empty($data_local['Ttuj']['tgljam_berangkat']) && $data_local['Ttuj']['tgljam_berangkat'] != '0000-00-00 00:00:00' ) {
-                $data_local['Ttuj']['tgl_berangkat'] = date('m/d/Y', strtotime($data_local['Ttuj']['tgljam_berangkat']));
+                $data_local['Ttuj']['tgl_berangkat'] = date('d/m/Y', strtotime($data_local['Ttuj']['tgljam_berangkat']));
                 $data_local['Ttuj']['jam_berangkat'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_berangkat']));
             }
             if( !empty($data_local['Ttuj']['tgljam_tiba']) && $data_local['Ttuj']['tgljam_tiba'] != '0000-00-00 00:00:00' ) {
-                $data_local['Ttuj']['tgl_tiba'] = date('m/d/Y', strtotime($data_local['Ttuj']['tgljam_tiba']));
+                $data_local['Ttuj']['tgl_tiba'] = date('d/m/Y', strtotime($data_local['Ttuj']['tgljam_tiba']));
                 $data_local['Ttuj']['jam_tiba'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_tiba']));
+            }
+            if( !empty($data_local['Ttuj']['tgljam_bongkaran']) && $data_local['Ttuj']['tgljam_bongkaran'] != '0000-00-00 00:00:00' ) {
+                $data_local['Ttuj']['tgl_bongkaran'] = date('d/m/Y', strtotime($data_local['Ttuj']['tgljam_bongkaran']));
+                $data_local['Ttuj']['jam_bongkaran'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_bongkaran']));
             }
             $this->request->data = $data_local;
             $perlengkapans = $this->Perlengkapan->getData('list', array(
@@ -666,7 +687,7 @@ class RevenuesController extends AppController {
             $this->set('active_menu', 'truk_tiba');
             $this->set(compact(
                 'ttujs', 'data_local', 'perlengkapans', 
-                'tipeMotors', 'ttuj_id'
+                'tipeMotors', 'ttuj_id', 'action_type'
             ));
             $this->render('ttuj_lanjutan_form');
         } else {

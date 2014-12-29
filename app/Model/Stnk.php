@@ -59,9 +59,11 @@ class Stnk extends AppModel {
 
 	function getData($find, $options = false){
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'Stnk.status' => 1,
+            ),
             'order'=> array(
-                'status' => 'DESC'
+                'Stnk.created' => 'DESC'
             ),
             'contain' => array(),
         );

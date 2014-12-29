@@ -25,9 +25,11 @@ class City extends AppModel {
 
 	function getData($find, $options = false){
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'City.status' => 1,
+            ),
             'order'=> array(
-                'name' => 'ASC'
+                'City.name' => 'ASC'
             ),
             'contain' => array(),
             'fields' => array(),

@@ -276,12 +276,31 @@ $(function() {
         frm.submit();
     });
 
-    $('.reload-link').change(function() {
+    $('.change-link').change(function() {
         var id = $(this).val();
         var url = $(this).attr('url') + '/' + id;
 
         location.href = url;
 
+        return false;
+    });
+
+    $('.submit-link').click(function() {
+        var frm = $(this).parents('form');
+        var alert_msg = $(this).attr('alert');
+        var action_type = $(this).attr('action_type');
+
+        if( alert_msg != null ) {
+            if ( !confirm(alert_msg) ) { 
+                return false;
+            }
+        }
+
+        if( action_type == 'rejected' ) {
+            $('#rejected').val(1);
+        }
+
+        frm.submit();
         return false;
     });
 });

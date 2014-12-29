@@ -31,9 +31,11 @@ class Siup extends AppModel {
 
 	function getData($find, $options = false){
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'Siup.status' => 1,
+            ),
             'order'=> array(
-                'status' => 'DESC'
+                'Siup.created' => 'DESC'
             ),
             'contain' => array(),
         );

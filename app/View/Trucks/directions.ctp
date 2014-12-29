@@ -24,7 +24,6 @@
                 <th>Jarak Tempuh</th>
                 <th>Bahan Bakar</th>
                 <th>Dibuat</th>
-                <th>Status</th>
                 <th>Action</th>
             </tr>
             <?php
@@ -41,16 +40,6 @@
                 <td><?php echo $this->Common->customDate($value['Direction']['created']);?></td>
                 <td>
                     <?php 
-                        if(!empty($value['Direction']['status'])){
-                            echo '<span class="label label-success">Active</span>'; 
-                        }else{
-                            echo '<span class="label label-danger">Non Active</span>';  
-                        }
-                        
-                    ?>
-                </td>
-                <td>
-                    <?php 
                         echo $this->Html->link('Edit', array(
                             'controller' => 'trucks',
                             'action' => 'direction_edit',
@@ -59,25 +48,14 @@
                             'class' => 'btn btn-primary btn-sm'
                         ));
 
-                        if(!empty($value['Direction']['status'])){
-                            echo $this->Html->link('Disable', array(
-                                'controller' => 'trucks',
-                                'action' => 'direction_toggle',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-danger btn-sm',
-                                'title' => 'disable status brand'
-                            ), __('Apakah Anda yakin akan menon-aktifkan?'));
-                        }else{
-                            echo $this->Html->link('Enable', array(
-                                'controller' => 'trucks',
-                                'action' => 'direction_toggle',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-success btn-sm',
-                                'title' => 'enable status brand'
-                            ), __('Apakah Anda yakin akan mengaktifkan?'));
-                        }
+                        echo $this->Html->link(__('Hapus'), array(
+                            'controller' => 'trucks',
+                            'action' => 'direction_toggle',
+                            $id
+                        ), array(
+                            'class' => 'btn btn-danger btn-sm',
+                            'title' => 'disable status brand'
+                        ), __('Anda yakin ingin menghapus data Rute ini?'));
                     ?>
                 </td>
             </tr>

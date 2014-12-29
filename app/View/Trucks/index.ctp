@@ -52,7 +52,6 @@
                 <th>Supir</th>
                 <th>Nopol</th>
                 <th>Aset</th>
-                <th>Status</th>
                 <th>Action</th>
             </tr>
             <?php
@@ -74,16 +73,6 @@
                         }else{
                             echo '<span class="label label-danger">Tidak</span>';  
                         }
-                    ?>
-                </td>
-                <td>
-                    <?php 
-                        if(!empty($value_truck['status'])){
-                            echo '<span class="label label-success">Active</span>'; 
-                        }else{
-                            echo '<span class="label label-danger">Non Active</span>';  
-                        }
-                        
                     ?>
                 </td>
                 <td class="action">
