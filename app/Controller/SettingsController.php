@@ -174,16 +174,23 @@ class SettingsController extends AppController {
                 $this->request->data['Customer']['customer_type_id'] = $customer_type_id;
                 $options['conditions']['Customer.customer_type_id '] = $customer_type_id;
             }
+            if(!empty($refine['customer_group_id'])){
+                $customer_group_id = urldecode($refine['customer_group_id']);
+                $this->request->data['Customer']['customer_group_id'] = $customer_group_id;
+                $options['conditions']['Customer.customer_group_id '] = $customer_group_id;
+            }
         }
         $this->paginate = $this->Customer->getData('paginate', $options);
         $truck_customers = $this->paginate('Customer');
         $customerTypes  = $this->Customer->CustomerType->getData('list', false, true);
+        $customerGroups  = $this->Customer->CustomerGroup->getData('list');
 
         $this->set('active_menu', 'customers');
         $this->set('module_title', 'Data Master');
         $this->set('sub_module_title', 'Customer');
         $this->set(compact(
-            'customerTypes', 'truck_customers'
+            'customerTypes', 'truck_customers',
+            'customerGroups'
         ));
     }
 
@@ -248,16 +255,19 @@ class SettingsController extends AppController {
         }
 
         $customerTypes  = $this->Customer->CustomerType->getData('list', false, true);
+        $customerGroups  = $this->Customer->CustomerGroup->getData('list');
+
         $this->set('active_menu', 'customers');
         $this->set('module_title', 'Data Master');
         $this->set(compact(
-            'customerTypes'
+            'customerTypes', 'customerGroups'
         ));
         $this->render('customer_form');
     }
 
     function customer_toggle($id){
         $this->loadModel('Customer');
+
         $locale = $this->Customer->getData('first', array(
             'conditions' => array(
                 'Customer.id' => $id
@@ -271,11 +281,12 @@ class SettingsController extends AppController {
             }
 
             $this->Customer->id = $id;
-            $this->Customer->set('status', $value);
+            $this->Customer->set('status', 0);
+
             if($this->Customer->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->MkCommon->setCustomFlash(__('Customer telah berhasil dihapus.'), 'success');
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->MkCommon->setCustomFlash(__('Gagal menghapus Customer.'), 'error');
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Customer tidak ditemukan.'), 'error');
@@ -1676,6 +1687,121 @@ class SettingsController extends AppController {
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Cabang tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
+
+    public function customer_groups () {
+        $this->loadModel('CustomerGroup');
+        $options = array();
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['CustomerGroup']['name'] = $name;
+                $options['conditions']['CustomerGroup.name LIKE '] = '%'.$name.'%';
+            }
+        }
+        $this->paginate = $this->CustomerGroup->getData('paginate', $options);
+        $customerGroups = $this->paginate('CustomerGroup');
+
+        $this->set('active_menu', 'customer_groups');
+        $this->set('module_title', 'Data Master');
+        $this->set('sub_module_title', 'Grup Customer');
+        $this->set('customerGroups', $customerGroups);        
+    }
+
+    function customer_group_add(){
+        $this->loadModel('CustomerGroup');
+        $this->set('sub_module_title', 'Tambah Grup Customer');
+        $this->doCustomerGroup();
+    }
+
+    function customer_group_edit($id){
+        $this->loadModel('CustomerGroup');
+        $this->set('sub_module_title', 'Rubah Grup Customer');
+        $customerGroup = $this->CustomerGroup->find('first', array(
+            'conditions' => array(
+                'CustomerGroup.id' => $id
+            )
+        ));
+
+        if(!empty($customerGroup)){
+            $this->doCustomerGroup($id, $customerGroup);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Grup Customer tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'customer_groups'
+            ));
+        }
+    }
+
+    function doCustomerGroup($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+
+            if($id && $data_local){
+                $this->CustomerGroup->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->CustomerGroup->create();
+                $msg = 'menambah';
+            }
+            
+            $this->CustomerGroup->set($data);
+
+            if($this->CustomerGroup->validates($data)){
+                if($this->CustomerGroup->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Grup Customer'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'customer_groups'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Grup Customer'), $msg), 'error');  
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Grup Customer'), $msg), 'error');
+            }
+        }else{
+            if($id && $data_local){
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->set('active_menu', 'customer_groups');
+        $this->set('module_title', 'Data Master');
+        $this->render('customer_group_form');
+    }
+
+    function customer_group_toggle($id){
+        $this->loadModel('CustomerGroup');
+        $locale = $this->CustomerGroup->getData('first', array(
+            'conditions' => array(
+                'CustomerGroup.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['CustomerGroup']['status']){
+                $value = false;
+            }
+
+            $this->CustomerGroup->id = $id;
+            $this->CustomerGroup->set('status', 0);
+
+            if($this->CustomerGroup->save()){
+                $this->MkCommon->setCustomFlash(__('Grup customer telah berhasil dihapus.'), 'success');
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal menghapus Grup Customer.'), 'error');
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Grup Customer tidak ditemukan.'), 'error');
         }
 
         $this->redirect($this->referer());

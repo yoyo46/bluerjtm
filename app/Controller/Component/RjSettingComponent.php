@@ -29,6 +29,11 @@ class RjSettingComponent extends Component {
 				}
 			}
 			if(!empty($refine)) {
+				if( !empty($refine['Customer']['customer_group_id']) ) {
+					$refine_conditions['Customer']['customer_group_id'] = $refine['Customer']['customer_group_id'];
+				}
+			}
+			if(!empty($refine)) {
 				if( !empty($refine['CustomerType']['name']) ) {
 					$refine_conditions['CustomerType']['name'] = $refine['CustomerType']['name'];
 				}
@@ -56,6 +61,11 @@ class RjSettingComponent extends Component {
 			if(!empty($refine)) {
 				if( !empty($refine['Branch']['name']) ) {
 					$refine_conditions['Branch']['name'] = $refine['Branch']['name'];
+				}
+			}
+			if(!empty($refine)) {
+				if( !empty($refine['CustomerGroup']['name']) ) {
+					$refine_conditions['CustomerGroup']['name'] = $refine['CustomerGroup']['name'];
 				}
 			}
 				
@@ -88,6 +98,13 @@ class RjSettingComponent extends Component {
 		}
 		if(isset($refine['CustomerType']) && !empty($refine['CustomerType'])) {
 			foreach($refine['CustomerType'] as $param => $value) {
+				if($value) {
+					$parameters[trim($param)] = rawurlencode($value);
+				}
+			}
+		}
+		if(isset($refine['CustomerGroup']) && !empty($refine['CustomerGroup'])) {
+			foreach($refine['CustomerGroup'] as $param => $value) {
 				if($value) {
 					$parameters[trim($param)] = rawurlencode($value);
 				}

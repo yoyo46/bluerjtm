@@ -685,14 +685,7 @@ class TrucksController extends AppController {
     }
 
     function kir($id = false){
-        $this->paginate = $this->Truck->Kir->getData('paginate', array(
-            'conditions' => array(
-                'status' => 1
-            ),
-            'order' => array(
-                'Kir.created'
-            )
-        ));
+        $this->paginate = $this->Truck->Kir->getData('paginate');
         $kir = $this->paginate('Kir');
         
         if(!empty($kir)){
@@ -707,12 +700,15 @@ class TrucksController extends AppController {
             }
         }
         
-        $sub_module_title = __('Histori KIR Truk');
+        $this->set('active_menu', 'kir');
+        $sub_module_title = __('KIR');
         $this->set(compact('kir', 'sub_module_title'));
     }
 
     function kir_add(){
-        $this->set('sub_module_title', 'Tambah KIR Truk');
+        $this->loadModel('Kir');
+        $this->set('active_menu', 'kir');
+        $this->set('sub_module_title', 'Tambah KIR');
         $this->doKir();
     }
 
@@ -740,43 +736,50 @@ class TrucksController extends AppController {
     function doKir($id = false, $data_local = false){
         if(!empty($this->request->data)){
             $data = $this->request->data;
+
             if($id && $data_local){
                 $this->Kir->id = $id;
                 $msg = 'merubah';
             }else{
-                $this->loadModel('Kir');
                 $this->Kir->create();
                 $msg = 'menambah';
             }
             
             $data['Kir']['user_id'] = $this->user_id;
-            $data['Kir']['tgl_kir'] = (!empty($data['Kir']['tgl_kir'])) ? date('Y-m-d', strtotime($data['Kir']['tgl_kir'])) : '';
-            $data['Kir']['tgl_next_kir'] = (!empty($data['Kir']['tgl_next_kir'])) ? date('Y-m-d', strtotime($data['Kir']['tgl_next_kir'])) : '';
+            $data['Kir']['tgl_kir'] = $this->MkCommon->getDateSelectbox($data['Kir']['tgl_kir']);
+            $data['Kir']['tgl_next_kir'] = $this->MkCommon->getDateSelectbox($data['Kir']['tgl_next_kir']);
+            $data['Kir']['price'] = !empty($data['Kir']['price'])?str_replace(array(',', ' '), array('', ''), $data['Kir']['price']):0;
 
-            $date_old = '';
-            if(!empty($value['Kir']['truck_id'])){
-                $truck = $this->Truck->getInfoTruck($value['Kir']['truck_id']);
-                $date_old = strtotime($truck['Truck']['kir']);
+            if( !empty($data['Kir']['truck_id']) ) {
+                $truck = $this->Truck->find('first', array(
+                    'conditions' => array(
+                        'Truck.id' => $data['Kir']['truck_id']
+                    ),
+                ));
+
+                if( !empty($truck['Truck']['nopol']) ) {
+                    $data['Kir']['no_pol'] = $truck['Truck']['nopol'];
+                }
             }
+
+            // $date_old = '';
+            // if(!empty($value['Kir']['truck_id'])){
+            //     $truck = $this->Truck->getInfoTruck($value['Kir']['truck_id']);
+            //     $date_old = strtotime($truck['Truck']['kir']);
+            // }
             
-            $date_new = strtotime($data['Kir']['tgl_kir']);
+            // $date_new = strtotime($data['Kir']['tgl_kir']);
             
-            $check = false;
-            if($date_new >= $date_old){
+            // $check = false;
+            // if($date_new >= $date_old){
+            //     $check = true;
+            // }else if(empty($date_old)){
                 $check = true;
-            }else if(empty($date_old)){
-                $check = true;
-            }
+            // }
             $this->Kir->set($data);
 
             if($this->Kir->validates($data) && $check){
-                $truck_id = $data['Kir']['truck_id'];
                 if($this->Kir->save($data)){
-
-                    $this->Truck->id = $truck_id;
-                    $this->Truck->set('kir', $data['Kir']['tgl_kir']);
-                    $this->Truck->save();
-
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s KIR Truk'), $msg), 'success');
                     $this->redirect(array(
                         'controller' => 'trucks',
@@ -787,17 +790,13 @@ class TrucksController extends AppController {
                 }
             }else{
                 $text = sprintf(__('Gagal %s KIR Truk'), $msg);
-                if( !$check ){
-                    $text .= ', tanggal KIR harus lebih besar dari sebelumnya';
-                }
+                // if( !$check ){
+                //     $text .= ', tanggal KIR harus lebih besar dari sebelumnya';
+                // }
                 $this->MkCommon->setCustomFlash($text, 'error');
             }
-        }else{
-            
-            if($id && $data_local){
-                
-                $this->request->data = $data_local;
-            }
+        } else if($id && $data_local){
+            $this->request->data = $data_local;
         }
 
         $this->loadModel('Truck');
@@ -810,10 +809,114 @@ class TrucksController extends AppController {
             )
         ));
 
-        $this->set('active_menu', 'trucks');
-        $sub_module_title = __('Histori KIR Truk');
-        $this->set(compact('truck_id', 'sub_module_title', 'trucks'));
+        $this->set('active_menu', 'kir');
+        $this->set(compact(
+            'truck_id', 'sub_module_title', 'trucks'
+        ));
         $this->render('kir_form');
+    }
+
+    function kir_payments( $kir_id = false ){
+        $this->loadModel('Kir');
+        
+        if( !empty($kir_id) ) {
+            $kir = $this->Kir->getData('first', array(
+                'conditions' => array(
+                    'Kir.rejected' => 0,
+                    'Kir.paid' => 0,
+                    'Kir.id' => $kir_id,
+                ),
+            ));
+        }
+        
+        if(!empty($this->request->data)){
+            if( !empty($this->request->data['KirPayment']['kir_id']) && !empty($kir) ){
+                $kir_id = $this->request->data['KirPayment']['kir_id'];
+
+                $this->loadModel('KirPayment');
+                $this->KirPayment->create();
+                $data = $this->request->data;
+                $data['KirPayment']['user_id'] = $this->user_id;
+                $data['KirPayment']['kir_id'] = $kir_id;
+                $this->KirPayment->set($data);
+
+                if( $this->KirPayment->validates($data) ){
+                    if($this->KirPayment->save($data)){
+                        $this->Kir->id = $kir_id;
+                        $this->Kir->set('paid', 1);
+
+                        if($this->Kir->save()){
+                            $this->MkCommon->setCustomFlash(sprintf(__('KIR Truk %s telah dibayar'), $kir['Kir']['no_pol']), 'success');
+                            $this->redirect(array(
+                                'controller' => 'trucks',
+                                'action' => 'kir_payments'
+                            ));
+                        } else {
+                            $this->MkCommon->setCustomFlash(sprintf(__('Gagal membayar KIR Truk %s'), $kir['Kir']['no_pol']), 'error');  
+                        }
+                    } else {
+                        $this->MkCommon->setCustomFlash(sprintf(__('Gagal membayar KIR Truk %s'), $kir['Kir']['no_pol']), 'error');  
+                    }
+                } else {
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal membayar KIR Truk %s'), $kir['Kir']['no_pol']), 'error');  
+                }
+            } else {
+                $this->MkCommon->setCustomFlash(__('Mohon pilih No. Pol Truk'), 'error');
+            }
+        } else if( !empty($kir) ) {
+            $this->request->data['KirPayment']['kir_id'] = $kir_id;
+            $this->request->data['KirPayment']['tgl_kir'] = date('d-m-Y', strtotime($kir['Kir']['tgl_kir']));
+            $this->request->data['KirPayment']['tgl_next_kir'] = date('d-m-Y', strtotime($kir['Kir']['tgl_next_kir']));
+            $this->request->data['KirPayment']['price'] = $kir['Kir']['price'];
+        }
+
+        $kirs = $this->Kir->getData('list', array(
+            'conditions' => array(
+                'Kir.status' => 1,
+                'Kir.paid' => 0,
+                'Kir.rejected' => 0,
+            ),
+            'fields' => array(
+                'Kir.id', 'Kir.no_pol'
+            )
+        ));
+        
+        $this->set('active_menu', 'kir_payments');
+        $sub_module_title = __('Pembayaran KIR');
+        $this->set(compact(
+            'kirs', 'sub_module_title', 'kir_id',
+            'kir'
+        ));
+    }
+
+    public function kir_reject( $kir_id = false ) {
+        $this->loadModel('Kir');
+        $kir = $this->Kir->getData('first', array(
+            'conditions' => array(
+                'Kir.paid' => 0,
+                'Kir.rejected' => 0,
+                'Kir.id' => $kir_id,
+            ),
+        ));
+
+        if( !empty($kir) ) {
+            $this->Kir->id = $kir_id;
+            $this->Kir->set('paid', 0);
+            $this->Kir->set('rejected', 1);
+
+            if($this->Kir->save()){
+                $this->MkCommon->setCustomFlash(sprintf(__('KIR Truk %s telah ditolak'), $kir['Kir']['no_pol']), 'success');
+            } else {
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal menolak KIR Truk %s'), $kir['Kir']['no_pol']), 'error');  
+            }
+        } else {
+            $this->MkCommon->setCustomFlash(__('Mohon pilih No. Pol Truk'), 'error');
+        }
+
+        $this->redirect(array(
+            'controller' => 'trucks',
+            'action' => 'kir_payments'
+        ));
     }
 
     function siup($id = false){
@@ -839,7 +942,7 @@ class TrucksController extends AppController {
             }
         }
         
-        $sub_module_title = __('Histori KIR Truk');
+        $sub_module_title = __('SIUP Truk');
         $this->set(compact('siup', 'sub_module_title'));
     }
 
@@ -942,7 +1045,7 @@ class TrucksController extends AppController {
         ));
 
         $this->set('active_menu', 'trucks');
-        $sub_module_title = __('Histori SIUP Truk');
+        $sub_module_title = __('SIUP Truk');
         $this->set(compact('truck_id', 'sub_module_title', 'trucks'));
         $this->render('siup_form');
     }
@@ -1400,7 +1503,8 @@ class TrucksController extends AppController {
             }
         }
         
-        $sub_module_title = __('Histori STNK Truk');
+        $sub_module_title = __('STNK');
+        $this->set('active_menu', 'stnk');
         $this->set(compact('stnk', 'sub_module_title'));
     }
 
@@ -1519,7 +1623,7 @@ class TrucksController extends AppController {
         ));
 
         $this->set('active_menu', 'truck');
-        $sub_module_title = __('Histori STNK Truk');
+        $sub_module_title = __('STNK Truk');
         $this->set(compact('truck_id', 'sub_module_title', 'trucks'));
         $this->render('stnk_form');
     }

@@ -24,6 +24,9 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('CustomerType.name', __('Tipe'), array(
                             'escape' => false
                         )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('CustomerGroup.name', __('Grup'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Customer.name', __('Customer'), array(
                             'escape' => false
                         )));
@@ -36,9 +39,6 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Customer.created', __('Dibuat'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Customer.status', __('Status'), array(
-                            'escape' => false
-                        )));
                         echo $this->Html->tag('th', __('Action'));
                 ?>
             </tr>
@@ -46,29 +46,19 @@
                     $i = 1;
                     if(!empty($truck_customers)){
                         foreach ($truck_customers as $key => $value) {
-                            $value_data = $value['Customer'];
-                            $id = $value_data['id'];
+                            $id = $value['Customer']['id'];
             ?>
             <tr>
                 <td><?php echo $value['CustomerType']['name'];?></td>
-                <td><?php echo $value_data['name'];?></td>
-                <td><?php echo $value_data['address'];?></td>
+                <td><?php echo !empty($value['CustomerGroup']['name'])?$value['CustomerGroup']['name']:'-';?></td>
+                <td><?php echo $value['Customer']['name'];?></td>
+                <td><?php echo $value['Customer']['address'];?></td>
                 <td>
                     <?php 
-                        echo $value_data['phone_number'];
+                        echo $value['Customer']['phone_number'];
                     ?>
                 </td>
-                <td><?php echo $this->Common->customDate($value_data['created']);?></td>
-                <td>
-                    <?php 
-                        if(!empty($value_data['status'])){
-                            echo '<span class="label label-success">Active</span>'; 
-                        }else{
-                            echo '<span class="label label-danger">Non Active</span>';  
-                        }
-                        
-                    ?>
-                </td>
+                <td><?php echo $this->Common->customDate($value['Customer']['created']);?></td>
                 <td class="action">
                     <?php 
                             echo $this->Html->link('Edit', array(
@@ -79,25 +69,14 @@
                                 'class' => 'btn btn-primary btn-xs'
                             ));
 
-                            if(!empty($value_data['status'])){
-                                echo $this->Html->link('Disable', array(
-                                    'controller' => 'settings',
-                                    'action' => 'customer_toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs',
-                                    'title' => 'disable status brand'
-                                ));
-                            }else{
-                                echo $this->Html->link('Enable', array(
-                                    'controller' => 'settings',
-                                    'action' => 'customer_toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-success btn-xs',
-                                    'title' => 'enable status brand'
-                                ));
-                            }
+                            echo $this->Html->link(__('Hapus'), array(
+                                'controller' => 'settings',
+                                'action' => 'customer_toggle',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-danger btn-xs',
+                                'title' => 'Hapus Data Customer'
+                            ), __('Anda yakin ingin menghapus data Customer ini?'));
                     ?>
                 </td>
             </tr>

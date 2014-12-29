@@ -8,6 +8,12 @@ class Customer extends AppModel {
                 'message' => 'Tipe Customer harap dipilih'
             ),
         ),
+        'customer_group_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Grup Customer harap dipilih'
+            ),
+        ),
         'name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -32,17 +38,24 @@ class Customer extends AppModel {
         'CustomerType' => array(
             'className' => 'CustomerType',
             'foreignKey' => 'customer_type_id',
+        ),
+        'CustomerGroup' => array(
+            'className' => 'CustomerGroup',
+            'foreignKey' => 'customer_group_id',
         )
 	);
 
 	function getData($find, $options = false){
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'Customer.status' => 1,
+            ),
             'order'=> array(
-                'Customer.status' => 'DESC'
+                'Customer.name' => 'ASC'
             ),
             'contain' => array(
-                'CustomerType'
+                'CustomerType',
+                'CustomerGroup',
             ),
         );
 

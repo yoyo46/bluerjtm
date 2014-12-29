@@ -8,10 +8,16 @@ class Kir extends AppModel {
                 'message' => 'Truk harap diisi'
             ),
         ),
+        'no_pol' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Truk harap diisi'
+            ),
+        ),
         'tgl_kir' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'tanggal KIR harap diisi'
+                'message' => 'Tanggal KIR harap diisi'
             ),
         ),
         'price' => array(
@@ -37,11 +43,16 @@ class Kir extends AppModel {
 
 	function getData($find, $options = false){
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'Kir.status' => 1,
+            ),
             'order'=> array(
-                'status' => 'DESC'
+                'Kir.rejected' => 'ASC',
+                'Kir.paid' => 'ASC',
+                'Kir.tgl_kir' => 'DESC',
             ),
             'contain' => array(),
+            'fields' => array(),
         );
 
         if(!empty($options)){
@@ -53,6 +64,9 @@ class Kir extends AppModel {
             }
             if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
+            }
+            if(!empty($options['fields'])){
+                $default_options['fields'] = $options['fields'];
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];

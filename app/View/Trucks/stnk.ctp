@@ -8,10 +8,42 @@
                     'class' => 'box-title'
                 ));
         ?>
+        <div class="box-tools">
+            <?php
+                echo $this->Html->link('<i class="fa fa-plus"></i> Perpanjang STNK', array(
+                    'controller' => 'trucks',
+                    'action' => 'stnk_add'
+                ), array(
+                    'escape' => false,
+                    'class' => 'btn btn-app pull-right'
+                ));
+            ?>
+        </div>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>
+                <?php
+                        echo $this->Html->tag('th', $this->Paginator->sort('Stnk.no_pol', __('No. Pol'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Stnk.tgl_bayar', __('Tgl Perpanjang'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Stnk.tgl_berakhir', __('Tgl Expired'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Stnk.price', __('Biaya Perpanjang'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Kir.paid', __('Status'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Kir.created', __('Dibuat'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', __('Action'));
+                ?>
                 <th>ID</th>
                 <th>Truk</th>
                 <th>Tanggal Bayar</th>

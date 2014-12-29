@@ -62,7 +62,157 @@
                 ?>
             </li>
             <?php
+                    $activeMenu = false;
+                    $dataMenu = array(
+                        'customers', 'customer_groups'
+                    );
 
+                    if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
+                        $activeMenu = 'active';
+                    }
+            ?>
+            <li class="treeview <?php echo $activeMenu; ?>">
+                <a href="#">
+                    <i class="fa fa-male"></i>
+                    <span>Customer</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Grup Customer', array(
+                                'controller' => 'settings',
+                                'action' => 'customer_groups',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'customer_groups' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Customer', array(
+                                'controller' => 'settings',
+                                'action' => 'customers',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'customers' )?'active':'',
+                            ));
+                    ?>
+                </ul>
+            </li>
+            <?php
+
+                    $activeTruck = false;
+                    $truckMenu = array(
+                        'drivers', 'trucks', 'directions'
+                    );
+
+                    if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
+                        $activeTruck = 'active';
+                    }
+            ?>
+            <li class="treeview <?php echo $activeTruck; ?>">
+                <a href="#">
+                    <i class="fa fa-truck"></i>
+                    <span>Truk</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Supir', array(
+                                'controller' => 'trucks',
+                                'action' => 'drivers',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'drivers' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Truk', array(
+                                'controller' => 'trucks',
+                                'action' => 'index',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
+                            ));
+                    ?>
+                </ul>
+            </li>
+            <?php
+                    $activeMenu = false;
+                    $dataMenu = array(
+                        'kir', 'kir_payments'
+                    );
+
+                    if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
+                        $activeMenu = 'active';
+                    }
+            ?>
+            <li class="treeview <?php echo $activeMenu; ?>">
+                <a href="#">
+                    <i class="fa fa-file-text"></i>
+                    <span>KIR</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Perpanjang KIR', array(
+                                'controller' => 'trucks',
+                                'action' => 'kir',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'kir' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran KIR', array(
+                                'controller' => 'trucks',
+                                'action' => 'kir_payments',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'kir_payments' )?'active':'',
+                            ));
+                    ?>
+                </ul>
+            </li>
+            <?php
+                    $activeMenu = false;
+                    $dataMenu = array(
+                        'stnk', 'stnk_payments'
+                    );
+
+                    if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
+                        $activeMenu = 'active';
+                    }
+            ?>
+            <li class="treeview <?php echo $activeMenu; ?>">
+                <a href="#">
+                    <i class="fa fa-file-text"></i>
+                    <span>SNTK</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Perpanjang STNK', array(
+                                'controller' => 'trucks',
+                                'action' => 'stnk',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
+                            ));
+
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran STNK', array(
+                                'controller' => 'trucks',
+                                'action' => 'stnk_add',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
+                            ));
+                    ?>
+                </ul>
+            </li>
+            <?php
                     $activeTtuj = false;
                     $ttujMenu = array(
                         'ttuj', 'truk_tiba', 'bongkaran'
@@ -108,49 +258,15 @@
                 </ul>
             </li>
             <?php
-
-                    $activeTruck = false;
-                    $truckMenu = array(
-                        'drivers', 'trucks', 'directions'
+                    $activeMenu = false;
+                    $dataMenu = array(
                     );
 
-                    if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
-                        $activeTruck = 'active';
+                    if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
+                        $activeMenu = 'active';
                     }
             ?>
-            <li class="treeview <?php echo $activeTruck; ?>">
-                <a href="#">
-                    <i class="fa fa-truck"></i>
-                    <span>Truk</span>
-                    <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <?php 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Supir', array(
-                                'controller' => 'trucks',
-                                'action' => 'drivers',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'drivers' )?'active':'',
-                            ));
-
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Truk', array(
-                                'controller' => 'trucks',
-                                'action' => 'index',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
-                            ));
-                    ?>
-                </ul>
-            </li>
-            <?php
-
-                    $activePayment = false;
-            ?>
-            <li class="treeview <?php echo $activePayment; ?>">
+            <li class="treeview <?php echo $activeMenu; ?>">
                 <a href="#">
                     <i class="fa fa-dollar"></i>
                     <span>Pembayaran</span>
@@ -158,41 +274,6 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Histori KIR', array(
-                                'controller' => 'trucks',
-                                'action' => 'kir',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'drivers' )?'active':'',
-                            ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran KIR', array(
-                                'controller' => 'trucks',
-                                'action' => 'kir_add',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'drivers' )?'active':'',
-                            ));
-
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Histori STNK', array(
-                                'controller' => 'trucks',
-                                'action' => 'stnk',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
-                            ));
-
-                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran STNK', array(
-                                'controller' => 'trucks',
-                                'action' => 'stnk_add',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
-                            ));
-
                              echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Histori SIUP', array(
                                 'controller' => 'trucks',
                                 'action' => 'siup',
@@ -216,8 +297,7 @@
             <?php 
                     $activeSetting = false;
                     $settingMenu = array(
-                        'cities', 'customer_types', 'customers',
-                        'vendors', 'companies', 'uang_jalan',
+                        'cities', 'vendors', 'companies', 'uang_jalan',
                         'perlengkapan', 'coas', 'type_motor',
                         'branches'
                     );
@@ -265,14 +345,6 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'cities' )?'active':'',
-                            ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Customer', array(
-                                'controller' => 'settings',
-                                'action' => 'customers',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'customers' )?'active':'',
                             ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Company', array(
                                 'controller' => 'settings',

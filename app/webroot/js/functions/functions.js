@@ -275,4 +275,13 @@ $(function() {
         }
         frm.submit();
     });
+
+    $('.reload-link').change(function() {
+        var id = $(this).val();
+        var url = $(this).attr('url') + '/' + id;
+
+        location.href = url;
+
+        return false;
+    });
 });

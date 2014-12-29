@@ -26,6 +26,14 @@
 				)), array(
 					'class' => 'form-group'
 				));
+				echo $this->Html->tag('div', $this->Form->input('customer_group_id',array(
+					'label'=> __('Grup Customer'), 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Grup Customer')
+				)), array(
+					'class' => 'form-group'
+				));
 				echo $this->Html->tag('div', $this->Form->input('name',array(
 					'label'=> __('Nama Customer *'), 
 					'class'=>'form-control',
