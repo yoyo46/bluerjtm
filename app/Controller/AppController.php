@@ -43,6 +43,25 @@ class AppController extends Controller {
 	    //Configure AuthComponent
 		Configure::write('__Site.config_currency_code', 'IDR ');
 		Configure::write('__Site.config_pagination', 20);
+		Configure::write('__Site.cache_view_path', '/images/view');
+		Configure::write('__Site.upload_path', APP.'Uploads');
+
+		Configure::write('__Site.profile_photo_folder', 'users');
+
+		Configure::write('__Site.fullsize', 'fullsize');
+		Configure::write('__Site.max_image_size', 5241090);
+		Configure::write('__Site.max_image_width', 1000);
+		Configure::write('__Site.max_image_height', 667);
+		Configure::write('__Site.allowed_ext', array('jpg', 'jpeg', 'png', 'gif'));
+
+		$dimensionProfile = array(
+			'ps' => '50x50',
+			'pm' => '100x100',
+			'pl' => '150x150',
+			'pxl' => '300x300',
+		);
+		Configure::write('__Site.dimension_profile', $dimensionProfile);
+
 	    $this->Auth->userModel = 'User';
 	    $this->Auth->authorize = array(
 	        'Controller',

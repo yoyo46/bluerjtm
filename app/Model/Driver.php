@@ -2,31 +2,12 @@
 class Driver extends AppModel {
 	var $name = 'Driver';
 
-    var $actsAs = array(
-        'MeioUpload.MeioUpload' => array(
-            'photo' => array( 
-                'dir' => 'images/drivers', 
-                'create_directory' => true, 
-                'allowed_mime' => array('image/jpeg', 'image/pjpeg', 'image/gif', 'image/png'), 
-                'allowed_ext' => array('.jpg', '.jpeg', '.png', '.gif'), 
-                'maxSize' => 5242880, // 5 mb
-                'thumbsizes' => array(
-                    'small' => array(
-                        'width' => 85,
-                        'height' => 113
-                    ),
-                )
-            ),
-        )
-    );
-
 	var $validate = array(
         'photo' => array(
-            'MeioUpload' => array(
-                'Empty' => array(
-                    'rule' => array('Empty'),
-                    'message' => 'Foto harap diisi'
-                )
+            'notempty' => array(
+                'on' => 'create',
+                'rule' => array('notempty'),
+                'message' => 'Foto harap diisi'
             ),
         ),
         'name' => array(

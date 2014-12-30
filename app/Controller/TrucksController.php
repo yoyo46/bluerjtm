@@ -4,7 +4,7 @@ class TrucksController extends AppController {
 	public $uses = array();
 
     public $components = array(
-        'RjTruck'
+        'RjTruck', 'RjImage'
     );
 
     function beforeFilter() {
@@ -615,9 +615,25 @@ class TrucksController extends AppController {
             $data['Driver']['expired_date_sim'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_expire_sim']);
             // $data['Driver']['photo'] = $this->MkCommon->getFilePhoto($data['Driver']['photo']);
 
-            $this->Driver->set($data);
+            if(!empty($data['Driver']['photo']['name']) && is_array($data['Driver']['photo'])){
+                $temp_image = $data['Driver']['photo'];
+                $data['Driver']['photo'] = $data['Driver']['photo']['name'];
+            }
 
+            $this->Driver->set($data);
+            
             if($this->Driver->validates($data)){
+                if(!empty($temp_image) && is_array($temp_image)){
+                    $uploaded = $this->RjImage->upload($temp_image, '/drivers/', String::uuid());
+                    if(!empty($uploaded)) {
+                        if($uploaded['error']) {
+                            $this->RmCommon->setCustomFlash($uploaded['message'], 'error');
+                        } else {
+                            $data['Driver']['photo'] = $uploaded['imageName'];
+                        }
+                    }
+                }
+
                 if($this->Driver->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Supir Truk'), $msg), 'success');
                     $this->redirect(array(

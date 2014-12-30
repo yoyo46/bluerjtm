@@ -283,7 +283,7 @@
 		        	<?php 
 							echo $this->Form->input('kontak_darurat_phone',array(
 								'label'=> __('No. Telp'), 
-								'class'=>'form-control custom-date',
+								'class'=>'form-control',
 								'required' => false,
 								'placeholder' => __('No. Telp'),
 								'type' => 'text'
