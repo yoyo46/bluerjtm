@@ -84,6 +84,19 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
+						echo $this->Form->label('capacity',__('Kapasitas *')); 
+
+						echo $this->Form->input('capacity',array(
+							'type' => 'text',
+							'label'=> false, 
+							'class'=>'form-control',
+							'required' => false,
+							'placeholder' => __('Kapasitas')
+						));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
 						echo $this->Form->label('company_id',__('Pemilik Truk *')); 
 
 						echo $this->Form->input('company_id',array(
@@ -170,7 +183,7 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('Leasing.installment', __('Biaya Leasing *')); 
+						echo $this->Form->label('Leasing.installment', __('Biaya Leasing')); 
 					?>
 					<div class="input-group">
 						<?php
@@ -189,7 +202,7 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('Leasing.paid_date',__('Tanggal leasing *')); 
+						echo $this->Form->label('Leasing.paid_date',__('Tanggal leasing')); 
 
 						echo $this->Form->input('Leasing.paid_date',array(
 							'type' => 'text',
@@ -258,19 +271,6 @@
 							'class'=>'form-control custom-date',
 							'required' => false,
 							'placeholder' => __('Tanggal BPKB')
-						));
-					?>
-		        </div>
-		        <div class="form-group">
-		        	<?php 
-						echo $this->Form->label('capacity',__('Kapasitas *')); 
-
-						echo $this->Form->input('capacity',array(
-							'type' => 'text',
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'placeholder' => __('Kapasitas')
 						));
 					?>
 		        </div>

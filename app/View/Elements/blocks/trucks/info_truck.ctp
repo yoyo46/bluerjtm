@@ -14,7 +14,7 @@
             <dd><?php echo $truck['Truck']['nopol'];?></dd>
             <dt><?php echo __('Perusahaan')?></dt>
             <dd><?php echo $truck['Company']['name'];?></dd>
-            <dt><?php echo __('Kategori')?></dt>
+            <dt><?php echo __('Jenis Truk')?></dt>
             <dd><?php echo $truck['TruckCategory']['name'];?></dd>
             <dt><?php echo __('BPKB')?></dt>
             <dd><?php echo $truck['Truck']['bpkb'];?></dd>
@@ -24,7 +24,7 @@
             <dd><?php echo $truck['Truck']['no_rangka'];?></dd>
             <dt><?php echo __('No. Mesin')?></dt>
             <dd><?php echo $truck['Truck']['no_machine'];?></dd>
-            <dt><?php echo __('Atas Nama')?></dt>
+            <dt><?php echo __('Pemilik Truk')?></dt>
             <dd><?php echo $truck['Truck']['atas_nama'];?></dd>
             <dt><?php echo __('KIR')?></dt>
             <dd>
