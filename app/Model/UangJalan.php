@@ -2,12 +2,12 @@
 class UangJalan extends AppModel {
 	var $name = 'UangJalan';
 	var $validate = array(
-        'customer_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Customer harap dipilih'
-            ),
-        ),
+        // 'customer_id' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Customer harap dipilih'
+        //     ),
+        // ),
         'group_classification_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -161,10 +161,10 @@ class UangJalan extends AppModel {
 	);
 
     var $belongsTo = array(
-        'Customer' => array(
-            'className' => 'Customer',
-            'foreignKey' => 'customer_id',
-        ),
+        // 'Customer' => array(
+        //     'className' => 'Customer',
+        //     'foreignKey' => 'customer_id',
+        // ),
         'GroupClassification' => array(
             'className' => 'GroupClassification',
             'foreignKey' => 'group_classification_id',
@@ -189,7 +189,7 @@ class UangJalan extends AppModel {
                 'UangJalan.status' => 'DESC'
             ),
             'contain' => array(
-                'Customer',
+                // 'Customer',
                 'GroupClassification',
                 'FromCity',
                 'ToCity'
@@ -223,8 +223,13 @@ class UangJalan extends AppModel {
     }
 
     function checkUangJalanExtra($data) {
-        if( !empty($this->data['UangJalan']['is_unit']) ) {
-            if( !empty($data['uang_jalan_extra']) && is_numeric($data['uang_jalan_extra']) ) {
+        $min_capacity = !empty($this->data['UangJalan']['min_capacity'])?trim($this->data['UangJalan']['min_capacity']):false;
+
+        if( !empty($min_capacity) ) {
+            $uang_jalan_extra = !empty($data['uang_jalan_extra'])?trim($data['uang_jalan_extra']):false;
+            $uang_jalan_extra = !empty($uang_jalan_extra)?str_replace(',', '', $uang_jalan_extra):false;
+
+            if( !empty($uang_jalan_extra) && is_numeric($uang_jalan_extra) ) {
                 return true;
             } else {
                 return false;
@@ -235,8 +240,13 @@ class UangJalan extends AppModel {
     }
 
     function checkMinCapacity($data) {
-        if( !empty($this->data['UangJalan']['is_unit']) ) {
-            if( !empty($data['min_capacity']) && is_numeric($data['min_capacity']) ) {
+        $uang_jalan_extra = !empty($this->data['UangJalan']['uang_jalan_extra'])?trim($this->data['UangJalan']['uang_jalan_extra']):false;
+
+        if( !empty($uang_jalan_extra) ) {
+            $min_capacity = !empty($data['min_capacity'])?trim($data['min_capacity']):false;
+            $min_capacity = !empty($min_capacity)?str_replace(',', '', $min_capacity):false;
+
+            if( !empty($min_capacity) && is_numeric($min_capacity) ) {
                 return true;
             } else {
                 return false;
@@ -246,11 +256,12 @@ class UangJalan extends AppModel {
         }
     }
 
-    function getKotaAsal ($customer_id) {
+    // function getKotaAsal ($customer_id) {
+    function getKotaAsal () {
         $fromCity = $this->getData('all', array(
             'conditions' => array(
                 'UangJalan.status' => 1,
-                'UangJalan.customer_id' => $customer_id,
+                // 'UangJalan.customer_id' => $customer_id,
             ),
             'group' => array(
                 'UangJalan.from_city_id'
@@ -273,11 +284,12 @@ class UangJalan extends AppModel {
         return $resultCity;
     }
 
-    function getKotaTujuan ($customer_id, $from_city_id) {
+    // function getKotaTujuan ($customer_id, $from_city_id) {
+    function getKotaTujuan ( $from_city_id ) {
         $toCity = $this->getData('all', array(
             'conditions' => array(
                 'UangJalan.status' => 1,
-                'UangJalan.customer_id' => $customer_id,
+                // 'UangJalan.customer_id' => $customer_id,
                 'UangJalan.from_city_id' => $from_city_id,
             ),
             'group' => array(
@@ -301,13 +313,14 @@ class UangJalan extends AppModel {
         return $resultCity;
     }
 
-    function getNopol ($customer_id, $from_city_id, $to_city_id) {
+    // function getNopol ($customer_id, $from_city_id, $to_city_id) {
+    function getNopol ( $from_city_id, $to_city_id ) {
         $result = false;
         $this->Truck = ClassRegistry::init('Truck');
         $uangJalan = $this->getData('first', array(
             'conditions' => array(
                 'UangJalan.status' => 1,
-                'UangJalan.customer_id' => $customer_id,
+                // 'UangJalan.customer_id' => $customer_id,
                 'UangJalan.from_city_id' => $from_city_id,
                 'UangJalan.to_city_id' => $to_city_id,
             ),

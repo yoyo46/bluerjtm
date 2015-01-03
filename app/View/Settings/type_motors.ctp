@@ -14,27 +14,6 @@
                         'escape' => false,
                         'class' => 'btn btn-app pull-right'
                     ));
-                    echo $this->Html->link('<i class="fa fa-circle"></i> Warna Motor', array(
-                        'controller' => 'settings',
-                        'action' => 'colors'
-                    ), array(
-                        'escape' => false,
-                        'class' => 'btn btn-app pull-right'
-                    ));
-                    echo $this->Html->link('<i class="fa fa-circle"></i> Grup Motor', array(
-                        'controller' => 'settings',
-                        'action' => 'group_motors'
-                    ), array(
-                        'escape' => false,
-                        'class' => 'btn btn-app pull-right'
-                    ));
-                    echo $this->Html->link('<i class="fa fa-circle"></i> Kode Motor', array(
-                        'controller' => 'settings',
-                        'action' => 'code_motors'
-                    ), array(
-                        'escape' => false,
-                        'class' => 'btn btn-app pull-right'
-                    ));
             ?>
         </div>
     </div><!-- /.box-header -->

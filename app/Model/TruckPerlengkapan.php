@@ -14,6 +14,12 @@ class TruckPerlengkapan extends AppModel {
                 'message' => 'Perlengkapan harap dipilih.'
             ),
         ),
+        'qty' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Jumlah Perlengkapan harap dipilih.'
+            ),
+        ),
 	);
     
     var $belongsTo = array(

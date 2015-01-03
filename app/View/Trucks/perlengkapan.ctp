@@ -38,70 +38,145 @@
 				?>
 			</div>
 		</div>
-    	<?php
-    		if( empty($this->request->data) ){
-    	?>
-    	<div class="form-group" id="perlengkapan1">
-        	<?php 
-				echo $this->Form->label('perlengkapan_id.0', __('Perlengkapan 1')); 
-
-				echo $this->Form->input('perlengkapan_id.0',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'options' => $perlengkapans,
-					'empty' => __('Pilih Perlengkapan --'),
-				));
-			?>
-        </div>
-        <div class="form-group"  id="perlengkapan2">
-        	<?php 
-				echo $this->Form->label('perlengkapan_id.1', __('Perlengkapan 2')); 
-
-				echo $this->Form->input('perlengkapan_id.',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'options' => $perlengkapans,
-					'empty' => __('Pilih Perlengkapan --'),
-				));
-			?>
-        </div>
-        <div class="form-group"  id="perlengkapan1">
-        	<?php 
-				echo $this->Form->label('perlengkapan_id.2', __('Perlengkapan 3')); 
-
-				echo $this->Form->input('perlengkapan_id.',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'options' => $perlengkapans,
-					'empty' => __('Pilih Perlengkapan --'),
-				));
-			?>
-        </div>
-    	<?php
-    			} else if( !empty($this->request->data['TruckPerlengkapan']['perlengkapan_id']) ){
-    				foreach ($this->request->data['TruckPerlengkapan']['perlengkapan_id'] as $key => $value) {
-    	?>
-    	<div class="form-group"  id="perlengkapan<?php echo $key;?>">
-        	<?php 
-				echo $this->Form->label('TruckPerlengkapan.perlengkapan_id.'.$key, __('Perlengkapan '.($key+1))); 
-
-				echo $this->Form->input('TruckPerlengkapan.perlengkapan_id.'.$key,array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'value' => $value,
-					'empty' => __('Pilih Perlengkapan --'),
-					'options' => $perlengkapans,
-				));
-			?>
-        </div>	
-    	<?php
-    			}
-    		}
-    	?>
+		<div class="list-perlengkapan">
+	    	<?php
+	    		if( empty($this->request->data) ){
+	    	?>
+	    	<div id="perlengkapan0" class="seperator">
+		    	<div class="row">
+		    		<div class="col-sm-9">
+		    			<div class="form-group">
+				        	<?php 
+									echo $this->Form->input('TruckPerlengkapan.perlengkapan_id.0',array(
+										'label'=> __('Perlengkapan 1'), 
+										'class'=>'form-control',
+										'required' => false,
+										'options' => $perlengkapans,
+										'empty' => __('Pilih Perlengkapan --'),
+									));
+							?>
+				        </div>
+		    		</div>
+		    		<div class="col-sm-3">
+		    			<div class="form-group">
+				        	<?php 
+									echo $this->Form->input('TruckPerlengkapan.qty.0',array(
+										'label'=> __('Jumlah Perlengkapan 1'), 
+										'class'=>'form-control',
+										'required' => false,
+									));
+							?>
+				        </div>
+		    		</div>
+		    	</div>
+	    	</div>
+	    	<div id="perlengkapan1" class="seperator">
+		    	<div class="row">
+		    		<div class="col-sm-9">
+		    			<div class="form-group">
+				        	<?php 
+									echo $this->Form->input('TruckPerlengkapan.perlengkapan_id.1',array(
+										'label'=> __('Perlengkapan 2'), 
+										'class'=>'form-control',
+										'required' => false,
+										'options' => $perlengkapans,
+										'empty' => __('Pilih Perlengkapan --'),
+									));
+							?>
+				        </div>
+		    		</div>
+		    		<div class="col-sm-3">
+		    			<div class="form-group">
+				        	<?php 
+									echo $this->Form->input('TruckPerlengkapan.qty.1',array(
+										'label'=> __('Jumlah Perlengkapan 2'), 
+										'class'=>'form-control',
+										'required' => false,
+									));
+							?>
+				        </div>
+		    		</div>
+		    	</div>
+	    	</div>
+	    	<div id="perlengkapan2" class="seperator">
+		    	<div class="row">
+		    		<div class="col-sm-9">
+		    			<div class="form-group">
+				        	<?php 
+									echo $this->Form->input('TruckPerlengkapan.perlengkapan_id.2',array(
+										'label'=> __('Perlengkapan 3'), 
+										'class'=>'form-control',
+										'required' => false,
+										'options' => $perlengkapans,
+										'empty' => __('Pilih Perlengkapan --'),
+									));
+							?>
+				        </div>
+		    		</div>
+		    		<div class="col-sm-3">
+		    			<div class="form-group">
+				        	<?php 
+									echo $this->Form->input('TruckPerlengkapan.qty.2',array(
+										'label'=> __('Jumlah Perlengkapan 3'), 
+										'class'=>'form-control',
+										'required' => false,
+									));
+							?>
+				        </div>
+		    		</div>
+		    	</div>
+	    	</div>
+	    	<?php
+	    			} else if( !empty($this->request->data['TruckPerlengkapan']['perlengkapan_id']) ){
+	    				foreach ($this->request->data['TruckPerlengkapan']['perlengkapan_id'] as $key => $value) {
+	    	?>
+	    	<div id="perlengkapan<?php echo $key;?>" class="seperator">
+		    	<div class="row">
+		    		<div class="col-sm-9">
+		    			<div class="form-group">
+				        	<?php 
+									echo $this->Form->input('TruckPerlengkapan.perlengkapan_id.'.$key,array(
+										'label'=> __('Perlengkapan '.($key+1)), 
+										'class'=>'form-control',
+										'required' => false,
+										'options' => $perlengkapans,
+										'empty' => __('Pilih Perlengkapan --'),
+										'value' => $value,
+									));
+									echo $this->Form->error(sprintf('TruckPerlengkapan.%s.perlengkapan_id', $key), array(
+										'notempty' => __('Perlengkapan harap dipilih'),
+									), array(
+										'wrap' => 'div', 
+										'class' => 'error-message',
+									));
+							?>
+				        </div>
+		    		</div>
+		    		<div class="col-sm-3">
+		    			<div class="form-group">
+				        	<?php 
+									echo $this->Form->input('TruckPerlengkapan.qty.'.$key,array(
+										'label'=> __('Jumlah Perlengkapan '.($key+1)), 
+										'class'=>'form-control input_number',
+										'required' => false,
+										'value' => !empty($this->request->data['TruckPerlengkapan']['qty'][$key])?$this->request->data['TruckPerlengkapan']['qty'][$key]:0,
+									));
+									echo $this->Form->error(sprintf('TruckPerlengkapan.%s.qty', $key), array(
+										'notempty' => __('Jumlah perlengkapan harap diisi'),
+									), array(
+										'wrap' => 'div', 
+										'class' => 'error-message',
+									));
+							?>
+				        </div>
+		    		</div>
+		    	</div>
+	    	</div>
+	    	<?php
+	    			}
+	    		}
+	    	?>
+    	</div>
     </div>
 
     <div class="box-footer text-center action">
@@ -119,6 +194,19 @@
     	?>
     </div>
 	<?php
-		echo $this->Form->end();
+			echo $this->Form->end();
 	?>
+</div>
+<div class="hide">
+	<div id="perlengkapan_id">
+		<?php 
+				echo $this->Form->input('perlengkapan_id',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Perlengkapan --'),
+					'options' => $perlengkapans
+				));
+		?>
+	</div>
 </div>

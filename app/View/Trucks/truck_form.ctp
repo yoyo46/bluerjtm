@@ -122,6 +122,32 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
+						echo $this->Form->label('capacity',__('Kapasitas *')); 
+
+						echo $this->Form->input('capacity',array(
+							'type' => 'text',
+							'label'=> false, 
+							'class'=>'form-control',
+							'required' => false,
+							'placeholder' => __('Kapasitas')
+						));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+						echo $this->Form->label('target_rit',__('Target Per Rit *')); 
+
+						echo $this->Form->input('target_rit',array(
+							'type' => 'text',
+							'label'=> false, 
+							'class'=>'form-control',
+							'required' => false,
+							'placeholder' => __('Target Per Rit')
+						));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
 						echo $this->Form->label('tahun',__('Tahun *')); 
 
 						echo $this->Form->input('tahun',array(
@@ -171,13 +197,13 @@
 		    <div class="box-body">
 		    	<div class="form-group">
 		        	<?php 
-						echo $this->Form->label('atas_nama',__('Pemilik Truk *')); 
+						echo $this->Form->label('atas_nama',__('Atas Nama *')); 
 
 						echo $this->Form->input('atas_nama',array(
 							'label'=> false, 
 							'class'=>'form-control',
 							'required' => false,
-							'placeholder' => __('Pemilik Truk')
+							'placeholder' => __('Atas Nama')
 						));
 					?>
 		        </div>
@@ -193,7 +219,7 @@
 							echo $this->Form->input('Leasing.installment',array(
 								'type' => 'text',
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control input_price',
 								'required' => false,
 								'placeholder' => __('Leasing Cicilan')
 							));
@@ -287,7 +313,7 @@
 		        	<div id="main-alocation">
 		        		<div class="form-group has-feedback">
 		        			<?php 
-									echo $this->Form->label('TruckCustomer.customer_id.',__('Alokasi')); 
+									echo $this->Form->label('TruckCustomer.customer_id.',__('Alokasi *')); 
 									echo $this->Form->input('TruckCustomer.customer_id.',array(
 										'label'=> false, 
 										'class'=> 'form-control',
@@ -313,7 +339,7 @@
 		        	?>
 		        	<div class="form-group">
 		        			<?php 
-								echo $this->Form->label('TruckCustomer.customer_id.', __('Alokasi')); 
+								echo $this->Form->label('TruckCustomer.customer_id.', __('Alokasi *')); 
 
 								echo $this->Form->input('TruckCustomer.customer_id.',array(
 									'label'=> false, 

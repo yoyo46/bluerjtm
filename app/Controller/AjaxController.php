@@ -10,27 +10,32 @@ class AjaxController extends AppController {
 		$this->layout = false;
 	}
 
-	function getKotaAsal( $customer_id = false ) {
+	// function getKotaAsal( $customer_id = false ) {
+	function getKotaAsal() {
 		$this->loadModel('UangJalan');
-		$resultCity = $this->UangJalan->getKotaAsal($customer_id);
+		$resultCity = $this->UangJalan->getKotaAsal();
 
 		$this->set(compact(
 			'resultCity'
 		));
 	}
 
-	function getKotaTujuan( $from_city_id = false, $customer_id = false ) {
+	// function getKotaTujuan( $from_city_id = false, $customer_id = false ) {
+	function getKotaTujuan( $from_city_id = false ) {
 		$this->loadModel('UangJalan');
-		$resultCity = $this->UangJalan->getKotaTujuan($customer_id, $from_city_id);
+		// $resultCity = $this->UangJalan->getKotaTujuan($customer_id, $from_city_id);
+		$resultCity = $this->UangJalan->getKotaTujuan($from_city_id);
 
 		$this->set(compact(
 			'resultCity'
 		));
 	}
 
-	function getNopol( $from_city_id = false, $to_city_id = false, $customer_id = false ) {
+	// function getNopol( $from_city_id = false, $to_city_id = false, $customer_id = false ) {
+	function getNopol( $from_city_id = false, $to_city_id = false ) {
 		$this->loadModel('UangJalan');
-		$data = $this->UangJalan->getNopol($customer_id, $from_city_id, $to_city_id);
+		// $data = $this->UangJalan->getNopol($customer_id, $from_city_id, $to_city_id);
+		$data = $this->UangJalan->getNopol($from_city_id, $to_city_id);
 
 		if( !empty($data) ) {
 			$result = $data['result'];

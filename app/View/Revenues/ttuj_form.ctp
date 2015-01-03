@@ -67,7 +67,6 @@
 							<div class="row">
 								<div class="col-sm-6">
 									<?php 
-											$disabled = !empty($this->request->data['Ttuj']['customer_id'])?false:true;
 											echo $this->Form->input('from_city_id',array(
 												'label'=> false, 
 												'class'=>'form-control',
@@ -76,7 +75,6 @@
 												'div' => array(
 													'class' => 'from_city'
 												),
-												'readonly' => $disabled,
 												'id' => 'getKotaTujuan',
 											));
 									?>

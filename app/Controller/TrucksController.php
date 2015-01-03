@@ -548,7 +548,7 @@ class TrucksController extends AppController {
         $this->loadModel('Driver');
 
         $conditions = array(
-            'Driver.status' => 1
+            'Driver.status' => array( 0, 1 )
         );
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -561,8 +561,12 @@ class TrucksController extends AppController {
         }
 
         $this->paginate = $this->Driver->getData('paginate', array(
-            'conditions' => $conditions
-        ));
+            'conditions' => $conditions,
+            'order' => array(
+                'Driver.status' => 'DESC',
+                'Driver.name' => 'ASC',
+            ),
+        ), false);
         $truck_drivers = $this->paginate('Driver');
 
         $this->set('active_menu', 'drivers');
@@ -663,6 +667,7 @@ class TrucksController extends AppController {
 
         $this->loadModel('DriverRelation');
         $this->loadModel('Branch');
+        $this->loadModel('JenisSim');
 
         $driverRelations = $this->DriverRelation->find('list', array(
             'conditions' => array(
@@ -680,10 +685,18 @@ class TrucksController extends AppController {
                 'Branch.id', 'Branch.name'
             )
         ));
+        $jenisSims = $this->JenisSim->find('list', array(
+            'conditions' => array(
+                'JenisSim.status' => 1
+            ),
+            'fields' => array(
+                'JenisSim.id', 'JenisSim.name'
+            )
+        ));
 
         $this->set('active_menu', 'drivers');
         $this->set(compact(
-            'driverRelations', 'branches'
+            'driverRelations', 'branches', 'jenisSims'
         ));
         $this->render('driver_form');
     }
@@ -692,7 +705,8 @@ class TrucksController extends AppController {
         $this->loadModel('Driver');
         $locale = $this->Driver->getData('first', array(
             'conditions' => array(
-                'Driver.id' => $id
+                'Driver.id' => $id,
+                'Driver.status' => array( 0, 1 ),
             )
         ));
 
@@ -1528,20 +1542,25 @@ class TrucksController extends AppController {
                         foreach ($data['TruckPerlengkapan']['perlengkapan_id'] as $key => $perlengkapan_id) {
                             if(!empty($perlengkapan_id)){
                                 $result_data[$key]['TruckPerlengkapan']['perlengkapan_id'] = $perlengkapan_id;
+                                $result_data[$key]['TruckPerlengkapan']['qty'] = !empty($data['TruckPerlengkapan']['qty'][$key])?$data['TruckPerlengkapan']['qty'][$key]:'';
                                 $result_data[$key]['TruckPerlengkapan']['truck_id'] = $truck_id;
                             }
                         }
-                    
+
                         $this->TruckPerlengkapan->create();
 
-                        if($this->TruckPerlengkapan->saveMany($result_data)){
-                            $this->MkCommon->setCustomFlash(sprintf(__('kelengkapan truk berhasil %s'), $message), 'success'); 
-                            $this->redirect(array(
-                                'controller' => 'trucks',
-                                'action' => 'index'
-                            ));
+                        if( !empty($result_data) ) {
+                            if($this->TruckPerlengkapan->saveMany($result_data)){
+                                $this->MkCommon->setCustomFlash(sprintf(__('kelengkapan truk berhasil %s'), $message), 'success'); 
+                                $this->redirect(array(
+                                    'controller' => 'trucks',
+                                    'action' => 'index'
+                                ));
+                            } else {
+                                $this->MkCommon->setCustomFlash(sprintf(__('kelengkapan truk gagal %s'), $message), 'error'); 
+                            }
                         } else {
-                            $this->MkCommon->setCustomFlash(sprintf(__('kelengkapan truk gagal %s'), $message), 'error'); 
+                            $this->MkCommon->setCustomFlash(__('Mohon lengkapi Perlengkapan Truk'), 'error'); 
                         }
                     } else {
                         $this->MkCommon->setCustomFlash(sprintf(__('kelengkapan truk gagal %s'), $message), 'error'); 
@@ -1550,6 +1569,7 @@ class TrucksController extends AppController {
                     if(!empty($truckPerlengkapans)){
                         foreach ($truckPerlengkapans as $key => $value) {
                             $this->request->data['TruckPerlengkapan']['perlengkapan_id'][$key] = $value['TruckPerlengkapan']['perlengkapan_id'];
+                            $this->request->data['TruckPerlengkapan']['qty'][$key] = $value['TruckPerlengkapan']['qty'];
                         }
                     }
                 }

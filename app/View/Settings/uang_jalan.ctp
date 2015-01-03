@@ -21,9 +21,9 @@
         <table class="table table-hover">
             <tr>
                 <?php
-                        echo $this->Html->tag('th', $this->Paginator->sort('Customer.name', __('Customer'), array(
-                            'escape' => false
-                        )));
+                        // echo $this->Html->tag('th', $this->Paginator->sort('Customer.name', __('Customer'), array(
+                        //     'escape' => false
+                        // )));
                         echo $this->Html->tag('th', $this->Paginator->sort('GroupClassification.name', __('Grup Klasifikasi'), array(
                             'escape' => false
                         )));
@@ -49,7 +49,7 @@
                             $id = $value['UangJalan']['id'];
             ?>
             <tr>
-                <td><?php echo $value['Customer']['name'];?></td>
+                <!-- <td><?php // echo $value['Customer']['name'];?></td> -->
                 <td><?php echo $value['GroupClassification']['name'];?></td>
                 <td><?php echo $value['FromCity']['name'];?></td>
                 <td><?php echo $value['ToCity']['name'];?></td>

@@ -1,6 +1,6 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
-        echo $this->element('blocks/leasings/search_index');
+        echo $this->element('blocks/ttuj/search_ttuj');
 ?>
 <div class="box box-success">
     <div class="box-header">
@@ -26,6 +26,26 @@
                             echo $this->Html->link('<i class="fa fa-plus"></i> Bongkaran Truk', array(
                                 'controller' => 'revenues',
                                 'action' => 'bongkaran_add'
+                            ), array(
+                                'escape' => false,
+                                'class' => 'btn btn-app btn-success pull-right'
+                            ));
+                            break;
+
+                        case 'balik':
+                            echo $this->Html->link('<i class="fa fa-plus"></i> Truk Balik', array(
+                                'controller' => 'revenues',
+                                'action' => 'balik_add'
+                            ), array(
+                                'escape' => false,
+                                'class' => 'btn btn-app btn-success pull-right'
+                            ));
+                            break;
+
+                        case 'pool':
+                            echo $this->Html->link('<i class="fa fa-plus"></i> Sampai Pool', array(
+                                'controller' => 'revenues',
+                                'action' => 'pool_add'
                             ), array(
                                 'escape' => false,
                                 'class' => 'btn btn-app btn-success pull-right'
@@ -74,18 +94,44 @@
                             'escape' => false
                         )));
 
-                        if( $active_menu == 'truk_tiba' ) {
-                            echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_berangkat', __('Tgl Berangkat'), array(
-                                'escape' => false
-                            )));
-                            echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_tiba', __('Tgl Tiba'), array(
-                                'escape' => false
-                            )));
-                        } else {
-                            echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.is_draft', __('Status'), array(
-                                'escape' => false
-                            )));
+                        switch ($active_menu) {
+                            case 'truk_tiba':
+                                echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_berangkat', __('Tgl Berangkat'), array(
+                                    'escape' => false
+                                )));
+                                echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_tiba', __('Tgl Tiba'), array(
+                                    'escape' => false
+                                )));
+                                break;
+
+                            case 'bongkaran':
+                                echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_tiba', __('Tgl Tiba'), array(
+                                    'escape' => false
+                                )));
+                                echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_bongkaran', __('Tgl Bongkaran'), array(
+                                    'escape' => false
+                                )));
+                                break;
+
+                            case 'balik':
+                                echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_bongkaran', __('Tgl Bongkaran'), array(
+                                    'escape' => false
+                                )));
+                                echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_balik', __('Tgl Balik'), array(
+                                    'escape' => false
+                                )));
+                                break;
+
+                            case 'pool':
+                                echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_balik', __('Tgl Balik'), array(
+                                    'escape' => false
+                                )));
+                                echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_pool', __('Tgl Sampai Pool'), array(
+                                    'escape' => false
+                                )));
+                                break;
                         }
+                        echo $this->Html->tag('th', __('Status'));
 
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.created', __('Dibuat'), array(
                             'escape' => false
@@ -112,85 +158,81 @@
                 <td><?php echo $value['Ttuj']['from_city_name'];?></td>
                 <td><?php echo $value['Ttuj']['to_city_name'];?></td>
                 <?php 
-                        if( $active_menu == 'truk_tiba' ) {
-                            echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_berangkat'])));
-                            echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_tiba'])));
-                        } else {
-                            if(!empty($value['Ttuj']['is_bongkaran'])){
-                                echo $this->Html->tag('td', '<span class="label label-warning">Bongkaran</span>');
-                            } else if(!empty($value['Ttuj']['is_arrive'])){
-                                echo $this->Html->tag('td', '<span class="label label-info">Tiba</span>');
-                            } else if(!empty($value['Ttuj']['is_draft'])){
-                                echo $this->Html->tag('td', '<span class="label label-primary">Draft</span>');
-                            } else{
-                                echo $this->Html->tag('td', '<span class="label label-default">Commit</span>');
-                            }
+                        switch ($active_menu) {
+                            case 'truk_tiba':
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_berangkat'])));
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_tiba'])));
+                                break;
+
+                            case 'bongkaran':
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_tiba'])));
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_bongkaran'])));
+                                break;
+
+                            case 'balik':
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_bongkaran'])));
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_balik'])));
+                                break;
+
+                            case 'pool':
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_balik'])));
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_pool'])));
+                                break;
+                        }
+
+                        if(!empty($value['Ttuj']['is_pool'])){
+                            echo $this->Html->tag('td', '<span class="label label-success">Sampai Pool</span>');
+                        } else if(!empty($value['Ttuj']['is_balik'])){
+                            echo $this->Html->tag('td', '<span class="label label-info">Balik</span>');
+                        } else if(!empty($value['Ttuj']['is_bongkaran'])){
+                            echo $this->Html->tag('td', '<span class="label label-warning">Bongkaran</span>');
+                        } else if(!empty($value['Ttuj']['is_arrive'])){
+                            echo $this->Html->tag('td', '<span class="label label-info">Tiba</span>');
+                        } else if(!empty($value['Ttuj']['is_draft'])){
+                            echo $this->Html->tag('td', '<span class="label label-primary">Draft</span>');
+                        } else{
+                            echo $this->Html->tag('td', '<span class="label label-default">Commit</span>');
                         }
                 ?>
                 <td><?php echo $this->Common->customDate($value['Ttuj']['created']);?></td>
                 <td class="action">
                     <?php
-                            switch ($active_menu) {
-                                case 'truk_tiba':
-                                    echo $this->Html->link('Info', array(
-                                        'controller' => 'revenues',
-                                        'action' => 'info_truk',
-                                        'tiba',
-                                        $id
-                                    ), array(
-                                        'class' => 'btn btn-primary btn-xs'
-                                    ));
+                            if( in_array($active_menu, array( 'truk_tiba', 'bongkaran', 'balik', 'pool' )) ) {
+                                echo $this->Html->link('Info', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'info_truk',
+                                    $active_menu,
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
 
-                                    echo $this->Html->link(__('Batalkan'), array(
-                                        'controller' => 'revenues',
-                                        'action' => 'ttuj_toggle',
-                                        $id,
-                                        'arrive'
-                                    ), array(
-                                        'class' => 'btn btn-danger btn-xs',
-                                        'title' => 'disable status brand'
-                                    ), __('Apakah Anda yakin akan menghapus data ini?'));
-                                    break;
+                                echo $this->Html->link(__('Batalkan'), array(
+                                    'controller' => 'revenues',
+                                    'action' => 'ttuj_toggle',
+                                    $id,
+                                    $active_menu
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs',
+                                    'title' => 'disable status brand'
+                                ), __('Apakah Anda yakin akan membatalkan data ini?'));
+                            } else {
+                                echo $this->Html->link('Rubah', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'ttuj_edit',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
 
-                                case 'bongkaran':
-                                    echo $this->Html->link('Info', array(
-                                        'controller' => 'revenues',
-                                        'action' => 'info_truk',
-                                        'bongkaran',
-                                        $id
-                                    ), array(
-                                        'class' => 'btn btn-primary btn-xs'
-                                    ));
-
-                                    echo $this->Html->link(__('Batalkan'), array(
-                                        'controller' => 'revenues',
-                                        'action' => 'ttuj_toggle',
-                                        $id,
-                                        'bongkaran'
-                                    ), array(
-                                        'class' => 'btn btn-danger btn-xs',
-                                        'title' => 'disable status brand'
-                                    ), __('Apakah Anda yakin akan menghapus data ini?'));
-                                    break;
-                                
-                                default:
-                                    echo $this->Html->link('Rubah', array(
-                                        'controller' => 'revenues',
-                                        'action' => 'ttuj_edit',
-                                        $id
-                                    ), array(
-                                        'class' => 'btn btn-primary btn-xs'
-                                    ));
-
-                                    echo $this->Html->link(__('Hapus'), array(
-                                        'controller' => 'revenues',
-                                        'action' => 'ttuj_toggle',
-                                        $id
-                                    ), array(
-                                        'class' => 'btn btn-danger btn-xs',
-                                        'title' => 'disable status brand'
-                                    ), __('Apakah Anda yakin akan menghapus data ini?'));
-                                    break;
+                                echo $this->Html->link(__('Hapus'), array(
+                                    'controller' => 'revenues',
+                                    'action' => 'ttuj_toggle',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs',
+                                    'title' => 'disable status brand'
+                                ), __('Apakah Anda yakin akan membatalkan data ini?'));
                             }
                     ?>
                 </td>
@@ -200,7 +242,7 @@
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '9'
+                            'colspan' => '10'
                         )));
                     }
             ?>

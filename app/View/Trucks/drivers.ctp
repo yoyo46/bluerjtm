@@ -23,35 +23,66 @@
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>
-                <th>Nama Supir</th>
-                <th>Panggilan</th>
-                <th>No. Identitas</th>
-                <th>Alamat</th>
-                <th>Telepon</th>
-                <th>Dibuat</th>
-                <th>Action</th>
+                <?php
+                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.no_id', __('No. ID'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.name', __('Nama Supir'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.alias', __('Panggilan'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.identity_number', __('No. Identitas'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.Address', __('Alamat'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.phone', __('Telepon'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.status', __('Status'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.created', __('Dibuat'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', __('Action'));
+                ?>
             </tr>
             <?php
-                $i = 1;
-                if(!empty($truck_drivers)){
-                    foreach ($truck_drivers as $key => $value) {
-                        $value_data = $value['Driver'];
-                        $id = $value_data['id'];
+                    if( !empty($truck_drivers) ){
+                        foreach ($truck_drivers as $key => $value) {
+                            $id = $value['Driver']['id'];
             ?>
             <tr>
-                <td><?php echo $value_data['name'];?></td>
-                <td><?php echo !empty($value_data['alias'])?$value_data['alias']:'-';?></td>
-                <td><?php echo $value_data['identity_number'];?></td>
-                <td><?php echo $value_data['address'];?></td>
+                <td><?php echo $value['Driver']['no_id'];?></td>
+                <td><?php echo $value['Driver']['name'];?></td>
+                <td><?php echo !empty($value['Driver']['alias'])?$value['Driver']['alias']:'-';?></td>
+                <td><?php echo $value['Driver']['identity_number'];?></td>
+                <td><?php echo $value['Driver']['address'];?></td>
                 <td>
                     <?php 
-                        echo $value_data['phone'];
-                        if(!empty($value_data['phone_2'])){
-                            echo ' / '.$value_data['phone_2'];
-                        }
+                            echo $value['Driver']['phone'];
                     ?>
                 </td>
-                <td><?php echo $this->Common->customDate($value_data['created']);?></td>
+                <td class="text-center">
+                    <?php 
+                            if( !empty($value['Driver']['status']) ) {
+                                $title = __('Aktif');
+                                $class = 'success';
+                            } else {
+                                $title = __('Non-Aktif');
+                                $class = 'danger';
+                            }
+
+                            echo $this->Html->tag('span', $title, array(
+                                'class' => sprintf('label label-%s', $class),
+                            ));
+                    ?>
+                </td>
+                <td><?php echo $this->Time->niceShort($value['Driver']['created']);?></td>
                 <td class="action">
                     <?php 
                             echo $this->Html->link('Edit', array(
@@ -62,14 +93,24 @@
                                 'class' => 'btn btn-primary btn-xs'
                             ));
 
-                            echo $this->Html->link(__('Hapus'), array(
+                            if( !empty($value['Driver']['status']) ) {
+                                $title = __('Non-Aktifkan');
+                                $msg = sprintf(__('Anda yakin ingin Non-Aktifkan data supir %s?'), $value['Driver']['name']);
+                                $class = 'danger';
+                            } else {
+                                $title = __('Aktifkan');
+                                $msg = sprintf(__('Anda yakin ingin Aktifkan data supir %s?'), $value['Driver']['name']);
+                                $class = 'warning';
+                            }
+
+                            echo $this->Html->link($title, array(
                                 'controller' => 'trucks',
                                 'action' => 'driver_toggle',
                                 $id
                             ), array(
-                                'class' => 'btn btn-danger btn-xs',
+                                'class' => sprintf('btn btn-%s btn-xs', $class),
                                 'title' => 'disable status brand'
-                            ), sprintf(__('Anda yakin ingin menghapus data supir %s?'), $value_data['name']));
+                            ), $msg);
                     ?>
                 </td>
             </tr>

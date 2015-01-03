@@ -802,16 +802,16 @@ class SettingsController extends AppController {
                 $this->request->data = $data_local;
             }
         }
-        $customers = $this->UangJalan->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1
-            ),
-        ));
+        // $customers = $this->UangJalan->Customer->getData('list', array(
+        //     'conditions' => array(
+        //         'Customer.status' => 1
+        //     ),
+        // ));
         $cities = $this->UangJalan->FromCity->getData('list', array(
             'conditions' => array(
-                'status' => 1
+                'FromCity.status' => 1
             ),
-        ));
+        ), false);
         $groupClassifications = $this->UangJalan->GroupClassification->find('list', array(
             'conditions' => array(
                 'status' => 1
@@ -821,7 +821,8 @@ class SettingsController extends AppController {
         $this->set('active_menu', 'uang_jalan');
         $this->set('module_title', 'Data Master');
         $this->set(compact(
-            'customers', 'cities', 'groupClassifications'
+            // 'customers', 
+            'cities', 'groupClassifications'
         ));
         $this->render('uang_jalan_form');
     }
@@ -1485,7 +1486,7 @@ class SettingsController extends AppController {
         $this->paginate = $this->CodeMotor->getData('paginate', $options);
         $code_motors = $this->paginate('CodeMotor');
 
-        $this->set('active_menu', 'code_motor');
+        $this->set('active_menu', 'code_motors');
         $this->set('sub_module_title', 'Kode Motor');
         $this->set('code_motors', $code_motors);
     }

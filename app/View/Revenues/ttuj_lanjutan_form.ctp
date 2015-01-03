@@ -1,10 +1,13 @@
 <?php
+		$classJamBongkaran = 'timepicker';
+		
 		switch ($action_type) {
 			case 'bongkaran':
-				$this->Html->addCrumb(__('Bongkaran'), array(
+				$backUrl = array(
 					'controller' => 'revenues',
 					'action' => 'bongkaran'
-				));
+				);
+				$this->Html->addCrumb(__('Bongkaran'), $backUrl);
     			$disabledTglJamBongkaran = false;
     			$disabledTglJamTiba = true;
     			$classJamTiba = '';
@@ -13,12 +16,49 @@
         			$disabledTglJamBongkaran = true;
     			}
 				break;
+
+			case 'balik':
+				$backUrl = array(
+					'controller' => 'revenues',
+					'action' => 'balik'
+				);
+				$this->Html->addCrumb(__('TTUJ Balik'), $backUrl);
+    			$disabledTglJamBalik = false;
+    			$disabledTglJamBongkaran = true;
+    			$disabledTglJamTiba = true;
+    			$classJamTiba = '';
+    			$classJamBongkaran = '';
+
+    			if( !empty($ttuj_id) ) {
+        			$disabledTglJamBalik = true;
+    			}
+				break;
+
+			case 'pool':
+				$backUrl = array(
+					'controller' => 'revenues',
+					'action' => 'pool'
+				);
+				$this->Html->addCrumb(__('TTUJ Sampai Pool'), $backUrl);
+    			$disabledTglJamPool = false;
+    			$disabledTglJamBalik = true;
+    			$disabledTglJamBongkaran = true;
+    			$disabledTglJamTiba = true;
+    			$classJamTiba = '';
+    			$classJamBongkaran = '';
+    			$classJamPool = '';
+
+    			if( !empty($ttuj_id) ) {
+        			$disabledTglJamPool = true;
+    			}
+				break;
 			
 			default:
-				$this->Html->addCrumb(__('Truk Tiba'), array(
+				$backUrl = array(
 					'controller' => 'revenues',
 					'action' => 'truk_tiba'
-				));
+				);
+				$this->Html->addCrumb(__('Truk Tiba'), $backUrl);
     			$disabledTglJamTiba = false;
     			$classJamTiba = 'timepicker';
 
@@ -232,8 +272,7 @@
 				        	?>
 				        </div>
 				        <?php 
-				        		switch ($action_type) {
-				        			case 'bongkaran':
+				        		if ( in_array($action_type, array( 'bongkaran', 'balik', 'pool' )) ) {
 						?>
 				        <div class="form-group">
 				        	<?php 
@@ -259,7 +298,7 @@
 					        			<?php 
 												echo $this->Form->input('jam_bongkaran',array(
 													'label'=> false, 
-													'class'=>'form-control pull-right timepicker',
+													'class'=>'form-control pull-right '.$classJamBongkaran,
 													'required' => false,
 													'type' => 'text',
 													'disabled' => $disabledTglJamBongkaran,
@@ -278,6 +317,7 @@
 				        	?>
 				        </div>
 						<?php
+				        			if ( $action_type == 'bongkaran' ) {
 				        				echo $this->Html->tag('div', $this->Form->input('note_bongkaran', array(
 											'label'=> __('Keterangan'), 
 											'class'=>'form-control',
@@ -286,18 +326,128 @@
 										)), array(
 											'class'=>'form-group',
 										));
-				        				break;
+				        			}
+		        				}
+
+				        		if ( $action_type == 'balik' ) {
+						?>
+				        <div class="form-group">
+				        	<?php 
+									echo $this->Form->label('tgljam_balik', __('Tgl & Jam Balik *'));
+							?>
+				        	<div class="row">
+				        		<div class="col-sm-8">
+				        			<?php 
+											echo $this->Form->input('tgl_balik',array(
+												'label'=> false, 
+												'class'=>'form-control custom-date',
+												'required' => false,
+												'type' => 'text',
+												'disabled' => $disabledTglJamBalik,
+											));
+									?>
+				        		</div>
+				        		<div class="col-sm-4">
+				        			<div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-clock-o"></i>
+                                        </div>
+					        			<?php 
+												echo $this->Form->input('jam_balik',array(
+													'label'=> false, 
+													'class'=>'form-control pull-right timepicker',
+													'required' => false,
+													'type' => 'text',
+													'disabled' => $disabledTglJamBalik,
+												));
+										?>
+                                    </div>
+				        		</div>
+				        	</div>
+				        	<?php 
+									echo $this->Form->error('tgljam_balik', array(
+										'notempty' => __('Tgl & Jam Balik harap dipilih'),
+									), array(
+										'wrap' => 'div', 
+										'class' => 'error-message',
+									));
+				        	?>
+				        </div>
+						<?php
+			        				echo $this->Html->tag('div', $this->Form->input('note_balik', array(
+										'label'=> __('Keterangan'), 
+										'class'=>'form-control',
+										'required' => false,
+										'disabled' => $disabledTglJamBalik,
+									)), array(
+										'class'=>'form-group',
+									));
+		        				}
+
+				        		if ( $action_type == 'pool' ) {
+						?>
+				        <div class="form-group">
+				        	<?php 
+									echo $this->Form->label('tgljam_pool', __('Tgl & Jam Sampai Pool *'));
+							?>
+				        	<div class="row">
+				        		<div class="col-sm-8">
+				        			<?php 
+											echo $this->Form->input('tgl_pool',array(
+												'label'=> false, 
+												'class'=>'form-control custom-date',
+												'required' => false,
+												'type' => 'text',
+												'disabled' => $disabledTglJamPool,
+											));
+									?>
+				        		</div>
+				        		<div class="col-sm-4">
+				        			<div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-clock-o"></i>
+                                        </div>
+					        			<?php 
+												echo $this->Form->input('jam_pool',array(
+													'label'=> false, 
+													'class'=>'form-control pull-right timepicker',
+													'required' => false,
+													'type' => 'text',
+													'disabled' => $disabledTglJamPool,
+												));
+										?>
+                                    </div>
+				        		</div>
+				        	</div>
+				        	<?php 
+									echo $this->Form->error('tgljam_pool', array(
+										'notempty' => __('Tgl & Jam Sampai Pool harap dipilih'),
+									), array(
+										'wrap' => 'div', 
+										'class' => 'error-message',
+									));
+				        	?>
+				        </div>
+						<?php
+			        				echo $this->Html->tag('div', $this->Form->input('note_pool', array(
+										'label'=> __('Keterangan'), 
+										'class'=>'form-control',
+										'required' => false,
+										'disabled' => $disabledTglJamPool,
+									)), array(
+										'class'=>'form-group',
+									));
+		        				}
 				        			
-				        			default:
-				        				echo $this->Html->tag('div', $this->Form->input('note_tiba', array(
-											'label'=> __('Keterangan'), 
-											'class'=>'form-control',
-											'required' => false,
-											'disabled' => $disabledTglJamTiba,
-										)), array(
-											'class'=>'form-group',
-										));
-				        				break;
+				        		if ( $action_type == 'truk_tiba' ) {
+			        				echo $this->Html->tag('div', $this->Form->input('note_tiba', array(
+										'label'=> __('Keterangan'), 
+										'class'=>'form-control',
+										'required' => false,
+										'disabled' => $disabledTglJamTiba,
+									)), array(
+										'class'=>'form-group',
+									));
 				        		}
 				        ?>
 				    </div>
@@ -403,9 +553,7 @@
 		</div>
 		<div class="box-footer text-center action">
 			<?php
-		    		echo $this->Html->link(__('Kembali'), array(
-						'action' => 'truk_tiba', 
-					), array(
+		    		echo $this->Html->link(__('Kembali'), $backUrl, array(
 						'class'=> 'btn btn-default',
 					));
 

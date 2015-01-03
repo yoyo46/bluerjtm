@@ -111,18 +111,6 @@ class Truck extends AppModel {
             'className' => 'Leasing',
             'foreignKey' => 'truck_id',
         ),
-        'Kir' => array(
-            'className' => 'Kir',
-            'foreignKey' => 'truck_id',
-            'conditions' => array(
-                'Kir.status' => 1,
-                'Kir.paid' => 1,
-            ),
-            'order' => array(
-                'Kir.tgl_kir' => 'DESC',
-                'Kir.id' => 'DESC',
-            )
-        ),
     );
 
     var $belongsTo = array(
@@ -167,9 +155,7 @@ class Truck extends AppModel {
             'order'=> array(
                 'Truck.status' => 'DESC'
             ),
-            'contain' => array(
-                'Kir'
-            ),
+            'contain' => array(),
             'fields' => array(),
         );
 

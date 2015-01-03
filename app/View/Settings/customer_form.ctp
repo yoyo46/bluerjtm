@@ -59,8 +59,29 @@
 					'class' => 'form-group'
 				));
 		?>
+	    <div class="row">
+			<div class="col-sm-3">
+				<div class="form-group">
+					<?php 
+							echo $this->Form->label('term_of_payment', __('Term Of Payment'));
+					?>
+			        <div class="input-group">
+				    	<?php 
+								echo $this->Form->input('term_of_payment',array(
+									'label'=> false, 
+									'class'=>'form-control',
+									'required' => false,
+									'type' => 'text',
+								));
+				    			echo $this->Html->tag('span', __('Hari'), array(
+				    				'class' => 'input-group-addon'
+			    				));
+						?>
+					</div>
+				</div>
+			</div>
+		</div>
     </div>
-
     <div class="box-footer text-center action">
     	<?php
 	    		echo $this->Form->button(__('Simpan'), array(

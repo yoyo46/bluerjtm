@@ -20,14 +20,14 @@
 		    </div>
 		    <div class="box-body">
 		    	<?php 
-						echo $this->Html->tag('div', $this->Form->input('customer_id',array(
-							'label'=> __('Customer *'), 
-							'class'=>'form-control',
-							'required' => false,
-							'empty' => __('Pilih Customer')
-						)), array(
-							'class' => 'form-group'
-						));
+						// echo $this->Html->tag('div', $this->Form->input('customer_id',array(
+						// 	'label'=> __('Customer *'), 
+						// 	'class'=>'form-control',
+						// 	'required' => false,
+						// 	'empty' => __('Pilih Customer')
+						// )), array(
+						// 	'class' => 'form-group'
+						// ));
 						echo $this->Html->tag('div', $this->Form->input('group_classification_id',array(
 							'label'=> __('Grup Klasifikasi *'), 
 							'class'=>'form-control',
@@ -293,44 +293,42 @@
 						?>
 					</div>
 				</div>
-                <div class="per-unit <?php echo !empty($this->request->data['UangJalan']['is_unit'])?'':'hide'; ?>">
-			    	<div class="form-group">
-			    		<?php 
-			    				echo $this->Form->label('uang_jalan_extra', __('Uang Jalan Extra *'));
-			    		?>
-	                    <div class="input-group">
-					    	<?php 
-					    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-					    				'class' => 'input-group-addon'
-				    				));
-									echo $this->Form->input('uang_jalan_extra',array(
-										'label'=> false, 
-										'class'=>'form-control input_price',
-										'required' => false,
-										'empty' => __('Uang Jalan Extra'),
-										'type' => 'text',
-									));
-							?>
-						</div>
+		    	<div class="form-group">
+		    		<?php 
+		    				echo $this->Form->label('uang_jalan_extra', __('Uang Jalan Extra'));
+		    		?>
+                    <div class="input-group">
+				    	<?php 
+				    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+				    				'class' => 'input-group-addon'
+			    				));
+								echo $this->Form->input('uang_jalan_extra',array(
+									'label'=> false, 
+									'class'=>'form-control input_price',
+									'required' => false,
+									'empty' => __('Uang Jalan Extra'),
+									'type' => 'text',
+								));
+						?>
 					</div>
-			    	<div class="form-group">
-			    		<?php 
-			    				echo $this->Form->label('min_capacity', __('Minimum Kapasitas *'));
-			    		?>
-	                    <div class="input-group">
-					    	<?php 
-					    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-					    				'class' => 'input-group-addon'
-				    				));
-									echo $this->Form->input('min_capacity',array(
-										'label'=> false, 
-										'class'=>'form-control input_price',
-										'required' => false,
-										'empty' => __('Minimum Kapasitas'),
-										'type' => 'text',
-									));
-							?>
-						</div>
+				</div>
+		    	<div class="form-group">
+		    		<?php 
+		    				echo $this->Form->label('min_capacity', __('Minimum Kapasitas'));
+		    		?>
+                    <div class="input-group">
+				    	<?php 
+				    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+				    				'class' => 'input-group-addon'
+			    				));
+								echo $this->Form->input('min_capacity',array(
+									'label'=> false, 
+									'class'=>'form-control input_price',
+									'required' => false,
+									'empty' => __('Minimum Kapasitas'),
+									'type' => 'text',
+								));
+						?>
 					</div>
 				</div>
 		    </div>

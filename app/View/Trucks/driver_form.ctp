@@ -42,6 +42,17 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
+							echo $this->Form->input('no_id',array(
+								'label'=> __('No. ID *'), 
+								'class'=>'form-control',
+								'required' => false,
+								'placeholder' => __('No. ID'),
+								'type' => 'text',
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
 							echo $this->Form->input('name',array(
 								'label'=> __('Nama Lengkap *'), 
 								'class'=>'form-control',
@@ -123,7 +134,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('tempat_lahir',array(
-								'label'=> __('Tempat Lahir'), 
+								'label'=> __('Tempat Lahir *'), 
 								'class'=>'form-control',
 								'required' => false,
 								'placeholder' => __('Tempat Lahir')
@@ -132,7 +143,7 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-							echo $this->Form->label('tgl_lahir', __('Tgl Lahir'));
+							echo $this->Form->label('tgl_lahir', __('Tgl Lahir *'));
 					?>
 					<div class="row">
 						<div class="col-sm-4">
@@ -190,6 +201,17 @@
 		        <h3 class="box-title"><?php echo __('Data SIM'); ?></h3>
 		    </div>
 		    <div class="box-body">
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('jenis_sim_id',array(
+								'label'=> __('Jenis SIM *'), 
+								'class'=>'form-control',
+								'required' => false,
+								'empty' => __('Pilih Jenis SIM --'),
+								'options' => $jenisSims,
+							));
+					?>
+		        </div>
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('no_sim',array(
@@ -293,7 +315,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('driver_relation_id',array(
-								'label'=> __('Hubungan'), 
+								'label'=> __('Hubungan *'), 
 								'class'=>'form-control',
 								'required' => false,
 								'empty' => __('Pilih Hubungan --'),
@@ -311,7 +333,7 @@
 		    <div class="box-body">
 		        <div class="form-group">
 		        	<?php 
-							echo $this->Form->label('tgl_penerimaan', __('Tgl Penerimaan'));
+							echo $this->Form->label('tgl_penerimaan', __('Tgl Penerimaan *'));
 					?>
 					<div class="row">
 						<div class="col-sm-4">

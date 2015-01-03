@@ -10,6 +10,12 @@ class Driver extends AppModel {
                 'message' => 'Foto harap diisi'
             ),
         ),
+        'no_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'No. ID harap diisi'
+            ),
+        ),
         'name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -62,10 +68,16 @@ class Driver extends AppModel {
                 'message' => 'Tempat Lahir harap diisi'
             ),
         ),
+        'jenis_sim_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Jenis SIM harap dipilih'
+            ),
+        ),
         'no_sim' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'No SIM harap diisi'
+                'message' => 'No. SIM harap diisi'
             ),
         ),
         'expired_date_sim' => array(
@@ -129,7 +141,7 @@ class Driver extends AppModel {
         ),
 	);
 
-	function getData($find, $options = false){
+	function getData( $find, $options = false, $is_merge = true ){
         $default_options = array(
             'conditions'=> array(
                 'Driver.status' => 1,
@@ -140,7 +152,7 @@ class Driver extends AppModel {
             'contain' => array(),
         );
 
-        if(!empty($options)){
+        if( !empty($options) && $is_merge ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
@@ -153,6 +165,8 @@ class Driver extends AppModel {
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
             }
+        } else if( !empty($options) ) {
+            $default_options = $options;
         }
 
         if( $find == 'paginate' ) {
