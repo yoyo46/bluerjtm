@@ -27,6 +27,15 @@
 /*#main-alocation .has-feedback a {
 	pointer-events: visible;
 }*/
+.list-perlengkapan .seperator {
+	border-top: 1px solid #CCCCCC;
+	padding-top: 10px;
+}
+
+.list-perlengkapan .seperator:first-child {
+	border-top: none;
+	padding-top: 0;
+}
 /*
 **	END Truck
 */

@@ -3639,3 +3639,7 @@ fieldset[disabled] .btn-vk.active {
 .has-danger {
     color: #a94442;
 }
+
+.table-overflow {
+  overflow-x: auto;
+}

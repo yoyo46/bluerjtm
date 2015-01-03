@@ -13,14 +13,28 @@ $(function() {
 
 		switch(action_type) {
 		    case 'perlengkapan':
-                var class_count = $('#box-field-input .form-group');
+                var class_count = $('#box-field-input .list-perlengkapan .seperator');
                 var length = parseInt(class_count.length);
                 var idx = length+1;
 
-		        $('#box-field-input').append('<div class="form-group" id="'+action_type+idx+'">'+
-		        	'<label for="PerlengkapanName'+idx+'">perlengkapan '+idx+'</label>'+
-		        	'<input name="data[Perlengkapan][name]['+(idx-1)+']" class="form-control" placeholder="perlengkapan" type="text" id="name'+idx+'">'+
-		        	'</div>');
+		        $('#box-field-input .list-perlengkapan').append('<div id="perlengkapan'+(idx-1)+'" class="seperator"> \
+                    <div class="row"> \
+                        <div class="col-sm-9"> \
+                            <div class="form-group"> \
+                                <label for="TruckPerlengkapanPerlengkapanId'+idx+'">Perlengkapan '+idx+'</label> \
+                                <select name="data[TruckPerlengkapan][perlengkapan_id]['+(idx-1)+']" class="form-control" id="TruckPerlengkapanPerlengkapanId'+idx+'"> \
+                                '+$('#perlengkapan_id select').html()+' \
+                                </select> \
+                            </div> \
+                        </div> \
+                        <div class="col-sm-3"> \
+                            <div class="form-group"> \
+                                <label for="TruckPerlengkapanQty'+idx+'">Jumlah Perlengkapan '+idx+'</label> \
+                                <input name="data[TruckPerlengkapan][qty]['+(idx-1)+']" class="form-control input_number" type="text" value="" id="TruckPerlengkapanQty'+idx+'"> \
+                            </div> \
+                        </div> \
+                    </div> \
+                </div>');
 		    break;
             case 'ttuj':
                 var idx = $('#ttujDetail tbody tr').length;
@@ -66,10 +80,8 @@ $(function() {
         var self = $(this);
 
         if( self.is(':checked') ) {
-            $('#UangJalanForm .per-unit').removeClass('hide');
             $('.uang_jalan_2').addClass('hide');
         } else {
-            $('#UangJalanForm .per-unit').addClass('hide');
             $('.uang_jalan_2').removeClass('hide');
         }
     });
@@ -82,38 +94,39 @@ $(function() {
         }
     });
 
-    $('#getKotaAsal').change(function() {
-        var self = $(this);
+    // $('#getKotaAsal').change(function() {
+    //     var self = $(this);
 
-        if( self.val() != '' ) {
-            $.ajax({
-                url: '/ajax/getKotaAsal/'+self.val()+'/',
-                type: 'POST',
-                success: function(response, status) {
-                    $('.from_city #getKotaTujuan').attr('readonly', false).html($(response).filter('#from_city_id').html());
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                    return false;
-                }
-            });
-        } else {
-            $('#getKotaTujuan').val('').attr('readonly', true);
-            $('#getTruck').val('').attr('readonly', true);
-            $('#getInfoTruck').val('').attr('readonly', true);
-            $('.driver_name').val('');
-            $('.truck_capacity').val('');
-            $('#biaya-uang-jalan input').val('');
-        }
-    });
+    //     if( self.val() != '' ) {
+    //         $.ajax({
+    //             url: '/ajax/getKotaAsal/'+self.val()+'/',
+    //             type: 'POST',
+    //             success: function(response, status) {
+    //                 $('.from_city #getKotaTujuan').attr('readonly', false).html($(response).filter('#from_city_id').html());
+    //             },
+    //             error: function(XMLHttpRequest, textStatus, errorThrown) {
+    //                 alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+    //                 return false;
+    //             }
+    //         });
+    //     } else {
+    //         $('#getKotaTujuan').val('').attr('readonly', true);
+    //         $('#getTruck').val('').attr('readonly', true);
+    //         $('#getInfoTruck').val('').attr('readonly', true);
+    //         $('.driver_name').val('');
+    //         $('.truck_capacity').val('');
+    //         $('#biaya-uang-jalan input').val('');
+    //     }
+    // });
 
     $('#getKotaTujuan').change(function() {
         var self = $(this);
-        var customer_id = $('.customer').val();
+        // var customer_id = $('.customer').val();
 
         if( self.val() != '' ) {
             $.ajax({
-                url: '/ajax/getKotaTujuan/'+self.val()+'/'+customer_id+'/',
+                // url: '/ajax/getKotaTujuan/'+self.val()+'/'+customer_id+'/',
+                url: '/ajax/getKotaTujuan/'+self.val()+'/',
                 type: 'POST',
                 success: function(response, status) {
                     $('.to_city #getTruck').attr('readonly', false).html($(response).filter('#to_city_id').html());
@@ -134,12 +147,13 @@ $(function() {
 
     $('#getTruck').change(function() {
         var self = $(this);
-        var customer_id = $('.customer').val();
+        // var customer_id = $('.customer').val();
         var from_city_id = $('.from_city #getKotaTujuan').val();
 
         if( self.val() != '' ) {
             $.ajax({
-                url: '/ajax/getNopol/'+from_city_id+'/'+self.val()+'/'+'/'+customer_id+'/',
+                // url: '/ajax/getNopol/'+from_city_id+'/'+self.val()+'/'+'/'+customer_id+'/',
+                url: '/ajax/getNopol/'+from_city_id+'/'+self.val()+'/',
                 type: 'POST',
                 success: function(response, status) {
                     $('.truck_id #getInfoTruck').attr('readonly', false).html($(response).filter('#truck_id').html());
@@ -219,14 +233,15 @@ $(function() {
         }
 
         obj.click(function (e) {
-            var action_type = $(this).attr('action_type');
+            var self = $(this);
+            var action_type = self.attr('action_type');
 
             if( confirm('Anda yakin ingin menghapus data ini?') ) {
                 if( action_type == 'ttuj' ) {
                     var lengthTable = $('#ttujDetail tbody tr').length;
                     $(this).parents('tr').remove();
                 } else if( action_type == 'perlengkapan' ) {
-                    var length = parseInt($('#box-field-input .form-group').length);
+                    var length = parseInt($('#box-field-input .list-perlengkapan .seperator').length);
                     var action_type = self.attr('action_type');
                     var idx = length;
                     $('#'+action_type+(idx-1)).remove();
@@ -270,6 +285,10 @@ $(function() {
 
         if( action_type == 'bongkaran' ) {
             frm.attr('action', '/revenues/search/bongkaran_add/')
+        } else if( action_type == 'balik' ) {
+            frm.attr('action', '/revenues/search/balik_add/')
+        } else if( action_type == 'pool' ) {
+            frm.attr('action', '/revenues/search/pool_add/')
         } else {
             frm.attr('action', '/revenues/search/truk_tiba_add/')
         }
@@ -303,4 +322,35 @@ $(function() {
         frm.submit();
         return false;
     });
+
+    var input_number = function () {
+        $('.input_number').keypress(function(event) {    
+            if( (this.value.length == 0 && event.which == 46) || event.keyCode == 33 || event.keyCode == 64 || event.keyCode == 35 || event.keyCode == 36 || event.keyCode == 37 || event.keyCode == 94 || event.keyCode == 38 || event.keyCode == 42 || event.keyCode == 40 || event.keyCode == 41
+                ){
+                return false;
+            } else {
+                if (
+                    event.keyCode == 8 ||  /*backspace*/
+                    event.keyCode == 46 || /*point*/
+                    event.keyCode == 9 || /*Tab*/
+                    event.keyCode == 27 || /*esc*/
+                    event.keyCode == 13 || /*enter*/
+                    // event.keyCode == 97 || 
+                    // Allow: Ctrl+A
+                    // (event.keyCode == 65 && event.ctrlKey === true) ||
+                    // Allow: home, end, left, right
+                    (event.keyCode >= 35 && event.keyCode < 39) || ( event.which >= 48 && event.which <= 57 )
+                    ) 
+                {
+                    return true;
+                }else if (          
+                    (event.which != 46 || ($(this).val().indexOf('.') != -1)) || 
+                    (event.which < 48 || event.which > 57)) 
+                {
+                    event.preventDefault();
+                }
+            }
+        });     
+    }
+    input_number();
 });
