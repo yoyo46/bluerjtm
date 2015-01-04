@@ -31,7 +31,13 @@ class Customer extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Phone harap diisi'
             ),
-        )
+        ),
+        'target_rit' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Taget Rit / bln harap diisi'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(

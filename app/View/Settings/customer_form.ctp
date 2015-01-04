@@ -59,6 +59,23 @@
 					'class' => 'form-group'
 				));
 		?>
+		<div class="row">
+			<div class="col-sm-3">
+		        <div class="form-group">
+		        	<?php 
+						echo $this->Form->label('target_rit',__('Target Rit / Bln *')); 
+
+						echo $this->Form->input('target_rit',array(
+							'type' => 'text',
+							'label'=> false, 
+							'class'=>'form-control input_number',
+							'required' => false,
+							'placeholder' => __('Target Rit / Bln'),
+						));
+					?>
+		        </div>
+			</div>
+		</div>
 	    <div class="row">
 			<div class="col-sm-3">
 				<div class="form-group">

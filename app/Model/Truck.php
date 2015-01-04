@@ -31,6 +31,10 @@ class Truck extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'nopol truk harap diisi'
             ),
+            // 'isUnique' => array(
+            //     'rule' => array('isUnique'),
+            //     'message' => 'No. Pol telah terdaftar',
+            // ),
         ),
         'no_contract' => array(
             'notempty' => array(
@@ -61,12 +65,20 @@ class Truck extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'nomor rangka truk harap diisi'
             ),
+            // 'isUnique' => array(
+            //     'rule' => array('isUnique'),
+            //     'message' => 'No. Rangka telah terdaftar',
+            // ),
         ),
         'no_machine' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'nomor mesin truk harap diisi'
             ),
+            // 'isUnique' => array(
+            //     'rule' => array('isUnique'),
+            //     'message' => 'No. Mesin telah terdaftar',
+            // ),
         ),
         'capacity' => array(
             'notempty' => array(

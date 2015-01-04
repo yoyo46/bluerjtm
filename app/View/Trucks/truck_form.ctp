@@ -58,19 +58,6 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('no_machine',__('No Mesin *')); 
-
-						echo $this->Form->input('no_machine',array(
-							'type' => 'text',
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'placeholder' => __('No Mesin')
-						));
-					?>
-		        </div>
-		        <div class="form-group">
-		        	<?php 
 						echo $this->Form->label('no_rangka',__('No Rangka *')); 
 
 						echo $this->Form->input('no_rangka',array(
@@ -84,14 +71,14 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('capacity',__('Kapasitas *')); 
+						echo $this->Form->label('no_machine',__('No Mesin *')); 
 
-						echo $this->Form->input('capacity',array(
+						echo $this->Form->input('no_machine',array(
 							'type' => 'text',
 							'label'=> false, 
 							'class'=>'form-control',
 							'required' => false,
-							'placeholder' => __('Kapasitas')
+							'placeholder' => __('No Mesin')
 						));
 					?>
 		        </div>
@@ -130,19 +117,6 @@
 							'class'=>'form-control',
 							'required' => false,
 							'placeholder' => __('Kapasitas')
-						));
-					?>
-		        </div>
-		        <div class="form-group">
-		        	<?php 
-						echo $this->Form->label('target_rit',__('Target Per Rit *')); 
-
-						echo $this->Form->input('target_rit',array(
-							'type' => 'text',
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'placeholder' => __('Target Per Rit')
 						));
 					?>
 		        </div>
@@ -207,6 +181,7 @@
 						));
 					?>
 		        </div>
+		        <?php /*
 		        <div class="form-group">
 		        	<?php 
 						echo $this->Form->label('Leasing.installment', __('Biaya Leasing')); 
@@ -263,18 +238,7 @@
 						));
 					?>
 		        </div>
-		        <div class="form-group">
-		        	<?php 
-						echo $this->Form->label('no_stnk',__('No STNK *')); 
-
-						echo $this->Form->input('no_stnk',array(
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'placeholder' => __('No STNK')
-						));
-					?>
-		        </div>
+		        */ ?>
 		        <div class="form-group">
 		        	<?php 
 						echo $this->Form->label('bpkb',__('BPKB *')); 
@@ -297,6 +261,18 @@
 							'class'=>'form-control custom-date',
 							'required' => false,
 							'placeholder' => __('Tanggal BPKB')
+						));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+						echo $this->Form->label('no_stnk',__('No STNK *')); 
+
+						echo $this->Form->input('no_stnk',array(
+							'label'=> false, 
+							'class'=>'form-control',
+							'required' => false,
+							'placeholder' => __('No STNK')
 						));
 					?>
 		        </div>
