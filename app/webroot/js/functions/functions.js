@@ -7,9 +7,10 @@ $(function() {
 		}
 	});
 
-	$('.add-custom-field').click(function (e) {
-		var self = $(this);
-		var action_type = self.attr('action_type');
+    var add_custom_field = function(){
+        $('.add-custom-field').click(function (e) {
+            var self = $(this);
+            var action_type = self.attr('action_type');
 
 		switch(action_type) {
 		    case 'perlengkapan':
@@ -17,51 +18,70 @@ $(function() {
                 var length = parseInt(class_count.length);
                 var idx = length+1;
 
-		        $('#box-field-input .list-perlengkapan').append('<div id="perlengkapan'+(idx-1)+'" class="seperator"> \
-                    <div class="row"> \
-                        <div class="col-sm-9"> \
-                            <div class="form-group"> \
-                                <label for="TruckPerlengkapanPerlengkapanId'+idx+'">Perlengkapan '+idx+'</label> \
-                                <select name="data[TruckPerlengkapan][perlengkapan_id]['+(idx-1)+']" class="form-control" id="TruckPerlengkapanPerlengkapanId'+idx+'"> \
-                                '+$('#perlengkapan_id select').html()+' \
-                                </select> \
+            switch(action_type) {
+                case 'perlengkapan':
+                    var class_count = $('#box-field-input .form-group');
+                    var length = parseInt(class_count.length);
+                    var idx = length+1;
+
+    		        $('#box-field-input .list-perlengkapan').append('<div id="perlengkapan'+(idx-1)+'" class="seperator"> \
+                        <div class="row"> \
+                            <div class="col-sm-9"> \
+                                <div class="form-group"> \
+                                    <label for="TruckPerlengkapanPerlengkapanId'+idx+'">Perlengkapan '+idx+'</label> \
+                                    <select name="data[TruckPerlengkapan][perlengkapan_id]['+(idx-1)+']" class="form-control" id="TruckPerlengkapanPerlengkapanId'+idx+'"> \
+                                    '+$('#perlengkapan_id select').html()+' \
+                                    </select> \
+                                </div> \
+                            </div> \
+                            <div class="col-sm-3"> \
+                                <div class="form-group"> \
+                                    <label for="TruckPerlengkapanQty'+idx+'">Jumlah Perlengkapan '+idx+'</label> \
+                                    <input name="data[TruckPerlengkapan][qty]['+(idx-1)+']" class="form-control input_number" type="text" value="" id="TruckPerlengkapanQty'+idx+'"> \
+                                </div> \
                             </div> \
                         </div> \
-                        <div class="col-sm-3"> \
-                            <div class="form-group"> \
-                                <label for="TruckPerlengkapanQty'+idx+'">Jumlah Perlengkapan '+idx+'</label> \
-                                <input name="data[TruckPerlengkapan][qty]['+(idx-1)+']" class="form-control input_number" type="text" value="" id="TruckPerlengkapanQty'+idx+'"> \
-                            </div> \
-                        </div> \
-                    </div> \
-                </div>');
+                    </div>');
 		    break;
             case 'ttuj':
                 var idx = $('#ttujDetail tbody tr').length;
                 var optionTipeMotor = $('#tipe_motor_id select').html();
+                    $('#box-field-input').append('<div class="form-group" id="'+action_type+idx+'">'+
+                        '<label for="PerlengkapanName'+idx+'">perlengkapan '+idx+'</label>'+
+                        '<input name="data[Perlengkapan][name]['+(idx-1)+']" class="form-control" placeholder="perlengkapan" type="text" id="name'+idx+'">'+
+                        '</div>');
+                break;
+                case 'ttuj':
+                    var idx = $('#ttujDetail tbody tr').length;
+                    var optionTipeMotor = $('#tipe_motor_id select').html();
 
-                $('#ttujDetail tbody').append(''+
-                '<tr rel="'+idx+'">'+
-                    '<td>'+
-                        '<select name="data[TtujTipeMotor][tipe_motor_id]['+idx+']" class="form-control">'+
-                        optionTipeMotor +
-                        '</select>'+
-                    '</td>'+
-                    '<td>'+
-                        '<input name="data[TtujTipeMotor][qty]['+idx+']" class="form-control" type="text">'+
-                    '</td>'+
-                    '<td>'+
-                        '<a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="ttuj"><i class="fa fa-times"></i> Hapus</a>'+
-                    '</td>'+
-                '</tr>');
+                    $('#ttujDetail tbody').append(''+
+                    '<tr rel="'+idx+'">'+
+                        '<td>'+
+                            '<select name="data[TtujTipeMotor][tipe_motor_id]['+idx+']" class="form-control">'+
+                            optionTipeMotor +
+                            '</select>'+
+                        '</td>'+
+                        '<td>'+
+                            '<input name="data[TtujTipeMotor][qty]['+idx+']" class="form-control" type="text">'+
+                        '</td>'+
+                        '<td>'+
+                            '<a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="ttuj"><i class="fa fa-times"></i> Hapus</a>'+
+                        '</td>'+
+                    '</tr>');
 
-                delete_custom_field( $('#ttujDetail tbody tr:last-child .delete-custom-field') );
-            break;
-		    case 'alocation':
-		    	$('#box-field-input #main-alocation .form-group').clone().appendTo('#advance-box-field-input');
-		    break;
-		}
-    });
+                    delete_custom_field( $('#ttujDetail tbody tr:last-child .delete-custom-field') );
+                break;
+                case 'alocation':
+                    $('#box-field-input #main-alocation .form-group').clone().appendTo('#advance-box-field-input');
+                break;
+                case 'lku_tipe_motor':
+                    $('#"tipe-motor-table').append('');
+                break;
+            }
+        });
+    }
+    add_custom_field();
 
     $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Collapse this branch');
     $('.tree li.parent_li > span').on('click', function (e) {
@@ -210,18 +230,18 @@ $(function() {
         }
     });
 
-    if( $('.ttuj-form').length > 0 && window.location.hash == '#step2' ) {
+    if( $('.ttuj-form, .laka-form').length > 0 && window.location.hash == '#step2' ) {
         $('#step1').hide();
         $('#step2').show();
     }
 
-    $('#nextTTUJ').click(function() {
+    $('#nextTTUJ, #nextLaka').click(function() {
         $( "#step1" ).fadeOut( "fast", function() {
             $( "#step2" ).fadeIn("fast");
         });
     });
 
-    $('#backTTUJ').click(function() {
+    $('#backTTUJ, #backLaka').click(function() {
         $( "#step2" ).fadeOut( "fast", function() {
             $( "#step1" ).fadeIn("fast");
         });
@@ -354,3 +374,72 @@ $(function() {
     }
     input_number();
 });
+
+    $('#getTtujInfo').change(function() {
+        var self = $(this);
+
+        if( self.val() != '' ) {
+            $.ajax({
+                url: '/ajax/getInfoTtuj/'+self.val()+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    $('#ttuj-info').html($(response).filter('#form-ttuj-main').html());
+                    $('#detail-tipe-motor').html($(response).filter('#form-ttuj-detail').html());
+
+                    choose_lku_tipe_motor();
+                    add_custom_field();
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        } else {
+            $('#getKotaTujuan').val('').attr('readonly', true);
+            $('#getTruck').val('').attr('readonly', true);
+            $('#getInfoTruck').val('').attr('readonly', true);
+            $('.driver_name').val('');
+            $('.truck_capacity').val('');
+            $('#biaya-uang-jalan input').val('');
+        }
+    });
+
+    $('#laka-driver-change').change(function(){
+        var self = $(this);
+        var val = self.val();
+
+        $.ajax({
+            url: '/ajax/getInfoLaka/'+val+'/',
+            type: 'POST',
+            success: function(response, status) {
+                $('#nopol-laka').html($(response).filter('#nopol-laka').html());
+                $('#city-laka').html($(response).filter('#destination-laka').html());
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    });
+});
+
+var choose_lku_tipe_motor = function(){
+    $('.lku-choose-tipe-motor').change(function(){
+        var self = $(this);
+        var ttuj_id = $('#getTtujInfo').val();
+
+        $.ajax({
+            url: '/ajax/getColorTipeMotor/'+self.val()+'/'+ttuj_id+'/',
+            type: 'POST',
+            success: function(response, status) {
+                self.parents('tr').find('td.lku-color-motor').html($(response).filter('#color-motor').html());
+                self.parents('tr').find('td.qty-tipe-motor').html($(response).filter('#form-qty').html());
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    });
+}
+choose_lku_tipe_motor();

@@ -23,11 +23,11 @@
 		    </div>
 		    <div class="box-body">
 		    	<?php
-		    			if(!empty($this->request->data['Driver']['photo'])){
-							echo $this->Html->tag('div', $this->Common->getImage('drivers', $this->request->data['Driver']['photo'], true, 'small'), array(
-								'class' => 'form-group',
-							));
-		    			}
+		    	// 		if(!empty($this->request->data['Driver']['photo'])){
+							// echo $this->Html->tag('div', $this->Common->getImage('drivers', $this->request->data['Driver']['photo'], true, 'small'), array(
+							// 	'class' => 'form-group',
+							// ));
+		    	// 		}
 		    	?>
 		        <div class="form-group">
 		        	<?php 
@@ -319,6 +319,7 @@
 								'class'=>'form-control',
 								'required' => false,
 								'empty' => __('Pilih Hubungan --'),
+								'options' => $driverRelations
 							));
 					?>
 		        </div>

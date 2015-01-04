@@ -394,6 +394,71 @@
                     ?>
                 </ul>
             </li>
+            <?php
+                    $activeMenu = false;
+                    $dataMenu = array(
+                    );
+
+                    if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
+                        $activeMenu = 'active';
+                    }
+            ?>
+            <li class="treeview <?php echo $activeMenu; ?>">
+                <a href="#">
+                    <i class="fa fa-dollar"></i>
+                    <span>LKU</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php 
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Histori LKU', array(
+                                'controller' => 'lkus',
+                                'action' => 'index',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'lkus' )?'active':'',
+                            ));
+
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LKU', array(
+                                'controller' => 'lkus',
+                                'action' => 'lku_add',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'lkus' )?'active':'',
+                            ));
+                    ?>
+                </ul>
+            </li>
+            <?php
+                    $activeMenu = false;
+                    $dataMenu = array(
+                    );
+
+                    if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
+                        $activeMenu = 'active';
+                    }
+            ?>
+            <li class="treeview <?php echo $activeMenu; ?>">
+                <a href="#">
+                    <i class="fa fa-ambulance"></i>
+                    <span>LAKA</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php 
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Histori LAKA', array(
+                                'controller' => 'lakas',
+                                'action' => 'index',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'Lakas' )?'active':'',
+                            ));
+                    ?>
+                </ul>
+            </li>
             <?php 
                     $activeSetting = false;
                     $settingMenu = array(

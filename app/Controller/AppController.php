@@ -62,6 +62,26 @@ class AppController extends Controller {
 		);
 		Configure::write('__Site.dimension_profile', $dimensionProfile);
 
+		$kelengkapan_laka = array(
+			'form claim/lap. kerugian', 
+			'polis, Asuransi, dan lampiran',
+			'SIM, KTP, STNK RJTM',
+			'surat tuntutan',
+			'berita acara perkara (BAP)',
+			'SIM, KTP, STNK korban',
+			'surat perdamaian',
+			'bukti perdamaian',
+			'bukti transfer'
+		);
+		Configure::write('__Site.laka_commpletness', $kelengkapan_laka);
+
+		$insurance_laka = array(
+			'tidak ada', 
+			'MNC Asuransi Indonesia',
+			'Asuransi Sinarmas Syariah',
+		);
+		Configure::write('__Site.insurance_laka', $insurance_laka);
+
 	    $this->Auth->userModel = 'User';
 	    $this->Auth->authorize = array(
 	        'Controller',

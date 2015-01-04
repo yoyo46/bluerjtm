@@ -55,5 +55,70 @@ class AjaxController extends AppController {
 			'result'
 		));
 	}
+
+	function getInfoTtuj($ttuj_id, $is_payment = false){
+		$this->loadModel('Ttuj');
+		$data_ttuj = $this->Ttuj->getData('first', array(
+			'conditions' => array(
+				'Ttuj.id' => $ttuj_id
+			),
+			'contain' => array(
+				'UangJalan'
+			)
+		));
+		
+		if(!empty($data_ttuj)){
+			if(!empty($data_ttuj['TtujTipeMotor'])){
+				$this->loadModel('TipeMotor');
+				$tipe_motor_list = array();
+				foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
+					$tipe_motor = $this->TipeMotor->getData('first', array(
+						'conditions' => array(
+							'TipeMotor.id' => $value['tipe_motor_id']
+						)
+					));
+					$tipe_motor_list[$tipe_motor['TipeMotor']['id']] = $tipe_motor['TipeMotor']['name'];
+				}
+			}
+			$this->request->data = $data_ttuj;
+		}
+		
+		$this->set('tipe_motor_list', $tipe_motor_list);
+
+	}
+
+	function getColorTipeMotor($tipe_motor_id, $ttuj_id){
+		$this->loadModel('Ttuj');
+		$data_ttuj = $this->Ttuj->TtujTipeMotor->getData('first', array(
+			'conditions' => array(
+				'TtujTipeMotor.ttuj_id' => $ttuj_id,
+				'TtujTipeMotor.tipe_motor_id' => $tipe_motor_id
+			)
+		));
+
+		$this->loadModel('ColorMotor');
+		$this->loadModel('TipeMotor');
+
+		$tipe_motor = $this->TipeMotor->getData('first', array(
+			'conditions' => array(
+				'TipeMotor.id' => $data_ttuj['TtujTipeMotor']['tipe_motor_id']
+			)
+		));
+		$data_ttuj = array_merge($data_ttuj, $tipe_motor);
+		if(!empty($data_ttuj)){
+			$this->set(compact('data_ttuj'));
+		}
+	}
+
+	function getInfoLaka($ttuj_id = false){
+		$this->loadModel('Ttuj');
+		$data_ttuj = $this->Ttuj->getData('first', array(
+			'conditions' => array(
+				'Ttuj.id' => $ttuj_id
+			)
+		));
+
+		$this->set(compact('data_ttuj'));
+	}
 }
 ?>
