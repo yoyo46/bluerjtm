@@ -9,6 +9,7 @@
 		'url'=> $this->Html->url( null, true ), 
 		'role' => 'form',
 		'inputDefaults' => array('div' => false),
+		'type' => 'file'
 	));
 ?>
 <div class="row">
@@ -169,6 +170,31 @@
 		        <h3 class="box-title"><?php echo __('Informasi Dokumen')?></h3>
 		    </div>
 		    <div class="box-body">
+		    	<?php
+		    			if(!empty($this->request->data['Truck']['photo']) && !is_array($this->request->data['Truck']['photo'])){
+		    				$photo = $this->Common->photo_thumbnail(array(
+								'save_path' => Configure::read('__Site.truck_photo_folder'), 
+								'src' => $this->request->data['Truck']['photo'], 
+								'thumb'=>true,
+								'size' => 'pm',
+								'thumb' => true,
+							));
+
+							echo $this->Html->tag('div', $photo, array(
+								'class' => 'form-group',
+							));
+		    			}
+		    	?>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('photo',array(
+								'type' => 'file',
+								'label'=> __('Foto Truk'), 
+								'class'=>'form-control',
+								'required' => false
+							));
+					?>
+		        </div>
 		    	<div class="form-group">
 		        	<?php 
 						echo $this->Form->label('atas_nama',__('Atas Nama *')); 

@@ -133,6 +133,17 @@ class TrucksController extends AppController {
             $data['Truck']['tgl_bpkb'] = (!empty($data['Truck']['tgl_bpkb'])) ? $this->MkCommon->getDate($data['Truck']['tgl_bpkb']) : '';
             $data['Leasing']['paid_date'] = (!empty($data['Leasing']['paid_date'])) ? $this->MkCommon->getDate($data['Leasing']['paid_date']) : '';
 
+            if(!empty($data['Truck']['photo']['name']) && is_array($data['Truck']['photo'])){
+                $temp_image = $data['Truck']['photo'];
+                $data['Truck']['photo'] = $data['Truck']['photo']['name'];
+            }else{
+                if($id && $data_local){
+                    unset($data['Truck']['photo']);
+                }else{
+                    $data['Truck']['photo'] = '';
+                }
+            }
+
             $this->Truck->set($data);
             $check_alokasi = false;
             if( !empty($data['TruckCustomer']['customer_id']) ){
@@ -145,6 +156,16 @@ class TrucksController extends AppController {
             }
 
             if($this->Truck->validates($data) && $check_alokasi){
+                if(!empty($temp_image) && is_array($temp_image)){
+                    $uploaded = $this->RjImage->upload($temp_image, '/'.Configure::read('__Site.truck_photo_folder').'/', String::uuid());
+                    if(!empty($uploaded)) {
+                        if($uploaded['error']) {
+                            $this->RmCommon->setCustomFlash($uploaded['message'], 'error');
+                        } else {
+                            $data['Truck']['photo'] = $uploaded['imageName'];
+                        }
+                    }
+                }
                 if($this->Truck->save($data)){
                     $truck_id = $this->Truck->id;
                     

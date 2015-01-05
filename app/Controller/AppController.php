@@ -44,6 +44,7 @@ class AppController extends Controller {
 
 		Configure::write('__Site.profile_photo_folder', 'users');
 		Configure::write('__Site.laka_photo_folder', 'lakas');
+		Configure::write('__Site.truck_photo_folder', 'trucks');
 
 		Configure::write('__Site.config_currency_code', 'IDR ');
 		Configure::write('__Site.config_pagination', 20);
