@@ -23,7 +23,7 @@
 		    </div>
 		    <div class="box-body">
 		    	<?php
-		    			if(!empty($this->request->data['Driver']['photo'])){
+		    			if(!empty($this->request->data['Driver']['photo']) && !is_array($this->request->data['Driver']['photo'])){
 		    				$photo = $this->Common->photo_thumbnail(array(
 								'save_path' => Configure::read('__Site.profile_photo_folder'), 
 								'src' => $this->request->data['Driver']['photo'], 
@@ -48,9 +48,9 @@
 							));
 					?>
 		        </div>
-		        <div class="form-group">
+		        <!-- <div class="form-group"> -->
 		        	<?php 
-							echo $this->Form->input('no_id',array(
+							echo $this->Form->hidden('no_id',array(
 								'label'=> __('No. ID *'), 
 								'class'=>'form-control',
 								'required' => false,
@@ -58,7 +58,7 @@
 								'type' => 'text',
 							));
 					?>
-		        </div>
+		        <!-- </div> -->
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('name',array(

@@ -215,5 +215,29 @@ class Driver extends AppModel {
 
         return $data;
     }
+
+    function generateNoId(){
+        $default_id = 1;
+        $format_id = sprintf('SP-%s-%s-', date('Y'), date('m'));
+
+        $last_data = $this->find('first', array(
+            'order' => array(
+                'Driver.no_id' => 'DESC'
+            ),
+            'fields' => array(
+                'Driver.no_id'
+            )
+        ));
+
+        if(!empty($last_data['Driver']['no_id'])){
+            $str_arr = explode('-', $last_data['Driver']['no_id']);
+            $last_arr = count($str_arr)-1;
+            $default_id = intval($str_arr[$last_arr]+1);
+        }
+        $id = str_pad($default_id, 4,'0',STR_PAD_LEFT);
+        $format_id .= $id;
+        
+        return $format_id;
+    }
 }
 ?>

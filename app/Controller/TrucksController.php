@@ -602,6 +602,7 @@ class TrucksController extends AppController {
     function doDriver($id = false, $data_local = false){
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            
             if($id && $data_local){
                 $this->Driver->id = $id;
                 $msg = 'merubah';
@@ -618,10 +619,19 @@ class TrucksController extends AppController {
             $data['Driver']['join_date'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_penerimaan']);
             $data['Driver']['expired_date_sim'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_expire_sim']);
             // $data['Driver']['photo'] = $this->MkCommon->getFilePhoto($data['Driver']['photo']);
-
+            if(empty($data['Driver']['no_id'])){
+                $data['Driver']['no_id'] = $this->Driver->generateNoId();
+            }
+            
             if(!empty($data['Driver']['photo']['name']) && is_array($data['Driver']['photo'])){
                 $temp_image = $data['Driver']['photo'];
                 $data['Driver']['photo'] = $data['Driver']['photo']['name'];
+            }else{
+                if($id && $data_local){
+                    unset($data['Driver']['photo']);
+                }else{
+                    $data['Driver']['photo'] = '';
+                }
             }
 
             $this->Driver->set($data);
