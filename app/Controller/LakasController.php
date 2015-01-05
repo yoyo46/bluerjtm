@@ -4,7 +4,7 @@ class LakasController extends AppController {
 	public $uses = array();
 
     public $components = array(
-        'RjLaka'
+        'RjLaka', 'RjImage'
     );
 
     function beforeFilter() {
@@ -110,12 +110,47 @@ class LakasController extends AppController {
             $data['Laka']['tgl_laka'] = (!empty($data['Laka']['tgl_laka'])) ? $this->MkCommon->getDate($data['Laka']['tgl_laka']) : '';
             $data['LakaDetail']['date_birth'] = (!empty($data['LakaDetail']['date_birth'])) ? $this->MkCommon->getDate($data['LakaDetail']['date_birth']) : '';
             
+            if(!empty($data['Laka']['ttuj_id'])){
+                $this->loadModel('Ttuj');
+                $ttuj = $this->Ttuj->find('first', array(
+                    'conditions' => array(
+                        'Ttuj.id' => $data['Laka']['ttuj_id']
+                    )
+                ));
+
+                if(!empty($ttuj['Ttuj']['driver_name'])){
+                    $data['Laka']['Laka_name'] = $ttuj['Ttuj']['driver_name'];
+                }
+            }
+
+            if(!empty($data['Laka']['ilustration_photo']['name']) && is_array($data['Laka']['ilustration_photo'])){
+                $temp_image = $data['Laka']['ilustration_photo'];
+                $data['Laka']['ilustration_photo'] = $data['Laka']['ilustration_photo']['name'];
+            }else{
+                if($id && $data_local){
+                    unset($data['Laka']['ilustration_photo']);
+                }else{
+                    $data['Laka']['ilustration_photo'] = '';
+                }
+            }
+            
             $this->Laka->set($data);
 
             if($this->Laka->validates($data)){
                 
                 $data['Laka']['completeness'] = (!empty($data['Laka']['completeness'])) ? serialize($data['Laka']['completeness']) : '';
                 $data['Laka']['completeness_insurance'] = (!empty($data['Laka']['completeness_insurance'])) ? serialize($data['Laka']['completeness_insurance']) : '';
+
+                if(!empty($temp_image) && is_array($temp_image)){
+                    $uploaded = $this->RjImage->upload($temp_image, '/'.Configure::read('__Site.laka_photo_folder').'/', String::uuid());
+                    if(!empty($uploaded)) {
+                        if($uploaded['error']) {
+                            $this->RmCommon->setCustomFlash($uploaded['message'], 'error');
+                        } else {
+                            $data['Laka']['ilustration_photo'] = $uploaded['imageName'];
+                        }
+                    }
+                }
 
                 if($this->Laka->save($data)){
                     $laka_id = $this->Laka->id;
@@ -167,6 +202,14 @@ class LakasController extends AppController {
             }
         }
         $ttujs = $result;
+
+        $this->loadModel('LakaMaterial');
+        $this->loadModel('LakaInsurance');
+
+        $material = $this->LakaMaterial->find('list');
+        $insurance = $this->LakaInsurance->find('list');
+
+        $this->set(compact('material', 'insurance'));
 
         $this->set('active_menu', 'Lakas');
         $this->set('ttujs', $ttujs);

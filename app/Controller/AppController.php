@@ -43,6 +43,7 @@ class AppController extends Controller {
 	    //Configure AuthComponent
 
 		Configure::write('__Site.profile_photo_folder', 'users');
+		Configure::write('__Site.laka_photo_folder', 'lakas');
 
 		Configure::write('__Site.config_currency_code', 'IDR ');
 		Configure::write('__Site.config_pagination', 20);
@@ -78,26 +79,6 @@ class AppController extends Controller {
    			'l' => '855x481',
 		);
 		Configure::write('__Site.dimension', $dimensionArr);
-
-		$kelengkapan_laka = array(
-			'form claim/lap. kerugian', 
-			'polis, Asuransi, dan lampiran',
-			'SIM, KTP, STNK RJTM',
-			'surat tuntutan',
-			'berita acara perkara (BAP)',
-			'SIM, KTP, STNK korban',
-			'surat perdamaian',
-			'bukti perdamaian',
-			'bukti transfer'
-		);
-		Configure::write('__Site.laka_commpletness', $kelengkapan_laka);
-
-		$insurance_laka = array(
-			'tidak ada', 
-			'MNC Asuransi Indonesia',
-			'Asuransi Sinarmas Syariah',
-		);
-		Configure::write('__Site.insurance_laka', $insurance_laka);
 
 	    $this->Auth->userModel = 'User';
 	    $this->Auth->authorize = array(

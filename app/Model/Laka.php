@@ -14,7 +14,7 @@ class Laka extends AppModel {
                 'message' => 'Tgl LAKA harap dipilih'
             ),
         ),
-        'driver_name' => array(
+        'ttuj_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Nama supir harap dipilih'

@@ -18,6 +18,7 @@
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
     		'autocomplete'=> 'off', 
+    		'type' => 'file'
 		));
 ?>
 <div class="laka-form">
@@ -31,7 +32,7 @@
 				    <div class="box-body">
 				        <div class="form-group">
 				        	<?php 
-									echo $this->Form->input('driver_name',array(
+									echo $this->Form->input('ttuj_id',array(
 										'label'=> __('Nama Supir *'), 
 										'class'=>'form-control',
 										'required' => false,
@@ -345,6 +346,31 @@
 									));
 							?>
 				        </div>
+				        <?php
+		    			if(!empty($this->request->data['Laka']['ilustration_photo']) && !is_array($this->request->data['Laka']['ilustration_photo'])){
+		    				$photo = $this->Common->photo_thumbnail(array(
+								'save_path' => Configure::read('__Site.laka_photo_folder'), 
+								'src' => $this->request->data['Laka']['ilustration_photo'], 
+								'thumb'=>true,
+								'size' => 'pm',
+								'thumb' => true,
+							));
+
+							echo $this->Html->tag('div', $photo, array(
+								'class' => 'form-group',
+							));
+		    			}
+		    	?>
+				        <div class="form-group">
+				        	<?php 
+									echo $this->Form->input('ilustration_photo',array(
+										'type' => 'file',
+										'label'=> __('Foto Ilustrasi LAKA'), 
+										'class'=>'form-control',
+										'required' => false
+									));
+							?>
+				        </div>
 				    </div>
 				</div>
 				<div class="box box-primary">
@@ -440,7 +466,7 @@
 				        <?php echo $this->Html->tag('h3', __('Kelengkapan (tandai yang sudah ada)'));?>
 				        <div class="checkbox-options">
 				        	<?php
-				        		foreach (Configure::read('__Site.laka_commpletness') as $key => $value) {
+				        		foreach ($material as $key => $value) {
 				        	?>
 				        	<div class="checkbox">
 	                            <label>
@@ -454,7 +480,7 @@
 				        <?php echo $this->Html->tag('h3', __('Asuransi (tandai yang ada)'));?>
 				        <div class="checkbox-options">
 				        	<?php
-				        		foreach (Configure::read('__Site.insurance_laka') as $key => $value) {
+				        		foreach ($insurance as $key => $value) {
 				        	?>
 				        	<div class="checkbox">
 	                            <label>

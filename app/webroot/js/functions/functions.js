@@ -12,19 +12,13 @@ $(function() {
             var self = $(this);
             var action_type = self.attr('action_type');
 
-		switch(action_type) {
-		    case 'perlengkapan':
-                var class_count = $('#box-field-input .list-perlengkapan .seperator');
-                var length = parseInt(class_count.length);
-                var idx = length+1;
-
-            switch(action_type) {
-                case 'perlengkapan':
-                    var class_count = $('#box-field-input .form-group');
+    		switch(action_type) {
+    		    case 'perlengkapan':
+                    var class_count = $('#box-field-input .list-perlengkapan .seperator');
                     var length = parseInt(class_count.length);
                     var idx = length+1;
 
-    		        $('#box-field-input .list-perlengkapan').append('<div id="perlengkapan'+(idx-1)+'" class="seperator"> \
+                    $('#box-field-input .list-perlengkapan').append('<div id="perlengkapan'+(idx-1)+'" class="seperator"> \
                         <div class="row"> \
                             <div class="col-sm-9"> \
                                 <div class="form-group"> \
@@ -42,34 +36,14 @@ $(function() {
                             </div> \
                         </div> \
                     </div>');
-		    break;
-            case 'ttuj':
-                var idx = $('#ttujDetail tbody tr').length;
-                var optionTipeMotor = $('#tipe_motor_id select').html();
-                    $('#box-field-input').append('<div class="form-group" id="'+action_type+idx+'">'+
-                        '<label for="PerlengkapanName'+idx+'">perlengkapan '+idx+'</label>'+
-                        '<input name="data[Perlengkapan][name]['+(idx-1)+']" class="form-control" placeholder="perlengkapan" type="text" id="name'+idx+'">'+
-                        '</div>');
                 break;
                 case 'ttuj':
                     var idx = $('#ttujDetail tbody tr').length;
                     var optionTipeMotor = $('#tipe_motor_id select').html();
-
-                    $('#ttujDetail tbody').append(''+
-                    '<tr rel="'+idx+'">'+
-                        '<td>'+
-                            '<select name="data[TtujTipeMotor][tipe_motor_id]['+idx+']" class="form-control">'+
-                            optionTipeMotor +
-                            '</select>'+
-                        '</td>'+
-                        '<td>'+
-                            '<input name="data[TtujTipeMotor][qty]['+idx+']" class="form-control" type="text">'+
-                        '</td>'+
-                        '<td>'+
-                            '<a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="ttuj"><i class="fa fa-times"></i> Hapus</a>'+
-                        '</td>'+
-                    '</tr>');
-
+                        $('#box-field-input').append('<div class="form-group" id="'+action_type+idx+'">'+
+                            '<label for="PerlengkapanName'+idx+'">perlengkapan '+idx+'</label>'+
+                            '<input name="data[Perlengkapan][name]['+(idx-1)+']" class="form-control" placeholder="perlengkapan" type="text" id="name'+idx+'">'+
+                            '</div>');
                     delete_custom_field( $('#ttujDetail tbody tr:last-child .delete-custom-field') );
                 break;
                 case 'alocation':
@@ -373,7 +347,6 @@ $(function() {
         });     
     }
     input_number();
-});
 
     $('#getTtujInfo').change(function() {
         var self = $(this);
