@@ -41,6 +41,9 @@ class AppController extends Controller {
 
 	function beforeFilter() {
 	    //Configure AuthComponent
+
+		Configure::write('__Site.profile_photo_folder', 'users');
+
 		Configure::write('__Site.config_currency_code', 'IDR ');
 		Configure::write('__Site.config_pagination', 20);
 		Configure::write('__Site.cache_view_path', '/images/view');
@@ -54,6 +57,10 @@ class AppController extends Controller {
 		Configure::write('__Site.max_image_height', 667);
 		Configure::write('__Site.allowed_ext', array('jpg', 'jpeg', 'png', 'gif'));
 
+		$changePhoto = 'view';
+		Configure::write('__Site.thumbnail_display_view_path', sprintf(APP.'webroot'.DS.'images'.DS.'%s', $changePhoto));
+		Configure::write('__Site.thumbnail_view_path', APP.'webroot'.DS.'images'.DS.'view');
+
 		$dimensionProfile = array(
 			'ps' => '50x50',
 			'pm' => '100x100',
@@ -61,6 +68,16 @@ class AppController extends Controller {
 			'pxl' => '300x300',
 		);
 		Configure::write('__Site.dimension_profile', $dimensionProfile);
+
+		$dimensionArr = array(
+			's' => '150x84',
+			'xsm' => '100x40',
+			'xm' => '165x165',
+			'xxsm' => '240x96',
+   			'm' => '300x169',
+   			'l' => '855x481',
+		);
+		Configure::write('__Site.dimension', $dimensionArr);
 
 		$kelengkapan_laka = array(
 			'form claim/lap. kerugian', 

@@ -628,7 +628,7 @@ class TrucksController extends AppController {
             
             if($this->Driver->validates($data)){
                 if(!empty($temp_image) && is_array($temp_image)){
-                    $uploaded = $this->RjImage->upload($temp_image, '/drivers/', String::uuid());
+                    $uploaded = $this->RjImage->upload($temp_image, '/'.Configure::read('__Site.profile_photo_folder').'/', String::uuid());
                     if(!empty($uploaded)) {
                         if($uploaded['error']) {
                             $this->RmCommon->setCustomFlash($uploaded['message'], 'error');

@@ -23,11 +23,19 @@
 		    </div>
 		    <div class="box-body">
 		    	<?php
-		    	// 		if(!empty($this->request->data['Driver']['photo'])){
-							// echo $this->Html->tag('div', $this->Common->getImage('drivers', $this->request->data['Driver']['photo'], true, 'small'), array(
-							// 	'class' => 'form-group',
-							// ));
-		    	// 		}
+		    			if(!empty($this->request->data['Driver']['photo'])){
+		    				$photo = $this->Common->photo_thumbnail(array(
+								'save_path' => Configure::read('__Site.profile_photo_folder'), 
+								'src' => $this->request->data['Driver']['photo'], 
+								'thumb'=>true,
+								'size' => 'pm',
+								'thumb' => true,
+							));
+
+							echo $this->Html->tag('div', $photo, array(
+								'class' => 'form-group',
+							));
+		    			}
 		    	?>
 		        <div class="form-group">
 		        	<?php 
