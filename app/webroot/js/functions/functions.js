@@ -51,11 +51,15 @@ $(function() {
                 break;
                 case 'lku_tipe_motor':
                     var content_clone = $('#first-row').html();
-                    $('.tipe-motor-table').append(content_clone);
+                    var length_option = $('#first-row .lku-choose-tipe-motor option').length-1;
+                    var tipe_motor_table = $('.tipe-motor-table .lku-choose-tipe-motor').length;
 
-                    choose_lku_tipe_motor();
-                    input_number();
-                    price_tipe_motor();
+                    if( length_option > tipe_motor_table ){
+                        $('.tipe-motor-table #field-grand-total-lku').before(content_clone);
+                        choose_lku_tipe_motor();
+                        input_number();
+                        price_tipe_motor();
+                    }
                 break;
             }
         });
@@ -401,20 +405,42 @@ $(function() {
             }
         });
     });
+
+    price_tipe_motor();
 });
 
 var price_tipe_motor = function(){
     $('.price-tipe-motor').keyup(function(){
-        var self = $(this);
-        var val = self.val();
-        var parent = self.parents('tr');
-        var qty = parent.find('td.qty-tipe-motor .claim-number').val();
-
-        if(typeof qty != 'undefined'){
-            total = parseInt(val)*qty;
-            parent.find('.total-price-claim').text(total);
-        }
+        getTotalLKU( $(this) );
     });
+
+    $('.claim-number').change(function(){
+        getTotalLKU( $(this) );
+    });
+}
+
+function getTotalLKU(self){
+    var parent = self.parents('tr');
+    var qty = parent.find('td.qty-tipe-motor .claim-number').val();
+    var val = parent.find('td .price-tipe-motor').val();
+
+    var claim_number = $('.claim-number');
+    var price_tipe_motor = $('.price-tipe-motor');
+    var length = claim_number.length;
+
+    if(typeof qty != 'undefined' && typeof val != 'undefined'){
+        total = parseInt(val)*qty;
+        parent.find('.total-price-claim').text('IDR '+total);
+
+        var total_price = 0;
+        for (var i = 0; i < length; i++) {
+            if(typeof claim_number[i] != 'undefined' && typeof price_tipe_motor[i] != 'undefined'){
+                total_price += claim_number[i].value * price_tipe_motor[i].value;
+            }
+        };
+
+        $('#grand-total-lku').text('IDR '+total_price);
+    }
 }
 
 var choose_lku_tipe_motor = function(){
@@ -428,6 +454,8 @@ var choose_lku_tipe_motor = function(){
             success: function(response, status) {
                 self.parents('tr').find('td.lku-color-motor').html($(response).filter('#color-motor').html());
                 self.parents('tr').find('td.qty-tipe-motor').html($(response).filter('#form-qty').html());
+
+                price_tipe_motor();
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');

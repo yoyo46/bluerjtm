@@ -46,19 +46,6 @@ class LkusController extends AppController {
         ));
         $Lkus = $this->paginate('Lku');
 
-        if(!empty($Lkus)){
-            foreach ($Lkus as $key => $Lku) {
-                $data = $Lku['Lku'];
-
-                $Lku = $this->Lku->LkuCategory->getMerge($Lku, $data['Lku_category_id']);
-                $Lku = $this->Lku->LkuBrand->getMerge($Lku, $data['Lku_brand_id']);
-                $Lku = $this->Lku->Company->getMerge($Lku, $data['company_id']);
-                $Lku = $this->Lku->Driver->getMerge($Lku, $data['driver_id']);
-
-                $Lkus[$key] = $Lku;
-            }
-        }
-
         $this->set('Lkus', $Lkus);
 	}
 
@@ -90,7 +77,7 @@ class LkusController extends AppController {
         $Lku = $this->Lku->getData('first', array(
             'conditions' => array(
                 'Lku.id' => $id
-            )
+            ),
         ));
 
         if(!empty($Lku)){
@@ -105,9 +92,11 @@ class LkusController extends AppController {
     }
 
     function DoLku($id = false, $data_local = false){
+        $this->loadModel('Ttuj');
+        $this->loadModel('TipeMotor');
+
         if(!empty($this->request->data)){
             $data = $this->request->data;
-            $leasing_id = 0;
 
             if($id && $data_local){
                 $this->Lku->id = $id;
@@ -119,11 +108,53 @@ class LkusController extends AppController {
             }
             
             $data['Lku']['tgl_lku'] = (!empty($data['Lku']['tgl_lku'])) ? $this->MkCommon->getDate($data['Lku']['tgl_lku']) : '';
-
+            
+            $validate_lku_detail = true;
+            $temp_detail = array();
+            $total_price = 0;
+            if(!empty($data['LkuDetail']['tipe_motor_id'])){
+                foreach ($data['LkuDetail']['tipe_motor_id'] as $key => $value) {
+                    if( !empty($value) ){
+                        $data_detail['LkuDetail'] = array(
+                            'tipe_motor_id' => $value,
+                            'no_rangka' => (!empty($data['LkuDetail']['no_rangka'][$key])) ? $data['LkuDetail']['no_rangka'][$key] : '',
+                            'qty' => (!empty($data['LkuDetail']['qty'][$key])) ? $data['LkuDetail']['qty'][$key] : '',
+                            'price' => (!empty($data['LkuDetail']['price'][$key])) ? $data['LkuDetail']['price'][$key] : '',
+                        );
+                        
+                        $temp_detail[] = $data_detail;
+                        $this->Lku->LkuDetail->set($data_detail);
+                        if( !$this->Lku->LkuDetail->validates() ){
+                            $validate_lku_detail = false;
+                            break;
+                        }else{
+                            $total_price += $data_detail['LkuDetail']['qty'] * $data_detail['LkuDetail']['price'];
+                        }
+                    }
+                }
+            }
+            
+            $data['Lku']['total_price'] = $total_price;
             $this->Lku->set($data);
 
-            if($this->Lku->validates($data)){
+            if($this->Lku->validates($data) && $validate_lku_detail){
                 if($this->Lku->save($data)){
+                    $lku_id = $this->Lku->id;
+
+                    if($id && $data_local){
+                        $this->Lku->LkuDetail->deleteAll(array(
+                            'LkuDetail.lku_id' => $lku_id
+                        ));
+                    }
+
+                    foreach ($temp_detail as $key => $value) {
+                        $this->Lku->LkuDetail->create();
+                        $value['LkuDetail']['lku_id'] = $lku_id;
+
+                        $this->Lku->LkuDetail->set($value);
+                        $this->Lku->LkuDetail->save();
+                    }
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Lku'), $msg), 'success');
                     $this->redirect(array(
                         'controller' => 'Lkus',
@@ -136,42 +167,101 @@ class LkusController extends AppController {
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Lku'), $msg), 'error');
             }
         } else if($id && $data_local){
-            $this->request->data= $data_local;
+            $this->request->data = $data_local;
+
+            if(!empty($this->request->data['LkuDetail'])){
+                foreach ($this->request->data['LkuDetail'] as $key => $value) {
+                    $tipe_motor = $this->TipeMotor->getData('first', array(
+                        'conditions' => array(
+                            'TipeMotor.id' => $value['tipe_motor_id']
+                        ),
+                        'contain' => array(
+                            'ColorMotor'
+                        )
+                    ));
+                    if(!empty($tipe_motor)){
+                        $Ttuj_Tipe_Motor = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                            'conditions' => array(
+                                'TtujTipeMotor.ttuj_id' => $this->request->data['Lku']['ttuj_id'],
+                                'TtujTipeMotor.tipe_motor_id' => $value['tipe_motor_id']
+                            )
+                        ));
+                        $this->request->data['LkuDetail'][$key]['TipeMotor'] = array_merge($tipe_motor['TipeMotor'], $Ttuj_Tipe_Motor);
+                        $this->request->data['LkuDetail'][$key]['ColorMotor'] = $tipe_motor['ColorMotor'];
+                    }
+                }
+            }
         }
 
-        $this->loadModel('Ttuj');
+        if(!empty($this->request->data['LkuDetail']['tipe_motor_id'])){
+            $temp = array();
+            foreach ($this->request->data['LkuDetail']['tipe_motor_id'] as $key => $value) {
+                if( !empty($value) ){
+                    $temp['LkuDetail'][$key] = array(
+                        'tipe_motor_id' => $value,
+                        'no_rangka' => (!empty($data['LkuDetail']['no_rangka'][$key])) ? $data['LkuDetail']['no_rangka'][$key] : '',
+                        'qty' => (!empty($data['LkuDetail']['qty'][$key])) ? $data['LkuDetail']['qty'][$key] : '',
+                        'price' => (!empty($data['LkuDetail']['price'][$key])) ? $data['LkuDetail']['price'][$key] : '',
+                    );
+
+                    $tipe_motor = $this->TipeMotor->getData('first', array(
+                        'conditions' => array(
+                            'TipeMotor.id' => $value
+                        ),
+                        'contain' => array(
+                            'ColorMotor'
+                        )
+                    ));
+                    if(!empty($tipe_motor)){
+                        $Ttuj_Tipe_Motor = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                            'conditions' => array(
+                                'TtujTipeMotor.ttuj_id' => $this->request->data['Lku']['ttuj_id'],
+                                'TtujTipeMotor.tipe_motor_id' => $value
+                            )
+                        ));
+                        $temp['LkuDetail'][$key]['TipeMotor'] = array_merge($tipe_motor['TipeMotor'], $Ttuj_Tipe_Motor);
+                        $temp['LkuDetail'][$key]['ColorMotor'] = $tipe_motor['ColorMotor'];
+                    }
+                }
+            }
+
+            unset($this->request->data['LkuDetail']);
+            $this->request->data['LkuDetail'] = $temp['LkuDetail'];
+        }
+
         $ttujs = $this->Ttuj->getData('list', array(
             'fields' => array(
                 'Ttuj.id', 'Ttuj.no_ttuj'
             )
         ));
 
-        // $data_ttuj = $this->Ttuj->getData('first', array(
-        //     'conditions' => array(
-        //         'Ttuj.id' => 3
-        //     ),
-        //     'contain' => array(
-        //         'UangJalan'
-        //     )
-        // ));
-        
-        // if(!empty($data_ttuj)){
-        //     if(!empty($data_ttuj['TtujTipeMotor'])){
-        //         $this->loadModel('TipeMotor');
-        //         $tipe_motor_list = array();
-        //         foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
-        //             $tipe_motor = $this->TipeMotor->getData('first', array(
-        //                 'conditions' => array(
-        //                     'TipeMotor.id' => $value['tipe_motor_id']
-        //                 )
-        //             ));
-        //             $tipe_motor_list[$tipe_motor['TipeMotor']['id']] = $tipe_motor['TipeMotor']['name'];
-        //         }
-        //     }
-        //     $this->request->data = $data_ttuj;
-        // }
-        
-        // $this->set('tipe_motor_list', $tipe_motor_list);
+        if(!empty($this->request->data['Lku']['ttuj_id'])){
+            $data_ttuj = $this->Ttuj->getData('first', array(
+                'conditions' => array(
+                    'Ttuj.id' => $this->request->data['Lku']['ttuj_id']
+                ),
+                'contain' => array(
+                    'UangJalan'
+                )
+            ));
+            
+            if(!empty($data_ttuj)){
+                if(!empty($data_ttuj['TtujTipeMotor'])){
+                    $tipe_motor_list = array();
+                    foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
+                        $tipe_motor = $this->TipeMotor->getData('first', array(
+                            'conditions' => array(
+                                'TipeMotor.id' => $value['tipe_motor_id']
+                            )
+                        ));
+                        $tipe_motor_list[$tipe_motor['TipeMotor']['id']] = $tipe_motor['TipeMotor']['name'];
+                    }
+                }
+                $this->request->data = array_merge($this->request->data, $data_ttuj);
+            }
+            
+            $this->set('tipe_motor_list', $tipe_motor_list);
+        }
 
         $this->set('active_menu', 'Lkus');
         $this->set('ttujs', $ttujs);

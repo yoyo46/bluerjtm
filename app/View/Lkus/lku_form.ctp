@@ -7,13 +7,13 @@
 <?php
 		}
 
-		$this->Html->addCrumb(__('TTUJ'), array(
-			'controller' => 'revenues',
-			'action' => 'ttuj'
+		$this->Html->addCrumb(__('LKU'), array(
+			'controller' => 'lkus',
+			'action' => 'index'
 		));
 		$this->Html->addCrumb($sub_module_title);
 
-		echo $this->Form->create('Ttuj', array(
+		echo $this->Form->create('Lku', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
@@ -58,9 +58,10 @@
 				        </div>
 				        <div class="form-group">
 							<?php 
-									echo $this->Form->input('tgl_klaim',array(
+									echo $this->Form->input('tgl_lku',array(
 										'label'=> __('Tanggal Klaim'), 
 										'class'=>'form-control custom-date',
+										'type' => 'text'
 									));
 							?>
 						</div>
