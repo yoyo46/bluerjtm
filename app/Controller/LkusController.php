@@ -146,32 +146,32 @@ class LkusController extends AppController {
             )
         ));
 
-        $data_ttuj = $this->Ttuj->getData('first', array(
-            'conditions' => array(
-                'Ttuj.id' => 3
-            ),
-            'contain' => array(
-                'UangJalan'
-            )
-        ));
+        // $data_ttuj = $this->Ttuj->getData('first', array(
+        //     'conditions' => array(
+        //         'Ttuj.id' => 3
+        //     ),
+        //     'contain' => array(
+        //         'UangJalan'
+        //     )
+        // ));
         
-        if(!empty($data_ttuj)){
-            if(!empty($data_ttuj['TtujTipeMotor'])){
-                $this->loadModel('TipeMotor');
-                $tipe_motor_list = array();
-                foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
-                    $tipe_motor = $this->TipeMotor->getData('first', array(
-                        'conditions' => array(
-                            'TipeMotor.id' => $value['tipe_motor_id']
-                        )
-                    ));
-                    $tipe_motor_list[$tipe_motor['TipeMotor']['id']] = $tipe_motor['TipeMotor']['name'];
-                }
-            }
-            $this->request->data = $data_ttuj;
-        }
+        // if(!empty($data_ttuj)){
+        //     if(!empty($data_ttuj['TtujTipeMotor'])){
+        //         $this->loadModel('TipeMotor');
+        //         $tipe_motor_list = array();
+        //         foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
+        //             $tipe_motor = $this->TipeMotor->getData('first', array(
+        //                 'conditions' => array(
+        //                     'TipeMotor.id' => $value['tipe_motor_id']
+        //                 )
+        //             ));
+        //             $tipe_motor_list[$tipe_motor['TipeMotor']['id']] = $tipe_motor['TipeMotor']['name'];
+        //         }
+        //     }
+        //     $this->request->data = $data_ttuj;
+        // }
         
-        $this->set('tipe_motor_list', $tipe_motor_list);
+        // $this->set('tipe_motor_list', $tipe_motor_list);
 
         $this->set('active_menu', 'Lkus');
         $this->set('ttujs', $ttujs);

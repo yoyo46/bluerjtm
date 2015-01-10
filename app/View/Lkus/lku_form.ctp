@@ -68,7 +68,11 @@
 				</div>
 			</div>
 			<div class="col-sm-12" id="detail-tipe-motor">
-				<?php echo $this->element('blocks/lkus/lkus_info_tipe_motor'); ?>
+				<?php 
+					if(!empty($this->request->data['LkuDetail'])){
+						echo $this->element('blocks/lkus/lkus_info_tipe_motor'); 
+					}
+				?>
 			</div>
 		</div>
 		<div class="box-footer text-center action">
@@ -88,3 +92,8 @@
 <?php
 		echo $this->Form->end();
 ?>
+<div class="hide">
+	<div class="">
+
+	</div>
+</div>

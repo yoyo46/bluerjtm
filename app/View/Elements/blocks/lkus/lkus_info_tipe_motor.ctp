@@ -28,7 +28,7 @@
         		<tr>
                     <td>
                         <?php
-                            echo $this->Form->input('LkuDetail.tipe_motor_id.1', array(
+                            echo $this->Form->input('LkuDetail.tipe_motor_id.', array(
                                 'options' => $tipe_motor_list,
                                 'label' => false,
                                 'empty' => __('Pilih Tipe Motor'),
@@ -36,10 +36,10 @@
                             ));
                         ?>
                     </td>
-        			<td class="lku-color-motor">-</td>
+        			<td class="lku-color-motor" align="center">-</td>
                     <td>
                         <?php 
-                            echo $this->Form->input('LkuDetail.no_rangka.1', array(
+                            echo $this->Form->input('LkuDetail.no_rangka.', array(
                                 'type' => 'text',
                                 'label' => false,
                                 'class' => 'form-control'
@@ -48,37 +48,75 @@
                     </td>
                     <td>
                         <?php 
-                            echo $this->Form->input('LkuDetail.note.1', array(
+                            echo $this->Form->input('LkuDetail.note.', array(
                                 'type' => 'text',
                                 'label' => false,
                                 'class' => 'form-control'
                             ));
                         ?>
                     </td>
-                    <td class="qty-tipe-motor">-</td>
+                    <td class="qty-tipe-motor" align="center">-</td>
                     <td>
                         <?php 
-                            echo $this->Form->input('LkuDetail.note.1', array(
+                            echo $this->Form->input('LkuDetail.price.', array(
                                 'type' => 'text',
                                 'label' => false,
-                                'class' => 'form-control'
+                                'class' => 'form-control price-tipe-motor input_number'
                             ));
                         ?>
                     </td>
+                    <td class="total-price-claim"></td>
         		</tr>
         	</tbody>
     	</table>
     </div>
 </div>
+
 <div class="hide">
-    <div id="select-tipe-motor">
-        <?php
-            echo $this->Form->input('tipe_motor_id', array(
-                'label' => false,
-                'options' => $tipe_motor_list,
-                'empty' => __('Pilih Tipe Motor'),
-                'class' => 'lku-choose-tipe-motor'
-            ));
-        ?>
-    </div>
+    <table>
+        <tbody id="first-row">
+            <tr>
+                <td>
+                    <?php
+                        echo $this->Form->input('LkuDetail.tipe_motor_id.', array(
+                            'options' => $tipe_motor_list,
+                            'label' => false,
+                            'empty' => __('Pilih Tipe Motor'),
+                            'class' => 'lku-choose-tipe-motor form-control'
+                        ));
+                    ?>
+                </td>
+                <td class="lku-color-motor" align="center">-</td>
+                <td>
+                    <?php 
+                        echo $this->Form->input('LkuDetail.no_rangka.', array(
+                            'type' => 'text',
+                            'label' => false,
+                            'class' => 'form-control'
+                        ));
+                    ?>
+                </td>
+                <td>
+                    <?php 
+                        echo $this->Form->input('LkuDetail.note.', array(
+                            'type' => 'text',
+                            'label' => false,
+                            'class' => 'form-control'
+                        ));
+                    ?>
+                </td>
+                <td class="qty-tipe-motor" align="center">-</td>
+                <td>
+                    <?php 
+                        echo $this->Form->input('LkuDetail.price.', array(
+                            'type' => 'text',
+                            'label' => false,
+                            'class' => 'form-control price-tipe-motor input_number'
+                        ));
+                    ?>
+                </td>
+                <td class="total-price-claim"></td>
+            </tr>
+        </tbody>
+    </table>
 </div>

@@ -11,7 +11,9 @@
 		echo $this->Form->input('LkuDetail.qty.', array(
 			'options' => $options,
 			'empty' => __('Pilih Jumlah Klaim'),
-			'class' => 'claim-number form-control'
+			'class' => 'claim-number form-control',
+			'div' => false,
+			'label' => false
 		));
 	?>
 </div>

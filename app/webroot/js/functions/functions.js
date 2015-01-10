@@ -50,7 +50,12 @@ $(function() {
                     $('#box-field-input #main-alocation .form-group').clone().appendTo('#advance-box-field-input');
                 break;
                 case 'lku_tipe_motor':
-                    $('#"tipe-motor-table').append('');
+                    var content_clone = $('#first-row').html();
+                    $('.tipe-motor-table').append(content_clone);
+
+                    choose_lku_tipe_motor();
+                    input_number();
+                    price_tipe_motor();
                 break;
             }
         });
@@ -361,6 +366,8 @@ $(function() {
 
                     choose_lku_tipe_motor();
                     add_custom_field();
+                    input_number();
+                    price_tipe_motor();
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
@@ -395,6 +402,20 @@ $(function() {
         });
     });
 });
+
+var price_tipe_motor = function(){
+    $('.price-tipe-motor').keyup(function(){
+        var self = $(this);
+        var val = self.val();
+        var parent = self.parents('tr');
+        var qty = parent.find('td.qty-tipe-motor .claim-number').val();
+
+        if(typeof qty != 'undefined'){
+            total = parseInt(val)*qty;
+            parent.find('.total-price-claim').text(total);
+        }
+    });
+}
 
 var choose_lku_tipe_motor = function(){
     $('.lku-choose-tipe-motor').change(function(){
