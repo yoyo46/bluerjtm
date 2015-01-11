@@ -1,0 +1,1 @@
+<?php echo $this->element('blocks/lkus/lkus_info_payment'); ?>
