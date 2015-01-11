@@ -20,7 +20,8 @@
                     <th><?php echo __('Dari');?></th>
                     <th><?php echo __('Tujuan');?></th>
                     <th><?php echo __('Total Klaim');?></th>
-                    <th><?php echo __('Tota Biaya Klaim');?></th>
+                    <th><?php echo __('Total Biaya Klaim');?></th>
+                    <th><?php echo __('Action');?></th>
         		</tr>
         	</thead>
         	<tbody class="ttuj-info-table">
@@ -120,6 +121,15 @@
                             }
                         ?>
                     </td>
+                    <td>
+                        <?php
+                            echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
+                                'class' => 'delete-custom-field btn btn-danger btn-xs',
+                                'escape' => false,
+                                'action_type' => 'lku_second'
+                            ));
+                        ?>
+                    </td>
         		</tr>
                 <?php
                     }
@@ -127,6 +137,7 @@
                 <tr id="field-grand-total-ttuj">
                     <td align="right" colspan="5"><?php echo __('Grand Total')?></td>
                     <td align="right" id="grand-total-payment"><?php printf('%s %s', Configure::read('__Site.config_currency_code'), $total); ?></td>
+                    <td>&nbsp;</td>
                 </tr>
         	</tbody>
     	</table>
@@ -153,6 +164,15 @@
                 <td class="data-to-city">-</td>
                 <td class="data-total-claim">-</td>
                 <td class="data-total-price-claim" align="right">-</td>
+                <td>
+                    <?php
+                        echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
+                            'class' => 'delete-custom-field btn btn-danger btn-xs',
+                            'escape' => false,
+                            'action_type' => 'lku_second'
+                        ));
+                    ?>
+                </td>
             </tr>
         </tbody>
     </table>
