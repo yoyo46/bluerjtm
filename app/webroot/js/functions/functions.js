@@ -56,7 +56,19 @@ $(function() {
 
                     if( length_option > tipe_motor_table ){
                         $('.tipe-motor-table #field-grand-total-lku').before(content_clone);
-                        choose_lku_tipe_motor();
+                        choose_item_info();
+                        input_number();
+                        price_tipe_motor();
+                    }
+                break;
+                case 'lku_ttuj':
+                    var content_clone = $('#first-row').html();
+                    var length_option = $('#first-row .lku-choose-ttuj option').length-1;
+                    var tipe_motor_table = $('.ttuj-info-table .lku-choose-ttuj').length;
+
+                    if( length_option > tipe_motor_table ){
+                        $('.ttuj-info-table #field-grand-total-ttuj').before(content_clone);
+                        choose_item_info();
                         input_number();
                         price_tipe_motor();
                     }
@@ -368,7 +380,7 @@ $(function() {
                     $('#ttuj-info').html($(response).filter('#form-ttuj-main').html());
                     $('#detail-tipe-motor').html($(response).filter('#form-ttuj-detail').html());
 
-                    choose_lku_tipe_motor();
+                    choose_item_info();
                     add_custom_field();
                     input_number();
                     price_tipe_motor();
@@ -407,6 +419,25 @@ $(function() {
     });
 
     price_tipe_motor();
+
+    $('#getTtujCustomerInfo').change(function(){
+        var self = $(this);
+        var val = self.val();
+
+        $.ajax({
+            url: '/ajax/getTtujCustomerInfo/'+val+'/',
+            type: 'POST',
+            success: function(response, status) {
+                $('#detail-customer-info').html(response);
+                add_custom_field();
+                choose_item_info();
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    });
 });
 
 var price_tipe_motor = function(){
@@ -416,6 +447,28 @@ var price_tipe_motor = function(){
 
     $('.claim-number').change(function(){
         getTotalLKU( $(this) );
+    });
+
+    $('.price-lku').keyup(function(){
+        var self = $(this);
+        var val = self.val();
+        var max_price = self.attr('max_price');
+
+        if(val > parseInt(max_price)){
+            return false;
+        }else{
+            var target = $('.price-lku');
+            var length = target.length;
+
+            var grand_total = 0;
+            for (var i = 0; i < length; i++) {
+                if(typeof target[i] != 'undefined' && target[i].value != 0){
+                    grand_total += parseInt(target[i].value);
+                }
+            }
+
+            $('#grand-total-payment').text('IDR '+grand_total);
+        }
     });
 }
 
@@ -443,7 +496,7 @@ function getTotalLKU(self){
     }
 }
 
-var choose_lku_tipe_motor = function(){
+var choose_item_info = function(){
     $('.lku-choose-tipe-motor').change(function(){
         var self = $(this);
         var ttuj_id = $('#getTtujInfo').val();
@@ -463,5 +516,27 @@ var choose_lku_tipe_motor = function(){
             }
         });
     });
+
+    $('.lku-choose-ttuj').change(function(){
+        var self = $(this);
+
+        $.ajax({
+            url: '/ajax/getTtujInfoLku/'+self.val()+'/',
+            type: 'POST',
+            success: function(response, status) {
+                self.parents('tr').find('td.data-nopol').html($(response).filter('#data-nopol').html());
+                self.parents('tr').find('td.data-from-city').html($(response).filter('#data-from-city').html());
+                self.parents('tr').find('td.data-to-city').html($(response).filter('#data-to-city').html());
+                self.parents('tr').find('td.data-total-claim').html($(response).filter('#data-total-claim').html());
+                self.parents('tr').find('td.data-total-price-claim').html($(response).filter('#data-total-price-claim').html());
+
+                price_tipe_motor();
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    });
 }
-choose_lku_tipe_motor();
+choose_item_info();

@@ -1,12 +1,4 @@
-<?php 
-		if( !empty($step) ) {
-?>
-<script type="text/javascript">
-	window.location.hash = '<?php echo $step; ?>';
-</script>
 <?php
-		}
-
 		$this->Html->addCrumb(__('LKU'), array(
 			'controller' => 'lkus',
 			'action' => 'index'
@@ -35,7 +27,8 @@
 										'label'=> __('No. Dokumen *'), 
 										'class'=>'form-control',
 										'required' => false,
-										'placeholder' => __('No. Dokumen')
+										'placeholder' => __('No. Dokumen'),
+										'readonly' => (!empty($id)) ? true : false
 									));
 							?>
 				        </div>
@@ -93,8 +86,3 @@
 <?php
 		echo $this->Form->end();
 ?>
-<div class="hide">
-	<div class="">
-
-	</div>
-</div>

@@ -422,7 +422,7 @@
 
                              echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LKU', array(
                                 'controller' => 'lkus',
-                                'action' => 'lku_add',
+                                'action' => 'payments',
                             ), array(
                                 'escape' => false
                             )), array(
