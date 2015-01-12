@@ -48,8 +48,9 @@
             <tr>
                 <th>Nopol</th>
                 <th>Merek</th>
-                <th>Pemilik</th>
                 <th>Jenis</th>
+                <th>Kapasitas</th>
+                <th>Pemilik</th>
                 <th>Supir</th>
                 <th>Aset</th>
                 <th>Action</th>
@@ -63,8 +64,9 @@
             <tr>
                 <td><?php echo $value_truck['nopol'];?></td>
                 <td><?php echo !empty($value['TruckBrand']['name'])?$value['TruckBrand']['name']:'-';?></td>
-                <td><?php echo !empty($value['Company']['name'])?$value['Company']['name']:'-';?></td>
                 <td><?php echo !empty($value['TruckCategory']['name'])?$value['TruckCategory']['name']:'-';?></td>
+                <td><?php echo $value_truck['capacity'];?></td>
+                <td><?php echo !empty($value['Company']['name'])?$value['Company']['name']:'-';?></td>
                 <td><?php echo !empty($value['Driver']['name'])?$value['Driver']['name']:'-';?></td>
                 <td>
                     <?php 
