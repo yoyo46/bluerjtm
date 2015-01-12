@@ -13,18 +13,17 @@
 	if(!empty($lku['Lku']['total_klaim'])){
 		$max_qty = $lku['Lku']['total_klaim'];
 	}
-	$options = array();
-	for ($i=1; $i <= $max_qty; $i++) { 
-		$options[$i] = $i;
-	}
 
-	$content = $this->Form->input('LkuPaymentDetail.total_klaim.', array(
-		'options' => $options,
-		'empty' => __('Pilih Jumlah Klaim'),
-		'class' => 'lku-claim-number form-control',
-		'div' => false,
-		'label' => false
-	));
+	$content = '-';
+	if(!empty($lku['Lku']['total_klaim'])){
+		$content = $lku['Lku']['total_klaim'].$this->Form->hidden('LkuPaymentDetail.total_klaim.', array(
+			'empty' => __('Pilih Jumlah Klaim'),
+			'class' => 'lku-claim-number form-control',
+			'div' => false,
+			'label' => false,
+			'value' => $max_qty
+		));
+	}
 	echo $this->Html->tag('div', $content, array(
 		'id' => 'data-total-claim'
 	));
@@ -33,14 +32,19 @@
 	if(!empty($lku['Lku']['total_price'])){
 		$max_qty = $lku['Lku']['total_price'];
 	}
-	$content = $this->Form->input('LkuPaymentDetail.total_biaya_klaim.', array(
-        'type' => 'text',
-        'label' => false,
-        'class' => 'form-control price-lku input_number',
-        'required' => false,
-        'max_price' => $max_qty,
-        'placeholder' => sprintf(__('maksimal pembayaran : %s'), $max_qty)
-    ));
+
+    $content = '-';
+	if(!empty($lku['Lku']['total_price'])){
+		$content = sprintf('%s %s', Configure::read('__Site.config_currency_code'), $lku['Lku']['total_price']).$this->Form->hidden('LkuPaymentDetail.total_biaya_klaim.', array(
+	        'type' => 'text',
+	        'label' => false,
+	        'class' => 'form-control price-lku input_number',
+	        'required' => false,
+	        'max_price' => $max_qty,
+	        'value' => $max_qty,
+	        'placeholder' => sprintf(__('maksimal pembayaran : %s'), $max_qty)
+	    ));
+	}
 	echo $this->Html->tag('div', $content, array(
 		'id' => 'data-total-price-claim'
 	));

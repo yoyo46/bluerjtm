@@ -75,24 +75,17 @@
                     </td>
                     <td class="data-total-claim">
                         <?php
-                            if(!empty($this->request->data['LkuPaymentDetail'][$i]['total_klaim'])){
-                                $max_qty = 0;
-                                if(!empty($this->request->data['LkuPaymentDetail'][$i]['Lku']['total_klaim'])){
-                                    $max_qty = $this->request->data['LkuPaymentDetail'][$i]['Lku']['total_klaim'];
-                                }
-                                $options = array();
-                                for ($a=1; $a <= $max_qty; $a++) { 
-                                    $options[$a] = $a;
-                                }
+                            if(!empty($this->request->data['LkuPaymentDetail'][$i]['Lku']['total_klaim'])){
 
-                                echo $this->Form->input('LkuPaymentDetail.total_klaim.', array(
-                                    'options' => $options,
+                                echo $this->Form->hidden('LkuPaymentDetail.total_klaim.', array(
                                     'empty' => __('Pilih Jumlah Klaim'),
                                     'class' => 'lku-claim-number form-control',
                                     'div' => false,
                                     'label' => false,
-                                    'value' => (isset($this->request->data['LkuPaymentDetail'][$i]['total_klaim']) && !empty($this->request->data['LkuPaymentDetail'][$i]['total_klaim'])) ? $this->request->data['LkuPaymentDetail'][$i]['total_klaim'] : ''
+                                    'value' => $this->request->data['LkuPaymentDetail'][$i]['Lku']['total_klaim']
                                 ));
+
+                                echo $this->request->data['LkuPaymentDetail'][$i]['Lku']['total_klaim'];
                             }else{
                                 echo '-';
                             }
@@ -100,22 +93,20 @@
                     </td>
                     <td class="data-total-price-claim" align="right">
                         <?php
-                            if(!empty($this->request->data['LkuPaymentDetail'][$i]['total_biaya_klaim'])){
-                                $max_qty = 0;
-                                if(!empty($this->request->data['LkuPaymentDetail'][$i]['Lku']['total_price'])){
-                                    $max_qty = $this->request->data['LkuPaymentDetail'][$i]['Lku']['total_price'];
-                                }
-
-                                echo  $this->Form->input('LkuPaymentDetail.total_biaya_klaim.', array(
+                            if(!empty($this->request->data['LkuPaymentDetail'][$i]['Lku']['total_price'])){
+                                $max_qty = $this->request->data['LkuPaymentDetail'][$i]['Lku']['total_price'];
+                                echo  $this->Form->hidden('LkuPaymentDetail.total_biaya_klaim.', array(
                                     'type' => 'text',
                                     'label' => false,
                                     'class' => 'form-control price-lku input_number',
                                     'required' => false,
                                     'max_price' => $max_qty,
                                     'placeholder' => sprintf(__('maksimal pembayaran : %s'), $max_qty),
-                                    'value' => (isset($this->request->data['LkuPaymentDetail'][$i]['total_biaya_klaim']) && !empty($this->request->data['LkuPaymentDetail'][$i]['total_biaya_klaim'])) ? $this->request->data['LkuPaymentDetail'][$i]['total_biaya_klaim'] : ''
+                                    'value' => $max_qty
                                 ));
-                                $total += $this->request->data['LkuPaymentDetail'][$i]['total_biaya_klaim'];
+                                $total += $max_qty;
+
+                                printf('%s %s', Configure::read('__Site.config_currency_code'), $max_qty);
                             }else{
                                 echo '-';
                             }

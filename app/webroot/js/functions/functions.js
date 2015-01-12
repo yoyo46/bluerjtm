@@ -548,7 +548,7 @@ var choose_item_info = function(){
                 self.parents('tr').find('td.data-total-claim').html($(response).filter('#data-total-claim').html());
                 self.parents('tr').find('td.data-total-price-claim').html($(response).filter('#data-total-price-claim').html());
 
-                price_tipe_motor();
+                getTotalLkuPayment();
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
