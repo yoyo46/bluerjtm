@@ -21,6 +21,19 @@
 		    <div class="box-body">
 		    	<div class="form-group">
 		        	<?php 
+						echo $this->Form->label('nomor_id',__('Nomor ID *')); 
+
+						echo $this->Form->input('nomor_id',array(
+							'label'=> false, 
+							'class'=>'form-control',
+							'required' => false,
+							'placeholder' => __('Nomor ID'),
+							'type' => 'text'
+						));
+					?>
+		        </div>
+		    	<div class="form-group">
+		        	<?php 
 						echo $this->Form->label('nopol',__('Nopol *')); 
 
 						echo $this->Form->input('nopol',array(
@@ -358,6 +371,30 @@
 		        			}
 		        		}
 		        	?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+						echo $this->Form->label('emergency_name', __('Nama Panggilan darurat')); 
+
+						echo $this->Form->input('emergency_name',array(
+							'label'=> false, 
+							'class'=>'form-control',
+							'required' => false,
+							'placeholder' => __('Nama Panggilan darurat')
+						));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+						echo $this->Form->label('emergency_call', __('Telepon darurat')); 
+
+						echo $this->Form->input('emergency_call',array(
+							'label'=> false, 
+							'class'=>'form-control',
+							'required' => false,
+							'placeholder' => __('Telepon darurat')
+						));
+					?>
 		        </div>
 		        <div class="form-group">
 		        	<?php 

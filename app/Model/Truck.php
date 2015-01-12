@@ -2,6 +2,16 @@
 class Truck extends AppModel {
 	var $name = 'Truck';
 	var $validate = array(
+        'nomor_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'nomor ID harap diisi'
+            ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'Nomor ID telah terdaftar',
+            ),
+        ),
         'truck_brand_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
