@@ -1807,4 +1807,230 @@ class SettingsController extends AppController {
 
         $this->redirect($this->referer());
     }
+
+    function jenis_sim(){
+        $this->loadModel('JenisSim');
+        $options = array();
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['JenisSim']['name'] = $name;
+                $options['conditions']['JenisSim.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+        $this->paginate = $this->JenisSim->getData('paginate', $options);
+        $jenis_sim = $this->paginate('JenisSim');
+
+        $this->set('active_menu', 'jenis_sim');
+        $this->set('sub_module_title', 'Jenis SIM');
+        $this->set('jenis_sim', $jenis_sim);
+    }
+
+    function sim_add(){
+        $this->set('sub_module_title', 'Tambah Jenis SIM');
+        $this->doSim();
+    }
+
+    function sim_edit($id){
+        $this->loadModel('JenisSim');
+        $this->set('sub_module_title', 'Rubah Jenis SIM');
+        $jenis_sim = $this->JenisSim->getData('first', array(
+            'conditions' => array(
+                'JenisSim.id' => $id
+            )
+        ));
+
+        if(!empty($jenis_sim)){
+            $this->doSim($id, $jenis_sim);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Jenis SIM tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'sims'
+            ));
+        }
+    }
+
+    function doSim($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->JenisSim->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('JenisSim');
+                $this->JenisSim->create();
+                $msg = 'menambah';
+            }
+            $this->JenisSim->set($data);
+
+            if($this->JenisSim->validates($data)){
+                if($this->JenisSim->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Jenis SIM'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'jenis_sim'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Jenis SIM'), $msg), 'error');  
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Jenis SIM'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->set('active_menu', 'jenis_sim');
+        $this->render('sim_form');
+    }
+
+    function sim_toggle($id){
+        $this->loadModel('JenisSim');
+        $locale = $this->JenisSim->getData('first', array(
+            'conditions' => array(
+                'JenisSim.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['JenisSim']['status']){
+                $value = false;
+            }
+
+            $this->JenisSim->id = $id;
+            $this->JenisSim->set('status', $value);
+            if($this->JenisSim->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Jenis SIM tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
+
+    function jenis_perlengkapan(){
+        $this->loadModel('JenisPerlengkapan');
+        $options = array();
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['JenisPerlengkapan']['name'] = $name;
+                $options['conditions']['JenisPerlengkapan.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+        $this->paginate = $this->JenisPerlengkapan->getData('paginate', $options);
+        $jenis_perlengkapan = $this->paginate('JenisPerlengkapan');
+
+        $this->set('active_menu', 'jenis_perlengkapan');
+        $this->set('sub_module_title', 'Jenis Perlengkapan');
+        $this->set('jenis_perlengkapan', $jenis_perlengkapan);
+    }
+
+    function jenis_perlengkapan_add(){
+        $this->set('sub_module_title', 'Tambah Jenis Perlengkapan');
+        $this->doJenisPerlengkapan();
+    }
+
+    function jenis_per_lengkapan_edit($id){
+        $this->loadModel('JenisPerlengkapan');
+        $this->set('sub_module_title', 'Rubah Jenis Perlengkapan');
+        $jenis_perlengkapan = $this->JenisPerlengkapan->getData('first', array(
+            'conditions' => array(
+                'JenisPerlengkapan.id' => $id
+            )
+        ));
+
+        if(!empty($jenis_perlengkapan)){
+            $this->doJenisPerlengkapan($id, $jenis_perlengkapan);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Jenis Perlengkapan tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'jenis_perlengkapan'
+            ));
+        }
+    }
+
+    function doJenisPerlengkapan($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->JenisPerlengkapan->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('JenisPerlengkapan');
+                $this->JenisPerlengkapan->create();
+                $msg = 'menambah';
+            }
+            $this->JenisPerlengkapan->set($data);
+
+            if($this->JenisPerlengkapan->validates($data)){
+                if($this->JenisPerlengkapan->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Jenis Perlengkapan'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'jenis_perlengkapan'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Jenis Perlengkapan'), $msg), 'error');  
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Jenis Perlengkapan'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->set('active_menu', 'jenis_perlengkapan');
+        $this->render('jenis_perlengkapan_form');
+    }
+
+    function jenis_perlengkapan_toggle($id){
+        $this->loadModel('JenisPerlengkapan');
+        $locale = $this->JenisPerlengkapan->getData('first', array(
+            'conditions' => array(
+                'JenisPerlengkapan.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['JenisPerlengkapan']['status']){
+                $value = false;
+            }
+
+            $this->JenisPerlengkapan->id = $id;
+            $this->JenisPerlengkapan->set('status', $value);
+            if($this->JenisPerlengkapan->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Jenis Perlengkapan tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
 }

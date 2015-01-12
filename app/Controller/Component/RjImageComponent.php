@@ -66,7 +66,7 @@ class RjImageComponent extends Component {
 		$allowed_ext = Configure::read('__Site.allowed_ext');
 		$allow_only_mimefavicon = array('image/vnd.microsoft.icon', 'image/ico', 'image/icon', 'text/ico', 'application/ico',
 				'image/x-icon');
-		$default_mime = array('image/gif', 'image/jpeg', 'image/png', 'image/pjpeg', 'image/x-png');
+		$default_mime = array('image/gif', 'image/jpeg', 'image/png', 'image/pjpeg', 'image/x-png', 'application/pdf');
 		$allowed_mime = $default_mime;
 		$is_upload_cdn = (isset($options['is_upload_cdn']) ) ? $options['is_upload_cdn'] : true;
 		$is_banner = ((!empty($options['banner'])) ? true : false);
