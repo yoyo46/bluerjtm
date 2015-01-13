@@ -97,7 +97,7 @@
 									} else {
 										echo $this->Form->input('no_ttuj',array(
 											'label'=> __('No. TTUJ *'), 
-											'class'=>'form-control',
+											'class'=>'form-control submit-change',
 											'required' => false,
 											'empty' => __('Pilih No. TTUJ --'),
 											'options' => $ttujs,

@@ -6,7 +6,11 @@ class Perlengkapan extends AppModel {
 		'TruckPerlengkapan' => array(
 			'className' => 'TruckPerlengkapan',
 			'foreignKey' => 'truck_id',
-		)
+		),
+        'JenisPerlengkapan' => array(
+            'className' => 'JenisPerlengkapan',
+            'foreignKey' => 'jenis_perlengkapan_id',
+        )
 	);
 
 	function getData($find, $options = false){
@@ -17,7 +21,9 @@ class Perlengkapan extends AppModel {
             'order'=> array(
                 'Perlengkapan.name' => 'ASC'
             ),
-            'contain' => array(),
+            'contain' => array(
+                'JenisPerlengkapan'
+            ),
             'fields' => array(),
         );
 

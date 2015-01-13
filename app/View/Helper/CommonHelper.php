@@ -333,8 +333,12 @@ class CommonHelper extends AppHelper {
 
     }
 
-	function customDate($dateString, $format = 'd F Y') {
-		return date($format, strtotime($dateString));
+	function customDate($dateString, $format = 'd F Y', $result = '') {
+        if( !empty($dateString) && $dateString != '0000-00-00' && $dateString != '0000-00-00 00:00:00' ) {
+            $result = date($format, strtotime($dateString));
+        }
+
+		return $result;
 	}
 
 	/**

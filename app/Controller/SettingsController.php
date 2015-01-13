@@ -902,6 +902,8 @@ class SettingsController extends AppController {
     }
 
     function doPerlengkapan($id = false, $data_local = false){
+        $this->loadModel('JenisPerlengkapan');
+
         if(!empty($this->request->data)){
             $data = $this->request->data;
             if($id && $data_local){
@@ -933,8 +935,17 @@ class SettingsController extends AppController {
             }
         }
 
+        $jenisPerlengkapans = $this->JenisPerlengkapan->find('list', array(
+            'conditions' => array(
+                'JenisPerlengkapan.status' => 1,
+            ),
+        ));
+
         $this->set('active_menu', 'perlengkapan');
         $this->set('module_title', 'Data Master');
+        $this->set(compact(
+            'jenisPerlengkapans'
+        ));
         $this->render('perlengkapan_form');
     }
 

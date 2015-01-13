@@ -24,6 +24,9 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Perlengkapan.name', __('Perlengkapan'), array(
                             'escape' => false
                         )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('JenisPerlengkapan.name', __('Jenis Perlengkapan'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Perlengkapan.created', __('Dibuat'), array(
                             'escape' => false
                         )));
@@ -39,6 +42,7 @@
             ?>
             <tr>
                 <td><?php echo $value_data['name'];?></td>
+                <td><?php echo $value['JenisPerlengkapan']['name'];?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td class="action">
                     <?php 

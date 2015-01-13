@@ -73,15 +73,15 @@
                 <td><?php echo $this->Time->niceShort($value['Kir']['created']);?></td>
                 <td class="action">
                     <?php
-                            if( empty($value['Kir']['paid']) && empty($value['Kir']['rejected']) ){
-                                echo $this->Html->link('Rubah', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'kir_edit',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs'
-                                ));
+                            echo $this->Html->link('Rubah', array(
+                                'controller' => 'trucks',
+                                'action' => 'kir_edit',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-primary btn-xs'
+                            ));
 
+                            if( empty($value['Kir']['paid']) && empty($value['Kir']['rejected']) ){
                                 echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'trucks',
                                     'action' => 'kir_delete',

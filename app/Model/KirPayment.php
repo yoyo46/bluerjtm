@@ -5,13 +5,19 @@ class KirPayment extends AppModel {
         'kir_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Ni. Pol Truk harap dipilih'
+                'message' => 'No. Pol Truk harap dipilih'
             ),
         ),
         'user_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Anda tidak memiliki otoritas pada halaman ini'
+            ),
+        ),
+        'kir_payment_date' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl dibayar harap dipilih'
             ),
         ),
 	);

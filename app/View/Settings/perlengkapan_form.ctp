@@ -18,6 +18,15 @@
 	?>
     <div class="box-body">
     	<?php 
+				echo $this->Html->tag('div', $this->Form->input('jenis_perlengkapan_id',array(
+					'label'=> __('Jenis Perlengkapan *'), 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Jenis Perlengkapan --'),
+				)), array(
+					'class' => 'form-group'
+				));
+
 				echo $this->Html->tag('div', $this->Form->input('name',array(
 					'label'=> __('Nama Perlengkapan *'), 
 					'class'=>'form-control',

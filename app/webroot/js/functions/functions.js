@@ -13,8 +13,8 @@ $(function() {
             var action_type = self.attr('action_type');
 
     		switch(action_type) {
-    		    case 'perlengkapan':
-                    var class_count = $('#box-field-input .list-perlengkapan .seperator');
+                case 'perlengkapan':
+                    var class_count = $('#box-field-input .form-group');
                     var length = parseInt(class_count.length);
                     var idx = length+1;
 
@@ -36,7 +36,7 @@ $(function() {
                             </div> \
                         </div> \
                     </div>');
-                break;
+    		      break;
                 case 'ttuj':
                     var idx = $('#ttujDetail tbody tr').length;
                     var optionTipeMotor = $('#tipe_motor_id select').html();
@@ -44,11 +44,33 @@ $(function() {
                             '<label for="PerlengkapanName'+idx+'">perlengkapan '+idx+'</label>'+
                             '<input name="data[Perlengkapan][name]['+(idx-1)+']" class="form-control" placeholder="perlengkapan" type="text" id="name'+idx+'">'+
                             '</div>');
+                    break;
+                case 'ttuj':
+                    var idx = $('#ttujDetail tbody tr').length;
+                    var optionTipeMotor = $('#tipe_motor_id select').html();
+
+                    $('#ttujDetail tbody').append(''+
+                    '<tr rel="'+idx+'">'+
+                        '<td>'+
+                            '<select name="data[TtujTipeMotor][tipe_motor_id]['+idx+']" class="form-control">'+
+                            optionTipeMotor +
+                            '</select>'+
+                        '</td>'+
+                        '<td>'+
+                            '<input name="data[TtujTipeMotor][qty]['+idx+']" class="form-control" type="text">'+
+                        '</td>'+
+                        '<td>'+
+                            '<a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="ttuj"><i class="fa fa-times"></i> Hapus</a>'+
+                        '</td>'+
+                    '</tr>');
+
                     delete_custom_field( $('#ttujDetail tbody tr:last-child .delete-custom-field') );
-                break;
+                    break;
                 case 'alocation':
-                    $('#box-field-input #main-alocation .form-group').clone().appendTo('#advance-box-field-input');
-                break;
+                    $('#box-field-input #main-alocation .list-alocation').clone().appendTo('#advance-box-field-input');
+                    $('#advance-box-field-input .list-alocation:last-child select').val('');
+                    delete_custom_field( $('#advance-box-field-input .list-alocation:last-child .delete-custom-field') );
+                    break;
                 case 'lku_tipe_motor':
                     var content_clone = $('#first-row').html();
                     var length_option = $('#first-row .lku-choose-tipe-motor option').length-1;
@@ -62,7 +84,7 @@ $(function() {
                         price_tipe_motor();
                         delete_custom_field();
                     }
-                break;
+                    break;
                 case 'lku_ttuj':
                     var content_clone = $('#first-row').html();
                     var length_option = $('#first-row .lku-choose-ttuj option').length-1;
@@ -269,6 +291,10 @@ $(function() {
                 } else if( action_type == 'lku_second'){
                     self.parents('tr').remove();
                     getTotalLkuPayment();
+                } else if( action_type == 'alocation' ) {
+                    var length = parseInt($('#advance-box-field-input .list-alocation').length);
+                    var parent = self.parents('.list-alocation');
+                    parent.remove();
                 }
             }
 
@@ -303,7 +329,7 @@ $(function() {
         });
     }
 
-    $('#no_ttuj').change(function() {
+    $('.submit-change').change(function() {
         var frm = $(this).parents('form');
         var action_type = $(this).attr('action_type');
 
@@ -313,8 +339,12 @@ $(function() {
             frm.attr('action', '/revenues/search/balik_add/')
         } else if( action_type == 'pool' ) {
             frm.attr('action', '/revenues/search/pool_add/')
-        } else {
+        } else if( action_type == 'truk_tiba' ) {
             frm.attr('action', '/revenues/search/truk_tiba_add/')
+        } else if( action_type == 'nopol' ) {
+            var data_action = $(this).attr('data-action');
+
+            frm.attr('action', '/trucks/search/'+data_action+'/')
         }
         frm.submit();
     });
@@ -326,6 +356,14 @@ $(function() {
         location.href = url;
 
         return false;
+    });
+
+    $('.change-plat').click(function() {
+        if($(this).is(':checked')) {
+            $('.content-plat').removeClass('hide');
+        } else {
+            $('.content-plat').addClass('hide');
+        }
     });
 
     $('.submit-link').click(function() {

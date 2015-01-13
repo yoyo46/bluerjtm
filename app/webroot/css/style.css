@@ -2508,7 +2508,7 @@ Component: timeline
 */
 .invoice {
   position: relative;
-  width: 90%;
+  width: 100%;
   margin: 10px auto;
   background: #fff;
   border: 1px solid #f4f4f4;
@@ -3642,4 +3642,12 @@ fieldset[disabled] .btn-vk.active {
 
 .table-overflow {
   overflow-x: auto;
+}
+
+.no-pleft {
+  padding-left: 0;
+}
+
+.order-by-list {
+  margin-bottom: 20px;
 }

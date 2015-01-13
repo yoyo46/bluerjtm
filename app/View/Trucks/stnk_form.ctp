@@ -4,178 +4,170 @@
 			'action' => 'stnk'
 		));
 		$this->Html->addCrumb($sub_module_title);
-?>
-<div class="box box-primary">
-    <div class="box-header">
-        <h3 class="box-title"><?php echo $sub_module_title?></h3>
-    </div>
-    <?php 
+
 		echo $this->Form->create('Stnk', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
 		));
-	?>
-    <div class="box-body">
-    	<div class="form-group">
-        	<?php 
-				echo $this->Form->input('truck_id', array(
-					'label'=> __('Truk *'), 
-					'class'=>'form-control',
-					'required' => false,
-					'empty' => __('Pilih Truk'),
-					'options' => $trucks
-				));
-			?>
-        </div>
-        <div class="form-group">
-        	<?php 
-					echo $this->Form->label('tgl_bayar', __('Tanggal Perpanjang *'));
-			?>
-			<div class="row">
-				<div class="col-sm-4">
+?>
+<div class="row">
+	<div class="col-sm-6">
+		<div class="box box-primary">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo $sub_module_title?></h3>
+		    </div>
+		    <div class="box-body">
+		    	<div class="form-group">
 		        	<?php 
-							echo $this->Form->day('tgl_bayar', array(
-								'label'=> false, 
-								'class'=>'form-control selectbox-date',
-								'required' => false,
-								'empty' => __('Hari'),
-								'id' => 'day',
-								'required' => false,
-							));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->month('tgl_bayar', array(
-								'label'=> false, 
-								'class'=>'form-control selectbox-date',
-								'required' => false,
-								'empty' => __('Bulan'),
-								'id' => 'month',
-								'required' => false,
-							));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->year('tgl_bayar', date('Y') - 10, date('Y') + 10, array(
-								'label'=> false, 
-								'class'=>'form-control selectbox-date',
-								'empty' => __('Tahun'),
-								'id' => 'year',
-								'required' => false,
-							));
-					?>
-				</div>
-			</div>
-        	<?php 
-					echo $this->Form->error('tgl_bayar', array(
-						'notempty' => __('Tanggal Perpanjang harap diisi'),
-					), array(
-						'wrap' => 'div', 
-						'class' => 'error-message',
-					));
-        	?>
-        </div>
-        <div class="form-group">
-        	<?php 
-					echo $this->Form->label('tgl_berakhir', __('Tanggal Expired *'));
-			?>
-			<div class="row">
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->day('tgl_berakhir', array(
-								'label'=> false, 
-								'class'=>'form-control selectbox-date',
-								'required' => false,
-								'empty' => __('Hari'),
-								'id' => 'day',
-								'required' => false,
-							));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->month('tgl_berakhir', array(
-								'label'=> false, 
-								'class'=>'form-control selectbox-date',
-								'required' => false,
-								'empty' => __('Bulan'),
-								'id' => 'month',
-								'required' => false,
-							));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->year('tgl_berakhir', date('Y') - 10, date('Y') + 10, array(
-								'label'=> false, 
-								'class'=>'form-control selectbox-date',
-								'empty' => __('Tahun'),
-								'id' => 'year',
-								'required' => false,
-							));
-					?>
-				</div>
-			</div>
-        	<?php 
-					echo $this->Form->error('tgl_berakhir', array(
-						'notempty' => __('Tanggal Expired harap diisi'),
-					), array(
-						'wrap' => 'div', 
-						'class' => 'error-message',
-					));
-        	?>
-        </div>
-        <div class="form-group">
-        	<?php 
-				echo $this->Form->label('price', __('Biaya Perpanjang STNK *')); 
-			?>
-			<div class="input-group">
-	        	<?php 
-	        		echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-	    				'class' => 'input-group-addon'
-    				));
-
-					echo $this->Form->input('price', array(
-						'type' => 'text',
-						'label'=> false, 
-						'class'=>'form-control input_price',
-						'required' => false,
-					));
-				?>
-			</div>
-        </div>
-        <div class="form-group">
-	        <div class="checkbox aset-handling">
-                <label>
-                    <?php 
-						echo $this->Form->checkbox('is_change_plat',array(
-							'label'=> false, 
+						echo $this->Form->input('truck_id', array(
+							'label'=> __('Truk *'), 
+							'class'=>'form-control submit-change',
 							'required' => false,
-						)).__('pergantian plat nomor truk?');
+							'empty' => __('Pilih Truk'),
+							'options' => $trucks,
+							'action_type' => 'nopol',
+							'data-action' => 'stnk_add',
+						));
 					?>
-                </label>
-            </div>
-        </div>
-    </div>
-
-    <div class="box-footer text-center action">
-    	<?php
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('from_date', array(
+								'label'=> __('Tgl Berakhir STNK'), 
+								'class'=>'form-control',
+								'type' => 'text',
+								'required' => false,
+								'readonly' => true,
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('to_date', array(
+								'label'=> __('Berlaku Sampai'), 
+								'class'=>'form-control',
+								'type' => 'text',
+								'required' => false,
+								'readonly' => true,
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+			        <div class="checkbox aset-handling">
+		                <label>
+		                    <?php 
+									echo $this->Form->checkbox('is_change_plat',array(
+										'label'=> false, 
+										'required' => false,
+										'class' => 'change-plat',
+									)).__('pergantian Plat Nomor Truk?');
+							?>
+		                </label>
+		            </div>
+		        </div>
+		        <div class="content-plat <?php echo !empty($stnk['Stnk']['is_change_plat'])?'':'hide'; ?>">
+		        	<div class="form-group">
+			        	<?php 
+								echo $this->Form->input('plat_from_date', array(
+									'label'=> __('Tgl Ganti Plat'), 
+									'class'=>'form-control',
+									'type' => 'text',
+									'required' => false,
+									'readonly' => true,
+								));
+						?>
+			        </div>
+			        <div class="form-group">
+			        	<?php 
+								echo $this->Form->input('plat_to_date', array(
+									'label'=> __('Plat Berlaku Sampai'), 
+									'class'=>'form-control',
+									'type' => 'text',
+									'required' => false,
+									'readonly' => true,
+								));
+						?>
+			        </div>
+		        </div>
+		    </div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="box box-primary">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Biaya Perpanjang'); ?></h3>
+		    </div>
+		    <div class="box-body">
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->label('price_estimate', __('Biaya STNK')); 
+					?>
+					<div class="input-group">
+						<?php 
+								echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+				    				'class' => 'input-group-addon'
+			    				));
+								echo $this->Form->input('price_estimate', array(
+									'type' => 'text',
+									'label'=> false, 
+									'class'=>'form-control input_price',
+									'required' => false,
+									'placeholder' => __('Biaya STNK'),
+									'readonly' => true,
+								));
+						?>
+					</div>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('tgl_bayar', array(
+								'label'=> __('Tanggal Perpanjang *'), 
+								'class'=>'form-control custom-date',
+								'type' => 'text',
+								'required' => false,
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->label('price', __('Biaya Yg Dibayar *')); 
+					?>
+					<div class="input-group">
+						<?php 
+								echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+				    				'class' => 'input-group-addon'
+			    				));
+								echo $this->Form->input('price', array(
+									'type' => 'text',
+									'label'=> false, 
+									'class'=>'form-control input_price',
+									'required' => false,
+									'placeholder' => __('Biaya STNK'),
+								));
+						?>
+					</div>
+		        </div>
+		    </div>
+		</div>
+	</div>
+</div>
+<div class="box-footer text-center action">
+	<?php
+            if( empty($stnk['Stnk']['paid']) && empty($stnk['Stnk']['rejected']) ){
 	    		echo $this->Form->button(__('Simpan'), array(
 					'div' => false, 
 					'class'=> 'btn btn-success',
 					'type' => 'submit',
 				));
-	    		echo $this->Html->link(__('Kembali'), array(
-					'action' => 'stnk',
-				), array(
-					'class'=> 'btn btn-default',
-				));
-    	?>
-    </div>
-	<?php
-		echo $this->Form->end();
+	    	}
+    		echo $this->Html->link(__('Kembali'), array(
+				'action' => 'stnk',
+			), array(
+				'class'=> 'btn btn-default',
+			));
 	?>
 </div>
+<?php
+		echo $this->Form->end();
+?>

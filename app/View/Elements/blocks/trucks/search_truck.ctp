@@ -1,4 +1,4 @@
-<div class="box box-primary">
+<div class="box box-primary hidden-print">
     <div class="box-header">
         <h3 class="box-title">Pencarian</h3>
         <div class="box-tools pull-right">
@@ -7,15 +7,15 @@
     </div>
     <div class="box-body">
         <?php 
-            echo $this->Form->create('Truck', array(
-                'url'=> $this->Html->url( array(
-                    'controller' => 'trucks',
-                    'action' => 'search',
-                    'index'
-                )), 
-                'role' => 'form',
-                'inputDefaults' => array('div' => false),
-            ));
+                echo $this->Form->create('Truck', array(
+                    'url'=> $this->Html->url( array(
+                        'controller' => 'trucks',
+                        'action' => 'search',
+                        'index'
+                    )), 
+                    'role' => 'form',
+                    'inputDefaults' => array('div' => false),
+                ));
         ?>
         <div class="row">
             <div class="col-sm-6">

@@ -80,7 +80,7 @@
 			<div class="col-sm-3">
 				<div class="form-group">
 					<?php 
-							echo $this->Form->label('term_of_payment', __('Term Of Payment'));
+							echo $this->Form->label('term_of_payment', __('Term Of Payment *'));
 					?>
 			        <div class="input-group">
 				    	<?php 

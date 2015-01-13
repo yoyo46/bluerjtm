@@ -24,6 +24,15 @@ class RjTruckComponent extends Component {
 				if( !empty($refine['Truck']['nopol']) ) {
 					$refine_conditions['Truck']['nopol'] = $refine['Truck']['nopol'];
 				}
+				if( !empty($refine['Kir']['truck_id']) || !empty($refine['Stnk']['truck_id']) || !empty($refine['Siup']['truck_id']) ) {
+					if( !empty($refine['Kir']['truck_id']) ) {
+						$refine_conditions['Truck']['truck_id'] = $refine['Kir']['truck_id'];
+					} else if( !empty($refine['Stnk']['truck_id']) ) {
+						$refine_conditions['Truck']['truck_id'] = $refine['Stnk']['truck_id'];
+					} else if( !empty($refine['Siup']['truck_id']) ) {
+						$refine_conditions['Truck']['truck_id'] = $refine['Siup']['truck_id'];
+					}
+				}
 			}
 				
 			return $refine_conditions;

@@ -174,6 +174,16 @@
 						));
 					?>
 		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('description',array(
+								'type' => 'textarea',
+								'label'=> __('Keterangan'), 
+								'class'=>'form-control',
+								'required' => false,
+							));
+					?>
+		        </div>
 			</div>    	
 		</div>
 	</div>
@@ -220,64 +230,6 @@
 						));
 					?>
 		        </div>
-		        <?php /*
-		        <div class="form-group">
-		        	<?php 
-						echo $this->Form->label('Leasing.installment', __('Biaya Leasing')); 
-					?>
-					<div class="input-group">
-						<?php
-							echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-				    				'class' => 'input-group-addon'
-			    				));
-							echo $this->Form->input('Leasing.installment',array(
-								'type' => 'text',
-								'label'=> false, 
-								'class'=>'form-control input_price',
-								'required' => false,
-								'placeholder' => __('Leasing Cicilan')
-							));
-						?>
-					</div>
-		        </div>
-		        <div class="form-group">
-		        	<?php 
-						echo $this->Form->label('Leasing.paid_date',__('Tanggal leasing')); 
-
-						echo $this->Form->input('Leasing.paid_date',array(
-							'type' => 'text',
-							'label'=> false, 
-							'class'=>'form-control custom-date',
-							'required' => false,
-							'placeholder' => __('Tanggal leasing')
-						));
-					?>
-		        </div>
-		        <div class="form-group">
-			        <div class="checkbox aset-handling">
-		                <label>
-		                    <?php 
-								echo $this->Form->checkbox('Leasing.fine',array(
-									'label'=> false, 
-									'required' => false,
-								)).__('status leasing?');
-							?>
-		                </label>
-		            </div>
-		        </div>
-		    	<div class="form-group">
-		        	<?php 
-						echo $this->Form->label('no_contract',__('No Kontrak *')); 
-
-						echo $this->Form->input('no_contract',array(
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'placeholder' => __('No Kontrak')
-						));
-					?>
-		        </div>
-		        */ ?>
 		        <div class="form-group">
 		        	<?php 
 						echo $this->Form->label('bpkb',__('BPKB *')); 
@@ -316,60 +268,196 @@
 					?>
 		        </div>
 		        <div class="form-group">
-		        	<?php
-		        		echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah Alokasi'), 'javascript:', array(
-							'class' => 'add-custom-field btn btn-success btn-xs',
-							'action_type' => 'alocation',
-							'escape' => false,
+		        	<?php 
+						echo $this->Form->input('tgl_stnk',array(
+							'label'=> __('Tgl Perpanjang STNK 1Thn *'), 
+							'class'=>'form-control custom-date',
+							'required' => false,
+							'placeholder' => __('Tgl Perpanjang STNK 1Thn'),
+							'type' => 'text',
 						));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('tgl_stnk_plat',array(
+								'label'=> __('Tgl Perpanjang STNK 5Thn *'), 
+								'class'=>'form-control custom-date',
+								'required' => false,
+								'placeholder' => __('Tgl Perpanjang STNK 5Thn'),
+								'type' => 'text',
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('bbnkb',array(
+								'label'=> __('Biaya BBNKB *'), 
+								'class'=>'form-control input_price',
+								'required' => false,
+								'placeholder' => __('Biaya BBNKB'),
+								'type' => 'text',
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('pkb',array(
+								'label'=> __('Biaya PKB *'), 
+								'class'=>'form-control input_price',
+								'required' => false,
+								'placeholder' => __('Biaya PKB'),
+								'type' => 'text',
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('swdkllj',array(
+								'label'=> __('Biaya SWDKLLJ *'), 
+								'class'=>'form-control input_price',
+								'required' => false,
+								'placeholder' => __('Biaya SWDKLLJ'),
+								'type' => 'text',
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+						echo $this->Form->input('tgl_siup',array(
+							'label'=> __('Tgl Perpanjang SIUP *'), 
+							'class'=>'form-control custom-date',
+							'required' => false,
+							'placeholder' => __('Tgl Perpanjang SIUP'),
+							'type' => 'text',
+						));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('siup',array(
+								'label'=> __('Biaya SIUP *'), 
+								'class'=>'form-control input_price',
+								'required' => false,
+								'placeholder' => __('Biaya SIUP'),
+								'type' => 'text',
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+						echo $this->Form->input('tgl_kir',array(
+							'label'=> __('Tgl Perpanjang KIR *'), 
+							'class'=>'form-control custom-date',
+							'required' => false,
+							'placeholder' => __('Tgl Perpanjang tgl_kir'),
+							'type' => 'text',
+						));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('kir',array(
+								'label'=> __('Biaya KIR *'), 
+								'class'=>'form-control input_price',
+								'required' => false,
+								'placeholder' => __('Biaya KIR'),
+								'type' => 'text',
+							));
+					?>
+		        </div>
+		   	</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="box box-success">
+			<div class="box-header">
+		        <h3 class="box-title"><?php echo __('Alokasi Truk')?></h3>
+		    </div>
+		    <div class="box-body">
+		        <div class="form-group">
+		        	<?php
+			        		echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah Alokasi'), 'javascript:', array(
+								'class' => 'add-custom-field btn btn-success btn-xs',
+								'action_type' => 'alocation',
+								'escape' => false,
+							));
 		        	?>
 		        </div>
 		        <div id="box-field-input">
 		        	<div id="main-alocation">
-		        		<div class="form-group has-feedback">
-		        			<?php 
+		        		<div class="list-alocation">
+			        		<?php 
 									echo $this->Form->label('TruckCustomer.customer_id.',__('Alokasi *')); 
-									echo $this->Form->input('TruckCustomer.customer_id.',array(
-										'label'=> false, 
-										'class'=> 'form-control',
-										'required' => false,
-										'empty' => __('Pilih'),
-										'options' => $customers,
-										'value' => (!empty($this->request->data['TruckCustomer']['customer_id'][0])) ? $this->request->data['TruckCustomer']['customer_id'][0] : ''
-									));
-									// echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
-									// 	'class' => 'delete-custom-field has-danger form-control-feedback',
-									// 	'action_type' => 'truck',
-									// 	'escape' => false
-									// ));
-							?>
-				        </div>
+			        		?>
+			        		<div class="row">
+			        			<div class="col-sm-11">
+			        				<div class="form-group">
+					        			<?php 
+												echo $this->Form->input('TruckCustomer.customer_id.',array(
+													'label'=> false, 
+													'class'=> 'form-control',
+													'required' => false,
+													'empty' => __('Pilih'),
+													'options' => $customers,
+													'value' => (!empty($this->request->data['TruckCustomer']['customer_id'][0])) ? $this->request->data['TruckCustomer']['customer_id'][0] : ''
+												));
+										?>
+							        </div>
+			        			</div>
+			        			<div class="col-sm-1 no-pleft">
+							        <?php
+											echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
+												'class' => 'delete-custom-field has-danger',
+												'action_type' => 'alocation',
+												'escape' => false
+											));
+							        ?>
+			        			</div>
+			        		</div>
+		        		</div>
 		        	</div>
 		        </div>
 		        <div id="advance-box-field-input">
 		        	<?php
-		        		if(!empty($this->request->data['TruckCustomer']['customer_id'])){
-		        			foreach ($this->request->data['TruckCustomer']['customer_id'] as $key => $value) {
-		        				if($key != 0 && !empty($value)){
+			        		if(!empty($this->request->data['TruckCustomer']['customer_id'])){
+			        			foreach ($this->request->data['TruckCustomer']['customer_id'] as $key => $value) {
+			        				if($key != 0 && !empty($value)){
 		        	?>
-		        	<div class="form-group">
-		        			<?php 
-								echo $this->Form->label('TruckCustomer.customer_id.', __('Alokasi *')); 
-
-								echo $this->Form->input('TruckCustomer.customer_id.',array(
-									'label'=> false, 
-									'class'=> 'form-control',
-									'required' => false,
-									'empty' => __('Pilih'),
-									'options' => $customers,
-									'value' => $value
-								));
-							?>
-				        </div>
+	        		<div class="list-alocation">
+		        		<?php 
+								echo $this->Form->label('TruckCustomer.customer_id.',__('Alokasi *')); 
+		        		?>
+		        		<div class="row">
+		        			<div class="col-sm-11">
+					        	<div class="form-group">
+				        			<?php 
+										echo $this->Form->input('TruckCustomer.customer_id.',array(
+											'label'=> false, 
+											'class'=> 'form-control',
+											'required' => false,
+											'empty' => __('Pilih'),
+											'options' => $customers,
+											'value' => $value
+										));
+									?>
+						        </div>
+		        			</div>
+		        			<div class="col-sm-1 no-pleft">
+						        <?php
+										echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
+											'class' => 'delete-custom-field has-danger',
+											'action_type' => 'alocation',
+											'escape' => false
+										));
+						        ?>
+		        			</div>
+		        		</div>
+	        		</div>
 		        	<?php
-		        				}
-		        			}
-		        		}
+			        				}
+			        			}
+			        		}
 		        	?>
 		        </div>
 		        <div class="form-group">

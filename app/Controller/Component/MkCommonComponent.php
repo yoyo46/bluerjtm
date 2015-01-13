@@ -104,5 +104,25 @@ class MkCommonComponent extends Component {
     	
     	return $dtString;
     }
+
+    function customDate($dateString, $format = 'd F Y', $result = '') {
+        if( !empty($dateString) && $dateString != '0000-00-00' && $dateString != '0000-00-00 00:00:00' ) {
+            $result = date($format, strtotime($dateString));
+        }
+
+        return $result;
+    }
+
+    function convertPriceToString ( $price, $separator = array(',', ' '), $result = '' ) {
+    	if( !empty($price) ) {
+    		$resultTmp = str_replace(array(',', ' '), array('', ''), trim($price));
+
+    		if( !empty($resultTmp) ) {
+    			$result = $resultTmp;
+    		}
+    	}
+
+    	return $result;
+    }
 }
 ?>

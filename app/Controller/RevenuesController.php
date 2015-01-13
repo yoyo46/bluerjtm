@@ -394,6 +394,10 @@ class RevenuesController extends AppController {
             'fields' => array(
                 'Perlengkapan.id', 'Perlengkapan.name',
             ),
+            'conditions' => array(
+                'Perlengkapan.status' => 1,
+                'Perlengkapan.jenis_perlengkapan_id' => 2,
+            ),
         ));
         $tipeMotorsTmp = $this->TipeMotor->getData('all', array(
             'fields' => array(
@@ -704,6 +708,10 @@ class RevenuesController extends AppController {
             'fields' => array(
                 'Perlengkapan.id', 'Perlengkapan.name',
             ),
+            'conditions' => array(
+                'Perlengkapan.status' => 1,
+                'Perlengkapan.jenis_perlengkapan_id' => 2,
+            ),
         ));
         $tipeMotorsTmp = $this->TipeMotor->getData('all', array(
             'fields' => array(
@@ -791,6 +799,10 @@ class RevenuesController extends AppController {
             $perlengkapans = $this->Perlengkapan->getData('list', array(
                 'fields' => array(
                     'Perlengkapan.id', 'Perlengkapan.name',
+                ),
+                'conditions' => array(
+                    'Perlengkapan.status' => 1,
+                    'Perlengkapan.jenis_perlengkapan_id' => 2,
                 ),
             ));
             $tipeMotorsTmp = $this->TipeMotor->getData('all', array(

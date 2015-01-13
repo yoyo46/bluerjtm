@@ -33,19 +33,8 @@
         </div>
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('tgl_kir', array(
-                        'label'=> __('Tanggal Perpanjang'), 
-                        'class'=>'form-control',
-                        'type' => 'text',
-                        'required' => false,
-                        'disabled' => true,
-                    ));
-            ?>
-        </div>
-        <div class="form-group">
-            <?php 
                     echo $this->Form->input('from_date', array(
-                        'label'=> __('Tgl KIR ditetapkan'), 
+                        'label'=> __('Tgl Berakhir KIR'), 
                         'class'=>'form-control',
                         'type' => 'text',
                         'required' => false,
@@ -56,7 +45,38 @@
         <div class="form-group">
             <?php 
                     echo $this->Form->input('to_date', array(
-                        'label'=> __('Berlaku Hingga'), 
+                        'label'=> __('Berlaku Sampai'), 
+                        'class'=>'form-control',
+                        'type' => 'text',
+                        'required' => false,
+                        'disabled' => true,
+                    ));
+            ?>
+        </div>
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->label('price_estimate', __('Estimasi Biaya KIR')); 
+            ?>
+            <div class="input-group">
+                <?php 
+                        echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+                            'class' => 'input-group-addon'
+                        ));
+                        echo $this->Form->input('price_estimate', array(
+                            'type' => 'text',
+                            'label'=> false, 
+                            'class'=>'form-control input_price',
+                            'required' => false,
+                            'placeholder' => __('Estimasi Biaya KIR'),
+                            'disabled' => true,
+                        ));
+                ?>
+            </div>
+        </div>
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->input('tgl_kir', array(
+                        'label'=> __('Tanggal Perpanjang'), 
                         'class'=>'form-control',
                         'type' => 'text',
                         'required' => false,
@@ -82,6 +102,16 @@
                     ));
                 ?>
             </div>
+        </div>
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->input('kir_payment_date', array(
+                        'label'=> __('Tgl Dibayar *'), 
+                        'class'=>'form-control custom-date',
+                        'type' => 'text',
+                        'required' => false,
+                    ));
+            ?>
         </div>
         <div class="form-group">
             <?php 

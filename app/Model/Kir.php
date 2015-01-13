@@ -20,12 +20,6 @@ class Kir extends AppModel {
                 'message' => 'Tanggal KIR harap diisi'
             ),
         ),
-        'tgl_next_kir' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'tanggal KIR selanjutnya harap diisi'
-            ),
-        ),
         'price' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

@@ -156,7 +156,8 @@
 
                     $activeTruck = false;
                     $truckMenu = array(
-                        'drivers', 'trucks', 'directions'
+                        'drivers', 'trucks', 'directions',
+                        'reports'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -187,6 +188,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Truk', array(
+                                'controller' => 'trucks',
+                                'action' => 'reports',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'reports' )?'active':'',
                             ));
                     ?>
                 </ul>
@@ -252,16 +262,52 @@
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'stnk' )?'active':'',
                             ));
-
-                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran STNK', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran STNK', array(
                                 'controller' => 'trucks',
-                                'action' => 'stnk_add',
+                                'action' => 'stnk_payments',
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'stnk_payments' )?'active':'',
+                            ));
+                    ?>
+                </ul>
+            </li>
+            <?php
+                    $activeMenu = false;
+                    $dataMenu = array(
+                        'siup', 'siup_payments'
+                    );
+
+                    if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
+                        $activeMenu = 'active';
+                    }
+            ?>
+            <li class="treeview <?php echo $activeMenu; ?>">
+                <a href="#">
+                    <i class="fa fa-file-text"></i>
+                    <span>SIUP</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Perpanjang SIUP', array(
+                                'controller' => 'trucks',
+                                'action' => 'siup',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'siup' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran SIUP', array(
+                                'controller' => 'trucks',
+                                'action' => 'siup_payments',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'siup_payments' )?'active':'',
                             ));
                     ?>
                 </ul>
@@ -353,43 +399,6 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'ritase_report' )?'active':'',
-                            ));
-                    ?>
-                </ul>
-            </li>
-            <?php
-                    $activeMenu = false;
-                    $dataMenu = array(
-                    );
-
-                    if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
-                        $activeMenu = 'active';
-                    }
-            ?>
-            <li class="treeview <?php echo $activeMenu; ?>">
-                <a href="#">
-                    <i class="fa fa-dollar"></i>
-                    <span>Pembayaran</span>
-                    <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <?php 
-                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Histori SIUP', array(
-                                'controller' => 'trucks',
-                                'action' => 'siup',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
-                            ));
-
-                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran SIUP', array(
-                                'controller' => 'trucks',
-                                'action' => 'siup_add',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
                             ));
                     ?>
                 </ul>

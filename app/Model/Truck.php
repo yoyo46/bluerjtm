@@ -12,16 +12,16 @@ class Truck extends AppModel {
                 'message' => 'Nomor ID telah terdaftar',
             ),
         ),
+        'nopol' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'nopol truk harap diisi'
+            ),
+        ),
         'truck_brand_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'merek truk harap diisi'
-            ),
-        ),
-        'company_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'perusahaan truk harap diisi'
             ),
         ),
         'truck_category_id' => array(
@@ -30,65 +30,29 @@ class Truck extends AppModel {
                 'message' => 'Jenis truk harap diisi'
             ),
         ),
-        'driver_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'supir truk harap diisi'
-            ),
-        ),
-        'nopol' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'nopol truk harap diisi'
-            ),
-            // 'isUnique' => array(
-            //     'rule' => array('isUnique'),
-            //     'message' => 'No. Pol telah terdaftar',
-            // ),
-        ),
-        'no_contract' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'nomor kontrak truk harap diisi'
-            ),
-        ),
-        'bpkb' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'BPKB truk harap diisi'
-            ),
-        ),
-        'atas_nama' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'atas nama truk harap diisi'
-            ),
-        ),
-        'no_stnk' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'nomor STNK truk harap diisi'
-            ),
-        ),
         'no_rangka' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'nomor rangka truk harap diisi'
             ),
-            // 'isUnique' => array(
-            //     'rule' => array('isUnique'),
-            //     'message' => 'No. Rangka telah terdaftar',
-            // ),
+        ),
+        'company_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'perusahaan truk harap diisi'
+            ),
         ),
         'no_machine' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'nomor mesin truk harap diisi'
             ),
-            // 'isUnique' => array(
-            //     'rule' => array('isUnique'),
-            //     'message' => 'No. Mesin telah terdaftar',
-            // ),
+        ),
+        'driver_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'supir truk harap diisi'
+            ),
         ),
         'capacity' => array(
             'notempty' => array(
@@ -108,10 +72,82 @@ class Truck extends AppModel {
                 'message' => 'tahun neraca truk harap diisi'
             ),
         ),
+        'atas_nama' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'atas nama truk harap diisi'
+            ),
+        ),
+        'bpkb' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'BPKB truk harap diisi'
+            ),
+        ),
         'tgl_bpkb' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'tanggal BPKB truk harap diisi'
+            ),
+        ),
+        'no_stnk' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'nomor STNK truk harap diisi'
+            ),
+        ),
+        'tgl_stnk' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl Perpanjang STNK 1thn truk harap diisi'
+            ),
+        ),
+        'tgl_stnk_plat' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl Perpanjang STNK 5thn truk harap diisi'
+            ),
+        ),
+        'bbnkb' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Biaya BBNKB truk harap diisi'
+            ),
+        ),
+        'pkb' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Biaya PKB truk harap diisi'
+            ),
+        ),
+        'swdkllj' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Biaya SWDKLLJ truk harap diisi'
+            ),
+        ),
+        'tgl_siup' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl Perpanjang SIUP truk harap diisi'
+            ),
+        ),
+        'siup' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Biaya SIUP truk harap diisi'
+            ),
+        ),
+        'tgl_kir' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl Perpanjang KIR truk harap diisi'
+            ),
+        ),
+        'kir' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Biaya KIR truk harap diisi'
             ),
         ),
 	);

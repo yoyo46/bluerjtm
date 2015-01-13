@@ -40,6 +40,13 @@ class Stnk extends AppModel {
         ),
 	);
 
+    var $belongsTo = array(
+        'Truck' => array(
+            'className' => 'Truck',
+            'foreignKey' => 'truck_id',
+        )
+    );
+
     function validDateStnk($data){
         $result = false;
         if(strtotime($data['tgl_berakhir']) > strtotime($this->data['Stnk']['tgl_bayar'])){
@@ -66,6 +73,7 @@ class Stnk extends AppModel {
                 'Stnk.created' => 'DESC'
             ),
             'contain' => array(),
+            'fields' => array(),
         );
 
         if(!empty($options)){
@@ -77,6 +85,9 @@ class Stnk extends AppModel {
             }
             if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
+            }
+            if(!empty($options['fields'])){
+                $default_options['fields'] = $options['fields'];
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];

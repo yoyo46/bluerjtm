@@ -1,43 +1,54 @@
 <?php
 class Siup extends AppModel {
-	var $name = 'Siup';
-	var $validate = array(
+    var $name = 'Siup';
+    var $validate = array(
         'truck_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'truk harap diisi'
+                'message' => 'Truk harap diisi'
+            ),
+        ),
+        'no_pol' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Truk harap diisi'
             ),
         ),
         'tgl_siup' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'tanggal SIUP harap diisi'
+                'message' => 'Tanggal SIUP harap diisi'
             ),
         ),
-        'tgl_next_siup' => array(
+        'price' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'tanggal SIUP selanjutnya harap diisi'
+                'message' => 'Biaya SIUP harap diisi'
             ),
         ),
-	);
+    );
 
-	var $belongsTo = array(
-		'Truck' => array(
-			'className' => 'Truck',
-			'foreignKey' => 'truck_brand_id',
-		)
-	);
+    var $belongsTo = array(
+        'Truck' => array(
+            'className' => 'Truck',
+            'foreignKey' => 'truck_id',
+        )
+    );
 
-	function getData($find, $options = false){
+    function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(
                 'Siup.status' => 1,
             ),
             'order'=> array(
-                'Siup.created' => 'DESC'
+                'Siup.rejected' => 'ASC',
+                'Siup.paid' => 'ASC',
+                'Siup.tgl_siup' => 'DESC',
             ),
-            'contain' => array(),
+            'contain' => array(
+                'Truck'
+            ),
+            'fields' => array(),
         );
 
         if(!empty($options)){
@@ -49,6 +60,9 @@ class Siup extends AppModel {
             }
             if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
+            }
+            if(!empty($options['fields'])){
+                $default_options['fields'] = $options['fields'];
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];

@@ -104,13 +104,13 @@
                             'title' => 'disable status brand'
                         ), sprintf(__('Apakah Anda yakin akan menghapus truk dengan nopol %s?'), $value_truck['nopol']));
 
-                        echo $this->Html->link('Alokasi', array(
-                            'controller' => 'trucks',
-                            'action' => 'alocations',
-                            $id
-                        ), array(
-                            'class' => 'btn bg-navy btn-xs'
-                        ));
+                        // echo $this->Html->link('Alokasi', array(
+                        //     'controller' => 'trucks',
+                        //     'action' => 'alocations',
+                        //     $id
+                        // ), array(
+                        //     'class' => 'btn bg-navy btn-xs'
+                        // ));
                     ?>
                 </td>
             </tr>

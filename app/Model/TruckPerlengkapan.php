@@ -44,7 +44,9 @@ class TruckPerlengkapan extends AppModel {
             'conditions'=> array(
                 'TruckPerlengkapan.status' => 1,
             ),
-            'contain' => array(),
+            'contain' => array(
+                'Perlengkapan',
+            ),
         );
 
         if(!empty($options)){

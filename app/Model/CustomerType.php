@@ -47,5 +47,22 @@ class CustomerType extends AppModel {
         }
         return $result;
     }
+
+    function getMergeCustomerType ( $data = false ) {
+        if( empty($data['Customer']['customer_type_id']) ) {
+            $customerType = $this->getData('first', array(
+                'conditions' => array(
+                    'CustomerType.id' => $data['Customer']['customer_type_id'],
+                    'PropertyType->.active' => 1,
+                ),
+            ));
+
+            if( !empty($customerType) ) {
+                $data = array_merge($data, $customerType);
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

@@ -38,6 +38,12 @@ class Customer extends AppModel {
                 'message' => 'Taget Rit / bln harap diisi'
             ),
         ),
+        'term_of_payment' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Term Of Payment harap diisi'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(
