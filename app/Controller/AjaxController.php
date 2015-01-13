@@ -99,14 +99,16 @@ class AjaxController extends AppController {
 		$this->loadModel('ColorMotor');
 		$this->loadModel('TipeMotor');
 
-		$tipe_motor = $this->TipeMotor->getData('first', array(
-			'conditions' => array(
-				'TipeMotor.id' => $data_ttuj['TtujTipeMotor']['tipe_motor_id']
-			)
-		));
-		$data_ttuj = array_merge($data_ttuj, $tipe_motor);
-		if(!empty($data_ttuj)){
-			$this->set(compact('data_ttuj'));
+		if(!empty($data_ttuj['TtujTipeMotor']['tipe_motor_id'])){
+			$tipe_motor = $this->TipeMotor->getData('first', array(
+				'conditions' => array(
+					'TipeMotor.id' => $data_ttuj['TtujTipeMotor']['tipe_motor_id']
+				)
+			));
+			$data_ttuj = array_merge($data_ttuj, $tipe_motor);
+			if(!empty($data_ttuj)){
+				$this->set(compact('data_ttuj'));
+			}
 		}
 	}
 
