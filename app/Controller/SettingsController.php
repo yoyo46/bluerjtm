@@ -1959,7 +1959,7 @@ class SettingsController extends AppController {
         $this->doJenisPerlengkapan();
     }
 
-    function jenis_per_lengkapan_edit($id){
+    function jenis_perlengkapan_edit($id){
         $this->loadModel('JenisPerlengkapan');
         $this->set('sub_module_title', 'Rubah Jenis Perlengkapan');
         $jenis_perlengkapan = $this->JenisPerlengkapan->getData('first', array(
