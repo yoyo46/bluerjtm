@@ -1,7 +1,7 @@
 <?php
 App::uses('AppController', 'Controller');
 class TrucksController extends AppController {
-	public $uses = array();
+	public $uses = array('Truck');
 
     public $components = array(
         'RjTruck', 'RjImage'
@@ -26,7 +26,6 @@ class TrucksController extends AppController {
     }
 
 	public function index() {
-        $this->loadModel('Truck');
 		$this->set('active_menu', 'trucks');
 		$this->set('sub_module_title', __('Data Truk'));
         $conditions = array();
@@ -98,9 +97,6 @@ class TrucksController extends AppController {
     }
 
     function edit($id){
-        $this->loadModel('Truck');
-        $this->loadModel('TruckCustomer');
-
         $this->set('sub_module_title', 'Rubah truk');
         $truck = $this->Truck->getData('first', array(
             'conditions' => array(
@@ -112,7 +108,7 @@ class TrucksController extends AppController {
         ));
 
         if(!empty($truck)){
-            $truck = $this->TruckCustomer->getMergeTruckCustomer($truck);
+            $truck = $this->Truck->TruckCustomer->getMergeTruckCustomer($truck);
             $this->doTruck($id, $truck);
         }else{
             $this->MkCommon->setCustomFlash(__('truk tidak ditemukan'), 'error');  
@@ -350,7 +346,6 @@ class TrucksController extends AppController {
     }
 
     function toggle($id){
-        $this->loadModel('Truck');
         $locale = $this->Truck->getData('first', array(
             'conditions' => array(
                 'Truck.id' => $id
@@ -2227,5 +2222,37 @@ class TrucksController extends AppController {
     public function reports() {
         $this->set('active_menu', 'reports');
         $this->set('sub_module_title', __('Laporan Truk'));
+
+        $from_date = '';
+        $to_date = '';
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if(!empty($data['Truck']['from_date'])){
+                $from_date = $data['Truck']['from_date'];
+            }
+            if(!empty($data['Truck']['to_date'])){
+                $to_date = $data['Truck']['to_date'];
+            }
+        }
+
+        $defaul_condition = array();
+
+        if(!empty($from_date)){
+            $defaul_condition['Truck.created >= '] = $from_date;
+        }
+        if(!empty($from_date)){
+            $defaul_condition['Truck.created <= '] = $to_date;
+        }
+
+        $trucks = $this->Truck->getData('all', array(
+            'conditions' => $defaul_condition,
+            'contain' => array(
+                'TruckBrand', 
+                'TruckCategory',
+                'Driver'
+            )
+        ));
+
+        $this->set(compact('trucks', 'from_date', 'to_date'));
     }
 }
