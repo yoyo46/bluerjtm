@@ -153,17 +153,9 @@ class Truck extends AppModel {
 	);
 
     var $hasOne = array(
-        'TruckBrand' => array(
-            'className' => 'TruckBrand',
-            'foreignKey' => 'truck_brand_id',
-        ),
         'Company' => array(
             'className' => 'Company',
             'foreignKey' => 'company_id',
-        ),
-        'TruckCategory' => array(
-            'className' => 'TruckCategory',
-            'foreignKey' => 'truck_category_id',
         ),
         'Leasing' => array(
             'className' => 'Leasing',
@@ -179,6 +171,14 @@ class Truck extends AppModel {
         'Stnk' => array(
             'className' => 'Stnk',
             'foreignKey' => 'truck_id',
+        ),
+        'TruckBrand' => array(
+            'className' => 'TruckBrand',
+            'foreignKey' => 'truck_brand_id',
+        ),
+        'TruckCategory' => array(
+            'className' => 'TruckCategory',
+            'foreignKey' => 'truck_category_id',
         ),
     );
 

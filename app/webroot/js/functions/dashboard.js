@@ -120,6 +120,18 @@ $(function() {
     $( ".custom-date" ).datepicker({
         format: 'dd/mm/yyyy',
     });
+    $( "#fromdatepicker" ).datepicker({ 
+        dateFormat: "yy-mm-dd",
+        onClose: function( selectedDate ) {
+            $( "#todatepicker" ).datepicker( "option", "minDate", selectedDate );
+        }
+    });
+    $( "#todatepicker" ).datepicker({ 
+        dateFormat: "yy-mm-dd",
+        onClose: function( selectedDate ) {
+            $( "#fromdatepicker" ).datepicker( "option", "maxDate", selectedDate );
+        }
+    });
 
     //SLIMSCROLL FOR CHAT WIDGET
     $('#chat-box').slimScroll({

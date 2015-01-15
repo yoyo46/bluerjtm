@@ -2219,29 +2219,43 @@ class TrucksController extends AppController {
         ));
     }
 
-    public function reports() {
+    function reports() {
         $this->set('active_menu', 'reports');
         $this->set('sub_module_title', __('Laporan Truk'));
+        
+        $defaul_condition = array();
 
         $from_date = '';
         $to_date = '';
-        if(!empty($this->request->data)){
-            $data = $this->request->data;
-            if(!empty($data['Truck']['from_date'])){
-                $from_date = $data['Truck']['from_date'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+            if(!empty($refine['from'])){
+                $data = date('Y-m-d', urldecode($refine['from']));
+                $from_date = $data;
+                $this->request->data['Truck']['from_date'] = $data;
             }
-            if(!empty($data['Truck']['to_date'])){
-                $to_date = $data['Truck']['to_date'];
+            if(!empty($refine['to'])){
+                $data = date('Y-m-d', urldecode($refine['to']));
+                $to_date = $data;
+                $this->request->data['Truck']['to_date'] = $data;
+            }
+            if(!empty($refine['nopol'])){
+                $data = urldecode($refine['nopol']);
+                $defaul_condition['Truck.nopol LIKE'] = '%'.$data.'%';
+                $this->request->data['Truck']['nopol'] = $data;
+            }
+            if(!empty($refine['name'])){
+                $data = urldecode($refine['name']);
+                $defaul_condition['Driver.name LIKE'] = '%'.$data.'%';
+                $this->request->data['Driver']['name'] = $data;
             }
         }
 
-        $defaul_condition = array();
-
         if(!empty($from_date)){
-            $defaul_condition['Truck.created >= '] = $from_date;
+            $defaul_condition['DATE_FORMAT(Truck.created, \'%Y-%m-%d\') >= '] = $from_date;
         }
-        if(!empty($from_date)){
-            $defaul_condition['Truck.created <= '] = $to_date;
+        if(!empty($to_date)){
+            $defaul_condition['DATE_FORMAT(Truck.created, \'%Y-%m-%d\') <= '] = $to_date;
         }
 
         $trucks = $this->Truck->getData('all', array(
