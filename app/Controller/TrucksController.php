@@ -2219,7 +2219,7 @@ class TrucksController extends AppController {
         ));
     }
 
-    function reports() {
+    function reports($action = false) {
         $this->set('active_menu', 'reports');
         $this->set('sub_module_title', __('Laporan Truk'));
         
@@ -2267,6 +2267,10 @@ class TrucksController extends AppController {
             )
         ));
 
-        $this->set(compact('trucks', 'from_date', 'to_date'));
+        $this->set(compact('trucks', 'from_date', 'to_date', 'action'));
+
+        if($action == 'pdf'){
+            $this->layout = 'pdf';
+        }
     }
 }

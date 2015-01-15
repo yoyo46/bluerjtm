@@ -391,4 +391,22 @@ class CommonHelper extends AppHelper {
 		$dataTree .= '</ul>';
 		return $dataTree;
 	}
+
+    function pathDirTcpdf () {
+        $year = date('Y');
+        $month = date('m');
+        $day = date('d');
+        $path = APP.'Vendor/tcpdf/'.$year;
+        
+        if( !file_exists($path) ) {
+            mkdir($path);
+        }
+
+        $path .= '/'.$month;
+        if( !file_exists($path) ) {
+            mkdir($path);
+        }
+
+        return $path;
+    }
 }
