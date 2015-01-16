@@ -1,5 +1,19 @@
 <?php 
-    if($action != 'pdf'){
+    $text = __('Semua Truk');
+    if(!empty($from_date) || !empty($to_date)){
+        $text = 'periode ';
+        if(!empty($from_date)){
+            $text .= date('d/m/Y', strtotime($from_date));
+        }
+
+        if(!empty($to_date)){
+            if(!empty($from_date)){
+                $text .= ' - ';
+            }
+            $text .= date('d/m/Y', strtotime($to_date));
+        }
+    }
+    if(!$action){
         $this->Html->addCrumb($sub_module_title);
         echo $this->element('blocks/trucks/search_report_truck');
 
@@ -42,31 +56,18 @@
         <i class="fa fa-globe"></i> <?php echo __('Laporan Truk');?>
         <small class="pull-right">
             <?php
-                if(!empty($from_date) || !empty($to_date)){
-                    $text = 'periode ';
-                    if(!empty($from_date)){
-                        $text .= date('d/m/Y', strtotime($from_date));
-                    }
-
-                    if(!empty($to_date)){
-                        if(!empty($from_date)){
-                            $text .= ' - ';
-                        }
-                        $text .= date('d/m/Y', strtotime($to_date));
-                    }
-
-                    echo $text;
-                }else{
-                    echo __('Semua Truk');
-                }
+                echo $text;
             ?>
         </small>
     </h2>
     <div class="row no-print">
         <div class="col-xs-12">
             <button class="btn btn-default" onclick="window.print();"><i class="fa fa-print"></i> Print</button>
-            <button class="btn btn-success pull-right"><i class="fa fa-table"></i> Download Excel</button>
             <?php
+                echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $this->here.'/excel', array(
+                    'escape' => false,
+                    'class' => 'btn btn-success pull-right'
+                ));
                 echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $this->here.'/pdf', array(
                     'escape' => false,
                     'class' => 'btn btn-primary pull-right'
@@ -112,6 +113,37 @@
     </div>
 </section>
 <?php
+    }else if($action == 'excel'){
+        $this->PhpExcel->createWorksheet()->setDefaultFont('Calibri', 12);
+        // define table cells
+        $table = array(
+            array('label' => __('Nopol'), 'filter' => true),
+            array('label' => __('Merek'), 'filter' => true),
+            array('label' => __('Pemilik'), 'filter' => true),
+            array('label' => __('Jenis'), 'filter' => true),
+            array('label' => __('Supir'), 'filter' => true),
+            array('label' => __('Kapasitas'), 'filter' => true),
+            array('label' => __('Tahun'), 'filter' => true),
+        );
+
+        // add heading with different font and bold text
+        $this->PhpExcel->addTableHeader($table, array('name' => 'Cambria', 'bold' => true));
+
+        // add data
+        foreach ($trucks as $truck) {
+            $this->PhpExcel->addTableRow(array(
+                $truck['Truck']['nopol'],
+                $truck['TruckBrand']['name'],
+                $truck['Truck']['atas_nama'],
+                $truck['TruckCategory']['name'],
+                $truck['Driver']['name'],
+                $truck['Truck']['capacity'],
+                $truck['Truck']['tahun']
+            ));
+        }
+
+        // close table and output
+        $this->PhpExcel->addTableFooter()->output('Laporan '.$text);
     }else{
         App::import('Vendor','xtcpdf');
         ob_end_clean();

@@ -7,6 +7,10 @@ class TrucksController extends AppController {
         'RjTruck', 'RjImage'
     );
 
+    public $helper = array(
+        'PhpExcel'
+    );
+
     function beforeFilter() {
         parent::beforeFilter();
         $this->set('title_for_layout', __('ERP RJTM | Data Truk'));
@@ -2271,6 +2275,8 @@ class TrucksController extends AppController {
 
         if($action == 'pdf'){
             $this->layout = 'pdf';
+        }else if($action == 'excel'){
+            $this->layout = 'ajax';
         }
     }
 }
