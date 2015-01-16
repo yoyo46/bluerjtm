@@ -61,6 +61,8 @@ class MkCommonComponent extends Component {
             foreach ($data['TtujTipeMotor'] as $key => $tipeMotor) {
                 $tempTipeMotor['TtujTipeMotor']['tipe_motor_id'][$key] = $tipeMotor['tipe_motor_id'];
                 $tempTipeMotor['TtujTipeMotor']['qty'][$key] = $tipeMotor['qty'];
+                $tempTipeMotor['TtujTipeMotor']['city_id'][$key] = $tipeMotor['city_id'];
+                $tempTipeMotor['TtujTipeMotor']['city'][$key] = !empty($tipeMotor['City']['name'])?$tipeMotor['City']['name']:false;
             }
 
             unset($data['TtujTipeMotor']);

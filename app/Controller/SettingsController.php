@@ -776,7 +776,7 @@ class SettingsController extends AppController {
             $data['UangJalan']['uang_keamanan'] = !empty($data['UangJalan']['uang_keamanan'])?str_replace(',', '', $data['UangJalan']['uang_keamanan']):false;
             $data['UangJalan']['uang_jalan_extra'] = !empty($data['UangJalan']['uang_jalan_extra'])?str_replace(',', '', $data['UangJalan']['uang_jalan_extra']):false;
 
-            if( !empty($data['UangJalan']['is_unit']) ) {
+            if( !empty($data['UangJalan']['uang_jalan_per_unit']) ) {
                 $data['UangJalan']['uang_jalan_2'] = 0;
             }
             

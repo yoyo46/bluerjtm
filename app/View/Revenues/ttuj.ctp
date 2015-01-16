@@ -53,13 +53,36 @@
                             break;
                         
                         default:
-                            echo $this->Html->link('<i class="fa fa-plus"></i> Tambah TTUJ', array(
+            ?>
+            <div class="btn-group pull-right">
+                <?php 
+                        echo $this->Html->tag('button', '<i class="fa fa-plus"></i> Tambah', array(
+                            'data-toggle' => 'dropdown',
+                            'class' => 'btn btn-app btn-success dropdown-toggle'
+                        ));
+                ?>
+                <ul class="dropdown-menu" role="menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link(__('TTUJ'), array(
                                 'controller' => 'revenues',
-                                'action' => 'ttuj_add'
+                                'action' => 'ttuj_add',
                             ), array(
                                 'escape' => false,
-                                'class' => 'btn btn-app btn-success pull-right'
+                            )));
+                            echo $this->Html->tag('li', '', array(
+                                'class' => 'divider',
                             ));
+                            echo $this->Html->tag('li', $this->Html->link(__('TTUJ Depo'), array(
+                                'controller' => 'revenues',
+                                'action' => 'ttuj_add',
+                                'depo',
+                            ), array(
+                                'escape' => false,
+                            )));
+                    ?>
+                </ul>
+            </div>
+            <?php
                             break;
                     }
             ?>
@@ -189,9 +212,9 @@
                         } else if(!empty($value['Ttuj']['is_arrive'])){
                             echo $this->Html->tag('td', '<span class="label label-info">Tiba</span>');
                         } else if(!empty($value['Ttuj']['is_draft'])){
-                            echo $this->Html->tag('td', '<span class="label label-primary">Draft</span>');
+                            echo $this->Html->tag('td', '<span class="label label-default">Unposting</span>');
                         } else{
-                            echo $this->Html->tag('td', '<span class="label label-default">Commit</span>');
+                            echo $this->Html->tag('td', '<span class="label label-primary">Posting</span>');
                         }
                 ?>
                 <td><?php echo $this->Common->customDate($value['Ttuj']['created']);?></td>

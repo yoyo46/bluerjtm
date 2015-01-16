@@ -18,29 +18,39 @@
                             'escape' => false,
                         )), array(
                             'style' => 'width: 100px;',
-                            'class' => 'text-center',
+                            'class' => 'text-center text-middle',
+                            'rowspan' => 2,
                         ));
                         echo $this->Html->tag('th', $this->Paginator->sort('Driver.name', __('Supir'), array(
                             'escape' => false
                         )), array(
                             'style' => 'width: 120px;',
-                            'class' => 'text-center',
+                            'class' => 'text-center text-middle',
+                            'rowspan' => 2,
                         ));
                         echo $this->Html->tag('th', $this->Paginator->sort('Truck.capacity', __('Kapasitas'), array(
                             'escape' => false
                         )), array(
                             'style' => 'width: 100px;',
-                            'class' => 'text-center',
+                            'class' => 'text-center text-middle',
+                            'rowspan' => 2,
+                        ));
+                        echo $this->Html->tag('th', __('Kapasitas'), array(
+                            'style' => 'width: 100px;',
+                            'class' => 'text-center text-middle',
+                            'rowspan' => 2,
                         ));
                         echo $this->Html->tag('th', __('Total'), array(
                             'style' => 'width: 80px;',
-                            'class' => 'text-center',
+                            'class' => 'text-center text-middle',
+                            'rowspan' => 2,
                         ));
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.target_rit', __('Target RIT'), array(
                             'escape' => false
                         )), array(
                             'style' => 'width: 120px;',
-                            'class' => 'text-center',
+                            'class' => 'text-center text-middle',
+                            'rowspan' => 2,
                         ));
                         echo $this->Html->tag('th', __('Tujuan'), array(
                             'colspan' => count($cities),
@@ -53,7 +63,7 @@
                 ?>
             </tr>
             <tr>
-                <th colspan="5">&nbsp;</th>
+                <th colspan="6">&nbsp;</th>
                 <?php 
                         if( !empty($cities) ) {
                             foreach ($cities as $key => $value) {
@@ -74,7 +84,9 @@
                 <td><?php echo $value['Truck']['nopol'];?></td>
                 <td><?php echo $value['Driver']['name'];?></td>
                 <td class="text-center"><?php echo $value['Truck']['capacity'];?></td>
+                <td class="text-center"><?php echo !empty($value['Customer']['name'])?$value['Customer']['name']:'-';?></td>
                 <td class="text-center"><?php echo !empty($value['Total'])?$value['Total']:0;?></td>
+                <td class="text-center"><?php echo !empty($value['Customer']['target_rit'])?$value['Customer']['target_rit']:'0';?></td>
             </tr>
             <?php
                         }

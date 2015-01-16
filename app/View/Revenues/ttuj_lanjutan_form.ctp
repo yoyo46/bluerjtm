@@ -329,7 +329,7 @@
 				        			}
 		        				}
 
-				        		if ( $action_type == 'balik' ) {
+				        		if ( in_array($action_type, array( 'balik', 'pool' )) ) {
 						?>
 				        <div class="form-group">
 				        	<?php 
@@ -374,14 +374,16 @@
 				        	?>
 				        </div>
 						<?php
-			        				echo $this->Html->tag('div', $this->Form->input('note_balik', array(
-										'label'=> __('Keterangan'), 
-										'class'=>'form-control',
-										'required' => false,
-										'disabled' => $disabledTglJamBalik,
-									)), array(
-										'class'=>'form-group',
-									));
+				        			if ( $action_type == 'balik' ) {
+				        				echo $this->Html->tag('div', $this->Form->input('note_balik', array(
+											'label'=> __('Keterangan'), 
+											'class'=>'form-control',
+											'required' => false,
+											'disabled' => $disabledTglJamBalik,
+										)), array(
+											'class'=>'form-group',
+										));
+				        			}
 		        				}
 
 				        		if ( $action_type == 'pool' ) {
@@ -462,8 +464,13 @@
 				        <table class="table table-bordered table-striped" id="ttujDetail">
 							<thead>
 								<tr>
-									<th><?php echo __('Tipe Motor'); ?></th>
-									<th><?php echo __('Jumlah Unit'); ?></th>
+									<?php 
+											if( $data_action == 'depo' ) {
+												echo $this->Html->tag('th', __('Tujuan'));
+											}
+											echo $this->Html->tag('th', __('Tipe Motor'));
+											echo $this->Html->tag('th', __('Jumlah Unit'));
+									?>
 								</tr>
 							</thead>
 							<tbody>
@@ -471,33 +478,39 @@
 										if( !empty($this->request->data['TtujTipeMotor']['tipe_motor_id']) ) {
 											foreach ($this->request->data['TtujTipeMotor']['tipe_motor_id'] as $key => $tipe_motor_id) {
 												$qty = !empty($this->request->data['TtujTipeMotor']['qty'][$key])?$this->request->data['TtujTipeMotor']['qty'][$key]:false;
+												$city = !empty($this->request->data['TtujTipeMotor']['city'][$key])?$this->request->data['TtujTipeMotor']['city'][$key]:false;
 								?>
 								<tr>
-									<td>
-										<?php
-												echo $this->Form->input('TtujTipeMotor.tipe_motor_id.'.$key, array(
-													'class' => 'form-control',
-													'label' => false,
-													'empty' => __('Pilih Tipe Motor --'),
-													'options' => $tipeMotors,
-													'value' => $tipe_motor_id,
+									<?php
+											if( $data_action == 'depo' ) {
+												echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.city_id.'.$key,array(
+													'label'=> false, 
+													'class'=>'form-control',
 													'required' => false,
+													'value' => $city,
 													'disabled' => true,
-												));
-										?>
-									</td>
-									<td>
-										<?php
-												echo $this->Form->input('TtujTipeMotor.qty.'.$key, array(
-													'class' => 'form-control',
-													'label' => false,
 													'required' => false,
-													'div' => false,
-													'value' => $qty,
-													'disabled' => true,
-												));
-										?>
-									</th>
+												)));
+											}
+
+											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.tipe_motor_id.'.$key, array(
+												'class' => 'form-control',
+												'label' => false,
+												'empty' => __('Pilih Tipe Motor --'),
+												'options' => $tipeMotors,
+												'value' => $tipe_motor_id,
+												'required' => false,
+												'disabled' => true,
+											)));
+											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.qty.'.$key, array(
+												'class' => 'form-control',
+												'label' => false,
+												'required' => false,
+												'div' => false,
+												'value' => $qty,
+												'disabled' => true,
+											)));
+									?>
 								</tr>
 								<?php
 											}

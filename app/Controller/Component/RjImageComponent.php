@@ -121,11 +121,13 @@ class RjImageComponent extends Component {
 
 					if( !file_exists($upload_path) ) {
 						mkdir($upload_path, 0755);
+						chmod($upload_path, 755);
 					}
 				}
 			
 				if( !file_exists($fullsizePath) ) {
 					mkdir($fullsizePath, 0755);
+					chmod($fullsizePath, 755);
 				}
 
 				$folder_sub_path = $this->generateSubPathFolder($filename);
@@ -163,6 +165,8 @@ class RjImageComponent extends Component {
 						$imgRawData = file_get_contents($uploadedInfo["tmp_name"]);
 		   				file_put_contents($uploadSource, $imgRawData);
 					}
+				} else {
+					chmod($uploadSource, 755);
 				}
 
 				if($this->options['rar'] == false){
@@ -262,12 +266,14 @@ class RjImageComponent extends Component {
         if( !empty($this->options['project_path']) ) {
 	        if( !file_exists($pathToThumbs) ) {
 				mkdir($pathToThumbs, 0755);
+				chmod($pathToThumbs, 755);
 			}
 			$pathToThumbs .= $this->options['project_path'].DS;
 		}
 
         if( !file_exists($pathToThumbs) ) {
 			mkdir($pathToThumbs, 0755);
+			chmod($pathToThumbs, 755);
 		}
 
 		if( !empty($Realname) ) {
@@ -349,15 +355,18 @@ class RjImageComponent extends Component {
 
 	    	if( !file_exists($yearDir) ) {
 	    		mkdir($yearDir, 0755);
+				chmod($yearDir, 755);
 	    	}
 	    	if( !file_exists($monthDir) ) {
 	    		mkdir($monthDir, 0755);
+				chmod($monthDir, 755);
 	    	}
 
 	    	if($folder_sub_path != '') {
 		    	$subDir = $monthDir.$folder_sub_path.DS;
 		    	if( !file_exists($subDir) ) {
 		    		mkdir($subDir, 0755, true);
+					chmod($subDir, 755);
 		    	}
 		    }
 	    	
@@ -369,15 +378,18 @@ class RjImageComponent extends Component {
 
     		if( !file_exists($yearFullsizeDir) ) {
     			mkdir($yearFullsizeDir, 0755);
+				chmod($yearFullsizeDir, 755);
     		}
     		if( !file_exists($monthFullsizeDir) ) {
     			mkdir($monthFullsizeDir, 0755);
+				chmod($monthFullsizeDir, 755);
     		}
     		$FullsizeDir = str_replace('/', DS, $thumbnailPath.DS);
     		if($folder_sub_path != '') {
     			$subFullsizeDir = $monthFullsizeDir.$folder_sub_path.DS;
 	    		if( !file_exists($subFullsizeDir) ) {
 	    			mkdir($subFullsizeDir, 0755, true);
+					chmod($subFullsizeDir, 755);
 	    		}
 	    	}
 		}

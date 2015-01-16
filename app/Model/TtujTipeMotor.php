@@ -8,6 +8,12 @@ class TtujTipeMotor extends AppModel {
                 'message' => 'TTUJ harap dipilih.'
 			),
 		),
+        'city_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tujuan harap dipilih.'
+            ),
+        ),
         'tipe_motor_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -37,6 +43,13 @@ class TtujTipeMotor extends AppModel {
         'TipeMotor' => array(
             'className' => 'TipeMotor',
             'foreignKey' => 'tipe_motor_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
+        'City' => array(
+            'className' => 'City',
+            'foreignKey' => 'city_id',
             'conditions' => '',
             'fields' => '',
             'order' => ''

@@ -551,14 +551,14 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'jenis_sim' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Jenis Perlengkapan', array(
-                                'controller' => 'settings',
-                                'action' => 'jenis_perlengkapan',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'jenis_perlengkapan' )?'active':'',
-                            ));
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Jenis Perlengkapan', array(
+                            //     'controller' => 'settings',
+                            //     'action' => 'jenis_perlengkapan',
+                            // ), array(
+                            //     'escape' => false
+                            // )), array(
+                            //     'class' => ( !empty($active_menu) && $active_menu == 'jenis_perlengkapan' )?'active':'',
+                            // ));
                     ?>
                 </ul>
             </li>

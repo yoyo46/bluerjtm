@@ -32805,3 +32805,158 @@ Stack Trace:
 #10 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(SettingsController), Object(CakeRequest))
 #11 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
 #12 {main}
+2015-01-13 22:41:03 Error: [PDOException] SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'getData' at line 1
+Request URL: /settings/jenis_sim
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(458): PDOStatement->execute(Array)
+#1 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(424): DboSource->_execute('getData', Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(666): DboSource->execute('getData', Array, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(609): DboSource->fetchAll('getData', Array, Array)
+#4 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Model.php(808): DboSource->query('getData', Array, Object(AppModel))
+#5 [internal function]: Model->__call('getData', Array)
+#6 C:\xampp\htdocs\bluerjtm\trunk\app\Controller\SettingsController.php(1836): AppModel->getData('paginate', Array)
+#7 [internal function]: SettingsController->jenis_sim()
+#8 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Controller\Controller.php(490): ReflectionMethod->invokeArgs(Object(SettingsController), Array)
+#9 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(191): Controller->invokeAction(Object(CakeRequest))
+#10 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(SettingsController), Object(CakeRequest))
+#11 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#12 {main}
+2015-01-13 22:42:23 Error: [PDOException] SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'getData' at line 1
+Request URL: /settings/jenis_perlengkapan
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(458): PDOStatement->execute(Array)
+#1 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(424): DboSource->_execute('getData', Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(666): DboSource->execute('getData', Array, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(609): DboSource->fetchAll('getData', Array, Array)
+#4 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Model.php(808): DboSource->query('getData', Array, Object(AppModel))
+#5 [internal function]: Model->__call('getData', Array)
+#6 C:\xampp\htdocs\bluerjtm\trunk\app\Controller\SettingsController.php(1949): AppModel->getData('paginate', Array)
+#7 [internal function]: SettingsController->jenis_perlengkapan()
+#8 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Controller\Controller.php(490): ReflectionMethod->invokeArgs(Object(SettingsController), Array)
+#9 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(191): Controller->invokeAction(Object(CakeRequest))
+#10 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(SettingsController), Object(CakeRequest))
+#11 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#12 {main}
+2015-01-14 21:29:04 Error: [MissingActionException] Action UsersController::js() could not be found.
+Exception Attributes: array (
+  'controller' => 'UsersController',
+  'action' => 'js',
+)
+Request URL: /users/js/jquery.js
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(191): Controller->invokeAction(Object(CakeRequest))
+#1 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(UsersController), Object(CakeRequest))
+#2 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#3 {main}
+2015-01-14 21:29:04 Error: [MissingActionException] Action UsersController::js() could not be found.
+Exception Attributes: array (
+  'controller' => 'UsersController',
+  'action' => 'js',
+)
+Request URL: /users/js/bootstrap.js
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(191): Controller->invokeAction(Object(CakeRequest))
+#1 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(UsersController), Object(CakeRequest))
+#2 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#3 {main}
+2015-01-14 21:40:24 Error: Fatal Error (4): syntax error, unexpected ')', expecting ',' or ';' in [C:\xampp\htdocs\bluerjtm\trunk\app\View\Revenues\ttuj.ctp, line 81]
+2015-01-14 21:40:24 Error: [FatalErrorException] syntax error, unexpected ')', expecting ',' or ';'
+Request URL: /revenues/ttuj
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Error\ErrorHandler.php(203): ErrorHandler::handleFatalError(4, 'syntax error, u...', 'C:\xampp\htdocs...', 81)
+#1 [internal function]: ErrorHandler::handleError(4, 'syntax error, u...', 'C:\xampp\htdocs...', 81, Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(931): call_user_func('ErrorHandler::h...', 4, 'syntax error, u...', 'C:\xampp\htdocs...', 81, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(904): App::_checkFatalError()
+#4 [internal function]: App::shutdown()
+#5 {main}
+2015-01-14 22:23:52 Error: Fatal Error (1): Call to a member function getData() on a non-object in [C:\xampp\htdocs\bluerjtm\trunk\app\Controller\RevenuesController.php, line 207]
+2015-01-14 22:23:52 Error: [FatalErrorException] Call to a member function getData() on a non-object
+Request URL: /revenues/ttuj_add/depo
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Error\ErrorHandler.php(203): ErrorHandler::handleFatalError(1, 'Call to a membe...', 'C:\xampp\htdocs...', 207)
+#1 [internal function]: ErrorHandler::handleError(1, 'Call to a membe...', 'C:\xampp\htdocs...', 207, Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(931): call_user_func('ErrorHandler::h...', 1, 'Call to a membe...', 'C:\xampp\htdocs...', 207, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(904): App::_checkFatalError()
+#4 [internal function]: App::shutdown()
+#5 {main}
+2015-01-15 20:55:26 Error: [MissingActionException] Action UsersController::js() could not be found.
+Exception Attributes: array (
+  'controller' => 'UsersController',
+  'action' => 'js',
+)
+Request URL: /users/js/bootstrap.js
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(191): Controller->invokeAction(Object(CakeRequest))
+#1 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(UsersController), Object(CakeRequest))
+#2 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#3 {main}
+2015-01-15 20:55:26 Error: [MissingActionException] Action UsersController::js() could not be found.
+Exception Attributes: array (
+  'controller' => 'UsersController',
+  'action' => 'js',
+)
+Request URL: /users/js/jquery.js
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(191): Controller->invokeAction(Object(CakeRequest))
+#1 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(UsersController), Object(CakeRequest))
+#2 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#3 {main}
+2015-01-16 20:07:14 Error: [MissingActionException] Action UsersController::js() could not be found.
+Exception Attributes: array (
+  'controller' => 'UsersController',
+  'action' => 'js',
+)
+Request URL: /users/js/jquery.js
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(191): Controller->invokeAction(Object(CakeRequest))
+#1 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(UsersController), Object(CakeRequest))
+#2 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#3 {main}
+2015-01-16 20:07:14 Error: [MissingActionException] Action UsersController::js() could not be found.
+Exception Attributes: array (
+  'controller' => 'UsersController',
+  'action' => 'js',
+)
+Request URL: /users/js/bootstrap.js
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(191): Controller->invokeAction(Object(CakeRequest))
+#1 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(UsersController), Object(CakeRequest))
+#2 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#3 {main}
+2015-01-16 23:33:29 Error: Fatal Error (4): syntax error, unexpected ')' in [C:\xampp\htdocs\bluerjtm\trunk\app\Controller\RevenuesController.php, line 1092]
+2015-01-16 23:33:29 Error: [FatalErrorException] syntax error, unexpected ')'
+Request URL: /revenues/ttuj
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Error\ErrorHandler.php(203): ErrorHandler::handleFatalError(4, 'syntax error, u...', 'C:\xampp\htdocs...', 1092)
+#1 [internal function]: ErrorHandler::handleError(4, 'syntax error, u...', 'C:\xampp\htdocs...', 1092, Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(931): call_user_func('ErrorHandler::h...', 4, 'syntax error, u...', 'C:\xampp\htdocs...', 1092, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(904): App::_checkFatalError()
+#4 [internal function]: App::shutdown()
+#5 {main}
+2015-01-16 23:35:17 Error: Fatal Error (1): Call to a member function bindModel() on a non-object in [C:\xampp\htdocs\bluerjtm\trunk\app\Controller\RevenuesController.php, line 1093]
+2015-01-16 23:35:17 Error: [FatalErrorException] Call to a member function bindModel() on a non-object
+Request URL: /revenues/ritase_report
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Error\ErrorHandler.php(203): ErrorHandler::handleFatalError(1, 'Call to a membe...', 'C:\xampp\htdocs...', 1093)
+#1 [internal function]: ErrorHandler::handleError(1, 'Call to a membe...', 'C:\xampp\htdocs...', 1093, Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(931): call_user_func('ErrorHandler::h...', 1, 'Call to a membe...', 'C:\xampp\htdocs...', 1093, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(904): App::_checkFatalError()
+#4 [internal function]: App::shutdown()
+#5 {main}
+2015-01-16 23:43:33 Error: [PDOException] SQLSTATE[42S22]: Column not found: 1054 Unknown column 'TruckCustomer.status' in 'where clause'
+Request URL: /revenues/ritase_report
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(458): PDOStatement->execute(Array)
+#1 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(424): DboSource->_execute('SELECT `TruckCu...', Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(666): DboSource->execute('SELECT `TruckCu...', Array, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(1106): DboSource->fetchAll('SELECT `TruckCu...', false)
+#4 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Model.php(2947): DboSource->read(Object(TruckCustomer), Array)
+#5 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Model.php(2919): Model->_readDataSource('first', Array)
+#6 C:\xampp\htdocs\bluerjtm\trunk\app\Model\TruckCustomer.php(59): Model->find('first', Array)
+#7 C:\xampp\htdocs\bluerjtm\trunk\app\Controller\RevenuesController.php(1111): TruckCustomer->getData('first', Array)
+#8 [internal function]: RevenuesController->ritase_report()
+#9 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Controller\Controller.php(490): ReflectionMethod->invokeArgs(Object(RevenuesController), Array)
+#10 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(191): Controller->invokeAction(Object(CakeRequest))
+#11 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(RevenuesController), Object(CakeRequest))
+#12 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#13 {main}

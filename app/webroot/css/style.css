@@ -3651,3 +3651,11 @@ fieldset[disabled] .btn-vk.active {
 .order-by-list {
   margin-bottom: 20px;
 }
+
+input[type=radio], input[type=checkbox] {
+  margin-right: 5px;
+}
+
+.text-middle {
+  vertical-align: middle !important;
+}

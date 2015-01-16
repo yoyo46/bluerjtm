@@ -1,3 +1,99 @@
+var formatNumber = function( number, decimals, dec_point, thousands_sep ){
+    // Set the default values here, instead so we can use them in the replace below.
+    thousands_sep   = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep;
+    dec_point       = (typeof dec_point === 'undefined') ? '.' : dec_point;
+    decimals        = !isFinite(+decimals) ? 0 : Math.abs(decimals);
+
+    // Work out the unicode representation for the decimal place.   
+    var u_dec = ('\\u'+('0000'+(dec_point.charCodeAt(0).toString(16))).slice(-4));
+
+    // Fix the number, so that it's an actual number.
+    number = (number + '')
+        .replace(new RegExp(u_dec,'g'),'.')
+        .replace(new RegExp('[^0-9+\-Ee.]','g'),'');
+
+    var n = !isFinite(+number) ? 0 : +number,
+        s = '',
+        toFixedFix = function (n, decimals) {
+            var k = Math.pow(10, decimals);
+            return '' + Math.round(n * k) / k;
+        };
+
+    // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+    s = (decimals ? toFixedFix(n, decimals) : '' + Math.round(n)).split('.');
+    if (s[0].length > 3) {
+        s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, thousands_sep);
+    }
+    if ((s[1] || '').length < decimals) {
+        s[1] = s[1] || '';
+        s[1] += new Array(decimals - s[1].length + 1).join('0');
+    }
+    return s.join(dec_point);
+}
+
+var qtyMuatanPress = function ( obj ) {
+    obj.keyup(function() {
+        var total_muatan = 0;
+        var qtyLen = $('#ttujDetail tbody tr').length;
+
+        for (var i = 0; i < qtyLen; i++) {
+            total_muatan += parseInt($('#ttujDetail tbody tr .qty-muatan[rel="'+i+'"]').val());
+        };
+
+        $('.total-unit-muatan').html(total_muatan);
+
+        if( isNaN( total_muatan ) || total_muatan == 0 ) {
+            total_muatan = 1;
+        }
+
+        var uang_jalan_1 = $('.uang_jalan_1_ori').val();
+        var uang_jalan_per_unit = $('.uang_jalan_per_unit').val();
+        var uang_kuli_muat = $('.uang_kuli_muat_ori').val();
+        var uang_kuli_muat_per_unit = $('.uang_kuli_muat_per_unit').val();
+        var uang_kuli_bongkar = $('.uang_kuli_bongkar_ori').val();
+        var uang_kuli_bongkar_per_unit = $('.uang_kuli_bongkar_per_unit').val();
+        var asdp = $('.asdp_ori').val();
+        var asdp_per_unit = $('.asdp_per_unit').val();
+        var uang_kawal = $('.uang_kawal_ori').val();
+        var uang_kawal_per_unit = $('.uang_kawal_per_unit').val();
+        var uang_keamanan = $('.uang_keamanan_ori').val();
+        var uang_keamanan_per_unit = $('.uang_keamanan_per_unit').val();
+
+        if( uang_jalan_per_unit == 1 ) {
+            uang_jalan_1 = uang_jalan_1*total_muatan;
+            uang_jalan_2 = 0;
+        }
+
+        if( uang_kuli_muat_per_unit == 1 ) {
+            uang_kuli_muat = uang_kuli_muat*total_muatan;
+        }
+
+        if( uang_kuli_bongkar_per_unit == 1 ) {
+            uang_kuli_bongkar = uang_kuli_bongkar*total_muatan;
+        }
+
+        if( asdp_per_unit == 1 ) {
+            asdp = asdp*total_muatan;
+        }
+
+        if( uang_kawal_per_unit == 1 ) {
+            uang_kawal = uang_kawal*total_muatan;
+        }
+
+        if( uang_keamanan_per_unit == 1 ) {
+            uang_keamanan = uang_keamanan*total_muatan;
+        }
+
+        $('.uang_jalan_1').val( formatNumber( uang_jalan_1, 0 ) );
+        $('.uang_jalan_2').val( formatNumber( uang_jalan_2, 0 ) );
+        $('.uang_kuli_muat').val( formatNumber( uang_kuli_muat, 0 ) );
+        $('.uang_kuli_bongkar').val( formatNumber( uang_kuli_bongkar, 0 ) );
+        $('.asdp').val( formatNumber( asdp, 0 ) );
+        $('.uang_kawal').val( formatNumber( uang_kawal, 0 ) );
+        $('.uang_keamanan').val( formatNumber( uang_keamanan, 0 ) );
+    });
+}
+
 $(function() {
 	$('.aset-handling').click(function(){
 		if($('.aset-handling .aset-handling-form').is(':checked')) {
@@ -11,6 +107,7 @@ $(function() {
         $('.add-custom-field').click(function (e) {
             var self = $(this);
             var action_type = self.attr('action_type');
+            var data_custom = self.attr('data-custom');
 
     		switch(action_type) {
                 case 'perlengkapan':
@@ -37,34 +134,47 @@ $(function() {
                         </div> \
                     </div>');
     		      break;
+                // case 'ttuj':
+                //     var idx = $('#ttujDetail tbody tr').length;
+                //     var optionTipeMotor = $('#tipe_motor_id select').html();
+                //         $('#box-field-input').append('<div class="form-group" id="'+action_type+idx+'">'+
+                //             '<label for="PerlengkapanName'+idx+'">perlengkapan '+idx+'</label>'+
+                //             '<input name="data[Perlengkapan][name]['+(idx-1)+']" class="form-control" placeholder="perlengkapan" type="text" id="name'+idx+'">'+
+                //             '</div>');
+                //     break;
                 case 'ttuj':
                     var idx = $('#ttujDetail tbody tr').length;
                     var optionTipeMotor = $('#tipe_motor_id select').html();
-                        $('#box-field-input').append('<div class="form-group" id="'+action_type+idx+'">'+
-                            '<label for="PerlengkapanName'+idx+'">perlengkapan '+idx+'</label>'+
-                            '<input name="data[Perlengkapan][name]['+(idx-1)+']" class="form-control" placeholder="perlengkapan" type="text" id="name'+idx+'">'+
-                            '</div>');
-                    break;
-                case 'ttuj':
-                    var idx = $('#ttujDetail tbody tr').length;
-                    var optionTipeMotor = $('#tipe_motor_id select').html();
+                    var additionalField = '';
 
-                    $('#ttujDetail tbody').append(''+
-                    '<tr rel="'+idx+'">'+
-                        '<td>'+
-                            '<select name="data[TtujTipeMotor][tipe_motor_id]['+idx+']" class="form-control">'+
-                            optionTipeMotor +
-                            '</select>'+
-                        '</td>'+
-                        '<td>'+
-                            '<input name="data[TtujTipeMotor][qty]['+idx+']" class="form-control" type="text">'+
-                        '</td>'+
-                        '<td>'+
-                            '<a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="ttuj"><i class="fa fa-times"></i> Hapus</a>'+
-                        '</td>'+
-                    '</tr>');
+                    if( data_custom == 'depo' ) {
+                        var contentOptionCities = $('#data-cities-options select').html();
+
+                        additionalField = '<td> \
+                            <select name="data[TtujTipeMotor][city_id]['+idx+']" class="form-control"> \
+                            ' + contentOptionCities +
+                            '</select> \
+                        </td>';
+                    }
+
+                    $('#ttujDetail tbody').append(' \
+                    <tr rel="'+idx+'"> \
+                        '+ additionalField +
+                        '<td> \
+                            <select name="data[TtujTipeMotor][tipe_motor_id]['+idx+']" class="form-control"> \
+                            ' + optionTipeMotor +
+                            '</select> \
+                        </td> \
+                        <td> \
+                            <input name="data[TtujTipeMotor][qty]['+idx+']" class="form-control qty-muatan" type="text" rel="'+idx+'"> \
+                        </td> \
+                        <td> \
+                            <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="ttuj"><i class="fa fa-times"></i> Hapus</a> \
+                        </td> \
+                    </tr>');
 
                     delete_custom_field( $('#ttujDetail tbody tr:last-child .delete-custom-field') );
+                    qtyMuatanPress( $('#ttujDetail tbody tr:last-child .qty-muatan') );
                     break;
                 case 'alocation':
                     $('#box-field-input #main-alocation .list-alocation').clone().appendTo('#advance-box-field-input');
@@ -116,7 +226,8 @@ $(function() {
         e.stopPropagation();
     });
 
-    $('#UangJalanPerUnit input[type="checkbox"]').click(function() {
+    // $('#UangJalanPerUnit input[type="checkbox"]').click(function() {
+    $('.chk-uang-jalan').click(function() {
         var self = $(this);
 
         if( self.is(':checked') ) {
@@ -196,24 +307,92 @@ $(function() {
                 url: '/ajax/getNopol/'+from_city_id+'/'+self.val()+'/',
                 type: 'POST',
                 success: function(response, status) {
-                    $('.truck_id #getInfoTruck').attr('readonly', false).html($(response).filter('#truck_id').html());
-                    $('.uang_jalan_1').val($(response).filter('#uang_jalan_1').html());
-                    $('.uang_jalan_2').val($(response).filter('#uang_jalan_2').html());
-                    $('.commission').val($(response).filter('#commission').html());
-                    $('.uang_kuli_muat').val($(response).filter('#uang_kuli_muat').html());
-                    $('.uang_kuli_bongkar').val($(response).filter('#uang_kuli_bongkar').html());
-                    $('.asdp').val($(response).filter('#asdp').html());
-                    $('.uang_kawal').val($(response).filter('#uang_kawal').html());
-                    $('.uang_keamanan').val($(response).filter('#uang_keamanan').html());
-                    $('.uang_jalan_extra').val($(response).filter('#uang_jalan_extra').html());
-                    $('.min_capacity').val($(response).filter('#min_capacity').html());
-                    $('.is_unit').val($(response).filter('#is_unit').html());
+                    var total_muatan = parseInt($('.total-unit-muatan').html());
+                    var uang_jalan_1 = $(response).filter('#uang_jalan_1').html().replace(/,/gi, "");
+                    var uang_jalan_2 = $(response).filter('#uang_jalan_2').html().replace(/,/gi, "");
+                    var uang_jalan_per_unit = $(response).filter('#uang_jalan_per_unit').html();
 
-                    if( $(response).filter('#is_unit').html() == 1 ) {
+                    var uang_kuli_muat = $(response).filter('#uang_kuli_muat').html().replace(/,/gi, "");
+                    var uang_kuli_muat_per_unit = $(response).filter('#uang_kuli_muat_per_unit').html();
+
+                    var uang_kuli_bongkar = $(response).filter('#uang_kuli_bongkar').html().replace(/,/gi, "");
+                    var uang_kuli_bongkar_per_unit = $(response).filter('#uang_kuli_bongkar_per_unit').html();
+
+                    // var commission = $(response).filter('#commission').html().replace(/,/gi, "");
+                    // var commission_per_unit = $(response).filter('#commission_per_unit').html();
+
+                    var asdp = $(response).filter('#asdp').html().replace(/,/gi, "");
+                    var asdp_per_unit = $(response).filter('#asdp_per_unit').html();
+
+                    var uang_kawal = $(response).filter('#uang_kawal').html().replace(/,/gi, "");
+                    var uang_kawal_per_unit = $(response).filter('#uang_kawal_per_unit').html();
+
+                    var uang_keamanan = $(response).filter('#uang_keamanan').html().replace(/,/gi, "");
+                    var uang_keamanan_per_unit = $(response).filter('#uang_keamanan_per_unit').html();
+
+                    if( isNaN( total_muatan ) || total_muatan == 0 ) {
+                        total_muatan = 1;
+                    }
+
+                    if( uang_jalan_per_unit == 1 ) {
+                        uang_jalan_1 = uang_jalan_1*total_muatan;
+                        uang_jalan_2 = 0;
                         $('.wrapper_uang_jalan_2').addClass('hide');
                     } else {
                         $('.wrapper_uang_jalan_2').removeClass('hide');
                     }
+
+                    if( uang_kuli_muat_per_unit == 1 ) {
+                        uang_kuli_muat = uang_kuli_muat*total_muatan;
+                    }
+
+                    if( uang_kuli_bongkar_per_unit == 1 ) {
+                        uang_kuli_bongkar = uang_kuli_bongkar*total_muatan;
+                    }
+
+                    if( asdp_per_unit == 1 ) {
+                        asdp = asdp*total_muatan;
+                    }
+
+                    if( uang_kawal_per_unit == 1 ) {
+                        uang_kawal = uang_kawal*total_muatan;
+                    }
+
+                    if( uang_keamanan_per_unit == 1 ) {
+                        uang_keamanan = uang_keamanan*total_muatan;
+                    }
+
+                    $('.truck_id #getInfoTruck').attr('readonly', false).html($(response).filter('#truck_id').html());
+                    $('.uang_jalan_1').val( formatNumber( uang_jalan_1, 0 ) );
+                    $('.uang_jalan_1_ori').val( uang_jalan_1 );
+                    $('.uang_jalan_per_unit').val( uang_jalan_per_unit );
+
+                    $('.uang_jalan_2').val( formatNumber( uang_jalan_2, 0 ) );
+
+                    // $('.commission').val( formatNumber( commission, 0 ) );
+                    $('.uang_kuli_muat').val( formatNumber( uang_kuli_muat, 0 ) );
+                    $('.uang_kuli_muat_ori').val( uang_kuli_muat );
+                    $('.uang_kuli_muat_per_unit').val( uang_kuli_muat_per_unit );
+
+                    $('.uang_kuli_bongkar').val( formatNumber( uang_kuli_bongkar, 0 ) );
+                    $('.uang_kuli_bongkar_ori').val( uang_kuli_bongkar );
+                    $('.uang_kuli_bongkar_per_unit').val( uang_kuli_bongkar );
+
+                    $('.asdp').val( formatNumber( asdp, 0 ) );
+                    $('.asdp_ori').val( formatNumber( asdp, 0 ) );
+                    $('.asdp_per_unit').val( asdp_ori );
+
+                    $('.uang_kawal').val( formatNumber( uang_kawal, 0 ) );
+                    $('.uang_kawal_ori').val( uang_kawal );
+                    $('.uang_kawal_per_unit').val( uang_kawal_per_unit );
+
+                    $('.uang_keamanan').val( formatNumber( uang_keamanan, 0 ) );
+                    $('.uang_keamanan_ori').val( uang_keamanan );
+                    $('.uang_keamanan_per_unit').val( uang_keamanan_per_unit );
+
+                    $('.uang_jalan_extra').val($(response).filter('#uang_jalan_extra').html());
+                    $('.min_capacity').val($(response).filter('#min_capacity').html());
+                    // $('.is_unit').val($(response).filter('#is_unit').html());
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
@@ -594,5 +773,7 @@ var choose_item_info = function(){
             }
         });
     });
+
+    qtyMuatanPress( $('.qty-muatan') );
 }
 choose_item_info();

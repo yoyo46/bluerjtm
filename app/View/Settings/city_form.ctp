@@ -28,19 +28,19 @@
 				));
 			?>
         </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
         	<?php 
-				echo $this->Form->label('region_id',__('Provinsi *')); 
+				// echo $this->Form->label('region_id',__('Provinsi *')); 
 
-				echo $this->Form->input('region_id',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'empty' => __('Pilih Provinsi'),
-					'options' => $regions
-				));
+				// echo $this->Form->input('region_id',array(
+				// 	'label'=> false, 
+				// 	'class'=>'form-control',
+				// 	'required' => false,
+				// 	'empty' => __('Pilih Provinsi'),
+				// 	'options' => $regions
+				// ));
 			?>
-        </div>
+        </div> -->
     </div>
 
     <div class="box-footer text-center action">

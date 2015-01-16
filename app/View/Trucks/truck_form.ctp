@@ -460,6 +460,15 @@
 			        		}
 		        	?>
 		        </div>
+		   	</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="box box-success">
+			<div class="box-header">
+		        <h3 class="box-title"><?php echo __('Emergency Call')?></h3>
+		    </div>
+		    <div class="box-body">
 		        <div class="form-group">
 		        	<?php 
 						echo $this->Form->label('emergency_name', __('Nama Panggilan darurat')); 
@@ -480,19 +489,8 @@
 							'label'=> false, 
 							'class'=>'form-control',
 							'required' => false,
-							'placeholder' => __('Telepon darurat')
-						));
-					?>
-		        </div>
-		        <div class="form-group">
-		        	<?php 
-						echo $this->Form->label('description',__('Keterangan')); 
-
-						echo $this->Form->input('description',array(
-							'type' => 'textarea',
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
+							'placeholder' => __('Telepon darurat'),
+							'type' => 'text',
 						));
 					?>
 		        </div>

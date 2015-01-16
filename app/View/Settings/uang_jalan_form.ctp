@@ -119,26 +119,26 @@
 						?>
 					</div>
 				</div>
-                <div class="form-group" id="UangJalanPerUnit">
+                <!-- <div class="form-group" id="UangJalanPerUnit">
                     <label>
                     	<?php 
-                    			echo $this->Form->input('is_unit',array(
-									'label'=> false, 
-									'required' => false,
-									'type' => 'checkbox',
-									'value' => 1
-								));
-								echo __('Per Unit ?');
+        //             			echo $this->Form->input('is_unit',array(
+								// 	'label'=> false, 
+								// 	'required' => false,
+								// 	'type' => 'checkbox',
+								// 	'value' => 1
+								// ));
+								// echo __('Per Unit ?');
 						?>
                     </label>
-                </div>
+                </div> -->
 		    </div>
 		</div>
 	</div>
 	<div class="col-sm-6">
 		<div class="box box-success">
 		    <div class="box-header">
-		        <h3 class="box-title"><?php echo __('Biaya Uang Jalan');?></h3>
+		        <h3 class="box-title"><?php echo __('Biaya   Jalan');?></h3>
 		    </div>
 		    <div class="box-body">
 		    	<div class="form-group">
@@ -159,6 +159,14 @@
 								));
 						?>
 					</div>
+					<?php 
+                			echo $this->Form->input('commission_per_unit',array(
+								'label'=> __('Per Unit ?'), 
+								'required' => false,
+								'type' => 'checkbox',
+								'value' => 1
+							));
+					?>
 				</div>
 		    	<div class="form-group">
 		    		<?php 
@@ -178,8 +186,17 @@
 								));
 						?>
 					</div>
+					<?php 
+                			echo $this->Form->input('uang_jalan_per_unit',array(
+								'label'=> __('Uang Jalan Per Unit ?'), 
+								'required' => false,
+								'type' => 'checkbox',
+								'value' => 1,
+								'class' => 'chk-uang-jalan'
+							));
+					?>
 				</div>
-		    	<div class="form-group uang_jalan_2 <?php echo !empty($this->request->data['UangJalan']['is_unit'])?'hide':''; ?>">
+		    	<div class="form-group uang_jalan_2 <?php echo !empty($this->request->data['UangJalan']['uang_jalan_per_unit'])?'hide':''; ?>">
 		    		<?php 
 		    				echo $this->Form->label('uang_jalan_2', __('Uang Jalan Kedua *'));
 		    		?>
@@ -216,6 +233,14 @@
 								));
 						?>
 					</div>
+					<?php 
+                			echo $this->Form->input('uang_kuli_muat_per_unit',array(
+								'label'=> __('Per Unit ?'), 
+								'required' => false,
+								'type' => 'checkbox',
+								'value' => 1
+							));
+					?>
 				</div>
 		    	<div class="form-group">
 		    		<?php 
@@ -235,6 +260,14 @@
 								));
 						?>
 					</div>
+					<?php 
+                			echo $this->Form->input('uang_kuli_bongkar_per_unit',array(
+								'label'=> __('Per Unit ?'), 
+								'required' => false,
+								'type' => 'checkbox',
+								'value' => 1
+							));
+					?>
 				</div>
 		    	<div class="form-group">
 		    		<?php 
@@ -254,6 +287,14 @@
 								));
 						?>
 					</div>
+					<?php 
+                			echo $this->Form->input('asdp_per_unit',array(
+								'label'=> __('Per Unit ?'), 
+								'required' => false,
+								'type' => 'checkbox',
+								'value' => 1
+							));
+					?>
 				</div>
 		    	<div class="form-group">
 		    		<?php 
@@ -273,6 +314,14 @@
 								));
 						?>
 					</div>
+					<?php 
+                			echo $this->Form->input('uang_kawal_per_unit',array(
+								'label'=> __('Per Unit ?'), 
+								'required' => false,
+								'type' => 'checkbox',
+								'value' => 1
+							));
+					?>
 				</div>
 		    	<div class="form-group">
 		    		<?php 
@@ -292,6 +341,14 @@
 								));
 						?>
 					</div>
+					<?php 
+                			echo $this->Form->input('uang_keamanan_per_unit',array(
+								'label'=> __('Per Unit ?'), 
+								'required' => false,
+								'type' => 'checkbox',
+								'value' => 1
+							));
+					?>
 				</div>
 		    	<div class="form-group">
 		    		<?php 
@@ -311,6 +368,14 @@
 								));
 						?>
 					</div>
+					<?php 
+                			echo $this->Form->input('uang_jalan_extra_per_unit',array(
+								'label'=> __('Per Unit ?'), 
+								'required' => false,
+								'type' => 'checkbox',
+								'value' => 1
+							));
+					?>
 				</div>
 		    	<div class="form-group">
 		    		<?php 
