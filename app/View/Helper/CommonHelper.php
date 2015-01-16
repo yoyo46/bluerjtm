@@ -173,13 +173,13 @@ class CommonHelper extends AppHelper {
         $srcDate = explode('/', $options['src']);
 
         if( !file_exists($pathMakeDir) ) {
-            mkdir($pathMakeDir);
+            mkdir($pathMakeDir, 0755);
         }
 
         if( !empty($options['project_path']) ) {
             $pathMakeDir = $pathMakeDir.DS.$options['project_path'];
             if( !file_exists($pathMakeDir) ) {
-                mkdir($pathMakeDir);
+                mkdir($pathMakeDir, 0755);
             }
 
             $year = !empty($srcDate[2])?$srcDate[2]:date('Y');
@@ -214,7 +214,7 @@ class CommonHelper extends AppHelper {
         }
 
         if( $options['thumb'] ) {
-            App::import('Vendor', 'thumb', array('file' => 'thumb'.DS.'ThumbLib.inc.php'));
+            App::import('Vendor', 'Thumb', array('file' => 'Thumb'.DS.'ThumbLib.inc.php'));
             $thumb =& $thumb;
             $thumb = PhpThumbFactory::create($pathMakeDir);
             $imgCrop = $thumb->adaptiveResize($thumbWidth, $thumbHeight);
@@ -250,7 +250,7 @@ class CommonHelper extends AppHelper {
         $pathMakeDir = sprintf('%s%s%s%s%s', $options['thumbnail_view_path'], DS, $options['save_path'], DS, $dimension);
 
         if( !file_exists($pathMakeDir) ) {
-            mkdir($pathMakeDir);
+            mkdir($pathMakeDir, 0755);
         }
 
         $pathMakeDir .= DS.$options['src'];
@@ -292,16 +292,16 @@ class CommonHelper extends AppHelper {
             $monthDir = $yearDir.date('m').DS;
 
             if( !file_exists($yearDir) ) {
-                mkdir($yearDir);
+                mkdir($yearDir, 0755);
             }
             if( !file_exists($monthDir) ) {
-                mkdir($monthDir);
+                mkdir($monthDir, 0755);
             }
 
             if($folder_sub_path != '') {
                 $subDir = $monthDir.$folder_sub_path.DS;
                 if( !file_exists($subDir) ) {
-                    mkdir($subDir, 0, true);
+                    mkdir($subDir, 0755, true);
                 }
             }
         }
@@ -311,16 +311,16 @@ class CommonHelper extends AppHelper {
             $monthFullsizeDir = $yearFullsizeDir.DS.$month.DS;
 
             if( !file_exists($yearFullsizeDir) ) {
-                mkdir($yearFullsizeDir);
+                mkdir($yearFullsizeDir, 0755);
             }
             if( !file_exists($monthFullsizeDir) ) {
-                mkdir($monthFullsizeDir);
+                mkdir($monthFullsizeDir, 0755);
             }
             $FullsizeDir = str_replace('/', DS, $thumbnailPath.DS);
             if($folder_sub_path != '') {
                 $subFullsizeDir = $monthFullsizeDir.$folder_sub_path.DS;
                 if( !file_exists($subFullsizeDir) ) {
-                    mkdir($subFullsizeDir, 0, true);
+                    mkdir($subFullsizeDir, 0755, true);
                 }
             }
         }

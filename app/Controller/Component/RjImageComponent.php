@@ -60,7 +60,7 @@ class RjImageComponent extends Component {
 	*		string imageSize - Ukuran file
 	*/
     function upload($uploadedInfo, $uploadTo, $prefix, $options = array(),$fromurl=false){
-    	App::import('Vendor', 'thumb', array('file' => 'thumb'.DS.'ThumbLib.inc.php'));
+    	App::import('Vendor', 'Thumb', array('file' => 'Thumb'.DS.'ThumbLib.inc.php'));
 		
 		$allow_only_favicon = array('ico');
 		$allowed_ext = Configure::read('__Site.allowed_ext');
@@ -120,12 +120,12 @@ class RjImageComponent extends Component {
 					$upload_path = $upload_path.$project_path;
 
 					if( !file_exists($upload_path) ) {
-						mkdir($upload_path);
+						mkdir($upload_path, 0755);
 					}
 				}
 			
 				if( !file_exists($fullsizePath) ) {
-					mkdir($fullsizePath);
+					mkdir($fullsizePath, 0755);
 				}
 
 				$folder_sub_path = $this->generateSubPathFolder($filename);
@@ -261,13 +261,13 @@ class RjImageComponent extends Component {
         $pathToThumbs = str_replace('/', DS, $pathToThumbs);
         if( !empty($this->options['project_path']) ) {
 	        if( !file_exists($pathToThumbs) ) {
-				mkdir($pathToThumbs);
+				mkdir($pathToThumbs, 0755);
 			}
 			$pathToThumbs .= $this->options['project_path'].DS;
 		}
 
         if( !file_exists($pathToThumbs) ) {
-			mkdir($pathToThumbs);
+			mkdir($pathToThumbs, 0755);
 		}
 
 		if( !empty($Realname) ) {
@@ -348,16 +348,16 @@ class RjImageComponent extends Component {
 	    	$monthDir = $yearDir.date('m').DS;
 
 	    	if( !file_exists($yearDir) ) {
-	    		mkdir($yearDir);
+	    		mkdir($yearDir, 0755);
 	    	}
 	    	if( !file_exists($monthDir) ) {
-	    		mkdir($monthDir);
+	    		mkdir($monthDir, 0755);
 	    	}
 
 	    	if($folder_sub_path != '') {
 		    	$subDir = $monthDir.$folder_sub_path.DS;
 		    	if( !file_exists($subDir) ) {
-		    		mkdir($subDir, 0, true);
+		    		mkdir($subDir, 0755, true);
 		    	}
 		    }
 	    	
@@ -368,16 +368,16 @@ class RjImageComponent extends Component {
     		$monthFullsizeDir = $yearFullsizeDir.$month.DS;
 
     		if( !file_exists($yearFullsizeDir) ) {
-    			mkdir($yearFullsizeDir);
+    			mkdir($yearFullsizeDir, 0755);
     		}
     		if( !file_exists($monthFullsizeDir) ) {
-    			mkdir($monthFullsizeDir);
+    			mkdir($monthFullsizeDir, 0755);
     		}
     		$FullsizeDir = str_replace('/', DS, $thumbnailPath.DS);
     		if($folder_sub_path != '') {
     			$subFullsizeDir = $monthFullsizeDir.$folder_sub_path.DS;
 	    		if( !file_exists($subFullsizeDir) ) {
-	    			mkdir($subFullsizeDir, 0, true);
+	    			mkdir($subFullsizeDir, 0755, true);
 	    		}
 	    	}
 		}
@@ -624,7 +624,7 @@ class RjImageComponent extends Component {
 	*/
     function cropImage($thumb_width, $x1, $y1, $x2, $y2, $w, $h, $thumbLocation, $imageLocation, $uploadTo, $w_img, $h_img){
     	if( !empty($w) ) {
-	    	App::import('Vendor', 'thumb', array('file' => 'thumb'.DS.'ThumbLib.inc.php'));
+	    	App::import('Vendor', 'Thumb', array('file' => 'Thumb'.DS.'ThumbLib.inc.php'));
 			
 	        $scale = $thumb_width/$w;
 	        $sourcePath = Configure::read('__Site.cache_view_path').'/'.$uploadTo;
