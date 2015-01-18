@@ -32,11 +32,15 @@ App::uses('Controller', 'Controller');
  */
 class AppController extends Controller {
 	public $components = array(
-		'MkCommon', 'Auth', 'Acl', 'Session'
+		'MkCommon', 'Auth', 'Acl', 'Session', 'RequestHandler'
 	);
 
 	var $helpers = array(
 		'Common', 'Html'
+	);
+
+	var $uses = array(
+		'Log'
 	);
 
 	function beforeFilter() {
@@ -112,7 +116,7 @@ class AppController extends Controller {
 	    if($logged_in){
 			$this->user_id = $this->Auth->user('id');
 			$GroupId = $this->Auth->user('group_id');
-			$User = $this->Auth->user();
+			$this->user_data = $User = $this->Auth->user();
 		}
 
 	    $this->set(compact('logged_in', 'GroupId', 'User'));

@@ -96,12 +96,14 @@ class SettingsController extends AppController {
             if($this->City->validates($data)){
                 if($this->City->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Kota'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Kota'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'cities'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Kota'), $msg), 'error');  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Kota'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Kota'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Kota'), $msg), 'error');
@@ -147,8 +149,10 @@ class SettingsController extends AppController {
             $this->City->set('status', $value);
             if($this->City->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Kota ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Kota ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Kota tidak ditemukan.'), 'error');
@@ -236,12 +240,14 @@ class SettingsController extends AppController {
             if($this->Customer->validates($data)){
                 if($this->Customer->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Customer'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Customer'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'customers'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Customer'), $msg), 'error');  
+                    $this->Log->logActivity( sprintf(__('Gagal %s Customer'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Customer'), $msg), 'error');
@@ -285,8 +291,10 @@ class SettingsController extends AppController {
 
             if($this->Customer->save()){
                 $this->MkCommon->setCustomFlash(__('Customer telah berhasil dihapus.'), 'success');
+                $this->Log->logActivity( sprintf(__('Customer ID #%s telah berhasil dihapus.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal menghapus Customer.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal menghapus Customer ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Customer tidak ditemukan.'), 'error');
@@ -359,12 +367,16 @@ class SettingsController extends AppController {
             if($this->CustomerType->validates($data)){
                 if($this->CustomerType->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Tipe Customer'), $msg), 'success');
+                    
+                    $this->Log->logActivity( sprintf(__('Sukses %s Tipe Customer'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'customer_types'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Tipe Customer'), $msg), 'error');  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Tipe Customer'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Tipe Customer'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );  
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Tipe Customer'), $msg), 'error');
@@ -398,8 +410,10 @@ class SettingsController extends AppController {
             $this->CustomerType->set('status', $value);
             if($this->CustomerType->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Tipe customer.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Tipe customer.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Tipe Customer tidak ditemukan.'), 'error');
@@ -474,12 +488,14 @@ class SettingsController extends AppController {
             if($this->Vendor->validates($data)){
                 if($this->Vendor->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Vendor'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Vendor'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );  
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'vendors'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Vendor'), $msg), 'error');  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Vendor'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Vendor'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Vendor'), $msg), 'error');
@@ -513,8 +529,10 @@ class SettingsController extends AppController {
             $this->Vendor->set('status', $value);
             if($this->Vendor->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status vendor ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status vendor ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Vendor tidak ditemukan.'), 'error');
@@ -587,12 +605,14 @@ class SettingsController extends AppController {
             if($this->Coa->validates($data)){
                 if($this->Coa->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Coa'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Coa'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'coas'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Coa'), $msg), 'error');  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Coa'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Coa'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Coa'), $msg), 'error');
@@ -674,12 +694,14 @@ class SettingsController extends AppController {
             if($this->Company->validates($data)){
                 if($this->Company->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Company'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Company'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'companies'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Company'), $msg), 'error');  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Company'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Company'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );    
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Company'), $msg), 'error');
@@ -715,8 +737,10 @@ class SettingsController extends AppController {
             $this->Company->set('status', $value);
             if($this->Company->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status company ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );    
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status company ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );    
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Company tidak ditemukan.'), 'error');
@@ -785,12 +809,14 @@ class SettingsController extends AppController {
             if($this->UangJalan->validates($data)){
                 if($this->UangJalan->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Uang jalan'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Uang jalan'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );    
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'uang_jalan'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Uang jalan'), $msg), 'error');  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Uang jalan'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Uang jalan'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );     
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Uang jalan'), $msg), 'error');
@@ -919,12 +945,14 @@ class SettingsController extends AppController {
             if($this->Perlengkapan->validates($data)){
                 if($this->Perlengkapan->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Perlengkapan'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Perlengkapan'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );     
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'perlengkapan'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Perlengkapan'), $msg), 'error');  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Perlengkapan'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Perlengkapan'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );      
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Perlengkapan'), $msg), 'error');
@@ -967,8 +995,10 @@ class SettingsController extends AppController {
             $this->Perlengkapan->set('status', $value);
             if($this->Perlengkapan->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status perlengkapan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status perlengkapan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Perlengkapan tidak ditemukan.'), 'error');
@@ -1044,12 +1074,14 @@ class SettingsController extends AppController {
             if($this->TipeMotor->validates($data)){
                 if($this->TipeMotor->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Tipe Motor'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Tipe Motor'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );      
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'type_motors'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Tipe Motor'), $msg), 'error');  
+                    $this->Log->logActivity( sprintf(__('Gagal %s Tipe Motor'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );      
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Tipe Motor'), $msg), 'error');
@@ -1119,8 +1151,10 @@ class SettingsController extends AppController {
             $this->TipeMotor->set('status', $value);
             if($this->TipeMotor->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status tipe motor.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status tipe motor.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Tipe Motor tidak ditemukan.'), 'error');
@@ -1196,12 +1230,14 @@ class SettingsController extends AppController {
             if($this->ColorMotor->validates($data)){
                 if($this->ColorMotor->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Warna Motor'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Warna Motor'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );      
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'colors'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Warna Motor'), $msg), 'error');  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Warna Motor'), $msg), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal %s Warna Motor'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );        
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Warna Motor'), $msg), 'error');
@@ -1236,8 +1272,10 @@ class SettingsController extends AppController {
             $this->ColorMotor->set('status', $value);
             if($this->ColorMotor->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status color motor ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status color motor ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Warna Motor tidak ditemukan.'), 'error');
@@ -1309,12 +1347,14 @@ class SettingsController extends AppController {
             if($this->Region->validates($data)){
                 if($this->Region->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Provinsi'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Provinsi'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );        
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'regions'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Provinsi'), $msg), 'error');  
+                    $this->Log->logActivity( sprintf(__('Gagal %s Provinsi'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );        
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Provinsi'), $msg), 'error');
@@ -1349,8 +1389,10 @@ class SettingsController extends AppController {
             $this->Region->set('status', $value);
             if($this->Region->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Provinsi ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Provinsi ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Provinsi tidak ditemukan.'), 'error');
@@ -1426,12 +1468,14 @@ class SettingsController extends AppController {
             if($this->GroupMotor->validates($data)){
                 if($this->GroupMotor->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Grup Motor'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Grup Motor'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );        
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'group_motors'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Grup Motor'), $msg), 'error');  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Grup Motor'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Grup Motor'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );         
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Grup Motor'), $msg), 'error');
@@ -1466,8 +1510,10 @@ class SettingsController extends AppController {
             $this->GroupMotor->set('status', $value);
             if($this->GroupMotor->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status group motor.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );         
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status group motor.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );         
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Grup Motor tidak ditemukan.'), 'error');
@@ -1543,12 +1589,14 @@ class SettingsController extends AppController {
             if($this->CodeMotor->validates($data)){
                 if($this->CodeMotor->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Kode Motor'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Kode Motor'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );         
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'code_motors'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Kode Motor'), $msg), 'error');  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Kode Motor'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Kode Motor'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );          
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Kode Motor'), $msg), 'error');
@@ -1583,8 +1631,10 @@ class SettingsController extends AppController {
             $this->CodeMotor->set('status', $value);
             if($this->CodeMotor->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status code motor #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status code motor #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Kode Motor tidak ditemukan.'), 'error');
@@ -1657,12 +1707,14 @@ class SettingsController extends AppController {
             if($this->Branch->validates($data)){
                 if($this->Branch->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Cabang'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Cabang'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'branches'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Branch'), $msg), 'error');  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Branch'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Cabang'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Branch'), $msg), 'error');
@@ -1694,8 +1746,10 @@ class SettingsController extends AppController {
 
             if($this->Branch->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses menghapus data cabang.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses menghapus data cabang ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal menghapus data cabang.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal menghapus data cabang ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Cabang tidak ditemukan.'), 'error');
@@ -1769,12 +1823,14 @@ class SettingsController extends AppController {
             if($this->CustomerGroup->validates($data)){
                 if($this->CustomerGroup->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Grup Customer'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Grup Customer'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'customer_groups'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Grup Customer'), $msg), 'error');  
+                    $this->Log->logActivity( sprintf(__('Gagal %s Grup Customer'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Grup Customer'), $msg), 'error');
@@ -1809,8 +1865,10 @@ class SettingsController extends AppController {
 
             if($this->CustomerGroup->save()){
                 $this->MkCommon->setCustomFlash(__('Grup customer telah berhasil dihapus.'), 'success');
+                $this->Log->logActivity( sprintf(__('Grup customer ID #%s telah berhasil dihapus.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal menghapus Grup Customer.'), 'error');
+                $this->Log->logActivity( sprintf(__('Grup customer ID #%s telah Gagal dihapus.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Grup Customer tidak ditemukan.'), 'error');
@@ -1882,12 +1940,14 @@ class SettingsController extends AppController {
             if($this->JenisSim->validates($data)){
                 if($this->JenisSim->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Jenis SIM'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Jenis SIM'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'jenis_sim'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Jenis SIM'), $msg), 'error');  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Jenis SIM'), $msg), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal %s Jenis SIM'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Jenis SIM'), $msg), 'error');
@@ -1922,8 +1982,10 @@ class SettingsController extends AppController {
             $this->JenisSim->set('status', $value);
             if($this->JenisSim->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status jenis sim ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status jenis sim ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Jenis SIM tidak ditemukan.'), 'error');
@@ -1995,12 +2057,14 @@ class SettingsController extends AppController {
             if($this->JenisPerlengkapan->validates($data)){
                 if($this->JenisPerlengkapan->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Jenis Perlengkapan'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Jenis Perlengkapan'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'jenis_perlengkapan'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Jenis Perlengkapan'), $msg), 'error');  
+                    $this->Log->logActivity( sprintf(__('Gagal %s Jenis Perlengkapan'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Jenis Perlengkapan'), $msg), 'error');
@@ -2035,8 +2099,10 @@ class SettingsController extends AppController {
             $this->JenisPerlengkapan->set('status', $value);
             if($this->JenisPerlengkapan->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status jenis perlengkapan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status jenis perlengkapan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Jenis Perlengkapan tidak ditemukan.'), 'error');

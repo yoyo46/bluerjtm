@@ -171,12 +171,15 @@ class LakasController extends AppController {
                     $this->Laka->LakaDetail->save();
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s LAKA'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Berhasil %s LAKA #%s'), $msg, $laka_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    
                     $this->redirect(array(
                         'controller' => 'Lakas',
                         'action' => 'index',
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LAKA'), $msg), 'error');  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LAKA'), $msg), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal %s LAKA'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LAKA'), $msg), 'error');
@@ -235,8 +238,10 @@ class LakasController extends AppController {
 
             if($this->Laka->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Laka tidak ditemukan.'), 'error');

@@ -284,12 +284,15 @@ class RevenuesController extends AppController {
                                 $this->saveTtujPerlengkapan($dataTtujPerlengkapan, $data, $this->Ttuj->id);
 
                                 $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s TTUJ'), $msg), 'success');
+                                $this->Log->logActivity( sprintf(__('Sukses %s TTUJ'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );  
+
                                 $this->redirect(array(
                                     'controller' => 'revenues',
                                     'action' => 'ttuj'
                                 ));
                             }else{
-                                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj'), $msg), 'error');  
+                                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj'), $msg), 'error'); 
+                                $this->Log->logActivity( sprintf(__('Gagal %s TTUJ'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
                             }
                         } else {
                             $step = '#step2';
@@ -535,8 +538,10 @@ class RevenuesController extends AppController {
 
             if($this->Ttuj->save()){
                 $this->MkCommon->setCustomFlash(__('TTUJ berhasil dibatalkan.'), 'success');
+                $this->Log->logActivity( sprintf(__('TTUJ ID #%s berhasil dibatalkan.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal membatalkan TTUJ.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal membatalkan TTUJ ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
             }
         }else{
             $this->MkCommon->setCustomFlash(__('TTUJ tidak ditemukan.'), 'error');
@@ -717,12 +722,16 @@ class RevenuesController extends AppController {
             if($this->Ttuj->validates($dataTiba)){
                 if($this->Ttuj->save($dataTiba)){
                     $this->MkCommon->setCustomFlash(__('Sukses merubah TTUJ'), 'success');
+
+                    $this->Log->logActivity( sprintf(__('Sukses merubah TTUJ ID #%s.'), $this->Ttuj->id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+
                     $this->redirect(array(
                         'controller' => 'revenues',
                         'action' => $referer
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah Ttuj'), 'error');  
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah Ttuj'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah TTUJ.')), $this->user_data, $this->RequestHandler, $this->params, 1 );     
                 }
             }
         }
