@@ -163,6 +163,7 @@ class TrucksController extends AppController {
             }else{
                 if($id && $data_local){
                     unset($data['Truck']['photo']);
+                    $data['Truck']['id'] = $id;
                 }else{
                     $data['Truck']['photo'] = '';
                 }

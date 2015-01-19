@@ -17,6 +17,16 @@ class Truck extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'nopol truk harap diisi'
             ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'on' => 'create',
+                'message' => 'Nopol telah terdaftar',
+            ),
+            'uniqueUpdate' => array(
+                'rule' => array('uniqueUpdate'),
+                'on' => 'update',
+                'message' => 'Nopol telah terdaftar'
+            )
         ),
         'truck_brand_id' => array(
             'notempty' => array(
@@ -204,6 +214,22 @@ class Truck extends AppModel {
             'foreignKey' => 'truck_id',
         ),
     );
+
+    function uniqueUpdate($data){
+        $result = false;
+        $find = $this->find('count', array(
+            'conditions' => array(
+                'Truck.id NOT' => $this->data['Truck']['id'],
+                'Truck.nopol' => $data['nopol']
+            )
+        ));
+
+        if(empty($find)){
+            $result = true;
+        }
+
+        return $result;
+    }
 
 	function getData($find, $options = false){
         $default_options = array(
