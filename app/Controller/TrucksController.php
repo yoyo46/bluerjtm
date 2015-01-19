@@ -682,15 +682,6 @@ class TrucksController extends AppController {
     function doDriver($id = false, $data_local = false){
         if(!empty($this->request->data)){
             $data = $this->request->data;
-            
-            if($id && $data_local){
-                $this->Driver->id = $id;
-                $msg = 'merubah';
-            }else{
-                $this->loadModel('Driver');
-                $this->Driver->create();
-                $msg = 'menambah';
-            }
 
             $data['Driver']['phone'] = (!empty($data['Driver']['phone'])) ? Sanitize::paranoid($data['Driver']['phone']) : '';
             $data['Driver']['phone_2'] = (!empty($data['Driver']['phone_2'])) ? Sanitize::paranoid($data['Driver']['phone_2']) : '';
@@ -714,9 +705,19 @@ class TrucksController extends AppController {
                 }
             }
 
+            if($id && $data_local){
+                $this->Driver->id = $id;
+                $msg = 'merubah';
+                $data['Driver']['id'] = $id;
+            }else{
+                $this->loadModel('Driver');
+                $this->Driver->create();
+                $msg = 'menambah';
+            }
+
             $this->Driver->set($data);
             
-            if($this->Driver->validates($data)){
+            if($this->Driver->validates()){
                 if(!empty($temp_image) && is_array($temp_image)){
                     $uploaded = $this->RjImage->upload($temp_image, '/'.Configure::read('__Site.profile_photo_folder').'/', String::uuid());
                     if(!empty($uploaded)) {
@@ -727,7 +728,7 @@ class TrucksController extends AppController {
                         }
                     }
                 }
-
+                
                 if($this->Driver->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Supir Truk'), $msg), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses %s Supir Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );  

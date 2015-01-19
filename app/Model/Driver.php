@@ -27,6 +27,16 @@ class Driver extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'No. KTP harap diisi'
             ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'on' => 'create',
+                'message' => 'No identitas telah terdaftar',
+            ),
+            'uniqueUpdate' => array(
+                'rule' => array('uniqueUpdate'),
+                'on' => 'update',
+                'message' => 'No identitas telah terdaftar'
+            )
         ),
         'address' => array(
             'notempty' => array(
@@ -140,6 +150,22 @@ class Driver extends AppModel {
             'foreignKey' => 'driver_relation_id',
         ),
 	);
+
+    function uniqueUpdate($data){
+        $result = false;
+        $find = $this->find('count', array(
+            'conditions' => array(
+                'Driver.id NOT' => $this->data['Driver']['id'],
+                'Driver.identity_number' => $data['identity_number']
+            )
+        ));
+
+        if(empty($find)){
+            $result = true;
+        }
+
+        return $result;
+    }
 
 	function getData( $find, $options = false, $is_merge = true ){
         $default_options = array(
