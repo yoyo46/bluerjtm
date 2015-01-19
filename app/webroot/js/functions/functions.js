@@ -488,6 +488,10 @@ $(function() {
         });
     }
 
+    if( $('.date-range').length > 0 ) {
+        $('.date-range').daterangepicker();
+    }
+
     $('.submit-form').click(function() {
         var action_type = $(this).attr('action_type');
 

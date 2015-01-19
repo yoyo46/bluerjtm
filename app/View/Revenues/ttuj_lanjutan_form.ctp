@@ -465,7 +465,7 @@
 							<thead>
 								<tr>
 									<?php 
-											if( $data_action == 'depo' ) {
+											if( $data_action == 'retail' ) {
 												echo $this->Html->tag('th', __('Tujuan'));
 											}
 											echo $this->Html->tag('th', __('Tipe Motor'));
@@ -482,7 +482,7 @@
 								?>
 								<tr>
 									<?php
-											if( $data_action == 'depo' ) {
+											if( $data_action == 'retail' ) {
 												echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.city_id.'.$key,array(
 													'label'=> false, 
 													'class'=>'form-control',

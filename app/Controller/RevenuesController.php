@@ -7,6 +7,10 @@ class RevenuesController extends AppController {
         'RjRevenue'
     );
 
+    public $helper = array(
+        'PhpExcel'
+    );
+
     function beforeFilter() {
         parent::beforeFilter();
         $this->set('title_for_layout', __('ERP RJTM | Revenue'));
@@ -59,9 +63,9 @@ class RevenuesController extends AppController {
         $this->set('ttujs', $ttujs);
 	}
 
-    function ttuj_add( $data_action = false ){
+    function ttuj_add( $data_action = 'depo' ){
         $this->loadModel('Ttuj');
-        $module_title = sprintf(__('Tambah TTUJ %s'), ucwords($data_action));
+        $module_title = sprintf(__('Tambah TTUJ - %s'), strtoupper($data_action));
         $this->set('sub_module_title', trim($module_title));
         $this->doTTUJ( $data_action );
     }
@@ -77,8 +81,8 @@ class RevenuesController extends AppController {
         if(!empty($ttuj)){
             $data_action = false;
 
-            if( !empty($ttuj['Ttuj']['is_depo']) ) {
-                $data_action = 'depo';
+            if( !empty($ttuj['Ttuj']['is_retail']) ) {
+                $data_action = 'retail';
             }
 
             $module_title = sprintf(__('Rubah TTUJ %s'), ucwords($data_action));
@@ -112,7 +116,7 @@ class RevenuesController extends AppController {
                 $dataValidate['TtujTipeMotor']['tipe_motor_id'] = $tipe_motor_id;
                 $dataValidate['TtujTipeMotor']['qty'] = !empty($data['TtujTipeMotor']['qty'][$key])?$data['TtujTipeMotor']['qty'][$key]:false;
 
-                if( $data_action == 'depo' ) {
+                if( $data_action == 'retail' ) {
                     $dataValidate['TtujTipeMotor']['city_id'] = !empty($data['TtujTipeMotor']['city_id'][$key])?$data['TtujTipeMotor']['city_id'][$key]:false;
                 }
                 
@@ -249,8 +253,8 @@ class RevenuesController extends AppController {
                 }
             }
 
-            if( $data_action == 'depo' ) {
-                $data['Ttuj']['is_depo'] = 1;
+            if( $data_action == 'retail' ) {
+                $data['Ttuj']['is_retail'] = 1;
             }
 
             $this->Ttuj->set($data);
@@ -634,9 +638,9 @@ class RevenuesController extends AppController {
                 'conditions' => $conditionsDataLocal
             ));
 
-            if( !empty($data_local['Ttuj']['is_depo']) ) {
-                $module_title = __('Truk Depo Tiba');
-                $data_action = 'depo';
+            if( !empty($data_local['Ttuj']['is_retail']) ) {
+                $module_title = __('Truk Tiba - RETAIL');
+                $data_action = 'retail';
             }
         }
 
@@ -868,9 +872,9 @@ class RevenuesController extends AppController {
         ));
 
         if( !empty($data_local) ){
-            if( !empty($data_local['Ttuj']['is_depo']) ) {
-                $module_title = __('Info Truk Depo Tiba');
-                $data_action = 'depo';
+            if( !empty($data_local['Ttuj']['is_retail']) ) {
+                $module_title = __('Info Truk Tiba - RETAIL');
+                $data_action = 'retail';
             }
 
             $data_local = $this->MkCommon->getTtujTipeMotor($data_local);
@@ -1073,14 +1077,14 @@ class RevenuesController extends AppController {
         $this->doTTUJLanjutan( 'pool' );
     }
 
-    public function ritase_report() {
+    public function ritase_report( $data_action = false ) {
         $this->loadModel('Truck');
         $this->loadModel('TruckCustomer');
         $this->loadModel('Ttuj');
         $this->loadModel('City');
         $this->set('active_menu', 'ritase_report');
-        $this->set('sub_module_title', __('Laporan Ritase'));
-        $date = date('Y-m');
+        $dateFrom = date('Y-m-d', strtotime('-1 month'));
+        $dateTo = date('Y-m-d');
         $conditions = array(
             'Truck.status'=> 1,
         );
@@ -1090,8 +1094,25 @@ class RevenuesController extends AppController {
 
             if(!empty($refine['nopol'])){
                 $nopol = urldecode($refine['nopol']);
-                $this->request->data['Truck']['nopol'] = $nopol;
+                $this->request->data['Ttuj']['nopol'] = $nopol;
                 $conditions['Truck.nopol LIKE '] = '%'.$nopol.'%';
+            }
+
+            if(!empty($refine['driver_name'])){
+                $driver_name = urldecode($refine['driver_name']);
+                $this->request->data['Ttuj']['driver_name'] = $driver_name;
+                $conditions['Driver.name LIKE '] = '%'.$driver_name.'%';
+            }
+
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
+
+                if( !empty($date) ) {
+                    $dateFrom = date('Y-m-d', strtotime(urldecode($date[0])));
+                    $dateTo = date('Y-m-d', strtotime(urldecode($date[1])));
+                }
+                $this->request->data['Ttuj']['date'] = $dateStr;
             }
         }
 
@@ -1120,23 +1141,19 @@ class RevenuesController extends AppController {
                         'Customer'
                     ),
                 ));
+
+                $conditionsTtuj = array(
+                    'Ttuj.is_pool'=> 1,
+                    'Ttuj.status'=> 1,
+                    'Ttuj.truck_id'=> $truck['Truck']['id'],
+                    'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='=> $dateFrom,
+                    'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <=' => $dateTo,
+                );
                 $total = $this->Ttuj->getData('count', array(
-                    'conditions' => array(
-                        'Ttuj.is_pool'=> 1,
-                        'Ttuj.status'=> 1,
-                        'Ttuj.truck_id'=> $truck['Truck']['id'],
-                        'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\')'=> $date,
-                        'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <>' => '0000-00-00'
-                    ),
+                    'conditions' => $conditionsTtuj
                 ));
                 $cities = $this->Ttuj->getData('all', array(
-                    'conditions' => array(
-                        'Ttuj.is_pool'=> 1,
-                        'Ttuj.status'=> 1,
-                        'Ttuj.truck_id'=> $truck['Truck']['id'],
-                        'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\')'=> $date,
-                        'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <>' => '0000-00-00'
-                    ),
+                    'conditions' => $conditionsTtuj,
                     'group' => array(
                         'Ttuj.to_city_id'
                     ),
@@ -1148,12 +1165,20 @@ class RevenuesController extends AppController {
                 ), false);
 
                 $truck = array_merge($truck, $truckCustomer);
+                $truck['Total'] = $total;
+                $truck['City'] = $cities;
                 $trucks[$key] = $truck;
-                $trucks[$key]['Total'] = $total;
-                $trucks[$key]['City'] = $cities;
             }
         }
 
+        $module_title = __('Laporan Ritase Truk');
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $this->request->data['Ttuj']['date'] = sprintf('%s - %s', date('m/d/Y', strtotime($dateFrom)), date('m/d/Y', strtotime($dateTo)));
+            $module_title .= sprintf(' Periode %s - %s', date('d M Y', strtotime($dateFrom)), date('d M Y', strtotime($dateTo)));
+        }
+
+        $this->set('sub_module_title', $module_title);
         $cities = $this->City->getData('list', array(
             'conditions' => array(
                 'City.status' => 1,
@@ -1164,7 +1189,13 @@ class RevenuesController extends AppController {
         ));
 
         $this->set(compact(
-            'trucks', 'cities'
+            'trucks', 'cities', 'data_action'
         ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
     }
 }

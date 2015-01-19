@@ -32960,3 +32960,261 @@ Stack Trace:
 #11 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(RevenuesController), Object(CakeRequest))
 #12 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
 #13 {main}
+2015-01-19 19:37:53 Error: [MissingActionException] Action UsersController::js() could not be found.
+Exception Attributes: array (
+  'controller' => 'UsersController',
+  'action' => 'js',
+)
+Request URL: /users/js/bootstrap.js
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(191): Controller->invokeAction(Object(CakeRequest))
+#1 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(UsersController), Object(CakeRequest))
+#2 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#3 {main}
+2015-01-19 19:37:54 Error: [MissingActionException] Action UsersController::js() could not be found.
+Exception Attributes: array (
+  'controller' => 'UsersController',
+  'action' => 'js',
+)
+Request URL: /users/js/jquery.js
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(191): Controller->invokeAction(Object(CakeRequest))
+#1 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(UsersController), Object(CakeRequest))
+#2 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#3 {main}
+2015-01-19 19:58:33 Error: [MissingTableException] Table logs for model Log was not found in datasource default.
+Exception Attributes: array (
+  'table' => 'logs',
+  'class' => 'Log',
+  'ds' => 'default',
+)
+Request URL: /revenues/truk_tiba_add/no_ttuj:7
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Model.php(3566): Model->setSource('logs')
+#1 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Model.php(1369): Model->getDataSource()
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Model.php(1553): Model->schema()
+#3 C:\xampp\htdocs\bluerjtm\trunk\app\Model\Log.php(88): Model->create()
+#4 C:\xampp\htdocs\bluerjtm\trunk\app\Controller\RevenuesController.php(726): Log->logActivity('Sukses merubah ...', Array, Object(RequestHandlerComponent), Object(CakeRequest), 1)
+#5 C:\xampp\htdocs\bluerjtm\trunk\app\Controller\RevenuesController.php(593): RevenuesController->doTTUJLanjutan()
+#6 [internal function]: RevenuesController->truk_tiba_add()
+#7 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Controller\Controller.php(490): ReflectionMethod->invokeArgs(Object(RevenuesController), Array)
+#8 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(191): Controller->invokeAction(Object(CakeRequest))
+#9 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(RevenuesController), Object(CakeRequest))
+#10 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#11 {main}
+2015-01-19 20:38:15 Error: Fatal Error (4): syntax error, unexpected ';' in [C:\xampp\htdocs\bluerjtm\trunk\app\Controller\RevenuesController.php, line 1084]
+2015-01-19 20:38:15 Error: [FatalErrorException] syntax error, unexpected ';'
+Request URL: /revenues/ritase_report
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Error\ErrorHandler.php(203): ErrorHandler::handleFatalError(4, 'syntax error, u...', 'C:\xampp\htdocs...', 1084)
+#1 [internal function]: ErrorHandler::handleError(4, 'syntax error, u...', 'C:\xampp\htdocs...', 1084, Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(931): call_user_func('ErrorHandler::h...', 4, 'syntax error, u...', 'C:\xampp\htdocs...', 1084, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(904): App::_checkFatalError()
+#4 [internal function]: App::shutdown()
+#5 {main}
+2015-01-19 20:38:25 Error: Fatal Error (4): syntax error, unexpected ',' in [C:\xampp\htdocs\bluerjtm\trunk\app\Controller\RevenuesController.php, line 1131]
+2015-01-19 20:38:25 Error: [FatalErrorException] syntax error, unexpected ','
+Request URL: /revenues/ritase_report
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Error\ErrorHandler.php(203): ErrorHandler::handleFatalError(4, 'syntax error, u...', 'C:\xampp\htdocs...', 1131)
+#1 [internal function]: ErrorHandler::handleError(4, 'syntax error, u...', 'C:\xampp\htdocs...', 1131, Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(931): call_user_func('ErrorHandler::h...', 4, 'syntax error, u...', 'C:\xampp\htdocs...', 1131, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(904): App::_checkFatalError()
+#4 [internal function]: App::shutdown()
+#5 {main}
+2015-01-19 20:41:04 Error: [PDOException] SQLSTATE[42S22]: Column not found: 1054 Unknown column 'Ttuj.stgljam_pool' in 'where clause'
+Request URL: /revenues/ritase_report
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(458): PDOStatement->execute(Array)
+#1 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(424): DboSource->_execute('SELECT COUNT(*)...', Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(666): DboSource->execute('SELECT COUNT(*)...', Array, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Datasource\DboSource.php(1106): DboSource->fetchAll('SELECT COUNT(*)...', false)
+#4 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Model.php(2947): DboSource->read(Object(Ttuj), Array)
+#5 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Model\Model.php(2919): Model->_readDataSource('count', Array)
+#6 C:\xampp\htdocs\bluerjtm\trunk\app\Model\Ttuj.php(143): Model->find('count', Array)
+#7 C:\xampp\htdocs\bluerjtm\trunk\app\Controller\RevenuesController.php(1134): Ttuj->getData('count', Array)
+#8 [internal function]: RevenuesController->ritase_report()
+#9 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Controller\Controller.php(490): ReflectionMethod->invokeArgs(Object(RevenuesController), Array)
+#10 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(191): Controller->invokeAction(Object(CakeRequest))
+#11 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(RevenuesController), Object(CakeRequest))
+#12 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#13 {main}
+2015-01-19 20:49:00 Error: [MissingActionException] Action TrucksController::ritase_report() could not be found.
+Exception Attributes: array (
+  'controller' => 'TrucksController',
+  'action' => 'ritase_report',
+)
+Request URL: /trucks/ritase_report/nopol:AE
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(191): Controller->invokeAction(Object(CakeRequest))
+#1 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(TrucksController), Object(CakeRequest))
+#2 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#3 {main}
+2015-01-19 20:50:57 Error: [MissingActionException] Action RevenuesController::index() could not be found.
+Exception Attributes: array (
+  'controller' => 'RevenuesController',
+  'action' => 'index',
+)
+Request URL: /revenues
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(191): Controller->invokeAction(Object(CakeRequest))
+#1 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(RevenuesController), Object(CakeRequest))
+#2 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#3 {main}
+2015-01-19 21:18:47 Error: Fatal Error (1): Undefined class constant 'HORIZONTAL_MIDDLE' in [C:\xampp\htdocs\bluerjtm\trunk\app\View\Revenues\ritase_report.ctp, line 261]
+2015-01-19 21:18:47 Error: [FatalErrorException] Undefined class constant 'HORIZONTAL_MIDDLE'
+Request URL: /revenues/ritase_report/excel
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Error\ErrorHandler.php(203): ErrorHandler::handleFatalError(1, 'Undefined class...', 'C:\xampp\htdocs...', 261)
+#1 [internal function]: ErrorHandler::handleError(1, 'Undefined class...', 'C:\xampp\htdocs...', 261, Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(931): call_user_func('ErrorHandler::h...', 1, 'Undefined class...', 'C:\xampp\htdocs...', 261, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(904): App::_checkFatalError()
+#4 [internal function]: App::shutdown()
+#5 {main}
+2015-01-19 21:19:14 Error: Fatal Error (1): Undefined class constant 'HORIZONTAL_MID' in [C:\xampp\htdocs\bluerjtm\trunk\app\View\Revenues\ritase_report.ctp, line 261]
+2015-01-19 21:19:14 Error: [FatalErrorException] Undefined class constant 'HORIZONTAL_MID'
+Request URL: /revenues/ritase_report/excel
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Error\ErrorHandler.php(203): ErrorHandler::handleFatalError(1, 'Undefined class...', 'C:\xampp\htdocs...', 261)
+#1 [internal function]: ErrorHandler::handleError(1, 'Undefined class...', 'C:\xampp\htdocs...', 261, Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(931): call_user_func('ErrorHandler::h...', 1, 'Undefined class...', 'C:\xampp\htdocs...', 261, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(904): App::_checkFatalError()
+#4 [internal function]: App::shutdown()
+#5 {main}
+2015-01-19 21:31:27 Error: [PHPExcel_Exception] You tried to set a sheet active by the out of bounds index: 4. The actual number of sheets is 1.
+Request URL: /revenues/ritase_report/excel
+Stack Trace:
+#0 [internal function]: PHPExcel->setActiveSheetIndex(4)
+#1 C:\xampp\htdocs\bluerjtm\trunk\app\View\Helper\PhpExcelHelper.php(121): call_user_func_array(Array, Array)
+#2 [internal function]: PhpExcelHelper->__call('setActiveSheetI...', Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\app\View\Revenues\ritase_report.ctp(262): PhpExcelHelper->setActiveSheetIndex(4)
+#4 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\View\View.php(948): include('C:\xampp\htdocs...')
+#5 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\View\View.php(910): View->_evaluate('C:\xampp\htdocs...', Array)
+#6 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\View\View.php(471): View->_render('C:\xampp\htdocs...')
+#7 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Controller\Controller.php(954): View->render(NULL, NULL)
+#8 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(198): Controller->render()
+#9 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(RevenuesController), Object(CakeRequest))
+#10 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#11 {main}
+2015-01-19 21:54:33 Error: Fatal Error (1): Call to a member function getStyle() on a non-object in [C:\xampp\htdocs\bluerjtm\trunk\app\View\Revenues\ritase_report.ctp, line 272]
+2015-01-19 21:54:33 Error: [FatalErrorException] Call to a member function getStyle() on a non-object
+Request URL: /revenues/ritase_report/excel
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Error\ErrorHandler.php(203): ErrorHandler::handleFatalError(1, 'Call to a membe...', 'C:\xampp\htdocs...', 272)
+#1 [internal function]: ErrorHandler::handleError(1, 'Call to a membe...', 'C:\xampp\htdocs...', 272, Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(931): call_user_func('ErrorHandler::h...', 1, 'Call to a membe...', 'C:\xampp\htdocs...', 272, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(904): App::_checkFatalError()
+#4 [internal function]: App::shutdown()
+#5 {main}
+2015-01-19 22:15:04 Error: Fatal Error (1): Call to a member function getActiveSheet() on a non-object in [C:\xampp\htdocs\bluerjtm\trunk\app\View\Revenues\ritase_report.ctp, line 253]
+2015-01-19 22:15:04 Error: [FatalErrorException] Call to a member function getActiveSheet() on a non-object
+Request URL: /revenues/ritase_report/excel
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Error\ErrorHandler.php(203): ErrorHandler::handleFatalError(1, 'Call to a membe...', 'C:\xampp\htdocs...', 253)
+#1 [internal function]: ErrorHandler::handleError(1, 'Call to a membe...', 'C:\xampp\htdocs...', 253, Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(931): call_user_func('ErrorHandler::h...', 1, 'Call to a membe...', 'C:\xampp\htdocs...', 253, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(904): App::_checkFatalError()
+#4 [internal function]: App::shutdown()
+#5 {main}
+2015-01-19 22:24:15 Error: Fatal Error (1): Call to undefined function char() in [C:\xampp\htdocs\bluerjtm\trunk\app\View\Revenues\ritase_report.ctp, line 254]
+2015-01-19 22:24:15 Error: [FatalErrorException] Call to undefined function char()
+Request URL: /revenues/ritase_report/excel
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Error\ErrorHandler.php(203): ErrorHandler::handleFatalError(1, 'Call to undefin...', 'C:\xampp\htdocs...', 254)
+#1 [internal function]: ErrorHandler::handleError(1, 'Call to undefin...', 'C:\xampp\htdocs...', 254, Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(931): call_user_func('ErrorHandler::h...', 1, 'Call to undefin...', 'C:\xampp\htdocs...', 254, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(904): App::_checkFatalError()
+#4 [internal function]: App::shutdown()
+#5 {main}
+2015-01-19 22:33:45 Error: Fatal Error (4): syntax error, unexpected T_ENDFOREACH in [C:\xampp\htdocs\bluerjtm\trunk\app\View\Revenues\ritase_report.ctp, line 374]
+2015-01-19 22:33:45 Error: [FatalErrorException] syntax error, unexpected T_ENDFOREACH
+Request URL: /revenues/ritase_report/
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Error\ErrorHandler.php(203): ErrorHandler::handleFatalError(4, 'syntax error, u...', 'C:\xampp\htdocs...', 374)
+#1 [internal function]: ErrorHandler::handleError(4, 'syntax error, u...', 'C:\xampp\htdocs...', 374, Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(931): call_user_func('ErrorHandler::h...', 4, 'syntax error, u...', 'C:\xampp\htdocs...', 374, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(904): App::_checkFatalError()
+#4 [internal function]: App::shutdown()
+#5 {main}
+2015-01-19 22:34:35 Error: Fatal Error (4): syntax error, unexpected T_ENDFOREACH in [C:\xampp\htdocs\bluerjtm\trunk\app\View\Revenues\ritase_report.ctp, line 377]
+2015-01-19 22:34:35 Error: [FatalErrorException] syntax error, unexpected T_ENDFOREACH
+Request URL: /revenues/ritase_report/
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Error\ErrorHandler.php(203): ErrorHandler::handleFatalError(4, 'syntax error, u...', 'C:\xampp\htdocs...', 377)
+#1 [internal function]: ErrorHandler::handleError(4, 'syntax error, u...', 'C:\xampp\htdocs...', 377, Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(931): call_user_func('ErrorHandler::h...', 4, 'syntax error, u...', 'C:\xampp\htdocs...', 377, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(904): App::_checkFatalError()
+#4 [internal function]: App::shutdown()
+#5 {main}
+2015-01-19 22:35:23 Error: [Exception] TCPDF ERROR: Incorrect output destination: L
+Request URL: /revenues/ritase_report/pdf
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\app\Vendor\tcpdf\tcpdf.php(9189): TCPDF->Error('Incorrect outpu...')
+#1 C:\xampp\htdocs\bluerjtm\trunk\app\View\Revenues\ritase_report.ctp(425): TCPDF->Output('C:\xampp\htdocs...', 'L')
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\View\View.php(948): include('C:\xampp\htdocs...')
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\View\View.php(910): View->_evaluate('C:\xampp\htdocs...', Array)
+#4 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\View\View.php(471): View->_render('C:\xampp\htdocs...')
+#5 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Controller\Controller.php(954): View->render(NULL, NULL)
+#6 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(198): Controller->render()
+#7 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(RevenuesController), Object(CakeRequest))
+#8 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#9 {main}
+2015-01-19 22:39:22 Error: Fatal Error (1): Call to undefined method XTCPDF::orientation() in [C:\xampp\htdocs\bluerjtm\trunk\app\View\Revenues\ritase_report.ctp, line 429]
+2015-01-19 22:39:22 Error: [FatalErrorException] Call to undefined method XTCPDF::orientation()
+Request URL: /revenues/ritase_report/pdf
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Error\ErrorHandler.php(203): ErrorHandler::handleFatalError(1, 'Call to undefin...', 'C:\xampp\htdocs...', 429)
+#1 [internal function]: ErrorHandler::handleError(1, 'Call to undefin...', 'C:\xampp\htdocs...', 429, Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(931): call_user_func('ErrorHandler::h...', 1, 'Call to undefin...', 'C:\xampp\htdocs...', 429, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(904): App::_checkFatalError()
+#4 [internal function]: App::shutdown()
+#5 {main}
+2015-01-19 22:43:02 Error: [Exception] TCPDF ERROR: Some data has already been output to browser, can't send PDF file
+Request URL: /revenues/ritase_report/pdf
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\app\Vendor\tcpdf\tcpdf.php(9078): TCPDF->Error('Some data has a...')
+#1 C:\xampp\htdocs\bluerjtm\trunk\app\View\Revenues\ritase_report.ctp(438): TCPDF->Output('C:\xampp\htdocs...', 'I')
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\View\View.php(948): include('C:\xampp\htdocs...')
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\View\View.php(910): View->_evaluate('C:\xampp\htdocs...', Array)
+#4 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\View\View.php(471): View->_render('C:\xampp\htdocs...')
+#5 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Controller\Controller.php(954): View->render(NULL, NULL)
+#6 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(198): Controller->render()
+#7 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(RevenuesController), Object(CakeRequest))
+#8 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#9 {main}
+2015-01-19 22:44:41 Error: [Exception] TCPDF ERROR: Some data has already been output to browser, can't send PDF file
+Request URL: /revenues/ritase_report/pdf
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\app\Vendor\tcpdf\tcpdf.php(9078): TCPDF->Error('Some data has a...')
+#1 C:\xampp\htdocs\bluerjtm\trunk\app\View\Revenues\ritase_report.ctp(449): TCPDF->Output('C:\xampp\htdocs...', 'I')
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\View\View.php(948): include('C:\xampp\htdocs...')
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\View\View.php(910): View->_evaluate('C:\xampp\htdocs...', Array)
+#4 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\View\View.php(471): View->_render('C:\xampp\htdocs...')
+#5 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Controller\Controller.php(954): View->render(NULL, NULL)
+#6 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(198): Controller->render()
+#7 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(RevenuesController), Object(CakeRequest))
+#8 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#9 {main}
+2015-01-19 22:45:54 Error: Fatal Error (4): syntax error, unexpected T_IF in [C:\xampp\htdocs\bluerjtm\trunk\app\View\Revenues\ritase_report.ctp, line 407]
+2015-01-19 22:45:54 Error: [FatalErrorException] syntax error, unexpected T_IF
+Request URL: /revenues/ritase_report/pdf
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Error\ErrorHandler.php(203): ErrorHandler::handleFatalError(4, 'syntax error, u...', 'C:\xampp\htdocs...', 407)
+#1 [internal function]: ErrorHandler::handleError(4, 'syntax error, u...', 'C:\xampp\htdocs...', 407, Array)
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(931): call_user_func('ErrorHandler::h...', 4, 'syntax error, u...', 'C:\xampp\htdocs...', 407, Array)
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Core\App.php(904): App::_checkFatalError()
+#4 [internal function]: App::shutdown()
+#5 {main}
+2015-01-19 22:46:22 Error: [Exception] TCPDF ERROR: Some data has already been output to browser, can't send PDF file
+Request URL: /revenues/ritase_report/pdf
+Stack Trace:
+#0 C:\xampp\htdocs\bluerjtm\trunk\app\Vendor\tcpdf\tcpdf.php(9078): TCPDF->Error('Some data has a...')
+#1 C:\xampp\htdocs\bluerjtm\trunk\app\View\Revenues\ritase_report.ctp(442): TCPDF->Output('C:\xampp\htdocs...', 'I')
+#2 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\View\View.php(948): include('C:\xampp\htdocs...')
+#3 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\View\View.php(910): View->_evaluate('C:\xampp\htdocs...', Array)
+#4 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\View\View.php(471): View->_render('C:\xampp\htdocs...')
+#5 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Controller\Controller.php(954): View->render(NULL, NULL)
+#6 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(198): Controller->render()
+#7 C:\xampp\htdocs\bluerjtm\trunk\lib\Cake\Routing\Dispatcher.php(165): Dispatcher->_invoke(Object(RevenuesController), Object(CakeRequest))
+#8 C:\xampp\htdocs\bluerjtm\trunk\app\webroot\index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#9 {main}

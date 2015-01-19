@@ -189,15 +189,6 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
                             ));
-
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Truk', array(
-                                'controller' => 'trucks',
-                                'action' => 'reports',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'reports' )?'active':'',
-                            ));
                     ?>
                 </ul>
             </li>
@@ -392,6 +383,14 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Truk', array(
+                                'controller' => 'trucks',
+                                'action' => 'reports',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'reports' )?'active':'',
+                            ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Ritase', array(
                                 'controller' => 'revenues',
                                 'action' => 'ritase_report',

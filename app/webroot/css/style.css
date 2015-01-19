@@ -3659,3 +3659,7 @@ input[type=radio], input[type=checkbox] {
 .text-middle {
   vertical-align: middle !important;
 }
+
+.print-action {
+  margin-bottom: 20px;
+}

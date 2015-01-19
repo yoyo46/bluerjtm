@@ -108,6 +108,20 @@ class AppController extends Controller {
 	        'admin' => false,
 	        'plugin' => false
 	    );
+	    $monthArr = array(
+	    	'Januari',
+	    	'Februari',
+	    	'Maret',
+	    	'April',
+	    	'Mei',
+	    	'Juni',
+	    	'Juli',
+	    	'Agustus',
+	    	'September',
+	    	'Oktober',
+	    	'November',
+	    	'Desember',
+    	);
 
 	    $logged_in = $this->MkCommon->loggedIn();
 	    $this->user_id = false;
@@ -119,7 +133,10 @@ class AppController extends Controller {
 			$this->user_data = $User = $this->Auth->user();
 		}
 
-	    $this->set(compact('logged_in', 'GroupId', 'User'));
+	    $this->set(compact(
+	    	'logged_in', 'GroupId', 'User',
+	    	'monthArr'
+    	));
 	}
 
 	function isAuthorized($user) {

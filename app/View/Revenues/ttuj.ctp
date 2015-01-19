@@ -63,7 +63,7 @@
                 ?>
                 <ul class="dropdown-menu" role="menu">
                     <?php 
-                            echo $this->Html->tag('li', $this->Html->link(__('TTUJ'), array(
+                            echo $this->Html->tag('li', $this->Html->link(__('TTUJ DEPO'), array(
                                 'controller' => 'revenues',
                                 'action' => 'ttuj_add',
                             ), array(
@@ -72,10 +72,10 @@
                             echo $this->Html->tag('li', '', array(
                                 'class' => 'divider',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link(__('TTUJ Depo'), array(
+                            echo $this->Html->tag('li', $this->Html->link(__('TTUJ RETAIL'), array(
                                 'controller' => 'revenues',
                                 'action' => 'ttuj_add',
-                                'depo',
+                                'retail',
                             ), array(
                                 'escape' => false,
                             )));
