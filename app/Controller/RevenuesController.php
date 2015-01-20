@@ -1188,14 +1188,23 @@ class RevenuesController extends AppController {
         }
 
         $this->set('sub_module_title', $module_title);
-        $cities = $this->City->getData('list', array(
+        $cities = $this->Ttuj->getData('list', array(
             'conditions' => array(
-                'City.status' => 1,
+                'Ttuj.status' => 1,
+                'Ttuj.is_pool' => 1,
+                'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='=> $dateFrom,
+                'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <=' => $dateTo,
             ),
             'order' => array(
-                'City.name'
+                'Ttuj.to_city_name'
             ),
-        ));
+            'group' => array(
+                'Ttuj.to_city_id'
+            ),
+            'fields' => array(
+                'Ttuj.to_city_id', 'Ttuj.to_city_name'
+            ),
+        ), false);
 
         $this->set(compact(
             'trucks', 'cities', 'data_action'

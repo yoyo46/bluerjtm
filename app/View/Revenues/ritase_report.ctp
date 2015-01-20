@@ -156,7 +156,9 @@
                     <?php 
                             if( !empty($cities) ) {
                                 foreach ($cities as $key => $value) {
-                                    echo $this->Html->tag('th', $value);
+                                    echo $this->Html->tag('th', $value, array(
+                                        'class' => 'text-center',
+                                    ));
                                 }
                             } else {
                                 echo '<th>&nbsp;</th>';
