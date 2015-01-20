@@ -28,14 +28,6 @@
 						// )), array(
 						// 	'class' => 'form-group'
 						// ));
-						echo $this->Html->tag('div', $this->Form->input('group_classification_id',array(
-							'label'=> __('Grup Klasifikasi *'), 
-							'class'=>'form-control',
-							'required' => false,
-							'empty' => __('Pilih Grup Klasifikasi')
-						)), array(
-							'class' => 'form-group'
-						));
 						echo $this->Html->tag('div', $this->Form->input('from_city_id',array(
 							'label'=> __('Kota Asal *'), 
 							'class'=>'form-control',
@@ -119,6 +111,16 @@
 						?>
 					</div>
 				</div>
+				<?php 
+						echo $this->Html->tag('div', $this->Form->input('group_classification_id',array(
+							'label'=> __('Grup Klasifikasi *'), 
+							'class'=>'form-control',
+							'required' => false,
+							'empty' => __('Pilih Grup Klasifikasi')
+						)), array(
+							'class' => 'form-group'
+						));
+				?>
                 <!-- <div class="form-group" id="UangJalanPerUnit">
                     <label>
                     	<?php 

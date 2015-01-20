@@ -837,6 +837,9 @@ class SettingsController extends AppController {
             'conditions' => array(
                 'FromCity.status' => 1
             ),
+            'order' => array(
+                'FromCity.name' => 'ASC',
+            ),
         ), false);
         $groupClassifications = $this->UangJalan->GroupClassification->find('list', array(
             'conditions' => array(
@@ -2109,5 +2112,63 @@ class SettingsController extends AppController {
         }
 
         $this->redirect($this->referer());
+    }
+
+    function classification(){
+        $this->loadModel('GroupClassification');
+        $this->set('sub_module_title', 'Group Klasifikasi');
+        $groupClassifications = $this->GroupClassification->find('list', array(
+            'conditions' => array(
+                'GroupClassification.status' => 1,
+            )
+        ));
+
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+
+            if( !empty($data['GroupClassification']['name']) ){
+                $failed = false;
+
+                foreach ($data['GroupClassification']['name'] as $key => $value) {
+                    if( !empty($groupClassifications[$key]) ) {
+                        $this->GroupClassification->id = $key;
+                    } else {
+                        $this->GroupClassification->create();
+                        $this->GroupClassification->set('id', $key);
+                    }
+
+                    $this->GroupClassification->set('name', $value);
+
+                    if($this->GroupClassification->validates()){
+                        if($this->GroupClassification->save()){
+                            $this->Log->logActivity( __('Berhasil menyimpan Klasifikasi'), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                        }else{
+                            $failed = true;
+                        }
+                    }else{
+                        $failed = true;
+                    }
+                }
+
+                if( !$failed ){
+                    $this->MkCommon->setCustomFlash(__('Klasifikasi berhasil disimpan'), 'success');
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'classification'
+                    ));
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Klasifikasi gagal disimpan'), 'error'); 
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('Mohon masukan Klasifikasi'), 'error'); 
+            }
+        } else if( !empty($groupClassifications) ) {
+            foreach ($groupClassifications as $key => $groupClassification) {
+                $this->request->data['GroupClassification']['name'][$key] = $groupClassification;
+            }
+        }
+
+        $this->set('active_menu', 'classification');
+
     }
 }

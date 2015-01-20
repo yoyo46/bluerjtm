@@ -19,14 +19,8 @@ class Truck extends AppModel {
             ),
             'isUnique' => array(
                 'rule' => array('isUnique'),
-                'on' => 'create',
                 'message' => 'Nopol telah terdaftar',
             ),
-            'uniqueUpdate' => array(
-                'rule' => array('uniqueUpdate'),
-                'on' => 'update',
-                'message' => 'Nopol telah terdaftar'
-            )
         ),
         'truck_brand_id' => array(
             'notempty' => array(
@@ -43,7 +37,11 @@ class Truck extends AppModel {
         'no_rangka' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'nomor rangka truk harap diisi'
+                'message' => 'Nomor Rangka truk harap diisi'
+            ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'Nomor Rangka telah terdaftar',
             ),
         ),
         'company_id' => array(
@@ -55,37 +53,41 @@ class Truck extends AppModel {
         'no_machine' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'nomor mesin truk harap diisi'
+                'message' => 'Nomor Mesin truk harap diisi'
+            ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'Nomor Mesin telah terdaftar',
             ),
         ),
         'driver_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'supir truk harap diisi'
+                'message' => 'Supir truk harap diisi'
             ),
         ),
         'capacity' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'kapasitas truk harap diisi'
+                'message' => 'Kapasitas truk harap diisi'
             ),
         ),
         'tahun' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'tahun truk harap diisi'
+                'message' => 'Tahun truk harap diisi'
             ),
         ),
         'tahun_neraca' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'tahun neraca truk harap diisi'
+                'message' => 'Tahun Neraca truk harap diisi'
             ),
         ),
         'atas_nama' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'atas nama truk harap diisi'
+                'message' => 'Atas Nama truk harap diisi'
             ),
         ),
         'bpkb' => array(
@@ -93,17 +95,25 @@ class Truck extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'BPKB truk harap diisi'
             ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'BPKB telah terdaftar',
+            ),
         ),
         'tgl_bpkb' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'tanggal BPKB truk harap diisi'
+                'message' => 'Tanggal BPKB truk harap diisi'
             ),
         ),
         'no_stnk' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'nomor STNK truk harap diisi'
+                'message' => 'Nomor STNK truk harap diisi'
+            ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'Nomor STNK telah terdaftar',
             ),
         ),
         'tgl_stnk' => array(

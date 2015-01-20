@@ -46,6 +46,7 @@
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>
+                <th>No. ID</th>
                 <th>Nopol</th>
                 <th>Merek</th>
                 <th>Jenis</th>
@@ -62,6 +63,7 @@
                             $id = $value_truck['id'];
             ?>
             <tr>
+                <td><?php echo $value_truck['nomor_id'];?></td>
                 <td><?php echo $value_truck['nopol'];?></td>
                 <td><?php echo !empty($value['TruckBrand']['name'])?$value['TruckBrand']['name']:'-';?></td>
                 <td><?php echo !empty($value['TruckCategory']['name'])?$value['TruckCategory']['name']:'-';?></td>

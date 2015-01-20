@@ -471,7 +471,7 @@
                     $activeSetting = false;
                     $settingMenu = array(
                         'cities', 'vendors', 'companies', 'uang_jalan',
-                        'perlengkapan', 'coas', 'branches'
+                        'perlengkapan', 'coas', 'branches', 'classification'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -534,14 +534,6 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'vendors' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Jalan', array(
-                                'controller' => 'settings',
-                                'action' => 'uang_jalan',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan' )?'active':'',
-                            ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Jenis SIM', array(
                                 'controller' => 'settings',
                                 'action' => 'jenis_sim',
@@ -549,6 +541,22 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'jenis_sim' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Group klasifikasi', array(
+                                'controller' => 'settings',
+                                'action' => 'classification',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'classification' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Jalan', array(
+                                'controller' => 'settings',
+                                'action' => 'uang_jalan',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan' )?'active':'',
                             ));
                             // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Jenis Perlengkapan', array(
                             //     'controller' => 'settings',
