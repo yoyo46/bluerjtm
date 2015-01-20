@@ -3,17 +3,21 @@ class Driver extends AppModel {
 	var $name = 'Driver';
 
 	var $validate = array(
-        'photo' => array(
-            'notempty' => array(
-                'on' => 'create',
-                'rule' => array('notempty'),
-                'message' => 'Foto harap diisi'
-            ),
-        ),
+        // 'photo' => array(
+        //     'notempty' => array(
+        //         'on' => 'create',
+        //         'rule' => array('notempty'),
+        //         'message' => 'Foto harap diisi'
+        //     ),
+        // ),
         'no_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'No. ID harap diisi'
+            ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'No. ID telah terdaftar',
             ),
         ),
         'name' => array(
@@ -29,14 +33,8 @@ class Driver extends AppModel {
             ),
             'isUnique' => array(
                 'rule' => array('isUnique'),
-                'on' => 'create',
                 'message' => 'No identitas telah terdaftar',
             ),
-            'uniqueUpdate' => array(
-                'rule' => array('uniqueUpdate'),
-                'on' => 'update',
-                'message' => 'No identitas telah terdaftar'
-            )
         ),
         'address' => array(
             'notempty' => array(

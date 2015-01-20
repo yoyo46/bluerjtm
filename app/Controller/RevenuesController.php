@@ -262,7 +262,10 @@ class RevenuesController extends AppController {
             if($this->Ttuj->validates($data)){
                 if( !empty($data['TtujTipeMotor']['tipe_motor_id']) ) {
                     $dataTtujTipeMotor = array_filter($data['TtujTipeMotor']['tipe_motor_id']);
-                    $dataTtujPerlengkapan = array_filter($data['TtujPerlengkapan']['qty']);
+
+                    if( !empty($data['TtujPerlengkapan']['qty']) ) {
+                        $dataTtujPerlengkapan = array_filter($data['TtujPerlengkapan']['qty']);
+                    }
 
                     if( !empty($dataTtujTipeMotor) ) {
                         $result_data = array();
@@ -271,7 +274,10 @@ class RevenuesController extends AppController {
                         $validates_perlengkapan = true;
 
                         $resultTtujTipeMotor = $this->saveTtujTipeMotor($data_action, $dataTtujTipeMotor, $data);
-                        $resultTtujPerlengkapan = $this->saveTtujPerlengkapan($dataTtujPerlengkapan, $data);
+
+                        if( !empty($dataTtujPerlengkapan) ) {
+                            $resultTtujPerlengkapan = $this->saveTtujPerlengkapan($dataTtujPerlengkapan, $data);
+                        }
 
                         if( !empty($resultTtujTipeMotor) ) {
                             $result_data = $resultTtujTipeMotor['data'];
@@ -285,7 +291,10 @@ class RevenuesController extends AppController {
                         if( !empty($validates) && !empty($validates_perlengkapan) ) {
                             if($this->Ttuj->save($data)){
                                 $this->saveTtujTipeMotor($data_action, $dataTtujTipeMotor, $data, $this->Ttuj->id);
-                                $this->saveTtujPerlengkapan($dataTtujPerlengkapan, $data, $this->Ttuj->id);
+
+                                if( !empty($dataTtujPerlengkapan) ) {
+                                    $this->saveTtujPerlengkapan($dataTtujPerlengkapan, $data, $this->Ttuj->id);
+                                }
 
                                 $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s TTUJ'), $msg), 'success');
                                 $this->Log->logActivity( sprintf(__('Sukses %s TTUJ'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );  

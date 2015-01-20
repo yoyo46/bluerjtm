@@ -48,9 +48,9 @@
 							));
 					?>
 		        </div>
-		        <!-- <div class="form-group"> -->
+		        <div class="form-group">
 		        	<?php 
-							echo $this->Form->hidden('no_id',array(
+							echo $this->Form->input('no_id',array(
 								'label'=> __('No. ID *'), 
 								'class'=>'form-control',
 								'required' => false,
@@ -58,7 +58,7 @@
 								'type' => 'text',
 							));
 					?>
-		        <!-- </div> -->
+		        </div>
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('name',array(

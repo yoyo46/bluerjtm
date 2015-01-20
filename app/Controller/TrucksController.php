@@ -656,6 +656,7 @@ class TrucksController extends AppController {
     }
 
     function driver_add(){
+        $this->loadModel('Driver');
         $this->set('sub_module_title', 'Tambah Supir Truk');
         $this->doDriver();
     }
@@ -691,9 +692,6 @@ class TrucksController extends AppController {
             $data['Driver']['join_date'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_penerimaan']);
             $data['Driver']['expired_date_sim'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_expire_sim']);
             // $data['Driver']['photo'] = $this->MkCommon->getFilePhoto($data['Driver']['photo']);
-            if(empty($data['Driver']['no_id'])){
-                $data['Driver']['no_id'] = $this->Driver->generateNoId();
-            }
             
             if(!empty($data['Driver']['photo']['name']) && is_array($data['Driver']['photo'])){
                 $temp_image = $data['Driver']['photo'];
@@ -757,6 +755,10 @@ class TrucksController extends AppController {
             } else {
                 $this->request->data['Driver']['expired_date_sim'] = '';
             }
+        }
+
+        if( empty($id) && empty($this->request->data['Driver']['no_id']) ){
+            $this->request->data['Driver']['no_id'] = $this->Driver->generateNoId();
         }
 
         $this->loadModel('DriverRelation');
