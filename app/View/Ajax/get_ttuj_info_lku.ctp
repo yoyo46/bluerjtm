@@ -35,7 +35,7 @@
 
     $content = '-';
 	if(!empty($lku['Lku']['total_price'])){
-		$content = sprintf('%s %s', Configure::read('__Site.config_currency_code'), $lku['Lku']['total_price']).$this->Form->hidden('LkuPaymentDetail.total_biaya_klaim.', array(
+		$content = $this->Number->currency($lku['Lku']['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0)).$this->Form->hidden('LkuPaymentDetail.total_biaya_klaim.', array(
 	        'type' => 'text',
 	        'label' => false,
 	        'class' => 'form-control price-lku input_number',

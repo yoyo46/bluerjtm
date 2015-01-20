@@ -106,7 +106,7 @@
                                 ));
                                 $total += $max_qty;
 
-                                printf('%s %s', Configure::read('__Site.config_currency_code'), $max_qty);
+                                echo $this->Number->currency($max_qty, Configure::read('__Site.config_currency_code'), array('places' => 0));
                             }else{
                                 echo '-';
                             }
