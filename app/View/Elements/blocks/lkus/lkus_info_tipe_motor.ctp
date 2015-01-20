@@ -13,9 +13,9 @@
             ?>
         </div>
         <table class="table table-hover">
-        	<thead>
-        		<tr>
-        			<th><?php echo __('Tipe Motor');?></th>
+            <thead>
+                <tr>
+                    <th><?php echo __('Tipe Motor');?></th>
                     <th><?php echo __('Warna');?></th>
                     <th><?php echo __('No. Rangka');?></th>
                     <th><?php echo __('Keterangan');?></th>
@@ -23,9 +23,9 @@
                     <th><?php printf(__('Biaya Klaim (%s)'), Configure::read('__Site.config_currency_code'));?></th>
                     <th><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
                     <th><?php echo __('Action');?></th>
-        		</tr>
-        	</thead>
-        	<tbody class="tipe-motor-table">
+                </tr>
+            </thead>
+            <tbody class="tipe-motor-table">
                 <?php
                     $count = 1;
                     if(!empty($this->request->data['LkuDetail'])){
@@ -36,7 +36,7 @@
                         $price = (isset($this->request->data['LkuDetail'][$i]['price']) && !empty($this->request->data['LkuDetail'][$i]['price'])) ? $this->request->data['LkuDetail'][$i]['price'] : 0;
                         $qty = (isset($this->request->data['LkuDetail'][$i]['qty']) && !empty($this->request->data['LkuDetail'][$i]['qty'])) ? $this->request->data['LkuDetail'][$i]['qty'] : 0;
                 ?>
-        		<tr>
+                <tr>
                     <td>
                         <?php
                             echo $this->Form->input('LkuDetail.tipe_motor_id.', array(
@@ -49,7 +49,7 @@
                             ));
                         ?>
                     </td>
-        			<td class="lku-color-motor" align="center">
+                    <td class="lku-color-motor" align="center">
                         <?php
                             if( isset($this->request->data['LkuDetail'][$i]['ColorMotor']['name']) && !empty($this->request->data['LkuDetail'][$i]['ColorMotor']['name']) ){
                                 echo $this->request->data['LkuDetail'][$i]['ColorMotor']['name'];
@@ -121,7 +121,7 @@
                                 $total += $value_price;
                             }
 
-                            printf('%s %s', Configure::read('__Site.config_currency_code'), $value_price);
+                            echo $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0));
                         ?>
                     </td>
                     <td>
@@ -133,17 +133,21 @@
                             ));
                         ?>
                     </td>
-        		</tr>
+                </tr>
                 <?php
                     }
                 ?>
                 <tr id="field-grand-total-lku">
                     <td align="right" colspan="6"><?php echo __('Total Biaya Klaim')?></td>
-                    <td align="right" id="grand-total-lku"><?php printf('%s %s', Configure::read('__Site.config_currency_code'), $total); ?></td>
+                    <td align="right" id="grand-total-lku">
+                        <?php 
+                            echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                        ?>
+                    </td>
                     <td>&nbsp;</td>
                 </tr>
-        	</tbody>
-    	</table>
+            </tbody>
+        </table>
     </div>
 </div>
 

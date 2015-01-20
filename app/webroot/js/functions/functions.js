@@ -705,7 +705,7 @@ function getTotalLkuPayment(){
         }
     }
 
-    $('#grand-total-payment').text('IDR '+grand_total);
+    $('#grand-total-payment').text('IDR '+formatNumber(grand_total));
 }
 
 function getTotalLKU(self){
@@ -715,9 +715,11 @@ function getTotalLKU(self){
 
     if(typeof qty != 'undefined' && typeof val != 'undefined'){
         total = parseInt(val)*qty;
-        parent.find('.total-price-claim').text('IDR '+total);
-        grandTotalLku();
+        parent.find('.total-price-claim').text('IDR '+formatNumber(total));
+    }else{
+        parent.find('.total-price-claim').text('IDR 0');
     }
+    grandTotalLku();
 }
 
 function grandTotalLku(){
@@ -732,7 +734,7 @@ function grandTotalLku(){
         }
     };
 
-    $('#grand-total-lku').text('IDR '+total_price);
+    $('#grand-total-lku').text('IDR '+formatNumber(total_price));
 }
 
 var choose_item_info = function(){
