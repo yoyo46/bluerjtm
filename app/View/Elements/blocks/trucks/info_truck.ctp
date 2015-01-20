@@ -16,6 +16,8 @@
                     <dd><?php echo $truck['TruckBrand']['name'];?></dd>
                     <dt><?php echo __('Jenis Truk')?></dt>
                     <dd><?php echo $truck['TruckCategory']['name'];?></dd>
+                    <dt><?php echo __('Fasilitas Truk')?></dt>
+                    <dd><?php echo !empty($truck['TruckFacility']['name'])?$truck['TruckFacility']['name']:'-';?></dd>
                     <dt><?php echo __('No Rangka')?></dt>
                     <dd><?php echo $truck['Truck']['no_rangka'];?></dd>
                     <dt><?php echo __('No Mesin')?></dt>
@@ -23,7 +25,7 @@
                     <dt><?php echo __('Pemilik Truk')?></dt>
                     <dd><?php echo $truck['Company']['name'];?></dd>
                     <dt><?php echo __('Supir Truk')?></dt>
-                    <dd><?php echo $truck['Driver']['name'];?></dd>
+                    <dd><?php echo !empty($truck['Driver']['name'])?$truck['Driver']['name']:'-';?></dd>
                     <dt><?php echo __('Kapasitas')?></dt>
                     <dd><?php echo $truck['Truck']['capacity'];?></dd>
                     <dt><?php echo __('Tahun')?></dt>

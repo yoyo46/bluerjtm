@@ -34,6 +34,12 @@ class Truck extends AppModel {
                 'message' => 'Jenis truk harap diisi'
             ),
         ),
+        'truck_facility_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Fasilitas truk harap dipilih'
+            ),
+        ),
         'no_rangka' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -60,12 +66,12 @@ class Truck extends AppModel {
                 'message' => 'Nomor Mesin telah terdaftar',
             ),
         ),
-        'driver_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Supir truk harap diisi'
-            ),
-        ),
+        // 'driver_id' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Supir truk harap diisi'
+        //     ),
+        // ),
         'capacity' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -200,6 +206,10 @@ class Truck extends AppModel {
             'className' => 'TruckCategory',
             'foreignKey' => 'truck_category_id',
         ),
+        'TruckFacility' => array(
+            'className' => 'TruckFacility',
+            'foreignKey' => 'truck_facility_id',
+        ),
     );
 
     var $hasMany = array(
@@ -291,6 +301,7 @@ class Truck extends AppModel {
             $data = $truck['Truck'];
 
             $truck = $this->TruckCategory->getMerge($truck, $data['truck_category_id']);
+            $truck = $this->TruckFacility->getMerge($truck, $data['truck_facility_id']);
             $truck = $this->TruckBrand->getMerge($truck, $data['truck_brand_id']);
             $truck = $this->Company->getMerge($truck, $data['company_id']);
             $truck = $this->Driver->getMerge($truck, $data['driver_id']);

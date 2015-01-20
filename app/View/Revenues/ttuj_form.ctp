@@ -105,7 +105,7 @@
 										'class'=>'form-control',
 										'required' => false,
 										'empty' => __('Pilih No. Pol --'),
-										'readonly' => $disabled,
+										'disabled' => $disabled,
 										'div' => array(
 											'class' => 'truck_id'
 										),
@@ -412,6 +412,7 @@
 													'required' => false,
 													'type' => 'text',
 													'readonly' => true,
+													'error' => false,
 												));
 												echo $this->Form->hidden('uang_jalan_1_ori',array(
 													'class'=>'uang_jalan_1_ori',
@@ -594,6 +595,14 @@
 								</div>
 				    		</div>
 				    	</div>
+				        <?php 
+								echo $this->Form->error('uang_jalan_1', array(
+									'notempty' => __('Biaya Uang Jalan belum dibuat'),
+								), array(
+									'wrap' => 'div', 
+									'class' => 'error-message',
+								));
+			        	?>
 				    </div>
 				</div>
 			</div>
@@ -611,12 +620,12 @@
 					));
 
 					if( !empty($data_local['Ttuj']['is_draft']) || empty($data_local) ) {
-			    		echo $this->Form->button(__('Posting'), array(
+			    		echo $this->Form->button(__('Commit'), array(
 							'class'=> 'btn btn-success submit-form btn-lg',
 							'type' => 'submit',
 							'action_type' => 'commit'
 						));
-			    		echo $this->Form->button(__('Unposting'), array(
+			    		echo $this->Form->button(__('Draft'), array(
 							'class'=> 'btn btn-primary submit-form',
 							'type' => 'submit',
 							'action_type' => 'draft'

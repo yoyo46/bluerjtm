@@ -220,7 +220,8 @@ class RevenuesController extends AppController {
                     'Truck.id' => $truck_id,
                 ),
                 'fields' => array(
-                    'Truck.id', 'Truck.nopol'
+                    'Truck.id', 'Truck.nopol',
+                    'Truck.capacity'
                 ),
             ));
 
@@ -233,15 +234,15 @@ class RevenuesController extends AppController {
             $data['Ttuj']['driver_penganti_id'] = !empty($data['Ttuj']['driver_penganti_id'])?$data['Ttuj']['driver_penganti_id']:0;
             $data['Ttuj']['commission'] = !empty($uangJalan['UangJalan']['commission'])?$uangJalan['UangJalan']['commission']:0;
             $data['Ttuj']['commission_per_unit'] = !empty($uangJalan['UangJalan']['commission_per_unit'])?$uangJalan['UangJalan']['commission_per_unit']:0;
-            $data['Ttuj']['uang_jalan_1'] = !empty($data['Ttuj']['uang_jalan_1'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_jalan_1']):0;
-            $data['Ttuj']['uang_jalan_2'] = !empty($data['Ttuj']['uang_jalan_2'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_jalan_2']):0;
-            $data['Ttuj']['uang_kuli_muat'] = !empty($data['Ttuj']['uang_kuli_muat'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_kuli_muat']):0;
-            $data['Ttuj']['uang_kuli_bongkar'] = !empty($data['Ttuj']['uang_kuli_bongkar'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_kuli_bongkar']):0;
-            $data['Ttuj']['asdp'] = !empty($data['Ttuj']['asdp'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['asdp']):0;
-            $data['Ttuj']['uang_kawal'] = !empty($data['Ttuj']['uang_kawal'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_kawal']):0;
-            $data['Ttuj']['uang_keamanan'] = !empty($data['Ttuj']['uang_keamanan'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_keamanan']):0;
-            $data['Ttuj']['uang_jalan_extra'] = !empty($data['Ttuj']['uang_jalan_extra'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['uang_jalan_extra']):0;
-            $data['Ttuj']['min_capacity'] = !empty($data['Ttuj']['min_capacity'])?str_replace(array(',', ' '), array('', ''), $data['Ttuj']['min_capacity']):0;
+            $data['Ttuj']['uang_jalan_1'] = $this->MkCommon->convertPriceToString($data['Ttuj']['uang_jalan_1']);
+            $data['Ttuj']['uang_jalan_2'] = $this->MkCommon->convertPriceToString($data['Ttuj']['uang_jalan_2'], 0);
+            $data['Ttuj']['uang_kuli_muat'] = $this->MkCommon->convertPriceToString($data['Ttuj']['uang_kuli_muat'], 0);
+            $data['Ttuj']['uang_kuli_bongkar'] = $this->MkCommon->convertPriceToString($data['Ttuj']['uang_kuli_bongkar'], 0);
+            $data['Ttuj']['asdp'] = $this->MkCommon->convertPriceToString($data['Ttuj']['asdp'], 0);
+            $data['Ttuj']['uang_kawal'] = $this->MkCommon->convertPriceToString($data['Ttuj']['uang_kawal'], 0);
+            $data['Ttuj']['uang_keamanan'] = $this->MkCommon->convertPriceToString($data['Ttuj']['uang_keamanan'], 0);
+            $data['Ttuj']['uang_jalan_extra'] = $this->MkCommon->convertPriceToString($data['Ttuj']['uang_jalan_extra'], 0);
+            $data['Ttuj']['min_capacity'] = $this->MkCommon->convertPriceToString($data['Ttuj']['min_capacity'], 0);
             $data['Ttuj']['tgljam_berangkat'] = '';
 
             if( !empty($data['Ttuj']['tgl_berangkat']) ) {
@@ -346,64 +347,64 @@ class RevenuesController extends AppController {
                     $toCities = $this->UangJalan->getKotaTujuan($data['Ttuj']['from_city_id']);
 
                     if( !empty($data['Ttuj']['to_city_id']) ) {
-                        // $dataTruck = $this->UangJalan->getNopol($data['Ttuj']['customer_id'], $data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id']);
-                        $dataTruck = $this->UangJalan->getNopol($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id']);
+                        if( !empty($truck['Truck']['capacity']) ) {
+                            $dataTruck = $this->UangJalan->getNopol($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $truck['Truck']['capacity']);
 
-                        if( !empty($dataTruck) ) {
-                            $trucks = $dataTruck['result'];
-                            $uangJalan = $dataTruck['uangJalan'];
-                            $this->request->data['Ttuj']['uang_jalan_1_ori'] = $uang_jalan_1 = !empty($uangJalan['UangJalan']['uang_jalan_1'])?$uangJalan['UangJalan']['uang_jalan_1']:0;
-                            $uang_jalan_2 = !empty($uangJalan['UangJalan']['uang_jalan_2'])?$uangJalan['UangJalan']['uang_jalan_2']:0;
-                            $this->request->data['Ttuj']['uang_kuli_muat_ori'] = $uang_kuli_muat = !empty($uangJalan['UangJalan']['uang_kuli_muat'])?$uangJalan['UangJalan']['uang_kuli_muat']:0;
-                            $this->request->data['Ttuj']['uang_kuli_bongkar_ori'] = $uang_kuli_bongkar = !empty($uangJalan['UangJalan']['uang_kuli_bongkar'])?$uangJalan['UangJalan']['uang_kuli_bongkar']:0;
-                            $this->request->data['Ttuj']['asdp_ori'] = $asdp = !empty($uangJalan['UangJalan']['asdp'])?$uangJalan['UangJalan']['asdp']:0;
-                            $this->request->data['Ttuj']['uang_kawal_ori'] = $uang_kawal = !empty($uangJalan['UangJalan']['uang_kawal'])?$uangJalan['UangJalan']['uang_kawal']:0;
-                            $this->request->data['Ttuj']['uang_keamanan_ori'] = $uang_keamanan = !empty($uangJalan['UangJalan']['uang_keamanan'])?$uangJalan['UangJalan']['uang_keamanan']:0;
+                            if( !empty($dataTruck) ) {
+                                $uangJalan = $dataTruck;
+                                $this->request->data['Ttuj']['uang_jalan_1_ori'] = $uang_jalan_1 = !empty($uangJalan['UangJalan']['uang_jalan_1'])?$uangJalan['UangJalan']['uang_jalan_1']:0;
+                                $uang_jalan_2 = !empty($uangJalan['UangJalan']['uang_jalan_2'])?$uangJalan['UangJalan']['uang_jalan_2']:0;
+                                $this->request->data['Ttuj']['uang_kuli_muat_ori'] = $uang_kuli_muat = !empty($uangJalan['UangJalan']['uang_kuli_muat'])?$uangJalan['UangJalan']['uang_kuli_muat']:0;
+                                $this->request->data['Ttuj']['uang_kuli_bongkar_ori'] = $uang_kuli_bongkar = !empty($uangJalan['UangJalan']['uang_kuli_bongkar'])?$uangJalan['UangJalan']['uang_kuli_bongkar']:0;
+                                $this->request->data['Ttuj']['asdp_ori'] = $asdp = !empty($uangJalan['UangJalan']['asdp'])?$uangJalan['UangJalan']['asdp']:0;
+                                $this->request->data['Ttuj']['uang_kawal_ori'] = $uang_kawal = !empty($uangJalan['UangJalan']['uang_kawal'])?$uangJalan['UangJalan']['uang_kawal']:0;
+                                $this->request->data['Ttuj']['uang_keamanan_ori'] = $uang_keamanan = !empty($uangJalan['UangJalan']['uang_keamanan'])?$uangJalan['UangJalan']['uang_keamanan']:0;
 
-                            if( !empty($uangJalan['UangJalan']['uang_jalan_per_unit']) ) {
-                                $uang_jalan_1 = $uang_jalan_1*$totalMuatan;
-                                $uang_jalan_2 = 0;
-                            }
+                                if( !empty($uangJalan['UangJalan']['uang_jalan_per_unit']) ) {
+                                    $uang_jalan_1 = $uang_jalan_1*$totalMuatan;
+                                    $uang_jalan_2 = 0;
+                                }
 
-                            if( !empty($uangJalan['UangJalan']['uang_kuli_muat_per_unit']) ) {
-                                $uang_kuli_muat = $uang_kuli_muat*$totalMuatan;
-                            }
+                                if( !empty($uangJalan['UangJalan']['uang_kuli_muat_per_unit']) ) {
+                                    $uang_kuli_muat = $uang_kuli_muat*$totalMuatan;
+                                }
 
-                            if( !empty($uangJalan['UangJalan']['uang_kuli_bongkar_per_unit']) ) {
-                                $uang_kuli_bongkar = $uang_kuli_bongkar*$totalMuatan;
-                            }
+                                if( !empty($uangJalan['UangJalan']['uang_kuli_bongkar_per_unit']) ) {
+                                    $uang_kuli_bongkar = $uang_kuli_bongkar*$totalMuatan;
+                                }
 
-                            if( !empty($uangJalan['UangJalan']['asdp_per_unit']) ) {
-                                $asdp = $asdp*$totalMuatan;
-                            }
+                                if( !empty($uangJalan['UangJalan']['asdp_per_unit']) ) {
+                                    $asdp = $asdp*$totalMuatan;
+                                }
 
-                            if( !empty($uangJalan['UangJalan']['uang_kawal_per_unit']) == 1 ) {
-                                $uang_kawal = $uang_kawal*$totalMuatan;
-                            }
+                                if( !empty($uangJalan['UangJalan']['uang_kawal_per_unit']) == 1 ) {
+                                    $uang_kawal = $uang_kawal*$totalMuatan;
+                                }
 
-                            if( !empty($uangJalan['UangJalan']['uang_keamanan_per_unit']) == 1 ) {
-                                $uang_keamanan = $uang_keamanan*$totalMuatan;
-                            }
+                                if( !empty($uangJalan['UangJalan']['uang_keamanan_per_unit']) == 1 ) {
+                                    $uang_keamanan = $uang_keamanan*$totalMuatan;
+                                }
 
-                            $this->request->data['Ttuj']['uang_jalan_1'] = number_format($uang_jalan_1, 0);
-                            $this->request->data['Ttuj']['uang_kuli_muat'] = number_format($uang_kuli_muat, 0);
-                            $this->request->data['Ttuj']['uang_kuli_bongkar'] = number_format($uang_kuli_bongkar, 0);
-                            $this->request->data['Ttuj']['asdp'] = number_format($asdp, 0);
-                            $this->request->data['Ttuj']['uang_kawal'] = number_format($uang_kawal, 0);
-                            $this->request->data['Ttuj']['uang_keamanan'] = number_format($uang_keamanan, 0);
+                                $this->request->data['Ttuj']['uang_jalan_1'] = number_format($uang_jalan_1, 0);
+                                $this->request->data['Ttuj']['uang_kuli_muat'] = number_format($uang_kuli_muat, 0);
+                                $this->request->data['Ttuj']['uang_kuli_bongkar'] = number_format($uang_kuli_bongkar, 0);
+                                $this->request->data['Ttuj']['asdp'] = number_format($asdp, 0);
+                                $this->request->data['Ttuj']['uang_kawal'] = number_format($uang_kawal, 0);
+                                $this->request->data['Ttuj']['uang_keamanan'] = number_format($uang_keamanan, 0);
 
-                            $this->request->data['Ttuj']['uang_jalan_per_unit'] = !empty($uangJalan['UangJalan']['uang_jalan_per_unit'])?$uangJalan['UangJalan']['uang_jalan_per_unit']:0;
-                            $this->request->data['Ttuj']['uang_kuli_muat_per_unit'] = !empty($uangJalan['UangJalan']['uang_kuli_muat_per_unit'])?$uangJalan['UangJalan']['uang_kuli_muat_per_unit']:0;
-                            $this->request->data['Ttuj']['uang_kuli_bongkar_per_unit'] = !empty($uangJalan['UangJalan']['uang_kuli_bongkar_per_unit'])?$uangJalan['UangJalan']['uang_kuli_bongkar_per_unit']:0;
-                            $this->request->data['Ttuj']['asdp_per_unit'] = !empty($uangJalan['UangJalan']['asdp_per_unit'])?$uangJalan['UangJalan']['asdp_per_unit']:0;
-                            $this->request->data['Ttuj']['uang_kawal_per_unit'] = !empty($uangJalan['UangJalan']['uang_kawal_per_unit'])?$uangJalan['UangJalan']['uang_kawal_per_unit']:0;
-                            $this->request->data['Ttuj']['uang_keamanan_per_unit'] = !empty($uangJalan['UangJalan']['uang_keamanan_per_unit'])?$uangJalan['UangJalan']['uang_keamanan_per_unit']:0;
+                                $this->request->data['Ttuj']['uang_jalan_per_unit'] = !empty($uangJalan['UangJalan']['uang_jalan_per_unit'])?$uangJalan['UangJalan']['uang_jalan_per_unit']:0;
+                                $this->request->data['Ttuj']['uang_kuli_muat_per_unit'] = !empty($uangJalan['UangJalan']['uang_kuli_muat_per_unit'])?$uangJalan['UangJalan']['uang_kuli_muat_per_unit']:0;
+                                $this->request->data['Ttuj']['uang_kuli_bongkar_per_unit'] = !empty($uangJalan['UangJalan']['uang_kuli_bongkar_per_unit'])?$uangJalan['UangJalan']['uang_kuli_bongkar_per_unit']:0;
+                                $this->request->data['Ttuj']['asdp_per_unit'] = !empty($uangJalan['UangJalan']['asdp_per_unit'])?$uangJalan['UangJalan']['asdp_per_unit']:0;
+                                $this->request->data['Ttuj']['uang_kawal_per_unit'] = !empty($uangJalan['UangJalan']['uang_kawal_per_unit'])?$uangJalan['UangJalan']['uang_kawal_per_unit']:0;
+                                $this->request->data['Ttuj']['uang_keamanan_per_unit'] = !empty($uangJalan['UangJalan']['uang_keamanan_per_unit'])?$uangJalan['UangJalan']['uang_keamanan_per_unit']:0;
 
-                            if( !empty($data['Ttuj']['truck_id']) ) {
-                                $truckInfo = $this->Truck->getInfoTruck($data['Ttuj']['truck_id']);
-                                $this->request->data['Ttuj']['driver_name'] = !empty($truckInfo['Driver']['name'])?$truckInfo['Driver']['name']:false;
-                                $this->request->data['Ttuj']['truck_capacity'] = !empty($truckInfo['Truck']['capacity'])?$truckInfo['Truck']['capacity']:false;
-                                $this->request->data['Ttuj']['truck_capacity'] = !empty($truckInfo['Truck']['capacity'])?$truckInfo['Truck']['capacity']:false;
+                                if( !empty($data['Ttuj']['truck_id']) ) {
+                                    $truckInfo = $this->Truck->getInfoTruck($data['Ttuj']['truck_id']);
+                                    $this->request->data['Ttuj']['driver_name'] = !empty($truckInfo['Driver']['name'])?$truckInfo['Driver']['name']:false;
+                                    $this->request->data['Ttuj']['truck_capacity'] = !empty($truckInfo['Truck']['capacity'])?$truckInfo['Truck']['capacity']:false;
+                                    $this->request->data['Ttuj']['truck_capacity'] = !empty($truckInfo['Truck']['capacity'])?$truckInfo['Truck']['capacity']:false;
+                                }
                             }
                         }
                     }
@@ -436,6 +437,15 @@ class RevenuesController extends AppController {
                 }
                 $this->request->data = $data_local;
 
+                if( !empty($data_local['UangJalan']) ) {
+                    $this->request->data['Ttuj']['uang_jalan_1_ori'] = $this->MkCommon->convertPriceToString($data_local['UangJalan']['uang_jalan_1'], 0);
+                    $this->request->data['Ttuj']['uang_kuli_muat_ori'] = $this->MkCommon->convertPriceToString($data_local['UangJalan']['uang_kuli_muat'], 0);
+                    $this->request->data['Ttuj']['uang_kuli_bongkar_ori'] = $this->MkCommon->convertPriceToString($data_local['UangJalan']['uang_kuli_bongkar'], 0);
+                    $this->request->data['Ttuj']['asdp_ori'] = $this->MkCommon->convertPriceToString($data_local['UangJalan']['asdp'], 0);
+                    $this->request->data['Ttuj']['uang_kawal_ori'] = $this->MkCommon->convertPriceToString($data_local['UangJalan']['uang_kawal'], 0);
+                    $this->request->data['Ttuj']['uang_keamanan_ori'] = $this->MkCommon->convertPriceToString($data_local['UangJalan']['uang_keamanan'], 0);
+                }
+
                 if( !empty($this->request->data['Ttuj']['ttuj_date']) && $this->request->data['Ttuj']['ttuj_date'] != '0000-00-00' ) {
                     $this->request->data['Ttuj']['ttuj_date'] = date('d/m/Y', strtotime($this->request->data['Ttuj']['ttuj_date']));
                 } else {
@@ -450,19 +460,19 @@ class RevenuesController extends AppController {
                 if( !empty($this->request->data['Ttuj']['from_city_id']) ) {
                     // $toCities = $this->UangJalan->getKotaTujuan($this->request->data['Ttuj']['customer_id'], $this->request->data['Ttuj']['from_city_id']);
                     $toCities = $this->UangJalan->getKotaTujuan($this->request->data['Ttuj']['from_city_id']);
-
-                    if( !empty($this->request->data['Ttuj']['to_city_id']) ) {
-                        // $dataTruck = $this->UangJalan->getNopol($this->request->data['Ttuj']['customer_id'], $this->request->data['Ttuj']['from_city_id'], $this->request->data['Ttuj']['to_city_id']);
-                        $dataTruck = $this->UangJalan->getNopol($this->request->data['Ttuj']['from_city_id'], $this->request->data['Ttuj']['to_city_id']);
-
-                        if( !empty($dataTruck) ) {
-                            $trucks = $dataTruck['result'];
-                        }
-                    }
                 }
             // }
         }
 
+        $trucks = $this->Truck->getData('list', array(
+            'conditions' => array(
+                'Truck.driver_id <>' => 0,
+                'Truck.status' => 1,
+            ),
+            'fields' => array(
+                'Truck.id', 'Truck.nopol'
+            ),
+        ));
         $customers = $this->Ttuj->Customer->getData('list', array(
             'conditions' => array(
                 'Customer.status' => 1

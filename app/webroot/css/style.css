@@ -3663,3 +3663,8 @@ input[type=radio], input[type=checkbox] {
 .print-action {
   margin-bottom: 20px;
 }
+
+table.report {
+  width: auto;
+  max-height: none;
+}

@@ -8,6 +8,12 @@ class UangJalan extends AppModel {
         //         'message' => 'Customer harap dipilih'
         //     ),
         // ),
+        'title' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Nama Uang Jalan harap diisi'
+            ),
+        ),
         'group_classification_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -314,34 +320,35 @@ class UangJalan extends AppModel {
     }
 
     // function getNopol ($customer_id, $from_city_id, $to_city_id) {
-    function getNopol ( $from_city_id, $to_city_id ) {
+    function getNopol ( $from_city_id, $to_city_id, $capacity ) {
         $result = false;
         $this->Truck = ClassRegistry::init('Truck');
         $uangJalan = $this->getData('first', array(
             'conditions' => array(
                 'UangJalan.status' => 1,
-                // 'UangJalan.customer_id' => $customer_id,
+                'UangJalan.capacity' => $capacity,
                 'UangJalan.from_city_id' => $from_city_id,
                 'UangJalan.to_city_id' => $to_city_id,
             ),
         ));
 
-        if( !empty($uangJalan) ) {
-            $result = $this->Truck->getData('list', array(
-                'conditions' => array(
-                    'Truck.status' => 1,
-                    'Truck.capacity' => $uangJalan['UangJalan']['capacity'],
-                ),
-                'fields' => array(
-                    'Truck.id', 'Truck.nopol'
-                ),
-            ));
-        }
+        // if( !empty($uangJalan) ) {
+        //     $result = $this->Truck->getData('list', array(
+        //         'conditions' => array(
+        //             'Truck.status' => 1,
+        //             'Truck.capacity' => $uangJalan['UangJalan']['capacity'],
+        //         ),
+        //         'fields' => array(
+        //             'Truck.id', 'Truck.nopol'
+        //         ),
+        //     ));
+        // }
 
-        return array(
-            'result' => $result,
-            'uangJalan' => $uangJalan,
-        );
+        // return array(
+        //     'result' => $result,
+        //     'uangJalan' => $uangJalan,
+        // );
+        return $uangJalan;
     }
 }
 ?>

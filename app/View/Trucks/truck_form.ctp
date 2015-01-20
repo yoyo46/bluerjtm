@@ -72,6 +72,19 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
+						echo $this->Form->label('truck_facility_id',__('Fasilitas Truk *')); 
+
+						echo $this->Form->input('truck_facility_id',array(
+							'label'=> false, 
+							'class'=>'form-control',
+							'required' => false,
+							'empty' => __('Pilih Fasilitas Truk'),
+							'options' => $truck_facilities
+						));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
 						echo $this->Form->label('no_rangka',__('No Rangka *')); 
 
 						echo $this->Form->input('no_rangka',array(
@@ -110,7 +123,7 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('driver_id',__('Supir Truk *')); 
+						echo $this->Form->label('driver_id',__('Supir Truk')); 
 
 						echo $this->Form->input('driver_id',array(
 							'label'=> false, 
@@ -369,6 +382,7 @@
 		   	</div>
 		</div>
 	</div>
+	<div class="clear"></div>
 	<div class="col-sm-6">
 		<div class="box box-success">
 			<div class="box-header">

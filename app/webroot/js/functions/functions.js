@@ -47,6 +47,7 @@ var qtyMuatanPress = function ( obj ) {
         }
 
         var uang_jalan_1 = $('.uang_jalan_1_ori').val();
+        var uang_jalan_2 = $('.uang_jalan_2').val().replace(/,/gi, "");
         var uang_jalan_per_unit = $('.uang_jalan_per_unit').val();
         var uang_kuli_muat = $('.uang_kuli_muat_ori').val();
         var uang_kuli_muat_per_unit = $('.uang_kuli_muat_per_unit').val();
@@ -289,7 +290,7 @@ $(function() {
             });
         } else {
             $('#getTruck').val('').attr('readonly', true);
-            $('#getInfoTruck').val('').attr('readonly', true);
+            $('#getInfoTruck').val('').attr('disabled', true);
             $('.driver_name').val('');
             $('.truck_capacity').val('');
             $('#biaya-uang-jalan input').val('');
@@ -302,105 +303,20 @@ $(function() {
         var from_city_id = $('.from_city #getKotaTujuan').val();
 
         if( self.val() != '' ) {
-            $.ajax({
-                // url: '/ajax/getNopol/'+from_city_id+'/'+self.val()+'/'+'/'+customer_id+'/',
-                url: '/ajax/getNopol/'+from_city_id+'/'+self.val()+'/',
-                type: 'POST',
-                success: function(response, status) {
-                    var total_muatan = parseInt($('.total-unit-muatan').html());
-                    var uang_jalan_1 = $(response).filter('#uang_jalan_1').html().replace(/,/gi, "");
-                    var uang_jalan_2 = $(response).filter('#uang_jalan_2').html().replace(/,/gi, "");
-                    var uang_jalan_per_unit = $(response).filter('#uang_jalan_per_unit').html();
-
-                    var uang_kuli_muat = $(response).filter('#uang_kuli_muat').html().replace(/,/gi, "");
-                    var uang_kuli_muat_per_unit = $(response).filter('#uang_kuli_muat_per_unit').html();
-
-                    var uang_kuli_bongkar = $(response).filter('#uang_kuli_bongkar').html().replace(/,/gi, "");
-                    var uang_kuli_bongkar_per_unit = $(response).filter('#uang_kuli_bongkar_per_unit').html();
-
-                    // var commission = $(response).filter('#commission').html().replace(/,/gi, "");
-                    // var commission_per_unit = $(response).filter('#commission_per_unit').html();
-
-                    var asdp = $(response).filter('#asdp').html().replace(/,/gi, "");
-                    var asdp_per_unit = $(response).filter('#asdp_per_unit').html();
-
-                    var uang_kawal = $(response).filter('#uang_kawal').html().replace(/,/gi, "");
-                    var uang_kawal_per_unit = $(response).filter('#uang_kawal_per_unit').html();
-
-                    var uang_keamanan = $(response).filter('#uang_keamanan').html().replace(/,/gi, "");
-                    var uang_keamanan_per_unit = $(response).filter('#uang_keamanan_per_unit').html();
-
-                    if( isNaN( total_muatan ) || total_muatan == 0 ) {
-                        total_muatan = 1;
-                    }
-
-                    if( uang_jalan_per_unit == 1 ) {
-                        uang_jalan_1 = uang_jalan_1*total_muatan;
-                        uang_jalan_2 = 0;
-                        $('.wrapper_uang_jalan_2').addClass('hide');
-                    } else {
-                        $('.wrapper_uang_jalan_2').removeClass('hide');
-                    }
-
-                    if( uang_kuli_muat_per_unit == 1 ) {
-                        uang_kuli_muat = uang_kuli_muat*total_muatan;
-                    }
-
-                    if( uang_kuli_bongkar_per_unit == 1 ) {
-                        uang_kuli_bongkar = uang_kuli_bongkar*total_muatan;
-                    }
-
-                    if( asdp_per_unit == 1 ) {
-                        asdp = asdp*total_muatan;
-                    }
-
-                    if( uang_kawal_per_unit == 1 ) {
-                        uang_kawal = uang_kawal*total_muatan;
-                    }
-
-                    if( uang_keamanan_per_unit == 1 ) {
-                        uang_keamanan = uang_keamanan*total_muatan;
-                    }
-
-                    $('.truck_id #getInfoTruck').attr('readonly', false).html($(response).filter('#truck_id').html());
-                    $('.uang_jalan_1').val( formatNumber( uang_jalan_1, 0 ) );
-                    $('.uang_jalan_1_ori').val( uang_jalan_1 );
-                    $('.uang_jalan_per_unit').val( uang_jalan_per_unit );
-
-                    $('.uang_jalan_2').val( formatNumber( uang_jalan_2, 0 ) );
-
-                    // $('.commission').val( formatNumber( commission, 0 ) );
-                    $('.uang_kuli_muat').val( formatNumber( uang_kuli_muat, 0 ) );
-                    $('.uang_kuli_muat_ori').val( uang_kuli_muat );
-                    $('.uang_kuli_muat_per_unit').val( uang_kuli_muat_per_unit );
-
-                    $('.uang_kuli_bongkar').val( formatNumber( uang_kuli_bongkar, 0 ) );
-                    $('.uang_kuli_bongkar_ori').val( uang_kuli_bongkar );
-                    $('.uang_kuli_bongkar_per_unit').val( uang_kuli_bongkar );
-
-                    $('.asdp').val( formatNumber( asdp, 0 ) );
-                    $('.asdp_ori').val( formatNumber( asdp, 0 ) );
-                    $('.asdp_per_unit').val( asdp_ori );
-
-                    $('.uang_kawal').val( formatNumber( uang_kawal, 0 ) );
-                    $('.uang_kawal_ori').val( uang_kawal );
-                    $('.uang_kawal_per_unit').val( uang_kawal_per_unit );
-
-                    $('.uang_keamanan').val( formatNumber( uang_keamanan, 0 ) );
-                    $('.uang_keamanan_ori').val( uang_keamanan );
-                    $('.uang_keamanan_per_unit').val( uang_keamanan_per_unit );
-
-                    $('.uang_jalan_extra').val($(response).filter('#uang_jalan_extra').html());
-                    $('.min_capacity').val($(response).filter('#min_capacity').html());
-                    // $('.is_unit').val($(response).filter('#is_unit').html());
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                    return false;
-                }
-            });
+            // $.ajax({
+            //     // url: '/ajax/getNopol/'+from_city_id+'/'+self.val()+'/'+'/'+customer_id+'/',
+            //     url: '/ajax/getNopol/'+from_city_id+'/'+self.val()+'/',
+            //     type: 'POST',
+            //     success: function(response, status) {
+                    $('.truck_id #getInfoTruck').attr('disabled', false);
+            //     },
+            //     error: function(XMLHttpRequest, textStatus, errorThrown) {
+            //         alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+            //         return false;
+            //     }
+            // });
         } else {
-            $('#getInfoTruck').val('').attr('readonly', true);
+            $('#getInfoTruck').val('').attr('disabled', true);
             $('.driver_name').val('');
             $('.truck_capacity').val('');
             $('#biaya-uang-jalan input').val('');
@@ -409,14 +325,132 @@ $(function() {
 
     $('#getInfoTruck').change(function() {
         var self = $(this);
+        var from_city_id = $('.from_city #getKotaTujuan').val();
+        var to_city_id = $('.to_city #getTruck').val();
 
         if( self.val() != '' ) {
             $.ajax({
-                url: '/ajax/getInfoTruck/'+self.val()+'/',
+                url: '/ajax/getInfoTruck/' + from_city_id + '/' + to_city_id + '/' + self.val() + '/',
                 type: 'POST',
                 success: function(response, status) {
                     $('.truck_capacity').val($(response).filter('#truck_capacity').html());
                     $('.driver_name').val($(response).filter('#driver_name').html());
+
+                    var total_muatan = parseInt($('.total-unit-muatan').html());
+                    var uang_jalan_1 = $(response).filter('#uang_jalan_1').html().replace(/,/gi, "");
+
+                    if( uang_jalan_1 != 0 ) {
+                        var uang_jalan_1_ori = uang_jalan_1;
+                        var uang_jalan_2 = $(response).filter('#uang_jalan_2').html().replace(/,/gi, "");
+                        var uang_jalan_per_unit = $(response).filter('#uang_jalan_per_unit').html();
+
+                        var uang_kuli_muat = $(response).filter('#uang_kuli_muat').html().replace(/,/gi, "");
+                        var uang_kuli_muat_ori = uang_kuli_muat;
+                        var uang_kuli_muat_per_unit = $(response).filter('#uang_kuli_muat_per_unit').html();
+
+                        var uang_kuli_bongkar = $(response).filter('#uang_kuli_bongkar').html().replace(/,/gi, "");
+                        var uang_kuli_bongkar_ori = uang_kuli_bongkar;
+                        var uang_kuli_bongkar_per_unit = $(response).filter('#uang_kuli_bongkar_per_unit').html();
+
+                        var asdp = $(response).filter('#asdp').html().replace(/,/gi, "");
+                        var asdp_ori = asdp;
+                        var asdp_per_unit = $(response).filter('#asdp_per_unit').html();
+
+                        var uang_kawal = $(response).filter('#uang_kawal').html().replace(/,/gi, "");
+                        var uang_kawal_ori = uang_kawal;
+                        var uang_kawal_per_unit = $(response).filter('#uang_kawal_per_unit').html();
+
+                        var uang_keamanan = $(response).filter('#uang_keamanan').html().replace(/,/gi, "");
+                        var uang_keamanan_ori = uang_keamanan;
+                        var uang_keamanan_per_unit = $(response).filter('#uang_keamanan_per_unit').html();
+
+                        var uang_jalan_extra = $(response).filter('#uang_jalan_extra').html();
+                        var min_capacity = $(response).filter('#min_capacity').html();
+
+                        if( isNaN( total_muatan ) || total_muatan == 0 ) {
+                            total_muatan = 1;
+                        }
+
+                        if( uang_jalan_per_unit == 1 ) {
+                            uang_jalan_1 = uang_jalan_1*total_muatan;
+                            uang_jalan_2 = 0;
+                            $('.wrapper_uang_jalan_2').addClass('hide');
+                        } else {
+                            $('.wrapper_uang_jalan_2').removeClass('hide');
+                        }
+
+                        if( uang_kuli_muat_per_unit == 1 ) {
+                            uang_kuli_muat = uang_kuli_muat*total_muatan;
+                        }
+
+                        if( uang_kuli_bongkar_per_unit == 1 ) {
+                            uang_kuli_bongkar = uang_kuli_bongkar*total_muatan;
+                        }
+
+                        if( asdp_per_unit == 1 ) {
+                            asdp = asdp*total_muatan;
+                        }
+
+                        if( uang_kawal_per_unit == 1 ) {
+                            uang_kawal = uang_kawal*total_muatan;
+                        }
+
+                        if( uang_keamanan_per_unit == 1 ) {
+                            uang_keamanan = uang_keamanan*total_muatan;
+                        }
+                    } else {
+                        var uang_jalan_1 = '';
+                        var uang_jalan_1_ori = 0;
+                        var uang_jalan_2 = '';
+                        var uang_jalan_per_unit = '';
+                        var uang_kuli_muat = '';
+                        var uang_kuli_muat_ori = 0;
+                        var uang_kuli_muat_per_unit = '';
+                        var uang_kuli_bongkar = '';
+                        var uang_kuli_bongkar_ori = 0;
+                        var uang_kuli_bongkar_per_unit = '';
+                        var asdp = '';
+                        var asdp_ori = 0;
+                        var asdp_per_unit = '';
+                        var uang_kawal = '';
+                        var uang_kawal_ori = 0;
+                        var uang_kawal_per_unit = '';
+                        var uang_keamanan = '';
+                        var uang_keamanan_ori = 0;
+                        var uang_keamanan_per_unit = '';
+
+                        var uang_jalan_extra = '';
+                        var min_capacity = 0;
+                    }
+
+                    $('.uang_jalan_1').val( formatNumber( uang_jalan_1, 0 ) );
+                    $('.uang_jalan_1_ori').val( uang_jalan_1 );
+                    $('.uang_jalan_per_unit').val( uang_jalan_per_unit );
+
+                    $('.uang_jalan_2').val( formatNumber( uang_jalan_2, 0 ) );
+
+                    $('.uang_kuli_muat').val( formatNumber( uang_kuli_muat, 0 ) );
+                    $('.uang_kuli_muat_ori').val( uang_kuli_muat_ori );
+                    $('.uang_kuli_muat_per_unit').val( uang_kuli_muat_per_unit );
+
+                    $('.uang_kuli_bongkar').val( formatNumber( uang_kuli_bongkar, 0 ) );
+                    $('.uang_kuli_bongkar_ori').val( uang_kuli_bongkar_ori );
+                    $('.uang_kuli_bongkar_per_unit').val( uang_kuli_bongkar_per_unit );
+
+                    $('.asdp').val( formatNumber( asdp, 0 ) );
+                    $('.asdp_ori').val( asdp_ori );
+                    $('.asdp_per_unit').val( asdp_per_unit );
+
+                    $('.uang_kawal').val( formatNumber( uang_kawal, 0 ) );
+                    $('.uang_kawal_ori').val( uang_kawal_ori );
+                    $('.uang_kawal_per_unit').val( uang_kawal_per_unit );
+
+                    $('.uang_keamanan').val( formatNumber( uang_keamanan, 0 ) );
+                    $('.uang_keamanan_ori').val( uang_keamanan_ori );
+                    $('.uang_keamanan_per_unit').val( uang_keamanan_per_unit );
+
+                    $('.uang_jalan_extra').val( formatNumber( uang_jalan_extra, 0 ) );
+                    $('.min_capacity').val( min_capacity );
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
@@ -426,6 +460,7 @@ $(function() {
         } else {
             $('.driver_name').val('');
             $('.truck_capacity').val('');
+            $('#biaya-uang-jalan input').val('');
         }
     });
 
@@ -624,7 +659,7 @@ $(function() {
         } else {
             $('#getKotaTujuan').val('').attr('readonly', true);
             $('#getTruck').val('').attr('readonly', true);
-            $('#getInfoTruck').val('').attr('readonly', true);
+            $('#getInfoTruck').val('').attr('disabled', true);
             $('.driver_name').val('');
             $('.truck_capacity').val('');
             $('#biaya-uang-jalan input').val('');

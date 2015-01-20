@@ -21,6 +21,9 @@ class RjTruckComponent extends Component {
 				if( !empty($refine['TruckCategory']['name']) ) {
 					$refine_conditions['TruckCategory']['name'] = $refine['TruckCategory']['name'];
 				}
+				if( !empty($refine['TruckFacility']['name']) ) {
+					$refine_conditions['TruckFacility']['name'] = $refine['TruckFacility']['name'];
+				}
 				if( !empty($refine['Truck']['nopol']) ) {
 					$refine_conditions['Truck']['nopol'] = $refine['Truck']['nopol'];
 				}
@@ -70,6 +73,13 @@ class RjTruckComponent extends Component {
 		}
 		if(isset($refine['TruckCategory']) && !empty($refine['TruckCategory'])) {
 			foreach($refine['TruckCategory'] as $param => $value) {
+				if($value) {
+					$parameters[trim($param)] = rawurlencode($value);
+				}
+			}
+		}
+		if(isset($refine['TruckFacility']) && !empty($refine['TruckFacility'])) {
+			foreach($refine['TruckFacility'] as $param => $value) {
 				if($value) {
 					$parameters[trim($param)] = rawurlencode($value);
 				}

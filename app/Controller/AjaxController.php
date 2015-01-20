@@ -32,28 +32,34 @@ class AjaxController extends AppController {
 	}
 
 	// function getNopol( $from_city_id = false, $to_city_id = false, $customer_id = false ) {
-	function getNopol( $from_city_id = false, $to_city_id = false ) {
-		$this->loadModel('UangJalan');
-		// $data = $this->UangJalan->getNopol($customer_id, $from_city_id, $to_city_id);
-		$data = $this->UangJalan->getNopol($from_city_id, $to_city_id);
+	// function getNopol( $from_city_id = false, $to_city_id = false ) {
+	// 	$this->loadModel('UangJalan');
+	// 	// $data = $this->UangJalan->getNopol($customer_id, $from_city_id, $to_city_id);
+	// 	$data = $this->UangJalan->getNopol($from_city_id, $to_city_id);
 
-		if( !empty($data) ) {
-			$result = $data['result'];
-			$uangJalan = $data['uangJalan'];
+	// 	if( !empty($data) ) {
+	// 		$result = $data['result'];
+	// 		$uangJalan = $data['uangJalan'];
+	// 	}
+
+	// 	$this->set(compact(
+	// 		'result', 'uangJalan'
+	// 	));
+	// }
+
+	function getInfoTruck( $from_city_id = false, $to_city_id = false, $truck_id = false ) {
+		$this->loadModel('UangJalan');
+		$this->loadModel('Truck');
+		$result = $this->Truck->getInfoTruck($truck_id);
+
+		if( !empty($result) ) {
+			$uangJalan = $this->UangJalan->getNopol( $from_city_id, $to_city_id, $result['Truck']['capacity'] );
 		}
 
 		$this->set(compact(
 			'result', 'uangJalan'
 		));
-	}
-
-	function getInfoTruck( $truck_id = false ) {
-		$this->loadModel('Truck');
-		$result = $this->Truck->getInfoTruck($truck_id);
-
-		$this->set(compact(
-			'result'
-		));
+		$this->render('get_nopol');
 	}
 
 	function getInfoTtuj($ttuj_id, $is_payment = false){

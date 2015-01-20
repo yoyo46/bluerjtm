@@ -115,7 +115,7 @@ class MkCommonComponent extends Component {
         return $result;
     }
 
-    function convertPriceToString ( $price, $separator = array(',', ' '), $result = '' ) {
+    function convertPriceToString ( $price, $result = '' ) {
     	if( !empty($price) ) {
     		$resultTmp = str_replace(array(',', ' '), array('', ''), trim($price));
 

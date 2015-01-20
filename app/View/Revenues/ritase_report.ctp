@@ -1,6 +1,11 @@
 <?php 
         if( empty($data_action) ){
             $this->Html->addCrumb($sub_module_title);
+            $addStyle = '';
+
+            if( !empty($cities) ) {
+                $addStyle = 'min-width: 1000px;';
+            }
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -107,7 +112,7 @@
         </div>
     </div>
     <div class="table-responsive">
-        <table class="table table-bordered" style="min-width: 1500px;">
+        <table class="table table-bordered report" style="<?php echo $addStyle; ?>">
             <thead>
                 <tr>
                     <?php 
@@ -141,10 +146,14 @@
                                 'class' => 'text-center text-middle',
                                 'rowspan' => 2,
                             ));
-                            echo $this->Html->tag('th', __('Tujuan'), array(
-                                'colspan' => count($cities),
-                                'class' => 'text-center',
-                            ));
+
+                            if( !empty($cities) ) {
+                                echo $this->Html->tag('th', __('Tujuan'), array(
+                                    'colspan' => count($cities),
+                                    'class' => 'text-center',
+                                ));
+                            }
+
                             echo $this->Html->tag('th', __('Pencapaian (%)'), array(
                                 'style' => 'width: 120px;',
                                 'class' => 'text-center text-middle',
@@ -158,10 +167,9 @@
                                 foreach ($cities as $key => $value) {
                                     echo $this->Html->tag('th', $value, array(
                                         'class' => 'text-center',
+                                        'style' => 'width: 120px;',
                                     ));
                                 }
-                            } else {
-                                echo '<th>&nbsp;</th>';
                             }
                     ?>
                 </tr>

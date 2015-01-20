@@ -145,6 +145,7 @@ class TrucksController extends AppController {
                 $msg = 'menambah';
             }
             
+            $data['Truck']['driver_id'] = (!empty($data['Truck']['driver_id'])) ? $data['Truck']['driver_id'] : 0;
             $data['Truck']['tgl_bpkb'] = (!empty($data['Truck']['tgl_bpkb'])) ? $this->MkCommon->getDate($data['Truck']['tgl_bpkb']) : '';
             $data['Truck']['tgl_stnk'] = (!empty($data['Truck']['tgl_stnk'])) ? $this->MkCommon->getDate($data['Truck']['tgl_stnk']) : '';
             $data['Truck']['tgl_stnk_plat'] = (!empty($data['Truck']['tgl_stnk_plat'])) ? $this->MkCommon->getDate($data['Truck']['tgl_stnk_plat']) : '';
@@ -299,6 +300,14 @@ class TrucksController extends AppController {
                 'TruckCategory.id', 'TruckCategory.name'
             )
         ));
+        $truck_facilities = $this->Truck->TruckFacility->getData('list', array(
+            'conditions' => array(
+                'TruckFacility.status' => 1
+            ),
+            'fields' => array(
+                'TruckFacility.id', 'TruckFacility.name'
+            )
+        ));
         $companies = $this->Truck->Company->getData('list', array(
             'conditions' => array(
                 'Company.status' => 1
@@ -348,7 +357,8 @@ class TrucksController extends AppController {
         $this->set('active_menu', 'trucks');
         $this->set(compact(
             'truck_brands', 'truck_categories', 'truck_brands', 
-            'companies', 'drivers', 'years', 'customers'
+            'companies', 'drivers', 'years', 'customers',
+            'truck_facilities'
         ));
         $this->render('truck_form');
     }
@@ -2327,5 +2337,126 @@ class TrucksController extends AppController {
         }else if($action == 'excel'){
             $this->layout = 'ajax';
         }
+    }
+
+    function facilities(){
+        $this->loadModel('TruckFacility');
+        $options = array(
+            'conditions' => array(
+                'TruckFacility.status' => 1
+            )
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['TruckFacility']['name'] = $name;
+                $options['conditions']['TruckFacility.name LIKE '] = '%'.$name.'%';
+            }
+        }
+        $this->paginate = $this->TruckFacility->getData('paginate', $options);
+        $truckFacilities = $this->paginate('TruckFacility');
+
+        $this->set('active_menu', 'trucks');
+        $this->set('sub_module_title', 'Fasilitas Truk');
+        $this->set('truckFacilities', $truckFacilities);
+    }
+
+    function facility_add(){
+        $this->loadModel('TruckFacility');
+        $this->set('sub_module_title', 'Tambah Fasilitas Truk');
+        $this->doFacility();
+    }
+
+    function facility_edit($id){
+        $this->loadModel('TruckFacility');
+        $this->set('sub_module_title', 'Rubah Fasilitas Truk');
+        $truckFacility = $this->TruckFacility->getData('first', array(
+            'conditions' => array(
+                'TruckFacility.id' => $id
+            )
+        ));
+
+        if(!empty($truckFacility)){
+            $this->doFacility($id, $truckFacility);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Fasilitas Truk tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'trucks',
+                'action' => 'facilities'
+            ));
+        }
+    }
+
+    function doFacility($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+
+            if($id && $data_local){
+                $this->TruckFacility->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->TruckFacility->create();
+                $msg = 'menambah';
+            }
+            $this->TruckFacility->set($data);
+
+            if($this->TruckFacility->validates($data)){
+                if($this->TruckFacility->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Fasilitas Truk'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Fasilitas Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->redirect(array(
+                        'controller' => 'trucks',
+                        'action' => 'facilities'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Fasilitas Truk'), $msg), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal %s Fasilitas Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );  
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Fasilitas Truk'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data= $data_local;
+            }
+        }
+
+        $this->set('active_menu', 'trucks');
+        $this->render('facility_form');
+    }
+
+    function facility_toggle($id){
+        $this->loadModel('TruckFacility');
+        $locale = $this->TruckFacility->getData('first', array(
+            'conditions' => array(
+                'TruckFacility.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['TruckFacility']['status']){
+                $value = false;
+            }
+
+            $this->TruckFacility->id = $id;
+            $this->TruckFacility->set('status', $value);
+            if($this->TruckFacility->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Fasilitas Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Fasilitas Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Fasilitas Truk tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
     }
 }

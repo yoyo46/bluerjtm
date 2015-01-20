@@ -60,6 +60,12 @@ class Ttuj extends AppModel {
                 'message' => 'Tgl & Jam Tiba harap dipilih'
             ),
         ),
+        'uang_jalan_1' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Biaya Uang Jalan belum disetting'
+            ),
+        ),
 	);
 
     var $belongsTo = array(
@@ -113,6 +119,7 @@ class Ttuj extends AppModel {
                     'City'
                 ),
                 'TtujPerlengkapan',
+                'UangJalan'
             ),
             'fields' => array(),
         );

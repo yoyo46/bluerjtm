@@ -212,9 +212,9 @@
                         } else if(!empty($value['Ttuj']['is_arrive'])){
                             echo $this->Html->tag('td', '<span class="label label-info">Tiba</span>');
                         } else if(!empty($value['Ttuj']['is_draft'])){
-                            echo $this->Html->tag('td', '<span class="label label-default">Unposting</span>');
+                            echo $this->Html->tag('td', '<span class="label label-default">Draft</span>');
                         } else{
-                            echo $this->Html->tag('td', '<span class="label label-primary">Posting</span>');
+                            echo $this->Html->tag('td', '<span class="label label-primary">Commit</span>');
                         }
                 ?>
                 <td><?php echo $this->Common->customDate($value['Ttuj']['created']);?></td>
