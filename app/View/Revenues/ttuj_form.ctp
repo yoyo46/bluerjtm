@@ -261,7 +261,7 @@
 													'class'=>'form-control',
 													'required' => false,
 													'empty' => __('Pilih Tujuan --'),
-													'options' => $fromCities,
+													'options' => $cities,
 												)));
 											}
 
@@ -300,7 +300,7 @@
 													'class'=>'form-control',
 													'required' => false,
 													'empty' => __('Tujuan --'),
-													'options' => $fromCities,
+													'options' => $cities,
 												)));
 											}
 
@@ -557,8 +557,20 @@
 									</div>
 								</div>
 						    	<div class="form-group">
+							    	<?php 
+											echo $this->Form->input('min_capacity',array(
+												'label'=> __('Minimum Kapasitas'), 
+												'class'=>'form-control min_capacity',
+												'required' => false,
+												'empty' => __('Minimum Kapasitas'),
+												'type' => 'text',
+												'readonly' => true,
+											));
+									?>
+								</div>
+						    	<div class="form-group">
 						    		<?php 
-						    				echo $this->Form->label('uang_jalan_extra', __('Uang Jalan Extra *'));
+						    				echo $this->Form->label('uang_jalan_extra', __('Uang Jalan Extra'));
 						    		?>
 				                    <div class="input-group">
 								    	<?php 
@@ -573,22 +585,8 @@
 													'type' => 'text',
 													'readonly' => true,
 												));
-										?>
-									</div>
-								</div>
-						    	<div class="form-group">
-						    		<?php 
-						    				echo $this->Form->label('min_capacity', __('Minimum Kapasitas *'));
-						    		?>
-				                    <div class="input-group">
-								    	<?php 
-												echo $this->Form->input('min_capacity',array(
-													'label'=> false, 
-													'class'=>'form-control min_capacity',
-													'required' => false,
-													'empty' => __('Minimum Kapasitas'),
-													'type' => 'text',
-													'readonly' => true,
+												echo $this->Form->hidden('uang_jalan_extra_ori',array(
+													'class'=>'uang_jalan_extra_ori',
 												));
 										?>
 									</div>
@@ -662,6 +660,9 @@
 		echo $this->Form->hidden('uang_keamanan_per_unit',array(
 			'class'=>'uang_keamanan_per_unit',
 		));
+		echo $this->Form->hidden('uang_jalan_extra_per_unit',array(
+			'class'=>'uang_jalan_extra_per_unit',
+		));
 		echo $this->Form->end();
 ?>
 <div class="hide">
@@ -683,7 +684,7 @@
 					'class'=>'form-control',
 					'required' => false,
 					'empty' => __('Tujuan --'),
-					'options' => $fromCities
+					'options' => $cities
 				));
 		?>
 	</div>

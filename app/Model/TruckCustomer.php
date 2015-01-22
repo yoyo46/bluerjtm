@@ -19,17 +19,16 @@ class TruckCustomer extends AppModel {
 				'conditions' => array(
 					'TruckCustomer.truck_id'=> $data['Truck']['id'],
 				),
-				'contain' => array(
-					'Customer' => array(
-						'CustomerType'
-					),
-				),
 				'order' => array(
 					'TruckCustomer.id' => 'ASC',
 				),
 			));
 
 			if( !empty($truckCustomers) ) {
+				foreach ($truckCustomers as $key => $truckCustomer) {
+                	$truckCustomer = $this->Customer->getMerge($truckCustomer, $truckCustomer['TruckCustomer']['customer_id']);
+                	$truckCustomers[$key] = $truckCustomer;
+				}
 				$data['TruckCustomer'] = $truckCustomers;
 			}
 		}

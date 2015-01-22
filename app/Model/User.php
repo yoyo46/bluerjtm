@@ -5,6 +5,12 @@ class User extends AppModel {
     var $belongsTo = array('Group');
     
     var $validate = array(
+        'branch_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Cabang harap dipilih'
+            ),
+        ),
         'first_name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

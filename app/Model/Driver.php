@@ -149,6 +149,11 @@ class Driver extends AppModel {
         ),
 	);
 
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['driver_name'] = sprintf('CASE WHEN %s.alias = \'\' THEN %s.name ELSE CONCAT(%s.name, \' ( \', %s.alias, \' )\') END', $this->alias, $this->alias, $this->alias, $this->alias);
+    }
+
     function uniqueUpdate($data){
         $result = false;
         $find = $this->find('count', array(
@@ -174,6 +179,7 @@ class Driver extends AppModel {
                 'Driver.name' => 'ASC'
             ),
             'contain' => array(),
+            'fields' => array(),
         );
 
         if( !empty($options) && $is_merge ){
@@ -185,6 +191,9 @@ class Driver extends AppModel {
             }
             if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
+            }
+            if(!empty($options['fields'])){
+                $default_options['fields'] = $options['fields'];
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];

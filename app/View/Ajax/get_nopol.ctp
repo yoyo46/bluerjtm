@@ -14,7 +14,13 @@
 				'id' => 'truck_capacity',
 			));
 
-			echo $this->Html->tag('div', $result['Driver']['name'], array(
+			$driver_name = $result['Driver']['name'];
+
+			if( !empty($result['Driver']['alias']) ) {
+				$driver_name = sprintf('%s ( %s )', $driver_name, $result['Driver']['alias']);
+			}
+
+			echo $this->Html->tag('div', $driver_name, array(
 				'id' => 'driver_name',
 			));
 		}
@@ -73,6 +79,10 @@
 
 		echo $this->Html->tag('div', !empty($uangJalan['UangJalan']['uang_jalan_extra'])?$uangJalan['UangJalan']['uang_jalan_extra']:0, array(
 			'id' => 'uang_jalan_extra',
+		));
+
+		echo $this->Html->tag('div', !empty($uangJalan['UangJalan']['uang_jalan_extra_per_unit'])?$uangJalan['UangJalan']['uang_jalan_extra_per_unit']:0, array(
+			'id' => 'uang_jalan_extra_per_unit',
 		));
 
 		echo $this->Html->tag('div', !empty($uangJalan['UangJalan']['min_capacity'])?$uangJalan['UangJalan']['min_capacity']:0, array(

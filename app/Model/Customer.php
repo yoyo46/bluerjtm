@@ -2,6 +2,16 @@
 class Customer extends AppModel {
 	var $name = 'Customer';
 	var $validate = array(
+        'code' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Kode Customer harap diisi'
+            ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'Kode Customer telah terdaftar',
+            ),
+        ),
         'customer_type_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -57,6 +67,11 @@ class Customer extends AppModel {
         )
 	);
 
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['customer_name'] = sprintf('CONCAT(%s.name, \' ( \', CustomerType.name, \' )\')', $this->alias);
+    }
+
 	function getData( $find, $options = false, $is_merge = true ){
         $default_options = array(
             'conditions'=> array(
@@ -69,6 +84,7 @@ class Customer extends AppModel {
                 'CustomerType',
                 'CustomerGroup',
             ),
+            'fields' => array(),
         );
 
         if( !empty($options) && $is_merge ){
@@ -80,6 +96,9 @@ class Customer extends AppModel {
             }
             if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
+            }
+            if(!empty($options['fields'])){
+                $default_options['fields'] = $options['fields'];
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
@@ -100,8 +119,11 @@ class Customer extends AppModel {
         if(empty($data['Customer'])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
-                    'id' => $id
-                )
+                    'Customer.id' => $id
+                ),
+                'contain' => array(
+                    'CustomerType',
+                ),
             ));
 
             if(!empty($data_merge)){

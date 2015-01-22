@@ -25,7 +25,7 @@
                     <dt><?php echo __('Pemilik Truk')?></dt>
                     <dd><?php echo $truck['Company']['name'];?></dd>
                     <dt><?php echo __('Supir Truk')?></dt>
-                    <dd><?php echo !empty($truck['Driver']['name'])?$truck['Driver']['name']:'-';?></dd>
+                    <dd><?php echo !empty($truck['Driver']['driver_name'])?ucwords($truck['Driver']['driver_name']):'-';?></dd>
                     <dt><?php echo __('Kapasitas')?></dt>
                     <dd><?php echo $truck['Truck']['capacity'];?></dd>
                     <dt><?php echo __('Tahun')?></dt>

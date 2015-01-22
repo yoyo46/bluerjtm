@@ -96,7 +96,7 @@
                             $content .= $this->Html->tag('td', $truck['TruckBrand']['name']);
                             $content .= $this->Html->tag('td', $truck['Truck']['atas_nama']);
                             $content .= $this->Html->tag('td', $truck['TruckCategory']['name']);
-                            $content .= $this->Html->tag('td', $truck['Driver']['name']);
+                            $content .= $this->Html->tag('td', $truck['Driver']['driver_name']);
                             $content .= $this->Html->tag('td', $truck['Truck']['capacity']);
                             $content .= $this->Html->tag('td', $truck['Truck']['tahun']);
 
@@ -136,7 +136,7 @@
                 $truck['TruckBrand']['name'],
                 $truck['Truck']['atas_nama'],
                 $truck['TruckCategory']['name'],
-                $truck['Driver']['name'],
+                $truck['Driver']['driver_name'],
                 $truck['Truck']['capacity'],
                 $truck['Truck']['tahun']
             ));
@@ -175,7 +175,7 @@
                 $content .= $this->Html->tag('td', $truck['TruckBrand']['name']);
                 $content .= $this->Html->tag('td', $truck['Truck']['atas_nama']);
                 $content .= $this->Html->tag('td', $truck['TruckCategory']['name']);
-                $content .= $this->Html->tag('td', $truck['Driver']['name']);
+                $content .= $this->Html->tag('td', $truck['Driver']['driver_name']);
                 $content .= $this->Html->tag('td', $truck['Truck']['capacity']);
                 $content .= $this->Html->tag('td', $truck['Truck']['tahun']);
 

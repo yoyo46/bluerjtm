@@ -21,6 +21,9 @@
         <table class="table table-hover">
             <tr>
                 <?php
+                        echo $this->Html->tag('th', $this->Paginator->sort('Customer.code', __('Kota Customer'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('CustomerType.name', __('Tipe'), array(
                             'escape' => false
                         )));
@@ -49,6 +52,7 @@
                             $id = $value['Customer']['id'];
             ?>
             <tr>
+                <td><?php echo $value['Customer']['code'];?></td>
                 <td><?php echo $value['CustomerType']['name'];?></td>
                 <td><?php echo !empty($value['CustomerGroup']['name'])?$value['CustomerGroup']['name']:'-';?></td>
                 <td><?php echo $value['Customer']['name'];?></td>

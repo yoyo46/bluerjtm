@@ -14,6 +14,11 @@ class RjSettingComponent extends Component {
 				}
 			}
 			if(!empty($refine)) {
+				if( !empty($refine['GroupClassification']['name']) ) {
+					$refine_conditions['GroupClassification']['name'] = $refine['GroupClassification']['name'];
+				}
+			}
+			if(!empty($refine)) {
 				if( !empty($refine['Region']['name']) ) {
 					$refine_conditions['Region']['name'] = $refine['Region']['name'];
 				}
@@ -163,6 +168,13 @@ class RjSettingComponent extends Component {
 		}
 		if(isset($refine['JenisPerlengkapan']) && !empty($refine['JenisPerlengkapan'])) {
 			foreach($refine['JenisPerlengkapan'] as $param => $value) {
+				if($value) {
+					$parameters[trim($param)] = rawurlencode($value);
+				}
+			}
+		}
+		if(isset($refine['GroupClassification']) && !empty($refine['GroupClassification'])) {
+			foreach($refine['GroupClassification'] as $param => $value) {
 				if($value) {
 					$parameters[trim($param)] = rawurlencode($value);
 				}

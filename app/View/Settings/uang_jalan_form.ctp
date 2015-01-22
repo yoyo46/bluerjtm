@@ -118,15 +118,53 @@
 						?>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-sm-6">
+						<?php 
+								echo $this->Html->tag('div', $this->Form->input('group_classification_1_id',array(
+									'label'=> __('Klasifikasi 1'), 
+									'class'=>'form-control',
+									'required' => false,
+									'empty' => __('Pilih Klasifikasi'),
+									'options' => $groupClassifications,
+								)), array(
+									'class' => 'form-group'
+								));
+								echo $this->Html->tag('div', $this->Form->input('group_classification_2_id',array(
+									'label'=> __('Klasifikasi 2'), 
+									'class'=>'form-control',
+									'required' => false,
+									'empty' => __('Pilih Klasifikasi'),
+									'options' => $groupClassifications,
+								)), array(
+									'class' => 'form-group'
+								));
+						?>
+					</div>
+					<div class="col-sm-6">
+						<?php 
+								echo $this->Html->tag('div', $this->Form->input('group_classification_3_id',array(
+									'label'=> __('Klasifikasi 3'), 
+									'class'=>'form-control',
+									'required' => false,
+									'empty' => __('Pilih Klasifikasi'),
+									'options' => $groupClassifications,
+								)), array(
+									'class' => 'form-group'
+								));
+								echo $this->Html->tag('div', $this->Form->input('group_classification_4_id',array(
+									'label'=> __('Klasifikasi 4'), 
+									'class'=>'form-control',
+									'required' => false,
+									'empty' => __('Pilih Klasifikasi'),
+									'options' => $groupClassifications,
+								)), array(
+									'class' => 'form-group'
+								));
+						?>
+					</div>
+				</div>
 				<?php 
-						echo $this->Html->tag('div', $this->Form->input('group_classification_id',array(
-							'label'=> __('Grup Klasifikasi *'), 
-							'class'=>'form-control',
-							'required' => false,
-							'empty' => __('Pilih Grup Klasifikasi')
-						)), array(
-							'class' => 'form-group'
-						));
 						echo $this->Html->tag('div', $this->Form->input('note',array(
 							'label'=> __('Keterangan'), 
 							'class'=>'form-control',

@@ -42,10 +42,18 @@ class TrucksController extends AppController {
                 $this->request->data['Truck']['nopol'] = $nopol;
                 $conditions['Truck.nopol LIKE '] = '%'.$nopol.'%';
             }
+            if(!empty($refine['name'])){
+                $data = urldecode($refine['name']);
+                $conditions['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$data.'%';
+                $this->request->data['Driver']['name'] = $data;
+            }
         }
 
         $this->paginate = $this->Truck->getData('paginate', array(
-            'conditions' => $conditions
+            'conditions' => $conditions,
+            'contain' => array(
+                'Driver'
+            ),
         ));
         $trucks = $this->paginate('Truck');
 
@@ -56,7 +64,6 @@ class TrucksController extends AppController {
                 $truck = $this->Truck->TruckCategory->getMerge($truck, $data['truck_category_id']);
                 $truck = $this->Truck->TruckBrand->getMerge($truck, $data['truck_brand_id']);
                 $truck = $this->Truck->Company->getMerge($truck, $data['company_id']);
-                $truck = $this->Truck->Driver->getMerge($truck, $data['driver_id']);
 
                 $trucks[$key] = $truck;
             }
@@ -319,7 +326,7 @@ class TrucksController extends AppController {
         $drivers = $this->Truck->Driver->getData('list', array(
            'conditions' => $driverConditions,
             'fields' => array(
-                'Driver.id', 'Driver.name'
+                'Driver.id', 'Driver.driver_name'
             ),
             'contain' => array(
                 'Truck'
@@ -2309,7 +2316,7 @@ class TrucksController extends AppController {
             }
             if(!empty($refine['name'])){
                 $data = urldecode($refine['name']);
-                $defaul_condition['Driver.name LIKE'] = '%'.$data.'%';
+                $defaul_condition['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$data.'%';
                 $this->request->data['Driver']['name'] = $data;
             }
         }

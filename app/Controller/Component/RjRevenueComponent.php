@@ -27,6 +27,18 @@ class RjRevenueComponent extends Component {
 				if( !empty($refine['Ttuj']['date']) ) {
 					$refine_conditions['Ttuj']['date'] = urlencode($refine['Ttuj']['date']);
 				}
+				if( !empty($refine['Ttuj']['from']['month']) ) {
+					$refine_conditions['Ttuj']['fromMonth'] = urlencode($refine['Ttuj']['from']['month']);
+				}
+				if( !empty($refine['Ttuj']['from']['year']) ) {
+					$refine_conditions['Ttuj']['fromYear'] = urlencode($refine['Ttuj']['from']['year']);
+				}
+				if( !empty($refine['Ttuj']['to']['month']) ) {
+					$refine_conditions['Ttuj']['toMonth'] = urlencode($refine['Ttuj']['to']['month']);
+				}
+				if( !empty($refine['Ttuj']['to']['year']) ) {
+					$refine_conditions['Ttuj']['toYear'] = urlencode($refine['Ttuj']['to']['year']);
+				}
 			}
 				
 			return $refine_conditions;

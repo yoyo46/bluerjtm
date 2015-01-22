@@ -3668,3 +3668,7 @@ table.report {
   width: auto;
   max-height: none;
 }
+
+table.report th {
+  vertical-align: top !important;
+}

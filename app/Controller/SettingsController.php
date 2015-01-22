@@ -841,7 +841,8 @@ class SettingsController extends AppController {
                 'FromCity.name' => 'ASC',
             ),
         ), false);
-        $groupClassifications = $this->UangJalan->GroupClassification->find('list', array(
+        $this->loadModel('GroupClassification');
+        $groupClassifications = $this->GroupClassification->find('list', array(
             'conditions' => array(
                 'status' => 1
             ),
@@ -2114,62 +2115,128 @@ class SettingsController extends AppController {
         $this->redirect($this->referer());
     }
 
-    function classification(){
+    function classifications(){
         $this->loadModel('GroupClassification');
-        $this->set('sub_module_title', 'Group Klasifikasi');
-        $groupClassifications = $this->GroupClassification->find('list', array(
+        $options = array(
             'conditions' => array(
                 'GroupClassification.status' => 1,
-            )
-        ));
+            ),
+            'order' => array(
+                'GroupClassification.name',
+            ),
+        );
 
-        if(!empty($this->request->data)){
-            $data = $this->request->data;
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-            if( !empty($data['GroupClassification']['name']) ){
-                $failed = false;
-
-                foreach ($data['GroupClassification']['name'] as $key => $value) {
-                    if( !empty($groupClassifications[$key]) ) {
-                        $this->GroupClassification->id = $key;
-                    } else {
-                        $this->GroupClassification->create();
-                        $this->GroupClassification->set('id', $key);
-                    }
-
-                    $this->GroupClassification->set('name', $value);
-
-                    if($this->GroupClassification->validates()){
-                        if($this->GroupClassification->save()){
-                            $this->Log->logActivity( __('Berhasil menyimpan Klasifikasi'), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                        }else{
-                            $failed = true;
-                        }
-                    }else{
-                        $failed = true;
-                    }
-                }
-
-                if( !$failed ){
-                    $this->MkCommon->setCustomFlash(__('Klasifikasi berhasil disimpan'), 'success');
-                    $this->redirect(array(
-                        'controller' => 'settings',
-                        'action' => 'classification'
-                    ));
-                } else {
-                    $this->MkCommon->setCustomFlash(__('Klasifikasi gagal disimpan'), 'error'); 
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Mohon masukan Klasifikasi'), 'error'); 
-            }
-        } else if( !empty($groupClassifications) ) {
-            foreach ($groupClassifications as $key => $groupClassification) {
-                $this->request->data['GroupClassification']['name'][$key] = $groupClassification;
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['GroupClassification']['name'] = $name;
+                $options['conditions']['GroupClassification.name LIKE '] = '%'.$name.'%';
             }
         }
 
-        $this->set('active_menu', 'classification');
+        $this->paginate = $options;
+        $groupClassifications = $this->paginate('GroupClassification');
 
+        $this->set('active_menu', 'classifications');
+        $this->set('sub_module_title', __('Klasifikasi'));
+        $this->set('groupClassifications', $groupClassifications);
+    }
+
+    function classification_add(){
+        $this->loadModel('GroupClassification');
+        $this->set('sub_module_title', __('Tambah Klasifikasi'));
+        $this->doclassification();
+    }
+
+    function classification_edit($id){
+        $this->loadModel('GroupClassification');
+        $this->set('sub_module_title', __('Rubah Klasifikasi'));
+        $groupClassification = $this->GroupClassification->getData('first', array(
+            'conditions' => array(
+                'GroupClassification.id' => $id
+            )
+        ));
+
+        if(!empty($groupClassification)){
+            $this->doclassification($id, $groupClassification);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Klasifikasi tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'classifications'
+            ));
+        }
+    }
+
+    function doclassification($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->GroupClassification->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->GroupClassification->create();
+                $msg = 'menambah';
+            }
+            $this->GroupClassification->set($data);
+
+            if($this->GroupClassification->validates($data)){
+                if($this->GroupClassification->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Klasifikasi'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s GroupClassification'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'classifications'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Klasifikasi'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Klasifikasi'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Klasifikasi'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->set('active_menu', 'classifications');
+        $this->render('classification_form');
+    }
+
+    function classification_toggle($id){
+        $this->loadModel('GroupClassification');
+        $locale = $this->GroupClassification->getData('first', array(
+            'conditions' => array(
+                'GroupClassification.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['GroupClassification']['status']){
+                $value = false;
+            }
+
+            $this->GroupClassification->id = $id;
+            $this->GroupClassification->set('status', $value);
+            if($this->GroupClassification->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Klasifikasi ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Klasifikasi ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Klasifikasi tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
     }
 
     function tarif_angkutan(){

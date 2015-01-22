@@ -14,12 +14,6 @@ class UangJalan extends AppModel {
                 'message' => 'Nama Uang Jalan harap diisi'
             ),
         ),
-        'group_classification_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Grup klasifikasi harap dipilih'
-            ),
-        ),
         'from_city_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -167,14 +161,6 @@ class UangJalan extends AppModel {
 	);
 
     var $belongsTo = array(
-        // 'Customer' => array(
-        //     'className' => 'Customer',
-        //     'foreignKey' => 'customer_id',
-        // ),
-        'GroupClassification' => array(
-            'className' => 'GroupClassification',
-            'foreignKey' => 'group_classification_id',
-        ),
         'FromCity' => array(
             'className' => 'City',
             'foreignKey' => 'from_city_id',
@@ -195,8 +181,6 @@ class UangJalan extends AppModel {
                 'UangJalan.status' => 'DESC'
             ),
             'contain' => array(
-                // 'Customer',
-                'GroupClassification',
                 'FromCity',
                 'ToCity'
             )

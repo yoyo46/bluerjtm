@@ -326,11 +326,15 @@ class LkusController extends AppController {
 
         $this->paginate = $this->LkuPayment->getData('paginate', array(
             'conditions' => $conditions,
-            'contain' => array(
-                'Customer'
-            )
         ));
         $payments = $this->paginate('LkuPayment');
+
+        if( !empty($payments) ) {
+            foreach ($payments as $key => $payment) {
+                $payment = $this->Customer->getMerge($payment, $payment['LkuPayment']['customer_id']);
+                $payments[$key] = $payment;
+            }
+        }
 
         $this->set('payments', $payments);
     }
@@ -533,11 +537,8 @@ class LkusController extends AppController {
                 'Ttuj.is_revenue' => 0
             ),
             'fields' => array(
-                'Customer.id', 'Customer.name'
+                'Ttuj.customer_id', 'Ttuj.customer_name'
             ),
-            'contain' => array(
-                'Customer'
-            )
         ));
 
         $this->set('active_menu', 'Lkus');

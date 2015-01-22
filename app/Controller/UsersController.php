@@ -300,11 +300,18 @@ class UsersController extends AppController {
         }
 
         $this->loadModel('Group');
+        $this->loadModel('Branch');
         $groups = $this->Group->find('list', array(
             'conditions' => array(
                 'id <>' => 3
             )
         ));
+        $branches = $this->Branch->find('list', array(
+            'conditions' => array(
+                'id <>' => 3
+            )
+        ));
+        $this->set('branches', $branches);
         $this->set('groups', $groups);
         $this->render('user_form');
     }

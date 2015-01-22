@@ -18,8 +18,16 @@
 	?>
     <div class="box-body">
     	<?php 
+				echo $this->Html->tag('div', $this->Form->input('code',array(
+					'label'=> __('Kode Customer *'), 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Kode Customer')
+				)), array(
+					'class' => 'form-group'
+				));
 				echo $this->Html->tag('div', $this->Form->input('customer_type_id',array(
-					'label'=> __('Tipe Customer'), 
+					'label'=> __('Tipe Customer *'), 
 					'class'=>'form-control',
 					'required' => false,
 					'empty' => __('Pilih Tipe Customer')
@@ -27,7 +35,7 @@
 					'class' => 'form-group'
 				));
 				echo $this->Html->tag('div', $this->Form->input('customer_group_id',array(
-					'label'=> __('Grup Customer'), 
+					'label'=> __('Grup Customer *'), 
 					'class'=>'form-control',
 					'required' => false,
 					'empty' => __('Pilih Grup Customer')

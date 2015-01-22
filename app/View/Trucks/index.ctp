@@ -69,7 +69,7 @@
                 <td><?php echo !empty($value['TruckCategory']['name'])?$value['TruckCategory']['name']:'-';?></td>
                 <td><?php echo $value_truck['capacity'];?></td>
                 <td><?php echo !empty($value['Company']['name'])?$value['Company']['name']:'-';?></td>
-                <td><?php echo !empty($value['Driver']['name'])?$value['Driver']['name']:'-';?></td>
+                <td><?php echo !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:'-';?></td>
                 <td>
                     <?php 
                         if(!empty($value_truck['is_asset'])){

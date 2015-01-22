@@ -159,7 +159,7 @@
                         'drivers', 'trucks', 'directions',
                         'reports', 'ritase_report', 'stnk',
                         'stnk_payments', 'kir', 'kir_payments',
-                        'siup', 'siup_payments'
+                        'siup', 'siup_payments', 'achievement_report'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -254,6 +254,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'ritase_report' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian', array(
+                                'controller' => 'revenues',
+                                'action' => 'achievement_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'achievement_report' )?'active':'',
                             ));
                     ?>
                 </ul>
@@ -389,7 +397,7 @@
                     $activeSetting = false;
                     $settingMenu = array(
                         'cities', 'vendors', 'companies', 'uang_jalan',
-                        'perlengkapan', 'coas', 'branches', 'classification'
+                        'perlengkapan', 'coas', 'branches', 'classifications'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -460,13 +468,13 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'jenis_sim' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Group klasifikasi', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> klasifikasi', array(
                                 'controller' => 'settings',
-                                'action' => 'classification',
+                                'action' => 'classifications',
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'classification' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'classifications' )?'active':'',
                             ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Jalan', array(
                                 'controller' => 'settings',

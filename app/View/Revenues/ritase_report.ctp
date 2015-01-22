@@ -193,11 +193,11 @@
                 <tr>
                     <?php 
                             echo $this->Html->tag('td', $value['Truck']['nopol']);
-                            echo $this->Html->tag('td', $value['Driver']['name']);
+                            echo $this->Html->tag('td', $value['Driver']['driver_name']);
                             echo $this->Html->tag('td', $value['Truck']['capacity'], array(
                                 'class' => 'text-center',
                             ));
-                            echo $this->Html->tag('td', !empty($value['Customer']['name'])?$value['Customer']['name']:'-', array(
+                            echo $this->Html->tag('td', !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-', array(
                                 'class' => 'text-center',
                             ));
                             echo $this->Html->tag('td', $total, array(
@@ -323,7 +323,7 @@
 
                     $bodyTable = array(
                         $value['Truck']['nopol'],
-                        $value['Driver']['name'],
+                        $value['Driver']['driver_name'],
                         $value['Truck']['capacity'],
                         !empty($value['Customer']['name'])?$value['Customer']['name']:'-',
                         $total,
@@ -387,7 +387,7 @@
 
                     $content = $this->Html->tag('td', $no);
                     $content .= $this->Html->tag('td', $value['Truck']['nopol']);
-                    $content .= $this->Html->tag('td', $value['Driver']['name']);
+                    $content .= $this->Html->tag('td', $value['Driver']['driver_name']);
                     $content .= $this->Html->tag('td', $value['Truck']['capacity']);
                     $content .= $this->Html->tag('td', !empty($value['Customer']['name'])?$value['Customer']['name']:'-');
                     $content .= $this->Html->tag('td', $total);

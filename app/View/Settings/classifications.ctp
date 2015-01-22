@@ -1,15 +1,15 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
-        echo $this->element('blocks/settings/search_uang_jalans');
+        echo $this->element('blocks/settings/search_classifications');
 ?>
 <div class="box">
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Uang Jalan', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Klasifikasi', array(
                     'controller' => 'settings',
-                    'action' => 'uang_jalan_add'
+                    'action' => 'classification_add'
                 ), array(
                     'escape' => false,
                     'class' => 'btn btn-app pull-right'
@@ -21,19 +21,10 @@
         <table class="table table-hover">
             <tr>
                 <?php
-                        // echo $this->Html->tag('th', $this->Paginator->sort('Customer.name', __('Customer'), array(
-                        //     'escape' => false
-                        // )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('FromCity.name', __('Kota Asal'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('GroupClassification.name', __('Nama Klasifikasi'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('ToCity.name', __('Kota Tujuan'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('UangJalan.capacity', __('Kapasitas'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('UangJalan.created', __('Dibuat'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('GroupClassification.created', __('Dibuat'), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', __('Action'));
@@ -41,21 +32,19 @@
             </tr>
             <?php
                     $i = 1;
-                    if(!empty($uangJalans)){
-                        foreach ($uangJalans as $key => $value) {
-                            $id = $value['UangJalan']['id'];
+                    if(!empty($groupClassifications)){
+                        foreach ($groupClassifications as $key => $value) {
+                            $value_data = $value['GroupClassification'];
+                            $id = $value_data['id'];
             ?>
             <tr>
-                <!-- <td><?php // echo $value['Customer']['name'];?></td> -->
-                <td><?php echo $value['FromCity']['name'];?></td>
-                <td><?php echo $value['ToCity']['name'];?></td>
-                <td><?php echo $value['UangJalan']['capacity'];?></td>
-                <td><?php echo $this->Common->customDate($value['UangJalan']['created']);?></td>
+                <td><?php echo $value_data['name'];?></td>
+                <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td class="action">
                     <?php 
                             echo $this->Html->link('Edit', array(
                                 'controller' => 'settings',
-                                'action' => 'uang_jalan_edit',
+                                'action' => 'classification_edit',
                                 $id
                             ), array(
                                 'class' => 'btn btn-primary btn-xs'
@@ -63,25 +52,25 @@
 
                             echo $this->Html->link(__('Hapus'), array(
                                 'controller' => 'settings',
-                                'action' => 'uang_jalan_toggle',
+                                'action' => 'classification_toggle',
                                 $id
                             ), array(
                                 'class' => 'btn btn-danger btn-xs',
                                 'title' => 'disable status brand'
-                            ), __('Anda yakin ingin menghapus data Uang Jalan ini?'));
+                            ), __('Anda yakin ingin menghapus data Klasifikasi ini?'));
                     ?>
                 </td>
             </tr>
             <?php
                         }
                     } else {
-                        echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
+                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '8'
+                            'colspan' => '6'
                         )));
                     }
             ?>
         </table>
-    </div>
+    </div><!-- /.box-body -->
     <?php echo $this->element('pagination');?>
 </div>
