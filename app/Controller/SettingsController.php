@@ -2171,4 +2171,247 @@ class SettingsController extends AppController {
         $this->set('active_menu', 'classification');
 
     }
+
+    function tarif_angkutan(){
+        $this->loadModel('TarifAngkutan');
+        $options = array();
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['TarifAngkutan']['name'] = $name;
+                $options['conditions']['TarifAngkutan.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+        $this->paginate = $this->TarifAngkutan->getData('paginate', $options);
+        $tarif_angkutan = $this->paginate('TarifAngkutan');
+
+        $this->set('active_menu', 'tarif_angkutan');
+        $this->set('sub_module_title', 'Tarif Angkutan');
+        $this->set('tarif_angkutan', $tarif_angkutan);
+    }
+
+    function tarif_angkutan_add(){
+        $this->set('sub_module_title', 'Tambah Tarif Angkutan');
+        $this->doTarifAngkutan();
+    }
+
+    function tarif_angkutan_edit($id){
+        $this->loadModel('TarifAngkutan');
+        $this->set('sub_module_title', 'Rubah Tarif Angkutan');
+        $tarif_angkutan = $this->TarifAngkutan->getData('first', array(
+            'conditions' => array(
+                'TarifAngkutan.id' => $id
+            )
+        ));
+
+        if(!empty($tarif_angkutan)){
+            $this->doTarifAngkutan($id, $tarif_angkutan);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Tarif Angkutan tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'tarif_angkutan'
+            ));
+        }
+    }
+
+    function doTarifAngkutan($id = false, $data_local = false){
+        $this->loadModel('City');
+
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->TarifAngkutan->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('TarifAngkutan');
+                $this->TarifAngkutan->create();
+                $msg = 'menambah';
+            }
+
+            if(!empty($data['TarifAngkutan']['from_city_id'])){
+                $city = $this->City->getData('first', array(
+                    'conditions' => array(
+                        'City.status' => 1,
+                        'City.id' => $data['TarifAngkutan']['from_city_id']
+                    ),
+                    'fields' => array(
+                        'City.name'
+                    )
+                ));
+
+                if(!empty($city['City']['name'])){
+                    $data['TarifAngkutan']['from_city_name'] = $city['City']['name'];
+                }
+            }
+
+            if(!empty($data['TarifAngkutan']['to_city_id'])){
+                $city = $this->City->getData('first', array(
+                    'conditions' => array(
+                        'City.status' => 1,
+                        'City.id' => $data['TarifAngkutan']['to_city_id']
+                    ),
+                    'fields' => array(
+                        'City.name'
+                    )
+                ));
+
+                if(!empty($city['City']['name'])){
+                    $data['TarifAngkutan']['to_city_name'] = $city['City']['name'];
+                }
+            }
+
+            if(!empty($data['TarifAngkutan']['from_city_name']) && !empty($data['TarifAngkutan']['to_city_name'])){
+                $data['TarifAngkutan']['name_tarif'] = sprintf('%s - %s', $data['TarifAngkutan']['from_city_name'], $data['TarifAngkutan']['to_city_name']);
+            }
+
+            $this->TarifAngkutan->set($data);
+
+            $check_availability = true;
+            
+            if(!$id){
+                $check_availability = $this->TarifAngkutan->check_availability($data);
+            }
+
+            if($this->TarifAngkutan->validates($data) && $check_availability){
+                if($this->TarifAngkutan->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Tarif Angkutan'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Tarif Angkutan'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'tarif_angkutan'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Tarif Angkutan'), $msg), 'error');  
+                    $this->Log->logActivity( sprintf(__('Gagal %s Tarif Angkutan'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Tarif Angkutan'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->loadModel('Customer');
+        $customers = $this->Customer->getData('list', array(
+            'conditions' => array(
+                'Customer.status' => 1
+            ),
+        ));
+
+        $this->loadModel('GroupMotor');
+        $group_motors = $this->GroupMotor->getData('list', array(
+            'conditions' => array(
+                'GroupMotor.status' => 1
+            ),
+        ));
+        
+        $cities = $this->City->getData('list', array(
+            'conditions' => array(
+                'City.status' => 1
+            ),
+        ));
+
+
+        $this->set(compact('customers', 'group_motors', 'cities'));
+
+        $this->set('active_menu', 'tarif_angkutan');
+        $this->render('tarif_angkutan_form');
+    }
+
+    function tarif_angkutan_toggle($id){
+        $this->loadModel('TarifAngkutan');
+        $locale = $this->TarifAngkutan->getData('first', array(
+            'conditions' => array(
+                'TarifAngkutan.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['TarifAngkutan']['status']){
+                $value = false;
+            }
+
+            $this->TarifAngkutan->id = $id;
+            $this->TarifAngkutan->set('status', $value);
+            if($this->TarifAngkutan->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status tarif angkutan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status tarif angkutan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Tarif Angkutan tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
+
+    // function classification(){
+    //     $this->loadModel('GroupClassification');
+    //     $this->set('sub_module_title', 'Group Klasifikasi');
+    //     $groupClassifications = $this->GroupClassification->find('list', array(
+    //         'conditions' => array(
+    //             'GroupClassification.status' => 1,
+    //         )
+    //     ));
+
+    //     if(!empty($this->request->data)){
+    //         $data = $this->request->data;
+
+    //         if( !empty($data['GroupClassification']['name']) ){
+    //             $failed = false;
+
+    //             foreach ($data['GroupClassification']['name'] as $key => $value) {
+    //                 if( !empty($groupClassifications[$key]) ) {
+    //                     $this->GroupClassification->id = $key;
+    //                 } else {
+    //                     $this->GroupClassification->create();
+    //                     $this->GroupClassification->set('id', $key);
+    //                 }
+
+    //                 $this->GroupClassification->set('name', $value);
+
+    //                 if($this->GroupClassification->validates()){
+    //                     if($this->GroupClassification->save()){
+    //                         $this->Log->logActivity( __('Berhasil menyimpan Klasifikasi'), $this->user_data, $this->RequestHandler, $this->params, 1 );
+    //                     }else{
+    //                         $failed = true;
+    //                     }
+    //                 }else{
+    //                     $failed = true;
+    //                 }
+    //             }
+
+    //             if( !$failed ){
+    //                 $this->MkCommon->setCustomFlash(__('Klasifikasi berhasil disimpan'), 'success');
+    //                 $this->redirect(array(
+    //                     'controller' => 'settings',
+    //                     'action' => 'classification'
+    //                 ));
+    //             } else {
+    //                 $this->MkCommon->setCustomFlash(__('Klasifikasi gagal disimpan'), 'error'); 
+    //             }
+    //         }else{
+    //             $this->MkCommon->setCustomFlash(__('Mohon masukan Klasifikasi'), 'error'); 
+    //         }
+    //     } else if( !empty($groupClassifications) ) {
+    //         foreach ($groupClassifications as $key => $groupClassification) {
+    //             $this->request->data['GroupClassification']['name'][$key] = $groupClassification;
+    //         }
+    //     }
+
+    //     $this->set('active_menu', 'classification');
+
+    // }
 }
