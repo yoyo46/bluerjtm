@@ -2333,6 +2333,7 @@ class TrucksController extends AppController {
             'contain' => array(
                 'TruckBrand', 
                 'TruckCategory',
+                'TruckFacility',
                 'Driver'
             )
         ));
@@ -2465,5 +2466,93 @@ class TrucksController extends AppController {
         }
 
         $this->redirect($this->referer());
+    }
+
+    public function capacity_report( $data_action = false ) {
+        $this->loadModel('TruckCustomer');
+        $this->loadModel('Customer');
+        $this->set('active_menu', 'capacity_report');
+        $this->set('sub_module_title', __('Laporan Truk Per Kapasitas'));
+        
+        $options = $this->Customer->getData('paginate', array(
+            'conditions' => array(
+                'Customer.status' => 1,
+            ),
+            'limit' => 20,
+        ));
+
+        if( !empty($data_action) ) {
+            $customers = $this->Customer->getData('all', array(
+                'conditions' => array(
+                    'Customer.status' => 1,
+                ),
+            ));
+        } else {
+            $this->paginate = $this->Customer->getData('paginate', array(
+                'conditions' => array(
+                    'Customer.status' => 1,
+                ),
+                'limit' => 20,
+            ));
+            $customers = $this->paginate('Customer');
+        }
+
+        $capacities = $this->Truck->getData('list', array(
+            'conditions' => array(
+                'Truck.status' => 1,
+            ),
+            'group' => array(
+                'Truck.capacity',
+            ),
+            'fields' => array(
+                'Truck.id',
+                'Truck.capacity',
+            ),
+        ), false);
+        $truckArr = array();
+
+        if( !empty($customers) ) {
+            $customerArr = Set::extract('/Customer/id', $customers);
+            $trucks = $this->TruckCustomer->getData('all', array(
+                'conditions' => array(
+                    'Truck.status' => 1,
+                    'TruckCustomer.customer_id' => $customerArr,
+                ),
+                'contain' => array(
+                    'Truck',
+                ),
+                'group' => array(
+                    'Truck.capacity',
+                    'TruckCustomer.customer_id',
+                ),
+                'fields' => array(
+                    'Truck.id',
+                    'Truck.capacity',
+                    'TruckCustomer.customer_id',
+                    'COUNT(Truck.id) AS cnt',
+                ),
+            ));
+
+            if( !empty($trucks) ) {
+                foreach ($trucks as $key => $truck) {
+                    if( !empty($truck[0]['cnt']) ) {
+                        $customer_id = $truck['TruckCustomer']['customer_id'];
+                        $capacity = $truck['Truck']['capacity'];
+                        $truckArr[$customer_id][$capacity] = $truck[0]['cnt'];
+                    }
+                }
+            }
+        }
+
+        $this->set(compact(
+            'data_action', 'customers', 'capacities',
+            'truckArr'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
     }
 }

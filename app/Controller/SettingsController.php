@@ -799,6 +799,10 @@ class SettingsController extends AppController {
             $data['UangJalan']['uang_kawal'] = !empty($data['UangJalan']['uang_kawal'])?str_replace(',', '', $data['UangJalan']['uang_kawal']):false;
             $data['UangJalan']['uang_keamanan'] = !empty($data['UangJalan']['uang_keamanan'])?str_replace(',', '', $data['UangJalan']['uang_keamanan']):false;
             $data['UangJalan']['uang_jalan_extra'] = !empty($data['UangJalan']['uang_jalan_extra'])?str_replace(',', '', $data['UangJalan']['uang_jalan_extra']):false;
+            $data['UangJalan']['group_classification_1_id'] = !empty($data['UangJalan']['group_classification_1_id'])?str_replace(',', '', $data['UangJalan']['group_classification_1_id']):0;
+            $data['UangJalan']['group_classification_2_id'] = !empty($data['UangJalan']['group_classification_2_id'])?str_replace(',', '', $data['UangJalan']['group_classification_2_id']):0;
+            $data['UangJalan']['group_classification_3_id'] = !empty($data['UangJalan']['group_classification_3_id'])?str_replace(',', '', $data['UangJalan']['group_classification_3_id']):0;
+            $data['UangJalan']['group_classification_4_id'] = !empty($data['UangJalan']['group_classification_4_id'])?str_replace(',', '', $data['UangJalan']['group_classification_4_id']):0;
 
             if( !empty($data['UangJalan']['uang_jalan_per_unit']) ) {
                 $data['UangJalan']['uang_jalan_2'] = 0;
@@ -875,6 +879,36 @@ class SettingsController extends AppController {
                 'action' => 'uang_jalan'
             ));
         }
+    }
+
+    function uang_jalan_toggle( $id = false ){
+        $this->loadModel('UangJalan');
+        $locale = $this->UangJalan->getData('first', array(
+            'conditions' => array(
+                'UangJalan.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['UangJalan']['status']){
+                $value = false;
+            }
+
+            $this->UangJalan->id = $id;
+            $this->UangJalan->set('status', $value);
+            if($this->UangJalan->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Uang Jalan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Uang Jalan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Uang Jalan tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
     }
 
     function perlengkapan(){
@@ -2419,6 +2453,151 @@ class SettingsController extends AppController {
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Tarif Angkutan tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
+
+    function customer_target_unit(){
+        $this->loadModel('CustomerTargetUnit');
+        $this->loadModel('Customer');
+        $options = array();
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['Customer']['name'] = $name;
+                $customers = $this->Customer->getData('list', array(
+                    'conditions' => array(
+                        'CONCAT(Customer.name, \' ( \', CustomerType.name, \' )\') LIKE' => '%'.$name.'%',
+                    ),
+                    'fields' => array(
+                        'Customer.id', 'Customer.id'
+                    ),
+                ));
+                $options['conditions']['CustomerTargetUnit.customer_id'] = $customers;
+            }
+        }
+
+        $this->paginate = $this->CustomerTargetUnit->getData('paginate', $options);
+        $customerTargetUnits = $this->paginate('CustomerTargetUnit');
+
+        if( !empty($customerTargetUnits) ) {
+            foreach ($customerTargetUnits as $key => $customerTargetUnit) {
+                $customerTargetUnit = $this->Customer->getMerge($customerTargetUnit, $customerTargetUnit['CustomerTargetUnit']['customer_id']);
+                $customerTargetUnits[$key] = $customerTargetUnit;
+            }
+        }
+
+        $this->set('active_menu', 'customer_target_unit');
+        $this->set('sub_module_title', __('Target Unit'));
+        $this->set('customerTargetUnits', $customerTargetUnits);
+    }
+
+    function customer_target_unit_add(){
+        $this->loadModel('CustomerTargetUnit');
+        $this->set('sub_module_title', __('Target Unit'));
+        $this->doCustomerTargetUnit();
+    }
+
+    function customer_target_unit_edit($id){
+        $this->loadModel('CustomerTargetUnit');
+        $this->set('sub_module_title', __('Rubah Unit'));
+        $customerTargetUnit = $this->CustomerTargetUnit->getData('first', array(
+            'conditions' => array(
+                'CustomerTargetUnit.id' => $id
+            )
+        ));
+
+        if(!empty($customerTargetUnit)){
+            $this->doCustomerTargetUnit($id, $customerTargetUnit);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Target Unit tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'customer_target_unit'
+            ));
+        }
+    }
+
+    function doCustomerTargetUnit($id = false, $data_local = false){
+        $this->loadModel('Customer');
+
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+
+            if($id && $data_local){
+                $this->CustomerTargetUnit->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->CustomerTargetUnit->create();
+                $msg = 'menambah';
+            }
+            $this->CustomerTargetUnit->set($data);
+
+            if($this->CustomerTargetUnit->validates($data)){
+                if($this->CustomerTargetUnit->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Target Unit'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Target Unit'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'customer_target_unit'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Target Unit'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Target Unit'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Target Unit'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+        $customers = $this->Customer->getData('list', array(
+            'conditions' => array(
+                'Customer.status' => 1
+            ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name'
+            )
+        ));
+
+        $this->set('active_menu', 'customer_target_unit');
+        $this->set('customers', $customers);
+        $this->render('customer_target_unit_form');
+    }
+
+    function customer_target_unit_toggle($id){
+        $this->loadModel('CustomerTargetUnit');
+        $locale = $this->CustomerTargetUnit->getData('first', array(
+            'conditions' => array(
+                'CustomerTargetUnit.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['CustomerTargetUnit']['status']){
+                $value = false;
+            }
+
+            $this->CustomerTargetUnit->id = $id;
+            $this->CustomerTargetUnit->set('status', $value);
+            if($this->CustomerTargetUnit->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Target Unit ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Target Unit ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Target Unit tidak ditemukan.'), 'error');
         }
 
         $this->redirect($this->referer());

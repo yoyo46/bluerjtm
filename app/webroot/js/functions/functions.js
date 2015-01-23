@@ -765,6 +765,12 @@ $(function() {
             }
         });
     });
+
+    $('.popover-hover-bottom').popover({
+        trigger: 'hover',
+        html: true,
+        placement: 'bottom'
+    });
 });
 
 var price_tipe_motor = function(){
@@ -873,6 +879,24 @@ var choose_item_info = function(){
                 return false;
             }
         });
+    });
+
+    $('.list-field input[type="checkbox"]').click(function(){
+        var data_field = $(this).attr('data-field');
+
+        if($(this).is(':checked')) {
+            $('.'+data_field).removeClass('hide');
+        } else {
+            $('.'+data_field).addClass('hide');
+        }
+    });
+
+    $('.list-field a.show').click(function(){
+        $('.list-field ul').slideToggle('fast');
+    });
+
+    $('.list-field a.close').click(function(){
+        $('.list-field ul').slideUp('fast');
     });
 
     qtyMuatanPress( $('.qty-muatan') );

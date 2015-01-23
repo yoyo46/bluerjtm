@@ -251,7 +251,7 @@ class Truck extends AppModel {
         return $result;
     }
 
-	function getData($find, $options = false){
+	function getData( $find, $options = false, $is_merge = true ){
         $default_options = array(
             'conditions'=> array(
                 'Truck.status' => 1,
@@ -263,7 +263,7 @@ class Truck extends AppModel {
             'fields' => array(),
         );
 
-        if(!empty($options)){
+        if( !empty($options) && $is_merge ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
@@ -279,6 +279,8 @@ class Truck extends AppModel {
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
             }
+        } else if( !empty($options) ) {
+            $default_options = $options;
         }
 
         if( $find == 'paginate' ) {

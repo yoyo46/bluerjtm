@@ -64,7 +64,7 @@
             <?php
                     $activeMenu = false;
                     $dataMenu = array(
-                        'customers', 'customer_groups'
+                        'customers', 'customer_groups', 'customer_target_unit'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -94,6 +94,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'customers' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Target Unit', array(
+                                'controller' => 'settings',
+                                'action' => 'customer_target_unit',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'customer_target_unit' )?'active':'',
                             ));
                     ?>
                 </ul>
@@ -159,7 +167,8 @@
                         'drivers', 'trucks', 'directions',
                         'reports', 'ritase_report', 'stnk',
                         'stnk_payments', 'kir', 'kir_payments',
-                        'siup', 'siup_payments', 'achievement_report'
+                        'siup', 'siup_payments', 'achievement_report',
+                        'monitoring_truck', 'capacity_report'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -262,6 +271,22 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'achievement_report' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Monitoring Truk', array(
+                                'controller' => 'revenues',
+                                'action' => 'monitoring_truck',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'monitoring_truck' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Truk Per Kapasitas', array(
+                                'controller' => 'trucks',
+                                'action' => 'capacity_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'capacity_report' )?'active':'',
                             ));
                     ?>
                 </ul>

@@ -203,7 +203,6 @@
                             foreach ($ttujs as $key => $value) {
                                 $id = $value['Ttuj']['id'];
                                 $customer_name = !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';
-                                $target_rit = !empty($value['Customer']['target_rit'])?$value['Customer']['target_rit']:'-';
                 ?>
                 <tr>
                     <?php 
@@ -212,6 +211,7 @@
                             if( !empty($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {
                                     $pencapaian = !empty($cntPencapaian[$value['Ttuj']['customer_id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$cntPencapaian[$value['Ttuj']['customer_id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
+                                    $target_rit = !empty($targetUnit[$value['Ttuj']['customer_id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$targetUnit[$value['Ttuj']['customer_id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
                                     echo $this->Html->tag('td', $target_rit, array(
                                         'class' => 'text-center',
                                         'style' => $tdStyle,

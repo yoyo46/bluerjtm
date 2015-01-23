@@ -46,6 +46,69 @@
 #box-field-input .list-alocation .delete-custom-field {
 	display: none;
 }
+
+.month-name-container {
+	font-style: 16px;
+	margin: 5px 0 15px;
+	position: relative;
+}
+
+.month-name-container .last-month {
+	left: 0;
+}
+
+.month-name-container .next-month {
+	right: 0;
+}
+
+.month-name-container .last-month, .month-name-container .next-month {
+	position: absolute;
+	top: 5px;
+}
+
+.month-name-container a {
+	color: #999;
+	-moz-transition: color,.2s;
+	-o-transition: color,.2s;
+	-webkit-transition: color,.2s;
+	transition: color,.2s;
+}
+
+.month-name-container .current-month {
+	font-size: 21px;
+	font-weight: 700;
+	text-transform: uppercase;
+	color: #666;
+}
+
+.month-name-container .last-month, .month-name-container .next-month {
+	position: absolute;
+	top: 5px;
+}
+
+td.berangkat i {
+	color: #a581a5;
+}
+
+td.tiba i {
+	color: #c08764;
+}
+
+td.bongkaran i {
+	color: #d9516f;
+}
+
+td.balik i {
+	color: #b1c567;
+}
+
+td.pool i {
+	color: #5ee14a;
+}
+
+td.color {
+	background: #DDD;
+}
 /*
 **	END Truck
 */

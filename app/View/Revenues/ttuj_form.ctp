@@ -115,6 +115,16 @@
 				        </div>
 				        <div class="form-group">
 				        	<?php 
+									echo $this->Form->input('truck_capacity',array(
+										'label'=> __('Kapasitas Truk'), 
+										'class'=>'form-control truck_capacity',
+										'required' => false,
+										'readonly' => true,
+									));
+							?>
+				        </div>
+				        <div class="form-group">
+				        	<?php 
 									echo $this->Form->input('driver_name',array(
 										'label'=> __('Supir'), 
 										'class'=>'form-control driver_name',
@@ -162,16 +172,6 @@
 										'class' => 'error-message',
 									));
 				        	?>
-				        </div>
-				        <div class="form-group">
-				        	<?php 
-									echo $this->Form->input('truck_capacity',array(
-										'label'=> __('Kapasitas Truk'), 
-										'class'=>'form-control truck_capacity',
-										'required' => false,
-										'readonly' => true,
-									));
-							?>
 				        </div>
 				        <div class="form-group">
 				        	<?php 

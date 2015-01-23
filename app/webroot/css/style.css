@@ -2506,6 +2506,10 @@ Component: timeline
 /* 
     Page: Invoice
 */
+.content {
+  overflow: inherit !important;
+}
+
 .invoice {
   position: relative;
   width: 100%;
@@ -3671,4 +3675,59 @@ table.report {
 
 table.report th {
   vertical-align: top !important;
+}
+
+.table-responsive.margin {
+  margin-bottom: 20px;
+}
+
+.list-field ul {
+  position: absolute;
+  padding: 010px;
+  border: 1px solid #CCCCCC;
+  background: #ffffff;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  display: none;
+}
+
+.list-field ul li {
+  list-style-type: none;
+}
+
+.list-field ul .close {
+  position: absolute;
+  top: -11px;
+  right: -7px;
+  color: #e25b7c;
+  opacity: 1;
+}
+
+.list-field ul .arrow, 
+.list-field ul .arrow:after {
+  position: absolute;
+  display: block;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+}
+
+.list-field ul .arrow {
+  top: -11px;
+  left: 50%;
+  border-width: 11px;
+  margin-left: -11px;
+  border-top-width: 0;
+  border-bottom-color: rgba(0,0,0,.25);
+}
+
+.list-field ul .arrow:after {
+  top: 1px;
+  margin-left: -10px;
+  content: " ";
+  border-top-width: 0;
+  border-bottom-color: #fff;
+  border-width: 10px;
 }

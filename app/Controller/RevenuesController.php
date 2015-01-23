@@ -1252,6 +1252,7 @@ class RevenuesController extends AppController {
     }
 
     public function achievement_report( $data_action = false ) {
+        $this->loadModel('CustomerTargetUnit');
         $this->loadModel('Ttuj');
         $this->loadModel('Customer');
         $this->set('active_menu', 'achievement_report');
@@ -1287,6 +1288,17 @@ class RevenuesController extends AppController {
         $conditions['DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') >='] = date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear));
         $conditions['DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') <='] = date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear));
 
+        $customerTargetUnits = $this->CustomerTargetUnit->getData('all', array(
+            'conditions' => array(
+                'CustomerTargetUnit.status' => 1,
+                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnit.month, \'-\', 1), \'%Y-%m\') >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear)),
+                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnit.month, \'-\', 1), \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear)),
+            ),
+            'order' => array(
+                'CustomerTargetUnit.customer_id' => 'ASC', 
+            ),
+        ));
+
         $ttujs = $this->Ttuj->getData('all', array(
             'conditions' => $conditions,
             'order' => array(
@@ -1303,12 +1315,20 @@ class RevenuesController extends AppController {
             ),
         ), false);
         $cntPencapaian = array();
+        $targetUnit = array();
 
         if( !empty($ttujs) ) {
             foreach ($ttujs as $key => $ttuj) {
                 $ttuj = $this->Customer->getMerge($ttuj, $ttuj['Ttuj']['customer_id']);
                 $cntPencapaian[$ttuj['Ttuj']['customer_id']][$ttuj[0]['dt']] = $ttuj[0]['cnt'];
                 $ttujs[$key] = $ttuj;
+            }
+        }
+
+        if( !empty($customerTargetUnits) ) {
+            foreach ($customerTargetUnits as $key => $customerTargetUnit) {
+                $idx = sprintf('%s-%s', $customerTargetUnit['CustomerTargetUnit']['year'], date('m', mktime(0, 0, 0, $customerTargetUnit['CustomerTargetUnit']['month'], 10)));
+                $targetUnit[$customerTargetUnit['CustomerTargetUnit']['customer_id']][$idx] = $customerTargetUnit['CustomerTargetUnit']['unit'];
             }
         }
 
@@ -1332,7 +1352,154 @@ class RevenuesController extends AppController {
         $this->set(compact(
             'ttujs', 'data_action', 'totalCnt',
             'fromMonth', 'fromYear', 'cntPencapaian',
-            'toYear', 'toMonth'
+            'toYear', 'toMonth', 'customerTargetUnit',
+            'targetUnit'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
+    }
+
+    public function monitoring_truck( $data_action = false ) {
+        $this->loadModel('Truck');
+        $this->loadModel('Ttuj');
+        $this->loadModel('TtujTipeMotor');
+        $this->set('active_menu', 'monitoring_truck');
+        $this->set('sub_module_title', __('Monitoring Truk'));
+
+        if( !empty($this->params['named']) ) {
+            $refine = $this->params['named'];
+
+            if( !empty($refine['month']) ) {
+                $refine['month'] = urldecode($refine['month']);
+                $monthArr = explode('-', $refine['month']);
+
+                if( !empty($monthArr[0]) && !empty($monthArr[1]) ) {
+                    $monthNumber = date_parse($monthArr[0]);
+
+                    if( !empty($monthArr[0]) ) {
+                        $currentMonth = sprintf("%02s", $monthNumber['month']);
+                    }
+
+                    if( !empty($monthArr[1]) && !empty($currentMonth) ) {
+                        $currentMonth = sprintf("%s-%s", $monthArr[1], $currentMonth);
+                    }
+                }
+            }
+        }
+
+        $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
+        $prevMonth = date('Y-m', mktime(0, 0, 0, date("m", strtotime($currentMonth))-1 , 1, date("Y", strtotime($currentMonth))));
+        $nextMonth = date('Y-m', mktime(0, 0, 0, date("m", strtotime($currentMonth))+1 , 1, date("Y", strtotime($currentMonth))));
+        $leftDay = date('N', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , 0, date("Y", strtotime($currentMonth))));
+        $lastDay = date('t', strtotime($currentMonth));
+        $conditions = array(
+            'Ttuj.status'=> 1,
+            'Ttuj.is_draft'=> 0,
+            'OR' => array(
+                'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m\')' => $currentMonth,
+                'DATE_FORMAT(Ttuj.tgljam_tiba, \'%Y-%m\')' => $currentMonth,
+                'DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m\')' => $currentMonth,
+                'DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m\')' => $currentMonth,
+                'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\')' => $currentMonth,
+            ),
+        );
+        $this->paginate = $this->Truck->getData('paginate', array(
+            'conditions' => array(
+                'Truck.status' => 1
+            ),
+            'fields' => array(
+                'Truck.id', 'Truck.nopol'
+            ),
+            'limit' => 20,
+        ));
+        $trucks = $this->paginate('Truck');
+        $truckList = Set::extract('/Truck/id', $trucks);
+        $conditions['Ttuj.truck_id'] = $truckList;
+
+        $ttujs = $this->Ttuj->getData('all', array(
+            'conditions' => $conditions,
+            'order' => array(
+                'Ttuj.customer_name' => 'ASC', 
+            ),
+            'group' => array(
+                'Ttuj.customer_id'
+            ),
+        ));
+        $lakas = $this->Ttuj->getData('all', array(
+            'conditions' => $conditions,
+            'order' => array(
+                'Ttuj.customer_name' => 'ASC', 
+            ),
+            'group' => array(
+                'Ttuj.customer_id'
+            ),
+        ));
+        $dataTtuj = array();
+
+        if( !empty($ttujs) ) {
+            foreach ($ttujs as $key => $value) {
+                $nopol = $value['Ttuj']['nopol'];
+                $ttujTipeMotor = $this->TtujTipeMotor->find('first', array(
+                    'conditions' => array(
+                        'TtujTipeMotor.status' => 1,
+                        'TtujTipeMotor.ttuj_id' => $value['Ttuj']['id'],
+                    ),
+                    'fields' => array(
+                        'SUM(TtujTipeMotor.qty) cnt'
+                    ),
+                ));
+                $totalMuatan = 0;
+
+                if( !empty($ttujTipeMotor[0]['cnt']) ) {
+                    $totalMuatan = $ttujTipeMotor[0]['cnt'];
+                }
+
+                $dataTmp = array(
+                    'Tujuan' => $value['Ttuj']['to_city_name'],
+                    'Driver' => $value['Ttuj']['driver_name'],
+                    'Muatan' => $totalMuatan,
+                );
+
+                if( !empty($value['Ttuj']['tgljam_berangkat']) ) {
+                    $tglBerangkat = date('d', strtotime($value['Ttuj']['tgljam_berangkat']));
+                    $dataTtuj[$nopol]['Berangkat'][$tglBerangkat] = $dataTmp;
+                    $dataTtuj[$nopol]['Berangkat'][$tglBerangkat]['datetime'] = date('d M Y H:i:s', strtotime($value['Ttuj']['tgljam_berangkat']));
+                }
+
+                if( !empty($value['Ttuj']['tgljam_tiba']) ) {
+                    $tglTiba = date('d', strtotime($value['Ttuj']['tgljam_tiba']));
+                    $dataTtuj[$nopol]['Tiba'][$tglTiba] = $dataTmp;
+                    $dataTtuj[$nopol]['Tiba'][$tglTiba]['datetime'] = date('d M Y H:i:s', strtotime($value['Ttuj']['tgljam_tiba']));
+                }
+
+                if( !empty($value['Ttuj']['tgljam_bongkaran']) ) {
+                    $tglBongkaran = date('d', strtotime($value['Ttuj']['tgljam_bongkaran']));
+                    $dataTtuj[$nopol]['Bongkaran'][$tglBongkaran] = $dataTmp;
+                    $dataTtuj[$nopol]['Bongkaran'][$tglBongkaran]['datetime'] = date('d M Y H:i:s', strtotime($value['Ttuj']['tgljam_bongkaran']));
+                }
+
+                if( !empty($value['Ttuj']['tgljam_balik']) ) {
+                    $tglBalik = date('d', strtotime($value['Ttuj']['tgljam_balik']));
+                    $dataTtuj[$nopol]['Balik'][$tglBalik] = $dataTmp;
+                    $dataTtuj[$nopol]['Balik'][$tglBalik]['datetime'] = date('d M Y H:i:s', strtotime($value['Ttuj']['tgljam_balik']));
+                }
+
+                if( !empty($value['Ttuj']['tgljam_pool']) ) {
+                    $tglPool = date('d', strtotime($value['Ttuj']['tgljam_pool']));
+                    $dataTtuj[$nopol]['Pool'][$tglPool] = $dataTmp;
+                    $dataTtuj[$nopol]['Pool'][$tglPool]['datetime'] = date('d M Y H:i:s', strtotime($value['Ttuj']['tgljam_pool']));
+                }
+            }
+        }
+
+        $this->set(compact(
+            'data_action', 'lastDay', 'currentMonth',
+            'trucks', 'prevMonth', 'nextMonth',
+            'dataTtuj'
         ));
 
         if($data_action == 'pdf'){

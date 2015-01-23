@@ -409,4 +409,13 @@ class CommonHelper extends AppHelper {
 
         return $path;
     }
+
+    
+    function toSlug($string) {
+        if( is_string($string) ) {
+            return strtolower(Inflector::slug($string, '-'));
+        } else {
+            return $string;
+        }
+    }
 }
