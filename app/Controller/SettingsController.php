@@ -2290,6 +2290,13 @@ class SettingsController extends AppController {
         $this->paginate = $this->TarifAngkutan->getData('paginate', $options);
         $tarif_angkutan = $this->paginate('TarifAngkutan');
 
+        if(!empty($tarif_angkutan)){
+            $this->loadModel('Customer');
+            foreach ($tarif_angkutan as $key => $value) {
+                $tarif_angkutan[$key] = $this->Customer->getMerge($value, $value['TarifAngkutan']['customer_id']);
+            }
+        }
+
         $this->set('active_menu', 'tarif_angkutan');
         $this->set('sub_module_title', 'Tarif Angkutan');
         $this->set('tarif_angkutan', $tarif_angkutan);

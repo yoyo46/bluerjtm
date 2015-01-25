@@ -292,6 +292,39 @@
                 </ul>
             </li>
             <?php
+
+                    $activeTruck = false;
+                    $truckMenu = array(
+                        'drivers', 'trucks', 'directions',
+                        'reports', 'ritase_report', 'stnk',
+                        'stnk_payments', 'kir', 'kir_payments',
+                        'siup', 'siup_payments'
+                    );
+
+                    if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
+                        $activeTruck = 'active';
+                    }
+            ?>
+            <li class="treeview <?php echo $activeTruck; ?>">
+                <a href="#">
+                    <i class="fa fa-truck"></i>
+                    <span>Revenue</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php
+                        echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Revenue', array(
+                            'controller' => 'revenues',
+                            'action' => 'index',
+                        ), array(
+                            'escape' => false
+                        )), array(
+                            'class' => ( !empty($active_menu) && $active_menu == 'revenue' )?'active':'',
+                        ));
+                    ?>
+                </ul>
+            </li>
+            <?php
                     $activeTtuj = false;
                     $ttujMenu = array(
                         'ttuj', 'truk_tiba', 'bongkaran',

@@ -1,57 +1,52 @@
 <?php
-class TipeMotor extends AppModel {
-	var $name = 'TipeMotor';
+class RevenueDetail extends AppModel {
+	var $name = 'RevenueDetail';
 	var $validate = array(
-        'name' => array(
+        'no_do' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Tipe motor harap diisi'
+                'message' => 'No DO harap diisi'
             ),
         ),
-        'color_motor_id' => array(
+        'no_sj' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Warna motor harap diisi'
+                'message' => 'No SJ harap diisi'
             ),
         ),
-        'code_motor_id' => array(
+        'qty_unit' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Kode motor harap diisi'
+                'message' => 'Quantity harap diisi'
             ),
         ),
-        'group_motor_id' => array(
+        'price_unit' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Grup motor harap diisi'
+                'message' => 'Quantity harap diisi'
             ),
         ),
+        'tipe_motor_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'tipe motor harap diisi'
+            ),
+        )
 	);
 
-	var $belongsTo = array(
-        'ColorMotor' => array(
-            'className' => 'ColorMotor',
-            'foreignKey' => 'color_motor_id',
+    var $belongsTo = array(
+        'Revenue' => array(
+            'className' => 'Revenue',
+            'foreignKey' => 'revenue_id',
         ),
-        'GroupMotor' => array(
-            'className' => 'GroupMotor',
-            'foreignKey' => 'group_motor_id',
-        ),
-	);
+    );
 
 	function getData($find, $options = false){
         $default_options = array(
-            'conditions'=> array(
-                'TipeMotor.status' => 1,
-            ),
-            'order'=> array(
-                'TipeMotor.name' => 'ASC'
-            ),
-            'contain' => array(
-                'ColorMotor',
-                'GroupMotor'
-            ),
-            'fields' => array()
+            'conditions'=> array(),
+            'order'=> array(),
+            'contain' => array(),
+            'fields' => array(),
         );
 
         if(!empty($options)){
@@ -81,7 +76,7 @@ class TipeMotor extends AppModel {
     }
 
     function getMerge($data, $id){
-        if(empty($data['TipeMotor'])){
+        if(empty($data['RevenueDetail'])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
                     'id' => $id
@@ -94,11 +89,6 @@ class TipeMotor extends AppModel {
         }
 
         return $data;
-    }
-
-    function __construct($id = false, $table = null, $ds = null) {
-        parent::__construct($id, $table, $ds);
-        $this->virtualFields['tipe_motor_color'] = sprintf('CONCAT(%s.name, " - ", ColorMotor.name)', $this->alias);
     }
 }
 ?>

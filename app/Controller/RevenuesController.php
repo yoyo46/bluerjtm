@@ -1508,4 +1508,388 @@ class RevenuesController extends AppController {
             $this->layout = 'ajax';
         }
     }
+
+    function index(){
+        $this->loadModel('Revenue');
+        $this->loadModel('Ttuj');
+        $this->set('active_menu', 'revenue');
+        $this->set('sub_module_title', __('Revenue'));
+
+        $conditions = array();
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['nodoc'])){
+                $nodoc = urldecode($refine['nodoc']);
+                $this->request->data['Revenue']['nodoc'] = $nodoc;
+                $conditions['Revenue.nodoc LIKE '] = '%'.$nodoc.'%';
+            }
+            if(!empty($refine['no_ttuj'])){
+                $no_ttuj = urldecode($refine['no_ttuj']);
+                $this->request->data['Ttuj']['no_ttuj'] = $no_ttuj;
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
+            }
+        }
+
+        $this->paginate = $this->Revenue->getData('paginate', array(
+            'conditions' => $conditions,
+            'contain' => array(
+                'Ttuj'
+            )
+        ));
+        $revenues = $this->paginate('Revenue');
+
+        if(!empty($revenues)){
+            foreach ($revenues as $key => $value) {
+                $revenues[$key] = $this->Ttuj->Customer->getMerge($value, $value['Ttuj']['customer_id']);
+            }
+        }
+        $this->set('revenues', $revenues); 
+    }
+
+    function revenue_add(){
+        $this->loadModel('Revenue');
+        $module_title = __('Tambah Revenue');
+        $this->set('sub_module_title', trim($module_title));
+        $this->doTTUJ();
+    }
+
+    function revenue_edit( $id ){
+        $this->loadModel('Ttuj');
+        $ttuj = $this->Ttuj->getData('first', array(
+            'conditions' => array(
+                'Ttuj.id' => $id
+            )
+        ));
+
+        if(!empty($ttuj)){
+            $data_action = false;
+
+            if( !empty($ttuj['Ttuj']['is_retail']) ) {
+                $data_action = 'retail';
+            }
+
+            $module_title = sprintf(__('Rubah TTUJ %s'), ucwords($data_action));
+            $this->set('sub_module_title', trim($module_title));
+            $this->doTTUJ($data_action, $id, $ttuj);
+        }else{
+            $this->MkCommon->setCustomFlash(__('TTUJ tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'revenues',
+                'action' => 'ttuj'
+            ));
+        }
+    }
+
+    function add(){
+        $this->loadModel('Revenue');
+        $module_title = __('Tambah Revenue');
+        $this->set('sub_module_title', trim($module_title));
+        $this->doRevenue();
+    }
+
+    function edit( $id ){
+        $this->loadModel('Revenue');
+        $revenue = $this->Revenue->getData('first', array(
+            'conditions' => array(
+                'Revenue.id' => $id
+            ),
+            'contain' => array(
+                'RevenueDetail',
+                'Ttuj'
+            )
+        ));
+
+        if(!empty($revenue)){
+            $module_title = __('Rubah Revenue');
+            $this->set('sub_module_title', trim($module_title));
+            $this->doRevenue($id, $revenue);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Revenue tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'revenues',
+                'action' => 'index'
+            ));
+        }
+    }
+
+    function doRevenue($id = false, $data_local = false){
+        $this->loadModel('Ttuj');
+        $this->loadModel('TarifAngkutan');
+        $this->loadModel('City');
+        $this->loadModel('TipeMotor');
+
+        $data_revenue_detail = array();
+
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+
+            if($id && $data_local){
+                $this->Revenue->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('Revenue');
+                $this->Revenue->create();
+                $msg = 'membuat';
+            }
+
+            /*validasi revenue detail*/
+            $validate_detail = true;
+            $validate_qty = true;
+            $array_ttuj_tipe_motor = array();
+            if(!empty($data['RevenueDetail'])){
+                foreach ($data['RevenueDetail']['no_do'] as $key => $value) {
+                    $data_detail['RevenueDetail'] = array(
+                        'no_do' => $value,
+                        'no_sj' => $data['RevenueDetail']['no_sj'][$key],
+                        'qty_unit' => $data['RevenueDetail']['qty_unit'][$key],
+                        'price_unit' => $data['RevenueDetail']['price_unit'][$key],
+                        'tipe_motor_id' => $data['RevenueDetail']['tipe_motor_id'][$key],
+                        'city_id' => $data['RevenueDetail']['city_id'][$key],
+                        'ttuj_tipe_motor_id' => $data['RevenueDetail']['ttuj_tipe_motor_id'][$key],
+                    );
+
+                    $this->Revenue->RevenueDetail->set($data_detail);
+                    if( !$this->Revenue->RevenueDetail->validates() ){
+                        $validate_detail = false;
+                    }
+
+                    if( empty($array_ttuj_tipe_motor[$data['RevenueDetail']['ttuj_tipe_motor_id'][$key]]) ){
+                        $array_ttuj_tipe_motor[$data['RevenueDetail']['ttuj_tipe_motor_id'][$key]] = $data_detail['RevenueDetail']['qty_unit'];
+                    }else{
+                        $array_ttuj_tipe_motor[$data['RevenueDetail']['ttuj_tipe_motor_id'][$key]] += $data_detail['RevenueDetail']['qty_unit'];
+                    }
+                }
+
+                foreach ($array_ttuj_tipe_motor as $ttuj_tipe_motor_id => $value) {
+                    $qty = $this->Ttuj->TtujTipeMotor->TtujTipeMotorUse->find('all', array(
+                        'conditions' => array(
+                            'TtujTipeMotorUse.ttuj_tipe_motor_id' => $ttuj_tipe_motor_id
+                        ),
+                        'fields' => array(
+                            'SUM(TtujTipeMotorUse.qty) as count_qty'
+                        )
+                    ));
+
+                    $qty_real_tipe_ttuj = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                        'conditions' => array(
+                            'TtujTipeMotor.id' => $ttuj_tipe_motor_id
+                        )
+                    ));
+
+                    $validate_qty_real = false;
+                    if(!empty($qty_real_tipe_ttuj) && $qty_real_tipe_ttuj['TtujTipeMotor']['qty'] <= $value ){
+                        $validate_qty_real = true;
+                    }
+
+                    if(((!empty($qty[0][0]['count_qty']) && $qty[0][0]['count_qty'] >= $value) || (empty($qty_real_tipe_ttuj))) && $validate_qty_real  ){
+                        $validate_qty = false;
+                        break;
+                    }
+                }
+            }
+            /*end validasi revenue detail*/
+
+            $this->Revenue->set($data);
+
+            if($this->Revenue->validates($data) && $validate_detail && $validate_qty){
+                if($this->Revenue->save($data)){
+                    $revenue_id = $this->Revenue->id;
+
+                    if($id && $data_local){
+                        $this->Revenue->RevenueDetail->deleteAll(array(
+                            'revenue_id' => $revenue_id
+                        ));
+                    }
+
+                    foreach ($array_ttuj_tipe_motor as $ttuj_tipe_motor_id => $value) {
+                        $this->Ttuj->TtujTipeMotor->TtujTipeMotorUse->create();
+                        $this->Ttuj->TtujTipeMotor->TtujTipeMotorUse->set(array(
+                            'revenue_id' => $revenue_id,
+                            'ttuj_tipe_motor_id' => $ttuj_tipe_motor_id,
+                            'qty' => $value
+                        ));
+                        $this->Ttuj->TtujTipeMotor->TtujTipeMotorUse->save();
+                    }
+
+                    foreach ($data['RevenueDetail']['no_do'] as $key => $value) {
+                        $this->Revenue->RevenueDetail->create();
+                        $data_detail['RevenueDetail'] = array(
+                            'no_do' => $value,
+                            'no_sj' => $data['RevenueDetail']['no_sj'][$key],
+                            'qty_unit' => $data['RevenueDetail']['qty_unit'][$key],
+                            'price_unit' => $data['RevenueDetail']['price_unit'][$key],
+                            'revenue_id' => $revenue_id,
+                            'tipe_motor_id' => $data['RevenueDetail']['tipe_motor_id'][$key],
+                            'city_id' => $data['RevenueDetail']['city_id'][$key],
+                            'ttuj_tipe_motor_id' => $data['RevenueDetail']['ttuj_tipe_motor_id'][$key],
+                        );
+                        $this->Revenue->RevenueDetail->set($data_detail);
+                        $this->Revenue->RevenueDetail->save();
+                    }
+
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Revenue'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Revenue'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->redirect(array(
+                        'controller' => 'revenues',
+                        'action' => 'index'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Revenue'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Revenue'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Revenue'), $msg), 'error');
+            }
+        }else if($id && $data_local){
+            $this->request->data = $data_local;
+
+            if(!empty($this->request->data['RevenueDetail'])){
+                foreach ($this->request->data['RevenueDetail'] as $key => $value) {
+                    // $data_revenue_detail[$key] = array(
+                    //     'TtujTipeMotor' => array(
+                    //         'qty' => $qty
+                    //     ),
+                    //     'RevenueDetail' => array(
+                    //         'no_do' => $value['no_do'],
+                    //         'no_sj' => $value['no_sj'],
+                    //         'to_city_name' => $to_city_name,
+                    //         'price_unit' => $value['price_unit']],
+                    //         'qty_unit' => $value['qty_unit'],
+                    //         'ttuj_tipe_motor_id' => $value['ttuj_tipe_motor_id'],
+                    //         'tipe_motor_id' => $tipe_motor_id,
+                    //         'city_id' => $to_city_id,
+                    //         'TipeMotor' => array(
+                    //             'name' => $tipe_motor_name,
+                    //         ),
+                    //     )
+                    // );
+                }
+            }
+        }
+
+        $ttuj_retail = false;
+        $ttuj_data = array();
+        $tarif_angkutan = false;
+        if(!empty($this->request->data['Revenue']['ttuj_id'])){
+            $ttuj_data = $this->Ttuj->getData('first', array(
+                'conditions' => array(
+                    'Ttuj.id' => $this->request->data['Revenue']['ttuj_id']
+                )
+            ));
+
+            if(!empty($ttuj_data['Ttuj']['is_retail'])){
+                $ttuj_retail = true;
+            }else{
+                $tarif_angkutan = $this->TarifAngkutan->findTarif($ttuj_data['Ttuj']['from_city_id'], $ttuj_data['Ttuj']['to_city_id'], $ttuj_data['Ttuj']['customer_id'], $ttuj_data['Ttuj']['truck_capacity']);
+            }
+        }
+        $this->set('tarif_angkutan', $tarif_angkutan);
+
+        if(!empty($this->request->data['RevenueDetail']['no_do'])){
+            foreach ($this->request->data['RevenueDetail']['no_do'] as $key => $value) {
+                $tipe_motor_id = $this->request->data['RevenueDetail']['tipe_motor_id'][$key];
+
+                $tipe_motor = $this->TipeMotor->getData('first', array(
+                    'conditions' => array(
+                        'TipeMotor.id' => $tipe_motor_id
+                    )
+                ));
+
+                $tipe_motor_name = '';
+                if(!empty($tipe_motor)){
+                    $tipe_motor_name = $tipe_motor['TipeMotor']['name'];
+                }
+
+                $qty = 0;
+                if($ttuj_data['Ttuj']['is_retail']){
+                    $city = $this->City->getData('first', array(
+                        'conditions' => array(
+                            'City.id' => $this->request->data['RevenueDetail']['city_id'][$key]
+                        )
+                    ));
+                    // debug($city);die();
+                    if(!empty($city['City']['name'])){
+                        $to_city_name = $city['City']['name'];
+                        $to_city_id = $city['City']['id'];
+                    }
+
+                    $ttujTipeMotor = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                        'conditions' => array(
+                            'TtujTipeMotor.ttuj_id' => $this->request->data['Revenue']['ttuj_id'],
+                            'TtujTipeMotor.tipe_motor_id' => $tipe_motor_id,
+                            'TtujTipeMotor.city_id' => $to_city_id
+                        )
+                    ));
+
+                    if(!empty($ttujTipeMotor)){
+                        $qty = $ttujTipeMotor['TtujTipeMotor']['qty'];
+                    }
+                }else{
+                    $to_city_name = $data_ttuj['Ttuj']['to_city_name'];
+                    $to_city_id = $data_ttuj['Ttuj']['to_city_id'];                    
+                }
+
+                $data_revenue_detail[$key] = array(
+                    'TtujTipeMotor' => array(
+                        'qty' => $qty
+                    ),
+                    'RevenueDetail' => array(
+                        'no_do' => $this->request->data['RevenueDetail']['no_do'][$key],
+                        'no_sj' => $this->request->data['RevenueDetail']['no_sj'][$key],
+                        'to_city_name' => $to_city_name,
+                        'price_unit' => $this->request->data['RevenueDetail']['price_unit'][$key],
+                        'qty_unit' => $this->request->data['RevenueDetail']['qty_unit'][$key],
+                        'ttuj_tipe_motor_id' => $this->request->data['RevenueDetail']['ttuj_tipe_motor_id'][$key],
+                        'tipe_motor_id' => $tipe_motor_id,
+                        'city_id' => $to_city_id,
+                        'TipeMotor' => array(
+                            'name' => $tipe_motor_name,
+                        ),
+                    )
+                );
+            }
+            $this->set('data_revenue_detail', $data_revenue_detail);
+        }
+
+        $ttujs = $this->Ttuj->getData('list', array(
+            'fields' => array(
+                'Ttuj.id', 'Ttuj.no_ttuj'
+            )
+        ));
+        $this->set('ttujs', $ttujs);
+
+        $this->set('active_menu', 'revenues');
+        $this->render('revenue_form');
+    }
+
+    function revenue_toggle( $id ){
+        $this->loadModel('Revenue');
+        $locale = $this->Revenue->getData('first', array(
+            'conditions' => array(
+                'Revenue.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['Revenue']['status']){
+                $value = false;
+            }
+
+            $this->Revenue->id = $id;
+
+            if($this->Revenue->save()){
+                $this->MkCommon->setCustomFlash(__('Revenue berhasil dibatalkan.'), 'success');
+                $this->Log->logActivity( sprintf(__('Revenue ID #%s berhasil dibatalkan.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+            }else{
+                $this->MkCommon->setCustomFlash(__('Revenue membatalkan TTUJ.'), 'error');
+                $this->Log->logActivity( sprintf(__('Revenue membatalkan TTUJ ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Revenue tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
 }

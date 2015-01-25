@@ -266,6 +266,15 @@ $(function() {
 		}
 	});
 
+    $('#sj-handle').click(function(){
+        if($('#sj-handle').is(':checked')) {
+            $('.sj-date').removeClass('hide');
+        }else{
+            $('.sj-date').addClass('hide');
+            $('.sj-date input').val('');
+        }
+    });
+
     var add_custom_field = function(){
         $('.add-custom-field').click(function (e) {
             var self = $(this);
@@ -726,6 +735,28 @@ $(function() {
         }
     });
 
+    $('#getTtujInfoRevenue').change(function() {
+        var self = $(this);
+
+        if( self.val() != '' ) {
+            $.ajax({
+                url: '/ajax/getInfoTtujRevenue/'+self.val()+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    $('#ttuj-info').html($(response).filter('#form-ttuj-main').html());
+                    $('#detail-tipe-motor').html($(response).filter('#form-ttuj-detail').html());
+
+                    revenue_detail();
+                    duplicate_row();
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        }
+    });
+
     $('#laka-driver-change').change(function(){
         var self = $(this);
         var val = self.val();
@@ -902,3 +933,65 @@ var choose_item_info = function(){
     qtyMuatanPress( $('.qty-muatan') );
 }
 choose_item_info();
+
+var revenue_detail = function(){
+    $('.revenue-qty').keyup(function(event){
+        var self = $(this);
+        var max = parseInt(self.attr('max'));
+        var val = parseInt(self.val());
+
+        if(val > max){
+            alert('qty tidak boleh lebih besar dari '+max)
+            self.val(max);
+        }else if(val <= 0){
+            self.val(1);
+        }
+        total_revenue_unit(self);
+    });
+
+    $('.price-unit-revenue').keyup(function(){
+        total_revenue_unit(self);
+    });
+
+    function total_revenue_unit(self){
+        var target = self.parents('tr');
+        var price = target.find('.price-unit-revenue').val();
+        var qty = target.find('.revenue-qty').val();
+
+        total = 0;
+        if(typeof qty != 'undefined' && qty != '' && typeof price != 'undefined' && price != ''){
+            total += price * qty;
+            target.find('.total-price-revenue').html('IDR '+formatNumber(total));
+        }
+
+        grandTotalRevenue();
+    }
+}
+
+revenue_detail();
+
+function grandTotalRevenue(){
+    var qty = $('.revenue-qty');
+    var price = $('.price-unit-revenue');
+    var length = price.length;
+
+    var total = 0;
+    for (var i = 0; i < length; i++) {
+        if(typeof qty[i] != 'undefined' && qty[i] != '' && typeof price[i] != 'undefined' && price[i] != ''){
+            total += price[i].value * qty[i].value;
+        }
+    };
+
+    $('#grand-total-revenue').html('IDR '+formatNumber(total));
+}
+var duplicate_row = function(){
+    $('.duplicate-row').click(function(){
+        var self = $(this);
+        var parent = self.parents('tr');
+        var html = '<tr>'+parent.html()+'</tr>';
+        
+        parent.after(html);
+        revenue_detail();
+        grandTotalRevenue();
+    });
+}

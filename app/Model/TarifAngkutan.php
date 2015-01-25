@@ -72,7 +72,6 @@ class TarifAngkutan extends AppModel {
                 'TarifAngkutan.name_tarif' => 'ASC'
             ),
             'contain' => array(
-                'Customer',
                 'GroupMotor',
             ),
         );
@@ -130,8 +129,28 @@ class TarifAngkutan extends AppModel {
             )
         ));
 
-        if(!empty($check_availability)){
+        if( empty($check_availability) ){
             return true;
+        }else{
+            return false;
+        }
+    }
+
+    function findTarif($from_city_id, $to_city_id, $customer_id, $capacity){
+        $result = $this->find('first', array(
+            'conditions' => array(
+                'from_city_id' => $from_city_id,
+                'to_city_id' => $to_city_id,
+                'customer_id' => $customer_id,
+                'capacity' => $capacity
+            )
+        ));
+
+        if(!empty($result)){
+            return array(
+                'jenis_unit' => $result['TarifAngkutan']['jenis_unit'],
+                'tarif' => $result['TarifAngkutan']['tarif']
+            );
         }else{
             return false;
         }

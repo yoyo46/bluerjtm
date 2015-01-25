@@ -119,7 +119,7 @@ class LakasController extends AppController {
                 ));
 
                 if(!empty($ttuj['Ttuj']['driver_name'])){
-                    $data['Laka']['Laka_name'] = $ttuj['Ttuj']['driver_name'];
+                    $data['Laka']['driver_name'] = $ttuj['Ttuj']['driver_name'];
                 }
             }
 

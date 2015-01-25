@@ -56,6 +56,13 @@ class TtujTipeMotor extends AppModel {
         ),
     );
 
+    var $hasMany = array(
+        'TtujTipeMotorUse' => array(
+            'className' => 'TtujTipeMotorUse',
+            'foreignKey' => 'ttuj_tipe_motor_id',
+        ),
+    );
+
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(

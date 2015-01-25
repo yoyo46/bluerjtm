@@ -178,5 +178,89 @@ class AjaxController extends AppController {
 		));
 		$this->set('lku', $lku);
 	}
+
+	function getInfoTtujRevenue($ttuj_id){
+		$this->loadModel('Ttuj');
+		$this->loadModel('TarifAngkutan');
+
+		$data_ttuj = $this->Ttuj->getData('first', array(
+			'conditions' => array(
+				'Ttuj.id' => $ttuj_id
+			)
+		));
+
+		$data_revenue_detail = array();
+		if(!empty($data_ttuj)){
+			$data_ttuj = $this->Ttuj->Customer->getMerge($data_ttuj, $data_ttuj['Ttuj']['customer_id']);
+			$this->request->data = $data_ttuj;
+
+			if(!empty($data_ttuj['TtujTipeMotor'])){
+				$this->loadModel('TipeMotor');
+				$this->loadModel('City');
+				$tipe_motor_list = array();
+				foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
+					$tipe_motor = $this->TipeMotor->getData('first', array(
+						'conditions' => array(
+							'TipeMotor.id' => $value['tipe_motor_id']
+						)
+					));
+
+					if(!empty($tipe_motor['TipeMotor']['name'])){
+						$tipe_motor_name = sprintf('%s - %s', $tipe_motor['TipeMotor']['name'], $tipe_motor['ColorMotor']['name']);
+						$tipe_motor_id = $tipe_motor['TipeMotor']['id'];
+					}
+					
+					$price_unit = false;
+					if($data_ttuj['Ttuj']['is_retail']){
+						$city = $this->City->getData('first', array(
+							'conditions' => array(
+								'City.id' => $value['city_id']
+							)
+						));
+						if(!empty($city['City']['name'])){
+							$to_city_name = $city['City']['name'];
+							$to_city_id = $city['City']['id'];
+						}
+
+						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $value['city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity']);
+						if(!empty($tarif['jenis_unit'])){
+							if($tarif['jenis_unit'] != 'per_unit'){
+								$tarif['tarif'] = false;
+							}
+						}
+						$price_unit = $tarif['tarif'];
+					}else{
+						$to_city_name = $data_ttuj['Ttuj']['to_city_name'];
+						$to_city_id = $data_ttuj['Ttuj']['to_city_id'];
+					}
+
+					$data_revenue_detail[$key] = array(
+						'TtujTipeMotor' => array(
+							
+							'qty' => $value['qty']
+						),
+						'RevenueDetail' => array(
+							'to_city_name' => $to_city_name,
+							'price_unit' => $price_unit,
+							'qty_unit' => $value['qty'],
+							'tipe_motor_id' => $tipe_motor_id,
+							'city_id' => $to_city_id,
+							'TipeMotor' => array(
+								'name' => $tipe_motor_name,
+							),
+							'ttuj_tipe_motor_id' => $value['id']
+						)
+					);
+				}
+			}
+		}
+
+		$tarif_angkutan = false;
+		if(!$data_ttuj['Ttuj']['is_retail']){
+			$tarif_angkutan = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity']);
+		}
+		// debug($data_revenue_detail);die();
+		$this->set(compact('data_revenue_detail', 'tarif_angkutan'));
+	}
 }
 ?>
