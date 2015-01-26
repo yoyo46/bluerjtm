@@ -83,6 +83,16 @@ class RjSettingComponent extends Component {
 					$refine_conditions['JenisPerlengkapan']['name'] = $refine['JenisPerlengkapan']['name'];
 				}
 			}
+			if(!empty($refine)) {
+				if( !empty($refine['TarifAngkutan']['customer_name']) ) {
+					$refine_conditions['TarifAngkutan']['customer_name'] = $refine['TarifAngkutan']['customer_name'];
+				}
+			}
+			if(!empty($refine)) {
+				if( !empty($refine['TarifAngkutan']['name']) ) {
+					$refine_conditions['TarifAngkutan']['name'] = $refine['TarifAngkutan']['name'];
+				}
+			}
 				
 			return $refine_conditions;
 		}
@@ -175,6 +185,13 @@ class RjSettingComponent extends Component {
 		}
 		if(isset($refine['GroupClassification']) && !empty($refine['GroupClassification'])) {
 			foreach($refine['GroupClassification'] as $param => $value) {
+				if($value) {
+					$parameters[trim($param)] = rawurlencode($value);
+				}
+			}
+		}
+		if(isset($refine['TarifAngkutan']) && !empty($refine['TarifAngkutan'])) {
+			foreach($refine['TarifAngkutan'] as $param => $value) {
 				if($value) {
 					$parameters[trim($param)] = rawurlencode($value);
 				}

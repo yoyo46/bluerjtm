@@ -17,15 +17,31 @@
                 'inputDefaults' => array('div' => false),
             ));
         ?>
-        <div class="form-group">
-            <?php 
-                echo $this->Form->input('name',array(
-                    'label'=> __('Nama Tarif Angkutan'),
-                    'class'=>'form-control',
-                    'required' => false,
-                    'placeholder' => __('Nama Tarif Angkutan')
-                ));
-            ?>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('name',array(
+                                'label'=> __('Nama Tarif Angkutan'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Nama Tarif Angkutan')
+                            ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('customer_name',array(
+                                'label'=> __('Nama Customer'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Nama Customer')
+                            ));
+                    ?>
+                </div>
+            </div>
         </div>
         <div class="form-group action">
             <?php

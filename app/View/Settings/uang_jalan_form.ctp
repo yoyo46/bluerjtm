@@ -36,7 +36,7 @@
 							'class' => 'form-group'
 						));
 						echo $this->Html->tag('div', $this->Form->input('from_city_id',array(
-							'label'=> __('Kota Asal *'), 
+							'label'=> __('Dari *'), 
 							'class'=>'form-control',
 							'required' => false,
 							'empty' => __('Pilih Kota Asal'),
@@ -45,7 +45,7 @@
 							'class' => 'form-group'
 						));
 						echo $this->Html->tag('div', $this->Form->input('to_city_id',array(
-							'label'=> __('Kota Tujuan *'), 
+							'label'=> __('Tujuan *'), 
 							'class'=>'form-control',
 							'required' => false,
 							'empty' => __('Pilih Kota Tujuan'),

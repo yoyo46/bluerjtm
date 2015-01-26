@@ -2274,6 +2274,7 @@ class SettingsController extends AppController {
     }
 
     function tarif_angkutan(){
+        $this->loadModel('Customer');
         $this->loadModel('TarifAngkutan');
         $options = array();
 
@@ -2283,7 +2284,20 @@ class SettingsController extends AppController {
             if(!empty($refine['name'])){
                 $name = urldecode($refine['name']);
                 $this->request->data['TarifAngkutan']['name'] = $name;
-                $options['conditions']['TarifAngkutan.name LIKE '] = '%'.$name.'%';
+                $options['conditions']['TarifAngkutan.name_tarif LIKE '] = '%'.$name.'%';
+            }
+            if(!empty($refine['customer_name'])){
+                $name = urldecode($refine['customer_name']);
+                $this->request->data['TarifAngkutan']['customer_name'] = $name;
+                $customers = $this->Customer->getData('list', array(
+                    'conditions' => array(
+                        'CONCAT(Customer.name, \' ( \', CustomerType.name, \' )\') LIKE' => '%'.$name.'%',
+                    ),
+                    'fields' => array(
+                        'Customer.id', 'Customer.id'
+                    ),
+                ));
+                $options['conditions']['TarifAngkutan.customer_id'] = $customers;
             }
         }
 
@@ -2291,7 +2305,6 @@ class SettingsController extends AppController {
         $tarif_angkutan = $this->paginate('TarifAngkutan');
 
         if(!empty($tarif_angkutan)){
-            $this->loadModel('Customer');
             foreach ($tarif_angkutan as $key => $value) {
                 $tarif_angkutan[$key] = $this->Customer->getMerge($value, $value['TarifAngkutan']['customer_id']);
             }
@@ -2335,11 +2348,15 @@ class SettingsController extends AppController {
             if($id && $data_local){
                 $this->TarifAngkutan->id = $id;
                 $msg = 'merubah';
+                $data['TarifAngkutan']['id'] = $id; // ini utk validasi uniq tarif angkut
             }else{
                 $this->loadModel('TarifAngkutan');
                 $this->TarifAngkutan->create();
                 $msg = 'menambah';
             }
+
+            $data['TarifAngkutan']['tarif'] = !empty($data['TarifAngkutan']['tarif'])?str_replace(',', '', $data['TarifAngkutan']['tarif']):false;
+            $data['TarifAngkutan']['capacity'] = !empty($data['TarifAngkutan']['capacity'])?$data['TarifAngkutan']['capacity']:0;
 
             if(!empty($data['TarifAngkutan']['from_city_id'])){
                 $city = $this->City->getData('first', array(
@@ -2373,9 +2390,9 @@ class SettingsController extends AppController {
                 }
             }
 
-            if(!empty($data['TarifAngkutan']['from_city_name']) && !empty($data['TarifAngkutan']['to_city_name'])){
-                $data['TarifAngkutan']['name_tarif'] = sprintf('%s - %s', $data['TarifAngkutan']['from_city_name'], $data['TarifAngkutan']['to_city_name']);
-            }
+            // if(!empty($data['TarifAngkutan']['from_city_name']) && !empty($data['TarifAngkutan']['to_city_name'])){
+            //     $data['TarifAngkutan']['name_tarif'] = sprintf('%s - %s', $data['TarifAngkutan']['from_city_name'], $data['TarifAngkutan']['to_city_name']);
+            // }
 
             $this->TarifAngkutan->set($data);
 

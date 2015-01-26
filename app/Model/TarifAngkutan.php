@@ -21,9 +21,10 @@ class TarifAngkutan extends AppModel {
             ),
         ),
         'capacity' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'kapasitas harap diisi'
+            'numeric' => array(
+                'allowEmpty'=> true,
+                'rule' => array('numeric'),
+                'message' => 'Kapasitas harus berupa angka',
             ),
         ),
         'jenis_unit' => array(
@@ -48,6 +49,10 @@ class TarifAngkutan extends AppModel {
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'customer harap dipilih'
+            ),
+            'uniqCustomer' => array(
+                'rule' => array('uniqCustomer'),
+                'message' => 'Tarif Angkut sudah terdaftar'
             ),
         )
 	);
@@ -153,6 +158,30 @@ class TarifAngkutan extends AppModel {
             );
         }else{
             return false;
+        }
+    }
+
+    function uniqCustomer () {
+        $conditions = array(
+            'TarifAngkutan.customer_id' => $this->data['TarifAngkutan']['customer_id'],
+            'TarifAngkutan.from_city_id' => $this->data['TarifAngkutan']['from_city_id'],
+            'TarifAngkutan.to_city_id' => $this->data['TarifAngkutan']['to_city_id'],
+            'TarifAngkutan.jenis_unit' => $this->data['TarifAngkutan']['jenis_unit'],
+            'TarifAngkutan.status' => 1,
+        );
+
+        if( !empty($this->data['TarifAngkutan']['id']) ) {
+            $conditions['TarifAngkutan.id <>'] = $this->data['TarifAngkutan']['id'];
+        }
+
+        $tarifAngkutan = $this->find('first', array(
+            'conditions' => $conditions,
+        ));
+
+        if( !empty($tarifAngkutan) ) {
+            return false;
+        } else {
+            return true;
         }
     }
 }

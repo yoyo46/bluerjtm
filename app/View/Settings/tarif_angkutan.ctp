@@ -23,11 +23,11 @@
                 <th>Nama</th>
                 <th>Dari</th>
                 <th>Tujuan</th>
-                <th>Tarif</th>
-                <th>Kapasitas</th>
                 <th>Customer</th>
                 <th>Jenis Unit</th>
                 <th>Group Motor</th>
+                <th>Kapasitas</th>
+                <th>Tarif</th>
                 <th>Dibuat</th>
                 <th>Action</th>
             </tr>
@@ -42,11 +42,23 @@
                 <td><?php echo $value_data['name_tarif'];?></td>
                 <td><?php echo $value_data['from_city_name'];?></td>
                 <td><?php echo $value_data['to_city_name'];?></td>
-                <td><?php echo $this->Number->currency($value_data['tarif'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
-                <td><?php echo $value_data['capacity'];?></td>
                 <td><?php echo $value['Customer']['name'];?></td>
-                <td><?php echo $value_data['jenis_unit'];?></td>
+                <td>
+                    <?php
+                            switch ($value_data['jenis_unit']) {
+                                case 'per_unit':
+                                    echo __('Per Unit');
+                                    break;
+                                
+                                default:
+                                    echo __('Per Truk');
+                                    break;
+                            };
+                    ?>
+                </td>
                 <td><?php echo $value['GroupMotor']['name'];?></td>
+                <td><?php echo $value_data['capacity'];?></td>
+                <td><?php echo $this->Number->currency($value_data['tarif'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td class="action">
                     <?php 

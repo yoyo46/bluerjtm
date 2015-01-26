@@ -293,19 +293,16 @@
             </li>
             <?php
 
-                    $activeTruck = false;
-                    $truckMenu = array(
-                        'drivers', 'trucks', 'directions',
-                        'reports', 'ritase_report', 'stnk',
-                        'stnk_payments', 'kir', 'kir_payments',
-                        'siup', 'siup_payments'
+                    $activeMenu = false;
+                    $dataMenu = array(
+                        'index', 'tarif_angkutan'
                     );
 
-                    if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
-                        $activeTruck = 'active';
+                    if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
+                        $activeMenu = 'active';
                     }
             ?>
-            <li class="treeview <?php echo $activeTruck; ?>">
+            <li class="treeview <?php echo $activeMenu; ?>">
                 <a href="#">
                     <i class="fa fa-truck"></i>
                     <span>Revenue</span>
@@ -313,14 +310,22 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php
-                        echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Revenue', array(
-                            'controller' => 'revenues',
-                            'action' => 'index',
-                        ), array(
-                            'escape' => false
-                        )), array(
-                            'class' => ( !empty($active_menu) && $active_menu == 'revenue' )?'active':'',
-                        ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Tarif Angkut', array(
+                                'controller' => 'settings',
+                                'action' => 'tarif_angkutan',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'tarif_angkutan' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Revenue', array(
+                                'controller' => 'revenues',
+                                'action' => 'index',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'revenue' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>
@@ -328,7 +333,7 @@
                     $activeTtuj = false;
                     $ttujMenu = array(
                         'ttuj', 'truk_tiba', 'bongkaran',
-                        'balik', 'pool'
+                        'balik', 'pool', 'uang_jalan'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $ttujMenu) ) {
@@ -343,6 +348,14 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Jalan', array(
+                                'controller' => 'settings',
+                                'action' => 'uang_jalan',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan' )?'active':'',
+                            ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> TTUJ', array(
                                 'controller' => 'revenues',
                                 'action' => 'ttuj',
@@ -454,7 +467,7 @@
             <?php 
                     $activeSetting = false;
                     $settingMenu = array(
-                        'cities', 'vendors', 'companies', 'uang_jalan',
+                        'cities', 'vendors', 'companies',
                         'perlengkapan', 'coas', 'branches', 'classifications'
                     );
 
@@ -534,14 +547,6 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'classifications' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Jalan', array(
-                                'controller' => 'settings',
-                                'action' => 'uang_jalan',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan' )?'active':'',
-                            ));
                             // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Jenis Perlengkapan', array(
                             //     'controller' => 'settings',
                             //     'action' => 'jenis_perlengkapan',
@@ -550,14 +555,6 @@
                             // )), array(
                             //     'class' => ( !empty($active_menu) && $active_menu == 'jenis_perlengkapan' )?'active':'',
                             // ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Tarif Angkut', array(
-                                'controller' => 'settings',
-                                'action' => 'tarif_angkutan',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'tarif_angkutan' )?'active':'',
-                            ));
                     ?>
                 </ul>
             </li>
