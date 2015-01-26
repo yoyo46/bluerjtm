@@ -137,9 +137,8 @@
                             $i = 0;
                             foreach ($truck['TruckCustomer'] as $key => $value) {
                                 $i++;
-                                $customerType = !empty($value['Customer']['CustomerType']['name'])?$value['Customer']['CustomerType']['name']:'-';
                                 echo $this->Html->tag('dt', sprintf(__('Alokasi %s'), $i));
-                                echo $this->Html->tag('dd', sprintf(__('%s (%s)'), $value['Customer']['name'], $customerType));
+                                echo $this->Html->tag('dd', $value['Customer']['customer_name']);
                             }
                     ?>
                 </dl>
@@ -149,6 +148,27 @@
     <?php 
             }
     ?>
+    <div class="col-sm-6">
+        <div class="box box-warning">
+            <div class="box-header">
+                <?php 
+                        echo $this->Html->tag('h3', __('Emergency Call'), array(
+                            'class' => 'box-title',
+                        ));
+                ?>
+            </div>
+            <div class="box-body">
+                <dl class="dl-horizontal">
+                    <dt><?php echo __('Nama')?></dt>
+                    <dd><?php echo !empty($truck['Truck']['emergency_name'])?$truck['Truck']['emergency_name']:'-';?></dd>
+                    <dt><?php echo __('Telepon')?></dt>
+                    <dd><?php echo !empty($truck['Truck']['emergency_call'])?$truck['Truck']['emergency_call']:'-';?></dd>
+                    <dt><?php echo __('Dilangkapi GPS')?></dt>
+                    <dd><?php echo !empty($truck['Truck']['is_gps'])?'Ya':'Tidak';?></dd>
+                </dl>
+            </div>
+        </div>
+    </div>
     <?php 
             if( !empty($_show_perlengkapan) && !empty($truckPerlengkapans) ) {
     ?>

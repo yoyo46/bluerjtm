@@ -150,6 +150,7 @@ class TrucksController extends AppController {
                 $this->loadModel('Truck');
                 $this->Truck->create();
                 $msg = 'menambah';
+                $data_local = $this->Driver->getGenerateDate($data_local);
             }
             
             $data['Truck']['driver_id'] = (!empty($data['Truck']['driver_id'])) ? $data['Truck']['driver_id'] : 0;
@@ -209,6 +210,9 @@ class TrucksController extends AppController {
                     $data_customer = array();
                     foreach ($data['TruckCustomer']['customer_id'] as $key => $value) {
                         if(!empty($value)){
+                            if( empty($key) ) {
+                                $data_customer[$key]['TruckCustomer']['primary'] = 1;
+                            }
                             $data_customer[$key]['TruckCustomer']['customer_id'] = $value;
                             $data_customer[$key]['TruckCustomer']['truck_id'] = $truck_id;
                         }
@@ -365,7 +369,7 @@ class TrucksController extends AppController {
         $this->set(compact(
             'truck_brands', 'truck_categories', 'truck_brands', 
             'companies', 'drivers', 'years', 'customers',
-            'truck_facilities'
+            'truck_facilities', 'data_local'
         ));
         $this->render('truck_form');
     }
@@ -2517,6 +2521,7 @@ class TrucksController extends AppController {
                 'conditions' => array(
                     'Truck.status' => 1,
                     'TruckCustomer.customer_id' => $customerArr,
+                    'TruckCustomer.primary' => $customerArr,
                 ),
                 'contain' => array(
                     'Truck',

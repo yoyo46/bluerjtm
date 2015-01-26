@@ -27,44 +27,43 @@
 			?>
         </div>
         <div class="form-group">
-            <?php 
-                    echo $this->Form->label('month', __('Bulan - Tahun'));
+        	<?php 
+        			echo $this->Form->label('year', __('Tahun'));
+                    echo $this->Form->year('year', 1949, date('Y') + 5, array(
+                        'label'=> false, 
+                        'class'=>'form-control',
+                        'required' => false,
+                        'empty' => false,
+                        'name' => 'data[CustomerTargetUnit][year]',
+                        'empty' => __('Pilih Tahun'),
+                    ));
             ?>
-            <div class="row">
-            	<div class="col-sm-6">
-		            <?php
-		                    echo $this->Form->month('month', array(
-		                        'label'=> false, 
-		                        'class'=>'form-control',
-		                        'required' => false,
-		                        'empty' => false,
-		                        'name' => 'data[CustomerTargetUnit][month]',
-		                        'empty' => __('Pilih Bulan'),
-		                    ));
-		            ?>
-            	</div>
-            	<div class="col-sm-6">
-		            <?php 
-		                    echo $this->Form->year('year', 1949, date('Y') + 5, array(
-		                        'label'=> false, 
-		                        'class'=>'form-control',
-		                        'required' => false,
-		                        'empty' => false,
-		                        'name' => 'data[CustomerTargetUnit][year]',
-		                        'empty' => __('Pilih Tahun'),
-		                    ));
-		            ?>
-		        </div>
-            </div>
         </div>
         <div class="form-group">
-        	<?php 
-					echo $this->Form->input('unit',array(
-						'label'=> __('Target Unit'), 
-						'class'=>'form-control',
-						'required' => false,
+        	<?php
+	        		echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah Bulan'), 'javascript:', array(
+						'class' => 'add-custom-field btn btn-success btn-xs',
+						'action_type' => 'target-unit',
+						'escape' => false,
 					));
-			?>
+        	?>
+        </div>
+        <div id="box-field-input">
+        	<?php 
+        			if( !empty($this->request->data['CustomerTargetUnitDetail']['month']) ) {
+        				foreach ($this->request->data['CustomerTargetUnitDetail']['month'] as $key => $value) {
+        					echo $this->element('blocks/settings/list_month', array(
+        						'rel' => $key,
+        						'month' => $value,
+        						'unit' => !empty($this->request->data['CustomerTargetUnitDetail']['unit'][$key])?$this->request->data['CustomerTargetUnitDetail']['unit'][$key]:'',
+    						));
+        				}
+        			} else {
+        				echo $this->element('blocks/settings/list_month', array(
+        					'rel' => 0,
+    					));
+        			}
+	        ?>
         </div>
     </div>
 
@@ -85,4 +84,18 @@
 	<?php
 		echo $this->Form->end();
 	?>
+</div>
+<div class="hide">
+	<div id="target_unit">
+		<?php
+                echo $this->Form->month('month', array(
+                    'label'=> false, 
+                    'class'=>'form-control',
+                    'required' => false,
+                    'empty' => false,
+                    'name' => 'data[CustomerTargetUnit][month]',
+                    'empty' => __('Pilih Bulan'),
+                ));
+        ?>
+	</div>
 </div>

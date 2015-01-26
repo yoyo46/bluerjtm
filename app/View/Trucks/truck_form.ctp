@@ -19,19 +19,25 @@
 		        <h3 class="box-title"><?php echo __('Informasi Utama')?></h3>
 		    </div>
 		    <div class="box-body">
+		    	<?php 
+		    			if( !empty($data_local) ) {
+		    	?>
 		    	<div class="form-group">
 		        	<?php 
-						echo $this->Form->label('nomor_id',__('Nomor ID *')); 
-
-						echo $this->Form->input('nomor_id',array(
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'placeholder' => __('Nomor ID'),
-							'type' => 'text'
-						));
+							echo $this->Form->input('id',array(
+								'label'=> false, 
+								'class'=>'form-control',
+								'required' => false,
+								'placeholder' => __('Nomor ID'),
+								'type' => 'text',
+								'disabled' => true,
+								'value' => str_pad($data_local['Truck']['id'], 4, '0', STR_PAD_LEFT),
+							));
 					?>
 		        </div>
+		        <?php 
+		        		}
+		        ?>
 		    	<div class="form-group">
 		        	<?php 
 						echo $this->Form->label('nopol',__('Nopol *')); 
@@ -507,6 +513,18 @@
 							'type' => 'text',
 						));
 					?>
+		        </div>
+		        <div class="form-group">
+			        <div class="checkbox aset-handling">
+		                <label>
+		                    <?php 
+								echo $this->Form->checkbox('is_gps',array(
+									'label'=> false, 
+									'required' => false,
+								)).__('Dilangkapi GPS?');
+							?>
+		                </label>
+		            </div>
 		        </div>
 		   	</div>
 		</div>

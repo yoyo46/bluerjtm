@@ -7,20 +7,10 @@ class CustomerTargetUnit extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Customer harap dipilih'
             ),
-            'customer_id' => array(
-                'rule' => array('isUnique', array('customer_id', 'month', 'year'), false),
-                'message' => 'Target sudah terdaftar.'
-            )
-        ),
-        'month' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Bulan harap dipilih'
-            ),
-            'numeric' => array(
-                'rule' => array('numeric'),
-                'message' => 'Bulan harap dipilih'
-            ),
+            // 'customer_id' => array(
+            //     'rule' => array('isUnique', array('customer_id', 'year'), false),
+            //     'message' => 'Target sudah terdaftar.'
+            // )
         ),
         'year' => array(
             'notempty' => array(
@@ -32,17 +22,22 @@ class CustomerTargetUnit extends AppModel {
                 'message' => 'Tahun harap dipilih'
             ),
         ),
-        'unit' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Target Unit harap dipilih'
+	);
+
+    var $hasMany = array(
+        'CustomerTargetUnitDetail' => array(
+            'className' => 'CustomerTargetUnitDetail',
+            'foreignKey' => 'customer_target_unit_id',
+            'dependent' => false,
+            'conditions' => array(
+                'CustomerTargetUnitDetail.status' => 1,
             ),
-            'numeric' => array(
-                'rule' => array('numeric'),
-                'message' => 'Target Unit dipilih'
+            'fields' => '',
+            'order' => array(
+                'CustomerTargetUnitDetail.month' => 'ASC'
             ),
         ),
-	);
+    );
 
 	function getData( $find, $options = false, $is_merge = true ){
         $default_options = array(
@@ -53,6 +48,9 @@ class CustomerTargetUnit extends AppModel {
                 'CustomerTargetUnit.customer_id' => 'ASC'
             ),
             'fields' => array(),
+            'contain' => array(
+                'CustomerTargetUnitDetail'
+            ),
         );
 
         if( !empty($options) && $is_merge ){

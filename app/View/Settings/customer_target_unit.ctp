@@ -22,8 +22,7 @@
             <tr>
                 <?php
                         echo $this->Html->tag('th', __('Customer'));
-                        echo $this->Html->tag('th', __('Bulan - Tahun'));
-                        echo $this->Html->tag('th', __('Target Unit'));
+                        echo $this->Html->tag('th', __('Tahun'));
                         echo $this->Html->tag('th', __('Dibuat'));
                         echo $this->Html->tag('th', __('Action'));
                 ?>
@@ -37,8 +36,7 @@
             ?>
             <tr>
                 <td><?php echo $customerTargetUnit['Customer']['customer_name'];?></td>
-                <td><?php echo date('F Y', mktime(0, 0, 0, $value_data['month'], 1, $value_data['year']));?></td>
-                <td><?php echo $value_data['unit'];?></td>
+                <td><?php echo date('Y', mktime(0, 0, 0, 1, 1, $value_data['year']));?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td class="action">
                     <?php 

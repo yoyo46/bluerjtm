@@ -2548,6 +2548,7 @@ class SettingsController extends AppController {
 
     function doCustomerTargetUnit($id = false, $data_local = false){
         $this->loadModel('Customer');
+        $this->loadModel('CustomerTargetUnitDetail');
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -2560,9 +2561,42 @@ class SettingsController extends AppController {
                 $msg = 'menambah';
             }
             $this->CustomerTargetUnit->set($data);
+            $dataDetail = array();
+            $validateDetail = true;
 
-            if($this->CustomerTargetUnit->validates($data)){
+            if( !empty($data['CustomerTargetUnitDetail']['month']) ) {
+                $data['CustomerTargetUnitDetail']['month'] = array_unique($data['CustomerTargetUnitDetail']['month']);
+                
+                foreach ($data['CustomerTargetUnitDetail']['month'] as $key => $month) {
+                    $dataTemp = array(
+                        'month' => $month,
+                        'unit' => !empty($data['CustomerTargetUnitDetail']['unit'][$key])?$data['CustomerTargetUnitDetail']['unit'][$key]:'',
+                    );
+                    $this->CustomerTargetUnitDetail->set($dataTemp);
+                    if( !$this->CustomerTargetUnitDetail->validates() ) {
+                        $validateDetail = false;
+                    }
+                }
+            }
+
+            if( $this->CustomerTargetUnit->validates($data) && $validateDetail ){
                 if($this->CustomerTargetUnit->save($data)){
+                    if( !empty($data['CustomerTargetUnitDetail']['month']) ) {
+                        foreach ($data['CustomerTargetUnitDetail']['month'] as $key => $month) {
+                            $dataDetail[$key]['CustomerTargetUnitDetail'] = array(
+                                'customer_target_unit_id' => $this->CustomerTargetUnit->id,
+                                'month' => $month,
+                                'unit' => !empty($data['CustomerTargetUnitDetail']['unit'][$key])?$data['CustomerTargetUnitDetail']['unit'][$key]:'',
+                            );
+                        }
+                    }
+
+                    $this->CustomerTargetUnitDetail->deleteAll(array( 
+                        'CustomerTargetUnitDetail.customer_target_unit_id' => $this->CustomerTargetUnit->id,
+                    ));
+
+                    $this->CustomerTargetUnitDetail->saveMany( $dataDetail );
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Target Unit'), $msg), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses %s Target Unit'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
                     $this->redirect(array(
@@ -2577,12 +2611,21 @@ class SettingsController extends AppController {
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Target Unit'), $msg), 'error');
             }
         }else{
-            
             if($id && $data_local){
-                
                 $this->request->data = $data_local;
+
+                if( !empty($this->request->data['CustomerTargetUnitDetail']) ) {
+                    $customerTargetUnitDetail = $this->request->data['CustomerTargetUnitDetail'];
+                    unset($this->request->data['CustomerTargetUnitDetail']);
+
+                    foreach ($customerTargetUnitDetail as $key => $value) {
+                        $this->request->data['CustomerTargetUnitDetail']['month'][$key] = $value['month'];
+                        $this->request->data['CustomerTargetUnitDetail']['unit'][$key] = $value['unit'];
+                    }
+                }
             }
         }
+
         $customers = $this->Customer->getData('list', array(
             'conditions' => array(
                 'Customer.status' => 1

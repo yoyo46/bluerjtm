@@ -63,7 +63,7 @@
                             $id = $value_truck['id'];
             ?>
             <tr>
-                <td><?php echo $value_truck['nomor_id'];?></td>
+                <td><?php echo str_pad($id, 4, '0', STR_PAD_LEFT);?></td>
                 <td><?php echo $value_truck['nopol'];?></td>
                 <td><?php echo !empty($value['TruckBrand']['name'])?$value['TruckBrand']['name']:'-';?></td>
                 <td><?php echo !empty($value['TruckCategory']['name'])?$value['TruckCategory']['name']:'-';?></td>

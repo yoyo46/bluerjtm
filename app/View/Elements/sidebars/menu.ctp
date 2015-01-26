@@ -292,44 +292,6 @@
                 </ul>
             </li>
             <?php
-
-                    $activeMenu = false;
-                    $dataMenu = array(
-                        'index', 'tarif_angkutan'
-                    );
-
-                    if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
-                        $activeMenu = 'active';
-                    }
-            ?>
-            <li class="treeview <?php echo $activeMenu; ?>">
-                <a href="#">
-                    <i class="fa fa-truck"></i>
-                    <span>Revenue</span>
-                    <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <?php
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Tarif Angkut', array(
-                                'controller' => 'settings',
-                                'action' => 'tarif_angkutan',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'tarif_angkutan' )?'active':'',
-                            ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Revenue', array(
-                                'controller' => 'revenues',
-                                'action' => 'index',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'revenue' )?'active':'',
-                            ));
-                    ?>
-                </ul>
-            </li>
-            <?php
                     $activeTtuj = false;
                     $ttujMenu = array(
                         'ttuj', 'truk_tiba', 'bongkaran',
@@ -395,6 +357,44 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'pool' )?'active':'',
+                            ));
+                    ?>
+                </ul>
+            </li>
+            <?php
+
+                    $activeMenu = false;
+                    $dataMenu = array(
+                        'index', 'tarif_angkutan'
+                    );
+
+                    if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
+                        $activeMenu = 'active';
+                    }
+            ?>
+            <li class="treeview <?php echo $activeMenu; ?>">
+                <a href="#">
+                    <i class="fa fa-truck"></i>
+                    <span>Revenue</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Tarif Angkut', array(
+                                'controller' => 'settings',
+                                'action' => 'tarif_angkutan',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'tarif_angkutan' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Revenue', array(
+                                'controller' => 'revenues',
+                                'action' => 'index',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'revenue' )?'active':'',
                             ));
                     ?>
                 </ul>

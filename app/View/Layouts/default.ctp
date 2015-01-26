@@ -38,6 +38,7 @@
       <script src="/js/html5shiv.js"></script>
       <script src="/js/respond.min.js"></script>
     <![endif]-->
+	<link rel="icon" href="/img/favicon.png" type="image/jpg" />
 </head>
 <body class="skin-blue">
     <?php

@@ -380,6 +380,28 @@ $(function() {
                         delete_custom_field();
                     }
                 break;
+                case 'target-unit':
+                    var class_count = $('#box-field-input .list-month');
+                    var length = parseInt(class_count.length);
+                    var idx = length+1;
+
+                    $('#box-field-input').append('<div rel="'+(idx-1)+'" class="list-month form-group"> \
+                        <div class="row"> \
+                            <div class="col-sm-6"> \
+                                <select name="data[CustomerTargetUnitDetail][month]['+(idx-1)+']" class="form-control"> \
+                                '+$('#target_unit select').html()+' \
+                                </select> \
+                            </div> \
+                            <div class="col-sm-5"> \
+                                <input name="data[CustomerTargetUnitDetail][unit]['+(idx-1)+']" class="form-control" placeholder="Target Unit" type="text"> \
+                            </div> \
+                            <div class="col-sm-1 no-pleft"> \
+                                <a href="javascript:" class="delete-custom-field has-danger" action_type="target-unit"><i class="fa fa-times"></i></a> \
+                            </div> \
+                        </div> \
+                    </div>');
+                    delete_custom_field( $('#box-field-input .list-month:last-child .delete-custom-field') );
+                  break;
             }
         });
     }
@@ -577,6 +599,10 @@ $(function() {
                 } else if( action_type == 'alocation' ) {
                     var length = parseInt($('#advance-box-field-input .list-alocation').length);
                     var parent = self.parents('.list-alocation');
+                    parent.remove();
+                } else if( action_type == 'target-unit' ) {
+                    var length = parseInt($('#box-field-input .list-month').length);
+                    var parent = self.parents('.list-month');
                     parent.remove();
                 }
             }

@@ -441,6 +441,41 @@
 								</div>
 						    	<div class="form-group">
 						    		<?php 
+						    				echo $this->Form->label('uang_jalan_extra', __('Uang Jalan Extra'));
+						    		?>
+				                    <div class="input-group">
+								    	<?php 
+								    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+								    				'class' => 'input-group-addon'
+							    				));
+												echo $this->Form->input('uang_jalan_extra',array(
+													'label'=> false, 
+													'class'=>'form-control input_price uang_jalan_extra',
+													'required' => false,
+													'empty' => __('Uang Jalan Extra'),
+													'type' => 'text',
+													'readonly' => true,
+												));
+												echo $this->Form->hidden('uang_jalan_extra_ori',array(
+													'class'=>'uang_jalan_extra_ori',
+												));
+										?>
+									</div>
+								</div>
+						    	<div class="form-group">
+							    	<?php 
+											echo $this->Form->input('min_capacity',array(
+												'label'=> __('Minimum Kapasitas'), 
+												'class'=>'form-control min_capacity',
+												'required' => false,
+												'empty' => __('Minimum Kapasitas'),
+												'type' => 'text',
+												'readonly' => true,
+											));
+									?>
+								</div>
+						    	<div class="form-group">
+						    		<?php 
 						    				echo $this->Form->label('uang_kuli_muat', __('Uang Kuli Muat'));
 						    		?>
 						            <div class="input-group">
@@ -462,6 +497,8 @@
 										?>
 									</div>
 								</div>
+				    		</div>
+				    		<div class="col-sm-6">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_kuli_bongkar', __('Uang Kuli Bongkar'));
@@ -508,8 +545,6 @@
 										?>
 									</div>
 								</div>
-				    		</div>
-				    		<div class="col-sm-6">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_kawal', __('Uang Kawal'));
@@ -552,41 +587,6 @@
 												));
 												echo $this->Form->hidden('uang_keamanan_ori',array(
 													'class'=>'uang_keamanan_ori',
-												));
-										?>
-									</div>
-								</div>
-						    	<div class="form-group">
-							    	<?php 
-											echo $this->Form->input('min_capacity',array(
-												'label'=> __('Minimum Kapasitas'), 
-												'class'=>'form-control min_capacity',
-												'required' => false,
-												'empty' => __('Minimum Kapasitas'),
-												'type' => 'text',
-												'readonly' => true,
-											));
-									?>
-								</div>
-						    	<div class="form-group">
-						    		<?php 
-						    				echo $this->Form->label('uang_jalan_extra', __('Uang Jalan Extra'));
-						    		?>
-				                    <div class="input-group">
-								    	<?php 
-								    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-								    				'class' => 'input-group-addon'
-							    				));
-												echo $this->Form->input('uang_jalan_extra',array(
-													'label'=> false, 
-													'class'=>'form-control input_price uang_jalan_extra',
-													'required' => false,
-													'empty' => __('Uang Jalan Extra'),
-													'type' => 'text',
-													'readonly' => true,
-												));
-												echo $this->Form->hidden('uang_jalan_extra_ori',array(
-													'class'=>'uang_jalan_extra_ori',
 												));
 										?>
 									</div>

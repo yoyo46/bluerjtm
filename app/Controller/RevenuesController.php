@@ -1252,8 +1252,9 @@ class RevenuesController extends AppController {
     }
 
     public function achievement_report( $data_action = false ) {
-        $this->loadModel('CustomerTargetUnit');
+        $this->loadModel('CustomerTargetUnitDetail');
         $this->loadModel('Ttuj');
+        $this->loadModel('TtujTipeMotor');
         $this->loadModel('Customer');
         $this->set('active_menu', 'achievement_report');
         $fromMonth = date('m');
@@ -1261,6 +1262,7 @@ class RevenuesController extends AppController {
         $toMonth = 12;
         $toYear = date('Y');
         $conditions = array(
+            'TtujTipeMotor.status'=> 1,
             'Ttuj.status'=> 1,
             'Ttuj.is_pool'=> 1,
         );
@@ -1288,47 +1290,67 @@ class RevenuesController extends AppController {
         $conditions['DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') >='] = date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear));
         $conditions['DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') <='] = date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear));
 
-        $customerTargetUnits = $this->CustomerTargetUnit->getData('all', array(
+        $customerTargetUnits = $this->CustomerTargetUnitDetail->find('all', array(
             'conditions' => array(
                 'CustomerTargetUnit.status' => 1,
-                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnit.month, \'-\', 1), \'%Y-%m\') >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear)),
-                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnit.month, \'-\', 1), \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear)),
+                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\') >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear)),
+                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear)),
             ),
             'order' => array(
                 'CustomerTargetUnit.customer_id' => 'ASC', 
             ),
+            'contain' => array(
+                'CustomerTargetUnit'
+            ),
         ));
 
-        $ttujs = $this->Ttuj->getData('all', array(
-            'conditions' => $conditions,
-            'order' => array(
-                'Ttuj.customer_name' => 'ASC', 
+        $ttujs = $this->Customer->getData('all', array(
+            'conditions' => array(
+                'Customer.status' => 1,
             ),
-            'group' => array(
-                'Ttuj.customer_id'
-            ),
-            'fields'=> array(
-                'Ttuj.id', 
-                'Ttuj.customer_id', 
-                'COUNT(Ttuj.id) as cnt',
-                'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') as dt',
-            ),
-        ), false);
+        ));
         $cntPencapaian = array();
         $targetUnit = array();
 
         if( !empty($ttujs) ) {
             foreach ($ttujs as $key => $ttuj) {
-                $ttuj = $this->Customer->getMerge($ttuj, $ttuj['Ttuj']['customer_id']);
-                $cntPencapaian[$ttuj['Ttuj']['customer_id']][$ttuj[0]['dt']] = $ttuj[0]['cnt'];
+                $conditions['Ttuj.customer_id'] = $ttuj['Customer']['id'];
+                $ttujTipeMotor = $this->TtujTipeMotor->find('first', array(
+                    'conditions' => $conditions,
+                    'contain' => array(
+                        'Ttuj',
+                    ),
+                    'order' => array(
+                        'Ttuj.customer_name' => 'ASC', 
+                    ),
+                    'group' => array(
+                        'Ttuj.customer_id'
+                    ),
+                    'fields'=> array(
+                        'Ttuj.id', 
+                        'Ttuj.customer_id', 
+                        'SUM(TtujTipeMotor.qty) as cnt',
+                        'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') as dt',
+                    ),
+                ), false);
+
+                if( !empty($ttujTipeMotor) ) {
+                    if( !empty($ttujTipeMotor) ) {
+                        $ttujTipeMotor = $this->Customer->getMerge($ttujTipeMotor, $ttujTipeMotor['Ttuj']['customer_id']);
+                        $cntPencapaian[$ttujTipeMotor['Ttuj']['customer_id']][$ttujTipeMotor[0]['dt']] = $ttujTipeMotor[0]['cnt'];
+                    }
+
+                    $ttuj = array_merge($ttuj, $ttujTipeMotor);
+                }
+
                 $ttujs[$key] = $ttuj;
             }
         }
 
         if( !empty($customerTargetUnits) ) {
             foreach ($customerTargetUnits as $key => $customerTargetUnit) {
-                $idx = sprintf('%s-%s', $customerTargetUnit['CustomerTargetUnit']['year'], date('m', mktime(0, 0, 0, $customerTargetUnit['CustomerTargetUnit']['month'], 10)));
-                $targetUnit[$customerTargetUnit['CustomerTargetUnit']['customer_id']][$idx] = $customerTargetUnit['CustomerTargetUnit']['unit'];
+                $idx = sprintf('%s-%s', $customerTargetUnit['CustomerTargetUnit']['year'], date('m', mktime(0, 0, 0, $customerTargetUnit['CustomerTargetUnitDetail']['month'], 10)));
+                $targetUnit[$customerTargetUnit['CustomerTargetUnit']['customer_id']][$idx] = $customerTargetUnit['CustomerTargetUnitDetail']['unit'];
             }
         }
 

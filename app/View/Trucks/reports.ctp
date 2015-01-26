@@ -131,6 +131,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th class="hide nomor_id"><?php echo __('No. ID');?></th>
                     <th><?php echo __('Nopol');?></th>
                     <th><?php echo __('Merek');?></th>
                     <th><?php echo __('Pemilik');?></th>
@@ -138,7 +139,6 @@
                     <th><?php echo __('Supir');?></th>
                     <th><?php echo __('Kapasitas');?></th>
                     <th><?php echo __('Tahun');?></th>
-                    <th class="hide nomor_id"><?php echo __('No. ID');?></th>
                     <th class="hide truck_facility"><?php echo __('Truk Fasilitas');?></th>
                     <th class="hide no_rangka"><?php echo __('No. Rangka');?></th>
                 </tr>
@@ -147,16 +147,16 @@
                 <?php
                     if(!empty($trucks)){
                         foreach ($trucks as $key => $truck) {
-                            $content = $this->Html->tag('td', $truck['Truck']['nopol']);
+                            $content = $this->Html->tag('td', str_pad($truck['Truck']['id'], 4, '0', STR_PAD_LEFT), array(
+                                'class' => 'hide nomor_id',
+                            ));
+                            $content .= $this->Html->tag('td', $truck['Truck']['nopol']);
                             $content .= $this->Html->tag('td', $truck['TruckBrand']['name']);
                             $content .= $this->Html->tag('td', $truck['Truck']['atas_nama']);
                             $content .= $this->Html->tag('td', $truck['TruckCategory']['name']);
                             $content .= $this->Html->tag('td', $truck['Driver']['driver_name']);
                             $content .= $this->Html->tag('td', $truck['Truck']['capacity']);
                             $content .= $this->Html->tag('td', $truck['Truck']['tahun']);
-                            $content .= $this->Html->tag('td', $truck['Truck']['nomor_id'], array(
-                                'class' => 'hide nomor_id',
-                            ));
                             $content .= $this->Html->tag('td', $truck['TruckFacility']['name'], array(
                                 'class' => 'hide truck_facility',
                             ));

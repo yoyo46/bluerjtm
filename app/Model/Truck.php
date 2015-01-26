@@ -2,16 +2,6 @@
 class Truck extends AppModel {
 	var $name = 'Truck';
 	var $validate = array(
-        'nomor_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'nomor ID harap diisi'
-            ),
-            'isUnique' => array(
-                'rule' => array('isUnique'),
-                'message' => 'Nomor ID telah terdaftar',
-            ),
-        ),
         'nopol' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -310,8 +300,6 @@ class Truck extends AppModel {
         }
         return $truck;
     }
-
-
 
     function getInfoTruck( $truck_id ) {
         $result = $this->getData('first', array(

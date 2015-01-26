@@ -21,7 +21,7 @@
         <table class="table table-hover">
             <tr>
                 <?php
-                        echo $this->Html->tag('th', $this->Paginator->sort('Customer.code', __('Kota Customer'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Customer.code', __('Kode Customer'), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', $this->Paginator->sort('CustomerType.name', __('Tipe'), array(

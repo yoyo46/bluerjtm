@@ -55,6 +55,14 @@
                                 'class' => 'text-center',
                                 'style' => $tdStyle,
                             ));
+
+                            if( !empty($capacities) ) {
+                                echo $this->Html->tag('th', __('Total'), array(
+                                    'class' => 'text-center',
+                                    'style' => $tdStyle,
+                                    'rowspan' => 2,
+                                ));
+                            }
                     ?>
                 </tr>
                 <tr>
@@ -85,6 +93,8 @@
                             ));
 
                             if( !empty($capacities) ) {
+                                $totalRit = 0;
+
                                 foreach ($capacities as $key => $capacity) {
                                     $kapasitas = 0;
 
@@ -98,11 +108,17 @@
                                         $total[$capacity] = $kapasitas;
                                     }
 
-                                    echo $this->Html->tag('th', $kapasitas, array(
+                                    $totalRit += $kapasitas;
+                                    echo $this->Html->tag('td', $kapasitas, array(
                                         'class' => 'text-center',
                                         'style' => $tdStyle,
                                     ));
                                 }
+
+                                echo $this->Html->tag('td', $totalRit, array(
+                                    'class' => 'text-center',
+                                    'style' => $tdStyle,
+                                ));
                             }
                     ?>
                 </tr>
@@ -123,12 +139,20 @@
                             ));
 
                             if( !empty($total) ) {
+                                $totalRit = 0;
+
                                 foreach ($total as $key => $value) {
+                                    $totalRit += $value;
                                     echo $this->Html->tag('th', $value, array(
                                         'class' => 'text-center',
                                         'style' => $tdStyle,
                                     ));
                                 }
+
+                                echo $this->Html->tag('td', $totalRit, array(
+                                    'class' => 'text-center',
+                                    'style' => $tdStyle,
+                                ));
                             }
                     ?>
                 </tr>
@@ -179,6 +203,8 @@
                 ));
 
                 if( !empty($capacities) ) {
+                    $totalRit = 0;
+
                     foreach ($capacities as $key => $capacity) {
                         $kapasitas = 0;
 
@@ -192,10 +218,15 @@
                             $total[$capacity] = $kapasitas;
                         }
 
+                        $totalRit = $kapasitas;
                         $content .= $this->Html->tag('th', $kapasitas, array(
                             'style' => 'text-align: center;',
                         ));
                     }
+
+                    $content .= $this->Html->tag('th', $totalRit, array(
+                        'style' => 'text-align: center;',
+                    ));
                 }
 
                 $each_loop_message .= $this->Html->tag('tr', $content);
@@ -216,12 +247,23 @@
             'colspan' => count($capacities),
             'style' => 'text-align: center;',
         ));
+
+        if( !empty($capacities) ) {
+            $header .= $this->Html->tag('th', __('Total'), array(
+                'style' => 'text-align: center;',
+                'rowspan' => 2,
+            ));
+        }
+
         $date_title = $sub_module_title;
         $totalCustomer = count($customers);
         $subHeader = '';
 
         if( !empty($capacities) ) {
+            $totalRit = 0;
+
             foreach ($capacities as $key => $capacity) {
+                $totalRit += $capacity;
                 $subHeader .= $this->Html->tag('th', $capacity, array(
                     'style' => 'text-align: center;',
                 ));
@@ -259,7 +301,7 @@ EOD;
 
         $path = $this->Common->pathDirTcpdf();
         $filename = 'Laporan_Truk_'.$date_title.'.pdf';
-        $tcpdf->Output($path.'/'.$filename, 'I'); 
+        $tcpdf->Output($path.'/'.$filename, 'F'); 
 
         header('Content-type: application/pdf');
         header('Content-Disposition: attachment; filename="'.$filename.'"');

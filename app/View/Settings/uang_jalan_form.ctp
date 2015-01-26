@@ -197,33 +197,6 @@
 		    <div class="box-body">
 		    	<div class="form-group">
 		    		<?php 
-		    				echo $this->Form->label('commission', __('Komisi *'));
-		    		?>
-                    <div class="input-group">
-				    	<?php 
-				    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-				    				'class' => 'input-group-addon'
-			    				));
-								echo $this->Form->input('commission',array(
-									'label'=> false, 
-									'class'=>'form-control input_price',
-									'required' => false,
-									'empty' => __('Komisi'),
-									'type' => 'text',
-								));
-						?>
-					</div>
-					<?php 
-                			echo $this->Form->input('commission_per_unit',array(
-								'label'=> __('Per Unit ?'), 
-								'required' => false,
-								'type' => 'checkbox',
-								'value' => 1
-							));
-					?>
-				</div>
-		    	<div class="form-group">
-		    		<?php 
 		    				echo $this->Form->label('uang_jalan_1', __('Uang Jalan Pertama *'));
 		    		?>
                     <div class="input-group">
@@ -268,6 +241,79 @@
 								));
 						?>
 					</div>
+				</div>
+		    	<div class="form-group">
+		    		<?php 
+		    				echo $this->Form->label('uang_jalan_extra', __('Uang Jalan Extra'));
+		    		?>
+                    <div class="input-group">
+				    	<?php 
+				    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+				    				'class' => 'input-group-addon'
+			    				));
+								echo $this->Form->input('uang_jalan_extra',array(
+									'label'=> false, 
+									'class'=>'form-control input_price',
+									'required' => false,
+									'empty' => __('Uang Jalan Extra'),
+									'type' => 'text',
+								));
+						?>
+					</div>
+					<?php 
+                			echo $this->Form->input('uang_jalan_extra_per_unit',array(
+								'label'=> __('Per Unit ?'), 
+								'required' => false,
+								'type' => 'checkbox',
+								'value' => 1
+							));
+					?>
+				</div>
+		    	<div class="form-group">
+		    		<?php 
+		    				echo $this->Form->label('min_capacity', __('Minimum Kapasitas'));
+		    		?>
+                    <div class="input-group">
+				    	<?php 
+				    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+				    				'class' => 'input-group-addon'
+			    				));
+								echo $this->Form->input('min_capacity',array(
+									'label'=> false, 
+									'class'=>'form-control input_price',
+									'required' => false,
+									'empty' => __('Minimum Kapasitas'),
+									'type' => 'text',
+								));
+						?>
+					</div>
+				</div>
+		    	<div class="form-group">
+		    		<?php 
+		    				echo $this->Form->label('commission', __('Komisi *'));
+		    		?>
+                    <div class="input-group">
+				    	<?php 
+				    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+				    				'class' => 'input-group-addon'
+			    				));
+								echo $this->Form->input('commission',array(
+									'label'=> false, 
+									'class'=>'form-control input_price',
+									'required' => false,
+									'empty' => __('Komisi'),
+									'type' => 'text',
+								));
+						?>
+					</div>
+					<?php 
+                			echo $this->Form->input('commission_per_unit',array(
+								'label'=> __('Per Unit ?'), 
+								'required' => false,
+								'type' => 'checkbox',
+								'value' => 1
+							));
+					?>
 				</div>
 		    	<div class="form-group">
 		    		<?php 
@@ -403,52 +449,6 @@
 								'value' => 1
 							));
 					?>
-				</div>
-		    	<div class="form-group">
-		    		<?php 
-		    				echo $this->Form->label('uang_jalan_extra', __('Uang Jalan Extra'));
-		    		?>
-                    <div class="input-group">
-				    	<?php 
-				    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-				    				'class' => 'input-group-addon'
-			    				));
-								echo $this->Form->input('uang_jalan_extra',array(
-									'label'=> false, 
-									'class'=>'form-control input_price',
-									'required' => false,
-									'empty' => __('Uang Jalan Extra'),
-									'type' => 'text',
-								));
-						?>
-					</div>
-					<?php 
-                			echo $this->Form->input('uang_jalan_extra_per_unit',array(
-								'label'=> __('Per Unit ?'), 
-								'required' => false,
-								'type' => 'checkbox',
-								'value' => 1
-							));
-					?>
-				</div>
-		    	<div class="form-group">
-		    		<?php 
-		    				echo $this->Form->label('min_capacity', __('Minimum Kapasitas'));
-		    		?>
-                    <div class="input-group">
-				    	<?php 
-				    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-				    				'class' => 'input-group-addon'
-			    				));
-								echo $this->Form->input('min_capacity',array(
-									'label'=> false, 
-									'class'=>'form-control input_price',
-									'required' => false,
-									'empty' => __('Minimum Kapasitas'),
-									'type' => 'text',
-								));
-						?>
-					</div>
 				</div>
 		    </div>
 		</div>
