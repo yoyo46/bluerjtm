@@ -97,14 +97,28 @@
                             }else if( !empty($detail['TtujTipeMotor']['qty']) ){
                                 $qty = $detail['TtujTipeMotor']['qty'];
                             }
-                            echo $this->Form->input('RevenueDetail.qty_unit.', array(
-                                'type' => 'text',
-                                'label' => false,
-                                'class' => 'form-control revenue-qty input_number',
-                                'required' => false,
-                                'value' =>  $qty,
-                                'max' => $detail['TtujTipeMotor']['qty']
-                            ));
+
+                            if(!empty($tarif_angkutan)){
+                                echo $qty;
+
+                                echo $this->Form->hidden('RevenueDetail.qty_unit.', array(
+                                    'type' => 'text',
+                                    'label' => false,
+                                    'class' => 'form-control revenue-qty input_number',
+                                    'required' => false,
+                                    'value' =>  $qty,
+                                    'max' => $detail['TtujTipeMotor']['qty']
+                                ));
+                            }else{
+                                echo $this->Form->input('RevenueDetail.qty_unit.', array(
+                                    'type' => 'text',
+                                    'label' => false,
+                                    'class' => 'form-control revenue-qty input_number',
+                                    'required' => false,
+                                    'value' =>  $qty,
+                                    'max' => $detail['TtujTipeMotor']['qty']
+                                ));
+                            }
                         ?>
                     </td>
                     <td class="price-data">
@@ -165,7 +179,19 @@
                             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
                         ?>
                     </td>
-                    <td>&nbsp;</td>
+                    <td>
+                        <?php
+                            echo $this->Form->hidden('total_temp', array(
+                                'id' => 'total_retail_revenue',
+                                'value' => $total
+                            ));
+
+                            echo $this->Form->hidden('is_retail_revenue', array(
+                                'id' => 'is_retail_revenue',
+                                'value' => (!empty($tarif_angkutan)) ? 'per_truck' : 'per_unit'
+                            ));
+                        ?>
+                    </td>
                 </tr>
                 <tr class="additional-input-revenue" id="ppn-grand-total-revenue">
                     <td align="right" colspan="6" class="relative">

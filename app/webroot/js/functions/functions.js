@@ -1004,43 +1004,7 @@ var choose_item_info = function(){
     qtyMuatanPress( $('.qty-muatan') );
 }
 choose_item_info();
-function grandTotalRevenue(){
-    var qty = $('.revenue-qty');
-    var price = $('.price-unit-revenue');
-    var length = price.length;
 
-    var total = 0;
-    for (var i = 0; i < length; i++) {
-        if(typeof qty[i] != 'undefined' && qty[i] != '' && typeof price[i] != 'undefined' && price[i] != ''){
-            total += price[i].value * qty[i].value;
-        }
-    };
-
-    $('#grand-total-revenue').html('IDR '+formatNumber(total));
-
-    var ppn = 0;
-    var revenue_ppn = $('.revenue-ppn').val();
-    if(typeof revenue_ppn != 'undefined' && revenue_ppn != ''){
-        ppn = total * (parseInt(revenue_ppn) / 100);
-    }
-    $('#ppn-total-revenue').html(formatNumber(ppn));
-
-    var pph = 0;
-    var revenue_pph = $('.revenue-pph').val();
-    if(typeof revenue_pph != 'undefined' && revenue_pph != ''){
-        pph = total * (parseInt(revenue_pph) / 100);
-    }
-    $('#pph-total-revenue').html(formatNumber(pph));
-    
-    if(pph > 0){
-        total -= pph;
-    }
-    if(ppn > 0){
-        total += ppn;
-    }
-
-    $('#all-total-revenue').html('IDR '+formatNumber(total));
-}
 var revenue_detail = function(){
     $('.revenue-qty').keyup(function(event){
         var self = $(this);
@@ -1080,3 +1044,47 @@ var revenue_detail = function(){
 }
 
 revenue_detail();
+
+function grandTotalRevenue(){
+    var qty = $('.revenue-qty');
+    var price = $('.price-unit-revenue');
+    var length = price.length;
+    var is_retail_revenue = $('#is_retail_revenue').val();
+    var total_temp = $('#total_retail_revenue').val();
+
+    var total = 0;
+    if(is_retail_revenue == 'per_unit'){
+        for (var i = 0; i < length; i++) {
+            if(typeof qty[i] != 'undefined' && qty[i] != '' && typeof price[i] != 'undefined' && price[i] != ''){
+                total += price[i].value * qty[i].value;
+            }
+        };
+    }else{
+        total = total_temp;
+    }
+
+    $('#grand-total-revenue').html('IDR '+formatNumber(total));
+
+    var ppn = 0;
+    var revenue_ppn = $('.revenue-ppn').val();
+    if(typeof revenue_ppn != 'undefined' && revenue_ppn != ''){
+        ppn = total * (parseInt(revenue_ppn) / 100);
+    }
+    $('#ppn-total-revenue').html(formatNumber(ppn));
+
+    var pph = 0;
+    var revenue_pph = $('.revenue-pph').val();
+    if(typeof revenue_pph != 'undefined' && revenue_pph != ''){
+        pph = total * (parseInt(revenue_pph) / 100);
+    }
+    $('#pph-total-revenue').html(formatNumber(pph));
+    
+    if(pph > 0){
+        total -= pph;
+    }
+    if(ppn > 0){
+        total += ppn;
+    }
+
+    $('#all-total-revenue').html('IDR '+formatNumber(total));
+}

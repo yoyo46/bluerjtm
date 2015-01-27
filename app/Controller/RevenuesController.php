@@ -1760,47 +1760,58 @@ class RevenuesController extends AppController {
             $this->request->data = $data_local;
 
             if(!empty($this->request->data['RevenueDetail'])){
+                $ttuj_temp_data = $this->Ttuj->getData('first', array(
+                    'conditions' => array(
+                        'Ttuj.id' => $this->request->data['Revenue']['ttuj_id']
+                    )
+                ));
                 foreach ($this->request->data['RevenueDetail'] as $key => $value) {
-                    $ttuj_tipe_motor = $this->Ttuj->TtujTipeMotor->getData('first', array(
-                        'conditions' => array(
-                            'TtujTipeMotor.id' => $value['ttuj_tipe_motor_id']
-                        ),
-                        'contain' => array(
-                            'Ttuj'
-                        )
-                    ));
-                    if(!empty($ttuj_tipe_motor)){
-                        $ttuj_tipe_motor = $this->TipeMotor->getMerge($ttuj_tipe_motor, $ttuj_tipe_motor['TtujTipeMotor']['tipe_motor_id']);
-                        $qty = $ttuj_tipe_motor['TtujTipeMotor']['qty'];
+                    if($ttuj_temp_data['Ttuj']['is_retail']){
+                        $ttuj_tipe_motor = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                            'conditions' => array(
+                                'TtujTipeMotor.id' => $value['ttuj_tipe_motor_id']
+                            ),
+                            'contain' => array(
+                                'Ttuj'
+                            )
+                        ));
+                        if(!empty($ttuj_tipe_motor)){
+                            $ttuj_tipe_motor = $this->TipeMotor->getMerge($ttuj_tipe_motor, $ttuj_tipe_motor['TtujTipeMotor']['tipe_motor_id']);
+                            $qty = $ttuj_tipe_motor['TtujTipeMotor']['qty'];
 
-                        if($ttuj_tipe_motor['Ttuj']['is_retail']){
-                            $city = $this->City->getData('first', array(
-                                'conditions' => array(
-                                    'City.id' => $$ttuj_tipe_motor['TtujTipeMotor']['city_id']
-                                )
-                            ));
-                            
-                            if(!empty($city['City']['name'])){
-                                $to_city_name = $city['City']['name'];
-                                $to_city_id = $city['City']['id'];
+                            if($ttuj_tipe_motor['Ttuj']['is_retail']){
+                                $city = $this->City->getData('first', array(
+                                    'conditions' => array(
+                                        'City.id' => $$ttuj_tipe_motor['TtujTipeMotor']['city_id']
+                                    )
+                                ));
+                                
+                                if(!empty($city['City']['name'])){
+                                    $to_city_name = $city['City']['name'];
+                                    $to_city_id = $city['City']['id'];
+                                }
+
+                                $ttujTipeMotor = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                                    'conditions' => array(
+                                        'TtujTipeMotor.ttuj_id' => $this->request->data['Revenue']['ttuj_id'],
+                                        'TtujTipeMotor.tipe_motor_id' => $tipe_motor_id,
+                                        'TtujTipeMotor.city_id' => $to_city_id
+                                    )
+                                ));
+
+                                if(!empty($ttujTipeMotor)){
+                                    $qty = $ttujTipeMotor['TtujTipeMotor']['qty'];
+                                }
+                            }else{
+                                $to_city_name = $ttuj_tipe_motor['Ttuj']['to_city_name'];
+                                $to_city_id = $ttuj_tipe_motor['Ttuj']['to_city_id'];                    
                             }
-
-                            $ttujTipeMotor = $this->Ttuj->TtujTipeMotor->getData('first', array(
-                                'conditions' => array(
-                                    'TtujTipeMotor.ttuj_id' => $this->request->data['Revenue']['ttuj_id'],
-                                    'TtujTipeMotor.tipe_motor_id' => $tipe_motor_id,
-                                    'TtujTipeMotor.city_id' => $to_city_id
-                                )
-                            ));
-
-                            if(!empty($ttujTipeMotor)){
-                                $qty = $ttujTipeMotor['TtujTipeMotor']['qty'];
-                            }
-                        }else{
-                            $to_city_name = $ttuj_tipe_motor['Ttuj']['to_city_name'];
-                            $to_city_id = $ttuj_tipe_motor['Ttuj']['to_city_id'];                    
                         }
+                    }else{
+                        $qty = $value['qty_unit'];
+                        $to_city_name = $ttuj_tipe_motor['Revenue']['to_city_name'];
                     }
+                    
                     $data_revenue_detail[$key] = array(
                         'TtujTipeMotor' => array(
                             'qty' => $qty
