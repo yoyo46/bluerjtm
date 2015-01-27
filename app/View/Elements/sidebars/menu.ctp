@@ -168,7 +168,9 @@
                         'reports', 'ritase_report', 'stnk',
                         'stnk_payments', 'kir', 'kir_payments',
                         'siup', 'siup_payments', 'achievement_report',
-                        'monitoring_truck', 'capacity_report'
+                        'monitoring_truck', 'capacity_report',
+                        'point_perday_report', 'point_perplant_report',
+                        'retail_point_perplant_report'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -287,6 +289,31 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'capacity_report' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Day', array(
+                                'controller' => 'trucks',
+                                'action' => 'point_perday_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'point_perday_report' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Plant - Depo', array(
+                                'controller' => 'trucks',
+                                'action' => 'point_perplant_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'point_perplant_report' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Plant - Retail', array(
+                                'controller' => 'trucks',
+                                'action' => 'point_perplant_report',
+                                'retail',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'retail_point_perplant_report' )?'active':'',
                             ));
                     ?>
                 </ul>
@@ -468,7 +495,8 @@
                     $activeSetting = false;
                     $settingMenu = array(
                         'cities', 'vendors', 'companies',
-                        'perlengkapan', 'coas', 'branches', 'classifications'
+                        'perlengkapan', 'coas', 'branches', 
+                        'classifications', 'banks'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -506,6 +534,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'coas' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Bank', array(
+                                'controller' => 'settings',
+                                'action' => 'banks',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'banks' )?'active':'',
                             ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kota', array(
                                 'controller' => 'settings',

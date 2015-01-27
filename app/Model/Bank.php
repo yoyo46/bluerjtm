@@ -1,68 +1,60 @@
 <?php
-class Coa extends AppModel {
-    public $actsAs = array('Tree');
-	var $name = 'Coa';
+class Bank extends AppModel {
+	var $name = 'Bank';
 	var $validate = array(
-        'code' => array(
+        'name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Kode COA harap diisi'
+                'message' => 'Bank name harap diisi'
             ),
         ),
-		'name' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-                'message' => 'Nama COA harap diisi'
-			),
+        'branch' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Cabang harap diisi'
+            ),
+        ),
+        'account_number' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'No Rek harap diisi'
+            ),
+        ),
+        'account_name' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Atas Nama harap diisi'
+            ),
+        ),
+	);
+
+	var $belongsTo = array(
+		'Coa' => array(
+			'className' => 'Coa',
+			'foreignKey' => 'coa_id',
 		)
 	);
 
-    var $belongsTo = array(
-        'ParentCoa' => array(
-            'className' => 'Coa',
-            'foreignKey' => 'parent_id',
-            'conditions' => array(
-                'ParentCoa.status' => 1,
-            ),
-            'fields' => '',
-            'order' => ''
-        )
-    );
-
-    var $hasMany = array(
-        'ChildCoa' => array(
-            'className' => 'AdviceCategory',
-            'foreignKey' => 'parent_id',
-            'dependent' => false,
-            'conditions' => array(
-                'ChildCoa.status' => 1,
-            ),
-            'fields' => '',
-            'order' => array(
-                'ChildCoa.order' => 'ASC'
-            ),
-        ),
-    );
-
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
-        $this->virtualFields['coa_name'] = sprintf('CASE WHEN %s.code = \'\' THEN %s.name ELSE CONCAT(%s.code, \' - \', %s.name) END', $this->alias, $this->alias, $this->alias, $this->alias);
+        $this->virtualFields['bank_name'] = sprintf('CASE WHEN %s.account_number = \'\' THEN %s.name ELSE CONCAT(%s.name, \' - \', %s.account_number) END', $this->alias, $this->alias, $this->alias, $this->alias);
     }
 
-	function getData($find, $options = false){
+	function getData( $find, $options = false, $is_merge = true ){
         $default_options = array(
             'conditions'=> array(
-                'Coa.status' => 1,
+                'Bank.status' => 1,
             ),
             'order'=> array(
-                'Coa.code' => 'ASC',
-                'Coa.id' => 'ASC',
+                'Bank.name' => 'ASC'
             ),
-            'contain' => array(),
+            'contain' => array(
+                'Coa'
+            ),
             'fields' => array(),
         );
 
-        if(!empty($options)){
+        if( !empty($options) && $is_merge ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
@@ -78,6 +70,8 @@ class Coa extends AppModel {
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
             }
+        } else if( !empty($options) ) {
+            $default_options = $options;
         }
 
         if( $find == 'paginate' ) {

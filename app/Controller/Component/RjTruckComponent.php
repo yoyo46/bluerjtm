@@ -42,6 +42,12 @@ class RjTruckComponent extends Component {
 						$refine_conditions['Truck']['truck_id'] = $refine['Siup']['truck_id'];
 					}
 				}
+				if( !empty($refine['Truck']['month']) ) {
+					$refine_conditions['Truck']['month'] = $refine['Truck']['month'];
+				}
+				if( !empty($refine['Truck']['year']) ) {
+					$refine_conditions['Truck']['year'] = $refine['Truck']['year'];
+				}
 			}
 				
 			return $refine_conditions;

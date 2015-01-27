@@ -237,6 +237,7 @@ class SettingsController extends AppController {
                 $msg = 'menambah';
             }
             
+            $data['Customer']['bank_id'] = !empty($data['Customer']['bank_id'])?$data['Customer']['bank_id']:0;
             $this->Customer->set($data);
 
             if($this->Customer->validates($data)){
@@ -264,11 +265,16 @@ class SettingsController extends AppController {
 
         $customerTypes  = $this->Customer->CustomerType->getData('list', false, true);
         $customerGroups  = $this->Customer->CustomerGroup->getData('list');
+        $banks  = $this->Customer->Bank->getData('list', array(
+            'fields' => array(
+                'Bank.id', 'Bank.bank_name'
+            ),
+        ));
 
         $this->set('active_menu', 'customers');
         $this->set('module_title', 'Data Master');
         $this->set(compact(
-            'customerTypes', 'customerGroups'
+            'customerTypes', 'customerGroups', 'banks'
         ));
         $this->render('customer_form');
     }
@@ -2689,6 +2695,137 @@ class SettingsController extends AppController {
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Target Unit tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
+
+    function banks(){
+        $this->loadModel('Bank');
+        $options = array();
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['Bank']['name'] = $name;
+                $options['conditions']['Bank.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+        $this->paginate = $this->Bank->getData('paginate', $options);
+        $banks = $this->paginate('Bank');
+
+        $this->set('active_menu', 'banks');
+        $this->set('sub_module_title', 'Bank');
+        $this->set('banks', $banks);
+    }
+
+    function bank_add(){
+        $this->loadModel('Bank');
+        $this->set('sub_module_title', 'Tambah Bank');
+        $this->doBank();
+    }
+
+    function bank_edit($id){
+        $this->loadModel('Bank');
+        $this->set('sub_module_title', 'Rubah Bank');
+        $bank = $this->Bank->getData('first', array(
+            'conditions' => array(
+                'Bank.id' => $id
+            )
+        ));
+
+        if(!empty($bank)){
+            $this->doBank($id, $bank);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Bank tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'banks'
+            ));
+        }
+    }
+
+    function doBank($id = false, $data_local = false){
+        $this->loadModel('Coa');
+
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->Bank->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->Bank->create();
+                $msg = 'menambah';
+            }
+
+            $data['Bank']['coa_id'] = !empty($data['Bank']['coa_id'])?$data['Bank']['coa_id']:0;
+            $this->Bank->set($data);
+
+            if($this->Bank->validates($data)){
+                if($this->Bank->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Bank'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Bank'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'banks'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Bank'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Bank'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Bank'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $coas = $this->Coa->getData('list', array(
+            'conditions' => array(
+                'Coa.status' => 1,
+            ),
+            'fields' => array(
+                'Coa.id', 'Coa.coa_name'
+            ),
+        ));
+
+        $this->set('active_menu', 'banks');
+        $this->set('coas', $coas);
+        $this->render('bank_form');
+    }
+
+    function bank_toggle($id){
+        $this->loadModel('Bank');
+        $locale = $this->Bank->getData('first', array(
+            'conditions' => array(
+                'Bank.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['Bank']['status']){
+                $value = false;
+            }
+
+            $this->Bank->id = $id;
+            $this->Bank->set('status', $value);
+            if($this->Bank->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Bank tidak ditemukan.'), 'error');
         }
 
         $this->redirect($this->referer());

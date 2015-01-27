@@ -18,6 +18,14 @@
 	?>
     <div class="box-body">
     	<?php 
+				echo $this->Html->tag('div', $this->Form->input('bank_id',array(
+					'label'=> __('Bank'), 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Bank')
+				)), array(
+					'class' => 'form-group'
+				));
 				echo $this->Html->tag('div', $this->Form->input('code',array(
 					'label'=> __('Kode Customer *'), 
 					'class'=>'form-control',

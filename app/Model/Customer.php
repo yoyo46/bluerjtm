@@ -64,6 +64,10 @@ class Customer extends AppModel {
         'CustomerGroup' => array(
             'className' => 'CustomerGroup',
             'foreignKey' => 'customer_group_id',
+        ),
+        'Bank' => array(
+            'className' => 'Bank',
+            'foreignKey' => 'bank_id',
         )
 	);
 
@@ -83,6 +87,7 @@ class Customer extends AppModel {
             'contain' => array(
                 'CustomerType',
                 'CustomerGroup',
+                'Bank',
             ),
             'fields' => array(),
         );

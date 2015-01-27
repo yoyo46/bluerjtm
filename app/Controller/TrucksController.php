@@ -2562,4 +2562,253 @@ class TrucksController extends AppController {
             $this->layout = 'ajax';
         }
     }
+
+    public function point_perday_report( $data_action = false ) {
+        $this->loadModel('Ttuj');
+        $this->loadModel('TtujTipeMotor');
+        $this->loadModel('Customer');
+        $this->loadModel('CustomerTargetUnitDetail');
+        $this->set('active_menu', 'point_perday_report');
+        $this->set('sub_module_title', __('Laporan Pencapaian Per Point Per Day'));
+        
+        if( !empty($this->params['named']) ) {
+            $refine = $this->params['named'];
+
+            if( !empty($refine['month']) && !empty($refine['year']) ) {
+                $monthArr[0] = $refine['month'];
+                $monthArr[1] = $refine['year'];
+
+                if( !empty($monthArr[0]) && !empty($monthArr[1]) ) {
+                    $monthNumber = $monthArr[0];
+
+                    if( !empty($monthArr[1]) && !empty($monthNumber) ) {
+                        $currentMonth = sprintf("%s-%s", $monthArr[1], $monthNumber);
+                    }
+                }
+            }
+        }
+
+        $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
+        $lastDay = date('t', strtotime($currentMonth));
+
+        $this->paginate = $this->Customer->getData('paginate', array(
+            'conditions' => array(
+                'Customer.status' => 1,
+            ),
+            'limit' => 20,
+        ));
+        $customers = $this->paginate('Customer');
+        $customerArr = Set::extract('/Customer/id', $customers);
+        $ttujs = $this->TtujTipeMotor->getData('all', array(
+            'conditions' => array(
+                'TtujTipeMotor.status'=> 1,
+                'Ttuj.status'=> 1,
+                'Ttuj.is_pool'=> 1,
+                'Ttuj.is_draft'=> 0,
+                'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m\')' => $currentMonth,
+                'Ttuj.customer_id' => $customerArr,
+            ),
+            'contain' => array(
+                'Ttuj',
+            ),
+            'order' => array(
+                'Ttuj.customer_name' => 'ASC', 
+            ),
+            'fields' => array(
+                'Ttuj.id', 'Ttuj.tgljam_berangkat',
+                'Ttuj.customer_id', 'SUM(TtujTipeMotor.qty) cnt'
+            ),
+            'group' => array(
+                'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\')',
+                'Ttuj.customer_id',
+            ),
+        ), false);
+        $dataTtuj = array();
+        $targetUnit = array();
+        $customerTargetUnits = $this->CustomerTargetUnitDetail->find('all', array(
+            'conditions' => array(
+                'CustomerTargetUnit.status' => 1,
+                'CustomerTargetUnit.customer_id' => $customerArr,
+                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\')' => $currentMonth,
+            ),
+            'order' => array(
+                'CustomerTargetUnit.customer_id' => 'ASC', 
+            ),
+            'contain' => array(
+                'CustomerTargetUnit'
+            ),
+        ));
+
+        if( !empty($customerTargetUnits) ) {
+            foreach ($customerTargetUnits as $key => $customerTargetUnit) {
+                $idx = sprintf('%s-%s', $customerTargetUnit['CustomerTargetUnit']['year'], date('m', mktime(0, 0, 0, $customerTargetUnit['CustomerTargetUnitDetail']['month'], 10)));
+                $targetUnit[$customerTargetUnit['CustomerTargetUnit']['customer_id']][$idx] = $customerTargetUnit['CustomerTargetUnitDetail']['unit'];
+            }
+        }
+
+        if( !empty($ttujs) ) {
+            foreach ($ttujs as $key => $value) {
+                $totalMuatan = 0;
+                $dayBerangkat = date('d', strtotime($value['Ttuj']['tgljam_berangkat']));
+                $customer_id = $value['Ttuj']['customer_id'];
+
+                if( !empty($value[0]['cnt']) ) {
+                    $totalMuatan = $value[0]['cnt'];
+                }
+
+                $dataTtuj[$customer_id][$dayBerangkat] = $totalMuatan;
+            }
+        }
+
+        if( !empty($currentMonth) ) {
+            $this->request->data['Truck']['month'] = date('m', strtotime($currentMonth));
+            $this->request->data['Truck']['year'] = date('Y', strtotime($currentMonth));
+        }
+
+        $this->set(compact(
+            'customers', 'data_action',
+            'lastDay', 'currentMonth', 'dataTtuj',
+            'targetUnit'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
+    }
+
+    public function point_perplant_report( $data_type = 'depo', $data_action = false ) {
+        $this->loadModel('City');
+        $this->loadModel('Ttuj');
+        $this->loadModel('TtujTipeMotor');
+        $this->loadModel('Customer');
+        $this->loadModel('CustomerTargetUnitDetail');
+        $this->set('sub_module_title', __('Laporan Pencapaian Per Point Per Plant'));
+        
+        if( !empty($this->params['named']) ) {
+            $refine = $this->params['named'];
+
+            if( !empty($refine['month']) && !empty($refine['year']) ) {
+                $monthArr[0] = $refine['month'];
+                $monthArr[1] = $refine['year'];
+
+                if( !empty($monthArr[0]) && !empty($monthArr[1]) ) {
+                    $monthNumber = $monthArr[0];
+
+                    if( !empty($monthArr[1]) && !empty($monthNumber) ) {
+                        $currentMonth = sprintf("%s-%s", $monthArr[1], $monthNumber);
+                    }
+                }
+            }
+        }
+
+        $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
+        $lastDay = date('t', strtotime($currentMonth));
+
+        $this->paginate = $this->Customer->getData('paginate', array(
+            'conditions' => array(
+                'Customer.status' => 1,
+            ),
+            'limit' => 20,
+        ));
+        $customers = $this->paginate('Customer');
+        $customerArr = Set::extract('/Customer/id', $customers);
+        $group = array(
+            'Ttuj.from_city_id',
+            'Ttuj.customer_id',
+        );
+
+        if( $data_type == 'retail' ) {
+            unset($group['Ttuj.from_city_id']);
+            $this->set('active_menu', 'retail_point_perplant_report');
+        } else {
+            $cities = $this->City->getData('list', array(
+                'conditions' => array(
+                    'City.status' => 1,
+                    'City.is_asal' => 1,
+                ),
+            ));
+            $this->set('active_menu', 'point_perplant_report');
+        }
+
+        $ttujs = $this->TtujTipeMotor->getData('all', array(
+            'conditions' => array(
+                'TtujTipeMotor.status'=> 1,
+                'Ttuj.status'=> 1,
+                'Ttuj.is_pool'=> 1,
+                'Ttuj.is_draft'=> 0,
+                'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m\')' => $currentMonth,
+                'Ttuj.customer_id' => $customerArr,
+            ),
+            'contain' => array(
+                'Ttuj',
+            ),
+            'order' => array(
+                'Ttuj.customer_name' => 'ASC', 
+            ),
+            'fields' => array(
+                'Ttuj.id', 'Ttuj.from_city_id',
+                'Ttuj.customer_id', 'SUM(TtujTipeMotor.qty) cnt'
+            ),
+            'group' => $group,
+        ), false);
+        $dataTtuj = array();
+        $targetUnit = array();
+        $customerTargetUnits = $this->CustomerTargetUnitDetail->find('all', array(
+            'conditions' => array(
+                'CustomerTargetUnit.status' => 1,
+                'CustomerTargetUnit.customer_id' => $customerArr,
+                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\')' => $currentMonth,
+            ),
+            'order' => array(
+                'CustomerTargetUnit.customer_id' => 'ASC', 
+            ),
+            'contain' => array(
+                'CustomerTargetUnit'
+            ),
+        ));
+
+        if( !empty($customerTargetUnits) ) {
+            foreach ($customerTargetUnits as $key => $customerTargetUnit) {
+                $idx = sprintf('%s-%s', $customerTargetUnit['CustomerTargetUnit']['year'], date('m', mktime(0, 0, 0, $customerTargetUnit['CustomerTargetUnitDetail']['month'], 10)));
+                $targetUnit[$customerTargetUnit['CustomerTargetUnit']['customer_id']][$idx] = $customerTargetUnit['CustomerTargetUnitDetail']['unit'];
+            }
+        }
+
+        if( !empty($ttujs) ) {
+            foreach ($ttujs as $key => $value) {
+                $totalMuatan = 0;
+                $customer_id = $value['Ttuj']['customer_id'];
+                $from_city_id = $value['Ttuj']['from_city_id'];
+
+                if( !empty($value[0]['cnt']) ) {
+                    $totalMuatan = $value[0]['cnt'];
+                }
+
+                if( $data_type == 'retail' ) {
+                    $dataTtuj[$customer_id] = $totalMuatan;
+                } else {
+                    $dataTtuj[$customer_id][$from_city_id] = $totalMuatan;
+                }
+            }
+        }
+
+        if( !empty($currentMonth) ) {
+            $this->request->data['Truck']['month'] = date('m', strtotime($currentMonth));
+            $this->request->data['Truck']['year'] = date('Y', strtotime($currentMonth));
+        }
+
+        $this->set(compact(
+            'customers', 'data_action',
+            'lastDay', 'currentMonth', 'dataTtuj',
+            'targetUnit', 'cities', 'data_type'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
+    }
 }
