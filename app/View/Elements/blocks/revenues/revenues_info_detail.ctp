@@ -211,7 +211,7 @@
                             if(!empty($total) && !empty($this->request->data['Revenue']['ppn'])){
                                 $ppn = $total * ($this->request->data['Revenue']['ppn'] / 100);
                             }
-                            echo $this->Number->currency($ppn, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                            echo $this->Number->format($ppn);
                         ?>
                     </td>
                     <td>&nbsp;</td>
@@ -234,7 +234,7 @@
                             if(!empty($total) && !empty($this->request->data['Revenue']['pph'])){
                                 $pph = $total * ($this->request->data['Revenue']['pph'] / 100);
                             }
-                            echo $this->Number->currency($pph, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                            echo $this->Number->format($pph);
                         ?>
                     </td>
                     <td>&nbsp;</td>

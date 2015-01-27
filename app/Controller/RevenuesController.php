@@ -1766,17 +1766,18 @@ class RevenuesController extends AppController {
                     )
                 ));
                 foreach ($this->request->data['RevenueDetail'] as $key => $value) {
+                    $ttuj_tipe_motor = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                        'conditions' => array(
+                            'TtujTipeMotor.id' => $value['ttuj_tipe_motor_id']
+                        ),
+                        'contain' => array(
+                            'Ttuj',
+                        )
+                    ));
+                    $ttuj_tipe_motor = $this->TipeMotor->getMerge($ttuj_tipe_motor, $ttuj_tipe_motor['TtujTipeMotor']['tipe_motor_id']);
+                    
                     if($ttuj_temp_data['Ttuj']['is_retail']){
-                        $ttuj_tipe_motor = $this->Ttuj->TtujTipeMotor->getData('first', array(
-                            'conditions' => array(
-                                'TtujTipeMotor.id' => $value['ttuj_tipe_motor_id']
-                            ),
-                            'contain' => array(
-                                'Ttuj'
-                            )
-                        ));
-                        if(!empty($ttuj_tipe_motor)){
-                            $ttuj_tipe_motor = $this->TipeMotor->getMerge($ttuj_tipe_motor, $ttuj_tipe_motor['TtujTipeMotor']['tipe_motor_id']);
+                        if(!empty($ttuj_tipe_motor)){                            
                             $qty = $ttuj_tipe_motor['TtujTipeMotor']['qty'];
 
                             if($ttuj_tipe_motor['Ttuj']['is_retail']){
@@ -1809,7 +1810,7 @@ class RevenuesController extends AppController {
                         }
                     }else{
                         $qty = $value['qty_unit'];
-                        $to_city_name = $ttuj_tipe_motor['Revenue']['to_city_name'];
+                        $to_city_name = $ttuj_temp_data['Ttuj']['to_city_name'];
                     }
                     
                     $data_revenue_detail[$key] = array(
