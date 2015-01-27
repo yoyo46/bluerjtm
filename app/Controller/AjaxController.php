@@ -182,6 +182,7 @@ class AjaxController extends AppController {
 	function getInfoTtujRevenue($ttuj_id){
 		$this->loadModel('Ttuj');
 		$this->loadModel('TarifAngkutan');
+		$this->loadModel('Customer');
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
@@ -193,6 +194,7 @@ class AjaxController extends AppController {
 		if(!empty($data_ttuj)){
 			$data_ttuj = $this->Ttuj->Customer->getMerge($data_ttuj, $data_ttuj['Ttuj']['customer_id']);
 			$this->request->data = $data_ttuj;
+			$this->request->data['Revenue']['customer_id'] = $data_ttuj['Ttuj']['customer_id'];
 
 			if(!empty($data_ttuj['TtujTipeMotor'])){
 				$this->loadModel('TipeMotor');
@@ -259,8 +261,15 @@ class AjaxController extends AppController {
 		if(!$data_ttuj['Ttuj']['is_retail']){
 			$tarif_angkutan = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity']);
 		}
+
+		$customers = $this->Customer->find('list', array(
+			'conditions' => array(
+				'Customer.status' => 1
+			)
+		));
+
 		// debug($data_revenue_detail);die();
-		$this->set(compact('data_revenue_detail', 'tarif_angkutan'));
+		$this->set(compact('data_revenue_detail', 'tarif_angkutan', 'customers'));
 	}
 }
 ?>

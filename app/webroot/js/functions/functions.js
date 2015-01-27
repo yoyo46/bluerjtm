@@ -596,6 +596,9 @@ $(function() {
                 } else if( action_type == 'lku_second'){
                     self.parents('tr').remove();
                     getTotalLkuPayment();
+                } else if( action_type == 'revenue_detail'){
+                    self.parents('tr').remove();
+                    grandTotalRevenue();
                 } else if( action_type == 'alocation' ) {
                     var length = parseInt($('#advance-box-field-input .list-alocation').length);
                     var parent = self.parents('.list-alocation');
@@ -611,6 +614,31 @@ $(function() {
         });
     }
     delete_custom_field();
+
+    var duplicate_row = function(){
+        $('.duplicate-row').click(function(){
+            var self = $(this);
+            var parent = self.parents('tr');
+            var tag_element = parent.html();
+            var html = '<tr>'+
+                '<td class="city-data">'+$(tag_element).filter('.city-data').html()+'</td>'+
+                '<td class="no-do-data" align="center">'+$(tag_element).filter('.no-do-data').html()+'</td>'+
+                '<td class="no-sj-data">'+$(tag_element).filter('.no-sj-data').html()+'</td>'+
+                '<td class="tipe-motor-data">'+$(tag_element).filter('.tipe-motor-data').html()+'</td>'+
+                '<td class="qty-tipe-motor-data" align="center">'+$(tag_element).filter('.qty-tipe-motor-data').html()+'</td>'+
+                '<td class="price-data">'+$(tag_element).filter('.price-data').html()+'</td>'+
+                '<td class="total-price-revenue" align="right">'+$(tag_element).filter('.total-price-revenue').html()+'</td>'+
+                '<td class="handle-row"><a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="revenue_detail" title="hapus baris"><i class="fa fa-times"></i></a></td>'+
+            '</tr>';
+            
+            parent.after(html);
+
+            delete_custom_field();
+            revenue_detail();
+            grandTotalRevenue();
+        });
+    }
+    duplicate_row();
 
     if( $('.timepicker').length > 0 ) {
         $('.timepicker').timepicker({
@@ -959,7 +987,43 @@ var choose_item_info = function(){
     qtyMuatanPress( $('.qty-muatan') );
 }
 choose_item_info();
+function grandTotalRevenue(){
+    var qty = $('.revenue-qty');
+    var price = $('.price-unit-revenue');
+    var length = price.length;
 
+    var total = 0;
+    for (var i = 0; i < length; i++) {
+        if(typeof qty[i] != 'undefined' && qty[i] != '' && typeof price[i] != 'undefined' && price[i] != ''){
+            total += price[i].value * qty[i].value;
+        }
+    };
+
+    $('#grand-total-revenue').html('IDR '+formatNumber(total));
+
+    var ppn = 0;
+    var revenue_ppn = $('.revenue-ppn').val();
+    if(typeof revenue_ppn != 'undefined' && revenue_ppn != ''){
+        ppn = total * (parseInt(revenue_ppn) / 100);
+    }
+    $('#ppn-total-revenue').html(formatNumber(ppn));
+
+    var pph = 0;
+    var revenue_pph = $('.revenue-pph').val();
+    if(typeof revenue_pph != 'undefined' && revenue_pph != ''){
+        pph = total * (parseInt(revenue_pph) / 100);
+    }
+    $('#pph-total-revenue').html(formatNumber(pph));
+    
+    if(pph > 0){
+        total -= pph;
+    }
+    if(ppn > 0){
+        total += ppn;
+    }
+
+    $('#all-total-revenue').html('IDR '+formatNumber(total));
+}
 var revenue_detail = function(){
     $('.revenue-qty').keyup(function(event){
         var self = $(this);
@@ -979,6 +1043,10 @@ var revenue_detail = function(){
         total_revenue_unit(self);
     });
 
+    $('.revenue-pph, .revenue-ppn').keyup(function(){
+        grandTotalRevenue();
+    });
+
     function total_revenue_unit(self){
         var target = self.parents('tr');
         var price = target.find('.price-unit-revenue').val();
@@ -995,29 +1063,3 @@ var revenue_detail = function(){
 }
 
 revenue_detail();
-
-function grandTotalRevenue(){
-    var qty = $('.revenue-qty');
-    var price = $('.price-unit-revenue');
-    var length = price.length;
-
-    var total = 0;
-    for (var i = 0; i < length; i++) {
-        if(typeof qty[i] != 'undefined' && qty[i] != '' && typeof price[i] != 'undefined' && price[i] != ''){
-            total += price[i].value * qty[i].value;
-        }
-    };
-
-    $('#grand-total-revenue').html('IDR '+formatNumber(total));
-}
-var duplicate_row = function(){
-    $('.duplicate-row').click(function(){
-        var self = $(this);
-        var parent = self.parents('tr');
-        var html = '<tr>'+parent.html()+'</tr>';
-        
-        parent.after(html);
-        revenue_detail();
-        grandTotalRevenue();
-    });
-}

@@ -13,7 +13,17 @@ class Revenue extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'No dokumen harap diisi'
             ),
-        )
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'No Dokumen telah terdaftar',
+            ),
+        ),
+        'customer_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Customer harap dipilih'
+            ),
+        ),
 	);
 
     var $belongsTo = array(

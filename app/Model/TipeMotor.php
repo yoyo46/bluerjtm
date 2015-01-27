@@ -84,7 +84,10 @@ class TipeMotor extends AppModel {
         if(empty($data['TipeMotor'])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
-                    'id' => $id
+                    'TipeMotor.id' => $id
+                ),
+                'contain' => array(
+                    'ColorMotor'
                 )
             ));
 

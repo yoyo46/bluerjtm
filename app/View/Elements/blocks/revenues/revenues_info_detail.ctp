@@ -19,10 +19,19 @@
                 <?php
                     $total = 0;
                     foreach ($data as $key => $detail) {
-                        $price = $detail['RevenueDetail']['price_unit'];
+                        if(!empty($detail['RevenueDetail']['price_unit'])){
+                            $price = $detail['RevenueDetail']['price_unit'];
+                        }else{
+                            $link = $this->Html->link(__('disini'), 
+                                array('controller' => 'settings', 'action' => 'tarif_angkutan_add'),
+                                array('target' => 'blank')
+                            );
+                            $price = sprintf(__('Tarif tidak ditemukan, silahkan buat tarif angkutan %s'), $link);
+                        }
+                        
                 ?>
                 <tr>
-                    <td>
+                    <td class="city-data">
                         <?php
                             if(!empty($detail['RevenueDetail']['to_city_name'])){
                                 echo $detail['RevenueDetail']['to_city_name'];
@@ -41,7 +50,7 @@
                             ));
                         ?>
                     </td>
-                    <td class="lku-color-motor" align="center">
+                    <td class="no-do-data" align="center">
                         <?php
                             echo $this->Form->input('RevenueDetail.no_do.', array(
                                 'type' => 'text',
@@ -52,7 +61,7 @@
                             ));
                         ?>
                     </td>
-                    <td>
+                    <td class="no-sj-data">
                         <?php 
                             echo $this->Form->input('RevenueDetail.no_sj.', array(
                                 'type' => 'text',
@@ -63,7 +72,7 @@
                             ));
                         ?>
                     </td>
-                    <td>
+                    <td class="tipe-motor-data">
                         <?php 
                             if(!empty($detail['RevenueDetail']['TipeMotor']['name'])){
                                 echo $detail['RevenueDetail']['TipeMotor']['name'];
@@ -74,13 +83,13 @@
                             echo $this->Form->hidden('RevenueDetail.tipe_motor_id.', array(
                                 'type' => 'text',
                                 'label' => false,
-                                'class' => 'form-control price-unit-revenue input_number',
+                                'class' => 'form-control input_number',
                                 'required' => false,
                                 'value' => (!empty($detail['RevenueDetail']['tipe_motor_id'])) ? $detail['RevenueDetail']['tipe_motor_id'] : 0
                             ));
                         ?>
                     </td>
-                    <td class="qty-tipe-motor" align="center">
+                    <td class="qty-tipe-motor-data" align="center">
                         <?php
                             $qty = '';
                             if( (isset($detail['RevenueDetail']['qty_unit']) && !empty($detail['RevenueDetail']['qty_unit'])) ){
@@ -98,12 +107,16 @@
                             ));
                         ?>
                     </td>
-                    <td>
+                    <td class="price-data">
                         <?php 
                             if(is_numeric($price)){
                                 echo $this->Number->format($price, Configure::read('__Site.config_currency_code'), array('places' => 0));
                             }else{
-                                echo $price;
+                                if(!empty($tarif_angkutan['tarif'])){
+                                    echo $this->Number->format($tarif_angkutan['tarif'], Configure::read('__Site.config_currency_code'), array('places' => 0));;
+                                }else{
+                                    echo $price;
+                                }
                             }
                             echo $this->Form->hidden('RevenueDetail.price_unit.', array(
                                 'type' => 'text',
@@ -117,7 +130,7 @@
                     <td class="total-price-revenue" align="right">
                         <?php 
                             $value_price = 0;
-                            if(!empty($price) && !empty($qty) && empty($tarif_angkutan)){
+                            if(!empty($price) && is_numeric($price) && !empty($qty) && empty($tarif_angkutan)){
                                 $value_price = $price * $qty;
                                 $total += $value_price;
                             }else{
@@ -145,6 +158,64 @@
                 <tr id="field-grand-total-revenue">
                     <td align="right" colspan="6"><?php echo __('Total')?></td>
                     <td align="right" id="grand-total-revenue">
+                        <?php 
+                            if(!empty($tarif_angkutan)){
+                                $total = $tarif_angkutan['tarif'];
+                            }
+                            echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                        ?>
+                    </td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr class="additional-input-revenue" id="ppn-grand-total-revenue">
+                    <td align="right" colspan="6" class="relative">
+                        <?php 
+                            echo $this->Form->input('Revenue.ppn', array(
+                                'type' => 'text',
+                                'label' => __('PPN'),
+                                'class' => 'input_number revenue-ppn',
+                                'required' => false,
+                                'div' => false
+                            )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
+                        ?>
+                    </td>
+                    <td align="right" id="ppn-total-revenue">
+                        <?php 
+                            $ppn = 0;
+                            if(!empty($total) && !empty($this->request->data['Revenue']['ppn'])){
+                                $ppn = $total * ($this->request->data['Revenue']['ppn'] / 100);
+                            }
+                            echo $this->Number->currency($ppn, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                        ?>
+                    </td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr class="additional-input-revenue" id="pph-grand-total-revenue">
+                    <td align="right" colspan="6" class="relative">
+                        <?php 
+                            echo $this->Form->input('Revenue.pph', array(
+                                'type' => 'text',
+                                'label' => __('PPH'),
+                                'class' => 'input_number revenue-pph',
+                                'required' => false,
+                                'div' => false
+                            )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
+                        ?>
+                    </td>
+                    <td align="right" id="pph-total-revenue">
+                        <?php 
+                            $pph = 0;
+                            if(!empty($total) && !empty($this->request->data['Revenue']['pph'])){
+                                $pph = $total * ($this->request->data['Revenue']['pph'] / 100);
+                            }
+                            echo $this->Number->currency($pph, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                        ?>
+                    </td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr id="all-grand-total-revenue">
+                    <td align="right" colspan="6"><?php echo __('Total');?></td>
+                    <td align="right" id="all-total-revenue">
                         <?php 
                             if(!empty($tarif_angkutan)){
                                 $total = $tarif_angkutan['tarif'];
