@@ -20,14 +20,6 @@
 		    </div>
 		    <div class="box-body">
 		    	<?php 
-						// echo $this->Html->tag('div', $this->Form->input('customer_id',array(
-						// 	'label'=> __('Customer *'), 
-						// 	'class'=>'form-control',
-						// 	'required' => false,
-						// 	'empty' => __('Pilih Customer')
-						// )), array(
-						// 	'class' => 'form-group'
-						// ));
 						echo $this->Html->tag('div', $this->Form->input('title',array(
 							'label'=> __('Nama *'), 
 							'class'=>'form-control',
@@ -40,7 +32,7 @@
 							'class'=>'form-control',
 							'required' => false,
 							'empty' => __('Pilih Kota Asal'),
-							'options' => $cities,
+							'options' => $fromCities,
 						)), array(
 							'class' => 'form-group'
 						));
@@ -49,7 +41,7 @@
 							'class'=>'form-control',
 							'required' => false,
 							'empty' => __('Pilih Kota Tujuan'),
-							'options' => $cities,
+							'options' => $toCities,
 						)), array(
 							'class' => 'form-group'
 						));

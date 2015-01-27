@@ -21,6 +21,8 @@
         <table class="table table-hover">
             <tr>
                 <th>Kota</th>
+                <th>Asal</th>
+                <th>Tujuan</th>
                 <th>Dibuat</th>
                 <th>Action</th>
             </tr>
@@ -33,6 +35,24 @@
             ?>
             <tr>
                 <td><?php echo $value_data['name'];?></td>
+                <td>
+                    <?php
+                            if( !empty($value_data['is_asal']) ) {
+                                echo '<i class="fa fa-check"></i>';
+                            } else {
+                                echo '<i class="fa fa-times"></i>';
+                            }
+                    ?>
+                </td>
+                <td>
+                    <?php
+                            if( !empty($value_data['is_tujuan']) ) {
+                                echo '<i class="fa fa-check"></i>';
+                            } else {
+                                echo '<i class="fa fa-times"></i>';
+                            }
+                    ?>
+                </td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td class="action">
                     <?php 

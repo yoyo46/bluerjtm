@@ -1629,7 +1629,8 @@ class TrucksController extends AppController {
         $this->loadModel('City');
         $cities = $this->City->getData('list', array(
             'conditions' => array(
-                'status' => 1
+                'City.status' => 1,
+                'City.is_tujuan' => 1,
             ),
             'fields' => array(
                 'City.id', 'City.name'
@@ -1749,7 +1750,8 @@ class TrucksController extends AppController {
         $this->loadModel('City');
         $cities = $this->City->getData('list', array(
             'conditions' => array(
-                'status' => 1
+                'City.status' => 1,
+                'City.is_tujuan' => 1,
             ),
             'fields' => array(
                 'City.id', 'City.name'

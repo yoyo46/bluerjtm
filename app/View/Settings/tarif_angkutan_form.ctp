@@ -34,7 +34,7 @@
 									'label'=> __('Dari *'), 
 									'class'=>'form-control',
 									'required' => false,
-									'options' => $cities,
+									'options' => $fromCities,
 									'empty' => __('pilih kota awal'),
 									'div' => array(
 										'class' => 'form-group'
@@ -48,7 +48,7 @@
 									'label'=> __('Tujuan *'), 
 									'class'=>'form-control',
 									'required' => false,
-									'options' => $cities,
+									'options' => $toCities,
 									'empty' => __('pilih kota tujuan'),
 									'div' => array(
 										'class' => 'form-group'

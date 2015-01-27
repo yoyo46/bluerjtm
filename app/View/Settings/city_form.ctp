@@ -18,29 +18,38 @@
     <div class="box-body">
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('name',__('Nama Kota *')); 
-
-				echo $this->Form->input('name',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'placeholder' => __('Nama Kota')
-				));
+					echo $this->Form->input('name',array(
+						'label'=> __('Nama Kota *'), 
+						'class'=>'form-control',
+						'required' => false,
+						'placeholder' => __('Nama Kota')
+					));
 			?>
         </div>
-        <!-- <div class="form-group">
-        	<?php 
-				// echo $this->Form->label('region_id',__('Provinsi *')); 
-
-				// echo $this->Form->input('region_id',array(
-				// 	'label'=> false, 
-				// 	'class'=>'form-control',
-				// 	'required' => false,
-				// 	'empty' => __('Pilih Provinsi'),
-				// 	'options' => $regions
-				// ));
-			?>
-        </div> -->
+        <div class="form-group">
+	        <div class="checkbox aset-handling">
+                <label>
+                    <?php 
+							echo $this->Form->checkbox('is_asal',array(
+								'label'=> false, 
+								'required' => false,
+							)).__('Kota Asal ?');
+					?>
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+	        <div class="checkbox aset-handling">
+                <label>
+                    <?php 
+							echo $this->Form->checkbox('is_tujuan',array(
+								'label'=> false, 
+								'required' => false,
+							)).__('Kota Tujuan ?');
+					?>
+                </label>
+            </div>
+        </div>
     </div>
 
     <div class="box-footer text-center action">

@@ -968,11 +968,28 @@ var choose_item_info = function(){
 
     $('.list-field input[type="checkbox"]').click(function(){
         var data_field = $(this).attr('data-field');
+        var data_parent = $(this).attr('data-parent');
+        var idx = 0;
 
         if($(this).is(':checked')) {
             $('.'+data_field).removeClass('hide');
+            idx = 1;
         } else {
             $('.'+data_field).addClass('hide');
+            idx = -1;
+        }
+
+        if( typeof data_parent != 'undefined' ) {
+            var parent = $('.'+data_parent);
+            var colspan = parseInt(parent.attr('colspan')) + idx;
+
+            if( colspan == 0 ) {
+                parent.addClass('hide');
+            } else {
+                parent.removeClass('hide');
+            }
+            
+            parent.attr('colspan', colspan);
         }
     });
 

@@ -95,6 +95,44 @@
     </h2>
     <div class="row no-print print-action">
         <div class="col-xs-12 action">
+            <div class="list-field">
+                <?php 
+                        echo $this->Html->link('<i class="fa fa-th-large"></i> Kolom Laporan', 'javascript:', array(
+                            'escape' => false,
+                            'class' => 'show',
+                        ));
+                ?>
+                <ul>
+                    <?php 
+                            echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
+                                'escape' => false,
+                                'class' => 'close'
+                            ));
+
+                            if( !empty($cities) ) {
+                                foreach ($cities as $key => $value) {
+                                    $slug = $this->Common->toSlug($value);
+                    ?>
+                    <li>
+                        <div class="checkbox">
+                            <label>
+                                <?php
+                                        echo $this->Form->checkbox($this->Common->toSlug($value), array(
+                                            'data-field' => sprintf('%s-%s', $slug, $key),
+                                            'data-parent' => 'col-alokasi',
+                                            'checked' => true,
+                                        ));
+                                        echo $value;
+                                ?>
+                            </label>
+                        </div>
+                    </li>
+                    <?php
+                                }
+                            }
+                    ?>
+                </ul>
+            </div>
             <?php
                     echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', array(
                         'excel'
@@ -117,12 +155,10 @@
                 <tr>
                     <?php 
                             echo $this->Html->tag('th', __('NO. POL'), array(
-                                'style' => 'width: 100px;',
                                 'class' => 'text-center text-middle',
                                 'rowspan' => 2,
                             ));
                             echo $this->Html->tag('th', __('Supir'), array(
-                                'style' => 'width: 120px;',
                                 'class' => 'text-center text-middle',
                                 'rowspan' => 2,
                             ));
@@ -150,7 +186,7 @@
                             if( !empty($cities) ) {
                                 echo $this->Html->tag('th', __('Tujuan'), array(
                                     'colspan' => count($cities),
-                                    'class' => 'text-center',
+                                    'class' => 'text-center col-alokasi',
                                 ));
                             }
 
@@ -165,8 +201,9 @@
                     <?php 
                             if( !empty($cities) ) {
                                 foreach ($cities as $key => $value) {
+                                    $slug = $this->Common->toSlug($value);
                                     echo $this->Html->tag('th', $value, array(
-                                        'class' => 'text-center',
+                                        'class' => 'text-center '.sprintf('%s-%s', $slug, $key),
                                         'style' => 'width: 120px;',
                                     ));
                                 }
@@ -192,12 +229,20 @@
                 ?>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('td', $value['Truck']['nopol']);
-                            echo $this->Html->tag('td', $value['Driver']['driver_name']);
-                            echo $this->Html->tag('td', $value['Truck']['capacity'], array(
+                            echo $this->Html->tag('td', $this->Html->tag('div', $value['Truck']['nopol'], array(
+                                'style' => 'width: 80px;',
+                            )));
+                            echo $this->Html->tag('td', $this->Html->tag('div', $value['Driver']['driver_name'], array(
+                                'style' => 'width: 120px;',
+                            )));
+                            echo $this->Html->tag('td', $this->Html->tag('div', $value['Truck']['capacity'], array(
+                                'style' => 'width: 80px;',
+                            )), array(
                                 'class' => 'text-center',
                             ));
-                            echo $this->Html->tag('td', !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-', array(
+                            echo $this->Html->tag('td', $this->Html->tag('div', !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-', array(
+                                'style' => 'width: 120px;',
+                            )), array(
                                 'class' => 'text-center',
                             ));
                             echo $this->Html->tag('td', $total, array(
@@ -209,6 +254,7 @@
 
                             if( !empty($cities) ) {
                                 foreach ($cities as $key => $city) {
+                                    $slug = $this->Common->toSlug($city);
                                     $keyCity = array_search($key, $cityArr);
                                     $cnt = 0;
 
@@ -217,7 +263,7 @@
                                     }
 
                                     echo $this->Html->tag('td', $cnt, array(
-                                        'class' => 'text-center',
+                                        'class' => 'text-center '.sprintf('%s-%s', $slug, $key),
                                     ));
                                 }
                             }

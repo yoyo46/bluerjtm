@@ -64,7 +64,7 @@
         <div class="col-xs-12 action">
             <div class="list-field">
                 <?php 
-                        echo $this->Html->link('<i class="fa fa-th-large"></i>', 'javascript:', array(
+                        echo $this->Html->link('<i class="fa fa-th-large"></i> Kolom Laporan', 'javascript:', array(
                             'escape' => false,
                             'class' => 'show',
                         ));

@@ -527,6 +527,7 @@ class RevenuesController extends AppController {
         $cities = $this->City->getData('list', array(
             'conditions' => array(
                 'City.status' => 1,
+                'City.is_asal' => 1,
             ),
         ));
         $tipeMotors = array();
@@ -1222,21 +1223,13 @@ class RevenuesController extends AppController {
         }
 
         $this->set('sub_module_title', $module_title);
-        $cities = $this->Ttuj->getData('list', array(
+        $cities = $this->City->getData('list', array(
             'conditions' => array(
-                'Ttuj.status' => 1,
-                'Ttuj.is_pool' => 1,
-                'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='=> $dateFrom,
-                'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <=' => $dateTo,
-            ),
-            'order' => array(
-                'Ttuj.to_city_name'
-            ),
-            'group' => array(
-                'Ttuj.to_city_id'
+                'City.status' => 1,
+                'City.is_tujuan' => 1,
             ),
             'fields' => array(
-                'Ttuj.to_city_id', 'Ttuj.to_city_name'
+                'City.id', 'City.name'
             ),
         ), false);
 

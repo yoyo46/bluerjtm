@@ -127,7 +127,9 @@ class SettingsController extends AppController {
         ));
 
         $this->set('active_menu', 'cities');
-        $this->set('regions', $regions);
+        $this->set(compact(
+            'regions'
+        ));
         $this->render('city_form');
     }
 
@@ -780,6 +782,8 @@ class SettingsController extends AppController {
     }
 
     function doUangJalan($id = false, $data_local = false){
+        $this->loadModel('City');
+
         if(!empty($this->request->data)){
             $data = $this->request->data;
             if($id && $data_local){
@@ -837,12 +841,22 @@ class SettingsController extends AppController {
         //         'Customer.status' => 1
         //     ),
         // ));
-        $cities = $this->UangJalan->FromCity->getData('list', array(
+        $fromCities = $this->City->getData('list', array(
             'conditions' => array(
-                'FromCity.status' => 1
+                'City.status' => 1,
+                'City.is_asal' => 1
             ),
             'order' => array(
-                'FromCity.name' => 'ASC',
+                'City.name' => 'ASC',
+            ),
+        ), false);
+        $toCities = $this->City->getData('list', array(
+            'conditions' => array(
+                'City.status' => 1,
+                'City.is_tujuan' => 1
+            ),
+            'order' => array(
+                'City.name' => 'ASC',
             ),
         ), false);
         $this->loadModel('GroupClassification');
@@ -855,8 +869,7 @@ class SettingsController extends AppController {
         $this->set('active_menu', 'uang_jalan');
         $this->set('module_title', 'Data Master');
         $this->set(compact(
-            // 'customers', 
-            'cities', 'groupClassifications'
+            'fromCities', 'groupClassifications', 'toCities'
         ));
         $this->render('uang_jalan_form');
     }
@@ -2439,14 +2452,25 @@ class SettingsController extends AppController {
             ),
         ));
         
-        $cities = $this->City->getData('list', array(
+        $fromCities = $this->City->getData('list', array(
             'conditions' => array(
-                'City.status' => 1
+                'City.status' => 1,
+                'City.is_asal' => 1,
+            ),
+        ));
+        
+        $toCities = $this->City->getData('list', array(
+            'conditions' => array(
+                'City.status' => 1,
+                'City.is_tujuan' => 1,
             ),
         ));
 
 
-        $this->set(compact('customers', 'group_motors', 'cities'));
+        $this->set(compact(
+            'customers', 'group_motors', 'fromCities',
+            'toCities'
+        ));
 
         $this->set('active_menu', 'tarif_angkutan');
         $this->render('tarif_angkutan_form');
