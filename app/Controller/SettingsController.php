@@ -801,6 +801,7 @@ class SettingsController extends AppController {
             }
 
             $data['UangJalan']['commission'] = !empty($data['UangJalan']['commission'])?str_replace(',', '', $data['UangJalan']['commission']):false;
+            $data['UangJalan']['commission_extra'] = !empty($data['UangJalan']['commission_extra'])?trim(str_replace(',', '', $data['UangJalan']['commission_extra'])):0;
             $data['UangJalan']['uang_jalan_1'] = !empty($data['UangJalan']['uang_jalan_1'])?str_replace(',', '', $data['UangJalan']['uang_jalan_1']):false;
             $data['UangJalan']['uang_jalan_2'] = !empty($data['UangJalan']['uang_jalan_2'])?str_replace(',', '', $data['UangJalan']['uang_jalan_2']):false;
             $data['UangJalan']['uang_kuli_muat'] = !empty($data['UangJalan']['uang_kuli_muat'])?str_replace(',', '', $data['UangJalan']['uang_kuli_muat']):false;
@@ -840,6 +841,7 @@ class SettingsController extends AppController {
             if($id && $data_local){
                 
                 $this->request->data = $data_local;
+                $this->request->data['UangJalan']['commission_min_qty'] = !empty($this->request->data['UangJalan']['commission_min_qty'])?$this->request->data['UangJalan']['commission_min_qty']:'';
             }
         }
         // $customers = $this->UangJalan->Customer->getData('list', array(

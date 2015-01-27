@@ -309,6 +309,66 @@
 				</div>
 		    	<div class="form-group">
 		    		<?php 
+		    				echo $this->Form->label('commission_extra', __('Komisi Extra'));
+		    		?>
+					<div class="row">
+						<div class="col-sm-3 no-pright">
+					    	<?php 
+									echo $this->Form->input('commission_extra_op',array(
+										'label'=> false, 
+										'class'=>'form-control',
+										'required' => false,
+										'empty' => __('Pilih'),
+										'options' => array(
+											'<' => __('<'),
+											'<=' => __('<='),
+											'>' => __('>'),
+											'>=' => __('>='),
+										),
+									));
+							?>
+						</div>
+						<div class="col-sm-3 no-pright">
+					    	<?php 
+									echo $this->Form->input('commission_min_qty',array(
+										'label'=> false, 
+										'class'=>'form-control input_number',
+										'required' => false,
+										'placeholder' => __('Muatan'),
+										'type' => 'text',
+										'title' => __('Muatan'),
+									));
+							?>
+						</div>
+						<div class="col-sm-6">
+		                    <div class="input-group">
+						    	<?php 
+						    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+						    				'class' => 'input-group-addon'
+					    				));
+										echo $this->Form->input('commission_extra',array(
+											'label'=> false, 
+											'class'=>'form-control input_price',
+											'required' => false,
+											'empty' => __('Komisi'),
+											'type' => 'text',
+											'error' => false,
+										));
+								?>
+							</div>
+						</div>
+					</div>
+		        	<?php 
+							echo $this->Form->error('commission_extra', array(
+								'notempty' => __('Mohon lengkapi data Komisi Extra'),
+							), array(
+								'wrap' => 'div', 
+								'class' => 'error-message',
+							));
+		        	?>
+				</div>
+		    	<div class="form-group">
+		    		<?php 
 		    				echo $this->Form->label('uang_kuli_muat', __('Uang Kuli Muat *'));
 		    		?>
                     <div class="input-group">

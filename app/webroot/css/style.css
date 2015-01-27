@@ -3744,3 +3744,7 @@ font-size: 22px;
 #pph-total-revenue{
   border-bottom: 1px solid;
 }
+
+.no-pright {
+  padding-right: 0;
+}

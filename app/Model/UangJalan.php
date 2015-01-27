@@ -96,6 +96,12 @@ class UangJalan extends AppModel {
                 'message' => 'Komisi harus berupa angka',
             ),
         ),
+        'commission_extra' => array(
+            'commissionExtra' => array(
+                'rule' => array('commissionExtra'),
+                'message' => 'Mohon lengkapi data Komisi Extra'
+            ),
+        ),
         'uang_kuli_muat' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -240,6 +246,26 @@ class UangJalan extends AppModel {
                 return true;
             } else {
                 return false;
+            }
+        } else {
+            return true; 
+        }
+    }
+
+    function commissionExtra () {
+        $commission_extra = !empty($this->data['UangJalan']['commission_extra'])?trim(str_replace(',', '', $this->data['UangJalan']['commission_extra'])):false;
+        $commission_min_qty = !empty($this->data['UangJalan']['commission_min_qty'])?$this->data['UangJalan']['commission_min_qty']:false;
+        $commission_extra_op = !empty($this->data['UangJalan']['commission_extra_op'])?$this->data['UangJalan']['commission_extra_op']:false;
+
+        if( !empty($commission_extra) || !empty($commission_min_qty) || !empty($commission_extra_op) ) {
+            if( empty($commission_extra_op) ) {
+                return false;
+            } else if( empty($commission_min_qty) ) {
+                return false;
+            } else if( empty($commission_extra_op) ) {
+                return false;
+            } else {
+                return true; 
             }
         } else {
             return true; 
