@@ -659,6 +659,16 @@ $(function() {
             } else {
                 return false;
             }
+        } else if(action_type == 'posting' || action_type == 'unposting'){
+            if(action_type == 'posting'){
+                if( confirm('Anda yakin ingin mengunci posting data ini?') ) {
+                    $('#transaction_status').val(action_type);
+                } else {
+                    return false;
+                }
+            }else{
+                $('#transaction_status').val(action_type);
+            }
         }
     });
 

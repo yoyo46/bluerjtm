@@ -11,6 +11,10 @@
 			'inputDefaults' => array('div' => false),
     		'autocomplete'=> 'off', 
 		));
+
+		echo $this->Form->hidden('transaction_status', array(
+			'id' => 'transaction_status'
+		));
 ?>
 <div class="ttuj-form">
 	<div id="step1">
@@ -80,19 +84,26 @@
 				?>
 			</div>
 		</div>
-		<div class="box-footer text-center action">
+	</div>
+	<div class="box-footer text-center action">
 			<?php
 		    		echo $this->Html->link(__('Kembali'), array(
 						'action' => 'index', 
 					), array(
 						'class'=> 'btn btn-default',
 					));
-		    		echo $this->Form->submit(__('simpan'), array(
-						'class'=> 'btn btn-success'
+		    		echo $this->Form->button(__('Posting'), array(
+		    			'type' => 'submit',
+						'class'=> 'btn btn-success submit-form btn-lg',
+						'action_type' => 'posting'
+					));
+					echo $this->Form->button(__('Unposting'), array(
+		    			'type' => 'submit',
+						'class'=> 'btn btn-primary submit-form',
+						'action_type' => 'unposting'
 					));
 			?>
 		</div>
-	</div>
 </div>
 <?php
 		echo $this->Form->end();
