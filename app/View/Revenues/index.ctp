@@ -35,6 +35,9 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Customer.name', __('Customer'), array(
                             'escape' => false
                         )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Revenue.transaction_status', __('Status'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Revenue.created', __('Dibuat'), array(
                             'escape' => false
                         )));
@@ -52,9 +55,22 @@
                 <td><?php echo $value['Revenue']['no_doc'];?></td>
                 <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
                 <td><?php echo $value['Customer']['name'];?></td>
+                <td>
+                    <?php 
+                        $class_status = 'label label-warning';
+                        if($value['Revenue']['transaction_status'] == 'invoiced'){
+                            $class_status = 'label label-success';
+                        }else if($value['Revenue']['transaction_status'] == 'posting'){
+                            $class_status = 'label label-primary';
+                        }
+
+                        echo $this->Html->tag('span', $value['Revenue']['transaction_status'], array('class' => $class_status));
+                    ?>
+                </td>
                 <td><?php echo $this->Common->customDate($value['Revenue']['created']);?></td>
                 <td class="action">
                     <?php
+                        if($value['Revenue']['transaction_status'] != 'invoiced'){
                             echo $this->Html->link('Rubah', array(
                                 'controller' => 'revenues',
                                 'action' => 'edit',
@@ -71,6 +87,7 @@
                                 'class' => 'btn btn-danger btn-xs',
                                 'title' => 'disable status brand'
                             ), __('Apakah Anda yakin akan membatalkan data ini?'));
+                        }
                     ?>
                 </td>
             </tr>
