@@ -225,15 +225,11 @@ class AjaxController extends AppController {
 						}
 
 						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $value['city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity']);
-						if(!empty($tarif['jenis_unit'])){
-							if($tarif['jenis_unit'] != 'per_unit'){
-								$tarif['tarif'] = false;
-							}
-						}
-						$price_unit = $tarif['tarif'];
 					}else{
 						$to_city_name = $data_ttuj['Ttuj']['to_city_name'];
 						$to_city_id = $data_ttuj['Ttuj']['to_city_id'];
+
+						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity']);
 					}
 
 					$data_revenue_detail[$key] = array(
@@ -243,7 +239,7 @@ class AjaxController extends AppController {
 						),
 						'RevenueDetail' => array(
 							'to_city_name' => $to_city_name,
-							'price_unit' => $price_unit,
+							'price_unit' => $tarif,
 							'qty_unit' => $value['qty'],
 							'tipe_motor_id' => $tipe_motor_id,
 							'city_id' => $to_city_id,
@@ -257,11 +253,6 @@ class AjaxController extends AppController {
 			}
 		}
 
-		$tarif_angkutan = false;
-		if(!$data_ttuj['Ttuj']['is_retail']){
-			$tarif_angkutan = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity']);
-		}
-
 		$customers = $this->Customer->find('list', array(
 			'conditions' => array(
 				'Customer.status' => 1
@@ -269,7 +260,7 @@ class AjaxController extends AppController {
 		));
 
 		// debug($data_revenue_detail);die();
-		$this->set(compact('data_revenue_detail', 'tarif_angkutan', 'customers'));
+		$this->set(compact('data_revenue_detail', 'customers'));
 	}
 }
 ?>

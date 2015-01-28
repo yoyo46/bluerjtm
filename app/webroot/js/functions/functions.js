@@ -1058,20 +1058,19 @@ revenue_detail();
 function grandTotalRevenue(){
     var qty = $('.revenue-qty');
     var price = $('.price-unit-revenue');
+    var total_price = $('.total-price-perunit');
+    var jenis_unit = $('.jenis_unit');
     var length = price.length;
-    var is_retail_revenue = $('#is_retail_revenue').val();
     var total_temp = $('#total_retail_revenue').val();
-
     var total = 0;
-    if(is_retail_revenue == 'per_unit'){
-        for (var i = 0; i < length; i++) {
-            if(typeof qty[i] != 'undefined' && qty[i] != '' && typeof price[i] != 'undefined' && price[i] != ''){
-                total += price[i].value * qty[i].value;
-            }
-        };
-    }else{
-        total = total_temp;
-    }
+
+    for (var i = 0; i < length; i++) {
+        if(typeof qty[i] != 'undefined' && qty[i] != '' && typeof jenis_unit[i] != 'undefined' && jenis_unit[i].value == 'per_unit'){
+            total += price[i].value * qty[i].value;
+        }else{
+            total += total_price[i].value;
+        }
+    };
 
     $('#grand-total-revenue').html('IDR '+formatNumber(total));
 

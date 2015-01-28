@@ -24,6 +24,12 @@ class Revenue extends AppModel {
                 'message' => 'Customer harap dipilih'
             ),
         ),
+        'date_revenue' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tanggal revenue harap diisi'
+            ),
+        ),
 	);
 
     var $belongsTo = array(

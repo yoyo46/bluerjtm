@@ -99,7 +99,7 @@
                                 $qty = $detail['TtujTipeMotor']['qty'];
                             }
 
-                            if(!empty($tarif_angkutan)){
+                            if(!empty($price) && $price['jenis_unit'] == 'per_truck'){
                                 echo $qty;
 
                                 echo $this->Form->hidden('RevenueDetail.qty_unit.', array(
@@ -120,44 +120,54 @@
                                     'max' => $detail['TtujTipeMotor']['qty']
                                 ));
                             }
+                            echo $this->Form->hidden('RevenueDetail.jenis_unit.', array(
+                                    'type' => 'text',
+                                    'label' => false,
+                                    'class' => 'jenis_unit',
+                                    'required' => false,
+                                    'value' =>  !empty($price['jenis_unit']) ? $price['jenis_unit'] : 0
+                                ));
                         ?>
                     </td>
                     <td class="price-data">
                         <?php 
-                            if(is_numeric($price)){
-                                echo $this->Number->format($price, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                            if(is_array($price)){
+                                echo $this->Number->format($price['tarif'], Configure::read('__Site.config_currency_code'), array('places' => 0));
                             }else{
-                                if(!empty($tarif_angkutan['tarif'])){
-                                    echo $this->Number->format($tarif_angkutan['tarif'], Configure::read('__Site.config_currency_code'), array('places' => 0));;
-                                }else{
-                                    echo $price;
-                                }
+                                echo $price;
                             }
                             echo $this->Form->hidden('RevenueDetail.price_unit.', array(
                                 'type' => 'text',
                                 'label' => false,
                                 'class' => 'form-control price-unit-revenue input_number',
                                 'required' => false,
-                                'value' => (is_numeric($price)) ? $price : 0
+                                'value' => (is_array($price)) ? $price['tarif'] : 0
                             ));
                         ?>
                     </td>
                     <td class="total-price-revenue" align="right">
                         <?php 
                             $value_price = 0;
-                            if(!empty($price) && is_numeric($price) && !empty($qty) && empty($tarif_angkutan)){
-                                $value_price = $price * $qty;
-                                $total += $value_price;
-                            }else{
-                                $value_price = $tarif_angkutan['tarif'];
+                            if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_unit'){
+                                $value_price = $price['tarif'] * $qty;
+                            }else if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_truck'){
+                                $value_price = $price['tarif'];
                             }
 
+                            $total += $value_price;
+
                             echo $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0));
+
+                            echo $this->Form->hidden('RevenueDetail.price_unit.', array(
+                                'class' => 'total-price-perunit',
+                                'required' => false,
+                                'value' => $value_price
+                            ));
                         ?>
                     </td>
                     <td class="handle-row">
                         <?php
-                            if(is_numeric($price)){
+                            if(!empty($price['jenis_unit']) && $price['jenis_unit'] == 'per_unit'){
                                 $open_duplicate = false;
                                 if(empty($arr_duplicate[$detail['RevenueDetail']['ttuj_tipe_motor_id']])){
                                     $arr_duplicate[$detail['RevenueDetail']['ttuj_tipe_motor_id']] = true;
@@ -189,9 +199,6 @@
                     <td align="right" colspan="6"><?php echo __('Total')?></td>
                     <td align="right" id="grand-total-revenue">
                         <?php 
-                            if(!empty($tarif_angkutan)){
-                                $total = $tarif_angkutan['tarif'];
-                            }
                             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
                         ?>
                     </td>
@@ -200,11 +207,6 @@
                             echo $this->Form->hidden('total_temp', array(
                                 'id' => 'total_retail_revenue',
                                 'value' => $total
-                            ));
-
-                            echo $this->Form->hidden('is_retail_revenue', array(
-                                'id' => 'is_retail_revenue',
-                                'value' => (!empty($tarif_angkutan)) ? 'per_truck' : 'per_unit'
                             ));
                         ?>
                     </td>
@@ -259,8 +261,11 @@
                     <td align="right" colspan="6"><?php echo __('Total');?></td>
                     <td align="right" id="all-total-revenue">
                         <?php 
-                            if(!empty($tarif_angkutan)){
-                                $total = $tarif_angkutan['tarif'];
+                            if($pph > 0){
+                                $total -= $pph;
+                            }
+                            if($ppn > 0){
+                                $total += $ppn;
                             }
                             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
                         ?>
