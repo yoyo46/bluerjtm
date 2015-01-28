@@ -1610,7 +1610,11 @@ class RevenuesController extends AppController {
                 'Revenue.id' => $id
             ),
             'contain' => array(
-                'RevenueDetail',
+                'RevenueDetail'=> array(
+                    'order' => array(
+                        'RevenueDetail.ttuj_tipe_motor_id'
+                    )
+                ),
                 'Ttuj'
             )
         ));
@@ -1670,14 +1674,14 @@ class RevenuesController extends AppController {
                     }
 
                     if( empty($array_ttuj_tipe_motor[$data['RevenueDetail']['ttuj_tipe_motor_id'][$key]]) ){
-                        $array_ttuj_tipe_motor[$data['RevenueDetail']['ttuj_tipe_motor_id'][$key]] = $data_detail['RevenueDetail']['qty_unit'];
+                        $array_ttuj_tipe_motor[$data['RevenueDetail']['ttuj_tipe_motor_id'][$key]] = intval($data_detail['RevenueDetail']['qty_unit']);
                     }else{
                         $array_ttuj_tipe_motor[$data['RevenueDetail']['ttuj_tipe_motor_id'][$key]] += $data_detail['RevenueDetail']['qty_unit'];
                     }
                 }
 
                 foreach ($array_ttuj_tipe_motor as $ttuj_tipe_motor_id => $value) {
-                    $qty = $this->Ttuj->TtujTipeMotor->TtujTipeMotorUse->find('all', array(
+                    $qty = $this->Ttuj->TtujTipeMotor->TtujTipeMotorUse->find('first', array(
                         'conditions' => array(
                             'TtujTipeMotorUse.ttuj_tipe_motor_id' => $ttuj_tipe_motor_id
                         ),
@@ -1693,11 +1697,20 @@ class RevenuesController extends AppController {
                     ));
 
                     $validate_qty_real = false;
-                    if(!empty($qty_real_tipe_ttuj) && $qty_real_tipe_ttuj['TtujTipeMotor']['qty'] <= $value ){
+                    if(!empty($qty_real_tipe_ttuj) && $qty_real_tipe_ttuj['TtujTipeMotor']['qty'] >= $value ){
                         $validate_qty_real = true;
                     }
 
-                    if(((!empty($qty[0][0]['count_qty']) && $qty[0][0]['count_qty'] >= $value) || (empty($qty_real_tipe_ttuj))) && $validate_qty_real  ){
+                    if($validate_qty_real){
+                        if(empty($qty_real_tipe_ttuj)){
+                            $validate_qty = true;
+                        }else{
+                            if( !empty($qty[0]['count_qty']) && $qty[0]['count_qty'] > $value){
+                                $validate_qty = false;
+                                break;
+                            }
+                        }
+                    }else{
                         $validate_qty = false;
                         break;
                     }
@@ -1713,6 +1726,10 @@ class RevenuesController extends AppController {
 
                     if($id && $data_local){
                         $this->Revenue->RevenueDetail->deleteAll(array(
+                            'revenue_id' => $revenue_id
+                        ));
+
+                        $this->Ttuj->TtujTipeMotor->TtujTipeMotorUse->deleteAll(array(
                             'revenue_id' => $revenue_id
                         ));
                     }
@@ -1754,7 +1771,14 @@ class RevenuesController extends AppController {
                     $this->Log->logActivity( sprintf(__('Gagal %s Revenue'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                 }
             }else{
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Revenue'), $msg), 'error');
+                $text = sprintf(__('Gagal %s Revenue'), $msg);
+                if(!$validate_detail){
+                    $text .= ', mohon lengkapi field-field yang kosong';
+                }
+                if(!$validate_qty){
+                    $text .= ', qty tipe motor melebihi qty maksimum TTUJ';
+                }
+                $this->MkCommon->setCustomFlash($text, 'error');
             }
         }else if($id && $data_local){
             $this->request->data = $data_local;
@@ -1783,7 +1807,7 @@ class RevenuesController extends AppController {
                             if($ttuj_tipe_motor['Ttuj']['is_retail']){
                                 $city = $this->City->getData('first', array(
                                     'conditions' => array(
-                                        'City.id' => $$ttuj_tipe_motor['TtujTipeMotor']['city_id']
+                                        'City.id' => $ttuj_tipe_motor['TtujTipeMotor']['city_id']
                                     )
                                 ));
                                 
@@ -1795,7 +1819,7 @@ class RevenuesController extends AppController {
                                 $ttujTipeMotor = $this->Ttuj->TtujTipeMotor->getData('first', array(
                                     'conditions' => array(
                                         'TtujTipeMotor.ttuj_id' => $this->request->data['Revenue']['ttuj_id'],
-                                        'TtujTipeMotor.tipe_motor_id' => $tipe_motor_id,
+                                        'TtujTipeMotor.tipe_motor_id' => $ttuj_tipe_motor['TtujTipeMotor']['id'],
                                         'TtujTipeMotor.city_id' => $to_city_id
                                     )
                                 ));

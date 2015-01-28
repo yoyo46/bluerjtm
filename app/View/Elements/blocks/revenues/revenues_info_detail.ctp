@@ -18,6 +18,7 @@
             <tbody class="tipe-motor-table">
                 <?php
                     $total = 0;
+                    $arr_duplicate = array();
                     foreach ($data as $key => $detail) {
                         if(!empty($detail['RevenueDetail']['price_unit'])){
                             $price = $detail['RevenueDetail']['price_unit'];
@@ -157,11 +158,26 @@
                     <td class="handle-row">
                         <?php
                             if(is_numeric($price)){
-                                echo $this->Html->link('<i class="fa fa-copy"></i>', 'javascript:', array(
-                                    'class' => 'duplicate-row btn btn-warning btn-xs',
+                                $open_duplicate = false;
+                                if(empty($arr_duplicate[$detail['RevenueDetail']['ttuj_tipe_motor_id']])){
+                                    $arr_duplicate[$detail['RevenueDetail']['ttuj_tipe_motor_id']] = true;
+                                    $open_duplicate = true;
+                                }
+
+                                if($open_duplicate){
+                                    echo $this->Html->link('<i class="fa fa-copy"></i>', 'javascript:', array(
+                                        'class' => 'duplicate-row btn btn-warning btn-xs',
+                                        'escape' => false,
+                                        'title' => 'Duplicate'
+                                    ));
+                                }else{
+                                    echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
+                                    'class' => 'delete-custom-field btn btn-danger btn-xs',
                                     'escape' => false,
-                                    'title' => 'Duplicate'
+                                    'action_type' => 'revenue_detail',
+                                    'title' => __('hapus baris')
                                 ));
+                                }
                             }
                         ?>
                     </td>
