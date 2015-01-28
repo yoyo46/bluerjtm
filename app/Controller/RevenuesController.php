@@ -1643,6 +1643,8 @@ class RevenuesController extends AppController {
         if(!empty($this->request->data)){
             $data = $this->request->data;
 
+            $data['Revenue']['date_sj'] = !empty($data['Revenue']['date_sj']) ? date('Y-m-d', strtotime($data['Revenue']['date_sj'])) : '';
+
             if($id && $data_local){
                 $this->Revenue->id = $id;
                 $msg = 'merubah';
@@ -1681,10 +1683,15 @@ class RevenuesController extends AppController {
                 }
 
                 foreach ($array_ttuj_tipe_motor as $ttuj_tipe_motor_id => $value) {
+                    $revenue_condition = array(
+                        'TtujTipeMotorUse.ttuj_tipe_motor_id' => $ttuj_tipe_motor_id
+                    );
+                    if(!empty($data_local['Revenue']['id'])){
+                        $revenue_condition['TtujTipeMotorUse.revenue_id <>'] = $data_local['Revenue']['id'];
+                    }
+                    
                     $qty = $this->Ttuj->TtujTipeMotor->TtujTipeMotorUse->find('first', array(
-                        'conditions' => array(
-                            'TtujTipeMotorUse.ttuj_tipe_motor_id' => $ttuj_tipe_motor_id
-                        ),
+                        'conditions' => $revenue_condition,
                         'fields' => array(
                             'SUM(TtujTipeMotorUse.qty) as count_qty'
                         )
@@ -1697,17 +1704,22 @@ class RevenuesController extends AppController {
                     ));
 
                     $validate_qty_real = false;
+                    $qty_real = $qty_real_tipe_ttuj['TtujTipeMotor']['qty'];
+
                     if(!empty($qty_real_tipe_ttuj) && $qty_real_tipe_ttuj['TtujTipeMotor']['qty'] >= $value ){
                         $validate_qty_real = true;
                     }
-
+                    
                     if($validate_qty_real){
                         if(empty($qty_real_tipe_ttuj)){
                             $validate_qty = true;
                         }else{
-                            if( !empty($qty[0]['count_qty']) && $qty[0]['count_qty'] > $value){
-                                $validate_qty = false;
-                                break;
+                            if( !empty($qty[0]['count_qty']) ){
+                                $free_space = $qty_real - ($qty[0]['count_qty'] + $value);
+                                if($free_space < 0){
+                                    $validate_qty = false;
+                                    break;
+                                }
                             }
                         }
                     }else{
