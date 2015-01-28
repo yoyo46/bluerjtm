@@ -31,7 +31,13 @@ class RevenueDetail extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'tipe motor harap diisi'
             ),
-        )
+        ),
+        'tarif_angkutan_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'tarif angkutan tidak ditemukan'
+            ),
+        ),
 	);
 
     var $belongsTo = array(

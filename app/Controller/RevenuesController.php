@@ -1669,6 +1669,7 @@ class RevenuesController extends AppController {
                         'tipe_motor_id' => $data['RevenueDetail']['tipe_motor_id'][$key],
                         'city_id' => $data['RevenueDetail']['city_id'][$key],
                         'ttuj_tipe_motor_id' => $data['RevenueDetail']['ttuj_tipe_motor_id'][$key],
+                        'tarif_angkutan_id' => $data['RevenueDetail']['tarif_angkutan_id'][$key],
                     );
 
                     $this->Revenue->RevenueDetail->set($data_detail);
@@ -1768,6 +1769,7 @@ class RevenuesController extends AppController {
                             'tipe_motor_id' => $data['RevenueDetail']['tipe_motor_id'][$key],
                             'city_id' => $data['RevenueDetail']['city_id'][$key],
                             'ttuj_tipe_motor_id' => $data['RevenueDetail']['ttuj_tipe_motor_id'][$key],
+                            'tarif_angkutan_id' => $data['RevenueDetail']['tarif_angkutan_id'][$key],
                         );
                         $this->Revenue->RevenueDetail->set($data_detail);
                         $this->Revenue->RevenueDetail->save();
@@ -2006,5 +2008,9 @@ class RevenuesController extends AppController {
         }
 
         $this->redirect($this->referer());
+    }
+
+    function invoices(){
+        
     }
 }

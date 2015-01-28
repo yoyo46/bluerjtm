@@ -49,6 +49,11 @@
                                 'required' => false,
                                 'value' => (!empty($detail['RevenueDetail']['ttuj_tipe_motor_id'])) ? $detail['RevenueDetail']['ttuj_tipe_motor_id'] : 0
                             ));
+
+                            echo $this->Form->hidden('RevenueDetail.tarif_angkutan_id.', array(
+                                'required' => false,
+                                'value' => (!empty($price['tarif_angkutan_id'])) ? $price['tarif_angkutan_id'] : 0
+                            ));
                         ?>
                     </td>
                     <td class="no-do-data" align="center">
