@@ -1479,31 +1479,31 @@ class RevenuesController extends AppController {
                     'Muatan' => $totalMuatan,
                 );
 
-                if( !empty($value['Ttuj']['tgljam_berangkat']) ) {
+                if( empty($value['Ttuj']['is_draft']) ) {
                     $tglBerangkat = date('d', strtotime($value['Ttuj']['tgljam_berangkat']));
                     $dataTtuj[$nopol]['Berangkat'][$tglBerangkat] = $dataTmp;
                     $dataTtuj[$nopol]['Berangkat'][$tglBerangkat]['datetime'] = date('d M Y H:i:s', strtotime($value['Ttuj']['tgljam_berangkat']));
                 }
 
-                if( !empty($value['Ttuj']['tgljam_tiba']) ) {
+                if( !empty($value['Ttuj']['is_arrive']) ) {
                     $tglTiba = date('d', strtotime($value['Ttuj']['tgljam_tiba']));
                     $dataTtuj[$nopol]['Tiba'][$tglTiba] = $dataTmp;
                     $dataTtuj[$nopol]['Tiba'][$tglTiba]['datetime'] = date('d M Y H:i:s', strtotime($value['Ttuj']['tgljam_tiba']));
                 }
 
-                if( !empty($value['Ttuj']['tgljam_bongkaran']) ) {
+                if( !empty($value['Ttuj']['is_bongkaran']) ) {
                     $tglBongkaran = date('d', strtotime($value['Ttuj']['tgljam_bongkaran']));
                     $dataTtuj[$nopol]['Bongkaran'][$tglBongkaran] = $dataTmp;
                     $dataTtuj[$nopol]['Bongkaran'][$tglBongkaran]['datetime'] = date('d M Y H:i:s', strtotime($value['Ttuj']['tgljam_bongkaran']));
                 }
 
-                if( !empty($value['Ttuj']['tgljam_balik']) ) {
+                if( !empty($value['Ttuj']['is_balik']) ) {
                     $tglBalik = date('d', strtotime($value['Ttuj']['tgljam_balik']));
                     $dataTtuj[$nopol]['Balik'][$tglBalik] = $dataTmp;
                     $dataTtuj[$nopol]['Balik'][$tglBalik]['datetime'] = date('d M Y H:i:s', strtotime($value['Ttuj']['tgljam_balik']));
                 }
 
-                if( !empty($value['Ttuj']['tgljam_pool']) ) {
+                if( !empty($value['Ttuj']['is_pool']) ) {
                     $tglPool = date('d', strtotime($value['Ttuj']['tgljam_pool']));
                     $dataTtuj[$nopol]['Pool'][$tglPool] = $dataTmp;
                     $dataTtuj[$nopol]['Pool'][$tglPool]['datetime'] = date('d M Y H:i:s', strtotime($value['Ttuj']['tgljam_pool']));

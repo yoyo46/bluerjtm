@@ -1,8 +1,8 @@
 <?php
-    $name = $User['first_name'];
-    if(!empty($User['last_name'])){
-        $name .= ' '.$User['last_name'];
-    }
+        $name = $User['first_name'];
+        if(!empty($User['last_name'])){
+            $name .= ' '.$User['last_name'];
+        }
 ?>
 <!-- Left side column. contains the logo and sidebar -->
 <aside class="left-side sidebar-offcanvas">
@@ -496,7 +496,7 @@
                     $settingMenu = array(
                         'cities', 'vendors', 'companies',
                         'perlengkapan', 'coas', 'branches', 
-                        'classifications', 'banks'
+                        'classifications', 'banks', 'calendar_colors'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -582,6 +582,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'classifications' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Warna Kalender', array(
+                                'controller' => 'settings',
+                                'action' => 'calendar_colors',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'calendar_colors' )?'active':'',
                             ));
                             // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Jenis Perlengkapan', array(
                             //     'controller' => 'settings',

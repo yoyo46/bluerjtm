@@ -2833,6 +2833,127 @@ class SettingsController extends AppController {
         $this->redirect($this->referer());
     }
 
+    function calendar_colors(){
+        $this->loadModel('CalendarColor');
+        $options = array(
+            'conditions' => array(
+                'CalendarColor.status' => 1
+            )
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['CalendarColor']['name'] = $name;
+                $options['conditions']['CalendarColor.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+        $this->paginate = $this->CalendarColor->getData('paginate', $options);
+        $calendarColors = $this->paginate('CalendarColor');
+
+        $this->set('active_menu', 'calendar_colors');
+        $this->set('sub_module_title', 'Warna Kalender');
+        $this->set('calendarColors', $calendarColors);
+    }
+
+    function calendar_color_add(){
+        $this->loadModel('CalendarColor');
+        $this->set('sub_module_title', 'Tambah Warna Kalender');
+        $this->doCalendarColor();
+    }
+
+    function calendar_color_edit($id){
+        $this->loadModel('CalendarColor');
+        $this->set('sub_module_title', 'Rubah Warna Kalender');
+        $calendarColor = $this->CalendarColor->getData('first', array(
+            'conditions' => array(
+                'CalendarColor.id' => $id
+            )
+        ));
+
+        if(!empty($calendarColor)){
+            $this->doCalendarColor($id, $calendarColor);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Warna Kalender tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'calendar_colors'
+            ));
+        }
+    }
+
+    function doCalendarColor($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->CalendarColor->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->CalendarColor->create();
+                $msg = 'menambah';
+            }
+            $this->CalendarColor->set($data);
+
+            if($this->CalendarColor->validates($data)){
+                if($this->CalendarColor->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Warna Kalender'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Warna Kalender'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'calendar_colors'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Warna Kalender'), $msg), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal %s Warna Kalender'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );        
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Warna Kalender'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->set('active_menu', 'calendar_colors');
+        $this->render('calendar_color_form');
+    }
+
+    function calendar_color_toggle($id){
+        $this->loadModel('CalendarColor');
+        $locale = $this->CalendarColor->getData('first', array(
+            'conditions' => array(
+                'CalendarColor.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['CalendarColor']['status']){
+                $value = false;
+            }
+
+            $this->CalendarColor->id = $id;
+            $this->CalendarColor->set('status', $value);
+            if($this->CalendarColor->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Warna Kalender ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Warna Kalender ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Warna Motor tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
+
     // function classification(){
     //     $this->loadModel('GroupClassification');
     //     $this->set('sub_module_title', 'Group Klasifikasi');
