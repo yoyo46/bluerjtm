@@ -2258,7 +2258,7 @@ class RevenuesController extends AppController {
                         ),
                         array(
                             'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='=> $date_from,
-                            'DATE_FORMAT(Ttuj.tgljams_pool, \'%Y-%m-%d\') <=' => $date_to,
+                            'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <=' => $date_to,
                         ),
                     );
                 }
