@@ -432,6 +432,14 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'revenue' )?'active':'',
                             ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Invoice', array(
+                                'controller' => 'revenues',
+                                'action' => 'invoices',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'revenue' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>

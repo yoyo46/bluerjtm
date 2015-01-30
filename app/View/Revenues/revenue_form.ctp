@@ -38,17 +38,6 @@
 				        </div>
 				        <div class="form-group">
 				        	<?php 
-									echo $this->Form->input('date_revenue',array(
-										'type' => 'text',
-										'label'=> __('Tanggal Revenue *'), 
-										'class'=>'form-control custom-date',
-										'required' => false,
-										'placeholder' => __('Tanggal Revenue')
-									));
-							?>
-				        </div>
-				        <div class="form-group">
-				        	<?php 
 									echo $this->Form->input('ttuj_id',array(
 										'label'=> __('No. TTUJ *'), 
 										'class'=>'form-control',

@@ -2032,6 +2032,9 @@ class RevenuesController extends AppController {
         ));
         $this->set('customers', $customers);
 
+        $toCities = $this->City->toCities();
+        $this->set('toCities', $toCities);
+
         $this->set('active_menu', 'revenues');
         $this->render('revenue_form');
     }
@@ -2067,6 +2070,116 @@ class RevenuesController extends AppController {
     }
 
     function invoices(){
+        $this->loadModel('Invoice');
+        $this->set('active_menu', 'revenue');
+        $this->set('sub_module_title', __('Invoice'));
+
+        $conditions = array();
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['nodoc'])){
+                $nodoc = urldecode($refine['nodoc']);
+                $this->request->data['Invoice']['nodoc'] = $nodoc;
+                $conditions['Invoice.nodoc LIKE '] = '%'.$nodoc.'%';
+            }
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Invoice']['customer_id'] = $customer;
+                $conditions['Invoice.customer_id LIKE '] = '%'.$customer.'%';
+            }
+        }
+
+        $this->paginate = $this->Invoice->getData('paginate', array(
+            'conditions' => $conditions,
+        ));
+        $invoices = $this->paginate('Invoice');
+
+        if(!empty($invoices)){
+            foreach ($invoices as $key => $value) {
+                $invoices[$key] = $this->Invoice->Customer->getMerge($value, $value['Invoice']['customer_id']);
+            }
+        }
+        $this->set('invoices', $invoices); 
+
+        $this->loadModel('Customer');
+        $customers = $this->Customer->find('list', array(
+            'conditions' => array(
+                'Customer.status' => 1
+            )
+        ));
+        $this->set('customers', $customers);
+    }
+
+    function invoice_add(){
+        $module_title = __('Tambah Invoice');
+        $this->set('sub_module_title', trim($module_title));
+        $this->doInvoice();
+    }
+
+    function invoice_edit( $id ){
+        $this->loadModel('Invoice');
+        $revenue = $this->Invoice->getData('first', array(
+            'conditions' => array(
+                'Invoice.id' => $id
+            )
+        ));
+
+        if(!empty($revenue)){
+            $module_title = __('Rubah Invoice');
+            $this->set('sub_module_title', trim($module_title));
+            $this->doInvoice($id, $revenue);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Invoice tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'revenues',
+                'action' => 'invoices'
+            ));
+        }
+    }
+
+    function doInvoice($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+
+            if($id && $data_local){
+                $this->Invoice->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('Invoice');
+                $this->Invoice->create();
+                $msg = 'membuat';
+            }
+
+            $this->Invoice->set($data);
+            if($this->Invoice->validates()){
+                if($this->Invoice->save()){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Berhasil %s Invoice'), $msg), 'success'); 
+                    $this->redirect(array(
+                        'controller' => 'revenues',
+                        'action' => 'invoices'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Invoice'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Invoice'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );     
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Invoice'), $msg), 'error'); 
+                $this->Log->logActivity( sprintf(__('Gagal %s Invoice'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }
+        }else if(!empty($id) && !empty($data_local)){
+             $this->request->data = $data_local;
+        }
+
+        $this->loadModel('Customer');
+        $customers = $this->Customer->find('list', array(
+            'conditions' => array(
+                'Customer.status' => 1
+            )
+        ));
         
+        $this->set(compact('customers', 'id'));
+        
+        $this->render('invoice_form');
     }
 }

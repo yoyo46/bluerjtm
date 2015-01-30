@@ -2,18 +2,18 @@
 class RevenueDetail extends AppModel {
 	var $name = 'RevenueDetail';
 	var $validate = array(
-        'no_do' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'No DO harap diisi'
-            ),
-        ),
-        'no_sj' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'No SJ harap diisi'
-            ),
-        ),
+        // 'no_do' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'No DO harap diisi'
+        //     ),
+        // ),
+        // 'no_sj' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'No SJ harap diisi'
+        //     ),
+        // ),
         'qty_unit' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

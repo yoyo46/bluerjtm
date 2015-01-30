@@ -6,7 +6,7 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th width="10%"><?php echo __('Tujuan');?></th>
+                    <th width="15%"><?php echo __('Tujuan');?></th>
                     <th width="15%"><?php echo __('No. DO');?></th>
                     <th width="15%"><?php echo __('No. SJ');?></th>
                     <th width="15%"><?php echo __('Tipe Motor');?></th>
@@ -34,14 +34,18 @@
                 <tr>
                     <td class="city-data">
                         <?php
-                            if(!empty($detail['RevenueDetail']['to_city_name'])){
-                                echo $detail['RevenueDetail']['to_city_name'];
-                            }else{
-                                echo ' - ';
-                            }
+                            // if(!empty($detail['RevenueDetail']['to_city_name'])){
+                            //     echo $detail['RevenueDetail']['to_city_name'];
+                            // }else{
+                            //     echo ' - ';
+                            // }
 
-                            echo $this->Form->hidden('RevenueDetail.city_id.', array(
+                            echo $this->Form->input('RevenueDetail.city_id.', array(
+                                'empty' => __('Pilih Kota Tujuan'),
+                                'options' => $toCities,
                                 'required' => false,
+                                'label' => false,
+                                'class' => 'form-control city-revenue-change',
                                 'value' => (!empty($detail['RevenueDetail']['city_id'])) ? $detail['RevenueDetail']['city_id'] : 0
                             ));
 
@@ -104,18 +108,18 @@
                                 $qty = $detail['TtujTipeMotor']['qty'];
                             }
 
-                            if(!empty($price) && $price['jenis_unit'] == 'per_truck'){
-                                echo $qty;
+                            // if(!empty($price) && is_array($price) && $price['jenis_unit'] == 'per_truck'){
+                            //     echo $qty;
 
-                                echo $this->Form->hidden('RevenueDetail.qty_unit.', array(
-                                    'type' => 'text',
-                                    'label' => false,
-                                    'class' => 'form-control revenue-qty input_number',
-                                    'required' => false,
-                                    'value' =>  $qty,
-                                    'max' => $detail['TtujTipeMotor']['qty']
-                                ));
-                            }else{
+                            //     echo $this->Form->hidden('RevenueDetail.qty_unit.', array(
+                            //         'type' => 'text',
+                            //         'label' => false,
+                            //         'class' => 'form-control revenue-qty input_number',
+                            //         'required' => false,
+                            //         'value' =>  $qty,
+                            //         'max' => $detail['TtujTipeMotor']['qty']
+                            //     ));
+                            // }else{
                                 echo $this->Form->input('RevenueDetail.qty_unit.', array(
                                     'type' => 'text',
                                     'label' => false,
@@ -124,7 +128,7 @@
                                     'value' =>  $qty,
                                     'max' => $detail['TtujTipeMotor']['qty']
                                 ));
-                            }
+                            // }
                             echo $this->Form->hidden('RevenueDetail.jenis_unit.', array(
                                     'type' => 'text',
                                     'label' => false,
@@ -153,17 +157,21 @@
                     <td class="total-price-revenue" align="right">
                         <?php 
                             $value_price = 0;
-                            if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_unit'){
-                                $value_price = $price['tarif'] * $qty;
-                            }else if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_truck'){
-                                $value_price = $price['tarif'];
+                            if(is_array($price)){
+                                if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_unit'){
+                                    $value_price = $price['tarif'] * $qty;
+                                }else if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_truck'){
+                                    $value_price = $price['tarif'];
+                                }
                             }
 
                             $total += $value_price;
 
-                            echo $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                            echo $this->Html->tag('span', $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                                'class' => 'total-revenue-perunit'
+                            ));
 
-                            echo $this->Form->hidden('RevenueDetail.price_unit.', array(
+                            echo $this->Form->hidden('RevenueDetail.total_price_unit.', array(
                                 'class' => 'total-price-perunit',
                                 'required' => false,
                                 'value' => $value_price
@@ -172,7 +180,7 @@
                     </td>
                     <td class="handle-row">
                         <?php
-                            if(!empty($price['jenis_unit']) && $price['jenis_unit'] == 'per_unit'){
+                            if( !empty($price['tarif']) && is_numeric($price['tarif'])){
                                 $open_duplicate = false;
                                 if(empty($arr_duplicate[$detail['RevenueDetail']['ttuj_tipe_motor_id']])){
                                     $arr_duplicate[$detail['RevenueDetail']['ttuj_tipe_motor_id']] = true;

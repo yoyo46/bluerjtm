@@ -183,6 +183,7 @@ class AjaxController extends AppController {
 		$this->loadModel('Ttuj');
 		$this->loadModel('TarifAngkutan');
 		$this->loadModel('Customer');
+		$this->loadModel('City');
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
@@ -198,7 +199,6 @@ class AjaxController extends AppController {
 
 			if(!empty($data_ttuj['TtujTipeMotor'])){
 				$this->loadModel('TipeMotor');
-				$this->loadModel('City');
 				$tipe_motor_list = array();
 				foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
 					$tipe_motor = $this->TipeMotor->getData('first', array(
@@ -259,8 +259,10 @@ class AjaxController extends AppController {
 			)
 		));
 
+		$toCities = $this->City->toCities();
+
 		// debug($data_revenue_detail);die();
-		$this->set(compact('data_revenue_detail', 'customers'));
+		$this->set(compact('data_revenue_detail', 'customers', 'toCities'));
 	}
 
 	public function event_add( $date = false ) {
@@ -325,6 +327,41 @@ class AjaxController extends AppController {
         $this->set(compact(
             'calendarIcons', 'calendarColors'
         ));
+	}
+
+	function getInfoRevenueDetail($ttuj_id, $city_id){
+		$this->loadModel('Ttuj');
+		$this->loadModel('TarifAngkutan');
+
+		$data_ttuj = $this->Ttuj->getData('first', array(
+			'conditions' => array(
+				'Ttuj.id' => $ttuj_id
+			),
+			'contain' => array(
+				'TtujTipeMotor' => array(
+					'conditions' => array(
+						'TtujTipeMotor.city_id' => $city_id
+					)
+				)
+			)
+		));
+
+		$detail = array();
+		if(!empty($data_ttuj)){
+			$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $city_id, $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity']);
+
+			$detail = array(
+				'RevenueDetail' => array(
+					'price_unit' => $tarif,
+				)
+			);
+		}
+
+		$this->set(compact('detail'));
+	}
+
+	function getInvoiceInfo($customer_id){
+		
 	}
 }
 ?>

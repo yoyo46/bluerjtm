@@ -2463,20 +2463,8 @@ class SettingsController extends AppController {
             ),
         ));
         
-        $fromCities = $this->City->getData('list', array(
-            'conditions' => array(
-                'City.status' => 1,
-                // 'City.is_asal' => 1,
-            ),
-        ));
-        
-        $toCities = $this->City->getData('list', array(
-            'conditions' => array(
-                'City.status' => 1,
-                // 'City.is_tujuan' => 1,
-            ),
-        ));
-
+        $fromCities = $this->City->fromCities();
+        $toCities = $this->City->toCities();
 
         $this->set(compact(
             'customers', 'group_motors', 'fromCities',

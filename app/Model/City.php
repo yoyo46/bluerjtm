@@ -111,5 +111,23 @@ class City extends AppModel {
 
         return $data;
     }
+
+    function fromCities(){
+        return $this->getData('list', array(
+            'conditions' => array(
+                'City.status' => 1,
+                'City.is_asal' => 1,
+            ),
+        ));
+    }
+    
+    function toCities(){
+        return $this->getData('list', array(
+            'conditions' => array(
+                'City.status' => 1,
+                'City.is_tujuan' => 1,
+            ),
+        ));
+    }
 }
 ?>
