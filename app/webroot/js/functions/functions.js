@@ -753,6 +753,224 @@ var datepicker = function(){
     });
 }
 
+
+
+var pickIcon = function(){
+    $('.pick-icon select').change(function(){
+        var self = $(this);
+        var val = self.val();
+        var parent = self.parents('.pick-icon');
+
+        parent.children('.pick-icon-show').html( $('.icon-calendar[rel='+val+']').html() );
+    });
+}
+
+var pickColor = function(){
+    $('.pick-color select').change(function(){
+        var self = $(this);
+        var val = self.val();
+        var parent = self.parents('.pick-color');
+
+        parent.children('.pick-color-show').html( '<i class="fa fa-square" style="color: '+$('.color-calendar[rel='+val+']').html()+'"></i>' );
+    });
+}
+
+var ajaxModal = function ( hide, obj, prettyPhoto ) {
+    if( typeof hide == 'undefined' ) {
+        hide = 0;
+    }
+    if( typeof obj == 'undefined' ) {
+        obj = $('.ajaxModal');
+    }
+    if( typeof prettyPhoto == 'undefined' ) {
+        prettyPhoto = false;
+    }
+
+    obj.click(function(msg) {
+        var type_action = '';
+        var url = $(this).attr('href');
+        var vthis = $(this);
+        var alert_msg = vthis.attr('alert');
+        var url_attr = vthis.attr('url');
+        var custom_backdrop_modal = $(this).attr('backdrop-modal');
+        $('.modal-body').html('');
+
+        if( prettyPhoto ) {
+            $.prettyPhoto.close();
+        }
+
+        if( url == '#myModal' ) {
+            url = vthis.attr('url');
+        }
+
+        if( url.indexOf('javascript:') != -1 && url_attr != null ) {
+            url = url_attr;
+        }
+
+        if( alert_msg != null ) {
+            if ( !confirm(alert_msg) ) { 
+                return false;
+            }
+        }
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            success: function(response, status) {
+                if( vthis.attr('title') !== undefined && vthis.attr('title') != '' ) {
+                    $('h4#myModalLabel').html(vthis.attr('title'));
+                    $('h4#myModalLabel').show();
+                } else {
+                    $('h4#myModalLabel').hide();
+                }
+
+                if( vthis.attr('data-action') !== undefined ) {
+                    type_action = vthis.attr('data-action');
+                }
+
+                $('.modal-body').html(response);
+
+                var backdrop_modal = true;                  
+                if( typeof custom_backdrop_modal != 'undefined' ){
+                    backdrop_modal = custom_backdrop_modal;
+                }
+                if( hide == 0 ) {
+                    $('#myModal').modal({
+                        show: true,
+                        backdrop : backdrop_modal
+                    });
+                }
+
+                if( type_action == 'event' ) {
+                    pickIcon();
+                    pickColor()
+                    submitForm();
+                    $('.timepicker').timepicker({
+                        showMeridian: false
+                    });
+                }
+
+                return false;
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+        
+        if( vthis.attr('href') != '#myModal' ) {
+            return false;
+        }
+    });
+
+    $('#myModal').on('hidden.bs.modal', function () {
+        $('.modal-dialog').removeClass('expand-modal');
+        $('.modal-content').removeClass('expand-content-modal');
+    });
+}
+
+var closeModal = function () {
+    $('.close-modal').click(function(){
+        $('#myModal').modal('hide');
+        return false;
+    });
+    $('.close-popup-modal').click(function(){
+        $('.popup-modal').modal('hide');
+        return false;
+    });
+}
+
+var formInput = function( obj ) {
+    obj.click(function(){
+        var self = $(this);
+        var type_action = self.attr('data-action');
+
+        var parents = self.parents('form');
+        var url_ajax = parents.attr('action');
+        var data_parsed = self.attr('data-parsed');
+        var data = parents.serialize();
+        var name = self.val();
+        var alert_msg = self.attr('alert');
+        $('.dropdown').removeClass('open');
+
+        if( alert_msg != null ) {
+            if ( !confirm(alert_msg) ) { 
+                return false;
+            }
+        }
+
+        if( type_action == 'submit_form' ) {
+            var form_name = self.attr('form_name');
+            $('#'+form_name).submit();
+        } else {
+            var load_icon = 'Loading..';
+
+            self.html(load_icon).val('Loading..');
+
+            $.ajax({
+                data: data,
+                url: url_ajax,
+                type: 'POST',
+                success: function(result) {
+                    var output = $(result).find('#form-content').html();
+                    var message = $(result).find('#message').html();
+                    var status = $(result).find('#status').html();
+
+                    if( message == null ) {
+                        message = $(result).filter('#message').html();
+                    }
+
+                    if( status == null ) {
+                        status = $(result).filter('#status').html();
+                    }
+
+                    if( status == 'success' ) {
+                        var modal_title = $(result).find('.modal-title').html();
+                        var modal_content = $(result).find('.modal-content').html();
+
+                        if( type_action == 'event' ) {
+                            window.location.reload();
+                        } else {
+                            $('#myModal #myModalLabel').html(modal_title);
+                            $('.modal-body').html(modal_content);
+                            $('h4#myModalLabel').show();
+                            $('#myModal').modal({
+                                show: true,
+                            });
+                            closeModal();
+                        }
+                    } else {
+                        $('#form-content').html(output);
+
+                        if( type_action == 'event' ) {
+                            pickIcon();
+                            pickColor()
+                            submitForm();
+                            $('.timepicker').timepicker({
+                                showMeridian: false
+                            });
+                        }
+                    }
+                    self.val(name);
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+
+            return false
+        }
+        return false;
+    });
+}
+
+var submitForm = function ( obj ) {
+    var obj = (typeof obj == 'undefined' ? $('#btn-submit-form, .btn-submit-form') : obj);
+    formInput( obj );
+    closeModal();
+}
+
 $(function() {
 	$('.aset-handling').click(function(){
 		if($('.aset-handling .aset-handling-form').is(':checked')) {
@@ -1143,6 +1361,6 @@ $(function() {
     });
 
     duplicate_row();
-    
+    ajaxModal();
     city_revenue_change();
 });

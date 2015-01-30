@@ -80,6 +80,17 @@
             <!-- /.content -->
         </aside><!-- /.right-side -->
     </div><!-- ./wrapper -->
+	<div id="myModal" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content no-radius">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">close</button>
+					<h4 id="myModalLabel" class="modal-title">&nbsp;</h4>
+				</div>
+				<div class="modal-body"></div>
+			</div>
+		</div>
+	</div>
 
     <!-- add new calendar event modal -->
 

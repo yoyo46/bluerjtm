@@ -265,12 +265,31 @@ class AjaxController extends AppController {
 		$this->set(compact('data_revenue_detail', 'customers', 'toCities'));
 	}
 
-	public function event_add( $date = false ) {
+	public function event_add( $nopol = false, $date = false ) {
         $this->loadModel('CalendarEvent');
+        $this->loadModel('Truck');
         $this->set('sub_module_title', 'Tambah Event');
+		$isAjax = $this->RequestHandler->isAjax();
+        $msg = array(
+			'class' => 'error',
+			'text' => ''
+		);
+		$truck = $this->Truck->getData('first', array(
+			'conditions' => array(
+				'Truck.nopol' => $nopol,
+				'Truck.status' => 1
+			)
+		), false);
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $data['CalendarEvent']['date'] = $date;
+            $data['CalendarEvent']['nopol'] = $nopol;
+
+            if( !empty($truck) ) {
+            	$data['CalendarEvent']['truck_id'] = $truck['Truck']['id'];
+            }
+
             if( !empty($id) ){
                 $this->CalendarEvent->id = $id;
                 $msg = 'merubah';
@@ -281,21 +300,38 @@ class AjaxController extends AppController {
             $this->CalendarEvent->set($data);
 
             if($this->CalendarEvent->validates($data)){
-            debug($data);die();
                 if($this->CalendarEvent->save($data)){
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Event'), $msg), 'success');
+                	$msg = array(
+						'class' => 'success',
+						'text' => sprintf(__('Sukses %s Event'), $msg),
+					);
                     $this->Log->logActivity( sprintf(__('Sukses %s Event'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                    $this->redirect(array(
-                        'controller' => 'revenues',
-                        'action' => 'monitoring_truck'
-                    ));
+                    // $this->redirect(array(
+                    //     'controller' => 'revenues',
+                    //     'action' => 'monitoring_truck'
+                    // ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Event'), $msg), 'error'); 
+                	$msg = array(
+						'class' => 'error',
+						'text' => sprintf(__('Gagal %s Event'), $msg),
+					);
+                    // $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Event'), $msg), 'error'); 
                     $this->Log->logActivity( sprintf(__('Gagal %s Event'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                 }
             }else{
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Event'), $msg), 'error');
+            	$msg = array(
+					'class' => 'error',
+					'text' => sprintf(__('Gagal %s Event'), $msg),
+				);
             }
+
+            if(!$isAjax){
+				$this->MkCommon->setCustomFlash($msg['text'], $msg['class']);
+				$this->redirect(array(
+                    'controller' => 'revenues',
+                    'action' => 'monitoring_truck'
+                ));
+			}
         }
 
         $this->loadModel('CalendarIcon');
@@ -317,15 +353,22 @@ class AjaxController extends AppController {
             )
         ));
         $optionIcons = array();
+        $optionColors = array();
 
         if( !empty($calendarIcons) ) {
         	foreach ($calendarIcons as $key => $calendarIcon) {
         		$optionIcons[$calendarIcon['CalendarIcon']['id']] = $calendarIcon['CalendarIcon']['name'];
         	}
         }
+        if( !empty($calendarColors) ) {
+        	foreach ($calendarColors as $key => $calendarColor) {
+        		$optionColors[$calendarColor['CalendarColor']['id']] = $calendarColor['CalendarColor']['name'];
+        	}
+        }
 
         $this->set(compact(
-            'calendarIcons', 'calendarColors'
+            'calendarIcons', 'calendarColors', 'optionIcons',
+            'optionColors', 'msg', 'isAjax'
         ));
 	}
 

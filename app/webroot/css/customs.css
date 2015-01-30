@@ -86,28 +86,49 @@
 	top: 5px;
 }
 
-td.berangkat i {
-	color: #a581a5;
+td.berangkat {
+	background: #4389fe;
 }
 
-td.tiba i {
-	color: #c08764;
+td.tiba {
+	background: #f39c12;
 }
 
-td.bongkaran i {
-	color: #d9516f;
+td.bongkaran {
+	background: #d9516f;
 }
 
-td.balik i {
-	color: #b1c567;
+td.balik {
+	background: #3d9970	;
 }
 
-td.pool i {
-	color: #5ee14a;
+td.pool {
+	background: #00a65a;
 }
 
 td.color {
 	background: #DDD;
+}
+
+td.multiple {
+	background: #232f44;
+}
+
+td.multiple a {
+	color: #FFFFFF;
+}
+
+table.monitoring td img {
+	width: 40px;
+}
+
+table.monitoring td > div {
+	font-size: 22px;
+	vertical-align: middle;
+	font-weight: bold;
+}
+.list-calendar li {
+	margin-bottom: 10px;
 }
 /*
 **	END Truck

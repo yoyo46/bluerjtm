@@ -1475,6 +1475,8 @@ class RevenuesController extends AppController {
         $this->loadModel('Truck');
         $this->loadModel('Ttuj');
         $this->loadModel('TtujTipeMotor');
+        $this->loadModel('CalendarEvent');
+        $this->loadModel('Laka');
         $this->set('active_menu', 'monitoring_truck');
         $this->set('sub_module_title', __('Monitoring Truk'));
 
@@ -1515,6 +1517,15 @@ class RevenuesController extends AppController {
                 'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\')' => $currentMonth,
             ),
         );
+        $conditionEvents = array(
+            'CalendarEvent.status'=> 1,
+            'DATE_FORMAT(CalendarEvent.date, \'%Y-%m\')' => $currentMonth,
+        );
+        $conditionLakas = array(
+            'Laka.status'=> 1,
+            'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\')' => $currentMonth,
+        );
+
         $this->paginate = $this->Truck->getData('paginate', array(
             'conditions' => array(
                 'Truck.status' => 1
@@ -1537,16 +1548,21 @@ class RevenuesController extends AppController {
                 'Ttuj.customer_id'
             ),
         ));
-        $lakas = $this->Ttuj->getData('all', array(
-            'conditions' => $conditions,
+        $events = $this->CalendarEvent->getData('all', array(
+            'conditions' => $conditionEvents,
             'order' => array(
-                'Ttuj.customer_name' => 'ASC', 
+                'CalendarEvent.date' => 'ASC', 
             ),
-            'group' => array(
-                'Ttuj.customer_id'
+        ));
+        $lakas = $this->Laka->getData('all', array(
+            'conditions' => $conditionLakas,
+            'order' => array(
+                'Laka.tgl_laka' => 'ASC', 
             ),
         ));
         $dataTtuj = array();
+        $dataEvent = array();
+        $dataLaka = array();
 
         if( !empty($ttujs) ) {
             foreach ($ttujs as $key => $value) {
@@ -1604,10 +1620,34 @@ class RevenuesController extends AppController {
             }
         }
 
+        if( !empty($events) ) {
+            foreach ($events as $key => $event) {
+                $dataEvent[$event['CalendarEvent']['nopol']][date('d', strtotime($event['CalendarEvent']['date']))][] = array(
+                    'time' => date('H:i', strtotime($event['CalendarEvent']['time'])),
+                    'date' => $event['CalendarEvent']['date'],
+                    'title' => $event['CalendarEvent']['name'],
+                    'note' => $event['CalendarEvent']['note'],
+                    'color' => !empty($event['CalendarColor']['hex'])?$event['CalendarColor']['hex']:false,
+                    'icon' => !empty($event['CalendarIcon']['photo'])?$event['CalendarIcon']['photo']:false,
+                );
+            }
+        }
+
+        if( !empty($lakas) ) {
+            foreach ($lakas as $key => $laka) {
+                $dataLaka[date('d', strtotime($laka['Laka']['tgl_laka']))][] = array(
+                    'tgl_laka' => $laka['Laka']['tgl_laka'],
+                    'driver_name' => $laka['Laka']['driver_name'],
+                    'lokasi_laka' => $laka['Laka']['lokasi_laka'],
+                    'truck_condition' => $laka['Laka']['truck_condition'],
+                );
+            }
+        }
+
         $this->set(compact(
             'data_action', 'lastDay', 'currentMonth',
             'trucks', 'prevMonth', 'nextMonth',
-            'dataTtuj'
+            'dataTtuj', 'dataEvent', 'dataLaka'
         ));
 
         if($data_action == 'pdf'){

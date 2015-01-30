@@ -13,6 +13,12 @@ class CalendarEvent extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Keterangan harap diisi'
             ),
+        ),
+        'time' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Pukul harap dipilih'
+            ),
         )
 	);
 

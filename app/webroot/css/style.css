@@ -3760,7 +3760,6 @@ font-size: 22px;
   padding: 5px;
 }
 
-.icon-calendar {
-  width: 40px;
-  padding: 2px 5px;
+.pick-color-show i {
+  font-size: 24px;
 }
