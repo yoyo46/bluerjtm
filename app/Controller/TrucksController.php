@@ -2618,7 +2618,7 @@ class TrucksController extends AppController {
                 'TtujTipeMotor.status'=> 1,
                 'Ttuj.status'=> 1,
                 'Ttuj.is_draft'=> 0,
-                'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m\')' => $currentMonth,
+                'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')' => $currentMonth,
                 'Ttuj.customer_id' => $customerArr,
             ),
             'contain' => array(
@@ -2628,11 +2628,11 @@ class TrucksController extends AppController {
                 'Ttuj.customer_name' => 'ASC', 
             ),
             'fields' => array(
-                'Ttuj.id', 'Ttuj.tgljam_berangkat',
+                'Ttuj.id', 'Ttuj.ttuj_date',
                 'Ttuj.customer_id', 'SUM(TtujTipeMotor.qty) cnt'
             ),
             'group' => array(
-                'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\')',
+                'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\')',
                 'Ttuj.customer_id',
             ),
         ), false);
@@ -2662,7 +2662,7 @@ class TrucksController extends AppController {
         if( !empty($ttujs) ) {
             foreach ($ttujs as $key => $value) {
                 $totalMuatan = 0;
-                $dayBerangkat = date('d', strtotime($value['Ttuj']['tgljam_berangkat']));
+                $dayBerangkat = date('d', strtotime($value['Ttuj']['ttuj_date']));
                 $customer_id = $value['Ttuj']['customer_id'];
 
                 if( !empty($value[0]['cnt']) ) {
@@ -2692,7 +2692,7 @@ class TrucksController extends AppController {
     }
 
     public function point_perplant_report( $data_type = 'depo', $data_action = false ) {
-        $this->loadModel('City');
+        $this->loadModel('UangJalan');
         $this->loadModel('Ttuj');
         $this->loadModel('TtujTipeMotor');
         $this->loadModel('Customer');
@@ -2718,20 +2718,25 @@ class TrucksController extends AppController {
 
         $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
         $lastDay = date('t', strtotime($currentMonth));
+        $conditionsCustomer = array(
+            'Customer.status' => 1,
+        );
+
+        if( $data_type == 'retail' ) {
+            $conditionsCustomer['Customer.customer_type_id'] = 1;
+        } else {
+            $conditionsCustomer['Customer.customer_type_id'] = 2;
+        }
 
         if( empty($data_action) ) {
             $this->paginate = $this->Customer->getData('paginate', array(
-                'conditions' => array(
-                    'Customer.status' => 1,
-                ),
+                'conditions' => $conditionsCustomer,
                 'limit' => 20,
             ));
             $customers = $this->paginate('Customer');
         } else {
             $customers = $this->Customer->getData('all', array(
-                'conditions' => array(
-                    'Customer.status' => 1,
-                ),
+                'conditions' => $conditionsCustomer,
             ));
         }
         
@@ -2745,12 +2750,23 @@ class TrucksController extends AppController {
             unset($group['Ttuj.from_city_id']);
             $this->set('active_menu', 'retail_point_perplant_report');
         } else {
-            $cities = $this->City->getData('list', array(
+            $cities = $this->UangJalan->getData('list', array(
                 'conditions' => array(
-                    'City.status' => 1,
-                    // 'City.is_asal' => 1,
+                    'UangJalan.status' => 1,
                 ),
-            ));
+                'fields' => array(
+                    'FromCity.id', 'FromCity.name'
+                ),
+                'contain' => array(
+                    'FromCity'
+                ),
+                'order' => array(
+                    'FromCity.name' => 'ASC',
+                ),
+                'group' => array(
+                    'FromCity.id',
+                )
+            ), false);
             $this->set('active_menu', 'point_perplant_report');
         }
 
@@ -2759,7 +2775,7 @@ class TrucksController extends AppController {
                 'TtujTipeMotor.status'=> 1,
                 'Ttuj.status'=> 1,
                 'Ttuj.is_draft'=> 0,
-                'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m\')' => $currentMonth,
+                'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')' => $currentMonth,
                 'Ttuj.customer_id' => $customerArr,
             ),
             'contain' => array(

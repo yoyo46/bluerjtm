@@ -270,7 +270,7 @@
                             echo $this->Html->tag('td', $this->Html->tag('div', $value['Truck']['nopol'], array(
                                 'style' => 'width: 80px;',
                             )));
-                            echo $this->Html->tag('td', $this->Html->tag('div', $value['Driver']['driver_name'], array(
+                            echo $this->Html->tag('td', $this->Html->tag('div', !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:false, array(
                                 'style' => 'width: 120px;',
                             )));
                             echo $this->Html->tag('td', $this->Html->tag('div', $value['Truck']['capacity'], array(
@@ -378,7 +378,7 @@
 
                     $content = $this->Html->tag('td', $no);
                     $content .= $this->Html->tag('td', $value['Truck']['nopol']);
-                    $content .= $this->Html->tag('td', $value['Driver']['driver_name']);
+                    $content .= $this->Html->tag('td', !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:false);
                     $content .= $this->Html->tag('td', $value['Truck']['capacity']);
                     $content .= $this->Html->tag('td', !empty($value['Customer']['name'])?$value['Customer']['name']:'-');
                     $content .= $this->Html->tag('td', $total);

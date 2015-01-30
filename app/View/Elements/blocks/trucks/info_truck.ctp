@@ -163,7 +163,7 @@
                     <dd><?php echo !empty($truck['Truck']['emergency_name'])?$truck['Truck']['emergency_name']:'-';?></dd>
                     <dt><?php echo __('Telepon')?></dt>
                     <dd><?php echo !empty($truck['Truck']['emergency_call'])?$truck['Truck']['emergency_call']:'-';?></dd>
-                    <dt><?php echo __('Dilangkapi GPS')?></dt>
+                    <dt><?php echo __('Dilengkapi GPS')?></dt>
                     <dd><?php echo !empty($truck['Truck']['is_gps'])?'Ya':'Tidak';?></dd>
                 </dl>
             </div>

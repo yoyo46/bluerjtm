@@ -801,15 +801,16 @@ class SettingsController extends AppController {
             }
 
             $data['UangJalan']['commission'] = $this->MkCommon->convertPriceToString($data['UangJalan']['commission']);
-            $data['UangJalan']['commission_extra'] = $this->MkCommon->convertPriceToString($data['UangJalan']['commission_extra']);
+            $data['UangJalan']['commission_extra'] = $this->MkCommon->convertPriceToString($data['UangJalan']['commission_extra'], 0);
+            $data['UangJalan']['commission_min_qty'] = $this->MkCommon->convertPriceToString($data['UangJalan']['commission_min_qty'], 0);
             $data['UangJalan']['uang_jalan_1'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_jalan_1']);
-            $data['UangJalan']['uang_jalan_2'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_jalan_2']);
-            $data['UangJalan']['uang_kuli_muat'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_kuli_muat']);
-            $data['UangJalan']['uang_kuli_bongkar'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_kuli_bongkar']);
-            $data['UangJalan']['asdp'] = $this->MkCommon->convertPriceToString($data['UangJalan']['asdp']);
-            $data['UangJalan']['uang_kawal'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_kawal']);
-            $data['UangJalan']['uang_keamanan'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_keamanan']);
-            $data['UangJalan']['uang_jalan_extra'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_jalan_extra']);
+            $data['UangJalan']['uang_jalan_2'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_jalan_2'], 0);
+            $data['UangJalan']['uang_kuli_muat'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_kuli_muat'], 0);
+            $data['UangJalan']['uang_kuli_bongkar'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_kuli_bongkar'], 0);
+            $data['UangJalan']['asdp'] = $this->MkCommon->convertPriceToString($data['UangJalan']['asdp'], 0);
+            $data['UangJalan']['uang_kawal'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_kawal'], 0);
+            $data['UangJalan']['uang_keamanan'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_keamanan'], 0);
+            $data['UangJalan']['uang_jalan_extra'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_jalan_extra'], 0);
             $data['UangJalan']['group_classification_1_id'] = !empty($data['UangJalan']['group_classification_1_id'])?$data['UangJalan']['group_classification_1_id']:0;
             $data['UangJalan']['group_classification_2_id'] = !empty($data['UangJalan']['group_classification_2_id'])?$data['UangJalan']['group_classification_2_id']:0;
             $data['UangJalan']['group_classification_3_id'] = !empty($data['UangJalan']['group_classification_3_id'])?$data['UangJalan']['group_classification_3_id']:0;
@@ -2587,30 +2588,35 @@ class SettingsController extends AppController {
             $dataDetail = array();
             $validateDetail = true;
 
-            if( !empty($data['CustomerTargetUnitDetail']['month']) ) {
-                $data['CustomerTargetUnitDetail']['month'] = array_unique($data['CustomerTargetUnitDetail']['month']);
-                
-                foreach ($data['CustomerTargetUnitDetail']['month'] as $key => $month) {
-                    $dataTemp = array(
-                        'month' => $month,
-                        'unit' => !empty($data['CustomerTargetUnitDetail']['unit'][$key])?$data['CustomerTargetUnitDetail']['unit'][$key]:'',
-                    );
-                    $this->CustomerTargetUnitDetail->set($dataTemp);
-                    if( !$this->CustomerTargetUnitDetail->validates() ) {
-                        $validateDetail = false;
+            if( !empty($data['CustomerTargetUnitDetail']['unit']) ) {
+                foreach ($data['CustomerTargetUnitDetail']['unit'] as $key => $unit) {
+                    if( !empty($unit) ) {
+                        $dataTemp = array(
+                            'month' => date('m', mktime(0, 0, 0, $key+1, 1, date("Y"))),
+                            'unit' => $unit,
+                        );
+                        $this->CustomerTargetUnitDetail->set($dataTemp);
+
+                        if( !$this->CustomerTargetUnitDetail->validates() ) {
+                            $validateDetail = false;
+                        }
                     }
                 }
             }
 
             if( $this->CustomerTargetUnit->validates($data) && $validateDetail ){
                 if($this->CustomerTargetUnit->save($data)){
-                    if( !empty($data['CustomerTargetUnitDetail']['month']) ) {
-                        foreach ($data['CustomerTargetUnitDetail']['month'] as $key => $month) {
-                            $dataDetail[$key]['CustomerTargetUnitDetail'] = array(
-                                'customer_target_unit_id' => $this->CustomerTargetUnit->id,
-                                'month' => $month,
-                                'unit' => !empty($data['CustomerTargetUnitDetail']['unit'][$key])?$data['CustomerTargetUnitDetail']['unit'][$key]:'',
-                            );
+                    if( !empty($data['CustomerTargetUnitDetail']['unit']) ) {
+                        $idx = 0;
+                        foreach ($data['CustomerTargetUnitDetail']['unit'] as $key => $unit) {
+                            if( !empty($unit) ) {
+                                $dataDetail[$idx]['CustomerTargetUnitDetail'] = array(
+                                    'customer_target_unit_id' => $this->CustomerTargetUnit->id,
+                                    'month' => date('m', mktime(0, 0, 0, $key+1, 1, date("Y"))),
+                                    'unit' => $unit,
+                                );
+                                $idx++;
+                            }
                         }
                     }
 
@@ -2642,8 +2648,7 @@ class SettingsController extends AppController {
                     unset($this->request->data['CustomerTargetUnitDetail']);
 
                     foreach ($customerTargetUnitDetail as $key => $value) {
-                        $this->request->data['CustomerTargetUnitDetail']['month'][$key] = $value['month'];
-                        $this->request->data['CustomerTargetUnitDetail']['unit'][$key] = $value['unit'];
+                        $this->request->data['CustomerTargetUnitDetail']['unit'][$value['month']-1] = $value['unit'];
                     }
                 }
             }

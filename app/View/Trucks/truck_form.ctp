@@ -496,7 +496,7 @@
 								echo $this->Form->checkbox('is_gps',array(
 									'label'=> false, 
 									'required' => false,
-								)).__('Dilangkapi GPS?');
+								)).__('Dilengkapi GPS?');
 							?>
 		                </label>
 		            </div>

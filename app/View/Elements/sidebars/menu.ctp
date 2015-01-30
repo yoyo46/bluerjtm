@@ -315,15 +315,15 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'point_perplant_report' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Plant - RETAIL', array(
-                                'controller' => 'trucks',
-                                'action' => 'point_perplant_report',
-                                'retail',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'retail_point_perplant_report' )?'active':'',
-                            ));
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Plant - RETAIL', array(
+                            //     'controller' => 'trucks',
+                            //     'action' => 'point_perplant_report',
+                            //     'retail',
+                            // ), array(
+                            //     'escape' => false
+                            // )), array(
+                            //     'class' => ( !empty($active_menu) && $active_menu == 'retail_point_perplant_report' )?'active':'',
+                            // ));
                     ?>
                 </ul>
             </li>

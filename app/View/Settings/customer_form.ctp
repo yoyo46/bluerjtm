@@ -106,28 +106,6 @@
 				</div>
 			</div>
 		</div>
-	    <div class="row">
-			<div class="col-sm-3">
-				<div class="form-group">
-					<?php 
-							echo $this->Form->label('term_of_payment', __('Term Of Payment *'));
-					?>
-			        <div class="input-group">
-				    	<?php 
-								echo $this->Form->input('term_of_payment',array(
-									'label'=> false, 
-									'class'=>'form-control',
-									'required' => false,
-									'type' => 'text',
-								));
-				    			echo $this->Html->tag('span', __('Hari'), array(
-				    				'class' => 'input-group-addon'
-			    				));
-						?>
-					</div>
-				</div>
-			</div>
-		</div>
 		<?php 
 				echo $this->Html->tag('div', $this->Form->input('bank_id',array(
 					'label'=> __('Bank'), 

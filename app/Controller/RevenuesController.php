@@ -1142,10 +1142,12 @@ class RevenuesController extends AppController {
         $this->loadModel('TruckCustomer');
         $this->loadModel('Ttuj');
         $this->loadModel('UangJalan');
+        $this->loadModel('Customer');
         $dateFrom = date('Y-m-d', strtotime('-1 month'));
         $dateTo = date('Y-m-d');
         $conditions = array(
             'Truck.status'=> 1,
+            'TruckCustomer.primary'=> 1,
         );
 
         if(!empty($this->params['named'])){
@@ -1175,42 +1177,70 @@ class RevenuesController extends AppController {
             }
         }
 
+        $this->Truck->bindModel(array(
+            'hasOne' => array(
+                'TruckCustomer' => array(
+                    'className' => 'TruckCustomer',
+                    'foreignKey' => 'truck_id',
+                )
+            )
+        ));
+
+        $conditionCustomers = array(
+            'Customer.status' => 1,
+        );
+
+        if( $data_type == 'retail' ) {
+            $conditionCustomers['Customer.customer_type_id'] = 1;
+        } else {
+            $conditionCustomers['Customer.customer_type_id'] = 2;
+        }
+
+        $customer_id = $this->Customer->getData('list', array(
+            'conditions' => $conditionCustomers,
+            'fields' => array(
+                'Customer.id', 'Customer.id'
+            ),
+        ));
+        $conditions['TruckCustomer.customer_id'] = $customer_id;
+
         if( !empty($data_action) ) {
-            $trucks = $this->Truck->getData('all', array(
+            $trucks = $this->TruckCustomer->getData('all', array(
                 'conditions' => $conditions,
                 'order' => array(
                     'Truck.nopol' => 'ASC', 
                 ),
                 'contain' => array(
-                    'Driver',
-                    'TruckAlocation'
+                    'Truck',
                 ),
             ));
         } else {
-            $this->paginate = $this->Truck->getData('paginate', array(
+            $this->paginate = $this->TruckCustomer->getData('paginate', array(
                 'conditions' => $conditions,
                 'order' => array(
                     'Truck.nopol' => 'ASC', 
                 ),
                 'contain' => array(
-                    'Driver',
-                    'TruckAlocation'
+                    'Truck',
                 ),
                 'limit' => 20,
             ));
-            $trucks = $this->paginate('Truck');
+            $trucks = $this->paginate('TruckCustomer');
         }
 
         if( !empty($trucks) ) {
             foreach ($trucks as $key => $truck) {
+                $conditionCustomers = array(
+                    'TruckCustomer.truck_id'=> $truck['Truck']['id'],
+                );
+
                 $truckCustomer = $this->TruckCustomer->getData('first', array(
-                    'conditions' => array(
-                        'TruckCustomer.truck_id'=> $truck['Truck']['id'],
-                    ),
+                    'conditions' => $conditionCustomers,
                     'order' => array(
                         'TruckCustomer.id' => 'ASC',
                     ),
                 ));
+                $truck = $this->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
 
                 if( !empty($truckCustomer) ) {
                     $truckCustomer = $this->TruckCustomer->Customer->getMerge($truckCustomer, $truckCustomer['TruckCustomer']['customer_id']);
@@ -1223,6 +1253,13 @@ class RevenuesController extends AppController {
                     'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='=> $dateFrom,
                     'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <=' => $dateTo,
                 );
+
+                if( $data_type == 'retail' ) {
+                    $conditionsTtuj['Ttuj.is_retail'] = 1;
+                } else {
+                    $conditionsTtuj['Ttuj.is_retail'] = 0;
+                }
+
                 $total = $this->Ttuj->getData('count', array(
                     'conditions' => $conditionsTtuj
                 ));
@@ -1313,7 +1350,7 @@ class RevenuesController extends AppController {
         $conditions = array(
             'TtujTipeMotor.status'=> 1,
             'Ttuj.status'=> 1,
-            'Ttuj.is_pool'=> 1,
+            'Ttuj.is_draft'=> 0,
         );
 
         if(!empty($this->params['named'])){
@@ -1336,8 +1373,8 @@ class RevenuesController extends AppController {
             }
         }
 
-        $conditions['DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') >='] = date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear));
-        $conditions['DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') <='] = date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear));
+        $conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') >='] = date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear));
+        $conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') <='] = date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear));
 
         $customerTargetUnits = $this->CustomerTargetUnitDetail->find('all', array(
             'conditions' => array(
@@ -1379,7 +1416,7 @@ class RevenuesController extends AppController {
                         'Ttuj.id', 
                         'Ttuj.customer_id', 
                         'SUM(TtujTipeMotor.qty) as cnt',
-                        'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') as dt',
+                        'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') as dt',
                     ),
                 ), false);
 

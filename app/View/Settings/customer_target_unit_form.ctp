@@ -49,21 +49,19 @@
         	?>
         </div>
         <div id="box-field-input">
-        	<?php 
-        			if( !empty($this->request->data['CustomerTargetUnitDetail']['month']) ) {
-        				foreach ($this->request->data['CustomerTargetUnitDetail']['month'] as $key => $value) {
-        					echo $this->element('blocks/settings/list_month', array(
-        						'rel' => $key,
-        						'month' => $value,
-        						'unit' => !empty($this->request->data['CustomerTargetUnitDetail']['unit'][$key])?$this->request->data['CustomerTargetUnitDetail']['unit'][$key]:'',
-    						));
-        				}
-        			} else {
-        				echo $this->element('blocks/settings/list_month', array(
-        					'rel' => 0,
-    					));
-        			}
-	        ?>
+            <div class="row">
+            	<?php 
+                        $rel = 0;
+                        for ($i=1; $i <= 12; $i++) { 
+                            $currentMonth = sprintf("%02s", $i);
+                            echo $this->element('blocks/settings/list_month', array(
+                                'rel' => $rel,
+                                'month' => $currentMonth,
+                            ));
+                            $rel++;
+                        }
+    	        ?>
+            </div>
         </div>
     </div>
 
