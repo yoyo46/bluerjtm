@@ -69,6 +69,7 @@ class TtujTipeMotor extends AppModel {
                 'TtujTipeMotor.status' => 1,
             ),
             'contain' => array(),
+            'fields' => array(),
         );
 
         if( !empty($options) && $is_merge ){
@@ -80,6 +81,9 @@ class TtujTipeMotor extends AppModel {
             }
             if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
+            }
+            if(!empty($options['fields'])){
+                $default_options['fields'] = array_merge($default_options['fields'], $options['fields']);
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];

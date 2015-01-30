@@ -267,7 +267,12 @@
                 ?>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('td', $this->Html->tag('div', $value['Truck']['nopol'], array(
+                            $link_truck = $this->Html->link($value['Truck']['nopol'], array(
+                                'controller' => 'revenues',
+                                'action' => 'detail_ritase',
+                                $id
+                            ));
+                            echo $this->Html->tag('td', $this->Html->tag('div', $link_truck, array(
                                 'style' => 'width: 80px;',
                             )));
                             echo $this->Html->tag('td', $this->Html->tag('div', !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:false, array(

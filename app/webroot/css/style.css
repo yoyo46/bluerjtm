@@ -3763,3 +3763,32 @@ font-size: 22px;
 .pick-color-show i {
   font-size: 24px;
 }
+.conntent-ritase-truk{
+  padding-left: 0px;
+  border-bottom: 1px solid;
+  display: inline-block;
+  background: #eee;
+  padding: 5px;
+}
+.conntent-ritase-truk li{
+  float: left;
+  list-style: none;
+  margin-right: 15px;
+}
+.second-revenue{
+  padding-left: 0px;
+  display: block;
+  border-bottom: 1px solid;
+}
+.second-box{
+  border-bottom: 1px solid;
+}
+.second-box ul{
+  padding-left: 0px;
+}
+.second-box li{
+  list-style: none;
+}
+.second-revenue li{
+  list-style: none;
+}

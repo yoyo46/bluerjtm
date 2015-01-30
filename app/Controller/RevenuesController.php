@@ -17,11 +17,14 @@ class RevenuesController extends AppController {
         $this->set('module_title', __('Revenue'));
     }
 
-    function search( $index = 'index' ){
+    function search( $index = 'index', $id = false ){
         $refine = array();
         if(!empty($this->request->data)) {
             $refine = $this->RjRevenue->processRefine($this->request->data);
             $params = $this->RjRevenue->generateSearchURL($refine);
+            if(!empty($id)){
+                array_push($params, $id);
+            }
             $params['action'] = $index;
 
             $this->redirect($params);
@@ -2144,6 +2147,196 @@ class RevenuesController extends AppController {
         }
 
         $this->redirect($this->referer());
+    }
+
+    function detail_ritase($id){
+        if(!empty($id)){
+            $this->loadModel('Truck');
+            $this->loadModel('Ttuj');
+            $this->loadModel('Customer');
+
+            $this->Truck->bindModel(array(
+                'hasOne' => array(
+                    'TruckCustomer' => array(
+                        'className' => 'TruckCustomer',
+                        'foreignKey' => 'truck_id',
+                    )
+                )
+            ));
+
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+                if(!empty($refine['date'])){
+                    $date = urldecode(rawurldecode($refine['date']));
+                    $this->request->data['Ttuj']['date'] = $date;
+                }
+            }
+
+            $truk = $this->Truck->getData('first', array(
+                'conditions' => array(
+                    'Truck.id' => $id,
+                    'Truck.status' => 1
+                ),
+                'contain' => array(
+                    'TruckBrand',
+                    'TruckCategory',
+                    'TruckFacility',
+                    'Driver',
+                    'TruckCustomer' => array(
+                        'conditions' => array(
+                            'TruckCustomer.primary'=> 1,
+                        ),
+                        'order' => array(
+                            'TruckCustomer.primary' => 'DESC'
+                        )
+                    )
+                )
+            ));
+            $truk = $this->Customer->getMerge($truk, $truk['TruckCustomer'][0]['customer_id']);
+            
+            if(!empty($truk)){
+                $total_ritase = $this->Ttuj->getData('count', array(
+                    'conditions' => array(
+                        'Ttuj.truck_id' => $id,
+                        'Ttuj.is_pool' => 1,
+                        'Ttuj.status' => 1
+                    )
+                ));
+
+                $total_unit = $this->Ttuj->getData('all', array(
+                    'conditions' => array(
+                        'Ttuj.truck_id' => $id,
+                        'Ttuj.is_draft' => 0,
+                        'Ttuj.status' => 1
+                    )
+                ));
+
+                if(!empty($total_unit)){
+                    $ttuj_id = Set::extract('/Ttuj/id', $total_unit);
+                    $total_unit = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                        'conditions' => array(
+                            'TtujTipeMotor.ttuj_id' => $ttuj_id
+                        ),
+                        'fields' => array(
+                            'sum(TtujTipeMotor.qty) as total_qty'
+                        )
+                    ));
+
+                    if(!empty($total_unit[0]['total_qty'])){
+                        $total_unit = $total_unit[0]['total_qty'];
+                    }else{
+                        $total_unit = 0;
+                    }
+                }
+
+                $default_conditions = array(
+                    'Ttuj.truck_id' => $id,
+                    'Ttuj.status' => 1,
+                    'Ttuj.is_draft' => 0,
+                );
+
+                if(isset($this->request->data['Ttuj']['date']) && !empty($this->request->data['Ttuj']['date'])){
+                    $date_explode = explode('-', trim($this->request->data['Ttuj']['date']));
+                    $date_from = $date_explode[0];
+                    $date_to = $date_explode[1];
+                    $default_conditions['OR'] = array(
+                        array(
+                            'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') >='=> $date_from,
+                            'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') <=' => $date_to,
+                        ),
+                        array(
+                            'DATE_FORMAT(Ttuj.tgljam_tiba, \'%Y-%m-%d\') >='=> $date_from,
+                            'DATE_FORMAT(Ttuj.tgljam_tiba, \'%Y-%m-%d\') <=' => $date_to,
+                        ),
+                        array(
+                            'DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m-%d\') >='=> $date_from,
+                            'DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m-%d\') <=' => $date_to,
+                        ),
+                        array(
+                            'DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m-%d\') >='=> $date_from,
+                            'DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m-%d\') <=' => $date_to,
+                        ),
+                        array(
+                            'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='=> $date_from,
+                            'DATE_FORMAT(Ttuj.tgljams_pool, \'%Y-%m-%d\') <=' => $date_to,
+                        ),
+                    );
+                }
+
+                $this->paginate = $this->Ttuj->getData('paginate', array(
+                    'conditions' => $default_conditions,
+                    'order' => array(
+                        'Ttuj.tgljam_berangkat' => 'ASC',
+                        'Ttuj.tgljam_tiba' => 'ASC',
+                        'Ttuj.tgljam_bongkaran' => 'ASC',
+                        'Ttuj.tgljam_balik' => 'ASC',
+                        'Ttuj.tgljam_pool' => 'ASC'
+                    )
+                ));
+                $truk_ritase = $this->paginate('Ttuj');
+
+                if(!empty($truk_ritase)){
+                    $this->loadModel('Lku');
+                    $this->loadModel('TtujTipeMotor');
+
+                    $total_lku = 0;
+                    foreach ($truk_ritase as $key => $value) {
+                        $qty_ritase = $this->TtujTipeMotor->getData('first', array(
+                            'conditions' => array(
+                                'TtujTipeMotor.ttuj_id' => $value['Ttuj']['id'],
+                                'TtujTipeMotor.status' => 1
+                            ),
+                            'fields' => array(
+                                'sum(TtujTipeMotor.qty) as qty_ritase'
+                            )
+                        ));
+
+                        $lkus = $this->Lku->getData('first', array(
+                            'conditions' => array(
+                                'Lku.status' => 1,
+                                'Lku.ttuj_id' => $value['Ttuj']['id']
+                            ),
+                            'fields' => array(
+                                'SUM(Lku.total_klaim) as qty_lku'
+                            )
+                        ));
+
+                        $from_time = strtotime($value['Ttuj']['tgljam_berangkat']);
+                        $to_time = strtotime($value['Ttuj']['tgljam_tiba']);
+                        $diff = round(abs($to_time - $from_time) / 60, 2);
+                        $truk_ritase[$key]['arrive_lead_time'] = round($diff/3600);
+                        $diff = round($diff/60, 2);
+
+                        if( $diff > $value['Ttuj']['arrive_over_time'] ) {
+                            $truk_ritase[$key]['arrive_over_time'] = round($diff/3600);
+                        }
+
+                        $from_time = strtotime($value['Ttuj']['tgljam_balik']);
+                        $to_time = strtotime($value['Ttuj']['tgljam_pool']);
+                        $diff = round(abs($to_time - $from_time) / 60, 2);
+                        $truk_ritase[$key]['back_lead_time'] = round($diff/3600);
+                        $diff = round($diff/60, 2);
+
+                        if( $diff > $value['Ttuj']['back_orver_time'] ) {
+                            $truk_ritase[$key]['back_orver_time'] = round($diff/3600);
+                        }
+
+                        $truk_ritase[$key]['qty_ritase'] = $qty_ritase[0]['qty_ritase'];
+                        $truk_ritase[$key]['qty_lku'] = $lkus[0]['qty_lku'];
+                        $total_lku += $lkus[0]['qty_lku'];
+                    }
+                }
+
+                $sub_module_title = __('Detail Ritase Truk');
+                $this->set(compact('id', 'truk', 'truk_ritase', 'sub_module_title', 'total_ritase', 'total_unit', 'total_lku'));
+            }else{
+                $this->MkCommon->setCustomFlash(__('Truk tidak ditemukan'), 'error');
+                $this->redirect($this->referer());
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Truk tidak ditemukan'), 'error');
+            $this->redirect($this->referer());
+        }
     }
 
     function invoices(){
