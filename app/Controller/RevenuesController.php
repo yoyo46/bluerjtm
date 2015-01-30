@@ -247,6 +247,8 @@ class RevenuesController extends AppController {
             $data['Ttuj']['uang_keamanan'] = $this->MkCommon->convertPriceToString($data['Ttuj']['uang_keamanan'], 0);
             $data['Ttuj']['uang_jalan_extra'] = $this->MkCommon->convertPriceToString($data['Ttuj']['uang_jalan_extra'], 0);
             $data['Ttuj']['min_capacity'] = $this->MkCommon->convertPriceToString($data['Ttuj']['min_capacity'], 0);
+            $data['Ttuj']['arrive_lead_time'] = !empty($uangJalan['UangJalan']['arrive_lead_time'])?$uangJalan['UangJalan']['arrive_lead_time']:0;
+            $data['Ttuj']['back_lead_time'] = !empty($uangJalan['UangJalan']['back_lead_time'])?$uangJalan['UangJalan']['back_lead_time']:0;
             $data['Ttuj']['tgljam_berangkat'] = '';
 
             if( !empty($data['Ttuj']['tgl_berangkat']) ) {
@@ -527,7 +529,7 @@ class RevenuesController extends AppController {
         $cities = $this->City->getData('list', array(
             'conditions' => array(
                 'City.status' => 1,
-                'City.is_asal' => 1,
+                // 'City.is_asal' => 1,
             ),
         ));
         $tipeMotors = array();
@@ -741,6 +743,10 @@ class RevenuesController extends AppController {
                         }
                     }
                     $referer = 'pool';
+                    $fromTime = 'tgljam_berangkat';
+                    $toTime = 'tgljam_pool';
+                    $leadTime = 'back_lead_time';
+                    $overTime = 'back_orver_time';
                     break;
                 
                 default:
@@ -757,12 +763,23 @@ class RevenuesController extends AppController {
                         }
                     }
                     $referer = 'truk_tiba';
+                    $fromTime = 'tgljam_berangkat';
+                    $toTime = 'tgljam_tiba';
+                    $leadTime = 'arrive_lead_time';
+                    $overTime = 'arrive_over_time';
                     break;
             }
 
-            $data_local = $this->Ttuj->getData('first', array(
-                'conditions' => $conditionsDataLocal
-            ));
+            if( !empty($fromTime) ) {
+                $from_time = strtotime($data_local['Ttuj'][$fromTime]);
+                $to_time = strtotime($dataTiba['Ttuj'][$toTime]);
+                $diff = round(abs($to_time - $from_time) / 60, 2);
+                $diff = round($diff/60, 2);
+
+                if( $diff > $data_local['Ttuj'][$leadTime] ) {
+                    $dataTiba['Ttuj'][$overTime] = $diff;
+                }
+            }
 
             $this->Ttuj->set($dataTiba);
 
@@ -1120,12 +1137,11 @@ class RevenuesController extends AppController {
         $this->doTTUJLanjutan( 'pool' );
     }
 
-    public function ritase_report( $data_action = false ) {
+    public function ritase_report( $data_type = 'depo', $data_action = false ) {
         $this->loadModel('Truck');
         $this->loadModel('TruckCustomer');
         $this->loadModel('Ttuj');
-        $this->loadModel('City');
-        $this->set('active_menu', 'ritase_report');
+        $this->loadModel('UangJalan');
         $dateFrom = date('Y-m-d', strtotime('-1 month'));
         $dateTo = date('Y-m-d');
         $conditions = array(
@@ -1159,17 +1175,31 @@ class RevenuesController extends AppController {
             }
         }
 
-        $this->paginate = $this->Truck->getData('paginate', array(
-            'conditions' => $conditions,
-            'order' => array(
-                'Truck.nopol' => 'ASC', 
-            ),
-            'contain' => array(
-                'Driver',
-                'TruckAlocation'
-            ),
-        ));
-        $trucks = $this->paginate('Truck');
+        if( !empty($data_action) ) {
+            $trucks = $this->Truck->getData('all', array(
+                'conditions' => $conditions,
+                'order' => array(
+                    'Truck.nopol' => 'ASC', 
+                ),
+                'contain' => array(
+                    'Driver',
+                    'TruckAlocation'
+                ),
+            ));
+        } else {
+            $this->paginate = $this->Truck->getData('paginate', array(
+                'conditions' => $conditions,
+                'order' => array(
+                    'Truck.nopol' => 'ASC', 
+                ),
+                'contain' => array(
+                    'Driver',
+                    'TruckAlocation'
+                ),
+                'limit' => 20,
+            ));
+            $trucks = $this->paginate('Truck');
+        }
 
         if( !empty($trucks) ) {
             foreach ($trucks as $key => $truck) {
@@ -1196,21 +1226,31 @@ class RevenuesController extends AppController {
                 $total = $this->Ttuj->getData('count', array(
                     'conditions' => $conditionsTtuj
                 ));
-                $cities = $this->Ttuj->getData('all', array(
-                    'conditions' => $conditionsTtuj,
-                    'group' => array(
-                        'Ttuj.to_city_id'
-                    ),
-                    'fields'=> array(
-                        'Ttuj.to_city_id', 
-                        'COUNT(Ttuj.id) as cnt',
-                        'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') as dt',
-                    ),
-                ), false);
+                $truck['Total'] = $total;
+
+                $overTimeOptions = $conditionsTtuj;
+                $overTimeOptions['Ttuj.arrive_over_time <>'] = 0;
+                $overTime = $this->Ttuj->getData('count', array(
+                    'conditions' => $overTimeOptions
+                ));
+                $truck['OverTime'] = $overTime;
+
+                if( $data_type != 'retail' ) {
+                    $cities = $this->Ttuj->getData('all', array(
+                        'conditions' => $conditionsTtuj,
+                        'group' => array(
+                            'Ttuj.to_city_id'
+                        ),
+                        'fields'=> array(
+                            'Ttuj.to_city_id', 
+                            'COUNT(Ttuj.id) as cnt',
+                            'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') as dt',
+                        ),
+                    ), false);
+                    $truck['City'] = $cities;
+                }
 
                 $truck = array_merge($truck, $truckCustomer);
-                $truck['Total'] = $total;
-                $truck['City'] = $cities;
                 $trucks[$key] = $truck;
             }
         }
@@ -1223,18 +1263,34 @@ class RevenuesController extends AppController {
         }
 
         $this->set('sub_module_title', $module_title);
-        $cities = $this->City->getData('list', array(
-            'conditions' => array(
-                'City.status' => 1,
-                'City.is_tujuan' => 1,
-            ),
-            'fields' => array(
-                'City.id', 'City.name'
-            ),
-        ), false);
+
+        if( $data_type == 'retail' ) {
+            $this->set('active_menu', 'ritase_report_retail');
+        } else {
+            $this->set('active_menu', 'ritase_report');
+            $cities = $this->UangJalan->getData('list', array(
+                'conditions' => array(
+                    'UangJalan.status' => 1,
+                    // 'City.is_tujuan' => 1,
+                ),
+                'fields' => array(
+                    'ToCity.id', 'ToCity.name'
+                ),
+                'contain' => array(
+                    'ToCity'
+                ),
+                'order' => array(
+                    'ToCity.name' => 'ASC',
+                ),
+                'group' => array(
+                    'ToCity.id',
+                )
+            ), false);
+        }
 
         $this->set(compact(
-            'trucks', 'cities', 'data_action'
+            'trucks', 'cities', 'data_action',
+            'data_type'
         ));
 
         if($data_action == 'pdf'){

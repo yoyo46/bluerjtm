@@ -98,6 +98,11 @@ class RjSettingComponent extends Component {
 					$refine_conditions['Bank']['name'] = $refine['Bank']['name'];
 				}
 			}
+			if(!empty($refine)) {
+				if( !empty($refine['CalendarColor']['name']) ) {
+					$refine_conditions['CalendarColor']['name'] = $refine['CalendarColor']['name'];
+				}
+			}
 				
 			return $refine_conditions;
 		}
@@ -204,6 +209,13 @@ class RjSettingComponent extends Component {
 		}
 		if(isset($refine['Bank']) && !empty($refine['Bank'])) {
 			foreach($refine['Bank'] as $param => $value) {
+				if($value) {
+					$parameters[trim($param)] = rawurlencode($value);
+				}
+			}
+		}
+		if(isset($refine['CalendarColor']) && !empty($refine['CalendarColor'])) {
+			foreach($refine['CalendarColor'] as $param => $value) {
 				if($value) {
 					$parameters[trim($param)] = rawurlencode($value);
 				}

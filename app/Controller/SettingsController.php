@@ -4,7 +4,7 @@ class SettingsController extends AppController {
 	public $uses = array();
 
     public $components = array(
-        'RjSetting'
+        'RjSetting', 'RjImage'
     );
 
     function beforeFilter() {
@@ -800,20 +800,20 @@ class SettingsController extends AppController {
                 $msg = 'menambah';
             }
 
-            $data['UangJalan']['commission'] = !empty($data['UangJalan']['commission'])?str_replace(',', '', $data['UangJalan']['commission']):false;
-            $data['UangJalan']['commission_extra'] = !empty($data['UangJalan']['commission_extra'])?trim(str_replace(',', '', $data['UangJalan']['commission_extra'])):0;
-            $data['UangJalan']['uang_jalan_1'] = !empty($data['UangJalan']['uang_jalan_1'])?str_replace(',', '', $data['UangJalan']['uang_jalan_1']):false;
-            $data['UangJalan']['uang_jalan_2'] = !empty($data['UangJalan']['uang_jalan_2'])?str_replace(',', '', $data['UangJalan']['uang_jalan_2']):false;
-            $data['UangJalan']['uang_kuli_muat'] = !empty($data['UangJalan']['uang_kuli_muat'])?str_replace(',', '', $data['UangJalan']['uang_kuli_muat']):false;
-            $data['UangJalan']['uang_kuli_bongkar'] = !empty($data['UangJalan']['uang_kuli_bongkar'])?str_replace(',', '', $data['UangJalan']['uang_kuli_bongkar']):false;
-            $data['UangJalan']['asdp'] = !empty($data['UangJalan']['asdp'])?str_replace(',', '', $data['UangJalan']['asdp']):false;
-            $data['UangJalan']['uang_kawal'] = !empty($data['UangJalan']['uang_kawal'])?str_replace(',', '', $data['UangJalan']['uang_kawal']):false;
-            $data['UangJalan']['uang_keamanan'] = !empty($data['UangJalan']['uang_keamanan'])?str_replace(',', '', $data['UangJalan']['uang_keamanan']):false;
-            $data['UangJalan']['uang_jalan_extra'] = !empty($data['UangJalan']['uang_jalan_extra'])?str_replace(',', '', $data['UangJalan']['uang_jalan_extra']):false;
-            $data['UangJalan']['group_classification_1_id'] = !empty($data['UangJalan']['group_classification_1_id'])?str_replace(',', '', $data['UangJalan']['group_classification_1_id']):0;
-            $data['UangJalan']['group_classification_2_id'] = !empty($data['UangJalan']['group_classification_2_id'])?str_replace(',', '', $data['UangJalan']['group_classification_2_id']):0;
-            $data['UangJalan']['group_classification_3_id'] = !empty($data['UangJalan']['group_classification_3_id'])?str_replace(',', '', $data['UangJalan']['group_classification_3_id']):0;
-            $data['UangJalan']['group_classification_4_id'] = !empty($data['UangJalan']['group_classification_4_id'])?str_replace(',', '', $data['UangJalan']['group_classification_4_id']):0;
+            $data['UangJalan']['commission'] = $this->MkCommon->convertPriceToString($data['UangJalan']['commission']);
+            $data['UangJalan']['commission_extra'] = $this->MkCommon->convertPriceToString($data['UangJalan']['commission_extra']);
+            $data['UangJalan']['uang_jalan_1'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_jalan_1']);
+            $data['UangJalan']['uang_jalan_2'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_jalan_2']);
+            $data['UangJalan']['uang_kuli_muat'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_kuli_muat']);
+            $data['UangJalan']['uang_kuli_bongkar'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_kuli_bongkar']);
+            $data['UangJalan']['asdp'] = $this->MkCommon->convertPriceToString($data['UangJalan']['asdp']);
+            $data['UangJalan']['uang_kawal'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_kawal']);
+            $data['UangJalan']['uang_keamanan'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_keamanan']);
+            $data['UangJalan']['uang_jalan_extra'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_jalan_extra']);
+            $data['UangJalan']['group_classification_1_id'] = !empty($data['UangJalan']['group_classification_1_id'])?$data['UangJalan']['group_classification_1_id']:0;
+            $data['UangJalan']['group_classification_2_id'] = !empty($data['UangJalan']['group_classification_2_id'])?$data['UangJalan']['group_classification_2_id']:0;
+            $data['UangJalan']['group_classification_3_id'] = !empty($data['UangJalan']['group_classification_3_id'])?$data['UangJalan']['group_classification_3_id']:0;
+            $data['UangJalan']['group_classification_4_id'] = !empty($data['UangJalan']['group_classification_4_id'])?$data['UangJalan']['group_classification_4_id']:0;
 
             if( !empty($data['UangJalan']['uang_jalan_per_unit']) ) {
                 $data['UangJalan']['uang_jalan_2'] = 0;
@@ -852,7 +852,7 @@ class SettingsController extends AppController {
         $fromCities = $this->City->getData('list', array(
             'conditions' => array(
                 'City.status' => 1,
-                'City.is_asal' => 1
+                // 'City.is_asal' => 1
             ),
             'order' => array(
                 'City.name' => 'ASC',
@@ -861,7 +861,7 @@ class SettingsController extends AppController {
         $toCities = $this->City->getData('list', array(
             'conditions' => array(
                 'City.status' => 1,
-                'City.is_tujuan' => 1
+                // 'City.is_tujuan' => 1
             ),
             'order' => array(
                 'City.name' => 'ASC',
@@ -2451,6 +2451,9 @@ class SettingsController extends AppController {
             'conditions' => array(
                 'Customer.status' => 1
             ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name'
+            ),
         ));
 
         $this->loadModel('GroupMotor');
@@ -2463,14 +2466,14 @@ class SettingsController extends AppController {
         $fromCities = $this->City->getData('list', array(
             'conditions' => array(
                 'City.status' => 1,
-                'City.is_asal' => 1,
+                // 'City.is_asal' => 1,
             ),
         ));
         
         $toCities = $this->City->getData('list', array(
             'conditions' => array(
                 'City.status' => 1,
-                'City.is_tujuan' => 1,
+                // 'City.is_tujuan' => 1,
             ),
         ));
 
@@ -2920,7 +2923,17 @@ class SettingsController extends AppController {
             }
         }
 
+        $layout_js = array(
+            'plugins/colorpicker/bootstrap-colorpicker.min'
+        );
+        $layout_css = array(
+            'colorpicker/bootstrap-colorpicker.min'
+        );
+
         $this->set('active_menu', 'calendar_colors');
+        $this->set(compact(
+            'layout_js', 'layout_css'
+        ));
         $this->render('calendar_color_form');
     }
 
@@ -2954,61 +2967,152 @@ class SettingsController extends AppController {
         $this->redirect($this->referer());
     }
 
-    // function classification(){
-    //     $this->loadModel('GroupClassification');
-    //     $this->set('sub_module_title', 'Group Klasifikasi');
-    //     $groupClassifications = $this->GroupClassification->find('list', array(
-    //         'conditions' => array(
-    //             'GroupClassification.status' => 1,
-    //         )
-    //     ));
+    function calendar_icons(){
+        $this->loadModel('CalendarIcon');
+        $options = array(
+            'conditions' => array(
+                'CalendarIcon.status' => 1
+            )
+        );
 
-    //     if(!empty($this->request->data)){
-    //         $data = $this->request->data;
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-    //         if( !empty($data['GroupClassification']['name']) ){
-    //             $failed = false;
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['CalendarIcon']['name'] = $name;
+                $options['conditions']['CalendarIcon.name LIKE '] = '%'.$name.'%';
+            }
+        }
 
-    //             foreach ($data['GroupClassification']['name'] as $key => $value) {
-    //                 if( !empty($groupClassifications[$key]) ) {
-    //                     $this->GroupClassification->id = $key;
-    //                 } else {
-    //                     $this->GroupClassification->create();
-    //                     $this->GroupClassification->set('id', $key);
-    //                 }
+        $this->paginate = $this->CalendarIcon->getData('paginate', $options);
+        $calendarIcons = $this->paginate('CalendarIcon');
 
-    //                 $this->GroupClassification->set('name', $value);
+        $this->set('active_menu', 'calendar_icons');
+        $this->set('sub_module_title', 'Icon Kalender');
+        $this->set('calendarIcons', $calendarIcons);
+    }
 
-    //                 if($this->GroupClassification->validates()){
-    //                     if($this->GroupClassification->save()){
-    //                         $this->Log->logActivity( __('Berhasil menyimpan Klasifikasi'), $this->user_data, $this->RequestHandler, $this->params, 1 );
-    //                     }else{
-    //                         $failed = true;
-    //                     }
-    //                 }else{
-    //                     $failed = true;
-    //                 }
-    //             }
+    function calendar_icon_add(){
+        $this->loadModel('CalendarIcon');
+        $this->set('sub_module_title', 'Tambah Icon Kalender');
+        $this->doCalendarIcon();
+    }
 
-    //             if( !$failed ){
-    //                 $this->MkCommon->setCustomFlash(__('Klasifikasi berhasil disimpan'), 'success');
-    //                 $this->redirect(array(
-    //                     'controller' => 'settings',
-    //                     'action' => 'classification'
-    //                 ));
-    //             } else {
-    //                 $this->MkCommon->setCustomFlash(__('Klasifikasi gagal disimpan'), 'error'); 
-    //             }
-    //         }else{
-    //             $this->MkCommon->setCustomFlash(__('Mohon masukan Klasifikasi'), 'error'); 
-    //         }
-    //     } else if( !empty($groupClassifications) ) {
-    //         foreach ($groupClassifications as $key => $groupClassification) {
-    //             $this->request->data['GroupClassification']['name'][$key] = $groupClassification;
-    //         }
-    //     }
+    function calendar_icon_edit($id){
+        $this->loadModel('CalendarIcon');
+        $this->set('sub_module_title', 'Rubah Icon Kalender');
+        $calendarIcon = $this->CalendarIcon->getData('first', array(
+            'conditions' => array(
+                'CalendarIcon.id' => $id
+            )
+        ));
 
-    //     $this->set('active_menu', 'classification');
+        if(!empty($calendarIcon)){
+            $this->doCalendarIcon($id, $calendarIcon);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Icon Kalender tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'calendar_icons'
+            ));
+        }
+    }
 
-    // }
+    function doCalendarIcon($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+
+            if($id && $data_local){
+                $this->CalendarIcon->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->CalendarIcon->create();
+                $msg = 'menambah';
+            }
+
+            if( !empty($data['CalendarIcon']['image']['name']) ){
+                $temp_image = $data['CalendarIcon']['image'];
+                $data['CalendarIcon']['photo'] = $data['CalendarIcon']['image']['name'];
+            }else{
+                if($id && $data_local){
+                    unset($data['CalendarIcon']['photo']);
+                }else{
+                    $data['CalendarIcon']['photo'] = '';
+                }
+            }
+
+            $this->CalendarIcon->set($data);
+
+            if($this->CalendarIcon->validates($data)){
+                $errorUpload = false;
+
+                if( !empty($temp_image) ){
+                    $uploaded = $this->RjImage->upload($temp_image, '/'.Configure::read('__Site.truck_photo_folder').'/', String::uuid());
+
+                    if(!empty($uploaded)) {
+                        if($uploaded['error']) {
+                            $errorUpload = true;
+                            $this->MkCommon->setCustomFlash($uploaded['message'], 'error');
+                        } else {
+                            $data['CalendarIcon']['photo'] = $uploaded['imageName'];
+                        }
+                    }
+                }
+
+                if( $this->CalendarIcon->save($data) && empty($errorUpload) ){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Icon Kalender'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Icon Kalender'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'calendar_icons'
+                    ));
+                } else if( empty($errorUpload) ) {
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Icon Kalender'), $msg), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal %s Icon Kalender'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );        
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Icon Kalender'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->set('active_menu', 'calendar_icons');
+        $this->render('calendar_icon_form');
+    }
+
+    function calendar_icon_toggle($id){
+        $this->loadModel('CalendarIcon');
+        $locale = $this->CalendarIcon->getData('first', array(
+            'conditions' => array(
+                'CalendarIcon.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['CalendarIcon']['status']){
+                $value = false;
+            }
+
+            $this->CalendarIcon->id = $id;
+            $this->CalendarIcon->set('status', $value);
+            if($this->CalendarIcon->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Icon Kalender ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Icon Kalender ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Icon Motor tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
 }

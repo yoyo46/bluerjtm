@@ -77,13 +77,20 @@ class UangJalan extends AppModel {
             ),
         ),
         'uang_jalan_2' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Uang jalan kedua harap diisi'
-            ),
+            // 'notempty' => array(
+            //     'rule' => array('notempty'),
+            //     'message' => 'Uang jalan kedua harap diisi'
+            // ),
             'numeric' => array(
+                'allowEmpty'=> true,
                 'rule' => array('numeric'),
                 'message' => 'Uang jalan kedua harus berupa angka',
+            ),
+        ),
+        'uang_jalan_extra' => array(
+            'checkUangJalanExtra' => array(
+                'rule' => array('checkUangJalanExtra'),
+                'message' => 'Mohon lengkapi data Uang Jalan Extra'
             ),
         ),
         'commission' => array(
@@ -103,65 +110,58 @@ class UangJalan extends AppModel {
             ),
         ),
         'uang_kuli_muat' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Uang kuli muat harap diisi'
-            ),
+            // 'notempty' => array(
+            //     'rule' => array('notempty'),
+            //     'message' => 'Uang kuli muat harap diisi'
+            // ),
             'numeric' => array(
+                'allowEmpty'=> true,
                 'rule' => array('numeric'),
                 'message' => 'Uang kuli muat harus berupa angka',
             ),
         ),
         'uang_kuli_bongkar' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Uang kuli bongkar harap diisi'
-            ),
+            // 'notempty' => array(
+            //     'rule' => array('notempty'),
+            //     'message' => 'Uang kuli bongkar harap diisi'
+            // ),
             'numeric' => array(
+                'allowEmpty'=> true,
                 'rule' => array('numeric'),
                 'message' => 'Uang kuli bongkar harus berupa angka',
             ),
         ),
         'asdp' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Uang penyebrangan (ASDP) harap diisi'
-            ),
+            // 'notempty' => array(
+            //     'rule' => array('notempty'),
+            //     'message' => 'Uang penyebrangan (ASDP) harap diisi'
+            // ),
             'numeric' => array(
+                'allowEmpty'=> true,
                 'rule' => array('numeric'),
                 'message' => 'Uang penyebrangan (ASDP) harus berupa angka',
             ),
         ),
         'uang_kawal' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Uang kawal harap diisi'
-            ),
+            // 'notempty' => array(
+            //     'rule' => array('notempty'),
+            //     'message' => 'Uang kawal harap diisi'
+            // ),
             'numeric' => array(
+                'allowEmpty'=> true,
                 'rule' => array('numeric'),
                 'message' => 'Uang kawal harus berupa angka',
             ),
         ),
         'uang_keamanan' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Uang keamanan harap diisi'
-            ),
+            // 'notempty' => array(
+            //     'rule' => array('notempty'),
+            //     'message' => 'Uang keamanan harap diisi'
+            // ),
             'numeric' => array(
+                'allowEmpty'=> true,
                 'rule' => array('numeric'),
                 'message' => 'Uang keamanan harus berupa angka',
-            ),
-        ),
-        'uang_jalan_extra' => array(
-            'checkUangJalanExtra' => array(
-                'rule' => array('checkUangJalanExtra'),
-                'message' => 'Uang jalan extra harap diisi dan berupa angka'
-            ),
-        ),
-        'min_capacity' => array(
-            'checkMinCapacity' => array(
-                'rule' => array('checkMinCapacity'),
-                'message' => 'Kapasitas minimum harap diisi dan berupa angka'
             ),
         ),
 	);
@@ -219,16 +219,19 @@ class UangJalan extends AppModel {
     }
 
     function checkUangJalanExtra($data) {
-        $min_capacity = !empty($this->data['UangJalan']['min_capacity'])?trim($this->data['UangJalan']['min_capacity']):false;
+        $uang_jalan_extra = !empty($this->data['UangJalan']['uang_jalan_extra'])?trim(str_replace(',', '', $this->data['UangJalan']['uang_jalan_extra'])):false;
+        $min_capacity = !empty($this->data['UangJalan']['min_capacity'])?$this->data['UangJalan']['min_capacity']:false;
+        $uang_jalan_extra_per_unit = !empty($this->data['UangJalan']['uang_jalan_extra_per_unit'])?$this->data['UangJalan']['uang_jalan_extra_per_unit']:false;
 
-        if( !empty($min_capacity) ) {
-            $uang_jalan_extra = !empty($data['uang_jalan_extra'])?trim($data['uang_jalan_extra']):false;
-            $uang_jalan_extra = !empty($uang_jalan_extra)?str_replace(',', '', $uang_jalan_extra):false;
-
-            if( !empty($uang_jalan_extra) && is_numeric($uang_jalan_extra) ) {
-                return true;
-            } else {
+        if( !empty($uang_jalan_extra_per_unit) && ( empty($uang_jalan_extra) || empty($min_capacity) ) ) {
+            return false;
+        } else if( !empty($uang_jalan_extra) || !empty($min_capacity) ) {
+            if( empty($uang_jalan_extra) ) {
                 return false;
+            } else if( empty($min_capacity) ) {
+                return false;
+            } else {
+                return true; 
             }
         } else {
             return true; 
@@ -255,14 +258,11 @@ class UangJalan extends AppModel {
     function commissionExtra () {
         $commission_extra = !empty($this->data['UangJalan']['commission_extra'])?trim(str_replace(',', '', $this->data['UangJalan']['commission_extra'])):false;
         $commission_min_qty = !empty($this->data['UangJalan']['commission_min_qty'])?$this->data['UangJalan']['commission_min_qty']:false;
-        $commission_extra_op = !empty($this->data['UangJalan']['commission_extra_op'])?$this->data['UangJalan']['commission_extra_op']:false;
 
         if( !empty($commission_extra) || !empty($commission_min_qty) || !empty($commission_extra_op) ) {
-            if( empty($commission_extra_op) ) {
+            if( empty($commission_extra) ) {
                 return false;
             } else if( empty($commission_min_qty) ) {
-                return false;
-            } else if( empty($commission_extra_op) ) {
                 return false;
             } else {
                 return true; 

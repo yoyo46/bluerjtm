@@ -23,10 +23,7 @@ class CommonHelper extends AppHelper {
             $options['save_path'] = Configure::read('__Site.profile_photo_folder');         
         }
 
-        if( !empty($options['user_path']) && $options['user_path'] == true ) {
-            $dimensionList = Configure::read('__Site.dimension_profile');
-            $defaultSize = 'ps';
-        } else {
+        if( !empty($options['size']) ) {
             $dimensionList = Configure::read('__Site.dimension');
             $defaultSize = 's';
         }
@@ -41,8 +38,12 @@ class CommonHelper extends AppHelper {
         $options['watermark'] = isset($options['watermark'])?$options['watermark']:false;
         $options['forceTimestamp'] = isset($options['forceTimestamp'])?$options['forceTimestamp']:false;
 
-        if( !array_key_exists($options['size'], $dimensionList) ) {
-            $options['size'] = $defaultSize;
+        if( array_key_exists($options['size'], Configure::read('__Site.dimension_profile')) ) {
+            $dimensionList = Configure::read('__Site.dimension_profile');
+        } else if( array_key_exists($options['size'], Configure::read('__Site.dimension')) ) {
+            $dimensionList = Configure::read('__Site.dimension');
+        } else {
+            $options['size'] = 's';
         }
 
         if( !empty($options['cache_view_path']) && !empty($options['thumbnail_view_path']) ) {

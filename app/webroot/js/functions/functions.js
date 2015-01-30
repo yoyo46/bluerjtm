@@ -1011,6 +1011,10 @@ var choose_item_info = function(){
         $('.list-field ul').slideUp('fast');
     });
 
+    if( $(".colorpicker").length > 0 ) {
+        $(".colorpicker").colorpicker();
+    }
+
     qtyMuatanPress( $('.qty-muatan') );
 }
 choose_item_info();

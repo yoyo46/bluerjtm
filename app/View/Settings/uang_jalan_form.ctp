@@ -217,7 +217,7 @@
 				</div>
 		    	<div class="form-group uang_jalan_2 <?php echo !empty($this->request->data['UangJalan']['uang_jalan_per_unit'])?'hide':''; ?>">
 		    		<?php 
-		    				echo $this->Form->label('uang_jalan_2', __('Uang Jalan Kedua *'));
+		    				echo $this->Form->label('uang_jalan_2', __('Uang Jalan Kedua'));
 		    		?>
                     <div class="input-group">
 				    	<?php 
@@ -238,47 +238,53 @@
 		    		<?php 
 		    				echo $this->Form->label('uang_jalan_extra', __('Uang Jalan Extra'));
 		    		?>
-                    <div class="input-group">
-				    	<?php 
-				    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-				    				'class' => 'input-group-addon'
-			    				));
-								echo $this->Form->input('uang_jalan_extra',array(
-									'label'=> false, 
-									'class'=>'form-control input_price',
-									'required' => false,
-									'empty' => __('Uang Jalan Extra'),
-									'type' => 'text',
-								));
-						?>
+					<div class="row">
+						<div class="col-sm-3 no-pright">
+		                    <div class="input-group">
+								<span class="input-group-addon">></span>
+						    	<?php 
+										echo $this->Form->input('min_capacity',array(
+											'label'=> false, 
+											'class'=>'form-control input_number',
+											'required' => false,
+											'placeholder' => __('Kapasitas'),
+											'type' => 'text',
+										));
+								?>
+							</div>
+						</div>
+						<div class="col-sm-9">
+		                    <div class="input-group">
+						    	<?php 
+						    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+						    				'class' => 'input-group-addon'
+					    				));
+										echo $this->Form->input('uang_jalan_extra',array(
+											'label'=> false, 
+											'class'=>'form-control input_price',
+											'required' => false,
+											'placeholder' => __('Uang Jalan Extra'),
+											'type' => 'text',
+											'error' => false,
+										));
+								?>
+							</div>
+						</div>
 					</div>
 					<?php 
+							echo $this->Form->error('uang_jalan_extra', array(
+								'notempty' => __('Mohon lengkapi data Uang Jalan Extra'),
+							), array(
+								'wrap' => 'div', 
+								'class' => 'error-message',
+							));
                 			echo $this->Form->input('uang_jalan_extra_per_unit',array(
 								'label'=> __('Per Unit ?'), 
 								'required' => false,
 								'type' => 'checkbox',
 								'value' => 1
 							));
-					?>
-				</div>
-		    	<div class="form-group">
-		    		<?php 
-		    				echo $this->Form->label('min_capacity', __('Minimum Kapasitas'));
-		    		?>
-                    <div class="input-group">
-				    	<?php 
-				    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-				    				'class' => 'input-group-addon'
-			    				));
-								echo $this->Form->input('min_capacity',array(
-									'label'=> false, 
-									'class'=>'form-control input_price',
-									'required' => false,
-									'empty' => __('Minimum Kapasitas'),
-									'type' => 'text',
-								));
-						?>
-					</div>
+		        	?>
 				</div>
 		    	<div class="form-group">
 		    		<?php 
@@ -313,34 +319,21 @@
 		    		?>
 					<div class="row">
 						<div class="col-sm-3 no-pright">
-					    	<?php 
-									echo $this->Form->input('commission_extra_op',array(
-										'label'=> false, 
-										'class'=>'form-control',
-										'required' => false,
-										'empty' => __('Pilih'),
-										'options' => array(
-											'<' => __('<'),
-											'<=' => __('<='),
-											'>' => __('>'),
-											'>=' => __('>='),
-										),
-									));
-							?>
+		                    <div class="input-group">
+								<span class="input-group-addon">></span>
+						    	<?php 
+										echo $this->Form->input('commission_min_qty',array(
+											'label'=> false, 
+											'class'=>'form-control input_number',
+											'required' => false,
+											'placeholder' => __('Muatan'),
+											'type' => 'text',
+											'title' => __('Muatan'),
+										));
+								?>
+							</div>
 						</div>
-						<div class="col-sm-3 no-pright">
-					    	<?php 
-									echo $this->Form->input('commission_min_qty',array(
-										'label'=> false, 
-										'class'=>'form-control input_number',
-										'required' => false,
-										'placeholder' => __('Muatan'),
-										'type' => 'text',
-										'title' => __('Muatan'),
-									));
-							?>
-						</div>
-						<div class="col-sm-6">
+						<div class="col-sm-9">
 		                    <div class="input-group">
 						    	<?php 
 						    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
@@ -350,7 +343,7 @@
 											'label'=> false, 
 											'class'=>'form-control input_price',
 											'required' => false,
-											'empty' => __('Komisi'),
+											'placeholder' => __('Komisi'),
 											'type' => 'text',
 											'error' => false,
 										));
@@ -369,7 +362,7 @@
 				</div>
 		    	<div class="form-group">
 		    		<?php 
-		    				echo $this->Form->label('uang_kuli_muat', __('Uang Kuli Muat *'));
+		    				echo $this->Form->label('uang_kuli_muat', __('Uang Kuli Muat'));
 		    		?>
                     <div class="input-group">
 				    	<?php 
@@ -396,7 +389,7 @@
 				</div>
 		    	<div class="form-group">
 		    		<?php 
-		    				echo $this->Form->label('uang_kuli_bongkar', __('Uang Kuli Bongkar *'));
+		    				echo $this->Form->label('uang_kuli_bongkar', __('Uang Kuli Bongkar'));
 		    		?>
                     <div class="input-group">
 				    	<?php 
@@ -423,7 +416,7 @@
 				</div>
 		    	<div class="form-group">
 		    		<?php 
-		    				echo $this->Form->label('asdp', __('Uang Penyebrangan *'));
+		    				echo $this->Form->label('asdp', __('Uang Penyebrangan'));
 		    		?>
                     <div class="input-group">
 				    	<?php 
@@ -450,7 +443,7 @@
 				</div>
 		    	<div class="form-group">
 		    		<?php 
-		    				echo $this->Form->label('uang_kawal', __('Uang Kawal *'));
+		    				echo $this->Form->label('uang_kawal', __('Uang Kawal'));
 		    		?>
                     <div class="input-group">
 				    	<?php 
@@ -477,7 +470,7 @@
 				</div>
 		    	<div class="form-group">
 		    		<?php 
-		    				echo $this->Form->label('uang_keamanan', __('Uang Keamanan *'));
+		    				echo $this->Form->label('uang_keamanan', __('Uang Keamanan'));
 		    		?>
                     <div class="input-group">
 				    	<?php 

@@ -3748,3 +3748,19 @@ font-size: 22px;
 .no-pright {
   padding-right: 0;
 }
+
+.colorpicker:before,
+.colorpicker:after {
+  display: none !important;
+}
+
+.color-calendar i,
+.icon-calendar {
+  background-color: #f4f4f4;
+  padding: 5px;
+}
+
+.icon-calendar {
+  width: 40px;
+  padding: 2px 5px;
+}

@@ -490,6 +490,18 @@
 		    </div>
 		    <div class="box-body">
 		        <div class="form-group">
+			        <div class="checkbox aset-handling">
+		                <label>
+		                    <?php 
+								echo $this->Form->checkbox('is_gps',array(
+									'label'=> false, 
+									'required' => false,
+								)).__('Dilangkapi GPS?');
+							?>
+		                </label>
+		            </div>
+		        </div>
+		        <div class="form-group">
 		        	<?php 
 						echo $this->Form->label('emergency_name', __('Nama Panggilan darurat')); 
 
@@ -513,18 +525,6 @@
 							'type' => 'text',
 						));
 					?>
-		        </div>
-		        <div class="form-group">
-			        <div class="checkbox aset-handling">
-		                <label>
-		                    <?php 
-								echo $this->Form->checkbox('is_gps',array(
-									'label'=> false, 
-									'required' => false,
-								)).__('Dilangkapi GPS?');
-							?>
-		                </label>
-		            </div>
 		        </div>
 		   	</div>
 		</div>

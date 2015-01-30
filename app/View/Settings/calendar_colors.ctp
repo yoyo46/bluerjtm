@@ -2,6 +2,7 @@
         $this->Html->addCrumb(__('Warna Kalender'), array(
             'action' => 'calendar_colors',
         ));
+        echo $this->element('blocks/settings/search_calendar_colors');
 ?>
 <div class="box">
     <div class="box-header">
@@ -25,7 +26,9 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('CalendarColor.name', __('Label'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', __('Warna'));
+                        echo $this->Html->tag('th', __('Warna'), array(
+                            'class' => 'text-center'
+                        ));
                         echo $this->Html->tag('th', $this->Paginator->sort('CalendarColor.created', __('Dibuat'), array(
                             'escape' => false
                         )));
@@ -40,10 +43,10 @@
             ?>
             <tr>
                 <td><?php echo $value_data['name'];?></td>
-                <td>
+                <td class="text-center">
                     <?php
                             echo $this->Html->tag('div', '<i class="fa fa-square"></i>', array(
-                                'style' => sprintf('background: #%s', $value['CalendarColor']['hex']),
+                                'style' => sprintf('color: %s;', $value['CalendarColor']['hex']),
                                 'class' => 'color-calendar',
                             ));
                     ?>

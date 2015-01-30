@@ -562,6 +562,70 @@
 			</div>
 			<?php 
 					}
+
+					switch ($action_type) {
+						case 'bongkaran':
+			?>
+			<div class="col-sm-6">
+				<div class="box box-primary" id="biaya-uang-jalan">
+				    <div class="box-header">
+				        <h3 class="box-title"><?php echo __('Biaya Bongkaran');?></h3>
+				    </div>
+				    <div class="box-body">
+				    	<?php 
+				    			if( !empty($this->request->data['Ttuj']['uang_jalan_2']) ) {
+				    	?>
+				    	<div class="form-group">
+				    		<?php 
+				    				echo $this->Form->label('uang_jalan_2', __('Uang Jalan Kedua'));
+				    		?>
+				            <div class="input-group">
+						    	<?php 
+						    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+						    				'class' => 'input-group-addon'
+					    				));
+										echo $this->Form->input('uang_jalan_2',array(
+											'label'=> false, 
+											'class'=>'form-control uang_jalan_2 input_price',
+											'required' => false,
+											'type' => 'text',
+											'readonly' => true,
+										));
+								?>
+							</div>
+						</div>
+						<?php 
+								}
+						?>
+				    	<div class="form-group">
+				    		<?php 
+				    				echo $this->Form->label('uang_kuli_bongkar', __('Uang Kuli Bongkar'));
+				    		?>
+				            <div class="input-group">
+						    	<?php 
+						    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+						    				'class' => 'input-group-addon'
+					    				));
+										echo $this->Form->input('uang_kuli_bongkar',array(
+											'label'=> false, 
+											'class'=>'form-control uang_kuli_bongkar input_price',
+											'required' => false,
+											'empty' => __('Uang Kuli Bongkar'),
+											'type' => 'text',
+											'readonly' => true,
+										));
+										echo $this->Form->hidden('uang_kuli_bongkar_ori',array(
+											'class'=>'uang_kuli_bongkar_ori',
+										));
+								?>
+							</div>
+						</div>
+				    </div>
+				</div>
+			</div>
+			<?php
+							break;
+					}
 			?>
 		</div>
 		<div class="box-footer text-center action">

@@ -165,7 +165,7 @@
                     $activeTruck = false;
                     $truckMenu = array(
                         'drivers', 'trucks', 'directions',
-                        'reports', 'ritase_report', 'stnk',
+                        'reports', 'ritase_report', 'ritase_report_retail', 'stnk',
                         'stnk_payments', 'kir', 'kir_payments',
                         'siup', 'siup_payments', 'achievement_report',
                         'monitoring_truck', 'capacity_report',
@@ -258,13 +258,22 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'reports' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Ritase', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Ritase - DEPO', array(
                                 'controller' => 'revenues',
                                 'action' => 'ritase_report',
                             ), array(
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'ritase_report' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Ritase - RETAIL', array(
+                                'controller' => 'revenues',
+                                'action' => 'ritase_report',
+                                'retail',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'ritase_report_retail' )?'active':'',
                             ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian', array(
                                 'controller' => 'revenues',
@@ -298,7 +307,7 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'point_perday_report' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Plant - Depo', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Plant - DEPO', array(
                                 'controller' => 'trucks',
                                 'action' => 'point_perplant_report',
                             ), array(
@@ -306,7 +315,7 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'point_perplant_report' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Plant - Retail', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Plant - RETAIL', array(
                                 'controller' => 'trucks',
                                 'action' => 'point_perplant_report',
                                 'retail',
@@ -496,7 +505,8 @@
                     $settingMenu = array(
                         'cities', 'vendors', 'companies',
                         'perlengkapan', 'coas', 'branches', 
-                        'classifications', 'banks', 'calendar_colors'
+                        'classifications', 'banks', 'calendar_colors',
+                        'calendar_icons'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -590,6 +600,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'calendar_colors' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Icon Kalender', array(
+                                'controller' => 'settings',
+                                'action' => 'calendar_icons',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'calendar_icons' )?'active':'',
                             ));
                             // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Jenis Perlengkapan', array(
                             //     'controller' => 'settings',

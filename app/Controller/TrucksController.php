@@ -131,6 +131,7 @@ class TrucksController extends AppController {
     }
 
     function doTruck($id = false, $data_local = false){
+        $this->loadModel('Driver');
         $driverConditions = array(
             'Driver.status' => 1,
             'Truck.id' => NULL,
@@ -165,6 +166,9 @@ class TrucksController extends AppController {
             $data['Truck']['tgl_kir'] = (!empty($data['Truck']['tgl_kir'])) ? $this->MkCommon->getDate($data['Truck']['tgl_kir']) : '';
             $data['Truck']['kir'] = $this->MkCommon->convertPriceToString($data['Truck']['kir']);
             $data['Leasing']['paid_date'] = (!empty($data['Leasing']['paid_date'])) ? $this->MkCommon->getDate($data['Leasing']['paid_date']) : '';
+            $data['Truck']['emergency_call'] = (!empty($data['Truck']['emergency_call'])) ? $data['Truck']['emergency_call'] : '';
+            $data['Truck']['emergency_name'] = (!empty($data['Truck']['emergency_name'])) ? $data['Truck']['emergency_name'] : '';
+            $data['Truck']['is_gps'] = (!empty($data['Truck']['is_gps'])) ? $data['Truck']['is_gps'] : 0;
 
             if(!empty($data['Truck']['photo']['name']) && is_array($data['Truck']['photo'])){
                 $temp_image = $data['Truck']['photo'];
@@ -194,12 +198,13 @@ class TrucksController extends AppController {
                     $uploaded = $this->RjImage->upload($temp_image, '/'.Configure::read('__Site.truck_photo_folder').'/', String::uuid());
                     if(!empty($uploaded)) {
                         if($uploaded['error']) {
-                            $this->RmCommon->setCustomFlash($uploaded['message'], 'error');
+                            $this->MkCommon->setCustomFlash($uploaded['message'], 'error');
                         } else {
                             $data['Truck']['photo'] = $uploaded['imageName'];
                         }
                     }
                 }
+
                 if($this->Truck->save($data)){
                     $truck_id = $this->Truck->id;
                     
@@ -742,7 +747,7 @@ class TrucksController extends AppController {
                     $uploaded = $this->RjImage->upload($temp_image, '/'.Configure::read('__Site.profile_photo_folder').'/', String::uuid());
                     if(!empty($uploaded)) {
                         if($uploaded['error']) {
-                            $this->RmCommon->setCustomFlash($uploaded['message'], 'error');
+                            $this->MkCommon->setCustomFlash($uploaded['message'], 'error');
                         } else {
                             $data['Driver']['photo'] = $uploaded['imageName'];
                         }
@@ -1630,7 +1635,7 @@ class TrucksController extends AppController {
         $cities = $this->City->getData('list', array(
             'conditions' => array(
                 'City.status' => 1,
-                'City.is_tujuan' => 1,
+                // 'City.is_tujuan' => 1,
             ),
             'fields' => array(
                 'City.id', 'City.name'
@@ -1751,7 +1756,7 @@ class TrucksController extends AppController {
         $cities = $this->City->getData('list', array(
             'conditions' => array(
                 'City.status' => 1,
-                'City.is_tujuan' => 1,
+                // 'City.is_tujuan' => 1,
             ),
             'fields' => array(
                 'City.id', 'City.name'
@@ -2591,19 +2596,27 @@ class TrucksController extends AppController {
         $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
         $lastDay = date('t', strtotime($currentMonth));
 
-        $this->paginate = $this->Customer->getData('paginate', array(
-            'conditions' => array(
-                'Customer.status' => 1,
-            ),
-            'limit' => 20,
-        ));
-        $customers = $this->paginate('Customer');
+        if( empty($data_action) ) {
+            $this->paginate = $this->Customer->getData('paginate', array(
+                'conditions' => array(
+                    'Customer.status' => 1,
+                ),
+                'limit' => 20,
+            ));
+            $customers = $this->paginate('Customer');
+        } else {
+            $customers = $this->Customer->getData('all', array(
+                'conditions' => array(
+                    'Customer.status' => 1,
+                ),
+            ));
+        }
+
         $customerArr = Set::extract('/Customer/id', $customers);
         $ttujs = $this->TtujTipeMotor->getData('all', array(
             'conditions' => array(
                 'TtujTipeMotor.status'=> 1,
                 'Ttuj.status'=> 1,
-                'Ttuj.is_pool'=> 1,
                 'Ttuj.is_draft'=> 0,
                 'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m\')' => $currentMonth,
                 'Ttuj.customer_id' => $customerArr,
@@ -2706,13 +2719,22 @@ class TrucksController extends AppController {
         $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
         $lastDay = date('t', strtotime($currentMonth));
 
-        $this->paginate = $this->Customer->getData('paginate', array(
-            'conditions' => array(
-                'Customer.status' => 1,
-            ),
-            'limit' => 20,
-        ));
-        $customers = $this->paginate('Customer');
+        if( empty($data_action) ) {
+            $this->paginate = $this->Customer->getData('paginate', array(
+                'conditions' => array(
+                    'Customer.status' => 1,
+                ),
+                'limit' => 20,
+            ));
+            $customers = $this->paginate('Customer');
+        } else {
+            $customers = $this->Customer->getData('all', array(
+                'conditions' => array(
+                    'Customer.status' => 1,
+                ),
+            ));
+        }
+        
         $customerArr = Set::extract('/Customer/id', $customers);
         $group = array(
             'Ttuj.from_city_id',
@@ -2726,7 +2748,7 @@ class TrucksController extends AppController {
             $cities = $this->City->getData('list', array(
                 'conditions' => array(
                     'City.status' => 1,
-                    'City.is_asal' => 1,
+                    // 'City.is_asal' => 1,
                 ),
             ));
             $this->set('active_menu', 'point_perplant_report');
@@ -2736,7 +2758,6 @@ class TrucksController extends AppController {
             'conditions' => array(
                 'TtujTipeMotor.status'=> 1,
                 'Ttuj.status'=> 1,
-                'Ttuj.is_pool'=> 1,
                 'Ttuj.is_draft'=> 0,
                 'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m\')' => $currentMonth,
                 'Ttuj.customer_id' => $customerArr,

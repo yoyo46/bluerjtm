@@ -98,7 +98,7 @@ class RjImageComponent extends Component {
 		*
 		* Di comment sementara sampai Development V3 selesai
 		*/
-		if(!$result['error'] || $this->Rest->isActive()) {
+		if( !$result['error'] ) {
 		// if( !$result['error'] ) {
 			$baseuploadpath = Configure::read('__Site.upload_path');
 

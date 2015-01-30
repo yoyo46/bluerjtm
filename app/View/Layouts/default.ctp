@@ -98,10 +98,6 @@
 				'plugins/datepicker/bootstrap-datepicker',
 				'plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min',
 				'jquery.library',
-				'functions/app',
-				'functions/functions',
-				'functions/dashboard',
-				'functions/demo',
 			)).PHP_EOL;
 
 			if(isset($layout_js) && !empty($layout_js)){
@@ -110,7 +106,12 @@
 				}
 			}
 
-			echo $this->element('sql_dump');
+			echo $this->Html->script(array(
+				'functions/app',
+				'functions/functions',
+				'functions/dashboard',
+				'functions/demo',
+			)).PHP_EOL;
 	?>
 </body>
 </html>

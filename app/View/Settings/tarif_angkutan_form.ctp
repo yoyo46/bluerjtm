@@ -70,14 +70,14 @@
 						));
 						
 						echo $this->Form->input('jenis_unit',array(
-							'label'=> __('Jenis angkutan *'), 
+							'label'=> __('Jenis Tarif *'), 
 							'class'=>'form-control',
 							'required' => false,
 							'options' => array(
 								'per_unit' => 'per unit',
 								'per_truck' => 'per truk',
 							),
-							'empty' => __('pilih jenis angkutan'),
+							'empty' => __('Pilih Jenis Tarif'),
 							'div' => array(
 								'class' => 'form-group'
 							)

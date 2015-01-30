@@ -140,7 +140,14 @@
                                         ));
                                         $bg = '';
                                     } else {
-                                        echo $this->Html->tag('td', '', array(
+                                        echo $this->Html->tag('td', $this->Html->link('&nbsp;', array(
+                                            'controller' => 'ajax',
+                                            'action' => 'event_add',
+                                            date('Y-m-d', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth))))
+                                        ), array(
+                                            'escape' => false,
+                                            'class' => 'event-add show',
+                                        )), array(
                                             'class' => 'text-center '.$bg,
                                             'style' => 'width: 100px;',
                                         ));

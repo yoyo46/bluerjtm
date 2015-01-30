@@ -1,11 +1,22 @@
 <?php 
-        if( empty($data_action) ){
+        if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
             $this->Html->addCrumb($sub_module_title);
             $addStyle = '';
+            $tdStyle = '';
+            $border = 0;
+
+            if( $data_action == 'excel' ) {
+                header('Content-type: application/ms-excel');
+                header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
+                $border = 1;
+                $tdStyle = 'text-align: center;';
+            }
 
             if( !empty($cities) ) {
                 $addStyle = 'min-width: 1000px;';
             }
+
+            if( $data_action != 'excel' ) {
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -95,12 +106,15 @@
     </h2>
     <div class="row no-print print-action">
         <div class="col-xs-12 action">
+            <?php 
+                    if( !empty($cities) ) {
+            ?>
             <div class="list-field">
                 <?php 
                         echo $this->Html->link('<i class="fa fa-th-large"></i> Kolom Laporan', 'javascript:', array(
                             'escape' => false,
                             'class' => 'show',
-                        ));
+                        ));                        
                 ?>
                 <ul>
                     <?php 
@@ -109,9 +123,8 @@
                                 'class' => 'close'
                             ));
 
-                            if( !empty($cities) ) {
-                                foreach ($cities as $key => $value) {
-                                    $slug = $this->Common->toSlug($value);
+                            foreach ($cities as $key => $value) {
+                                $slug = $this->Common->toSlug($value);
                     ?>
                     <li>
                         <div class="checkbox">
@@ -128,19 +141,22 @@
                         </div>
                     </li>
                     <?php
-                                }
                             }
                     ?>
                 </ul>
             </div>
             <?php
+                    }
+                    
                     echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', array(
+                        $data_type,
                         'excel'
                     ), array(
                         'escape' => false,
                         'class' => 'btn btn-success pull-right'
                     ));
                     echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', array(
+                        $data_type,
                         'pdf'
                     ), array(
                         'escape' => false,
@@ -150,35 +166,30 @@
         </div>
     </div>
     <div class="table-responsive">
-        <table class="table table-bordered report" style="<?php echo $addStyle; ?>">
+        <?php 
+                }
+        ?>
+        <table class="table table-bordered report" style="<?php echo $addStyle; ?>" border="<?php echo $border; ?>">
             <thead>
                 <tr>
                     <?php 
                             echo $this->Html->tag('th', __('NO. POL'), array(
                                 'class' => 'text-center text-middle',
                                 'rowspan' => 2,
+                                'style' => $tdStyle,
                             ));
                             echo $this->Html->tag('th', __('Supir'), array(
                                 'class' => 'text-center text-middle',
                                 'rowspan' => 2,
+                                'style' => $tdStyle,
                             ));
                             echo $this->Html->tag('th', __('Kapasitas'), array(
-                                'style' => 'width: 100px;',
+                                'style' => 'width: 100px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                                 'rowspan' => 2,
                             ));
                             echo $this->Html->tag('th', __('Alokasi'), array(
-                                'style' => 'width: 100px;',
-                                'class' => 'text-center text-middle',
-                                'rowspan' => 2,
-                            ));
-                            echo $this->Html->tag('th', __('Total'), array(
-                                'style' => 'width: 80px;',
-                                'class' => 'text-center text-middle',
-                                'rowspan' => 2,
-                            ));
-                            echo $this->Html->tag('th', __('Target RIT'), array(
-                                'style' => 'width: 120px;',
+                                'style' => 'width: 100px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                                 'rowspan' => 2,
                             ));
@@ -187,11 +198,32 @@
                                 echo $this->Html->tag('th', __('Tujuan'), array(
                                     'colspan' => count($cities),
                                     'class' => 'text-center col-alokasi',
+                                    'style' => $tdStyle,
                                 ));
                             }
 
-                            echo $this->Html->tag('th', __('Pencapaian (%)'), array(
-                                'style' => 'width: 120px;',
+                            echo $this->Html->tag('th', __('Target RIT'), array(
+                                'style' => 'width: 120px;'.$tdStyle,
+                                'class' => 'text-center text-middle',
+                                'rowspan' => 2,
+                            ));
+                            echo $this->Html->tag('th', __('Total RIT'), array(
+                                'style' => 'width: 80px;'.$tdStyle,
+                                'class' => 'text-center text-middle',
+                                'rowspan' => 2,
+                            ));
+                            echo $this->Html->tag('th', __('Pencapaian<br>(%)'), array(
+                                'style' => 'width: 120px;'.$tdStyle,
+                                'class' => 'text-center text-middle',
+                                'rowspan' => 2,
+                            ));
+                            echo $this->Html->tag('th', __('OVER LT'), array(
+                                'style' => 'width: 80px;'.$tdStyle,
+                                'class' => 'text-center text-middle',
+                                'rowspan' => 2,
+                            ));
+                            echo $this->Html->tag('th', __('Q LT<br>(%)'), array(
+                                'style' => 'width: 80px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                                 'rowspan' => 2,
                             ));
@@ -204,7 +236,7 @@
                                     $slug = $this->Common->toSlug($value);
                                     echo $this->Html->tag('th', $value, array(
                                         'class' => 'text-center '.sprintf('%s-%s', $slug, $key),
-                                        'style' => 'width: 120px;',
+                                        'style' => 'width: 120px;'.$tdStyle,
                                     ));
                                 }
                             }
@@ -218,6 +250,12 @@
                                 $id = $value['Truck']['id'];
                                 $cityArr = Set::extract('/City/Ttuj/to_city_id', $value);
                                 $total = !empty($value['Total'])?$value['Total']:0;
+                                $overTime = !empty($value['OverTime'])?$value['OverTime']:0;
+                                $qLt = 0;
+
+                                if( !empty($overTime) ) {
+                                    $qLt = round(($overTime/$total)*100, 2);
+                                }
 
                                 if( !empty($value['Customer']['target_rit']) ) {
                                     $target_rit = $value['Customer']['target_rit'];
@@ -236,19 +274,13 @@
                                 'style' => 'width: 120px;',
                             )));
                             echo $this->Html->tag('td', $this->Html->tag('div', $value['Truck']['capacity'], array(
-                                'style' => 'width: 80px;',
+                                'style' => 'width: 80px;'.$tdStyle,
                             )), array(
                                 'class' => 'text-center',
                             ));
                             echo $this->Html->tag('td', $this->Html->tag('div', !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-', array(
-                                'style' => 'width: 120px;',
+                                'style' => 'width: 150px;',
                             )), array(
-                                'class' => 'text-center',
-                            ));
-                            echo $this->Html->tag('td', $total, array(
-                                'class' => 'text-center',
-                            ));
-                            echo $this->Html->tag('td', $target_rit, array(
                                 'class' => 'text-center',
                             ));
 
@@ -264,137 +296,50 @@
 
                                     echo $this->Html->tag('td', $cnt, array(
                                         'class' => 'text-center '.sprintf('%s-%s', $slug, $key),
+                                        'style' => $tdStyle,
                                     ));
                                 }
                             }
+                            echo $this->Html->tag('td', $target_rit, array(
+                                'class' => 'text-center',
+                                'style' => $tdStyle,
+                            ));
+                            echo $this->Html->tag('td', $total, array(
+                                'class' => 'text-center',
+                                'style' => $tdStyle,
+                            ));
                             echo $this->Html->tag('td', number_format($pencapaian, 2).' %', array(
                                 'class' => 'text-center',
+                                'style' => $tdStyle,
+                            ));
+                            echo $this->Html->tag('td', $overTime, array(
+                                'class' => 'text-center',
+                                'style' => $tdStyle,
+                            ));
+                            echo $this->Html->tag('td', $qLt, array(
+                                'class' => 'text-center',
+                                'style' => $tdStyle,
                             ));
                     ?>
                 </tr>
                 <?php
                             }
-                        }else{
-                            echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
-                                'class' => 'alert alert-warning text-center',
-                                'colspan' => '10'
-                            )));
                         }
                 ?>
             </tbody>
         </table>
+        <?php 
+                if( $data_action != 'excel' ) {
+                    if(empty($trucks)){
+                        echo $this->Html->tag('p', __('Data belum tersedia.'), array(
+                            'class' => 'alert alert-warning text-center',
+                        ));
+                    }
+        ?>
     </div><!-- /.box-body -->
 </div>
 <?php 
-        } else if($data_action == 'excel') {
-            $this->PhpExcel->createWorksheet()->setDefaultFont('Calibri', 12);
-            $cntCol = !empty($cities)?count($cities):1;
-
-            $table = array(
-                array('label' => __('NO. POL'), 'filter' => true, 'width' => 10),
-                array('label' => __('Supir'), 'filter' => true, 'width' => 12),
-                array('label' => __('Kapasitas'), 'filter' => true, 'width' => 10),
-                array('label' => __('Alokasi'), 'filter' => true, 'width' => 15),
-                array('label' => __('Total'), 'filter' => true, 'width' => 10),
-                array('label' => __('Target RIT'), 'filter' => true, 'width' => 12),
-                array('label' => __('Tujuan'), 'filter' => false),
-            );
-
-            $this->PhpExcel->setActiveSheetIndex(0)->mergeCells('A1:A2');
-            $this->PhpExcel->setActiveSheetIndex(0)->mergeCells('B1:B2');
-            $this->PhpExcel->setActiveSheetIndex(0)->mergeCells('C1:C2');
-            $this->PhpExcel->setActiveSheetIndex(0)->mergeCells('D1:D2');
-            $this->PhpExcel->setActiveSheetIndex(0)->mergeCells('E1:E2');
-            $this->PhpExcel->setActiveSheetIndex(0)->mergeCells('F1:F2');
-
-            if( !empty($cities) ) {
-                $colSpan = sprintf('G1:%s1', chr(71 + count($cities)-1));
-                $this->PhpExcel->setActiveSheetIndex(0)->mergeCells($colSpan);
             }
-
-            $this->PhpExcel->getActiveSheet(0)->getStyle('A1')->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
-            $this->PhpExcel->getActiveSheet(0)->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-            $this->PhpExcel->getActiveSheet(0)->getStyle('B1')->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
-            $this->PhpExcel->getActiveSheet(0)->getStyle('B1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-            $this->PhpExcel->getActiveSheet(0)->getStyle('C1')->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
-            $this->PhpExcel->getActiveSheet(0)->getStyle('C1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-            $this->PhpExcel->getActiveSheet(0)->getStyle('D1')->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
-            $this->PhpExcel->getActiveSheet(0)->getStyle('D1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-            $this->PhpExcel->getActiveSheet(0)->getStyle('E1')->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
-            $this->PhpExcel->getActiveSheet(0)->getStyle('E1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-            $this->PhpExcel->getActiveSheet(0)->getStyle('F1')->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
-            $this->PhpExcel->getActiveSheet(0)->getStyle('F1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-            $this->PhpExcel->getActiveSheet(0)->getStyle('G1')->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
-            $this->PhpExcel->getActiveSheet(0)->getStyle('G1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-
-            // add heading with different font and bold text
-            $this->PhpExcel->addTableHeader($table, array(
-                'name' => 'Cambria',
-                'bold' => true
-            ));
-
-            $bodyTable = array(
-                array('label' => '', 'filter' => false, 'width' => 10),
-                array('label' => '', 'filter' => false, 'width' => 12),
-                array('label' => '', 'filter' => false, 'width' => 10),
-                array('label' => '', 'filter' => false, 'width' => 15),
-                array('label' => '', 'filter' => false, 'width' => 10),
-                array('label' => '', 'filter' => false, 'width' => 12),
-            );
-
-            if( !empty($cities) ) {
-                foreach ($cities as $key => $value) {
-                    $bodyTable[] = array('label' => $value, 'filter' => false, 'width' => 15);
-                }
-            }
-
-            $this->PhpExcel->addTableHeader($bodyTable, array(
-                'name' => 'Cambria',
-                'bold' => false
-            ));
-
-            // add data
-            if(!empty($trucks)){
-                foreach ($trucks as $key => $value) {
-                    $cityArr = Set::extract('/City/Ttuj/to_city_id', $value);
-                    $total = !empty($value['Total'])?$value['Total']:0;
-
-                    if( !empty($value['Customer']['target_rit']) ) {
-                        $target_rit = $value['Customer']['target_rit'];
-                        $pencapaian = ( $total / $target_rit ) * 100;
-                    } else {
-                        $pencapaian = 0;
-                        $target_rit = 0;
-                    }
-
-                    $bodyTable = array(
-                        $value['Truck']['nopol'],
-                        $value['Driver']['driver_name'],
-                        $value['Truck']['capacity'],
-                        !empty($value['Customer']['name'])?$value['Customer']['name']:'-',
-                        $total,
-                        $target_rit,
-                    );
-
-                    if( !empty($cities) ) {
-                        foreach ($cities as $key => $city) {
-                            $keyCity = array_search($key, $cityArr);
-                            $cnt = 0;
-
-                            if( is_numeric($keyCity) && !empty($value['City'][$keyCity][0]['cnt']) ) {
-                                $cnt = $value['City'][$keyCity][0]['cnt'];
-                            }
-
-                            $bodyTable[] = $cnt;
-                        }
-                    }
-
-                    $this->PhpExcel->addTableRow($bodyTable);
-                }
-            }
-
-            // close table and output
-            $this->PhpExcel->addTableFooter()->output($sub_module_title);
         } else if( $data_action == 'pdf' ) {
             App::import('Vendor','xtcpdf');
             ob_end_clean();

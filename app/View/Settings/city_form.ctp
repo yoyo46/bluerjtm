@@ -26,30 +26,30 @@
 					));
 			?>
         </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
 	        <div class="checkbox aset-handling">
                 <label>
                     <?php 
-							echo $this->Form->checkbox('is_asal',array(
-								'label'=> false, 
-								'required' => false,
-							)).__('Kota Asal ?');
+							// echo $this->Form->checkbox('is_asal',array(
+							// 	'label'=> false, 
+							// 	'required' => false,
+							// )).__('Kota Asal ?');
 					?>
                 </label>
             </div>
-        </div>
-        <div class="form-group">
+        </div> -->
+        <!-- <div class="form-group">
 	        <div class="checkbox aset-handling">
                 <label>
                     <?php 
-							echo $this->Form->checkbox('is_tujuan',array(
-								'label'=> false, 
-								'required' => false,
-							)).__('Kota Tujuan ?');
+							// echo $this->Form->checkbox('is_tujuan',array(
+							// 	'label'=> false, 
+							// 	'required' => false,
+							// )).__('Kota Tujuan ?');
 					?>
                 </label>
             </div>
-        </div>
+        </div> -->
     </div>
 
     <div class="box-footer text-center action">

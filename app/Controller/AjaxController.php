@@ -262,5 +262,69 @@ class AjaxController extends AppController {
 		// debug($data_revenue_detail);die();
 		$this->set(compact('data_revenue_detail', 'customers'));
 	}
+
+	public function event_add( $date = false ) {
+        $this->loadModel('CalendarEvent');
+        $this->set('sub_module_title', 'Tambah Event');
+
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if( !empty($id) ){
+                $this->CalendarEvent->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->CalendarEvent->create();
+                $msg = 'menambah';
+            }
+            $this->CalendarEvent->set($data);
+
+            if($this->CalendarEvent->validates($data)){
+            debug($data);die();
+                if($this->CalendarEvent->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Event'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Event'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->redirect(array(
+                        'controller' => 'revenues',
+                        'action' => 'monitoring_truck'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Event'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Event'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Event'), $msg), 'error');
+            }
+        }
+
+        $this->loadModel('CalendarIcon');
+        $this->loadModel('CalendarColor');
+        $calendarIcons = $this->CalendarIcon->getData('all', array(
+            'conditions' => array(
+                'CalendarIcon.status' => 1
+            ),
+            'fields' => array(
+                'CalendarIcon.id', 'CalendarIcon.name'
+            )
+        ));
+        $calendarColors = $this->CalendarColor->getData('all', array(
+            'conditions' => array(
+                'CalendarColor.status' => 1
+            ),
+            'fields' => array(
+                'CalendarColor.id', 'CalendarColor.name'
+            )
+        ));
+        $optionIcons = array();
+
+        if( !empty($calendarIcons) ) {
+        	foreach ($calendarIcons as $key => $calendarIcon) {
+        		$optionIcons[$calendarIcon['CalendarIcon']['id']] = $calendarIcon['CalendarIcon']['name'];
+        	}
+        }
+
+        $this->set(compact(
+            'calendarIcons', 'calendarColors'
+        ));
+	}
 }
 ?>

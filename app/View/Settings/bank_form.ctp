@@ -18,16 +18,6 @@
     <div class="box-body">
         <div class="form-group">
         	<?php 
-					echo $this->Form->input('coa_id',array(
-						'label'=> __('No. Akun'), 
-						'class'=>'form-control',
-						'required' => false,
-						'empty' => __('Pilih No. Akun'),
-					));
-			?>
-        </div>
-        <div class="form-group">
-        	<?php 
 					echo $this->Form->input('name',array(
 						'label'=> __('Nama Bank *'), 
 						'class'=>'form-control',
@@ -63,6 +53,16 @@
 						'class'=>'form-control',
 						'required' => false,
 						'placeholder' => __('Atas Nama')
+					));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+					echo $this->Form->input('coa_id',array(
+						'label'=> __('No. Akun'), 
+						'class'=>'form-control',
+						'required' => false,
+						'empty' => __('Pilih No. Akun'),
 					));
 			?>
         </div>
