@@ -1935,6 +1935,11 @@ class RevenuesController extends AppController {
             $this->request->data = $data_local;
 
             if(!empty($this->request->data['RevenueDetail'])){
+                $ttuj_city_id = Set::extract('/RevenueDetail/city_id', $this->request->data);
+                if(!empty($ttuj_city_id)){
+                    $toCities = $this->City->toCities($ttuj_city_id);
+                }
+
                 $ttuj_temp_data = $this->Ttuj->getData('first', array(
                     'conditions' => array(
                         'Ttuj.id' => $this->request->data['Revenue']['ttuj_id']
@@ -2027,6 +2032,10 @@ class RevenuesController extends AppController {
             ));
 
             if(!empty($ttuj_data) && !empty($this->request->data['RevenueDetail']['no_do'])){
+                $ttuj_city_id = Set::extract('/RevenueDetail/city_id', $this->request->data);
+                if(!empty($ttuj_city_id)){
+                    $toCities = $this->City->toCities($ttuj_city_id);
+                }
                 foreach ($this->request->data['RevenueDetail']['no_do'] as $key => $value) {
                     $tipe_motor_id = $this->request->data['RevenueDetail']['tipe_motor_id'][$key];
 
@@ -2112,7 +2121,7 @@ class RevenuesController extends AppController {
         ));
         $this->set('customers', $customers);
 
-        $toCities = $this->City->toCities();
+        // $toCities = $this->City->toCities();
         $this->set('toCities', $toCities);
 
         $this->set('active_menu', 'revenues');

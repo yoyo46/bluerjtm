@@ -121,12 +121,18 @@ class City extends AppModel {
         ));
     }
     
-    function toCities(){
+    function toCities($id = false){
+        $default_conditions = array(
+            'City.status' => 1,
+            'City.is_tujuan' => 1,
+        );
+        
+        if(!empty($id)){
+            $default_conditions['City.id'] = $id;
+        }
+
         return $this->getData('list', array(
-            'conditions' => array(
-                'City.status' => 1,
-                'City.is_tujuan' => 1,
-            ),
+            'conditions' => $default_conditions,
         ));
     }
 }

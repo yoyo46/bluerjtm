@@ -197,7 +197,17 @@ class AjaxController extends AppController {
 			$this->request->data = $data_ttuj;
 			$this->request->data['Revenue']['customer_id'] = $data_ttuj['Ttuj']['customer_id'];
 
+			$toCities = array();
 			if(!empty($data_ttuj['TtujTipeMotor'])){
+				$ttuj_city_id = Set::extract('/TtujTipeMotor/city_id', $data_ttuj);
+                if(!empty($ttuj_city_id)){
+                	if( !$data_ttuj['Ttuj']['is_retail'] ){
+                		$toCities = $this->City->toCities($data_ttuj['Ttuj']['to_city_id']);
+                	}else{
+                		$toCities = $this->City->toCities($ttuj_city_id);
+                	}
+                }
+
 				$this->loadModel('TipeMotor');
 				$tipe_motor_list = array();
 				foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
@@ -259,7 +269,7 @@ class AjaxController extends AppController {
 			)
 		));
 
-		$toCities = $this->City->toCities();
+		// $toCities = $this->City->toCities();
 
 		// debug($data_revenue_detail);die();
 		$this->set(compact('data_revenue_detail', 'customers', 'toCities'));
