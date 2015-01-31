@@ -13,43 +13,53 @@
                 $text .= date('d/m/Y', strtotime($to_date));
             }
         }
-        if(!$action){
-            $this->Html->addCrumb($sub_module_title);
-            echo $this->element('blocks/trucks/search_report_truck');
 
-            echo $this->Form->create('Truck', array(
-                'url'=> $this->Html->url( array(
-                    'controller' => 'trucks',
-                    'action' => 'search',
-                    'reports'
-                )), 
-                'class' => 'form-inline text-right hidden-print',
-                'inputDefaults' => array('div' => false),
-            ));
+        if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
+            $tdStyle = '';
+            $border = 0;
 
-            $find_sort = array(
-                '' => __('Urutkan Berdasarkan'),
-                '1' => __('No. Pol A - Z'),
-                '2' => __('No. Pol Z - A'),
-                '3' => __('Nama Supir Z - A'),
-                '4' => __('Nama Supir Z - A'),
-            );
+            if( $data_action == 'excel' ) {
+                header('Content-type: application/ms-excel');
+                header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
+                $border = 1;
+                $tdStyle = 'text-align: center;';
+            } else {
+                $this->Html->addCrumb($sub_module_title);
+                echo $this->element('blocks/trucks/search_report_truck');
 
-            echo $this->Html->tag('div', $this->Form->input('Truck.sortby', array(
-                'label'=> false,
-                'options'=> $find_sort,
-                'div' => false,
-                'data-placeholder' => 'Order By',
-                'autocomplete'=> false,
-                'empty'=> false,
-                'error' => false,
-                'onChange' => 'submit()',
-                'class' => 'form-control order-by-list'
-            )), array(
-                'class' => 'form-group'
-            ));
+                echo $this->Form->create('Truck', array(
+                    'url'=> $this->Html->url( array(
+                        'controller' => 'trucks',
+                        'action' => 'search',
+                        'reports'
+                    )), 
+                    'class' => 'form-inline text-right hidden-print',
+                    'inputDefaults' => array('div' => false),
+                ));
 
-            echo $this->Form->end();
+                $find_sort = array(
+                    '' => __('Urutkan Berdasarkan'),
+                    '1' => __('No. Pol A - Z'),
+                    '2' => __('No. Pol Z - A'),
+                    '3' => __('Nama Supir Z - A'),
+                    '4' => __('Nama Supir Z - A'),
+                );
+
+                echo $this->Html->tag('div', $this->Form->input('Truck.sortby', array(
+                    'label'=> false,
+                    'options'=> $find_sort,
+                    'div' => false,
+                    'data-placeholder' => 'Order By',
+                    'autocomplete'=> false,
+                    'empty'=> false,
+                    'error' => false,
+                    'onChange' => 'submit()',
+                    'class' => 'form-control order-by-list'
+                )), array(
+                    'class' => 'form-group'
+                ));
+
+                echo $this->Form->end();
 ?>
 <section class="content invoice">
     <h2 class="page-header">
@@ -128,6 +138,9 @@
         </div>
     </div>
     <div class="table-responsive">
+        <?php 
+                }
+        ?>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -166,49 +179,23 @@
 
                             echo $this->Html->tag('tr', $content);
                         }
-                    }else{
-                        echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan'), array(
-                            'colspan' => '7'
-                        )));
                     }
                 ?>
             </tbody>
         </table>
+        <?php 
+                if( $data_action != 'excel' ) {
+                    if(empty($ttujs)){
+                        echo $this->Html->tag('p', __('Data belum tersedia.'), array(
+                            'class' => 'alert alert-warning text-center',
+                        ));
+                    }
+        ?>
     </div>
 </section>
 <?php
-    }else if($action == 'excel'){
-        $this->PhpExcel->createWorksheet()->setDefaultFont('Calibri', 12);
-        // define table cells
-        $table = array(
-            array('label' => __('Nopol'), 'filter' => true),
-            array('label' => __('Merek'), 'filter' => true),
-            array('label' => __('Pemilik'), 'filter' => true),
-            array('label' => __('Jenis'), 'filter' => true),
-            array('label' => __('Supir'), 'filter' => true),
-            array('label' => __('Kapasitas'), 'filter' => true),
-            array('label' => __('Tahun'), 'filter' => true),
-        );
-
-        // add heading with different font and bold text
-        $this->PhpExcel->addTableHeader($table, array('name' => 'Cambria', 'bold' => true));
-
-        // add data
-        foreach ($trucks as $truck) {
-            $this->PhpExcel->addTableRow(array(
-                $truck['Truck']['nopol'],
-                $truck['TruckBrand']['name'],
-                $truck['Truck']['atas_nama'],
-                $truck['TruckCategory']['name'],
-                $truck['Driver']['driver_name'],
-                $truck['Truck']['capacity'],
-                $truck['Truck']['tahun']
-            ));
         }
-
-        // close table and output
-        $this->PhpExcel->addTableFooter()->output('Laporan '.$text);
-    }else{
+    } else{
         App::import('Vendor','xtcpdf');
         ob_end_clean();
         $tcpdf = new XTCPDF();

@@ -2300,7 +2300,7 @@ class TrucksController extends AppController {
         ));
     }
 
-    function reports($action = false) {
+    function reports($data_action = false) {
         $this->set('active_menu', 'reports');
         $this->set('sub_module_title', __('Laporan Truk'));
         
@@ -2349,11 +2349,11 @@ class TrucksController extends AppController {
             )
         ));
 
-        $this->set(compact('trucks', 'from_date', 'to_date', 'action'));
+        $this->set(compact('trucks', 'from_date', 'to_date', 'data_action'));
 
-        if($action == 'pdf'){
+        if($data_action == 'pdf'){
             $this->layout = 'pdf';
-        }else if($action == 'excel'){
+        }else if($data_action == 'excel'){
             $this->layout = 'ajax';
         }
     }

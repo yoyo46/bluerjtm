@@ -264,11 +264,11 @@ class LkusController extends AppController {
                         ));
                         $tipe_motor_list[$tipe_motor['TipeMotor']['id']] = $tipe_motor['TipeMotor']['name'];
                     }
+                    $this->set('tipe_motor_list', $tipe_motor_list);
                 }
                 $this->request->data = array_merge($this->request->data, $data_ttuj);
             }
             
-            $this->set('tipe_motor_list', $tipe_motor_list);
         }
 
         $this->set('active_menu', 'Lkus');

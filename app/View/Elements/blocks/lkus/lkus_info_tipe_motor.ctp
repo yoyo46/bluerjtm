@@ -40,7 +40,7 @@
                     <td>
                         <?php
                             echo $this->Form->input('LkuDetail.tipe_motor_id.', array(
-                                'options' => $tipe_motor_list,
+                                'options' => !empty($tipe_motor_list)?$tipe_motor_list:false,
                                 'label' => false,
                                 'empty' => __('Pilih Tipe Motor'),
                                 'class' => 'lku-choose-tipe-motor form-control',
