@@ -39,7 +39,6 @@
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('customer_id',array(
-										'type' => 'text',
 										'label'=> __('Customer *'), 
 										'class'=>'form-control custom-find-invoice',
 										'required' => false,

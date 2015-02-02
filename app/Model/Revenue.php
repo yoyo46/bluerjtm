@@ -9,12 +9,9 @@ class Revenue extends AppModel {
             ),
         ),
         'no_doc' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'No dokumen harap diisi'
-            ),
             'isUnique' => array(
                 'rule' => array('isUnique'),
+                'on' => 'create',
                 'message' => 'No Dokumen telah terdaftar',
             ),
         ),

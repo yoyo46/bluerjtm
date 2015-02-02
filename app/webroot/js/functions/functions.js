@@ -1363,4 +1363,21 @@ $(function() {
     duplicate_row();
     ajaxModal();
     city_revenue_change();
+
+    $('.custom-find-invoice').change(function(){
+        var self = $(this);
+        var val = self.val();
+
+        $.ajax({
+            url: '/ajax/getInvoiceInfo/'+val+'/',
+            type: 'POST',
+            success: function(response, status) {
+                $('#invoice-info').html(response);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    });
 });

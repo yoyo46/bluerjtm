@@ -184,6 +184,7 @@ class AjaxController extends AppController {
 		$this->loadModel('TarifAngkutan');
 		$this->loadModel('Customer');
 		$this->loadModel('City');
+		$this->loadModel('TipeMotor');
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
@@ -192,6 +193,7 @@ class AjaxController extends AppController {
 		));
 
 		$data_revenue_detail = array();
+
 		if(!empty($data_ttuj)){
 			$data_ttuj = $this->Ttuj->Customer->getMerge($data_ttuj, $data_ttuj['Ttuj']['customer_id']);
 			$this->request->data = $data_ttuj;
@@ -199,16 +201,6 @@ class AjaxController extends AppController {
 
 			$toCities = array();
 			if(!empty($data_ttuj['TtujTipeMotor'])){
-				$ttuj_city_id = Set::extract('/TtujTipeMotor/city_id', $data_ttuj);
-                if(!empty($ttuj_city_id)){
-                	if( !$data_ttuj['Ttuj']['is_retail'] ){
-                		$toCities = $this->City->toCities($data_ttuj['Ttuj']['to_city_id']);
-                	}else{
-                		$toCities = $this->City->toCities($ttuj_city_id);
-                	}
-                }
-
-				$this->loadModel('TipeMotor');
 				$tipe_motor_list = array();
 				foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
 					$tipe_motor = $this->TipeMotor->getData('first', array(
@@ -269,10 +261,14 @@ class AjaxController extends AppController {
 			)
 		));
 
-		// $toCities = $this->City->toCities();
-
+		$toCities = $this->City->toCities();
+		$list_tipe_motor = $this->TipeMotor->getData('list', array(
+			'conditions' => array(
+				'TipeMotor.status' => 1
+			)
+		));
 		// debug($data_revenue_detail);die();
-		$this->set(compact('data_revenue_detail', 'customers', 'toCities'));
+		$this->set(compact('data_revenue_detail', 'customers', 'toCities', 'list_tipe_motor'));
 	}
 
 	public function event_add( $nopol = false, $date = false ) {
@@ -413,8 +409,16 @@ class AjaxController extends AppController {
 		$this->set(compact('detail'));
 	}
 
-	function getInvoiceInfo($customer_id){
-		
+	function getInvoiceInfo($customer_id, $action = false){
+		switch ($action) {
+			case 'detail':
+				
+				break;
+			
+			default:
+				
+				break;
+		}
 	}
 }
 ?>

@@ -96,5 +96,20 @@ class RevenueDetail extends AppModel {
 
         return $data;
     }
+
+    function getLastReference(){
+        return $this->find('first', array(
+            'conditions' => array(
+                'RevenueDetail.no_reference <>' => ''
+            ),
+            'fields' => array(
+                'RevenueDetail.no_reference'
+            ),
+            'order' => array(
+                'RevenueDetail.id' => 'no_reference',
+                'RevenueDetail.id' => 'DESC'
+            )
+        ));
+    }
 }
 ?>

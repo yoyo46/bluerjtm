@@ -84,18 +84,19 @@
                     </td>
                     <td class="tipe-motor-data">
                         <?php 
-                            if(!empty($detail['RevenueDetail']['TipeMotor']['name'])){
-                                echo $detail['RevenueDetail']['TipeMotor']['name'];
-                            }else{
-                                echo ' - ';
-                            }
+                            // if(!empty($detail['RevenueDetail']['TipeMotor']['name'])){
+                            //     echo $detail['RevenueDetail']['TipeMotor']['name'];
+                            // }else{
+                            //     echo ' - ';
+                            // }
 
-                            echo $this->Form->hidden('RevenueDetail.tipe_motor_id.', array(
-                                'type' => 'text',
+                            echo $this->Form->input('RevenueDetail.tipe_motor_id.', array(
                                 'label' => false,
-                                'class' => 'form-control input_number',
+                                'class' => 'form-control',
                                 'required' => false,
-                                'value' => (!empty($detail['RevenueDetail']['tipe_motor_id'])) ? $detail['RevenueDetail']['tipe_motor_id'] : 0
+                                'value' => (!empty($detail['RevenueDetail']['tipe_motor_id'])) ? $detail['RevenueDetail']['tipe_motor_id'] : 0,
+                                'options' => $list_tipe_motor,
+                                'empty' => __('Pilih Tipe Motor')
                             ));
                         ?>
                     </td>

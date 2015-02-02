@@ -1778,7 +1778,7 @@ class RevenuesController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
-
+// debug($data);die();
             $data['Revenue']['date_sj'] = !empty($data['Revenue']['date_sj']) ? date('Y-m-d', strtotime($data['Revenue']['date_sj'])) : '';
             $data['Revenue']['date_revenue'] = !empty($data['Revenue']['date_revenue']) ? date('Y-m-d', strtotime($data['Revenue']['date_revenue'])) : '';
 
@@ -1794,6 +1794,7 @@ class RevenuesController extends AppController {
             /*validasi revenue detail*/
             $validate_detail = true;
             $validate_qty = true;
+            $total_revenue = 0;
             $array_ttuj_tipe_motor = array();
             if(!empty($data['RevenueDetail'])){
                 foreach ($data['RevenueDetail']['no_do'] as $key => $value) {
@@ -1817,6 +1818,14 @@ class RevenuesController extends AppController {
                         $array_ttuj_tipe_motor[$data['RevenueDetail']['ttuj_tipe_motor_id'][$key]] = intval($data_detail['RevenueDetail']['qty_unit']);
                     }else{
                         $array_ttuj_tipe_motor[$data['RevenueDetail']['ttuj_tipe_motor_id'][$key]] += $data_detail['RevenueDetail']['qty_unit'];
+                    }
+
+                    if(!empty($data['RevenueDetail']['price_unit'][$key]) && $data['RevenueDetail']['qty_unit'][$key]){
+                        if($data['RevenueDetail']['jenis_unit'][$key] == 'per_truck'){
+                            $total_revenue += $data['RevenueDetail']['price_unit'][$key];
+                        }else{
+                            $total_revenue += $data['RevenueDetail']['price_unit'][$key] * $data['RevenueDetail']['qty_unit'][$key];
+                        }
                     }
                 }
 
@@ -1866,6 +1875,21 @@ class RevenuesController extends AppController {
                     }
                 }
             }
+
+            if( !empty($data['Revenue']['pph']) && $data['Revenue']['pph'] > 0 ){
+                $pph = $total_revenue * ($data['Revenue']['pph'] / 100);
+            }
+            if( !empty($data['Revenue']['ppn']) && $data['Revenue']['ppn'] > 0 ){
+                $ppn = $total_revenue * ($data['Revenue']['ppn'] / 100);
+            }
+
+            if( !empty($data['Revenue']['pph']) && $data['Revenue']['pph'] > 0 ){
+                $total_revenue -= $pph;
+            }
+            if( !empty($data['Revenue']['ppn']) && $data['Revenue']['ppn'] > 0 ){
+                $total_revenue += $ppn;
+            }
+            $data['Revenue']['total'] = $total_revenue;
             /*end validasi revenue detail*/
 
             $this->Revenue->set($data);
@@ -1894,6 +1918,7 @@ class RevenuesController extends AppController {
                         $this->Ttuj->TtujTipeMotor->TtujTipeMotorUse->save();
                     }
 
+                    $getLastReference = intval($this->Revenue->RevenueDetail->getLastReference())+1;
                     foreach ($data['RevenueDetail']['no_do'] as $key => $value) {
                         $this->Revenue->RevenueDetail->create();
                         $data_detail['RevenueDetail'] = array(
@@ -1906,6 +1931,7 @@ class RevenuesController extends AppController {
                             'city_id' => $data['RevenueDetail']['city_id'][$key],
                             'ttuj_tipe_motor_id' => $data['RevenueDetail']['ttuj_tipe_motor_id'][$key],
                             'tarif_angkutan_id' => $data['RevenueDetail']['tarif_angkutan_id'][$key],
+                            'no_reference' => str_pad ( $getLastReference++ , 10, "0", STR_PAD_LEFT)
                         );
                         $this->Revenue->RevenueDetail->set($data_detail);
                         $this->Revenue->RevenueDetail->save();
@@ -1935,10 +1961,6 @@ class RevenuesController extends AppController {
             $this->request->data = $data_local;
 
             if(!empty($this->request->data['RevenueDetail'])){
-                $ttuj_city_id = Set::extract('/RevenueDetail/city_id', $this->request->data);
-                if(!empty($ttuj_city_id)){
-                    $toCities = $this->City->toCities($ttuj_city_id);
-                }
 
                 $ttuj_temp_data = $this->Ttuj->getData('first', array(
                     'conditions' => array(
@@ -2032,10 +2054,6 @@ class RevenuesController extends AppController {
             ));
 
             if(!empty($ttuj_data) && !empty($this->request->data['RevenueDetail']['no_do'])){
-                $ttuj_city_id = Set::extract('/RevenueDetail/city_id', $this->request->data);
-                if(!empty($ttuj_city_id)){
-                    $toCities = $this->City->toCities($ttuj_city_id);
-                }
                 foreach ($this->request->data['RevenueDetail']['no_do'] as $key => $value) {
                     $tipe_motor_id = $this->request->data['RevenueDetail']['tipe_motor_id'][$key];
 
@@ -2121,9 +2139,14 @@ class RevenuesController extends AppController {
         ));
         $this->set('customers', $customers);
 
-        // $toCities = $this->City->toCities();
-        $this->set('toCities', $toCities);
+        $toCities = $this->City->toCities();
+        $list_tipe_motor = $this->TipeMotor->getData('list', array(
+            'conditions' => array(
+                'TipeMotor.status' => 1
+            )
+        ));
 
+        $this->set(compact('toCities', 'list_tipe_motor'));
         $this->set('active_menu', 'revenues');
         $this->render('revenue_form');
     }
