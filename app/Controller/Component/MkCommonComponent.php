@@ -126,5 +126,23 @@ class MkCommonComponent extends Component {
 
     	return $result;
     }
+
+    function getUangJalanTipeMotor ( $data ) {
+        if( !empty($data['UangJalanTipeMotor']) ) {
+            $tempTipeMotor = array();
+
+            foreach ($data['UangJalanTipeMotor'] as $key => $tipeMotor) {
+                $tempTipeMotor['UangJalanTipeMotor']['tipe_motor_id'][$key] = $tipeMotor['tipe_motor_id'];
+                $tempTipeMotor['UangJalanTipeMotor']['uang_jalan_1'][$key] = $tipeMotor['uang_jalan_1'];
+                $tempTipeMotor['UangJalanTipeMotor']['uang_kuli_muat'][$key] = $tipeMotor['uang_kuli_muat'];
+                $tempTipeMotor['UangJalanTipeMotor']['uang_kuli_bongkar'][$key] = $tipeMotor['uang_kuli_bongkar'];
+            }
+
+            unset($data['UangJalanTipeMotor']);
+            $data['UangJalanTipeMotor'] = $tempTipeMotor['UangJalanTipeMotor'];
+        }
+
+        return $data;
+    }
 }
 ?>

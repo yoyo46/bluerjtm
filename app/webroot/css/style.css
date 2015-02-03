@@ -3792,3 +3792,7 @@ font-size: 22px;
 .second-revenue li{
   list-style: none;
 }
+
+#box-field-input .list-uang-jalan:first-child .delete-custom-field {
+  display: none;
+}

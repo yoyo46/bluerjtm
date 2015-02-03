@@ -86,6 +86,7 @@ class AppController extends Controller {
 		Configure::write('__Site.dimension', $dimensionArr);
 
 	    $this->Auth->userModel = 'User';
+		// $this->Auth->authorize = 'Actions';
 	    $this->Auth->authorize = array(
 	        'Controller',
 	        'Actions' => array('actionPath' => 'controllers')

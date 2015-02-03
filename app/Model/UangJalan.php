@@ -177,6 +177,16 @@ class UangJalan extends AppModel {
         ),
     );
 
+    var $hasMany = array(
+        'UangJalanTipeMotor' => array(
+            'className' => 'UangJalanTipeMotor',
+            'foreignKey' => 'uang_jalan_id',
+            'conditions' => array(
+                'UangJalanTipeMotor.status' => 1,
+            ),
+        ),
+    );
+
 	function getData($find, $options = false){
         $default_options = array(
             'fields'=> array(),
@@ -188,7 +198,8 @@ class UangJalan extends AppModel {
             ),
             'contain' => array(
                 'FromCity',
-                'ToCity'
+                'ToCity',
+                'UangJalanTipeMotor'
             )
         );
 

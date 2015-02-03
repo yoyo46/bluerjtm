@@ -498,6 +498,35 @@
 		    </div>
 		</div>
 	</div>
+	<div class="col-sm-12 biaya-per-unit">
+		<div class="box box-success">
+			<div class="box-header">
+		        <h3 class="box-title"><?php echo __('Biaya Per Tipe Motor <small>(* Semua biaya berlaku apabila per unit)</small>'); ?></h3>
+		    </div>
+		    <div class="box-body">
+		        <div class="form-group">
+		            <?php
+		                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+		                        'class' => 'add-custom-field btn btn-success btn-xs',
+		                        'action_type' => 'uang_jalan',
+		                        'escape' => false
+		                    ));
+		            ?>
+		        </div>
+		        <div id="box-field-input">
+		        	<?php 
+		        			if( !empty($this->request->data['UangJalanTipeMotor']['tipe_motor_id']) ) {
+								foreach ($this->request->data['UangJalanTipeMotor']['tipe_motor_id'] as $key => $tipe_motor_id) {
+									echo $this->element('blocks/settings/list_uang_jalan', array(
+										'idx' => $key,
+									));
+								}
+							}
+		        	?>
+		        </div>
+		   	</div>
+		</div>
+	</div>
 </div>
 
 <div class="box-footer text-center action">
@@ -517,3 +546,17 @@
 <?php
 		echo $this->Form->end();
 ?>
+<div class="hide">
+	<div id="tipe_motor">
+		<?php
+                echo $this->Form->input('tipe_motor_id', array(
+                    'label'=> false, 
+                    'class'=>'form-control',
+                    'required' => false,
+                    'empty' => false,
+                    'empty' => __('Pilih Tipe Motor'),
+               	 	'options' => $tipeMotors,
+                ));
+        ?>
+	</div>
+</div>

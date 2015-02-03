@@ -26,6 +26,12 @@
 			'customs',
 		)).PHP_EOL;
 
+		if( !empty($this->params['controller']) && $this->params['controller'] == 'user_permissions' ) {
+			echo $this->Html->css(array(
+				'/css/acl/treeview'
+			)).PHP_EOL;
+		}
+
 		if(isset($layout_css) && !empty($layout_css)){
 			foreach ($layout_css as $key => $value) {
 				echo $this->Html->css($value).PHP_EOL;
@@ -123,6 +129,15 @@
 				'functions/dashboard',
 				'functions/demo',
 			)).PHP_EOL;
+
+			if( !empty($this->params['controller']) && $this->params['controller'] == 'user_permissions' ) {
+				echo $this->Html->script(array(
+					'/js/acl/jquery.cookie',
+			        '/js/acl/treeview',
+			        '/js/acl/acos',
+			        '/js/bootstrap.min',
+				)).PHP_EOL;
+			}
 	?>
 </body>
 </html>

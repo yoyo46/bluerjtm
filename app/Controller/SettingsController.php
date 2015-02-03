@@ -787,8 +787,49 @@ class SettingsController extends AppController {
         $this->doUangJalan();
     }
 
+    function saveTipeMotor ( $data = false, $uang_jalan_id = false ) {
+        $result = array(
+            'validates' => true,
+            'data' => false,
+        );
+
+        if( !empty($data['UangJalanTipeMotor']['tipe_motor_id']) ) {
+            if( !empty($uang_jalan_id) ) {
+                $this->UangJalan->UangJalanTipeMotor->updateAll( array(
+                    'UangJalanTipeMotor.status' => 0,
+                ), array(
+                    'UangJalanTipeMotor.uang_jalan_id' => $uang_jalan_id,
+                ));
+            }
+
+            foreach ($data['UangJalanTipeMotor']['tipe_motor_id'] as $key => $tipe_motor_id) {
+                $dataValidate['UangJalanTipeMotor']['tipe_motor_id'] = $tipe_motor_id;
+                $dataValidate['UangJalanTipeMotor']['uang_jalan_1'] = !empty($data['UangJalanTipeMotor']['uang_jalan_1'][$key])?$this->MkCommon->convertPriceToString($data['UangJalanTipeMotor']['uang_jalan_1'][$key], 0):0;
+                $dataValidate['UangJalanTipeMotor']['uang_kuli_muat'] = !empty($data['UangJalanTipeMotor']['uang_kuli_muat'][$key])?$this->MkCommon->convertPriceToString($data['UangJalanTipeMotor']['uang_kuli_muat'][$key], 0):0;
+                $dataValidate['UangJalanTipeMotor']['uang_kuli_bongkar'] = !empty($data['UangJalanTipeMotor']['uang_kuli_bongkar'][$key])?$this->MkCommon->convertPriceToString($data['UangJalanTipeMotor']['uang_kuli_bongkar'][$key], 0):0;
+                
+                $this->UangJalan->UangJalanTipeMotor->set($dataValidate);
+
+                if( !empty($uang_jalan_id) ) {
+                    $dataValidate['UangJalanTipeMotor']['uang_jalan_id'] = $uang_jalan_id;
+                    $this->UangJalan->UangJalanTipeMotor->create();
+                    $this->UangJalan->UangJalanTipeMotor->save($dataValidate);
+                } else {
+                    if(!$this->UangJalan->UangJalanTipeMotor->validates($dataValidate)){
+                        $result['validates'] = false;
+                    } else {
+                        $result['data'][$key] = $dataValidate;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
     function doUangJalan($id = false, $data_local = false){
         $this->loadModel('City');
+        $this->loadModel('TipeMotor');
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -823,7 +864,18 @@ class SettingsController extends AppController {
             $this->UangJalan->set($data);
 
             if($this->UangJalan->validates($data)){
-                if($this->UangJalan->save($data)){
+                $saveTipeMotor = false;
+
+                if( !empty($data['UangJalanTipeMotor']['tipe_motor_id']) ) {
+                    $resultTipeMotor = $this->saveTipeMotor($data);
+                    $saveTipeMotor = !empty($resultTipeMotor['validates'])?$resultTipeMotor['validates']:false;
+                } else {
+                    $saveTipeMotor = true;
+                }
+
+                if( $saveTipeMotor && $this->UangJalan->save($data) ){
+                    $this->saveTipeMotor($data, $this->UangJalan->id);
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Uang jalan'), $msg), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses %s Uang jalan'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );    
                     $this->redirect(array(
@@ -840,7 +892,7 @@ class SettingsController extends AppController {
         }else{
             
             if($id && $data_local){
-                
+                $data_local = $this->MkCommon->getUangJalanTipeMotor($data_local);
                 $this->request->data = $data_local;
                 $this->request->data['UangJalan']['commission_min_qty'] = !empty($this->request->data['UangJalan']['commission_min_qty'])?$this->request->data['UangJalan']['commission_min_qty']:'';
             }
@@ -874,11 +926,17 @@ class SettingsController extends AppController {
                 'status' => 1
             ),
         ));
+        $tipeMotors = $this->TipeMotor->getData('list', array(
+            'fields' => array(
+                'TipeMotor.id', 'TipeMotor.tipe_motor_color',
+            ),
+        ));
 
         $this->set('active_menu', 'uang_jalan');
         $this->set('module_title', 'Data Master');
         $this->set(compact(
-            'fromCities', 'groupClassifications', 'toCities'
+            'fromCities', 'groupClassifications', 'toCities',
+            'tipeMotors'
         ));
         $this->render('uang_jalan_form');
     }

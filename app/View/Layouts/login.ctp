@@ -6,6 +6,7 @@
 			echo $this->Html->css(array(
 				'bootstrap.min',
 				'bootstrap-responsive.min',
+				'login',
 			));
 
 			echo $this->fetch('meta');
@@ -16,9 +17,10 @@
 		  background-color: #eee;
 		}
 	</style>
+	<link rel="icon" href="/img/favicon.png" type="image/jpg" />
 </head>
-<body class="metro">
-	<div class="container" style="width:320px !important;">
+<body>
+	<div class="container">
 		<?php 
 			echo $this->fetch('content'); 
 		?>

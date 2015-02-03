@@ -35,14 +35,40 @@ var qtyMuatanPress = function ( obj ) {
     obj.keyup(function() {
         var total_muatan = 0;
         var qtyLen = $('#ttujDetail tbody tr').length;
+        var rel = $(this).attr('rel');
+        var uang_jalan_1 = $('.uang_jalan_1_ori').val();
+        var uang_kuli_muat = $('.uang_kuli_muat_ori').val();
+        var uang_kuli_bongkar = $('.uang_kuli_bongkar_ori').val();
+        var uang_jalan_tipe_motor = 0;
+        var uang_kuli_bongkar_tipe_motor = 0;
+        var uang_kuli_muat_tipe_motor = 0;
 
         for (var i = 0; i < qtyLen; i++) {
+            var tipe_motor_id = parseInt($('#ttujDetail tbody tr .tipe_motor_id[rel="'+i+'"] option:selected').val());
             var qtyMuatan = parseInt($('#ttujDetail tbody tr .qty-muatan[rel="'+i+'"]').val());
-
+            
             if( isNaN(qtyMuatan) ) {
                 qtyMuatan = 0;
             }
             total_muatan += qtyMuatan;
+
+            if( typeof $('.uang-jalan-1-'+tipe_motor_id).html() != 'undefined' ) {
+                uang_jalan_tipe_motor += parseInt($('.uang-jalan-1-'+tipe_motor_id).html()) * qtyMuatan;
+            } else {
+                uang_jalan_tipe_motor += uang_jalan_1 * qtyMuatan;
+            }
+
+            if( typeof $('.uang-kuli-muat-'+tipe_motor_id).html() != 'undefined' ) {
+                uang_kuli_muat_tipe_motor += parseInt($('.uang-kuli-muat-'+tipe_motor_id).html()) * qtyMuatan;
+            } else {
+                uang_kuli_muat_tipe_motor += uang_kuli_muat * qtyMuatan;
+            }
+
+            if( typeof $('.uang-kuli-bongkar-'+tipe_motor_id).html() != 'undefined' ) {
+                uang_kuli_bongkar_tipe_motor += parseInt($('.uang-kuli-bongkar-'+tipe_motor_id).html()) * qtyMuatan;
+            } else {
+                uang_kuli_bongkar_tipe_motor += uang_kuli_bongkar * qtyMuatan;
+            }
         };
 
         $('.total-unit-muatan').html(total_muatan);
@@ -51,12 +77,9 @@ var qtyMuatanPress = function ( obj ) {
             total_muatan = 1;
         }
 
-        var uang_jalan_1 = $('.uang_jalan_1_ori').val();
         var uang_jalan_2 = $('.uang_jalan_2').val().replace(/,/gi, "");
         var uang_jalan_per_unit = $('.uang_jalan_per_unit').val();
-        var uang_kuli_muat = $('.uang_kuli_muat_ori').val();
         var uang_kuli_muat_per_unit = $('.uang_kuli_muat_per_unit').val();
-        var uang_kuli_bongkar = $('.uang_kuli_bongkar_ori').val();
         var uang_kuli_bongkar_per_unit = $('.uang_kuli_bongkar_per_unit').val();
         var asdp = $('.asdp_ori').val();
         var asdp_per_unit = $('.asdp_per_unit').val();
@@ -69,16 +92,16 @@ var qtyMuatanPress = function ( obj ) {
         var uang_jalan_extra_per_unit = $('.uang_jalan_extra_per_unit').val();
 
         if( uang_jalan_per_unit == 1 ) {
-            uang_jalan_1 = uang_jalan_1*total_muatan;
+            uang_jalan_1 = uang_jalan_tipe_motor;
             uang_jalan_2 = 0;
         }
 
         if( uang_kuli_muat_per_unit == 1 ) {
-            uang_kuli_muat = uang_kuli_muat*total_muatan;
+            uang_kuli_muat = uang_kuli_muat_tipe_motor;
         }
 
         if( uang_kuli_bongkar_per_unit == 1 ) {
-            uang_kuli_bongkar = uang_kuli_bongkar*total_muatan;
+            uang_kuli_bongkar = uang_kuli_bongkar_tipe_motor;
         }
 
         if( asdp_per_unit == 1 ) {
@@ -121,8 +144,12 @@ var getUangjalan = function ( response ) {
     $('.truck_capacity').val($(response).filter('#truck_capacity').html());
     $('.driver_name').val($(response).filter('#driver_name').html());
 
-    var total_muatan = parseInt($('.total-unit-muatan').html());
+    var total_muatan = 0;
+    var qtyLen = $('#ttujDetail tbody tr').length;
     var uang_jalan_1 = $(response).filter('#uang_jalan_1').html().replace(/,/gi, "");
+    var uang_jalan_tipe_motor = 0;
+    var uang_kuli_bongkar_tipe_motor = 0;
+    var uang_kuli_muat_tipe_motor = 0;
 
     if( uang_jalan_1 != 0 ) {
         var uang_jalan_1_ori = uang_jalan_1;
@@ -153,13 +180,42 @@ var getUangjalan = function ( response ) {
         var uang_jalan_extra_ori = uang_jalan_extra;
         var min_capacity = $(response).filter('#min_capacity').html();
         var uang_jalan_extra_per_unit = $(response).filter('#uang_jalan_extra_per_unit').html();
+        $('.list-tipe-motor').html( $(response).filter('#list-tipe-motor').html() );
+
+        for (var i = 0; i < qtyLen; i++) {
+            var tipe_motor_id = parseInt($('#ttujDetail tbody tr .tipe_motor_id[rel="'+i+'"] option:selected').val());
+            var qtyMuatan = parseInt($('#ttujDetail tbody tr .qty-muatan[rel="'+i+'"]').val());
+            
+            if( isNaN(qtyMuatan) ) {
+                qtyMuatan = 0;
+            }
+            total_muatan += qtyMuatan;
+
+            if( typeof $('.uang-jalan-1-'+tipe_motor_id).html() != 'undefined' ) {
+                uang_jalan_tipe_motor += parseInt($('.uang-jalan-1-'+tipe_motor_id).html()) * qtyMuatan;
+            } else {
+                uang_jalan_tipe_motor += uang_jalan_1 * qtyMuatan;
+            }
+
+            if( typeof $('.uang-kuli-muat-'+tipe_motor_id).html() != 'undefined' ) {
+                uang_kuli_muat_tipe_motor += parseInt($('.uang-kuli-muat-'+tipe_motor_id).html()) * qtyMuatan;
+            } else {
+                uang_kuli_muat_tipe_motor += uang_kuli_muat * qtyMuatan;
+            }
+
+            if( typeof $('.uang-kuli-bongkar-'+tipe_motor_id).html() != 'undefined' ) {
+                uang_kuli_bongkar_tipe_motor += parseInt($('.uang-kuli-bongkar-'+tipe_motor_id).html()) * qtyMuatan;
+            } else {
+                uang_kuli_bongkar_tipe_motor += uang_kuli_bongkar * qtyMuatan;
+            }
+        };
 
         if( isNaN( total_muatan ) || total_muatan == 0 ) {
             total_muatan = 1;
         }
 
         if( uang_jalan_per_unit == 1 ) {
-            uang_jalan_1 = uang_jalan_1*total_muatan;
+            uang_jalan_1 = uang_jalan_tipe_motor;
             uang_jalan_2 = 0;
             $('.wrapper_uang_jalan_2').addClass('hide');
         } else {
@@ -167,11 +223,11 @@ var getUangjalan = function ( response ) {
         }
 
         if( uang_kuli_muat_per_unit == 1 ) {
-            uang_kuli_muat = uang_kuli_muat*total_muatan;
+            uang_kuli_muat = uang_kuli_muat_tipe_motor;
         }
 
         if( uang_kuli_bongkar_per_unit == 1 ) {
-            uang_kuli_bongkar = uang_kuli_bongkar*total_muatan;
+            uang_kuli_bongkar = uang_kuli_bongkar_tipe_motor;
         }
 
         if( asdp_per_unit == 1 ) {
@@ -315,7 +371,7 @@ var add_custom_field = function(){
                 <tr rel="'+idx+'"> \
                     '+ additionalField +
                     '<td> \
-                        <select name="data[TtujTipeMotor][tipe_motor_id]['+idx+']" class="form-control"> \
+                        <select name="data[TtujTipeMotor][tipe_motor_id]['+idx+']" class="form-control tipe_motor_id" rel="'+idx+'"> \
                         ' + optionTipeMotor +
                         '</select> \
                     </td> \
@@ -384,6 +440,71 @@ var add_custom_field = function(){
                 </div>');
                 delete_custom_field( $('#box-field-input .list-month:last-child .delete-custom-field') );
               break;
+            case 'uang_jalan':
+                var class_count = $('#box-field-input .list-uang-jalan');
+                var length = parseInt(class_count.length);
+                var idx = length+1;
+
+                $('#box-field-input').append('<div rel="'+(idx-1)+'" class="row list-uang-jalan"> \
+                    <div class="col-sm-2"> \
+                        <div class="form-group"> \
+                            <label for="UangJalanTipeMotorTipeMotorId'+(idx-1)+'">Tipe Motor</label> \
+                            <select name="data[UangJalanTipeMotor][tipe_motor_id]['+(idx-1)+']" class="form-control" id="UangJalanTipeMotorTipeMotorId'+(idx-1)+'"> \
+                                '+$('#tipe_motor select').html()+' \
+                            </select> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-3"> \
+                        <div class="form-group"> \
+                            <label for="UangJalanTipeMotorUangJalan1'+(idx-1)+'">Uang Jalan Pertama</label> \
+                            <div class="input-group"> \
+                                <span class="input-group-addon">IDR </span> \
+                                <input name="data[UangJalanTipeMotor][uang_jalan_1]['+(idx-1)+']" class="form-control input_price" type="text" id="UangJalanTipeMotorUangJalan1'+(idx-1)+'"> \
+                            </div> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-2 uang_jalan_2"> \
+                        <div class="form-group"> \
+                            <label for="UangJalanTipeMotorUangJalan2'+(idx-1)+'">Uang Jalan Kedua</label> \
+                            <div class="input-group"> \
+                                <span class="input-group-addon">IDR </span> \
+                                <input name="data[UangJalanTipeMotor][uang_jalan_2]['+(idx-1)+']" class="form-control input_price" type="text" id="UangJalanTipeMotorUangJalan2'+(idx-1)+'"> \
+                            </div> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-2"> \
+                        <div class="form-group"> \
+                            <label for="UangJalanTipeMotorUangKuliMuat'+(idx-1)+'">Uang Kuli Muat</label> \
+                            <div class="input-group"> \
+                                <span class="input-group-addon">IDR </span> \
+                                <input name="data[UangJalanTipeMotor][uang_kuli_muat]['+(idx-1)+']" class="form-control input_price" type="text" id="UangJalanTipeMotorUangKuliMuat'+(idx-1)+'"> \
+                            </div> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-2"> \
+                        <div class="form-group"> \
+                            <label for="UangJalanTipeMotorUangKuliBongkar'+(idx-1)+'">Uang Kuli Bongkar</label> \
+                            <div class="input-group"> \
+                                <span class="input-group-addon">IDR </span> \
+                                <input name="data[UangJalanTipeMotor][uang_kuli_bongkar]['+(idx-1)+']" class="form-control input_price" type="text" id="UangJalanTipeMotorUangKuliBongkar'+(idx-1)+'"> \
+                            </div> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-1"> \
+                        <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="uang_jalan"> \
+                            <i class="fa fa-times"></i> Hapus \
+                        </a> \
+                    </div> \
+                </div>');
+                input_price( $('#box-field-input .list-uang-jalan:last-child .input_price') );
+                delete_custom_field( $('#box-field-input .list-uang-jalan:last-child .delete-custom-field') );
+
+                if( $('.chk-uang-jalan').is(':checked') ) {
+                    $('#box-field-input .list-uang-jalan:last-child .uang_jalan_2').addClass('hide');
+                } else {
+                    $('#box-field-input .list-uang-jalan:last-child .uang_jalan_2').removeClass('hide');
+                }
+              break;
         }
     });
 }
@@ -422,6 +543,10 @@ var delete_custom_field = function( obj ) {
             } else if( action_type == 'target-unit' ) {
                 var length = parseInt($('#box-field-input .list-month').length);
                 var parent = self.parents('.list-month');
+                parent.remove();
+            } else if( action_type == 'uang_jalan' ) {
+                var length = parseInt($('#box-field-input .list-uang-jalan').length);
+                var parent = self.parents('.list-uang-jalan');
                 parent.remove();
             }
         }
@@ -971,6 +1096,16 @@ var submitForm = function ( obj ) {
     closeModal();
 }
 
+var input_price = function () {
+    $('.input_price').priceFormat({
+        doneFunc: function(obj, val) {
+            currencyVal = val;
+            currencyVal = currencyVal.replace(/,/gi, "")
+            obj.next(".input_hidden").val(currencyVal);
+        }
+    });
+}
+
 $(function() {
 	$('.aset-handling').click(function(){
 		if($('.aset-handling .aset-handling-form').is(':checked')) {
@@ -1016,13 +1151,7 @@ $(function() {
         }
     });
 
-    $('.input_price').priceFormat({
-        doneFunc: function(obj, val) {
-            currencyVal = val;
-            currencyVal = currencyVal.replace(/,/gi, "")
-            obj.next(".input_hidden").val(currencyVal);
-        }
-    });
+    input_price( $('.input_price') );
 
     // $('#getKotaAsal').change(function() {
     //     var self = $(this);
@@ -1359,6 +1488,19 @@ $(function() {
         html: true,
         placement: 'bottom'
     });
+
+    if( $("#acos").length > 0 ) {
+        $("#acos").treeview({collapsed: true});
+        var btn = $('#generate-acl').click(function () {
+            btn.button('loading');
+            $.get('/user_permissions/sync/', {},
+                function(data){
+                    btn.button('reset');
+                    $("#acos").html(data);
+                }
+            );        
+        })
+    }
 
     duplicate_row();
     ajaxModal();

@@ -337,19 +337,6 @@ class RevenuesController extends AppController {
             // if( !empty($data['Ttuj']['customer_id']) ) {
             //     $fromCities = $this->UangJalan->getKotaAsal($data['Ttuj']['customer_id']);
                 $fromCities = $this->UangJalan->getKotaAsal();
-                $totalMuatan = 0;
-
-                if( !empty($data['TtujTipeMotor']['qty']) ) {
-                    foreach ($data['TtujTipeMotor']['qty'] as $key => $qty) {
-                        if( !empty($qty) ) {
-                            $totalMuatan += $qty;
-                        }
-                    }
-                }
-
-                if( empty($totalMuatan) ) {
-                    $totalMuatan = 1;
-                }
 
                 if( !empty($data['Ttuj']['from_city_id']) ) {
                     // $toCities = $this->UangJalan->getKotaTujuan($data['Ttuj']['customer_id'], $data['Ttuj']['from_city_id']);
@@ -369,18 +356,62 @@ class RevenuesController extends AppController {
                                 $this->request->data['Ttuj']['uang_kawal_ori'] = $uang_kawal = !empty($uangJalan['UangJalan']['uang_kawal'])?$uangJalan['UangJalan']['uang_kawal']:0;
                                 $this->request->data['Ttuj']['uang_keamanan_ori'] = $uang_keamanan = !empty($uangJalan['UangJalan']['uang_keamanan'])?$uangJalan['UangJalan']['uang_keamanan']:0;
                                 $this->request->data['Ttuj']['uang_jalan_extra_ori'] = $uang_jalan_extra = !empty($uangJalan['UangJalan']['uang_jalan_extra'])?$uangJalan['UangJalan']['uang_jalan_extra']:0;
+                                $uang_jalan_tipe_motor = 0;
+                                $uang_kuli_bongkar_tipe_motor = 0;
+                                $uang_kuli_muat_tipe_motor = 0;
+                                $totalMuatan = 0;
+                                $uangJalanTipeMotor = array();
+
+                                if( !empty($uangJalan['UangJalanTipeMotor']) ) {
+                                    foreach ($uangJalan['UangJalanTipeMotor'] as $key => $tipeMotor) {
+                                        $uangJalanTipeMotor['UangJalan'][$tipeMotor['tipe_motor_id']] = $tipeMotor['uang_jalan_1'];
+                                        $uangJalanTipeMotor['UangKuliMuat'][$tipeMotor['tipe_motor_id']] = $tipeMotor['uang_kuli_muat'];
+                                        $uangJalanTipeMotor['UangKuliBongkar'][$tipeMotor['tipe_motor_id']] = $tipeMotor['uang_kuli_bongkar'];
+                                    }
+                                }
+
+                                if( !empty($data['TtujTipeMotor']['qty']) ) {
+                                    foreach ($data['TtujTipeMotor']['qty'] as $key => $qty) {
+                                        if( !empty($qty) ) {
+                                            $tipe_motor_id = !empty($data['TtujTipeMotor']['tipe_motor_id'][$key])?$data['TtujTipeMotor']['tipe_motor_id'][$key]:false;
+                                            $totalMuatan += $qty;
+
+                                            if( !empty($uangJalanTipeMotor['UangJalan'][$tipe_motor_id]) ) {
+                                                $uang_jalan_tipe_motor += $uangJalanTipeMotor['UangJalan'][$tipe_motor_id] * $qty;
+                                            } else {
+                                                $uang_jalan_tipe_motor += $uang_jalan_1 * $qty;
+                                            }
+
+                                            if( !empty($uangJalanTipeMotor['UangKuliMuat'][$tipe_motor_id]) ) {
+                                                $uang_kuli_muat_tipe_motor += $uangJalanTipeMotor['UangKuliMuat'][$tipe_motor_id] * $qty;
+                                            } else {
+                                                $uang_kuli_muat_tipe_motor += $uang_kuli_muat * $qty;
+                                            }
+
+                                            if( !empty($uangJalanTipeMotor['UangKuliBongkar'][$tipe_motor_id]) ) {
+                                                $uang_kuli_bongkar_tipe_motor += $uangJalanTipeMotor['UangKuliBongkar'][$tipe_motor_id] * $qty;
+                                            } else {
+                                                $uang_kuli_bongkar_tipe_motor += $uang_kuli_bongkar * $qty;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if( empty($totalMuatan) ) {
+                                    $totalMuatan = 1;
+                                }
 
                                 if( !empty($uangJalan['UangJalan']['uang_jalan_per_unit']) ) {
-                                    $uang_jalan_1 = $uang_jalan_1*$totalMuatan;
+                                    $uang_jalan_1 = $uang_jalan_tipe_motor;
                                     $uang_jalan_2 = 0;
                                 }
 
                                 if( !empty($uangJalan['UangJalan']['uang_kuli_muat_per_unit']) ) {
-                                    $uang_kuli_muat = $uang_kuli_muat*$totalMuatan;
+                                    $uang_kuli_muat = $uang_kuli_muat_tipe_motor;
                                 }
 
                                 if( !empty($uangJalan['UangJalan']['uang_kuli_bongkar_per_unit']) ) {
-                                    $uang_kuli_bongkar = $uang_kuli_bongkar*$totalMuatan;
+                                    $uang_kuli_bongkar = $uang_kuli_bongkar_tipe_motor;
                                 }
 
                                 if( !empty($uangJalan['UangJalan']['asdp_per_unit']) ) {

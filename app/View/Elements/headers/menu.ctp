@@ -38,7 +38,7 @@
                         </li>
                         <!-- Menu Body -->
                         <li class="user-body">
-                            <div class="col-xs-6 text-center">
+                            <div class="col-xs-4 text-center">
                                 <?php
                                     echo $this->Html->link(__('Rubah Password'), array(
                                         'controller' => 'users',
@@ -46,7 +46,7 @@
                                     ));
                                 ?>
                             </div>
-                            <div class="col-xs-6 text-center">
+                            <div class="col-xs-4 text-center">
                                 <?php
                                     echo $this->Html->link(__('Rubah Profile'), array(
                                         'controller' => 'users',
@@ -54,6 +54,18 @@
                                     ));
                                 ?>
                             </div>
+                            <?php 
+                                    if(in_array($GroupId, array(1))){
+                                        echo $this->Html->tag('div', $this->Html->link(__('User Permission'), array(
+                                            'controller'=>'user_permissions', 
+                                            'action'=>'index',
+                                        ), array(
+                                            'escape' => false
+                                        )), array(
+                                            'class' => 'col-xs-4 text-center'
+                                        ));
+                                    }
+                            ?>
                         </li>
                         <!-- Menu Footer-->
                         <li class="user-footer">

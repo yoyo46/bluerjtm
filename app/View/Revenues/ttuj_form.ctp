@@ -272,6 +272,7 @@
 												'options' => $tipeMotors,
 												'value' => $tipe_motor_id,
 												'required' => false,
+												'rel' => $key,
 											)));
 											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.qty.'.$key, array(
 												'class' => 'form-control qty-muatan',
@@ -306,10 +307,11 @@
 
 											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.tipe_motor_id.0',array(
 												'label'=> false, 
-												'class'=>'form-control',
+												'class'=>'form-control tipe_motor_id',
 												'required' => false,
 												'empty' => __('Pilih Tipe Motor --'),
-												'options' => $tipeMotors
+												'options' => $tipeMotors,
+												'rel' => 0,
 											)));
 
 											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.qty.0',array(
@@ -687,5 +689,7 @@
 					'options' => $cities
 				));
 		?>
+	</div>
+	<div class="list-tipe-motor">
 	</div>
 </div>

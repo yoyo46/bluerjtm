@@ -93,3 +93,23 @@
 			'id' => 'is_unit',
 		));
 ?>
+<div id="list-tipe-motor">
+	<?php 
+			if( !empty($uangJalan['UangJalanTipeMotor']) ) {
+				foreach ($uangJalan['UangJalanTipeMotor'] as $key => $value) {
+					echo $this->Html->tag('div', $value['uang_jalan_1'], array(
+						'class' => sprintf('uang-jalan-1-%s', $value['tipe_motor_id'])
+					));
+					echo $this->Html->tag('div', $value['uang_jalan_2'], array(
+						'class' => sprintf('uang-jalan-2-%s', $value['tipe_motor_id'])
+					));
+					echo $this->Html->tag('div', $value['uang_kuli_muat'], array(
+						'class' => sprintf('uang-kuli-muat-%s', $value['tipe_motor_id'])
+					));
+					echo $this->Html->tag('div', $value['uang_kuli_bongkar'], array(
+						'class' => sprintf('uang-kuli-bongkar-%s', $value['tipe_motor_id'])
+					));
+				}
+			}
+	?>	
+</div>
