@@ -409,16 +409,102 @@ class AjaxController extends AppController {
 		$this->set(compact('detail'));
 	}
 
-	function getInvoiceInfo($customer_id, $action = false){
-		switch ($action) {
-			case 'detail':
-				
-				break;
-			
-			default:
-				
-				break;
+	function getInvoiceInfo($customer_id = false){
+		$this->loadModel('Revenue');
+		$revenues = $this->Revenue->getData('all', array(
+			'conditions' => array(
+				'Revenue.customer_id' => $customer_id,
+				'Revenue.transaction_status' => 'posting',
+				'Revenue.status' => 1,						
+			),
+			'order' => array(
+				'Revenue.date_revenue' => 'ASC'
+			)
+		));
+		if(!empty($revenues)){
+			$total = 0;
+			foreach ($revenues as $key => $value) {
+				if(!empty($value['Revenue']['total'])){
+					$total += $value['Revenue']['total'];
+				}
+
+				$date_rev = $value['Revenue']['date_revenue'];
+				if($key == 0){
+					$this->request->data['Invoice']['period_from'] = $date_rev;
+				}
+
+				$this->request->data['Invoice']['period_to'] = $date_rev;
+			}
+			$this->request->data['Invoice']['total'] = $total;
 		}
+	}
+
+	function previewInvoice($customer_id, $action = false){
+		$this->loadModel('Revenue');
+		$this->loadModel('TipeMotor');
+		$this->loadModel('City');
+		$this->loadModel('TarifAngkutan');
+
+		$revenues = $this->Revenue->getData('all', array(
+			'conditions' => array(
+				'Revenue.customer_id' => $customer_id,
+				'Revenue.transaction_status' => 'posting',
+				'Revenue.status' => 1,						
+			),
+			'order' => array(
+				'Revenue.date_revenue' => 'ASC'
+			),
+		));
+
+		if(!empty($revenues)){
+			$revenue_id = Set::extract('/Revenue/id', $revenues);
+			
+			if($action == 'tarif'){
+				$revenue_detail = $this->Revenue->RevenueDetail->getData('all', array(
+					'conditions' => array(
+						'RevenueDetail.revenue_id' => $revenue_id,
+					),
+					'order' => array(
+						'RevenueDetail.price_unit' => 'DESC'
+					)
+				));
+			}else{
+				$revenue_detail = $this->Revenue->RevenueDetail->getData('all', array(
+					'conditions' => array(
+						'RevenueDetail.revenue_id' => $revenue_id,
+					),
+					'order' => array(
+						'RevenueDetail.city_id'
+					)
+				));
+			}
+
+			foreach ($revenue_detail as $key => $value) {
+				if(!empty($value['RevenueDetail'])){
+					$value = $this->TipeMotor->getMerge($value, $value['RevenueDetail']['tipe_motor_id']);
+					$value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
+					$value = $this->TarifAngkutan->getMerge($value, $value['RevenueDetail']['tarif_angkutan_id']);
+					
+					$revenue_detail[$key] = $value;
+				}
+			}
+			
+			if($action == 'tarif'){
+				$result = array();
+				foreach ($revenue_detail as $key => $value) {
+					$result[$value['RevenueDetail']['price_unit']][] = $value;
+				}
+				$revenue_detail = $result;
+			}else{
+				$result = array();
+				foreach ($revenue_detail as $key => $value) {
+					$result[$value['City']['id']][] = $value;
+				}
+				$revenue_detail = $result;
+			}
+		}
+// debug($revenue_detail);die();
+		$this->set(compact('revenue_detail', 'action'));
 	}
 }
 ?>

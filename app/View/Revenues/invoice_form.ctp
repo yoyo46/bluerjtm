@@ -25,6 +25,9 @@
 				        <h3 class="box-title"><?php echo __('Informasi Invoice'); ?></h3>
 				    </div>
 				    <div class="box-body">
+				    	<?php
+				    		if($action != 'tarif'){
+				    	?>
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('no_invoice',array(
@@ -36,6 +39,9 @@
 									));
 							?>
 				        </div>
+				        <?php
+				    		}
+				    	?>
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('customer_id',array(
@@ -66,8 +72,13 @@
 					));
 		    		echo $this->Form->button(__('Buat Invoice'), array(
 		    			'type' => 'submit',
-						'class'=> 'btn btn-success',
+						'class'=> 'btn btn-success btn-lg btn-invoice',
 					));
+		    		echo $this->Html->link(__('Preview Invoice'), 'javascript:', array(
+		    			'rel' => $action,
+		    			'class' => 'btn btn-primary',
+		    			'id' => 'preview-invoice'
+		    		));
 			?>
 		</div>
 </div>

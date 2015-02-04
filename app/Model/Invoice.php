@@ -39,6 +39,13 @@ class Invoice extends AppModel {
         ),
 	);
 
+    var $hasMany = array(
+        'InvoiceDetail' => array(
+            'className' => 'InvoiceDetail',
+            'foreignKey' => 'invoice_id',
+        ),
+    );
+
 	function getData( $find, $options = false, $is_merge = true ){
         $default_options = array(
             'conditions'=> array(
@@ -96,6 +103,34 @@ class Invoice extends AppModel {
         }
 
         return $data;
+    }
+
+    function getNoInvoice($action = 'tarif'){
+        $last_invoice = $this->find('first', array(
+            'conditions' => array(
+                'type_invoice' => $action,
+                'status' => 1
+            ),
+            'order' => array(
+                'id' => 'DESC'
+            )
+        ));
+
+        if(!empty($last_invoice)){
+            $arr_explode = explode('/', $last_invoice['Invoice']['no_invoice']);
+            if($arr_explode[2] == date('Y')){
+                $number = intval($arr_explode[0]);
+                $id = str_pad ( ++$number , 3, "0", STR_PAD_LEFT);
+            }else{
+                $id = '001';
+            }
+            
+            $invoice = sprintf('%s/INV/%s/%s', $id, date('Y'), date('m'));
+        }else{
+            $invoice = sprintf('001/INV/%s/%s', date('Y'), date('m'));
+        }
+
+        return $invoice;
     }
 }
 ?>

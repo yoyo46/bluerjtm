@@ -2444,34 +2444,34 @@ class RevenuesController extends AppController {
         $this->set('customers', $customers);
     }
 
-    function invoice_add(){
+    function invoice_add($action = false){
         $module_title = __('Tambah Invoice');
         $this->set('sub_module_title', trim($module_title));
-        $this->doInvoice();
+        $this->doInvoice($action);
     }
 
-    function invoice_edit( $id ){
-        $this->loadModel('Invoice');
-        $revenue = $this->Invoice->getData('first', array(
-            'conditions' => array(
-                'Invoice.id' => $id
-            )
-        ));
+    // function invoice_edit( $id ){
+    //     $this->loadModel('Invoice');
+    //     $revenue = $this->Invoice->getData('first', array(
+    //         'conditions' => array(
+    //             'Invoice.id' => $id
+    //         )
+    //     ));
 
-        if(!empty($revenue)){
-            $module_title = __('Rubah Invoice');
-            $this->set('sub_module_title', trim($module_title));
-            $this->doInvoice($id, $revenue);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Invoice tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'revenues',
-                'action' => 'invoices'
-            ));
-        }
-    }
+    //     if(!empty($revenue)){
+    //         $module_title = __('Rubah Invoice');
+    //         $this->set('sub_module_title', trim($module_title));
+    //         $this->doInvoice($id, $revenue);
+    //     }else{
+    //         $this->MkCommon->setCustomFlash(__('Invoice tidak ditemukan'), 'error');  
+    //         $this->redirect(array(
+    //             'controller' => 'revenues',
+    //             'action' => 'invoices'
+    //         ));
+    //     }
+    // }
 
-    function doInvoice($id = false, $data_local = false){
+    function doInvoice($action, $id = false, $data_local = false){
         if(!empty($this->request->data)){
             $data = $this->request->data;
 
@@ -2486,15 +2486,125 @@ class RevenuesController extends AppController {
 
             $this->Invoice->set($data);
             if($this->Invoice->validates()){
-                if($this->Invoice->save()){
-                    $this->MkCommon->setCustomFlash(sprintf(__('Berhasil %s Invoice'), $msg), 'success'); 
-                    $this->redirect(array(
-                        'controller' => 'revenues',
-                        'action' => 'invoices'
+                if($action == 'tarif'){
+                    $customer_id = $data['Invoice']['customer_id'];
+
+                    $this->loadModel('Revenue');
+                    $revenues = $this->Revenue->getData('all', array(
+                        'conditions' => array(
+                            'Revenue.customer_id' => $customer_id,
+                            'Revenue.transaction_status' => 'posting',
+                            'Revenue.status' => 1,                      
+                        ),
+                        'order' => array(
+                            'Revenue.date_revenue' => 'ASC'
+                        ),
                     ));
+
+                    if(!empty($revenues)){
+                        $revenue_id = Set::extract('/Revenue/id', $revenues);
+
+                        $revenue_detail = $this->Revenue->RevenueDetail->getData('all', array(
+                            'conditions' => array(
+                                'RevenueDetail.revenue_id' => $revenue_id,
+                            ),
+                            'order' => array(
+                                'RevenueDetail.price_unit' => 'DESC'
+                            )
+                        ));
+
+                        $result = array();
+                        if(!empty($revenue_detail)){
+                            foreach ($revenue_detail as $key => $value) {
+                                $result[$value['RevenueDetail']['price_unit']][] = $value;
+                            }
+                        }
+
+                        if(!empty($result)){
+                            foreach ($result as $key => $value) {
+                                $this->Invoice->create();
+                                $invoice_number = $this->Invoice->getNoInvoice();
+                                $data['Invoice']['no_invoice'] = $invoice_number;
+                                $data['Invoice']['type_invoice'] = 'tarif';
+                                
+                                $this->Invoice->set($data);
+                                if($this->Invoice->save()){
+                                    foreach ($value as $key => $value_detail) {
+                                        $this->Revenue->RevenueDetail->id = $value_detail['RevenueDetail']['id'];
+                                        $this->Revenue->RevenueDetail->set('invoice_id', $this->Invoice->id);
+                                        $this->Revenue->RevenueDetail->save();
+                                    }
+                                }
+                            }
+
+                            $this->MkCommon->setCustomFlash(sprintf(__('Berhasil %s Invoice'), $msg), 'success'); 
+                            $this->redirect(array(
+                                'controller' => 'revenues',
+                                'action' => 'invoices'
+                            ));
+                        }
+                    }
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Invoice'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Invoice'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );     
+                    if($this->Invoice->save()){
+                        $invoice_id = $this->Invoice->id;
+
+                        $this->loadModel('Revenue');
+                        if($action == 'tarif'){
+                            $revenues = $this->Revenue->getData('all', array(
+                                'conditions' => array(
+                                    'Revenue.customer_id' => $customer_id,
+                                    'Revenue.transaction_status' => 'posting',
+                                    'Revenue.status' => 1,                      
+                                ),
+                                'order' => array(
+                                    'Revenue.date_revenue' => 'ASC'
+                                ),
+                            ));
+                            if(!empty($revenues)){
+                                $revenue_id = Set::extract('/Revenue/id', $revenues);
+
+                                $this->Revenue->updateAll(
+                                    array('RevenueDetail.invoice_id' => $invoice_id),
+                                    array(
+                                        'RevenueDetail.revenue_id' => $revenue_id,
+                                    )
+                                );
+                            }
+                        }else{
+                            $revenues = $this->Revenue->getData('all', array(
+                                'conditions' => array(
+                                    'Revenue.customer_id' => $data['Invoice']['customer_id'],
+                                    'Revenue.transaction_status' => 'posting',
+                                    'Revenue.status' => 1
+                                )
+                            ));
+
+                            if(!empty($revenues)){
+                                foreach ($revenues as $key => $value) {
+                                    $revenue_id = $value['Revenue']['id'];
+                                    $this->Invoice->InvoiceDetail->create();
+                                    $this->Invoice->InvoiceDetail->set(array(
+                                        'invoice_id' => $invoice_id,
+                                        'revenue_id' => $revenue_id
+                                    ));
+                                    $this->Invoice->InvoiceDetail->save();
+
+                                    $this->Revenue->id = $revenue_id;
+                                    $this->Revenue->set('transaction_status', 'invoiced');
+                                    $this->Revenue->save();
+                                }
+                            }
+                        }
+
+                        $this->MkCommon->setCustomFlash(sprintf(__('Berhasil %s Invoice'), $msg), 'success'); 
+                        $this->redirect(array(
+                            'controller' => 'revenues',
+                            'action' => 'invoices'
+                        ));
+                    }else{
+                        $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Invoice'), $msg), 'error'); 
+                        $this->Log->logActivity( sprintf(__('Gagal %s Invoice'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );     
+                    }
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Invoice'), $msg), 'error'); 
@@ -2511,8 +2621,72 @@ class RevenuesController extends AppController {
             )
         ));
         
-        $this->set(compact('customers', 'id'));
+        $this->set(compact('customers', 'id', 'action'));
         
         $this->render('invoice_form');
+    }
+
+    function invoice_print($id){
+        $this->loadModel('Invoice');
+        $this->loadModel('Revenue');
+        $this->loadModel('TipeMotor');
+        $this->loadModel('City');
+        
+        $invoice = $this->Invoice->getData('first', array(
+            'conditions' => array(
+                'Invoice.id' => $id
+            ),
+            'contain' => array(
+                'InvoiceDetail'
+            )
+        ));
+
+        if(!empty($invoice)){
+            if($invoice['Invoice']['type_invoice'] == 'tarif'){
+                $revenue_detail = $this->Revenue->RevenueDetail->getData('all', array(
+                    'conditions' => array(
+                        'invoice_id' => $invoice['Invoice']['id']
+                    )
+                ));
+            }else{
+                $revenue_id = Set::extract('/RevenueDetail/revenue_id', $invoice);
+                $revenue_detail = $this->Revenue->RevenueDetail->getData('all', array(
+                    'conditions' => array(
+                        'RevenueDetail.revenue_id' => $revenue_id,
+                    ),
+                    'order' => array(
+                        'RevenueDetail.city_id'
+                    )
+                ));
+            }
+            
+            if(!empty($revenue_detail)){
+                foreach ($revenue_detail as $key => $value) {
+                    if(!empty($value['RevenueDetail'])){
+                        $value = $this->TipeMotor->getMerge($value, $value['RevenueDetail']['tipe_motor_id']);
+                        $value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
+                        $value = $this->TarifAngkutan->getMerge($value, $value['RevenueDetail']['tarif_angkutan_id']);
+                        
+                        $revenue_detail[$key] = $value;
+                    }
+                }
+                
+                if($invoice['Invoice']['type_invoice'] == 'tarif'){
+                    $result = array();
+                    foreach ($revenue_detail as $key => $value) {
+                        $result[$value['RevenueDetail']['price_unit']][] = $value;
+                    }
+                    $revenue_detail = $result;
+                }else{
+                    $result = array();
+                    foreach ($revenue_detail as $key => $value) {
+                        $result[$value['City']['id']][] = $value;
+                    }
+                    $revenue_detail = $result;
+                }
+            }
+
+            $this->set(compact('invoice', 'revenue_detail'));
+        }
     }
 }

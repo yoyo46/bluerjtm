@@ -6,15 +6,34 @@
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
-            <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Invoice', array(
-                    'controller' => 'revenues',
-                    'action' => 'invoice_add'
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app pull-right'
-                ));
-            ?>
+            <div class="btn-group pull-right">
+                <?php 
+                        echo $this->Html->tag('button', '<i class="fa fa-plus"></i> Buat Invoice', array(
+                            'data-toggle' => 'dropdown',
+                            'class' => 'btn btn-app btn-success dropdown-toggle'
+                        ));
+                ?>
+                <ul class="dropdown-menu" role="menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link(__('Invoice Biasa'), array(
+                                'controller' => 'revenues',
+                                'action' => 'invoice_add'
+                            ), array(
+                                'escape' => false,
+                            )));
+                            echo $this->Html->tag('li', '', array(
+                                'class' => 'divider',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(__('Invoice Per Tarif'), array(
+                                'controller' => 'revenues',
+                                'action' => 'invoice_add',
+                                'tarif',
+                            ), array(
+                                'escape' => false,
+                            )));
+                    ?>
+                </ul>
+            </div>
         </div>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
@@ -33,8 +52,8 @@
             </tr>
             <?php
                     $i = 1;
-                    if(!empty($truck_customers)){
-                        foreach ($truck_customers as $key => $value) {
+                    if(!empty($invoices)){
+                        foreach ($invoices as $key => $value) {
                             $id = $value['Invoice']['id'];
             ?>
             <tr>
@@ -47,12 +66,12 @@
                 </td>
                 <td class="action">
                     <?php 
-                            echo $this->Html->link('Edit', array(
+                            echo $this->Html->link('print', array(
                                 'controller' => 'revenues',
-                                'action' => 'invoice_edit',
+                                'action' => 'invoice_print',
                                 $id
                             ), array(
-                                'class' => 'btn btn-primary btn-xs'
+                                'class' => 'btn btn-primary btn-xs print-window'
                             ));
 
                             // echo $this->Html->link(__('Hapus'), array(
