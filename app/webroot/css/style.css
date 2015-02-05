@@ -3822,3 +3822,10 @@ table th i {
 .invoice-print table td, .invoice-print table th{
   padding: 5px;
 }
+.header-invoice{
+  font-size: 25px;
+  font-weight: 700;
+}
+.action-print a{
+  margin-left: 15px;
+}

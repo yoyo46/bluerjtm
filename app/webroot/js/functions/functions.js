@@ -1548,4 +1548,8 @@ $(function() {
 
         return false;
     });
+
+    $('.print-window').click(function(){
+        window.print();
+    });
 });

@@ -1,3 +1,18 @@
+<?php
+	echo $this->Html->tag('span', 'RJTM Invoice', array('class' => 'header-invoice'));
+?>
+<div class="action-print pull-right">
+	<?php
+		echo $this->Html->link('<i class="fa fa-print"></i> print', 'javascript:', array(
+			'class' => 'btn btn-primary hidden-print print-window',
+			'escape' => false
+		));
+		echo $this->Html->link('<i class="fa fa-pdf-o"></i> download PDF', 'javascript:', array(
+			'class' => 'btn btn-danger hidden-print print-window',
+			'escape' => false
+		));
+	?>
+</div>
 <div class="invoice-print">
 	<table border="1" width="100%">
 		<tr>
