@@ -26,13 +26,27 @@
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>
-                <th>No. Akun</th>
-                <th>Bank</th>
-                <th>Cabang</th>
-                <th>No. Rek</th>
-                <th>Atas Nama</th>
-                <th>Dibuat</th>
-                <th>Action</th>
+                <?php 
+                        echo $this->Html->tag('th', $this->Paginator->sort('Coa.coa_name', $this->Common->getSorting('Coa.coa_name', __('No. Akun')), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Bank.name', $this->Common->getSorting('Bank.name', __('Bank')), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Bank.branch', $this->Common->getSorting('Bank.branch', __('Cabang')), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Bank.account_number', $this->Common->getSorting('Bank.account_number', __('No. Rek')), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Bank.account_name', $this->Common->getSorting('Bank.account_name', __('Atas Nama')), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Bank.created', $this->Common->getSorting('Bank.created', __('Dibuat')), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', __('Action'));
+                ?>
             </tr>
             <?php
                     $i = 1;

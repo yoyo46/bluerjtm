@@ -148,17 +148,15 @@
             <?php
                     }
                     
-                    echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', array(
-                        $data_type,
-                        'excel'
-                    ), array(
+                    $urlExcel = $this->passedArgs;
+                    $urlExcel[] = 'excel';
+                    echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
                         'escape' => false,
                         'class' => 'btn btn-success pull-right'
                     ));
-                    echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', array(
-                        $data_type,
-                        'pdf'
-                    ), array(
+                    $urlPdf = $this->passedArgs;
+                    $urlPdf[] = 'pdf';
+                    echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
                         'escape' => false,
                         'class' => 'btn btn-primary pull-right'
                     ));
@@ -173,7 +171,7 @@
             <thead>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', __('NO. POL'), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.nopol', __('NO. POL')), array(
                                 'class' => 'text-center text-middle',
                                 'rowspan' => 2,
                                 'style' => $tdStyle,
@@ -183,12 +181,12 @@
                                 'rowspan' => 2,
                                 'style' => $tdStyle,
                             ));
-                            echo $this->Html->tag('th', __('Kapasitas'), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.capacity', __('Kapasitas')), array(
                                 'style' => 'width: 100px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                                 'rowspan' => 2,
                             ));
-                            echo $this->Html->tag('th', __('Alokasi'), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.name', __('Alokasi')), array(
                                 'style' => 'width: 100px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                                 'rowspan' => 2,
@@ -202,7 +200,7 @@
                                 ));
                             }
 
-                            echo $this->Html->tag('th', __('Target RIT'), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.target_rit', __('Target RIT')), array(
                                 'style' => 'width: 120px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                                 'rowspan' => 2,
@@ -342,6 +340,11 @@
                     }
         ?>
     </div><!-- /.box-body -->
+    <?php 
+                echo $this->Html->tag('div', $this->element('pagination'), array(
+                    'class' => 'pagination-report'
+                ));
+    ?>
 </div>
 <?php 
             }

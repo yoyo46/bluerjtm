@@ -23,15 +23,15 @@
     <div class="row no-print print-action">
         <div class="col-xs-12 action">
             <?php
-                    echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', array(
-                        'excel'
-                    ), array(
+                    $urlExcel = $this->passedArgs;
+                    $urlExcel[] = 'excel';
+                    echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
                         'escape' => false,
                         'class' => 'btn btn-success pull-right'
                     ));
-                    echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', array(
-                        'pdf'
-                    ), array(
+                    $urlPdf = $this->passedArgs;
+                    $urlPdf[] = 'pdf';
+                    echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
                         'escape' => false,
                         'class' => 'btn btn-primary pull-right'
                     ));
@@ -46,7 +46,7 @@
             <thead>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', __('Alokasi'), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.customer_name', __('ALOKASI')), array(
                                 'class' => 'text-middle text-center',
                                 'style' => $tdStyle,
                             ));
@@ -123,10 +123,12 @@
         </table>
     <?php
             if( $data_action != 'excel' ) {
-                echo $this->element('pagination');
     ?>
     </div>
     <?php 
+                echo $this->Html->tag('div', $this->element('pagination'), array(
+                    'class' => 'pagination-report'
+                ));
             }
     ?>
 </section>

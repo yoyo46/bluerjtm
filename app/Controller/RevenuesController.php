@@ -1270,15 +1270,6 @@ class RevenuesController extends AppController {
                 }
             }
 
-            $this->Truck->bindModel(array(
-                'hasOne' => array(
-                    'TruckCustomer' => array(
-                        'className' => 'TruckCustomer',
-                        'foreignKey' => 'truck_id',
-                    )
-                )
-            ));
-
             $conditionCustomers = array(
                 'Customer.status' => 1,
             );
@@ -1296,30 +1287,24 @@ class RevenuesController extends AppController {
                 ),
             ));
             $conditions['TruckCustomer.customer_id'] = $customer_id;
+            $options = $this->TruckCustomer->getData('paginate', array(
+                'conditions' => $conditions,
+                'order' => array(
+                    'Truck.nopol' => 'ASC', 
+                ),
+                'contain' => array(
+                    'Truck',
+                    'CustomerNoType'
+                ),
+            ));
 
             if( !empty($data_action) ) {
-                $trucks = $this->TruckCustomer->getData('all', array(
-                    'conditions' => $conditions,
-                    'order' => array(
-                        'Truck.nopol' => 'ASC', 
-                    ),
-                    'contain' => array(
-                        'Truck',
-                    ),
-                ));
+                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
             } else {
-                $this->paginate = $this->TruckCustomer->getData('paginate', array(
-                    'conditions' => $conditions,
-                    'order' => array(
-                        'Truck.nopol' => 'ASC', 
-                    ),
-                    'contain' => array(
-                        'Truck',
-                    ),
-                    'limit' => 20,
-                ));
-                $trucks = $this->paginate('TruckCustomer');
+                $options['limit'] = 20;
             }
+            $this->paginate = $options;
+            $trucks = $this->paginate('TruckCustomer');
 
             if( !empty($trucks) ) {
                 foreach ($trucks as $key => $truck) {
@@ -1487,11 +1472,20 @@ class RevenuesController extends AppController {
                 ),
             ));
 
-            $ttujs = $this->Customer->getData('all', array(
+            $options = $this->Customer->getData('paginate', array(
                 'conditions' => array(
                     'Customer.status' => 1,
                 ),
             ));
+
+            if( !empty($data_action) ) {
+                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+            } else {
+                $options['limit'] = 20;
+            }
+
+            $this->paginate = $options;
+            $ttujs = $this->paginate('Customer');
             $cntPencapaian = array();
             $targetUnit = array();
 

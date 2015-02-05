@@ -1,6 +1,8 @@
 <?php
 class CommonHelper extends AppHelper {
-	var $helpers = array('Html', 'Number');
+	var $helpers = array(
+        'Html', 'Number', 'Paginator'
+    );
 
     /**
     *
@@ -438,5 +440,27 @@ class CommonHelper extends AppHelper {
         }
 
         return $flagAllow;
+    }
+
+
+
+    function getSorting ( $model = false,  $label = false ) {
+        $named = $this->params['named'];
+        
+        if( !empty($named['sort']) && $named['sort'] == $model ) {
+            if( !empty($named['direction']) && strtolower($named['direction']) == 'desc' ) {
+                $label = sprintf('%s <i class="fa fa-sort-amount-desc"></i>', $label);
+            } else {
+                $label = sprintf('%s <i class="fa fa-sort-amount-asc"></i>', $label);
+            }
+        }
+
+        if( $this->Paginator->hasPage() ) {
+            return $this->Paginator->sort($model, $label, array(
+                'escape' => false
+            ));
+        } else {
+            return $label;
+        }
     }
 }

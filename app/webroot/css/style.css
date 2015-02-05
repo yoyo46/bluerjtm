@@ -3807,3 +3807,12 @@ font-size: 22px;
     color: #d9534f;
     font-weight: bold;
 }
+
+table th i {
+  color: #333333;
+  margin-left: 5px;
+}
+
+.pagination-report {
+  margin-top: 15px;
+}

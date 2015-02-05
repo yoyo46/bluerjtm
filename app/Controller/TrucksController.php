@@ -2486,7 +2486,7 @@ class TrucksController extends AppController {
                 $defaul_condition['DATE_FORMAT(Truck.created, \'%Y-%m-%d\') <= '] = $to_date;
             }
 
-            $trucks = $this->Truck->getData('all', array(
+            $options = $this->Truck->getData('paginate', array(
                 'conditions' => $defaul_condition,
                 'contain' => array(
                     'TruckBrand', 
@@ -2495,6 +2495,15 @@ class TrucksController extends AppController {
                     'Driver'
                 )
             ));
+
+            if( !empty($data_action) ) {
+                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+            } else {
+                $options['limit'] = 20;
+            }
+
+            $this->paginate = $options;
+            $trucks = $this->paginate('Truck');
 
             $this->set(compact('trucks', 'from_date', 'to_date', 'data_action'));
 
@@ -2659,21 +2668,20 @@ class TrucksController extends AppController {
                 'limit' => 20,
             ));
 
+            $options = $this->Customer->getData('paginate', array(
+                'conditions' => array(
+                    'Customer.status' => 1,
+                ),
+            ));
+
             if( !empty($data_action) ) {
-                $customers = $this->Customer->getData('all', array(
-                    'conditions' => array(
-                        'Customer.status' => 1,
-                    ),
-                ));
+                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
             } else {
-                $this->paginate = $this->Customer->getData('paginate', array(
-                    'conditions' => array(
-                        'Customer.status' => 1,
-                    ),
-                    'limit' => 20,
-                ));
-                $customers = $this->paginate('Customer');
+                $options['limit'] = 50;
             }
+
+            $this->paginate = $options;
+            $customers = $this->paginate('Customer');
 
             $capacities = $this->Truck->getData('list', array(
                 'conditions' => array(
@@ -2766,22 +2774,20 @@ class TrucksController extends AppController {
 
             $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
             $lastDay = date('t', strtotime($currentMonth));
+            $options = $this->Customer->getData('paginate', array(
+                'conditions' => array(
+                    'Customer.status' => 1,
+                ),
+            ));
 
-            if( empty($data_action) ) {
-                $this->paginate = $this->Customer->getData('paginate', array(
-                    'conditions' => array(
-                        'Customer.status' => 1,
-                    ),
-                    'limit' => 20,
-                ));
-                $customers = $this->paginate('Customer');
+            if( !empty($data_action) ) {
+                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
             } else {
-                $customers = $this->Customer->getData('all', array(
-                    'conditions' => array(
-                        'Customer.status' => 1,
-                    ),
-                ));
+                $options['limit'] = 20;
             }
+
+            $this->paginate = $options;
+            $customers = $this->paginate('Customer');
 
             $customerArr = Set::extract('/Customer/id', $customers);
             $ttujs = $this->TtujTipeMotor->getData('all', array(
@@ -2903,17 +2909,18 @@ class TrucksController extends AppController {
                 $conditionsCustomer['Customer.customer_type_id'] = 2;
             }
 
-            if( empty($data_action) ) {
-                $this->paginate = $this->Customer->getData('paginate', array(
-                    'conditions' => $conditionsCustomer,
-                    'limit' => 20,
-                ));
-                $customers = $this->paginate('Customer');
+            $options = array(
+                'conditions' => $conditionsCustomer,
+            );
+
+            if( !empty($data_action) ) {
+                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
             } else {
-                $customers = $this->Customer->getData('all', array(
-                    'conditions' => $conditionsCustomer,
-                ));
+                $options['limit'] = 20;
             }
+
+            $this->paginate = $this->Customer->getData('paginate', $options);
+            $customers = $this->paginate('Customer');
             
             $customerArr = Set::extract('/Customer/id', $customers);
             $group = array(

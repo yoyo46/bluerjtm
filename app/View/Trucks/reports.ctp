@@ -144,16 +144,24 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th class="hide nomor_id"><?php echo __('No. ID');?></th>
-                    <th><?php echo __('Nopol');?></th>
-                    <th><?php echo __('Merek');?></th>
-                    <th><?php echo __('Pemilik');?></th>
-                    <th><?php echo __('Jenis');?></th>
-                    <th><?php echo __('Supir');?></th>
-                    <th><?php echo __('Kapasitas');?></th>
-                    <th><?php echo __('Tahun');?></th>
-                    <th class="hide truck_facility"><?php echo __('Truk Fasilitas');?></th>
-                    <th class="hide no_rangka"><?php echo __('No. Rangka');?></th>
+                    <?php
+                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.id', __('No. ID')), array(
+                                'class' => 'hide nomor_id',
+                            ));
+                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.nopol', __('Nopol')));
+                            echo $this->Html->tag('th', $this->Common->getSorting('TruckBrand.name', __('Merek')));
+                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.atas_nama', __('Pemilik')));
+                            echo $this->Html->tag('th', $this->Common->getSorting('TruckCategory.name', __('Jenis')));
+                            echo $this->Html->tag('th', $this->Common->getSorting('Driver.driver_name', __('Supir')));
+                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.capacity', __('Kapasitas')));
+                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.tahun', __('Tahun')));
+                            echo $this->Html->tag('th', $this->Common->getSorting('TruckFacility.name', __('Truk Fasilitas')), array(
+                                'class' => 'hide truck_facility',
+                            ));
+                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.no_rangka', __('No. Rangka')), array(
+                                'class' => 'hide no_rangka',
+                            ));
+                    ?>
                 </tr>
             </thead>
             <tbody>
@@ -192,6 +200,11 @@
                     }
         ?>
     </div>
+    <?php 
+            echo $this->Html->tag('div', $this->element('pagination'), array(
+                'class' => 'pagination-report'
+            ));
+    ?>
 </section>
 <?php
         }

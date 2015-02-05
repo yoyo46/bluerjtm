@@ -127,23 +127,16 @@
     <div class="row no-print print-action">
         <div class="col-xs-12 action">
             <?php
-                    echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', array(
-                         'excel',
-                         'fromMonth' => $fromMonth,
-                         'fromYear' => $fromYear,
-                         'toMonth' => $toMonth,
-                         'toYear' => $toYear,
-                    ), array(
+                    $urlExcel = $this->passedArgs;
+                    $urlExcel[] = 'excel';
+                    echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
                         'escape' => false,
                         'class' => 'btn btn-success pull-right'
                     ));
-                    echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', array(
-                        'pdf',
-                         'fromMonth' => $fromMonth,
-                         'fromYear' => $fromYear,
-                         'toMonth' => $toMonth,
-                         'toYear' => $toYear,
-                    ), array(
+
+                    $urlPdf = $this->passedArgs;
+                    $urlPdf[] = 'pdf';
+                    echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
                         'escape' => false,
                         'class' => 'btn btn-primary pull-right'
                     ));
@@ -158,7 +151,7 @@
             <thead>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', __('ALOKASI'), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.customer_name', __('ALOKASI')), array(
                                 'style' => 'width: 100px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                                 'rowspan' => 2,
@@ -239,8 +232,13 @@
                     }
         ?>
     </div><!-- /.box-body -->
+    <?php 
+                echo $this->Html->tag('div', $this->element('pagination'), array(
+                    'class' => 'pagination-report'
+                ));
+    ?>
 </div>
-<?php 
+<?php
             }
         } else if( $data_action == 'pdf' ) {
             App::import('Vendor','xtcpdf');
