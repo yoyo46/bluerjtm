@@ -3816,3 +3816,9 @@ table th i {
 .pagination-report {
   margin-top: 15px;
 }
+.invoice-print table{
+  margin: 10px 0px;
+}
+.invoice-print table td, .invoice-print table th{
+  padding: 5px;
+}

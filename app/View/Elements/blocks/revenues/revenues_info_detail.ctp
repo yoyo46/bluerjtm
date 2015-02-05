@@ -130,7 +130,7 @@
                                     'max' => $detail['TtujTipeMotor']['qty']
                                 ));
                             // }
-                            echo $this->Form->hidden('RevenueDetail.jenis_unit.', array(
+                            echo $this->Form->hidden('RevenueDetail.payment_type.', array(
                                     'type' => 'text',
                                     'label' => false,
                                     'class' => 'jenis_unit',

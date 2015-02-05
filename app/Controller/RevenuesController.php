@@ -1756,7 +1756,7 @@ class RevenuesController extends AppController {
     }
 
     function index(){
-        if( in_array('view_revenues', $this->allowModule) ) {
+        // if( in_array('view_revenues', $this->allowModule) ) {
             $this->loadModel('Revenue');
             $this->loadModel('Ttuj');
             $this->set('active_menu', 'revenue');
@@ -1792,9 +1792,9 @@ class RevenuesController extends AppController {
                 }
             }
             $this->set('revenues', $revenues); 
-        } else {
-            $this->redirect($this->referer());
-        }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
     }
 
     function revenue_add(){
@@ -1922,6 +1922,7 @@ class RevenuesController extends AppController {
                         'city_id' => $data['RevenueDetail']['city_id'][$key],
                         'ttuj_tipe_motor_id' => $data['RevenueDetail']['ttuj_tipe_motor_id'][$key],
                         'tarif_angkutan_id' => $data['RevenueDetail']['tarif_angkutan_id'][$key],
+                        'payment_type' => $data['RevenueDetail']['payment_type'][$key],
                     );
 
                     $this->Revenue->RevenueDetail->set($data_detail);
@@ -1930,13 +1931,17 @@ class RevenuesController extends AppController {
                     }
 
                     if( empty($array_ttuj_tipe_motor[$data['RevenueDetail']['ttuj_tipe_motor_id'][$key]]) ){
-                        $array_ttuj_tipe_motor[$data['RevenueDetail']['ttuj_tipe_motor_id'][$key]] = intval($data_detail['RevenueDetail']['qty_unit']);
+                        $array_ttuj_tipe_motor[$data['RevenueDetail']['ttuj_tipe_motor_id'][$key]] = array(
+                            'qty' => intval($data_detail['RevenueDetail']['qty_unit']),
+                            'payment_type' => $data['RevenueDetail']['payment_type'][$key]
+                        );
                     }else{
-                        $array_ttuj_tipe_motor[$data['RevenueDetail']['ttuj_tipe_motor_id'][$key]] += $data_detail['RevenueDetail']['qty_unit'];
+                        $array_ttuj_tipe_motor[$data['RevenueDetail']['ttuj_tipe_motor_id'][$key]]['qty'] += $data_detail['RevenueDetail']['qty_unit'];
+                        $array_ttuj_tipe_motor[$data['RevenueDetail']['ttuj_tipe_motor_id'][$key]]['payment_type'] = $data['RevenueDetail']['payment_type'][$key];
                     }
 
                     if(!empty($data['RevenueDetail']['price_unit'][$key]) && $data['RevenueDetail']['qty_unit'][$key]){
-                        if($data['RevenueDetail']['jenis_unit'][$key] == 'per_truck'){
+                        if($data['RevenueDetail']['payment_type'][$key] == 'per_truck'){
                             $total_revenue += $data['RevenueDetail']['price_unit'][$key];
                         }else{
                             $total_revenue += $data['RevenueDetail']['price_unit'][$key] * $data['RevenueDetail']['qty_unit'][$key];
@@ -1945,48 +1950,50 @@ class RevenuesController extends AppController {
                 }
 
                 foreach ($array_ttuj_tipe_motor as $ttuj_tipe_motor_id => $value) {
-                    $revenue_condition = array(
-                        'TtujTipeMotorUse.ttuj_tipe_motor_id' => $ttuj_tipe_motor_id
-                    );
-                    if(!empty($data_local['Revenue']['id'])){
-                        $revenue_condition['TtujTipeMotorUse.revenue_id <>'] = $data_local['Revenue']['id'];
-                    }
-                    
-                    $qty = $this->Ttuj->TtujTipeMotor->TtujTipeMotorUse->find('first', array(
-                        'conditions' => $revenue_condition,
-                        'fields' => array(
-                            'SUM(TtujTipeMotorUse.qty) as count_qty'
-                        )
-                    ));
+                    if($value['payment_type'] == 'per_unit'){
+                        $revenue_condition = array(
+                            'TtujTipeMotorUse.ttuj_tipe_motor_id' => $ttuj_tipe_motor_id
+                        );
+                        if(!empty($data_local['Revenue']['id'])){
+                            $revenue_condition['TtujTipeMotorUse.revenue_id <>'] = $data_local['Revenue']['id'];
+                        }
+                        
+                        $qty = $this->Ttuj->TtujTipeMotor->TtujTipeMotorUse->find('first', array(
+                            'conditions' => $revenue_condition,
+                            'fields' => array(
+                                'SUM(TtujTipeMotorUse.qty) as count_qty'
+                            )
+                        ));
 
-                    $qty_real_tipe_ttuj = $this->Ttuj->TtujTipeMotor->getData('first', array(
-                        'conditions' => array(
-                            'TtujTipeMotor.id' => $ttuj_tipe_motor_id
-                        )
-                    ));
+                        $qty_real_tipe_ttuj = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                            'conditions' => array(
+                                'TtujTipeMotor.id' => $ttuj_tipe_motor_id
+                            )
+                        ));
 
-                    $validate_qty_real = false;
-                    $qty_real = $qty_real_tipe_ttuj['TtujTipeMotor']['qty'];
+                        $validate_qty_real = false;
+                        $qty_real = $qty_real_tipe_ttuj['TtujTipeMotor']['qty'];
 
-                    if(!empty($qty_real_tipe_ttuj) && $qty_real_tipe_ttuj['TtujTipeMotor']['qty'] >= $value ){
-                        $validate_qty_real = true;
-                    }
-                    
-                    if($validate_qty_real){
-                        if(empty($qty_real_tipe_ttuj)){
-                            $validate_qty = true;
-                        }else{
-                            if( !empty($qty[0]['count_qty']) ){
-                                $free_space = $qty_real - ($qty[0]['count_qty'] + $value);
-                                if($free_space < 0){
-                                    $validate_qty = false;
-                                    break;
+                        if(!empty($qty_real_tipe_ttuj) && $qty_real_tipe_ttuj['TtujTipeMotor']['qty'] >= $value['qty'] ){
+                            $validate_qty_real = true;
+                        }
+                        
+                        if($validate_qty_real){
+                            if(empty($qty_real_tipe_ttuj)){
+                                $validate_qty = true;
+                            }else{
+                                if( !empty($qty[0]['count_qty']) ){
+                                    $free_space = $qty_real - ($qty[0]['count_qty'] + $value['qty']);
+                                    if($free_space < 0){
+                                        $validate_qty = false;
+                                        break;
+                                    }
                                 }
                             }
+                        }else{
+                            $validate_qty = false;
+                            break;
                         }
-                    }else{
-                        $validate_qty = false;
-                        break;
                     }
                 }
             }
@@ -2028,7 +2035,7 @@ class RevenuesController extends AppController {
                         $this->Ttuj->TtujTipeMotor->TtujTipeMotorUse->set(array(
                             'revenue_id' => $revenue_id,
                             'ttuj_tipe_motor_id' => $ttuj_tipe_motor_id,
-                            'qty' => $value
+                            'qty' => $value['qty']
                         ));
                         $this->Ttuj->TtujTipeMotor->TtujTipeMotorUse->save();
                     }
@@ -2046,7 +2053,8 @@ class RevenuesController extends AppController {
                             'city_id' => $data['RevenueDetail']['city_id'][$key],
                             'ttuj_tipe_motor_id' => $data['RevenueDetail']['ttuj_tipe_motor_id'][$key],
                             'tarif_angkutan_id' => $data['RevenueDetail']['tarif_angkutan_id'][$key],
-                            'no_reference' => str_pad ( $getLastReference++ , 10, "0", STR_PAD_LEFT)
+                            'no_reference' => str_pad ( $getLastReference++ , 10, "0", STR_PAD_LEFT),
+                            'payment_type' => $data['RevenueDetail']['payment_type'][$key],
                         );
                         $this->Revenue->RevenueDetail->set($data_detail);
                         $this->Revenue->RevenueDetail->save();
@@ -2144,6 +2152,7 @@ class RevenuesController extends AppController {
                             'no_sj' => $value['no_sj'],
                             'to_city_name' => $to_city_name,
                             'price_unit' => $tarif,
+                            'payment_type' => $tarif['jenis_unit'],
                             'qty_unit' => $value['qty_unit'],
                             'ttuj_tipe_motor_id' => $value['ttuj_tipe_motor_id'],
                             'tipe_motor_id' => $ttuj_tipe_motor['TipeMotor']['id'],
@@ -2225,6 +2234,7 @@ class RevenuesController extends AppController {
                             'no_sj' => $this->request->data['RevenueDetail']['no_sj'][$key],
                             'to_city_name' => $to_city_name,
                             'price_unit' => $tarif,
+                            'payment_type' => $tarif['jenis_unit'],
                             'qty_unit' => $this->request->data['RevenueDetail']['qty_unit'][$key],
                             'ttuj_tipe_motor_id' => $this->request->data['RevenueDetail']['ttuj_tipe_motor_id'][$key],
                             'tipe_motor_id' => $tipe_motor_id,
@@ -2491,7 +2501,7 @@ class RevenuesController extends AppController {
     }
 
     function invoices(){
-        if( in_array('view_revenues', $this->allowModule) ) {
+        // if( in_array('view_revenues', $this->allowModule) ) {
             $this->loadModel('Invoice');
             $this->set('active_menu', 'revenue');
             $this->set('sub_module_title', __('Invoice'));
@@ -2531,9 +2541,9 @@ class RevenuesController extends AppController {
                 )
             ));
             $this->set('customers', $customers);
-        } else {
-            $this->redirect($this->referer());
-        }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
     }
 
     function invoice_add($action = false){
@@ -2585,10 +2595,17 @@ class RevenuesController extends AppController {
             }
 
             $this->Invoice->set($data);
-            if($this->Invoice->validates()){
-                if($action == 'tarif'){
-                    $customer_id = $data['Invoice']['customer_id'];
 
+            if($this->Invoice->validates()){
+                $customer_id = $data['Invoice']['customer_id'];
+
+                $customer = $this->Customer->getData('first', array(
+                    'conditions' => array(
+                        'Customer.id' => $customer_id
+                    )
+                ));
+
+                if($action == 'tarif'){
                     $this->loadModel('Revenue');
                     $revenues = $this->Revenue->getData('all', array(
                         'conditions' => array(
@@ -2601,7 +2618,7 @@ class RevenuesController extends AppController {
                         ),
                     ));
 
-                    if(!empty($revenues)){
+                    if(!empty($revenues) && !empty($customer)){
                         $revenue_id = Set::extract('/Revenue/id', $revenues);
 
                         $revenue_detail = $this->Revenue->RevenueDetail->getData('all', array(
@@ -2626,6 +2643,7 @@ class RevenuesController extends AppController {
                                 $invoice_number = $this->Invoice->getNoInvoice();
                                 $data['Invoice']['no_invoice'] = $invoice_number;
                                 $data['Invoice']['type_invoice'] = 'tarif';
+                                $data['Invoice']['due_invoice'] = $customer['Customer']['term_of_payment'];
                                 
                                 $this->Invoice->set($data);
                                 if($this->Invoice->save()){
@@ -2645,6 +2663,8 @@ class RevenuesController extends AppController {
                         }
                     }
                 }else{
+                    $data['Invoice']['due_invoice'] = $customer['Customer']['term_of_payment'];
+                    $this->Invoice->set($data);
                     if($this->Invoice->save()){
                         $invoice_id = $this->Invoice->id;
 
@@ -2731,17 +2751,22 @@ class RevenuesController extends AppController {
         $this->loadModel('Revenue');
         $this->loadModel('TipeMotor');
         $this->loadModel('City');
+        $this->loadModel('Customer');
+
+        $module_title = __('Invoice');
+        $this->set('sub_module_title', trim($module_title));
         
         $invoice = $this->Invoice->getData('first', array(
             'conditions' => array(
                 'Invoice.id' => $id
             ),
             'contain' => array(
-                'InvoiceDetail'
+                'InvoiceDetail',
             )
         ));
 
         if(!empty($invoice)){
+            $invoice = $this->Customer->getMerge($invoice, $invoice['Invoice']['customer_id']);
             if($invoice['Invoice']['type_invoice'] == 'tarif'){
                 $revenue_detail = $this->Revenue->RevenueDetail->getData('all', array(
                     'conditions' => array(
@@ -2749,7 +2774,8 @@ class RevenuesController extends AppController {
                     )
                 ));
             }else{
-                $revenue_id = Set::extract('/RevenueDetail/revenue_id', $invoice);
+                $revenue_id = Set::extract('/InvoiceDetail/revenue_id', $invoice);
+                
                 $revenue_detail = $this->Revenue->RevenueDetail->getData('all', array(
                     'conditions' => array(
                         'RevenueDetail.revenue_id' => $revenue_id,
@@ -2765,7 +2791,6 @@ class RevenuesController extends AppController {
                     if(!empty($value['RevenueDetail'])){
                         $value = $this->TipeMotor->getMerge($value, $value['RevenueDetail']['tipe_motor_id']);
                         $value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
-                        $value = $this->TarifAngkutan->getMerge($value, $value['RevenueDetail']['tarif_angkutan_id']);
                         
                         $revenue_detail[$key] = $value;
                     }
@@ -2785,8 +2810,9 @@ class RevenuesController extends AppController {
                     $revenue_detail = $result;
                 }
             }
-
-            $this->set(compact('invoice', 'revenue_detail'));
+            
+            $action = $invoice['Invoice']['type_invoice'];
+            $this->set(compact('invoice', 'revenue_detail', 'action'));
         }
     }
 }
