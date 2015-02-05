@@ -64,6 +64,13 @@ class Laka extends AppModel {
         ),
 	);
 
+    var $belongsTo = array(
+        'Ttuj' => array(
+            'className' => 'Ttuj',
+            'foreignKey' => 'ttuj_id',
+        ),
+    );
+
     var $hasOne = array(
         'LakaDetail' => array(
             'className' => 'LakaDetail',
@@ -110,6 +117,27 @@ class Laka extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
+    }
+
+    function getMerge( $truck_id, $data ){
+        if( empty($data['Laka'])){
+            $data_merge = $this->find('first', array(
+                'conditions' => array(
+                    'Ttuj.truck_id' => $truck_id,
+                    'Laka.status' => 1,
+                    'Laka.completed' => 0,
+                ),
+                'contain' => array(
+                    'Ttuj'
+                ),
+            ));
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
     }
 }
 ?>

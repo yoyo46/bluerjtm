@@ -201,6 +201,10 @@ class RevenuesController extends AppController {
         $step = false;
         $is_draft = isset($data_local['Ttuj']['is_draft'])?$data_local['Ttuj']['is_draft']:true;
 
+        if( !empty($this->request->data) && in_array('update_ttuj_commit', $this->allowModule) ) {
+            $is_draft = true;
+        }
+
         if( !empty($this->request->data) && $is_draft ){
             $data = $this->request->data;
             if($id && $data_local){

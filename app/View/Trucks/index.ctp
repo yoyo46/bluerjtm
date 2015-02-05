@@ -59,6 +59,7 @@
                 <th>Pemilik</th>
                 <th>Supir</th>
                 <th>Aset</th>
+                <th>Status</th>
                 <th>Action</th>
             </tr>
             <?php
@@ -77,11 +78,24 @@
                 <td><?php echo !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:'-';?></td>
                 <td>
                     <?php 
-                        if(!empty($value_truck['is_asset'])){
-                            echo '<span class="label label-success">Ya</span>'; 
-                        }else{
-                            echo '<span class="label label-danger">Tidak</span>';  
-                        }
+                            if(!empty($value_truck['is_asset'])){
+                                echo '<span class="label label-success"><i class="fa fa-check"></i></span>'; 
+                            }else{
+                                echo '<span class="label label-danger"><i class="fa fa-times"></i></span>';  
+                            }
+                    ?>
+                </td>
+                <td>
+                    <?php 
+                            $status = '<span class="label label-success">AVAILABLE</span>';
+
+                            if( !empty($value['Laka']) ){
+                                $status = '<span class="label label-danger">LAKA</span>';
+                            } else if( !empty($value['Truck']['sold']) ){
+                                $status = '<span class="label label-warning">TERJUAL</span>';
+                            }
+
+                            echo $status;
                     ?>
                 </td>
                 <td class="action">

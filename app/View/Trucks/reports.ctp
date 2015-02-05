@@ -185,7 +185,7 @@
         </table>
         <?php 
                 if( $data_action != 'excel' ) {
-                    if(empty($ttujs)){
+                    if(empty($trucks)){
                         echo $this->Html->tag('p', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
                         ));

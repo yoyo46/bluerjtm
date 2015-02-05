@@ -31,6 +31,7 @@ class TrucksController extends AppController {
 
 	public function index() {
         if( in_array('view_trucks', $this->allowModule) ) {
+            $this->loadModel('Laka');
     		$this->set('active_menu', 'trucks');
     		$this->set('sub_module_title', __('Data Truk'));
             $conditions = array();
@@ -65,6 +66,7 @@ class TrucksController extends AppController {
                     $truck = $this->Truck->TruckCategory->getMerge($truck, $data['truck_category_id']);
                     $truck = $this->Truck->TruckBrand->getMerge($truck, $data['truck_brand_id']);
                     $truck = $this->Truck->Company->getMerge($truck, $data['company_id']);
+                    $truck = $this->Laka->getMerge($data['id'], $truck);
 
                     $trucks[$key] = $truck;
                 }
