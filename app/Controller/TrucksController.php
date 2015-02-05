@@ -386,7 +386,7 @@ class TrucksController extends AppController {
         $this->set(compact(
             'truck_brands', 'truck_categories', 'truck_brands', 
             'companies', 'drivers', 'years', 'customers',
-            'truck_facilities', 'data_local'
+            'truck_facilities', 'data_local', 'id'
         ));
         $this->render('truck_form');
     }

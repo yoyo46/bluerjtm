@@ -38,6 +38,9 @@
                     echo $this->Html->tag('label', $module['Module']['name']);
             ?>
         </div>
+        <?php 
+                if( empty($module['Module']['no_view']) ) {
+        ?>
         <div class="col-sm-2">
             <?php 
                     $actionName = 'view_'.$module['Module']['function'];
@@ -59,7 +62,10 @@
             ?>
         </div>
         <?php 
+                }
+
                 if( empty($module['Module']['is_report']) ) {
+                    if( empty($module['Module']['no_insert']) ) {
         ?>
         <div class="col-sm-2">
             <?php 
@@ -81,6 +87,10 @@
                     ));
             ?>
         </div>
+        <?php 
+                    }
+                    if( empty($module['Module']['no_update']) ) {
+        ?>
         <div class="col-sm-2">
             <?php 
                     $actionName = 'update_'.$module['Module']['function'];
@@ -101,6 +111,10 @@
                     ));
             ?>
         </div>
+        <?php 
+                    }
+                    if( empty($module['Module']['no_delete']) ) {
+        ?>
         <div class="col-sm-2">
             <?php 
                     $actionName = 'delete_'.$module['Module']['function'];
@@ -122,6 +136,7 @@
             ?>
         </div>
         <?php 
+                    }
                 }
         ?>
     </div>
