@@ -353,7 +353,7 @@ class CommonHelper extends AppHelper {
 		return strip_tags($string);
 	}
 
-	function generateCoaTree ( $coas ) {
+	function generateCoaTree ( $coas, $allowModule ) {
 		$dataTree = '<ul>';
         if( !empty($coas) ) {
             foreach ($coas as $key => $coa) {
@@ -364,22 +364,28 @@ class CommonHelper extends AppHelper {
                 $dataTree .= $this->Html->link($coa['Coa']['name'], 'javascript:', array(
                     'escape' => false,
                 ));
-                $dataTree .= $this->Html->link('<i class="fa fa-plus-circle"></i>', array(
-                    'controller' => 'settings',
-                    'action' => 'coa_add',
-                    $coa['Coa']['id'],
-                ), array(
-                    'escape' => false,
-                    'class' => 'bg-green'
-                ));
-                $dataTree .= $this->Html->link('<i class="fa fa-minus-circle"></i>', array(
-                    'controller' => 'settings',
-                    'action' => 'coa_toggle',
-                    $coa['Coa']['id'],
-                ), array(
-                    'escape' => false,
-                    'class' => 'bg-red'
-                ));
+
+                if( in_array('insert_coas', $allowModule) ) {
+                    $dataTree .= $this->Html->link('<i class="fa fa-plus-circle"></i>', array(
+                        'controller' => 'settings',
+                        'action' => 'coa_add',
+                        $coa['Coa']['id'],
+                    ), array(
+                        'escape' => false,
+                        'class' => 'bg-green'
+                    ));
+                }
+
+                if( in_array('delete_coas', $allowModule) ) {
+                    $dataTree .= $this->Html->link('<i class="fa fa-minus-circle"></i>', array(
+                        'controller' => 'settings',
+                        'action' => 'coa_toggle',
+                        $coa['Coa']['id'],
+                    ), array(
+                        'escape' => false,
+                        'class' => 'bg-red'
+                    ));
+                }
 
                 if( !empty($coa['children']) ) {
                 	$child = $coa['children'];
@@ -418,5 +424,19 @@ class CommonHelper extends AppHelper {
         } else {
             return $string;
         }
+    }
+
+    function getModuleAllow ( $listMenu = false, $allowModule = false ) {
+        $flagAllow = false;
+
+        if( !empty($listMenu) ) {
+            foreach ($listMenu as $key => $value) {
+                if( in_array($value, $allowModule) ) {
+                    $flagAllow = true;
+                }
+            }
+        }
+
+        return $flagAllow;
     }
 }

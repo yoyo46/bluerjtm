@@ -3793,6 +3793,17 @@ font-size: 22px;
   list-style: none;
 }
 
-#box-field-input .list-uang-jalan:first-child .delete-custom-field {
-  display: none;
+.list-module {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.list-module a .fa-check {
+    color: #5cb85c;
+    font-weight: bold;
+}
+
+.list-module a .fa-times {
+    color: #d9534f;
+    font-weight: bold;
 }

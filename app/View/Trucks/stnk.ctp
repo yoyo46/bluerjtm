@@ -7,6 +7,8 @@
                 echo $this->Html->tag('h3', $sub_module_title, array(
                     'class' => 'box-title'
                 ));
+
+                if( in_array('insert_stnk', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -19,6 +21,9 @@
                 ));
             ?>
         </div>
+        <?php 
+                }
+        ?>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
@@ -78,22 +83,26 @@
                 <td><?php echo $this->Time->niceShort($value['Stnk']['created']);?></td>
                 <td class="action">
                     <?php
-                            echo $this->Html->link('Rubah', array(
-                                'controller' => 'trucks',
-                                'action' => 'stnk_edit',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-primary btn-xs'
-                            ));
-
-                            if( empty($value['Stnk']['paid']) && empty($value['Stnk']['rejected']) ){
-                                echo $this->Html->link(__('Hapus'), array(
+                            if( in_array('update_stnk', $allowModule) ) {
+                                echo $this->Html->link('Rubah', array(
                                     'controller' => 'trucks',
-                                    'action' => 'stnk_delete',
+                                    'action' => 'stnk_edit',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs'
-                                ), __('Anda yakin ingin menghapus data Perpanjang STNK ini?'));
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
+                            }
+
+                            if( in_array('delete_stnk', $allowModule) ) {
+                                if( empty($value['Stnk']['paid']) && empty($value['Stnk']['rejected']) ){
+                                    echo $this->Html->link(__('Hapus'), array(
+                                        'controller' => 'trucks',
+                                        'action' => 'stnk_delete',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-danger btn-xs'
+                                    ), __('Anda yakin ingin menghapus data Perpanjang STNK ini?'));
+                                }
                             }
                     ?>
                 </td>

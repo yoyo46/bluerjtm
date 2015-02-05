@@ -8,6 +8,8 @@
                 echo $this->Html->tag('h3', $sub_module_title, array(
                     'class' => 'box-title'
                 ));
+
+                if( in_array('insert_kirs', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -20,6 +22,9 @@
                 ));
             ?>
         </div>
+        <?php 
+                }
+        ?>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
@@ -73,22 +78,26 @@
                 <td><?php echo $this->Time->niceShort($value['Kir']['created']);?></td>
                 <td class="action">
                     <?php
-                            echo $this->Html->link('Rubah', array(
-                                'controller' => 'trucks',
-                                'action' => 'kir_edit',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-primary btn-xs'
-                            ));
-
-                            if( empty($value['Kir']['paid']) && empty($value['Kir']['rejected']) ){
-                                echo $this->Html->link(__('Hapus'), array(
+                            if( in_array('update_kirs', $allowModule) ) {
+                                echo $this->Html->link('Rubah', array(
                                     'controller' => 'trucks',
-                                    'action' => 'kir_delete',
+                                    'action' => 'kir_edit',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs'
-                                ), __('Anda yakin ingin menghapus data Perpanjang KIR ini?'));
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
+                            }
+
+                            if( in_array('delete_kirs', $allowModule) ) {
+                                if( empty($value['Kir']['paid']) && empty($value['Kir']['rejected']) ){
+                                    echo $this->Html->link(__('Hapus'), array(
+                                        'controller' => 'trucks',
+                                        'action' => 'kir_delete',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-danger btn-xs'
+                                    ), __('Anda yakin ingin menghapus data Perpanjang KIR ini?'));
+                                }
                             }
                     ?>
                 </td>

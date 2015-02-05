@@ -2,7 +2,16 @@
 class User extends AppModel {
 	var $name = 'User';
     var $actsAs = array('Acl' => array('type' => 'requester'));
-    var $belongsTo = array('Group');
+    var $belongsTo = array(
+        'Group' => array(
+            'className' => 'Group',
+            'foreignKey' => 'group_id',
+        ),
+        'Branch' => array(
+            'className' => 'Branch',
+            'foreignKey' => 'branch_id',
+        ),
+    );
     
     var $validate = array(
         'branch_id' => array(
@@ -22,6 +31,10 @@ class User extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'username harap diisi'
             ),
+            'unique' => array(
+                'rule' => 'isUnique',
+                'message' => 'Username sudah tersedia sebelumnya, mohon masukkan username lain.'
+            ),
         ),
         'group_id' => array(
             'notempty' => array(
@@ -40,7 +53,6 @@ class User extends AppModel {
             ),
             'unique' => array(
                 'rule' => 'isUnique',
-                'required' => 'create',
                 'message' => 'Email sudah tersedia sebelumnya, mohon masukkan email lain.'
             ),
         ),
@@ -62,7 +74,36 @@ class User extends AppModel {
                 'message' => 'tanggal lahir harap diisi'
             ),
         ),
+        'password' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Password harap diisi',
+            ),
+            'minLength' => array(
+                'rule' => array('minLength', 6),
+                'message' => 'Panjang password minimal 6 karakter',
+            ),
+            'maxLength' => array(
+                'rule' => array('maxLength', 64),
+                'message' => 'Panjang password maksimal 64 karakter',
+            ),
+        ),
+        'password_confirmation' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Konfirmasi password harap diisi',
+            ),
+            'notMatch' => array(
+                'rule' => array('matchPasswords'),
+                'message' => 'Konfirmasi password anda tidak sesuai',
+            ),
+        ),
     );
+
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['full_name'] = sprintf('CONCAT(%s.first_name, " ", %s.last_name)', $this->alias, $this->alias);
+    }
 
     function parentNode() {
         if (!$this->id && empty($this->data)) {
@@ -116,5 +157,15 @@ class User extends AppModel {
         return $result;
     }
 
+    function matchPasswords($data) {
+        if($data['password_confirmation']) {
+            if($this->data['User']['password'] == $data['password_confirmation']) {
+                return true;
+            }
+            return false; 
+        } else {
+            return true;
+        }
+    }
 }
 ?>

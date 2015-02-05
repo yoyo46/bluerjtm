@@ -8,6 +8,8 @@
                 echo $this->Html->tag('h3', $sub_module_title, array(
                     'class' => 'box-title'
                 ));
+
+                if( in_array('insert_siup', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -20,6 +22,9 @@
                 ));
             ?>
         </div>
+        <?php 
+                }
+        ?>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
@@ -73,22 +78,26 @@
                 <td><?php echo $this->Time->niceShort($value['Siup']['created']);?></td>
                 <td class="action">
                     <?php
-                            echo $this->Html->link('Rubah', array(
-                                'controller' => 'trucks',
-                                'action' => 'siup_edit',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-primary btn-xs'
-                            ));
-
-                            if( empty($value['Siup']['paid']) && empty($value['Siup']['rejected']) ){
-                                echo $this->Html->link(__('Hapus'), array(
+                            if( in_array('update_siup', $allowModule) ) {
+                                echo $this->Html->link('Rubah', array(
                                     'controller' => 'trucks',
-                                    'action' => 'siup_delete',
+                                    'action' => 'siup_edit',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs'
-                                ), __('Anda yakin ingin menghapus data Perpanjang SIUP ini?'));
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
+                            }
+
+                            if( in_array('delete_siup', $allowModule) ) {
+                                if( empty($value['Siup']['paid']) && empty($value['Siup']['rejected']) ){
+                                    echo $this->Html->link(__('Hapus'), array(
+                                        'controller' => 'trucks',
+                                        'action' => 'siup_delete',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-danger btn-xs'
+                                    ), __('Anda yakin ingin menghapus data Perpanjang SIUP ini?'));
+                                }
                             }
                     ?>
                 </td>

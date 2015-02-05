@@ -8,6 +8,8 @@
                 echo $this->Html->tag('h3', $sub_module_title, array(
                     'class' => 'box-title'
                 ));
+
+                if( in_array('insert_revenues', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -21,6 +23,9 @@
             ?>
             <div class="clear"></div>
         </div>
+        <?php 
+                }
+        ?>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
@@ -70,24 +75,28 @@
                 <td><?php echo $this->Common->customDate($value['Revenue']['created']);?></td>
                 <td class="action">
                     <?php
-                        if($value['Revenue']['transaction_status'] != 'invoiced'){
-                            echo $this->Html->link('Rubah', array(
-                                'controller' => 'revenues',
-                                'action' => 'edit',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-primary btn-xs'
-                            ));
+                            if($value['Revenue']['transaction_status'] != 'invoiced'){
+                                if( in_array('update_revenues', $allowModule) ) {
+                                    echo $this->Html->link('Rubah', array(
+                                        'controller' => 'revenues',
+                                        'action' => 'edit',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-primary btn-xs'
+                                    ));
+                                }
 
-                            echo $this->Html->link(__('Hapus'), array(
-                                'controller' => 'revenues',
-                                'action' => 'revenue_toggle',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                                'title' => 'disable status brand'
-                            ), __('Apakah Anda yakin akan membatalkan data ini?'));
-                        }
+                                if( in_array('delete_revenues', $allowModule) ) {
+                                    echo $this->Html->link(__('Hapus'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'revenue_toggle',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-danger btn-xs',
+                                        'title' => 'disable status brand'
+                                    ), __('Apakah Anda yakin akan membatalkan data ini?'));
+                                }
+                            }
                     ?>
                 </td>
             </tr>

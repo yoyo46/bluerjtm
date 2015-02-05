@@ -8,6 +8,8 @@
                 echo $this->Html->tag('h3', $sub_module_title, array(
                     'class' => 'box-title'
                 ));
+                
+                if( in_array('insert_kir_payments', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -20,6 +22,9 @@
                 ));
             ?>
         </div>
+        <?php 
+                }
+        ?>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">

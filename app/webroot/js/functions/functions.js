@@ -463,16 +463,7 @@ var add_custom_field = function(){
                             </div> \
                         </div> \
                     </div> \
-                    <div class="col-sm-2 uang_jalan_2"> \
-                        <div class="form-group"> \
-                            <label for="UangJalanTipeMotorUangJalan2'+(idx-1)+'">Uang Jalan Kedua</label> \
-                            <div class="input-group"> \
-                                <span class="input-group-addon">IDR </span> \
-                                <input name="data[UangJalanTipeMotor][uang_jalan_2]['+(idx-1)+']" class="form-control input_price" type="text" id="UangJalanTipeMotorUangJalan2'+(idx-1)+'"> \
-                            </div> \
-                        </div> \
-                    </div> \
-                    <div class="col-sm-2"> \
+                    <div class="col-sm-3"> \
                         <div class="form-group"> \
                             <label for="UangJalanTipeMotorUangKuliMuat'+(idx-1)+'">Uang Kuli Muat</label> \
                             <div class="input-group"> \
@@ -481,7 +472,7 @@ var add_custom_field = function(){
                             </div> \
                         </div> \
                     </div> \
-                    <div class="col-sm-2"> \
+                    <div class="col-sm-3"> \
                         <div class="form-group"> \
                             <label for="UangJalanTipeMotorUangKuliBongkar'+(idx-1)+'">Uang Kuli Bongkar</label> \
                             <div class="input-group"> \
@@ -1542,5 +1533,19 @@ $(function() {
         }else{
             return false;
         }
+    });
+
+    $('.list-module a').click(function() {
+        var self = $(this);
+        var url = self.attr('href');
+
+        $.ajax({
+            url: url,
+            success: function(result) {
+                self.children('i').removeClass().addClass(result);
+            },
+        });
+
+        return false;
     });
 });

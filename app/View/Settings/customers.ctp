@@ -5,6 +5,9 @@
 <div class="box">
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
+        <?php 
+                if( in_array('insert_customers', $allowModule) ) {
+        ?>
         <div class="box-tools">
             <?php
                 echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Customer', array(
@@ -16,6 +19,9 @@
                 ));
             ?>
         </div>
+        <?php 
+                }
+        ?>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
         <table class="table table-hover">
@@ -65,22 +71,26 @@
                 <td><?php echo $this->Common->customDate($value['Customer']['created']);?></td>
                 <td class="action">
                     <?php 
-                            echo $this->Html->link('Edit', array(
-                                'controller' => 'settings',
-                                'action' => 'customer_edit',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-primary btn-xs'
-                            ));
+                            if( in_array('update_customers', $allowModule) ) {
+                                echo $this->Html->link('Edit', array(
+                                    'controller' => 'settings',
+                                    'action' => 'customer_edit',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
+                            }
 
-                            echo $this->Html->link(__('Hapus'), array(
-                                'controller' => 'settings',
-                                'action' => 'customer_toggle',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                                'title' => 'Hapus Data Customer'
-                            ), __('Anda yakin ingin menghapus data Customer ini?'));
+                            if( in_array('delete_customers', $allowModule) ) {
+                                echo $this->Html->link(__('Hapus'), array(
+                                    'controller' => 'settings',
+                                    'action' => 'customer_toggle',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs',
+                                    'title' => 'Hapus Data Customer'
+                                ), __('Anda yakin ingin menghapus data Customer ini?'));
+                            }
                     ?>
                 </td>
             </tr>

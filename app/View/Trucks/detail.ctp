@@ -8,13 +8,16 @@
 ?>
 <div class="form-group text-center action">
     <?php
-            echo $this->Html->link(__('Rubah'), array(
-                'action' => 'edit', 
-                $truck['Truck']['id'],
-            ), array(
-                'escape' => false, 
-                'class'=> 'btn btn-primary btn-sm',
-            ));
+            if( in_array('update_trucks', $allowModule) ) {
+                echo $this->Html->link(__('Rubah'), array(
+                    'action' => 'edit', 
+                    $truck['Truck']['id'],
+                ), array(
+                    'escape' => false, 
+                    'class'=> 'btn btn-primary btn-sm',
+                ));
+            }
+            
             echo $this->Html->link(__('Kembali'), array(
                 'action' => 'index', 
             ), array(

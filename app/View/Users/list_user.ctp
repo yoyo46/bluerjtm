@@ -1,9 +1,13 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
+        echo $this->element('blocks/users/search_list_users');
 ?>
 <div class="box">
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
+        <?php 
+                if( in_array('insert_list_user', $allowModule) ) {
+        ?>
         <div class="box-tools">
             <?php
                     echo $this->Html->link('<i class="fa fa-plus"></i> Tambah User', array(
@@ -15,19 +19,20 @@
                     ));
             ?>
         </div>
+        <?php 
+                }
+        ?>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>
-                <th>No.</th>
                 <th>Nama</th>
+                <th>Cabang</th>
                 <th>Group</th>
                 <th>Email</th>
                 <th>Telepon</th>
-                <th>Jenis Kelamin</th>
-                <th>Tgl Lahir</th>
                 <th>Status</th>
-                <th>terakhir dirubah</th>
+                <th>Terakhir dirubah</th>
                 <th>Action</th>
             </tr>
             <?php
@@ -37,24 +42,14 @@
                             $value_data = $value['User'];
                             $id = $value_data['id'];
 
-                            $name = $value_data['first_name'].(!empty($value_data['last_name'])) ? ' '.$value_data['last_name'] : '';
+                            $name = $value_data['full_name'];
             ?>
             <tr>
-                <td><?php echo $i++;?></td>
                 <td><?php echo $name;?></td>
+                <td><?php echo $value['Branch']['name'];?></td>
                 <td><?php echo $value['Group']['name'];?></td>
                 <td><?php echo $value_data['email'];?></td>
                 <td><?php echo $value_data['phone'];;?></td>
-                <td>
-                    <?php 
-                        $gend = 'Pria';
-                        if($value_data['gender'] == 'female'){
-                            $gend = 'Wanita';
-                        }
-                        echo $gend;
-                    ?>
-                </td>
-                <td><?php echo $this->Common->customDate($value_data['birthdate']);?></td>
                 <td>
                     <?php 
                         if(!empty($value_data['status'])){
@@ -68,32 +63,36 @@
                 <td><?php echo $this->Common->customDate($value_data['modified']);?></td>
                 <td class="action">
                     <?php 
-                            echo $this->Html->link('Edit', array(
-                                'controller' => 'users',
-                                'action' => 'edit',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-primary btn-xs'
-                            ));
+                            if( in_array('update_list_user', $allowModule) ) {
+                                echo $this->Html->link('Edit', array(
+                                    'controller' => 'users',
+                                    'action' => 'edit',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
+                            }
 
-                            if(!empty($value_data['status'])){
-                                echo $this->Html->link('Disable', array(
-                                    'controller' => 'users',
-                                    'action' => 'toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs',
-                                    'title' => 'disable status user'
-                                ), sprintf(__('Apakah Anda yakin akan menon-aktifkan %s?'), $name));
-                            }else{
-                                echo $this->Html->link('Enable', array(
-                                    'controller' => 'users',
-                                    'action' => 'toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-success btn-xs',
-                                    'title' => 'enable status user'
-                                ), sprintf(__('Apakah Anda yakin akan mengaktifkan %s?'), $name));
+                            if( in_array('delete_list_user', $allowModule) ) {
+                                if(!empty($value_data['status'])){
+                                    echo $this->Html->link('Disable', array(
+                                        'controller' => 'users',
+                                        'action' => 'toggle',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-danger btn-xs',
+                                        'title' => 'disable status user'
+                                    ), sprintf(__('Apakah Anda yakin akan menon-aktifkan %s?'), $name));
+                                }else{
+                                    echo $this->Html->link('Enable', array(
+                                        'controller' => 'users',
+                                        'action' => 'toggle',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-success btn-xs',
+                                        'title' => 'enable status user'
+                                    ), sprintf(__('Apakah Anda yakin akan mengaktifkan %s?'), $name));
+                                }
                             }
                     ?>
                 </td>

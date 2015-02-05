@@ -5,17 +5,23 @@
 <div class="box">
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
+        <?php 
+                if( in_array('insert_group_customers', $allowModule) ) {
+        ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Grup', array(
-                    'controller' => 'settings',
-                    'action' => 'customer_group_add'
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app pull-right'
-                ));
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Grup', array(
+                        'controller' => 'settings',
+                        'action' => 'customer_group_add'
+                    ), array(
+                        'escape' => false,
+                        'class' => 'btn btn-app pull-right'
+                    ));
             ?>
         </div>
+        <?php 
+                }
+        ?>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
         <table class="table table-hover">
@@ -41,22 +47,26 @@
                 <td><?php echo $this->Common->customDate($value['CustomerGroup']['created']);?></td>
                 <td class="action">
                     <?php 
-                            echo $this->Html->link('Edit', array(
-                                'controller' => 'settings',
-                                'action' => 'customer_group_edit',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-primary btn-xs'
-                            ));
+                            if( in_array('update_group_customers', $allowModule) ) {
+                                echo $this->Html->link('Edit', array(
+                                    'controller' => 'settings',
+                                    'action' => 'customer_group_edit',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
+                            }
 
-                            echo $this->Html->link(__('Hapus'), array(
-                                'controller' => 'settings',
-                                'action' => 'customer_group_toggle',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                                'title' => 'Hapus Grup Customer'
-                            ), __('Anda yakin ingin menghapus data Grup Customer ini?'));
+                            if( in_array('delete_group_customers', $allowModule) ) {
+                                echo $this->Html->link(__('Hapus'), array(
+                                    'controller' => 'settings',
+                                    'action' => 'customer_group_toggle',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs',
+                                    'title' => 'Hapus Grup Customer'
+                                ), __('Anda yakin ingin menghapus data Grup Customer ini?'));
+                            }
                     ?>
                 </td>
             </tr>

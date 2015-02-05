@@ -3,6 +3,7 @@ App::uses('AppController', 'Controller');
 class UserPermissionsController extends AppController {
     public $helpers = array('Tree');
     public $Permission = null;
+    public $uses = array('Module');
 
     public function  beforeFilter() {
         parent::beforeFilter();
@@ -23,13 +24,42 @@ class UserPermissionsController extends AppController {
         $this->__acos_details($results);
         return $results;
     }
-    // public function index(){
-    //     $this->set('results', $this->__acosList());
-    // }
 
-    public function index(){
+    public function admin_index(){
         $this->set('permissions', true);
         $this->set('results', $this->__acosList());
+    }
+
+    public function index(){
+        $this->loadModel('Group');
+        $groups = $this->Group->find('list', array(
+            'fields' => array(
+                'Group.id', 'Group.name'
+            ),
+            'conditions'=> array(
+                'Group.status'=> 1, 
+            ),
+        ), false);
+
+        $group_id = !empty($this->request->data['Group']['group_id'])?$this->request->data['Group']['group_id']:0;
+        $conditions['ModuleAction.group_id'] = $group_id;
+        $modules = $this->Module->find('all', array(
+            'conditions'=> array(
+                'Module.status'=> 1, 
+            ),
+            'order' => array(
+                'Module.order' => 'ASC'
+            ),
+            'contain' => array(
+                'ModuleAction' => array(
+                    'conditions' => $conditions,
+                )
+            ),
+        ));
+
+        $this->set(compact(
+            'groups', 'modules', 'group_id'
+        ));
     }
 
     public function sync(){
@@ -194,6 +224,50 @@ class UserPermissionsController extends AppController {
             }
 
             $this->set('acos_details', $list);
+        }
+    }
+
+    function generate_module( $module_id, $group_id, $action ) {
+        $isAjax = $this->RequestHandler->isAjax();
+        $moduleAction = $this->Module->ModuleAction->find('first', array(
+            'conditions' => array(
+                'ModuleAction.module_id' => $module_id,
+                'ModuleAction.group_id' => $group_id,
+                'ModuleAction.action' => $action,
+            )
+        ));
+
+        $module = $this->Module->find('first', array(
+            'conditions' => array(
+                'Module.id' => $module_id,
+            )
+        ));
+
+        if( !empty($module) ) {
+            $idName = $module['Module']['function'];
+        } else {
+            $idName = false;
+        }
+
+        if( !empty($moduleAction) ) {
+            $this->Module->ModuleAction->delete( $moduleAction['ModuleAction']['id'] );
+            $fa = 'fa fa-times';
+        } else {
+            $data['ModuleAction']['group_id'] = $group_id;
+            $data['ModuleAction']['module_id'] = $module_id;
+            $data['ModuleAction']['action'] = $action;
+            $this->Module->ModuleAction->save($data);
+            $fa = 'fa fa-check';
+        }
+
+        if( empty($isAjax) ) {
+            $this->redirect(array(
+                'action' => 'index',
+                '#' => $idName,
+            ));
+        } else {
+            echo $fa;
+            die();
         }
     }
 }

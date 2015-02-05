@@ -1,6 +1,6 @@
 <?php
 		$this->Html->addCrumb(__('Group'), array(
-            'action' => 'index',
+            'action' => 'groups',
         ));
 		$this->Html->addCrumb($sub_module_title);
 ?>

@@ -26,71 +26,87 @@ class LakasController extends AppController {
     }
 
 	public function index() {
-        $this->loadModel('Laka');
-		$this->set('active_menu', 'Lakas');
-		$this->set('sub_module_title', __('Data LAKA'));
-        $conditions = array();
-        
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+        if( in_array('view_lakas', $this->allowModule) ) {
+            $this->loadModel('Laka');
+    		$this->set('active_menu', 'Lakas');
+    		$this->set('sub_module_title', __('Data LAKA'));
+            $conditions = array();
+            
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['nopol'])){
-                $nopol = urldecode($refine['nopol']);
-                $this->request->data['Laka']['nopol'] = $nopol;
-                $conditions['Laka.nopol LIKE '] = '%'.$nopol.'%';
+                if(!empty($refine['nopol'])){
+                    $nopol = urldecode($refine['nopol']);
+                    $this->request->data['Laka']['nopol'] = $nopol;
+                    $conditions['Laka.nopol LIKE '] = '%'.$nopol.'%';
+                }
             }
+
+            $this->paginate = $this->Laka->getData('paginate', array(
+                'conditions' => $conditions
+            ));
+            $Lakas = $this->paginate('Laka');
+
+            $this->set('Lakas', $Lakas);
+        } else {
+            $this->redirect($this->referer());
         }
-
-        $this->paginate = $this->Laka->getData('paginate', array(
-            'conditions' => $conditions
-        ));
-        $Lakas = $this->paginate('Laka');
-
-        $this->set('Lakas', $Lakas);
 	}
 
     function detail($id = false){
-        if(!empty($id)){
-            $Laka = $this->Laka->getLaka($id);
+        if( in_array('view_lakas', $this->allowModule) ) {
+            if(!empty($id)){
+                $Laka = $this->Laka->getLaka($id);
 
-            if(!empty($Laka)){
-                $sub_module_title = __('Detail LAKA');
-                $this->set(compact('Laka', 'sub_module_title'));
+                if(!empty($Laka)){
+                    $sub_module_title = __('Detail LAKA');
+                    $this->set(compact('Laka', 'sub_module_title'));
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Laka tidak ditemukan.'), 'error');
+                    $this->redirect($this->referer());
+                }
             }else{
                 $this->MkCommon->setCustomFlash(__('Laka tidak ditemukan.'), 'error');
                 $this->redirect($this->referer());
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Laka tidak ditemukan.'), 'error');
+        } else {
             $this->redirect($this->referer());
         }
     }
 
     function add(){
-        $this->set('sub_module_title', __('Tambah LAKA'));
-        $this->DoLaka();
+        if( in_array('insert_lakas', $this->allowModule) ) {
+            $this->set('sub_module_title', __('Tambah LAKA'));
+            $this->DoLaka();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function edit($id){
-        $this->loadModel('Laka');
-        $this->set('sub_module_title', 'Rubah LAKA');
-        $Laka = $this->Laka->getData('first', array(
-            'conditions' => array(
-                'Laka.id' => $id
-            ),
-            'contain' => array(
-                'LakaDetail'
-            )
-        ));
-
-        if(!empty($Laka)){
-            $this->DoLaka($id, $Laka);
-        }else{
-            $this->MkCommon->setCustomFlash(__('LAKA tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'Lakas',
-                'action' => 'index'
+        if( in_array('update_lakas', $this->allowModule) ) {
+            $this->loadModel('Laka');
+            $this->set('sub_module_title', 'Rubah LAKA');
+            $Laka = $this->Laka->getData('first', array(
+                'conditions' => array(
+                    'Laka.id' => $id
+                ),
+                'contain' => array(
+                    'LakaDetail'
+                )
             ));
+
+            if(!empty($Laka)){
+                $this->DoLaka($id, $Laka);
+            }else{
+                $this->MkCommon->setCustomFlash(__('LAKA tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'Lakas',
+                    'action' => 'index'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
@@ -220,33 +236,37 @@ class LakasController extends AppController {
     }
 
     function toggle($id){
-        $this->loadModel('Laka');
-        $locale = $this->Laka->getData('first', array(
-            'conditions' => array(
-                'Laka.id' => $id
-            )
-        ));
+        if( in_array('delete_lakas', $this->allowModule) ) {
+            $this->loadModel('Laka');
+            $locale = $this->Laka->getData('first', array(
+                'conditions' => array(
+                    'Laka.id' => $id
+                )
+            ));
 
-        if($locale){
-            $value = true;
-            if($locale['Laka']['status']){
-                $value = false;
-            }
+            if($locale){
+                $value = true;
+                if($locale['Laka']['status']){
+                    $value = false;
+                }
 
-            $this->Laka->id = $id;
-            $this->Laka->set('status', 0);
+                $this->Laka->id = $id;
+                $this->Laka->set('status', 0);
 
-            if($this->Laka->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                if($this->Laka->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                $this->MkCommon->setCustomFlash(__('Laka tidak ditemukan.'), 'error');
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Laka tidak ditemukan.'), 'error');
-        }
 
-        $this->redirect($this->referer());
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 }

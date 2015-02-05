@@ -40,7 +40,7 @@ class AppController extends Controller {
 	);
 
 	var $uses = array(
-		'Log'
+		'Log', 'Module'
 	);
 
 	function beforeFilter() {
@@ -132,11 +132,28 @@ class AppController extends Controller {
 			$this->user_id = $this->Auth->user('id');
 			$GroupId = $this->Auth->user('group_id');
 			$this->user_data = $User = $this->Auth->user();
+
+			$allowModule = $this->Module->ModuleAction->find('list', array(
+	            'conditions'=> array(
+	                'Module.status'=> 1, 
+            		'ModuleAction.group_id' => $GroupId,
+	            ),
+	            'order' => array(
+	                'Module.order' => 'ASC'
+	            ),
+	            'contain' => array(
+	            	'Module'
+            	),
+            	'fields' => array(
+            		'ModuleAction.id', 'ModuleAction.action'
+        		),
+	        ));
+        	$this->allowModule = $allowModule;
 		}
 
 	    $this->set(compact(
 	    	'logged_in', 'GroupId', 'User',
-	    	'monthArr'
+	    	'monthArr', 'allowModule'
     	));
 	}
 

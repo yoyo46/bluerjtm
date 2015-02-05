@@ -51,6 +51,49 @@
 			?>
 			</div>
 		</div>
+		<?php 
+                if( empty($id) ) {
+		?>
+		<div class="form-group">
+			<?php 
+					$title = __('Password *');
+					echo $this->Form->label('password', $title, array(
+						'class'=>'control-label col-sm-2'
+					)); 
+			?>
+			<div class="col-sm-8">
+			<?php 
+					echo $this->Form->input('password',array(
+						'label'=>false,
+						'placeholder' => $title,
+						'required' => false,
+						'class' => 'form-control',
+					)); 
+			?>
+			</div>
+		</div>
+		<div class="form-group">
+			<?php 
+					$title = __('Confirm Password *');
+					echo $this->Form->label('password_confirmation', $title, array(
+						'class'=>'control-label col-sm-2'
+					)); 
+			?>
+			<div class="col-sm-8">
+			<?php 
+					echo $this->Form->input('password_confirmation',array(
+						'label'=>false,
+						'placeholder' => $title,
+						'required' => false,
+						'class' => 'form-control',
+						'type' => 'password',
+					)); 
+			?>
+			</div>
+		</div>
+		<?php 
+				}
+		?>
 		<div class="form-group">
 			<?php 
 					$title = __('Group *');
@@ -108,7 +151,7 @@
 		</div>
 		<div class="form-group">
 			<?php 
-					$title = __('Telepon');
+					$title = __('Telepon *');
 					echo $this->Form->label('phone', $title, array(
 						'class'=>'control-label col-sm-2'
 					)); 
@@ -170,6 +213,14 @@
 		    		echo $this->Form->button(__('Simpan'), array(
 						'div' => false, 
 						'class'=> 'btn btn-success',
+						'type' => 'submit',
+					));
+		    		echo $this->Html->link(__('Kembali'), array(
+		    			'controller' => 'users',
+		    			'action' => 'list_user'
+	    			), array(
+						'div' => false, 
+						'class'=> 'btn btn-default',
 						'type' => 'submit',
 					));
 	    	?>

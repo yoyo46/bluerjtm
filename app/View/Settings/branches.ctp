@@ -5,6 +5,9 @@
 <div class="box">
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
+        <?php 
+                if( in_array('insert_branches', $allowModule) ) {
+        ?>
         <div class="box-tools">
             <?php
                     echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Cabang', array(
@@ -16,6 +19,9 @@
                     ));
             ?>
         </div>
+        <?php 
+                }
+        ?>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
@@ -42,22 +48,26 @@
                 <td><?php echo $this->Common->customDate($created);?></td>
                 <td class="action">
                     <?php 
-                            echo $this->Html->link(__('Edit'), array(
-                                'controller' => 'settings',
-                                'action' => 'branch_edit',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-primary btn-xs'
-                            ));
+                            if( in_array('update_branches', $allowModule) ) {
+                                echo $this->Html->link(__('Edit'), array(
+                                    'controller' => 'settings',
+                                    'action' => 'branch_edit',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
+                            }
 
-                            echo $this->Html->link(__('Hapus'), array(
-                                'controller' => 'settings',
-                                'action' => 'branch_toggle',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                                'title' => 'disable status brand'
-                            ), __('Anda yakin ingin menghapus data cabang ini ?'));
+                            if( in_array('delete_branches', $allowModule) ) {
+                                echo $this->Html->link(__('Hapus'), array(
+                                    'controller' => 'settings',
+                                    'action' => 'branch_toggle',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs',
+                                    'title' => 'disable status brand'
+                                ), __('Anda yakin ingin menghapus data cabang ini ?'));
+                            }
                     ?>
                 </td>
             </tr>

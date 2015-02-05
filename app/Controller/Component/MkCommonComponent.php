@@ -144,5 +144,9 @@ class MkCommonComponent extends Component {
 
         return $data;
     }
+
+    function toSlug($string) {
+        return strtolower(Inflector::slug($string, '-'));
+    }
 }
 ?>

@@ -27,56 +27,68 @@ class SettingsController extends AppController {
     }
 
     function cities(){
-        $this->loadModel('City');
-        $options = array();
+        if( in_array('view_cities', $this->allowModule) ) {
+            $this->loadModel('City');
+            $options = array();
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['City']['name'] = $name;
-                $options['conditions']['City.name LIKE '] = '%'.$name.'%';
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['City']['name'] = $name;
+                    $options['conditions']['City.name LIKE '] = '%'.$name.'%';
+                }
             }
-        }
 
-        $this->paginate = $this->City->getData('paginate', $options);
-        $cities = $this->paginate('City');
+            $this->paginate = $this->City->getData('paginate', $options);
+            $cities = $this->paginate('City');
 
-        if(!empty($cities)){
-            $this->loadModel('Region');
-            foreach ($cities as $key => $city) {
-                $cities[$key] = $this->Region->getMerge($city, $city['City']['region_id']);
+            if(!empty($cities)){
+                $this->loadModel('Region');
+                foreach ($cities as $key => $city) {
+                    $cities[$key] = $this->Region->getMerge($city, $city['City']['region_id']);
+                }
             }
-        }
 
-        $this->set('active_menu', 'cities');
-        $this->set('sub_module_title', 'Kota');
-        $this->set('cities', $cities);
+            $this->set('active_menu', 'cities');
+            $this->set('sub_module_title', 'Kota');
+            $this->set('cities', $cities);
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function city_add(){
-        $this->set('sub_module_title', 'Tambah Kota');
-        $this->docity();
+        if( in_array('insert_cities', $this->allowModule) ) {
+            $this->set('sub_module_title', 'Tambah Kota');
+            $this->docity();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function city_edit($id){
-        $this->loadModel('City');
-        $this->set('sub_module_title', 'Rubah Kota');
-        $type_property = $this->City->getData('first', array(
-            'conditions' => array(
-                'City.id' => $id
-            )
-        ));
-
-        if(!empty($type_property)){
-            $this->docity($id, $type_property);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Kota tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'citys'
+        if( in_array('update_cities', $this->allowModule) ) {
+            $this->loadModel('City');
+            $this->set('sub_module_title', 'Rubah Kota');
+            $type_property = $this->City->getData('first', array(
+                'conditions' => array(
+                    'City.id' => $id
+                )
             ));
+
+            if(!empty($type_property)){
+                $this->docity($id, $type_property);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Kota tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'citys'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
@@ -134,95 +146,111 @@ class SettingsController extends AppController {
     }
 
     function city_toggle($id){
-        $this->loadModel('City');
-        $locale = $this->City->getData('first', array(
-            'conditions' => array(
-                'City.id' => $id
-            )
-        ));
+        if( in_array('delete_cities', $this->allowModule) ) {
+            $this->loadModel('City');
+            $locale = $this->City->getData('first', array(
+                'conditions' => array(
+                    'City.id' => $id
+                )
+            ));
 
-        if($locale){
-            $value = true;
-            if($locale['City']['status']){
-                $value = false;
-            }
+            if($locale){
+                $value = true;
+                if($locale['City']['status']){
+                    $value = false;
+                }
 
-            $this->City->id = $id;
-            $this->City->set('status', $value);
-            if($this->City->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Kota ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->City->id = $id;
+                $this->City->set('status', $value);
+                if($this->City->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status Kota ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status Kota ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Kota ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->MkCommon->setCustomFlash(__('Kota tidak ditemukan.'), 'error');
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Kota tidak ditemukan.'), 'error');
-        }
 
-        $this->redirect($this->referer());
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function customers(){
-        $this->loadModel('Customer');
-        $options = array();
+        if( in_array('view_customers', $this->allowModule) ) {
+            $this->loadModel('Customer');
+            $options = array();
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['Customer']['name'] = $name;
-                $options['conditions']['Customer.name LIKE '] = '%'.$name.'%';
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['Customer']['name'] = $name;
+                    $options['conditions']['Customer.name LIKE '] = '%'.$name.'%';
+                }
+                if(!empty($refine['customer_type_id'])){
+                    $customer_type_id = urldecode($refine['customer_type_id']);
+                    $this->request->data['Customer']['customer_type_id'] = $customer_type_id;
+                    $options['conditions']['Customer.customer_type_id '] = $customer_type_id;
+                }
+                if(!empty($refine['customer_group_id'])){
+                    $customer_group_id = urldecode($refine['customer_group_id']);
+                    $this->request->data['Customer']['customer_group_id'] = $customer_group_id;
+                    $options['conditions']['Customer.customer_group_id '] = $customer_group_id;
+                }
             }
-            if(!empty($refine['customer_type_id'])){
-                $customer_type_id = urldecode($refine['customer_type_id']);
-                $this->request->data['Customer']['customer_type_id'] = $customer_type_id;
-                $options['conditions']['Customer.customer_type_id '] = $customer_type_id;
-            }
-            if(!empty($refine['customer_group_id'])){
-                $customer_group_id = urldecode($refine['customer_group_id']);
-                $this->request->data['Customer']['customer_group_id'] = $customer_group_id;
-                $options['conditions']['Customer.customer_group_id '] = $customer_group_id;
-            }
+            $this->paginate = $this->Customer->getData('paginate', $options);
+            $truck_customers = $this->paginate('Customer');
+            $customerTypes  = $this->Customer->CustomerType->getData('list', false, true);
+            $customerGroups  = $this->Customer->CustomerGroup->getData('list');
+
+            $this->set('active_menu', 'customers');
+            $this->set('module_title', 'Data Master');
+            $this->set('sub_module_title', 'Customer');
+            $this->set(compact(
+                'customerTypes', 'truck_customers',
+                'customerGroups'
+            ));
+        } else {
+            $this->redirect($this->referer());
         }
-        $this->paginate = $this->Customer->getData('paginate', $options);
-        $truck_customers = $this->paginate('Customer');
-        $customerTypes  = $this->Customer->CustomerType->getData('list', false, true);
-        $customerGroups  = $this->Customer->CustomerGroup->getData('list');
-
-        $this->set('active_menu', 'customers');
-        $this->set('module_title', 'Data Master');
-        $this->set('sub_module_title', 'Customer');
-        $this->set(compact(
-            'customerTypes', 'truck_customers',
-            'customerGroups'
-        ));
     }
 
     function customer_add(){
-        $this->loadModel('Customer');
-        $this->set('sub_module_title', 'Tambah Customer');
-        $this->doCustomer();
+        if( in_array('insert_customers', $this->allowModule) ) {
+            $this->loadModel('Customer');
+            $this->set('sub_module_title', 'Tambah Customer');
+            $this->doCustomer();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function customer_edit($id){
-        $this->loadModel('Customer');
-        $this->set('sub_module_title', 'Rubah Customer');
-        $customer = $this->Customer->getData('first', array(
-            'conditions' => array(
-                'Customer.id' => $id
-            )
-        ));
-
-        if(!empty($customer)){
-            $this->doCustomer($id, $customer);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Customer tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'customers'
+        if( in_array('update_customers', $this->allowModule) ) {
+            $this->loadModel('Customer');
+            $this->set('sub_module_title', 'Rubah Customer');
+            $customer = $this->Customer->getData('first', array(
+                'conditions' => array(
+                    'Customer.id' => $id
+                )
             ));
+
+            if(!empty($customer)){
+                $this->doCustomer($id, $customer);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Customer tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'customers'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
@@ -280,35 +308,39 @@ class SettingsController extends AppController {
     }
 
     function customer_toggle($id){
-        $this->loadModel('Customer');
+        if( in_array('delete_customers', $this->allowModule) ) {
+            $this->loadModel('Customer');
 
-        $locale = $this->Customer->getData('first', array(
-            'conditions' => array(
-                'Customer.id' => $id
-            )
-        ));
+            $locale = $this->Customer->getData('first', array(
+                'conditions' => array(
+                    'Customer.id' => $id
+                )
+            ));
 
-        if($locale){
-            $value = true;
-            if($locale['Customer']['status']){
-                $value = false;
-            }
+            if($locale){
+                $value = true;
+                if($locale['Customer']['status']){
+                    $value = false;
+                }
 
-            $this->Customer->id = $id;
-            $this->Customer->set('status', 0);
+                $this->Customer->id = $id;
+                $this->Customer->set('status', 0);
 
-            if($this->Customer->save()){
-                $this->MkCommon->setCustomFlash(__('Customer telah berhasil dihapus.'), 'success');
-                $this->Log->logActivity( sprintf(__('Customer ID #%s telah berhasil dihapus.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                if($this->Customer->save()){
+                    $this->MkCommon->setCustomFlash(__('Customer telah berhasil dihapus.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Customer ID #%s telah berhasil dihapus.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal menghapus Customer.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal menghapus Customer ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal menghapus Customer.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal menghapus Customer ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->MkCommon->setCustomFlash(__('Customer tidak ditemukan.'), 'error');
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Customer tidak ditemukan.'), 'error');
-        }
 
-        $this->redirect($this->referer());
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     public function customer_types() {
@@ -431,52 +463,64 @@ class SettingsController extends AppController {
     }
 
     function vendors(){
-        $this->loadModel('Vendor');
-        $options = array();
+        if( in_array('view_vendors', $this->allowModule) ) {
+            $this->loadModel('Vendor');
+            $options = array();
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['Vendor']['name'] = $name;
-                $options['conditions']['Vendor.name LIKE '] = '%'.$name.'%';
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['Vendor']['name'] = $name;
+                    $options['conditions']['Vendor.name LIKE '] = '%'.$name.'%';
+                }
             }
-        }
-        $this->paginate = $this->Vendor->getData('paginate', $options);
-        $vendors = $this->paginate('Vendor');
+            $this->paginate = $this->Vendor->getData('paginate', $options);
+            $vendors = $this->paginate('Vendor');
 
-        $this->set('active_menu', 'vendors');
-        $this->set('module_title', 'Data Master');
-        $this->set('sub_module_title', 'Vendor');
-        $this->set(compact(
-            'vendors'
-        ));
+            $this->set('active_menu', 'vendors');
+            $this->set('module_title', 'Data Master');
+            $this->set('sub_module_title', 'Vendor');
+            $this->set(compact(
+                'vendors'
+            ));
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function vendor_add(){
-        $this->loadModel('Vendor');
-        $this->set('sub_module_title', 'Tambah Vendor');
-        $this->doVendor();
+        if( in_array('insert_vendors', $this->allowModule) ) {
+            $this->loadModel('Vendor');
+            $this->set('sub_module_title', 'Tambah Vendor');
+            $this->doVendor();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function vendor_edit($id){
-        $this->loadModel('Vendor');
-        $this->set('sub_module_title', 'Rubah Vendor');
-        $vendor = $this->Vendor->getData('first', array(
-            'conditions' => array(
-                'Vendor.id' => $id
-            )
-        ));
-
-        if(!empty($vendor)){
-            $this->doVendor($id, $vendor);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Vendor tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'vendors'
+        if( in_array('update_vendors', $this->allowModule) ) {
+            $this->loadModel('Vendor');
+            $this->set('sub_module_title', 'Rubah Vendor');
+            $vendor = $this->Vendor->getData('first', array(
+                'conditions' => array(
+                    'Vendor.id' => $id
+                )
             ));
+
+            if(!empty($vendor)){
+                $this->doVendor($id, $vendor);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Vendor tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'vendors'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
@@ -520,72 +564,84 @@ class SettingsController extends AppController {
     }
 
     function vendor_toggle($id){
-        $this->loadModel('Vendor');
-        $locale = $this->Vendor->getData('first', array(
-            'conditions' => array(
-                'Vendor.id' => $id
-            )
-        ));
+        if( in_array('delete_vendors', $this->allowModule) ) {
+            $this->loadModel('Vendor');
+            $locale = $this->Vendor->getData('first', array(
+                'conditions' => array(
+                    'Vendor.id' => $id
+                )
+            ));
 
-        if($locale){
-            $value = true;
-            if($locale['Vendor']['status']){
-                $value = false;
-            }
+            if($locale){
+                $value = true;
+                if($locale['Vendor']['status']){
+                    $value = false;
+                }
 
-            $this->Vendor->id = $id;
-            $this->Vendor->set('status', $value);
-            if($this->Vendor->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status vendor ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                $this->Vendor->id = $id;
+                $this->Vendor->set('status', $value);
+                if($this->Vendor->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status vendor ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status vendor ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status vendor ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                $this->MkCommon->setCustomFlash(__('Vendor tidak ditemukan.'), 'error');
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Vendor tidak ditemukan.'), 'error');
-        }
 
-        $this->redirect($this->referer());
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     public function coas() {
-        $this->loadModel('Coa');
-        $coas = $this->Coa->getData('threaded', array(
-            'conditions' => array(
-                'Coa.status' => 1
-            ),
-        ));
-
-        $this->set('active_menu', 'coas');
-        $this->set('module_title', 'Data Master');
-        $this->set('sub_module_title', 'COA ( Chart Of Account )');
-        $this->set('coas', $coas);
-    }
-
-    public function coa_add( $parent_id = false ) {
-        $this->loadModel('Coa');
-        $coa = false;
-
-        if( !empty($parent_id) ) {
-            $coa = $this->Coa->getData('first', array(
+        if( in_array('view_coas', $this->allowModule) ) {
+            $this->loadModel('Coa');
+            $coas = $this->Coa->getData('threaded', array(
                 'conditions' => array(
                     'Coa.status' => 1
                 ),
             ));
 
-            if( !empty($coa) ) {
-                $this->set('coa', $coa);
-                $this->set('sub_module_title', sprintf(__('Tambah COA - %s', $coa['Coa']['name'])));
-            } else {
-                $this->MkCommon->setCustomFlash(__('Coa tidak ditemukan.'), 'error');
-                $this->redirect($this->referer());
-            }
+            $this->set('active_menu', 'coas');
+            $this->set('module_title', 'Data Master');
+            $this->set('sub_module_title', 'COA ( Chart Of Account )');
+            $this->set('coas', $coas);
         } else {
-            $this->set('sub_module_title', 'Tambah COA');
+            $this->redirect($this->referer());
         }
+    }
 
-        $this->doCoa( false, false, $parent_id, $coa );
+    public function coa_add( $parent_id = false ) {
+        if( in_array('insert_coas', $this->allowModule) ) {
+            $this->loadModel('Coa');
+            $coa = false;
+
+            if( !empty($parent_id) ) {
+                $coa = $this->Coa->getData('first', array(
+                    'conditions' => array(
+                        'Coa.status' => 1
+                    ),
+                ));
+
+                if( !empty($coa) ) {
+                    $this->set('coa', $coa);
+                    $this->set('sub_module_title', sprintf(__('Tambah COA - %s', $coa['Coa']['name'])));
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Coa tidak ditemukan.'), 'error');
+                    $this->redirect($this->referer());
+                }
+            } else {
+                $this->set('sub_module_title', 'Tambah COA');
+            }
+
+            $this->doCoa( false, false, $parent_id, $coa );
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function doCoa($id = false, $data_local = false, $parent_id = false, $coa = false ){
@@ -637,52 +693,64 @@ class SettingsController extends AppController {
     }
 
     function companies(){
-        $this->loadModel('Company');
-        $options = array();
+        if( in_array('view_companies', $this->allowModule) ) {
+            $this->loadModel('Company');
+            $options = array();
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['Company']['name'] = $name;
-                $options['conditions']['Company.name LIKE '] = '%'.$name.'%';
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['Company']['name'] = $name;
+                    $options['conditions']['Company.name LIKE '] = '%'.$name.'%';
+                }
             }
-        }
-        $this->paginate = $this->Company->getData('paginate', $options);
-        $companies = $this->paginate('Company');
+            $this->paginate = $this->Company->getData('paginate', $options);
+            $companies = $this->paginate('Company');
 
-        $this->set('active_menu', 'companies');
-        $this->set('module_title', 'Data Master');
-        $this->set('sub_module_title', 'Company');
-        $this->set(compact(
-            'companies'
-        ));
+            $this->set('active_menu', 'companies');
+            $this->set('module_title', 'Data Master');
+            $this->set('sub_module_title', 'Company');
+            $this->set(compact(
+                'companies'
+            ));
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function company_add(){
-        $this->loadModel('Company');
-        $this->set('sub_module_title', 'Tambah Company');
-        $this->doCompany();
+        if( in_array('insert_companies', $this->allowModule) ) {
+            $this->loadModel('Company');
+            $this->set('sub_module_title', 'Tambah Company');
+            $this->doCompany();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function company_edit($id){
-        $this->loadModel('Company');
-        $this->set('sub_module_title', 'Rubah Company');
-        $company = $this->Company->getData('first', array(
-            'conditions' => array(
-                'Company.id' => $id
-            )
-        ));
-
-        if(!empty($company)){
-            $this->doCompany($id, $company);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Company tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'companies'
+        if( in_array('update_companies', $this->allowModule) ) {
+            $this->loadModel('Company');
+            $this->set('sub_module_title', 'Rubah Company');
+            $company = $this->Company->getData('first', array(
+                'conditions' => array(
+                    'Company.id' => $id
+                )
             ));
+
+            if(!empty($company)){
+                $this->doCompany($id, $company);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Company tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'companies'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
@@ -728,63 +796,75 @@ class SettingsController extends AppController {
     }
 
     function company_toggle($id){
-        $this->loadModel('Company');
-        $locale = $this->Company->getData('first', array(
-            'conditions' => array(
-                'Company.id' => $id
-            )
-        ));
+        if( in_array('delete_companies', $this->allowModule) ) {
+            $this->loadModel('Company');
+            $locale = $this->Company->getData('first', array(
+                'conditions' => array(
+                    'Company.id' => $id
+                )
+            ));
 
-        if($locale){
-            $value = true;
-            if($locale['Company']['status']){
-                $value = false;
-            }
+            if($locale){
+                $value = true;
+                if($locale['Company']['status']){
+                    $value = false;
+                }
 
-            $this->Company->id = $id;
-            $this->Company->set('status', $value);
-            if($this->Company->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status company ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );    
+                $this->Company->id = $id;
+                $this->Company->set('status', $value);
+                if($this->Company->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status company ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );    
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status company ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );    
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status company ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );    
+                $this->MkCommon->setCustomFlash(__('Company tidak ditemukan.'), 'error');
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Company tidak ditemukan.'), 'error');
-        }
 
-        $this->redirect($this->referer());
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     public function uang_jalan() {
-        $this->loadModel('UangJalan');
-        $options = array();
+        if( in_array('view_uang_jalan', $this->allowModule) ) {
+            $this->loadModel('UangJalan');
+            $options = array();
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['Company']['name'] = $name;
-                $options['conditions']['Company.name LIKE '] = '%'.$name.'%';
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['Company']['name'] = $name;
+                    $options['conditions']['Company.name LIKE '] = '%'.$name.'%';
+                }
             }
-        }
-        $this->paginate = $this->UangJalan->getData('paginate', $options);
-        $uangJalans = $this->paginate('UangJalan');
+            $this->paginate = $this->UangJalan->getData('paginate', $options);
+            $uangJalans = $this->paginate('UangJalan');
 
-        $this->set('active_menu', 'uang_jalan');
-        $this->set('module_title', 'Data Master');
-        $this->set('sub_module_title', 'Uang Jalan');
-        $this->set(compact(
-            'uangJalans'
-        ));
+            $this->set('active_menu', 'uang_jalan');
+            $this->set('module_title', 'Data Master');
+            $this->set('sub_module_title', 'Uang Jalan');
+            $this->set(compact(
+                'uangJalans'
+            ));
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     public function uang_jalan_add() {
-        $this->loadModel('UangJalan');
-        $this->set('sub_module_title', 'Tambah Uang Jalan');
-        $this->doUangJalan();
+        if( in_array('insert_uang_jalan', $this->allowModule) ) {
+            $this->loadModel('UangJalan');
+            $this->set('sub_module_title', 'Tambah Uang Jalan');
+            $this->doUangJalan();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function saveTipeMotor ( $data = false, $uang_jalan_id = false ) {
@@ -792,16 +872,15 @@ class SettingsController extends AppController {
             'validates' => true,
             'data' => false,
         );
+        if( !empty($uang_jalan_id) ) {
+            $this->UangJalan->UangJalanTipeMotor->updateAll( array(
+                'UangJalanTipeMotor.status' => 0,
+            ), array(
+                'UangJalanTipeMotor.uang_jalan_id' => $uang_jalan_id,
+            ));
+        }
 
         if( !empty($data['UangJalanTipeMotor']['tipe_motor_id']) ) {
-            if( !empty($uang_jalan_id) ) {
-                $this->UangJalan->UangJalanTipeMotor->updateAll( array(
-                    'UangJalanTipeMotor.status' => 0,
-                ), array(
-                    'UangJalanTipeMotor.uang_jalan_id' => $uang_jalan_id,
-                ));
-            }
-
             foreach ($data['UangJalanTipeMotor']['tipe_motor_id'] as $key => $tipe_motor_id) {
                 $dataValidate['UangJalanTipeMotor']['tipe_motor_id'] = $tipe_motor_id;
                 $dataValidate['UangJalanTipeMotor']['uang_jalan_1'] = !empty($data['UangJalanTipeMotor']['uang_jalan_1'][$key])?$this->MkCommon->convertPriceToString($data['UangJalanTipeMotor']['uang_jalan_1'][$key], 0):0;
@@ -942,106 +1021,126 @@ class SettingsController extends AppController {
     }
 
     function uang_jalan_edit($id){
-        $this->loadModel('UangJalan');
-        $this->set('sub_module_title', 'Rubah Uang Jalan');
-        $uangJalan = $this->UangJalan->getData('first', array(
-            'conditions' => array(
-                'UangJalan.id' => $id
-            )
-        ));
-
-        if(!empty($uangJalan)){
-            $this->doUangJalan($id, $uangJalan);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Uang jalan tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'uang_jalan'
+        if( in_array('update_uang_jalan', $this->allowModule) ) {
+            $this->loadModel('UangJalan');
+            $this->set('sub_module_title', 'Rubah Uang Jalan');
+            $uangJalan = $this->UangJalan->getData('first', array(
+                'conditions' => array(
+                    'UangJalan.id' => $id
+                )
             ));
+
+            if(!empty($uangJalan)){
+                $this->doUangJalan($id, $uangJalan);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Uang jalan tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'uang_jalan'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
     function uang_jalan_toggle( $id = false ){
-        $this->loadModel('UangJalan');
-        $locale = $this->UangJalan->getData('first', array(
-            'conditions' => array(
-                'UangJalan.id' => $id
-            )
-        ));
+        if( in_array('delete_uang_jalan', $this->allowModule) ) {
+            $this->loadModel('UangJalan');
+            $locale = $this->UangJalan->getData('first', array(
+                'conditions' => array(
+                    'UangJalan.id' => $id
+                )
+            ));
 
-        if($locale){
-            $value = true;
-            if($locale['UangJalan']['status']){
-                $value = false;
-            }
+            if($locale){
+                $value = true;
+                if($locale['UangJalan']['status']){
+                    $value = false;
+                }
 
-            $this->UangJalan->id = $id;
-            $this->UangJalan->set('status', $value);
-            if($this->UangJalan->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Uang Jalan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                $this->UangJalan->id = $id;
+                $this->UangJalan->set('status', $value);
+                if($this->UangJalan->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status Uang Jalan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status Uang Jalan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Uang Jalan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                $this->MkCommon->setCustomFlash(__('Uang Jalan tidak ditemukan.'), 'error');
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Uang Jalan tidak ditemukan.'), 'error');
-        }
 
-        $this->redirect($this->referer());
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function perlengkapan(){
-        $this->loadModel('Perlengkapan');
-        $options = array(
-            'order' => array(
-                'Perlengkapan.name' => 'ASC'
-            ),
-        );
+        if( in_array('view_perlengkapan', $this->allowModule) ) {
+            $this->loadModel('Perlengkapan');
+            $options = array(
+                'order' => array(
+                    'Perlengkapan.name' => 'ASC'
+                ),
+            );
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['Perlengkapan']['name'] = $name;
-                $options['conditions']['Perlengkapan.name LIKE '] = '%'.$name.'%';
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['Perlengkapan']['name'] = $name;
+                    $options['conditions']['Perlengkapan.name LIKE '] = '%'.$name.'%';
+                }
             }
-        }
-        $this->paginate = $this->Perlengkapan->getData('paginate', $options);
-        $perlengkapans = $this->paginate('Perlengkapan');
+            $this->paginate = $this->Perlengkapan->getData('paginate', $options);
+            $perlengkapans = $this->paginate('Perlengkapan');
 
-        $this->set('active_menu', 'perlengkapan');
-        $this->set('module_title', 'Data Master');
-        $this->set('sub_module_title', 'Perlengkapan');
-        $this->set(compact(
-            'perlengkapans'
-        ));
+            $this->set('active_menu', 'perlengkapan');
+            $this->set('module_title', 'Data Master');
+            $this->set('sub_module_title', 'Perlengkapan');
+            $this->set(compact(
+                'perlengkapans'
+            ));
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function perlengkapan_add(){
-        $this->loadModel('Perlengkapan');
-        $this->set('sub_module_title', 'Tambah Perlengkapan');
-        $this->doPerlengkapan();
+        if( in_array('insert_perlengkapan', $this->allowModule) ) {
+            $this->loadModel('Perlengkapan');
+            $this->set('sub_module_title', 'Tambah Perlengkapan');
+            $this->doPerlengkapan();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function perlengkapan_edit($id){
-        $this->loadModel('Perlengkapan');
-        $this->set('sub_module_title', 'Rubah Perlengkapan');
-        $perlengkapan = $this->Perlengkapan->getData('first', array(
-            'conditions' => array(
-                'Perlengkapan.id' => $id
-            )
-        ));
-
-        if(!empty($perlengkapan)){
-            $this->doPerlengkapan($id, $perlengkapan);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Perlengkapan tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'perlengkapan'
+        if( in_array('update_perlengkapan', $this->allowModule) ) {
+            $this->loadModel('Perlengkapan');
+            $this->set('sub_module_title', 'Rubah Perlengkapan');
+            $perlengkapan = $this->Perlengkapan->getData('first', array(
+                'conditions' => array(
+                    'Perlengkapan.id' => $id
+                )
             ));
+
+            if(!empty($perlengkapan)){
+                $this->doPerlengkapan($id, $perlengkapan);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Perlengkapan tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'perlengkapan'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
@@ -1096,33 +1195,37 @@ class SettingsController extends AppController {
     }
 
     function perlengkapan_toggle($id){
-        $this->loadModel('Perlengkapan');
-        $locale = $this->Perlengkapan->getData('first', array(
-            'conditions' => array(
-                'Perlengkapan.id' => $id
-            )
-        ));
+        if( in_array('delete_perlengkapan', $this->allowModule) ) {
+            $this->loadModel('Perlengkapan');
+            $locale = $this->Perlengkapan->getData('first', array(
+                'conditions' => array(
+                    'Perlengkapan.id' => $id
+                )
+            ));
 
-        if($locale){
-            $value = true;
-            if($locale['Perlengkapan']['status']){
-                $value = false;
-            }
+            if($locale){
+                $value = true;
+                if($locale['Perlengkapan']['status']){
+                    $value = false;
+                }
 
-            $this->Perlengkapan->id = $id;
-            $this->Perlengkapan->set('status', $value);
-            if($this->Perlengkapan->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status perlengkapan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                $this->Perlengkapan->id = $id;
+                $this->Perlengkapan->set('status', $value);
+                if($this->Perlengkapan->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status perlengkapan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status perlengkapan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status perlengkapan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                $this->MkCommon->setCustomFlash(__('Perlengkapan tidak ditemukan.'), 'error');
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Perlengkapan tidak ditemukan.'), 'error');
-        }
 
-        $this->redirect($this->referer());
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function type_motors(){
@@ -1762,50 +1865,62 @@ class SettingsController extends AppController {
     }
 
     function branches(){
-        $this->loadModel('Branch');
-        $options = array();
+        if( in_array('view_branches', $this->allowModule) ) {
+            $this->loadModel('Branch');
+            $options = array();
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['Branch']['name'] = $name;
-                $options['conditions']['Branch.name LIKE '] = '%'.$name.'%';
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['Branch']['name'] = $name;
+                    $options['conditions']['Branch.name LIKE '] = '%'.$name.'%';
+                }
             }
+
+            $this->paginate = $this->Branch->getData('paginate', $options);
+            $branches = $this->paginate('Branch');
+
+            $this->set('active_menu', 'branches');
+            $this->set('sub_module_title', 'Cabang Perusahaan');
+            $this->set('branches', $branches);
+        } else {
+            $this->redirect($this->referer());
         }
-
-        $this->paginate = $this->Branch->getData('paginate', $options);
-        $branches = $this->paginate('Branch');
-
-        $this->set('active_menu', 'branches');
-        $this->set('sub_module_title', 'Cabang Perusahaan');
-        $this->set('branches', $branches);
     }
 
     function branch_add(){
-        $this->loadModel('Branch');
-        $this->set('sub_module_title', 'Tambah Cabang');
-        $this->doBranch();
+        if( in_array('insert_branches', $this->allowModule) ) {
+            $this->loadModel('Branch');
+            $this->set('sub_module_title', 'Tambah Cabang');
+            $this->doBranch();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function branch_edit($id){
-        $this->loadModel('Branch');
-        $this->set('sub_module_title', 'Rubah Cabang');
-        $branch = $this->Branch->getData('first', array(
-            'conditions' => array(
-                'Branch.id' => $id
-            )
-        ));
-
-        if(!empty($branch)){
-            $this->doBranch($id, $branch);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Cabang tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'branches'
+        if( in_array('update_branches', $this->allowModule) ) {
+            $this->loadModel('Branch');
+            $this->set('sub_module_title', 'Rubah Cabang');
+            $branch = $this->Branch->getData('first', array(
+                'conditions' => array(
+                    'Branch.id' => $id
+                )
             ));
+
+            if(!empty($branch)){
+                $this->doBranch($id, $branch);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Cabang tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'branches'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
@@ -1846,81 +1961,97 @@ class SettingsController extends AppController {
     }
 
     function branch_toggle($id){
-        $this->loadModel('Branch');
-        $locale = $this->Branch->getData('first', array(
-            'conditions' => array(
-                'Branch.id' => $id
-            )
-        ));
+        if( in_array('delete_branches', $this->allowModule) ) {
+            $this->loadModel('Branch');
+            $locale = $this->Branch->getData('first', array(
+                'conditions' => array(
+                    'Branch.id' => $id
+                )
+            ));
 
-        if($locale){
-            $value = true;
-            if($locale['Branch']['status']){
-                $value = false;
-            }
+            if($locale){
+                $value = true;
+                if($locale['Branch']['status']){
+                    $value = false;
+                }
 
-            $this->Branch->id = $id;
-            $this->Branch->set('status', 0);
+                $this->Branch->id = $id;
+                $this->Branch->set('status', 0);
 
-            if($this->Branch->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses menghapus data cabang.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses menghapus data cabang ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                if($this->Branch->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses menghapus data cabang.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses menghapus data cabang ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal menghapus data cabang.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal menghapus data cabang ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal menghapus data cabang.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal menghapus data cabang ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->MkCommon->setCustomFlash(__('Cabang tidak ditemukan.'), 'error');
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Cabang tidak ditemukan.'), 'error');
-        }
 
-        $this->redirect($this->referer());
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     public function customer_groups () {
-        $this->loadModel('CustomerGroup');
-        $options = array();
+        if( in_array('view_group_customers', $this->allowModule) ) {
+            $this->loadModel('CustomerGroup');
+            $options = array();
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['CustomerGroup']['name'] = $name;
-                $options['conditions']['CustomerGroup.name LIKE '] = '%'.$name.'%';
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['CustomerGroup']['name'] = $name;
+                    $options['conditions']['CustomerGroup.name LIKE '] = '%'.$name.'%';
+                }
             }
-        }
-        $this->paginate = $this->CustomerGroup->getData('paginate', $options);
-        $customerGroups = $this->paginate('CustomerGroup');
+            $this->paginate = $this->CustomerGroup->getData('paginate', $options);
+            $customerGroups = $this->paginate('CustomerGroup');
 
-        $this->set('active_menu', 'customer_groups');
-        $this->set('module_title', 'Data Master');
-        $this->set('sub_module_title', 'Grup Customer');
-        $this->set('customerGroups', $customerGroups);        
+            $this->set('active_menu', 'customer_groups');
+            $this->set('module_title', 'Data Master');
+            $this->set('sub_module_title', 'Grup Customer');
+            $this->set('customerGroups', $customerGroups);
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function customer_group_add(){
-        $this->loadModel('CustomerGroup');
-        $this->set('sub_module_title', 'Tambah Grup Customer');
-        $this->doCustomerGroup();
+        if( in_array('insert_group_customers', $this->allowModule) ) {
+            $this->loadModel('CustomerGroup');
+            $this->set('sub_module_title', 'Tambah Grup Customer');
+            $this->doCustomerGroup();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function customer_group_edit($id){
-        $this->loadModel('CustomerGroup');
-        $this->set('sub_module_title', 'Rubah Grup Customer');
-        $customerGroup = $this->CustomerGroup->getData('first', array(
-            'conditions' => array(
-                'CustomerGroup.id' => $id
-            )
-        ));
-
-        if(!empty($customerGroup)){
-            $this->doCustomerGroup($id, $customerGroup);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Grup Customer tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'customer_groups'
+        if( in_array('update_group_customers', $this->allowModule) ) {
+            $this->loadModel('CustomerGroup');
+            $this->set('sub_module_title', 'Rubah Grup Customer');
+            $customerGroup = $this->CustomerGroup->getData('first', array(
+                'conditions' => array(
+                    'CustomerGroup.id' => $id
+                )
             ));
+
+            if(!empty($customerGroup)){
+                $this->doCustomerGroup($id, $customerGroup);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Grup Customer tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'customer_groups'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
@@ -1965,80 +2096,96 @@ class SettingsController extends AppController {
     }
 
     function customer_group_toggle($id){
-        $this->loadModel('CustomerGroup');
-        $locale = $this->CustomerGroup->getData('first', array(
-            'conditions' => array(
-                'CustomerGroup.id' => $id
-            )
-        ));
+        if( in_array('delete_group_customers', $this->allowModule) ) {
+            $this->loadModel('CustomerGroup');
+            $locale = $this->CustomerGroup->getData('first', array(
+                'conditions' => array(
+                    'CustomerGroup.id' => $id
+                )
+            ));
 
-        if($locale){
-            $value = true;
-            if($locale['CustomerGroup']['status']){
-                $value = false;
-            }
+            if($locale){
+                $value = true;
+                if($locale['CustomerGroup']['status']){
+                    $value = false;
+                }
 
-            $this->CustomerGroup->id = $id;
-            $this->CustomerGroup->set('status', 0);
+                $this->CustomerGroup->id = $id;
+                $this->CustomerGroup->set('status', 0);
 
-            if($this->CustomerGroup->save()){
-                $this->MkCommon->setCustomFlash(__('Grup customer telah berhasil dihapus.'), 'success');
-                $this->Log->logActivity( sprintf(__('Grup customer ID #%s telah berhasil dihapus.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                if($this->CustomerGroup->save()){
+                    $this->MkCommon->setCustomFlash(__('Grup customer telah berhasil dihapus.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Grup customer ID #%s telah berhasil dihapus.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal menghapus Grup Customer.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Grup customer ID #%s telah Gagal dihapus.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal menghapus Grup Customer.'), 'error');
-                $this->Log->logActivity( sprintf(__('Grup customer ID #%s telah Gagal dihapus.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->MkCommon->setCustomFlash(__('Grup Customer tidak ditemukan.'), 'error');
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Grup Customer tidak ditemukan.'), 'error');
-        }
 
-        $this->redirect($this->referer());
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function jenis_sim(){
-        $this->loadModel('JenisSim');
-        $options = array();
+        if( in_array('view_jenis_sim', $this->allowModule) ) {
+            $this->loadModel('JenisSim');
+            $options = array();
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['JenisSim']['name'] = $name;
-                $options['conditions']['JenisSim.name LIKE '] = '%'.$name.'%';
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['JenisSim']['name'] = $name;
+                    $options['conditions']['JenisSim.name LIKE '] = '%'.$name.'%';
+                }
             }
+
+            $this->paginate = $this->JenisSim->getData('paginate', $options);
+            $jenis_sim = $this->paginate('JenisSim');
+
+            $this->set('active_menu', 'jenis_sim');
+            $this->set('sub_module_title', 'Jenis SIM');
+            $this->set('jenis_sim', $jenis_sim);
+        } else {
+            $this->redirect($this->referer());
         }
-
-        $this->paginate = $this->JenisSim->getData('paginate', $options);
-        $jenis_sim = $this->paginate('JenisSim');
-
-        $this->set('active_menu', 'jenis_sim');
-        $this->set('sub_module_title', 'Jenis SIM');
-        $this->set('jenis_sim', $jenis_sim);
     }
 
     function sim_add(){
-        $this->set('sub_module_title', 'Tambah Jenis SIM');
-        $this->doSim();
+        if( in_array('insert_jenis_sim', $this->allowModule) ) {
+            $this->set('sub_module_title', 'Tambah Jenis SIM');
+            $this->doSim();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function sim_edit($id){
-        $this->loadModel('JenisSim');
-        $this->set('sub_module_title', 'Rubah Jenis SIM');
-        $jenis_sim = $this->JenisSim->getData('first', array(
-            'conditions' => array(
-                'JenisSim.id' => $id
-            )
-        ));
-
-        if(!empty($jenis_sim)){
-            $this->doSim($id, $jenis_sim);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Jenis SIM tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'sims'
+        if( in_array('update_jenis_sim', $this->allowModule) ) {
+            $this->loadModel('JenisSim');
+            $this->set('sub_module_title', 'Rubah Jenis SIM');
+            $jenis_sim = $this->JenisSim->getData('first', array(
+                'conditions' => array(
+                    'JenisSim.id' => $id
+                )
             ));
+
+            if(!empty($jenis_sim)){
+                $this->doSim($id, $jenis_sim);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Jenis SIM tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'sims'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
@@ -2083,33 +2230,37 @@ class SettingsController extends AppController {
     }
 
     function sim_toggle($id){
-        $this->loadModel('JenisSim');
-        $locale = $this->JenisSim->getData('first', array(
-            'conditions' => array(
-                'JenisSim.id' => $id
-            )
-        ));
+        if( in_array('delete_jenis_sim', $this->allowModule) ) {
+            $this->loadModel('JenisSim');
+            $locale = $this->JenisSim->getData('first', array(
+                'conditions' => array(
+                    'JenisSim.id' => $id
+                )
+            ));
 
-        if($locale){
-            $value = true;
-            if($locale['JenisSim']['status']){
-                $value = false;
-            }
+            if($locale){
+                $value = true;
+                if($locale['JenisSim']['status']){
+                    $value = false;
+                }
 
-            $this->JenisSim->id = $id;
-            $this->JenisSim->set('status', $value);
-            if($this->JenisSim->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status jenis sim ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                $this->JenisSim->id = $id;
+                $this->JenisSim->set('status', $value);
+                if($this->JenisSim->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status jenis sim ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status jenis sim ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status jenis sim ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                $this->MkCommon->setCustomFlash(__('Jenis SIM tidak ditemukan.'), 'error');
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Jenis SIM tidak ditemukan.'), 'error');
-        }
 
-        $this->redirect($this->referer());
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function jenis_perlengkapan(){
@@ -2230,57 +2381,69 @@ class SettingsController extends AppController {
     }
 
     function classifications(){
-        $this->loadModel('GroupClassification');
-        $options = array(
-            'conditions' => array(
-                'GroupClassification.status' => 1,
-            ),
-            'order' => array(
-                'GroupClassification.name',
-            ),
-        );
+        if( in_array('view_classifications', $this->allowModule) ) {
+            $this->loadModel('GroupClassification');
+            $options = array(
+                'conditions' => array(
+                    'GroupClassification.status' => 1,
+                ),
+                'order' => array(
+                    'GroupClassification.name',
+                ),
+            );
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['GroupClassification']['name'] = $name;
-                $options['conditions']['GroupClassification.name LIKE '] = '%'.$name.'%';
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['GroupClassification']['name'] = $name;
+                    $options['conditions']['GroupClassification.name LIKE '] = '%'.$name.'%';
+                }
             }
+
+            $this->paginate = $options;
+            $groupClassifications = $this->paginate('GroupClassification');
+
+            $this->set('active_menu', 'classifications');
+            $this->set('sub_module_title', __('Klasifikasi'));
+            $this->set('groupClassifications', $groupClassifications);
+        } else {
+            $this->redirect($this->referer());
         }
-
-        $this->paginate = $options;
-        $groupClassifications = $this->paginate('GroupClassification');
-
-        $this->set('active_menu', 'classifications');
-        $this->set('sub_module_title', __('Klasifikasi'));
-        $this->set('groupClassifications', $groupClassifications);
     }
 
     function classification_add(){
-        $this->loadModel('GroupClassification');
-        $this->set('sub_module_title', __('Tambah Klasifikasi'));
-        $this->doclassification();
+        if( in_array('insert_classifications', $this->allowModule) ) {
+            $this->loadModel('GroupClassification');
+            $this->set('sub_module_title', __('Tambah Klasifikasi'));
+            $this->doclassification();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function classification_edit($id){
-        $this->loadModel('GroupClassification');
-        $this->set('sub_module_title', __('Rubah Klasifikasi'));
-        $groupClassification = $this->GroupClassification->getData('first', array(
-            'conditions' => array(
-                'GroupClassification.id' => $id
-            )
-        ));
-
-        if(!empty($groupClassification)){
-            $this->doclassification($id, $groupClassification);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Klasifikasi tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'classifications'
+        if( in_array('update_classifications', $this->allowModule) ) {
+            $this->loadModel('GroupClassification');
+            $this->set('sub_module_title', __('Rubah Klasifikasi'));
+            $groupClassification = $this->GroupClassification->getData('first', array(
+                'conditions' => array(
+                    'GroupClassification.id' => $id
+                )
             ));
+
+            if(!empty($groupClassification)){
+                $this->doclassification($id, $groupClassification);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Klasifikasi tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'classifications'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
@@ -2324,99 +2487,115 @@ class SettingsController extends AppController {
     }
 
     function classification_toggle($id){
-        $this->loadModel('GroupClassification');
-        $locale = $this->GroupClassification->getData('first', array(
-            'conditions' => array(
-                'GroupClassification.id' => $id
-            )
-        ));
+        if( in_array('delete_classifications', $this->allowModule) ) {
+            $this->loadModel('GroupClassification');
+            $locale = $this->GroupClassification->getData('first', array(
+                'conditions' => array(
+                    'GroupClassification.id' => $id
+                )
+            ));
 
-        if($locale){
-            $value = true;
-            if($locale['GroupClassification']['status']){
-                $value = false;
-            }
+            if($locale){
+                $value = true;
+                if($locale['GroupClassification']['status']){
+                    $value = false;
+                }
 
-            $this->GroupClassification->id = $id;
-            $this->GroupClassification->set('status', $value);
-            if($this->GroupClassification->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Klasifikasi ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->GroupClassification->id = $id;
+                $this->GroupClassification->set('status', $value);
+                if($this->GroupClassification->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status Klasifikasi ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status Klasifikasi ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Klasifikasi ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->MkCommon->setCustomFlash(__('Klasifikasi tidak ditemukan.'), 'error');
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Klasifikasi tidak ditemukan.'), 'error');
-        }
 
-        $this->redirect($this->referer());
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function tarif_angkutan(){
-        $this->loadModel('Customer');
-        $this->loadModel('TarifAngkutan');
-        $options = array();
+        if( in_array('view_tarif_angkutan', $this->allowModule) ) {
+            $this->loadModel('Customer');
+            $this->loadModel('TarifAngkutan');
+            $options = array();
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['TarifAngkutan']['name'] = $name;
-                $options['conditions']['TarifAngkutan.name_tarif LIKE '] = '%'.$name.'%';
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['TarifAngkutan']['name'] = $name;
+                    $options['conditions']['TarifAngkutan.name_tarif LIKE '] = '%'.$name.'%';
+                }
+                if(!empty($refine['customer_name'])){
+                    $name = urldecode($refine['customer_name']);
+                    $this->request->data['TarifAngkutan']['customer_name'] = $name;
+                    $customers = $this->Customer->getData('list', array(
+                        'conditions' => array(
+                            'CONCAT(Customer.name, \' ( \', CustomerType.name, \' )\') LIKE' => '%'.$name.'%',
+                        ),
+                        'fields' => array(
+                            'Customer.id', 'Customer.id'
+                        ),
+                    ));
+                    $options['conditions']['TarifAngkutan.customer_id'] = $customers;
+                }
             }
-            if(!empty($refine['customer_name'])){
-                $name = urldecode($refine['customer_name']);
-                $this->request->data['TarifAngkutan']['customer_name'] = $name;
-                $customers = $this->Customer->getData('list', array(
-                    'conditions' => array(
-                        'CONCAT(Customer.name, \' ( \', CustomerType.name, \' )\') LIKE' => '%'.$name.'%',
-                    ),
-                    'fields' => array(
-                        'Customer.id', 'Customer.id'
-                    ),
-                ));
-                $options['conditions']['TarifAngkutan.customer_id'] = $customers;
+
+            $this->paginate = $this->TarifAngkutan->getData('paginate', $options);
+            $tarif_angkutan = $this->paginate('TarifAngkutan');
+
+            if(!empty($tarif_angkutan)){
+                foreach ($tarif_angkutan as $key => $value) {
+                    $tarif_angkutan[$key] = $this->Customer->getMerge($value, $value['TarifAngkutan']['customer_id']);
+                }
             }
+
+            $this->set('active_menu', 'tarif_angkutan');
+            $this->set('sub_module_title', 'Tarif Angkutan');
+            $this->set('tarif_angkutan', $tarif_angkutan);
+        } else {
+            $this->redirect($this->referer());
         }
-
-        $this->paginate = $this->TarifAngkutan->getData('paginate', $options);
-        $tarif_angkutan = $this->paginate('TarifAngkutan');
-
-        if(!empty($tarif_angkutan)){
-            foreach ($tarif_angkutan as $key => $value) {
-                $tarif_angkutan[$key] = $this->Customer->getMerge($value, $value['TarifAngkutan']['customer_id']);
-            }
-        }
-
-        $this->set('active_menu', 'tarif_angkutan');
-        $this->set('sub_module_title', 'Tarif Angkutan');
-        $this->set('tarif_angkutan', $tarif_angkutan);
     }
 
     function tarif_angkutan_add(){
-        $this->set('sub_module_title', 'Tambah Tarif Angkutan');
-        $this->doTarifAngkutan();
+        if( in_array('insert_tarif_angkutan', $this->allowModule) ) {
+            $this->set('sub_module_title', 'Tambah Tarif Angkutan');
+            $this->doTarifAngkutan();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function tarif_angkutan_edit($id){
-        $this->loadModel('TarifAngkutan');
-        $this->set('sub_module_title', 'Rubah Tarif Angkutan');
-        $tarif_angkutan = $this->TarifAngkutan->getData('first', array(
-            'conditions' => array(
-                'TarifAngkutan.id' => $id
-            )
-        ));
-
-        if(!empty($tarif_angkutan)){
-            $this->doTarifAngkutan($id, $tarif_angkutan);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Tarif Angkutan tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'tarif_angkutan'
+        if( in_array('update_tarif_angkutan', $this->allowModule) ) {
+            $this->loadModel('TarifAngkutan');
+            $this->set('sub_module_title', 'Rubah Tarif Angkutan');
+            $tarif_angkutan = $this->TarifAngkutan->getData('first', array(
+                'conditions' => array(
+                    'TarifAngkutan.id' => $id
+                )
             ));
+
+            if(!empty($tarif_angkutan)){
+                $this->doTarifAngkutan($id, $tarif_angkutan);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Tarif Angkutan tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'tarif_angkutan'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
@@ -2565,66 +2744,78 @@ class SettingsController extends AppController {
     }
 
     function customer_target_unit(){
-        $this->loadModel('CustomerTargetUnit');
-        $this->loadModel('Customer');
-        $options = array();
+        if( in_array('view_customer_target_unit', $this->allowModule) ) {
+            $this->loadModel('CustomerTargetUnit');
+            $this->loadModel('Customer');
+            $options = array();
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['Customer']['name'] = $name;
-                $customers = $this->Customer->getData('list', array(
-                    'conditions' => array(
-                        'CONCAT(Customer.name, \' ( \', CustomerType.name, \' )\') LIKE' => '%'.$name.'%',
-                    ),
-                    'fields' => array(
-                        'Customer.id', 'Customer.id'
-                    ),
-                ));
-                $options['conditions']['CustomerTargetUnit.customer_id'] = $customers;
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['Customer']['name'] = $name;
+                    $customers = $this->Customer->getData('list', array(
+                        'conditions' => array(
+                            'CONCAT(Customer.name, \' ( \', CustomerType.name, \' )\') LIKE' => '%'.$name.'%',
+                        ),
+                        'fields' => array(
+                            'Customer.id', 'Customer.id'
+                        ),
+                    ));
+                    $options['conditions']['CustomerTargetUnit.customer_id'] = $customers;
+                }
             }
-        }
 
-        $this->paginate = $this->CustomerTargetUnit->getData('paginate', $options);
-        $customerTargetUnits = $this->paginate('CustomerTargetUnit');
+            $this->paginate = $this->CustomerTargetUnit->getData('paginate', $options);
+            $customerTargetUnits = $this->paginate('CustomerTargetUnit');
 
-        if( !empty($customerTargetUnits) ) {
-            foreach ($customerTargetUnits as $key => $customerTargetUnit) {
-                $customerTargetUnit = $this->Customer->getMerge($customerTargetUnit, $customerTargetUnit['CustomerTargetUnit']['customer_id']);
-                $customerTargetUnits[$key] = $customerTargetUnit;
+            if( !empty($customerTargetUnits) ) {
+                foreach ($customerTargetUnits as $key => $customerTargetUnit) {
+                    $customerTargetUnit = $this->Customer->getMerge($customerTargetUnit, $customerTargetUnit['CustomerTargetUnit']['customer_id']);
+                    $customerTargetUnits[$key] = $customerTargetUnit;
+                }
             }
-        }
 
-        $this->set('active_menu', 'customer_target_unit');
-        $this->set('sub_module_title', __('Target Unit'));
-        $this->set('customerTargetUnits', $customerTargetUnits);
+            $this->set('active_menu', 'customer_target_unit');
+            $this->set('sub_module_title', __('Target Unit'));
+            $this->set('customerTargetUnits', $customerTargetUnits);
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function customer_target_unit_add(){
-        $this->loadModel('CustomerTargetUnit');
-        $this->set('sub_module_title', __('Target Unit'));
-        $this->doCustomerTargetUnit();
+        if( in_array('insert_customer_target_unit', $this->allowModule) ) {
+            $this->loadModel('CustomerTargetUnit');
+            $this->set('sub_module_title', __('Target Unit'));
+            $this->doCustomerTargetUnit();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function customer_target_unit_edit($id){
-        $this->loadModel('CustomerTargetUnit');
-        $this->set('sub_module_title', __('Rubah Unit'));
-        $customerTargetUnit = $this->CustomerTargetUnit->getData('first', array(
-            'conditions' => array(
-                'CustomerTargetUnit.id' => $id
-            )
-        ));
-
-        if(!empty($customerTargetUnit)){
-            $this->doCustomerTargetUnit($id, $customerTargetUnit);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Target Unit tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'customer_target_unit'
+        if( in_array('update_customer_target_unit', $this->allowModule) ) {
+            $this->loadModel('CustomerTargetUnit');
+            $this->set('sub_module_title', __('Rubah Unit'));
+            $customerTargetUnit = $this->CustomerTargetUnit->getData('first', array(
+                'conditions' => array(
+                    'CustomerTargetUnit.id' => $id
+                )
             ));
+
+            if(!empty($customerTargetUnit)){
+                $this->doCustomerTargetUnit($id, $customerTargetUnit);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Target Unit tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'customer_target_unit'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
@@ -2727,80 +2918,96 @@ class SettingsController extends AppController {
     }
 
     function customer_target_unit_toggle($id){
-        $this->loadModel('CustomerTargetUnit');
-        $locale = $this->CustomerTargetUnit->getData('first', array(
-            'conditions' => array(
-                'CustomerTargetUnit.id' => $id
-            )
-        ));
+        if( in_array('delete_customer_target_unit', $this->allowModule) ) {
+            $this->loadModel('CustomerTargetUnit');
+            $locale = $this->CustomerTargetUnit->getData('first', array(
+                'conditions' => array(
+                    'CustomerTargetUnit.id' => $id
+                )
+            ));
 
-        if($locale){
-            $value = true;
-            if($locale['CustomerTargetUnit']['status']){
-                $value = false;
-            }
+            if($locale){
+                $value = true;
+                if($locale['CustomerTargetUnit']['status']){
+                    $value = false;
+                }
 
-            $this->CustomerTargetUnit->id = $id;
-            $this->CustomerTargetUnit->set('status', $value);
-            if($this->CustomerTargetUnit->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Target Unit ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->CustomerTargetUnit->id = $id;
+                $this->CustomerTargetUnit->set('status', $value);
+                if($this->CustomerTargetUnit->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status Target Unit ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status Target Unit ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Target Unit ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->MkCommon->setCustomFlash(__('Target Unit tidak ditemukan.'), 'error');
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Target Unit tidak ditemukan.'), 'error');
-        }
 
-        $this->redirect($this->referer());
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function banks(){
-        $this->loadModel('Bank');
-        $options = array();
+        if( in_array('view_banks', $this->allowModule) ) {
+            $this->loadModel('Bank');
+            $options = array();
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['Bank']['name'] = $name;
-                $options['conditions']['Bank.name LIKE '] = '%'.$name.'%';
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['Bank']['name'] = $name;
+                    $options['conditions']['Bank.name LIKE '] = '%'.$name.'%';
+                }
             }
+
+            $this->paginate = $this->Bank->getData('paginate', $options);
+            $banks = $this->paginate('Bank');
+
+            $this->set('active_menu', 'banks');
+            $this->set('sub_module_title', 'Bank');
+            $this->set('banks', $banks);
+        } else {
+            $this->redirect($this->referer());
         }
-
-        $this->paginate = $this->Bank->getData('paginate', $options);
-        $banks = $this->paginate('Bank');
-
-        $this->set('active_menu', 'banks');
-        $this->set('sub_module_title', 'Bank');
-        $this->set('banks', $banks);
     }
 
     function bank_add(){
-        $this->loadModel('Bank');
-        $this->set('sub_module_title', 'Tambah Bank');
-        $this->doBank();
+        if( in_array('insert_banks', $this->allowModule) ) {
+            $this->loadModel('Bank');
+            $this->set('sub_module_title', 'Tambah Bank');
+            $this->doBank();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function bank_edit($id){
-        $this->loadModel('Bank');
-        $this->set('sub_module_title', 'Rubah Bank');
-        $bank = $this->Bank->getData('first', array(
-            'conditions' => array(
-                'Bank.id' => $id
-            )
-        ));
-
-        if(!empty($bank)){
-            $this->doBank($id, $bank);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Bank tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'banks'
+        if( in_array('update_banks', $this->allowModule) ) {
+            $this->loadModel('Bank');
+            $this->set('sub_module_title', 'Rubah Bank');
+            $bank = $this->Bank->getData('first', array(
+                'conditions' => array(
+                    'Bank.id' => $id
+                )
             ));
+
+            if(!empty($bank)){
+                $this->doBank($id, $bank);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Bank tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'banks'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
@@ -2858,84 +3065,100 @@ class SettingsController extends AppController {
     }
 
     function bank_toggle($id){
-        $this->loadModel('Bank');
-        $locale = $this->Bank->getData('first', array(
-            'conditions' => array(
-                'Bank.id' => $id
-            )
-        ));
+        if( in_array('delete_banks', $this->allowModule) ) {
+            $this->loadModel('Bank');
+            $locale = $this->Bank->getData('first', array(
+                'conditions' => array(
+                    'Bank.id' => $id
+                )
+            ));
 
-        if($locale){
-            $value = true;
-            if($locale['Bank']['status']){
-                $value = false;
-            }
+            if($locale){
+                $value = true;
+                if($locale['Bank']['status']){
+                    $value = false;
+                }
 
-            $this->Bank->id = $id;
-            $this->Bank->set('status', $value);
-            if($this->Bank->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->Bank->id = $id;
+                $this->Bank->set('status', $value);
+                if($this->Bank->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->MkCommon->setCustomFlash(__('Bank tidak ditemukan.'), 'error');
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Bank tidak ditemukan.'), 'error');
-        }
 
-        $this->redirect($this->referer());
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function calendar_colors(){
-        $this->loadModel('CalendarColor');
-        $options = array(
-            'conditions' => array(
-                'CalendarColor.status' => 1
-            )
-        );
+        if( in_array('view_calendar_colors', $this->allowModule) ) {
+            $this->loadModel('CalendarColor');
+            $options = array(
+                'conditions' => array(
+                    'CalendarColor.status' => 1
+                )
+            );
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['CalendarColor']['name'] = $name;
-                $options['conditions']['CalendarColor.name LIKE '] = '%'.$name.'%';
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['CalendarColor']['name'] = $name;
+                    $options['conditions']['CalendarColor.name LIKE '] = '%'.$name.'%';
+                }
             }
+
+            $this->paginate = $this->CalendarColor->getData('paginate', $options);
+            $calendarColors = $this->paginate('CalendarColor');
+
+            $this->set('active_menu', 'calendar_colors');
+            $this->set('sub_module_title', 'Warna Kalender');
+            $this->set('calendarColors', $calendarColors);
+        } else {
+            $this->redirect($this->referer());
         }
-
-        $this->paginate = $this->CalendarColor->getData('paginate', $options);
-        $calendarColors = $this->paginate('CalendarColor');
-
-        $this->set('active_menu', 'calendar_colors');
-        $this->set('sub_module_title', 'Warna Kalender');
-        $this->set('calendarColors', $calendarColors);
     }
 
     function calendar_color_add(){
-        $this->loadModel('CalendarColor');
-        $this->set('sub_module_title', 'Tambah Warna Kalender');
-        $this->doCalendarColor();
+        if( in_array('insert_calendar_colors', $this->allowModule) ) {
+            $this->loadModel('CalendarColor');
+            $this->set('sub_module_title', 'Tambah Warna Kalender');
+            $this->doCalendarColor();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function calendar_color_edit($id){
-        $this->loadModel('CalendarColor');
-        $this->set('sub_module_title', 'Rubah Warna Kalender');
-        $calendarColor = $this->CalendarColor->getData('first', array(
-            'conditions' => array(
-                'CalendarColor.id' => $id
-            )
-        ));
-
-        if(!empty($calendarColor)){
-            $this->doCalendarColor($id, $calendarColor);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Warna Kalender tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'calendar_colors'
+        if( in_array('update_calendar_colors', $this->allowModule) ) {
+            $this->loadModel('CalendarColor');
+            $this->set('sub_module_title', 'Rubah Warna Kalender');
+            $calendarColor = $this->CalendarColor->getData('first', array(
+                'conditions' => array(
+                    'CalendarColor.id' => $id
+                )
             ));
+
+            if(!empty($calendarColor)){
+                $this->doCalendarColor($id, $calendarColor);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Warna Kalender tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'calendar_colors'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
@@ -2989,84 +3212,100 @@ class SettingsController extends AppController {
     }
 
     function calendar_color_toggle($id){
-        $this->loadModel('CalendarColor');
-        $locale = $this->CalendarColor->getData('first', array(
-            'conditions' => array(
-                'CalendarColor.id' => $id
-            )
-        ));
+        if( in_array('delete_calendar_colors', $this->allowModule) ) {
+            $this->loadModel('CalendarColor');
+            $locale = $this->CalendarColor->getData('first', array(
+                'conditions' => array(
+                    'CalendarColor.id' => $id
+                )
+            ));
 
-        if($locale){
-            $value = true;
-            if($locale['CalendarColor']['status']){
-                $value = false;
-            }
+            if($locale){
+                $value = true;
+                if($locale['CalendarColor']['status']){
+                    $value = false;
+                }
 
-            $this->CalendarColor->id = $id;
-            $this->CalendarColor->set('status', $value);
-            if($this->CalendarColor->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Warna Kalender ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
+                $this->CalendarColor->id = $id;
+                $this->CalendarColor->set('status', $value);
+                if($this->CalendarColor->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status Warna Kalender ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status Warna Kalender ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Warna Kalender ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
+                $this->MkCommon->setCustomFlash(__('Warna Motor tidak ditemukan.'), 'error');
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Warna Motor tidak ditemukan.'), 'error');
-        }
 
-        $this->redirect($this->referer());
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function calendar_icons(){
-        $this->loadModel('CalendarIcon');
-        $options = array(
-            'conditions' => array(
-                'CalendarIcon.status' => 1
-            )
-        );
+        if( in_array('view_calendar_icons', $this->allowModule) ) {
+            $this->loadModel('CalendarIcon');
+            $options = array(
+                'conditions' => array(
+                    'CalendarIcon.status' => 1
+                )
+            );
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['CalendarIcon']['name'] = $name;
-                $options['conditions']['CalendarIcon.name LIKE '] = '%'.$name.'%';
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['CalendarIcon']['name'] = $name;
+                    $options['conditions']['CalendarIcon.name LIKE '] = '%'.$name.'%';
+                }
             }
+
+            $this->paginate = $this->CalendarIcon->getData('paginate', $options);
+            $calendarIcons = $this->paginate('CalendarIcon');
+
+            $this->set('active_menu', 'calendar_icons');
+            $this->set('sub_module_title', 'Icon Kalender');
+            $this->set('calendarIcons', $calendarIcons);
+        } else {
+            $this->redirect($this->referer());
         }
-
-        $this->paginate = $this->CalendarIcon->getData('paginate', $options);
-        $calendarIcons = $this->paginate('CalendarIcon');
-
-        $this->set('active_menu', 'calendar_icons');
-        $this->set('sub_module_title', 'Icon Kalender');
-        $this->set('calendarIcons', $calendarIcons);
     }
 
     function calendar_icon_add(){
-        $this->loadModel('CalendarIcon');
-        $this->set('sub_module_title', 'Tambah Icon Kalender');
-        $this->doCalendarIcon();
+        if( in_array('insert_calendar_icons', $this->allowModule) ) {
+            $this->loadModel('CalendarIcon');
+            $this->set('sub_module_title', 'Tambah Icon Kalender');
+            $this->doCalendarIcon();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function calendar_icon_edit($id){
-        $this->loadModel('CalendarIcon');
-        $this->set('sub_module_title', 'Rubah Icon Kalender');
-        $calendarIcon = $this->CalendarIcon->getData('first', array(
-            'conditions' => array(
-                'CalendarIcon.id' => $id
-            )
-        ));
-
-        if(!empty($calendarIcon)){
-            $this->doCalendarIcon($id, $calendarIcon);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Icon Kalender tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'calendar_icons'
+        if( in_array('update_calendar_icons', $this->allowModule) ) {
+            $this->loadModel('CalendarIcon');
+            $this->set('sub_module_title', 'Rubah Icon Kalender');
+            $calendarIcon = $this->CalendarIcon->getData('first', array(
+                'conditions' => array(
+                    'CalendarIcon.id' => $id
+                )
             ));
+
+            if(!empty($calendarIcon)){
+                $this->doCalendarIcon($id, $calendarIcon);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Icon Kalender tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'calendar_icons'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
@@ -3138,32 +3377,36 @@ class SettingsController extends AppController {
     }
 
     function calendar_icon_toggle($id){
-        $this->loadModel('CalendarIcon');
-        $locale = $this->CalendarIcon->getData('first', array(
-            'conditions' => array(
-                'CalendarIcon.id' => $id
-            )
-        ));
+        if( in_array('delete_calendar_icons', $this->allowModule) ) {
+            $this->loadModel('CalendarIcon');
+            $locale = $this->CalendarIcon->getData('first', array(
+                'conditions' => array(
+                    'CalendarIcon.id' => $id
+                )
+            ));
 
-        if($locale){
-            $value = true;
-            if($locale['CalendarIcon']['status']){
-                $value = false;
-            }
+            if($locale){
+                $value = true;
+                if($locale['CalendarIcon']['status']){
+                    $value = false;
+                }
 
-            $this->CalendarIcon->id = $id;
-            $this->CalendarIcon->set('status', $value);
-            if($this->CalendarIcon->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Icon Kalender ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
+                $this->CalendarIcon->id = $id;
+                $this->CalendarIcon->set('status', $value);
+                if($this->CalendarIcon->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status Icon Kalender ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status Icon Kalender ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Icon Kalender ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
+                $this->MkCommon->setCustomFlash(__('Icon Motor tidak ditemukan.'), 'error');
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Icon Motor tidak ditemukan.'), 'error');
-        }
 
-        $this->redirect($this->referer());
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 }
