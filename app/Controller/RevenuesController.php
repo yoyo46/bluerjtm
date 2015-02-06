@@ -2815,4 +2815,77 @@ class RevenuesController extends AppController {
             $this->set(compact('invoice', 'revenue_detail', 'action'));
         }
     }
+
+    function invoice_reports(){
+        // if( in_array('view_revenues', $this->allowModule) ) {
+            $this->loadModel('Invoice');
+            $this->set('active_menu', 'revenue');
+            $this->set('sub_module_title', __('Laporan Invoice Aging'));
+
+            $customers = $this->Invoice->Customer->getData('all', array(
+                'conditions' => array(
+                    'Customer.status' => 1
+                )
+            ));
+            $list_customer = array();
+            foreach ($customers as $key => $value) {
+                $default_conditions = array(
+                    'Invoice.paid' => 0
+                );
+                $customers[$key]['piutang'] = $this->Invoice->getData('all', array(
+                    'conditions' => $default_conditions,
+                    'fields' => array(
+                        'SUM(Invoice.total) as total_pituang'
+                    )
+                ));
+
+                $default_conditions = array(
+                    'Invoice.paid' => 1
+                );
+                $customers[$key]['current'] = $this->Invoice->getData('all', array(
+                    'conditions' => $default_conditions,
+                    'fields' => array(
+                        'SUM(Invoice.total) as current'
+                    )
+                ));
+
+                $default_conditions = array(
+                    'Invoice.due_invoice >=' => 1,
+                    'Invoice.due_invoice <=' => 15,
+                );
+                $customers[$key]['current_rev1to15'] = $this->Invoice->getData('all', array(
+                    'conditions' => $default_conditions,
+                    'fields' => array(
+                        'SUM(Invoice.total) as current_rev1to15'
+                    )
+                ));
+                $default_conditions = array(
+                    'Invoice.due_invoice >=' => 16,
+                    'Invoice.due_invoice <=' => 30,
+                );
+                $customers[$key]['current_rev16to30'] = $this->Invoice->getData('all', array(
+                    'conditions' => $default_conditions,
+                    'fields' => array(
+                        'SUM(Invoice.total) as current_rev16to30'
+                    )
+                ));
+
+                $default_conditions = array(
+                    'Invoice.due_invoice >' => 30,
+                );
+                $customers[$key]['current_rev30'] = $this->Invoice->getData('all', array(
+                    'conditions' => $default_conditions,
+                    'fields' => array(
+                        'SUM(Invoice.total) as current_rev30'
+                    )
+                ));
+
+                $list_customer[$value['Customer']['id']] = $value['Customer']['name'];
+            }
+
+            $this->set(compact('customers', 'list_customer'));
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
 }

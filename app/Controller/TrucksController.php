@@ -2447,7 +2447,7 @@ class TrucksController extends AppController {
     }
 
     function reports($data_action = false) {
-        if( in_array('view_truck_reports', $this->allowModule) ) {
+        // if( in_array('view_truck_reports', $this->allowModule) ) {
             $this->set('active_menu', 'reports');
             $this->set('sub_module_title', __('Laporan Truk'));
             
@@ -2512,9 +2512,9 @@ class TrucksController extends AppController {
             }else if($data_action == 'excel'){
                 $this->layout = 'ajax';
             }
-        } else {
-            $this->redirect($this->referer());
-        }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
     }
 
     function facilities(){
