@@ -2742,10 +2742,13 @@ class RevenuesController extends AppController {
         }
 
         $this->loadModel('Customer');
-        $customers = $this->Customer->find('list', array(
+        $customers = $this->Customer->getData('list', array(
             'conditions' => array(
                 'Customer.status' => 1
-            )
+            ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name'
+            ),
         ));
         
         $this->set(compact('customers', 'id', 'action'));
