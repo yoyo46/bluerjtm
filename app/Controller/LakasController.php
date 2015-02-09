@@ -28,7 +28,7 @@ class LakasController extends AppController {
 	public function index() {
         if( in_array('view_lakas', $this->allowModule) ) {
             $this->loadModel('Laka');
-    		$this->set('active_menu', 'Lakas');
+    		$this->set('active_menu', 'lakas');
     		$this->set('sub_module_title', __('Data LAKA'));
             $conditions = array();
             
@@ -211,7 +211,12 @@ class LakasController extends AppController {
         $ttujs = $this->Ttuj->getData('all', array(
             'fields' => array(
                 'Ttuj.id', 'Ttuj.driver_name', 'Ttuj.no_ttuj'
-            )
+            ),
+            'conditions' => array(
+                'Ttuj.is_pool <>' => 1,
+                'Ttuj.is_draft' => 0,
+                'Ttuj.status' => 1,
+            ),
         ));
 
         $result = array();
@@ -230,7 +235,7 @@ class LakasController extends AppController {
 
         $this->set(compact('material', 'insurance'));
 
-        $this->set('active_menu', 'Lakas');
+        $this->set('active_menu', 'lakas');
         $this->set('ttujs', $ttujs);
         $this->render('laka_form');
     }

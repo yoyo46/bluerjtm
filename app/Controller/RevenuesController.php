@@ -1759,7 +1759,7 @@ class RevenuesController extends AppController {
         // if( in_array('view_revenues', $this->allowModule) ) {
             $this->loadModel('Revenue');
             $this->loadModel('Ttuj');
-            $this->set('active_menu', 'revenue');
+            $this->set('active_menu', 'revenues');
             $this->set('sub_module_title', __('Revenue'));
 
             $conditions = array();
@@ -2510,7 +2510,7 @@ class RevenuesController extends AppController {
     function invoices(){
         // if( in_array('view_revenues', $this->allowModule) ) {
             $this->loadModel('Invoice');
-            $this->set('active_menu', 'revenue');
+            $this->set('active_menu', 'invoices');
             $this->set('sub_module_title', __('Invoice'));
 
             $conditions = array();
@@ -2752,7 +2752,7 @@ class RevenuesController extends AppController {
         ));
         
         $this->set(compact('customers', 'id', 'action'));
-        
+        $this->set('active_menu', 'invoices');
         $this->render('invoice_form');
     }
 
@@ -2827,7 +2827,7 @@ class RevenuesController extends AppController {
     }
 
     function invoice_reports(){
-        // if( in_array('view_revenues', $this->allowModule) ) {
+        if( in_array('view_revenue_reports', $this->allowModule) ) {
             $this->loadModel('Invoice');
             $this->set('active_menu', 'revenue');
             $this->set('sub_module_title', __('Laporan Invoice Aging'));
@@ -2892,10 +2892,11 @@ class RevenuesController extends AppController {
 
                 $list_customer[$value['Customer']['id']] = $value['Customer']['name'];
             }
+            $this->set('active_menu', 'invoice_reports');
 
             $this->set(compact('customers', 'list_customer'));
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 }

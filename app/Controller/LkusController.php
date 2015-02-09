@@ -28,7 +28,7 @@ class LkusController extends AppController {
 	public function index() {
         if( in_array('view_lkus', $this->allowModule) ) {
             $this->loadModel('Lku');
-    		$this->set('active_menu', 'Lkus');
+    		$this->set('active_menu', 'lkus');
     		$this->set('sub_module_title', __('Data Lku'));
             $conditions = array();
             
@@ -256,7 +256,12 @@ class LkusController extends AppController {
         $ttujs = $this->Ttuj->getData('list', array(
             'fields' => array(
                 'Ttuj.id', 'Ttuj.no_ttuj'
-            )
+            ),
+            'conditions' => array(
+                'Ttuj.is_pool' => 1,
+                'Ttuj.is_draft' => 0,
+                'Ttuj.status' => 1,
+            ),
         ));
 
         if(!empty($this->request->data['Lku']['ttuj_id'])){
@@ -287,7 +292,7 @@ class LkusController extends AppController {
             
         }
 
-        $this->set('active_menu', 'Lkus');
+        $this->set('active_menu', 'lkus');
         $this->set('ttujs', $ttujs);
         $this->set('id', $id);
         $this->render('lku_form');
@@ -564,7 +569,7 @@ class LkusController extends AppController {
             $this->set('lkus', $lkus);
         }
 
-        $ttujs = $this->Ttuj->getData('list', array(
+        $customers = $this->Ttuj->getData('list', array(
             'conditions' => array(
                 'Ttuj.is_revenue' => 0
             ),
@@ -572,6 +577,21 @@ class LkusController extends AppController {
                 'Ttuj.customer_id', 'Ttuj.customer_name'
             ),
         ));
+        $ttujs = array();
+
+        if( !empty($customers) ) {
+            foreach ($customers as $customer_id => $value) {
+                $dataCust = $this->Ttuj->Customer->getData('first', array(
+                    'conditions' => array(
+                        'Customer.id' => $customer_id,
+                    ),
+                ));
+
+                if( !empty($dataCust) ) {
+                    $ttujs[$customer_id] = $dataCust['Customer']['customer_name'];
+                }
+            }
+        }
 
         $this->set('active_menu', 'Lkus');
         $this->set('id', $id);

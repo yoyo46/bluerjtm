@@ -512,7 +512,8 @@
                     ), $allowModule ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
-                            'index', 'tarif_angkutan'
+                            'index', 'tarif_angkutan', 'invoices',
+                            'invoice_reports', 'revenues'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -545,7 +546,7 @@
                                 ), array(
                                     'escape' => false
                                 )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'revenue' )?'active':'',
+                                    'class' => ( !empty($active_menu) && $active_menu == 'revenues' )?'active':'',
                                 ));
                             }
 
@@ -556,7 +557,7 @@
                                 ), array(
                                     'escape' => false
                                 )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'revenue' )?'active':'',
+                                    'class' => ( !empty($active_menu) && $active_menu == 'invoices' )?'active':'',
                                 ));
                             }
 
@@ -567,7 +568,7 @@
                                 ), array(
                                     'escape' => false
                                 )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'revenue' )?'active':'',
+                                    'class' => ( !empty($active_menu) && $active_menu == 'invoice_reports' )?'active':'',
                                 ));
                             }
                     ?>
@@ -581,6 +582,7 @@
                     ), $allowModule ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
+                            'lkus', 'lku_payments'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -596,7 +598,7 @@
                 <ul class="treeview-menu">
                     <?php 
                             if( in_array('view_lkus', $allowModule) ) {
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Histori LKU', array(
+                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> LKU', array(
                                     'controller' => 'lkus',
                                     'action' => 'index',
                                 ), array(
@@ -613,7 +615,7 @@
                                 ), array(
                                     'escape' => false
                                 )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'lkus' )?'active':'',
+                                    'class' => ( !empty($active_menu) && $active_menu == 'lku_payments' )?'active':'',
                                 ));
                              }
                     ?>
@@ -627,6 +629,7 @@
                     ), $allowModule ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
+                            'lakas'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -642,13 +645,13 @@
                 <ul class="treeview-menu">
                     <?php 
                             if( in_array('view_lakas', $allowModule) ) {
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Histori LAKA', array(
+                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> LAKA', array(
                                     'controller' => 'lakas',
                                     'action' => 'index',
                                 ), array(
                                     'escape' => false
                                 )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'Lakas' )?'active':'',
+                                    'class' => ( !empty($active_menu) && $active_menu == 'lakas' )?'active':'',
                                 ));
                              }
                     ?>

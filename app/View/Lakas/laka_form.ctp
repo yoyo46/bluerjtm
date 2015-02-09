@@ -32,15 +32,37 @@
 				    <div class="box-body">
 				        <div class="form-group">
 				        	<?php 
-									echo $this->Form->input('ttuj_id',array(
-										'label'=> __('Nama Supir *'), 
-										'class'=>'form-control',
-										'required' => false,
-										'empty' => __('Pilih Nama Supir'),
-										'options' => $ttujs,
-										'id' => 'laka-driver-change'
-									));
-							?>
+			                    	echo $this->Form->label('ttuj_id', __('Nama Supir *'));
+			                ?>
+			                <div class="row">
+			                    <div class="col-sm-10">
+						        	<?php 
+											echo $this->Form->input('ttuj_id',array(
+												'label'=> false, 
+												'class'=>'form-control',
+												'required' => false,
+												'empty' => __('Pilih Nama Supir'),
+												'options' => $ttujs,
+												'id' => 'laka-driver-change'
+											));
+									?>
+			                    </div>
+			                    <div class="col-sm-2">
+			                        <?php 
+			                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', array(
+			                                    'controller'=> 'ajax', 
+			                                    'action' => 'getTtujs',
+			                                    'laka',
+			                                ), array(
+			                                    'class' => 'btn bg-maroon ajaxModal',
+			                                    'escape' => false,
+			                                    'title' => __('Data TTUJ'),
+			                                    'data-action' => 'browse-form',
+			                                    'data-change' => 'laka-driver-change',
+			                                ));
+			                        ?>
+			                    </div>
+			                </div>
 				        </div>
 				        <div class="form-group">
 				        	<?php 

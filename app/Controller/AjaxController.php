@@ -814,6 +814,16 @@ class AjaxController extends AppController {
                 $conditions['Ttuj.is_pool'] = 1;
 				$data_change = 'getTtujInfoRevenue';
                 break;
+
+            case 'lku':
+                $conditions['Ttuj.is_pool'] = 1;
+				$data_change = 'getTtujInfo';
+                break;
+
+            case 'laka':
+                $conditions['Ttuj.is_pool <>'] = 1;
+				$data_change = 'laka-driver-change';
+                break;
             
             default:
                 $conditions['Ttuj.is_arrive'] = 0;

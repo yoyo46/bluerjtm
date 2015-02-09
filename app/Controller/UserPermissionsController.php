@@ -48,7 +48,8 @@ class UserPermissionsController extends AppController {
                 'Module.status'=> 1, 
             ),
             'order' => array(
-                'Module.order' => 'ASC'
+                'Module.order' => 'ASC',
+                'Module.id' => 'ASC',
             ),
             'contain' => array(
                 'ModuleAction' => array(
