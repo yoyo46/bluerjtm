@@ -95,15 +95,39 @@
 											'disabled' => true,
 										));
 									} else {
-										echo $this->Form->input('no_ttuj',array(
-											'label'=> __('No. TTUJ *'), 
-											'class'=>'form-control submit-change',
-											'required' => false,
-											'empty' => __('Pilih No. TTUJ --'),
-											'options' => $ttujs,
-											'id' => 'no_ttuj',
-											'action_type' => $action_type,
-										));
+		                            	echo $this->Form->label('no_ttuj', __('No. TTUJ *'));
+		                    ?>
+		                    <div class="row">
+		                        <div class="col-sm-10">
+									<?php
+												echo $this->Form->input('no_ttuj',array(
+													'label'=> false, 
+													'class'=>'form-control submit-change',
+													'required' => false,
+													'empty' => __('Pilih No. TTUJ --'),
+													'options' => $ttujs,
+													'id' => 'no_ttuj',
+													'action_type' => $action_type,
+												));
+									?>
+		                        </div>
+		                        <div class="col-sm-2">
+		                            <?php 
+		                                    echo $this->Html->link('<i class="fa fa-plus-square"></i>', array(
+		                                        'controller'=> 'ajax', 
+		                                        'action' => 'getTtujs',
+		                                        $action_type,
+		                                    ), array(
+		                                        'class' => 'btn bg-maroon ajaxModal',
+		                                        'escape' => false,
+		                                        'title' => __('Data TTUJ'),
+		                                        'data-action' => 'browse-form',
+		                                        'data-change' => 'no_ttuj',
+		                                    ));
+		                            ?>
+		                        </div>
+		                    </div>
+							<?php
 									}
 							?>
 				        </div>

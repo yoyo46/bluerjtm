@@ -891,10 +891,19 @@ var pickColor = function(){
     });
 }
 
-var ajaxModal = function ( hide, obj, prettyPhoto ) {
-    if( typeof hide == 'undefined' ) {
-        hide = 0;
-    }
+var pickData = function () {
+    $('.browse-form table tr').click(function(){
+        var vthis = $(this);
+        var data_value = vthis.attr('data-value');
+        var data_change = vthis.attr('data-change');
+        $(data_change).val(data_value);
+        $(data_change).trigger('change');
+        $('#myModal').modal('hide');
+        return false;
+    });
+}
+
+var ajaxModal = function ( obj, prettyPhoto ) {
     if( typeof obj == 'undefined' ) {
         obj = $('.ajaxModal');
     }
@@ -904,15 +913,24 @@ var ajaxModal = function ( hide, obj, prettyPhoto ) {
 
     obj.click(function(msg) {
         var type_action = '';
-        var url = $(this).attr('href');
         var vthis = $(this);
+        var url = vthis.attr('href');
         var alert_msg = vthis.attr('alert');
         var url_attr = vthis.attr('url');
-        var custom_backdrop_modal = $(this).attr('backdrop-modal');
+        var parent = vthis.attr('data-parent');
+        var custom_backdrop_modal = vthis.attr('backdrop-modal');
+        var data = false;
+        
         $('.modal-body').html('');
 
         if( prettyPhoto ) {
             $.prettyPhoto.close();
+        }
+
+        if( parent == 1 ) {
+            var parents = vthis.parents('form');
+            data = parents.serialize();
+            url = parents.attr('action');
         }
 
         if( url == '#myModal' ) {
@@ -932,6 +950,7 @@ var ajaxModal = function ( hide, obj, prettyPhoto ) {
         $.ajax({
             url: url,
             type: 'POST',
+            data: data,
             success: function(response, status) {
                 if( vthis.attr('title') !== undefined && vthis.attr('title') != '' ) {
                     $('h4#myModalLabel').html(vthis.attr('title'));
@@ -950,12 +969,11 @@ var ajaxModal = function ( hide, obj, prettyPhoto ) {
                 if( typeof custom_backdrop_modal != 'undefined' ){
                     backdrop_modal = custom_backdrop_modal;
                 }
-                if( hide == 0 ) {
-                    $('#myModal').modal({
-                        show: true,
-                        backdrop : backdrop_modal
-                    });
-                }
+
+                $('#myModal').modal({
+                    show: true,
+                    backdrop : backdrop_modal
+                });
 
                 if( type_action == 'event' ) {
                     pickIcon();
@@ -964,6 +982,9 @@ var ajaxModal = function ( hide, obj, prettyPhoto ) {
                     $('.timepicker').timepicker({
                         showMeridian: false
                     });
+                } else if( type_action == 'browse-form' ) {
+                    ajaxModal( $('.modal-body .pagination li a, .modal-body .ajaxModal') );
+                    pickData();
                 }
 
                 return false;
@@ -974,9 +995,7 @@ var ajaxModal = function ( hide, obj, prettyPhoto ) {
             }
         });
         
-        if( vthis.attr('href') != '#myModal' ) {
-            return false;
-        }
+        return false;
     });
 
     $('#myModal').on('hidden.bs.modal', function () {
@@ -1162,7 +1181,8 @@ $(function() {
     //     } else {
     //         $('#getKotaTujuan').val('').attr('readonly', true);
     //         $('#getTruck').val('').attr('readonly', true);
-    //         $('#getInfoTruck').val('').attr('readonly', true);
+    //         $('#truckID').val('').attr('readonly', true);
+            // $('#truckBrowse').attr('disabled', true);
     //         $('.driver_name').val('');
     //         $('.truck_capacity').val('');
     //         $('#biaya-uang-jalan input').val('');
@@ -1188,7 +1208,8 @@ $(function() {
             });
         } else {
             $('#getTruck').val('').attr('readonly', true);
-            $('#getInfoTruck').val('').attr('disabled', true);
+            $('#truckID').val('').attr('disabled', true);
+            $('#truckBrowse').attr('disabled', true);
             $('.driver_name').val('');
             $('.truck_capacity').val('');
             $('#biaya-uang-jalan input').val('');
@@ -1199,7 +1220,7 @@ $(function() {
         var self = $(this);
         // var customer_id = $('.customer').val();
         var from_city_id = $('.from_city #getKotaTujuan').val();
-        var nopol = $('#getInfoTruck').val();
+        var nopol = $('#truckID').val();
 
         if( self.val() != '' ) {
             // $.ajax({
@@ -1207,7 +1228,7 @@ $(function() {
             //     url: '/ajax/getNopol/'+from_city_id+'/'+self.val()+'/',
             //     type: 'POST',
             //     success: function(response, status) {
-            $('.truck_id #getInfoTruck').attr('disabled', false);
+            $('#truckID,#truckBrowse').attr('disabled', false);
             
             if( nopol != '' ) {
                 $.ajax({
@@ -1229,14 +1250,15 @@ $(function() {
             //     }
             // });
         } else {
-            $('#getInfoTruck').val('').attr('disabled', true);
+            $('#truckID').val('').attr('disabled', true);
+            $('#truckBrowse').attr('disabled', true);
             $('.driver_name').val('');
             $('.truck_capacity').val('');
             $('#biaya-uang-jalan input').val('');
         }
     });
 
-    $('#getInfoTruck').change(function() {
+    $('#truckID').change(function() {
         var self = $(this);
         var from_city_id = $('.from_city #getKotaTujuan').val();
         var to_city_id = $('.to_city #getTruck').val();
@@ -1403,7 +1425,8 @@ $(function() {
         } else {
             $('#getKotaTujuan').val('').attr('readonly', true);
             $('#getTruck').val('').attr('readonly', true);
-            $('#getInfoTruck').val('').attr('disabled', true);
+            $('#truckID').val('').attr('disabled', true);
+            $('#truckBrowse').attr('disabled', true);
             $('.driver_name').val('');
             $('.truck_capacity').val('');
             $('#biaya-uang-jalan input').val('');

@@ -128,17 +128,38 @@
 					?>
 		        </div>
 		        <div class="form-group">
-		        	<?php 
-						echo $this->Form->label('driver_id',__('Supir Truk')); 
-
-						echo $this->Form->input('driver_id',array(
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'empty' => __('Pilih Supir Truk'),
-							'options' => $drivers
-						));
+        			<?php 
+							echo $this->Form->label('driver_id', __('Supir Truk'));
 					?>
+		        	<div class="row">
+		        		<div class="col-sm-10">
+		        			<?php 
+									echo $this->Form->input('driver_id',array(
+										'label'=> false, 
+										'class'=>'form-control',
+										'required' => false,
+										'empty' => __('Pilih Supir Truk'),
+										'options' => $drivers,
+										'id' => 'driverID',
+									));
+							?>
+		        		</div>
+		        		<div class="col-sm-2">
+		        			<?php 
+									echo $this->Html->link('<i class="fa fa-plus-square"></i>', array(
+										'controller'=> 'ajax', 
+										'action' => 'getDrivers',
+										!empty($data_local['Truck']['driver_id'])?$data_local['Truck']['driver_id']:false,
+									), array(
+										'class' => 'btn bg-maroon ajaxModal',
+										'escape' => false,
+										'title' => __('Supir Truk'),
+										'data-action' => 'browse-form',
+										'data-change' => 'driverID',
+									));
+							?>
+		        		</div>
+		        	</div>
 		        </div>
 		        <div class="form-group">
 		        	<?php 

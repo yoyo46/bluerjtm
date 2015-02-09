@@ -19,17 +19,39 @@
 		    </div>
 		    <div class="box-body">
 		        <div class="form-group">
-		        	<?php 
-						echo $this->Form->input('truck_id', array(
-							'label'=> __('Truk *'), 
-							'class'=>'form-control submit-change',
-							'required' => false,
-							'empty' => __('Pilih Truk'),
-							'options' => $trucks,
-							'action_type' => 'nopol',
-							'data-action' => 'kir_add',
-						));
+        			<?php 
+							echo $this->Form->label('truck_id', __('Truk *'));
 					?>
+		        	<div class="row">
+		        		<div class="col-sm-10">
+		        			<?php 
+									echo $this->Form->input('truck_id', array(
+										'label'=> false, 
+										'class'=>'form-control submit-change',
+										'required' => false,
+										'empty' => __('Pilih Truk'),
+										'options' => $trucks,
+										'id' => 'truckID',
+										'action_type' => 'nopol',
+										'data-action' => 'kir_add',
+									));
+							?>
+		        		</div>
+		        		<div class="col-sm-2">
+		        			<?php 
+									echo $this->Html->link('<i class="fa fa-plus-square"></i>', array(
+										'controller'=> 'ajax', 
+										'action' => 'getTrucks',
+									), array(
+										'class' => 'btn bg-maroon ajaxModal',
+										'escape' => false,
+										'title' => __('Data Truk'),
+										'data-action' => 'browse-form',
+										'data-change' => 'truckID',
+									));
+							?>
+		        		</div>
+		        	</div>
 		        </div>
 		        <div class="form-group">
 		        	<?php 

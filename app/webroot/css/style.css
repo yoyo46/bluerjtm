@@ -3816,6 +3816,10 @@ table th i {
 .pagination-report {
   margin-top: 15px;
 }
+
+.browse-form table tr {
+  cursor: pointer;
+}
 .invoice-print table{
   margin: 10px 0px;
 }

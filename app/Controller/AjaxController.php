@@ -506,5 +506,330 @@ class AjaxController extends AppController {
 // debug($revenue_detail);die();
 		$this->set(compact('revenue_detail', 'action'));
 	}
+
+	function getDrivers ( $id ) {
+		$this->loadModel('Driver');
+		$title = __('Supir Truk');
+		$data_action = 'browse-form';
+		$data_change = 'driverID';
+		$conditions = array(
+            'Driver.status' => 1,
+            'Truck.id' => NULL,
+        );
+
+        if(!empty($this->request->data)){
+            if(!empty($this->request->data['Driver']['name'])){
+                $name = urldecode($this->request->data['Driver']['name']);
+                $conditions['Driver.name LIKE '] = '%'.$name.'%';
+            }
+            if(!empty($this->request->data['Driver']['alias'])){
+                $alias = urldecode($this->request->data['Driver']['alias']);
+                $conditions['Driver.alias LIKE '] = '%'.$alias.'%';
+            }
+            if(!empty($this->request->data['Driver']['identity_number'])){
+                $identity_number = urldecode($this->request->data['Driver']['identity_number']);
+                $conditions['Driver.identity_number LIKE '] = '%'.$identity_number.'%';
+            }
+            if(!empty($this->request->data['Driver']['phone'])){
+                $phone = urldecode($this->request->data['Driver']['phone']);
+                $conditions['Driver.phone LIKE '] = '%'.$phone.'%';
+            }
+        }
+
+        if( !empty($id)) {
+            unset($conditions['Truck.id']);
+            $conditions['OR'] = array(
+                'Truck.id' => NULL,
+                'Driver.id' => $id,
+            );
+        }
+
+		$this->paginate = $this->Driver->getData('paginate', array(
+            'conditions' => $conditions,
+            'order' => array(
+                'Driver.status' => 'DESC',
+                'Driver.name' => 'ASC',
+            ),
+            'contain' => array(
+                'Truck'
+            ),
+            'limit' => 10,
+        ), false);
+        $drivers = $this->paginate('Driver');
+
+        $this->set(compact(
+        	'drivers', 'data_action', 'title',
+        	'data_change', 'id'
+    	));
+	}
+
+	function getTrucks () {
+		$this->loadModel('Truck');
+		$title = __('Data Truk');
+		$data_action = 'browse-form';
+		$data_change = 'truckID';
+		$conditions = array(
+            'Truck.status' => 1
+        );
+
+        if(!empty($this->request->data)){
+            if(!empty($this->request->data['Truck']['nopol'])){
+                $nopol = urldecode($this->request->data['Truck']['nopol']);
+                $conditions['Truck.nopol LIKE '] = '%'.$nopol.'%';
+            }
+            if(!empty($this->request->data['Driver']['name'])){
+                $name = urldecode($this->request->data['Driver']['name']);
+                $conditions['Driver.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+		$this->paginate = $this->Truck->getData('paginate', array(
+            'conditions' => $conditions,
+            'limit' => 10,
+            'contain' => array(
+                'Driver'
+            ),
+        ));
+        $trucks = $this->paginate('Truck');
+
+        if(!empty($trucks)){
+            foreach ($trucks as $key => $truck) {
+                $data = $truck['Truck'];
+
+                $truck = $this->Truck->TruckCategory->getMerge($truck, $data['truck_category_id']);
+                $truck = $this->Truck->TruckBrand->getMerge($truck, $data['truck_brand_id']);
+                $truck = $this->Truck->Company->getMerge($truck, $data['company_id']);
+
+                $trucks[$key] = $truck;
+            }
+        }
+
+        $this->set(compact(
+        	'trucks', 'data_action', 'title',
+        	'data_change'
+    	));
+	}
+
+	function getKirs () {
+		$this->loadModel('Kir');
+		$this->loadModel('Truck');
+		$title = __('Data KIR');
+		$data_action = 'browse-form';
+		$data_change = 'truckID';
+		$conditions = array(
+            'Kir.status' => 1,
+            'Kir.paid' => 0,
+            'Kir.rejected' => 0,
+        );
+
+        if(!empty($this->request->data)){
+            if(!empty($this->request->data['Kir']['nopol'])){
+                $nopol = urldecode($this->request->data['Kir']['nopol']);
+                $conditions['Kir.no_pol LIKE '] = '%'.$nopol.'%';
+            }
+            if(!empty($this->request->data['Driver']['name'])){
+                $name = urldecode($this->request->data['Driver']['name']);
+                $drivers = $this->Truck->Driver->getData('list', array(
+                	'conditions' => array(
+                		'Driver.name LIKE' => '%'.$name.'%',
+            		),
+            		'fields' => array(
+            			'Driver.id', 'Driver.id'
+        			),
+            	));
+                $conditions['Truck.driver_id'] = $drivers;
+            }
+        }
+
+        $this->paginate = $this->Kir->getData('paginate', array(
+            'conditions' => $conditions,
+            'limit' => Configure::read('__Site.config_pagination'),
+        ));
+        $trucks = $this->paginate('Kir');
+
+        if(!empty($trucks)){
+            foreach ($trucks as $key => $truck) {
+                $truck = $this->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
+                $trucks[$key] = $truck;
+            }
+        }
+
+        $this->set(compact(
+        	'trucks', 'data_action', 'title',
+        	'data_change'
+    	));
+	}
+
+	function getStnks () {
+		$this->loadModel('Stnk');
+		$this->loadModel('Truck');
+		$title = __('Data STNK');
+		$data_action = 'browse-form';
+		$data_change = 'truckID';
+		$conditions = array(
+            'Stnk.status' => 1,
+            'Stnk.paid' => 0,
+            'Stnk.rejected' => 0,
+        );
+
+        if(!empty($this->request->data)){
+            if(!empty($this->request->data['Stnk']['nopol'])){
+                $nopol = urldecode($this->request->data['Stnk']['nopol']);
+                $conditions['Stnk.no_pol LIKE '] = '%'.$nopol.'%';
+            }
+            if(!empty($this->request->data['Driver']['name'])){
+                $name = urldecode($this->request->data['Driver']['name']);
+                $drivers = $this->Truck->Driver->getData('list', array(
+                	'conditions' => array(
+                		'Driver.name LIKE' => '%'.$name.'%',
+            		),
+            		'fields' => array(
+            			'Driver.id', 'Driver.id'
+        			),
+            	));
+                $conditions['Truck.driver_id'] = $drivers;
+            }
+        }
+
+        $this->paginate = $this->Stnk->getData('paginate', array(
+            'conditions' => $conditions,
+            'limit' => Configure::read('__Site.config_pagination'),
+            'contain' => array(
+            	'Truck'
+        	),
+        ));
+        $trucks = $this->paginate('Stnk');
+
+        if(!empty($trucks)){
+            foreach ($trucks as $key => $truck) {
+                $truck = $this->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
+                $trucks[$key] = $truck;
+            }
+        }
+
+        $this->set(compact(
+        	'trucks', 'data_action', 'title',
+        	'data_change'
+    	));
+	}
+
+	function getSiups () {
+		$this->loadModel('Siup');
+		$this->loadModel('Truck');
+		$title = __('Data SIUP');
+		$data_action = 'browse-form';
+		$data_change = 'truckID';
+		$conditions = array(
+            'Siup.status' => 1,
+            'Siup.paid' => 0,
+            'Siup.rejected' => 0,
+        );
+
+        if(!empty($this->request->data)){
+            if(!empty($this->request->data['Siup']['nopol'])){
+                $nopol = urldecode($this->request->data['Siup']['nopol']);
+                $conditions['Siup.no_pol LIKE '] = '%'.$nopol.'%';
+            }
+            if(!empty($this->request->data['Driver']['name'])){
+                $name = urldecode($this->request->data['Driver']['name']);
+                $drivers = $this->Truck->Driver->getData('list', array(
+                	'conditions' => array(
+                		'Driver.name LIKE' => '%'.$name.'%',
+            		),
+            		'fields' => array(
+            			'Driver.id', 'Driver.id'
+        			),
+            	));
+                $conditions['Truck.driver_id'] = $drivers;
+            }
+        }
+
+        $this->paginate = $this->Siup->getData('paginate', array(
+            'conditions' => $conditions,
+            'limit' => Configure::read('__Site.config_pagination'),
+            'contain' => array(
+            	'Truck'
+        	),
+        ));
+        $trucks = $this->paginate('Siup');
+
+        if(!empty($trucks)){
+            foreach ($trucks as $key => $truck) {
+                $truck = $this->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
+                $trucks[$key] = $truck;
+            }
+        }
+
+        $this->set(compact(
+        	'trucks', 'data_action', 'title',
+        	'data_change'
+    	));
+	}
+
+	function getTtujs ( $action_type = false ) {
+		$this->loadModel('Ttuj');
+		$title = __('Data TTUJ');
+		$data_action = 'browse-form';
+		$data_change = 'no_ttuj';
+		$conditions = array(
+		 	'Ttuj.status' => 1,
+            'Ttuj.is_draft' => 0,
+        );
+
+        if(!empty($this->request->data)){
+            if(!empty($this->request->data['Ttuj']['nottuj'])){
+                $nottuj = urldecode($this->request->data['Ttuj']['nottuj']);
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
+            }
+            if(!empty($this->request->data['Ttuj']['nopol'])){
+                $nopol = urldecode($this->request->data['Ttuj']['nopol']);
+                $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
+            }
+            if(!empty($this->request->data['Driver']['name'])){
+                $name = urldecode($this->request->data['Driver']['name']);
+                $conditions['Ttuj.driver_name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+        switch ($action_type) {
+            case 'bongkaran':
+                $conditions['Ttuj.is_arrive'] = 1;
+                $conditions['Ttuj.is_bongkaran <>'] = 1;
+                break;
+
+            case 'balik':
+                $conditions['Ttuj.is_arrive'] = 1;
+                $conditions['Ttuj.is_bongkaran'] = 1;
+                $conditions['Ttuj.is_balik <>'] = 1;
+                break;
+
+            case 'pool':
+                $conditions['Ttuj.is_arrive'] = 1;
+                $conditions['Ttuj.is_bongkaran'] = 1;
+                $conditions['Ttuj.is_balik'] = 1;
+                $conditions['Ttuj.is_pool <>'] = 1;
+                break;
+
+            case 'revenues':
+                $conditions['Ttuj.is_pool'] = 1;
+				$data_change = 'getTtujInfoRevenue';
+                break;
+            
+            default:
+                $conditions['Ttuj.is_arrive'] = 0;
+                break;
+        }
+
+        $this->paginate = $this->Ttuj->getData('paginate', array(
+            'conditions' => $conditions,
+            'limit' => Configure::read('__Site.config_pagination'),
+        ));
+        $ttujs = $this->paginate('Ttuj');
+
+        $this->set(compact(
+        	'ttujs', 'data_action', 'title',
+        	'data_change', 'action_type'
+    	));
+	}
 }
 ?>

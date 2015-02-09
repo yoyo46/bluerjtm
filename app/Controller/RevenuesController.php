@@ -1893,7 +1893,6 @@ class RevenuesController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
-// debug($data);die();
             $data['Revenue']['date_sj'] = !empty($data['Revenue']['date_sj']) ? date('Y-m-d', strtotime($data['Revenue']['date_sj'])) : '';
             $data['Revenue']['date_revenue'] = !empty($data['Revenue']['date_revenue']) ? date('Y-m-d', strtotime($data['Revenue']['date_revenue'])) : '';
 
@@ -2252,15 +2251,23 @@ class RevenuesController extends AppController {
         $ttujs = $this->Ttuj->getData('list', array(
             'fields' => array(
                 'Ttuj.id', 'Ttuj.no_ttuj'
-            )
+            ),
+            'conditions' => array(
+                'Ttuj.is_pool' => 1,
+                'Ttuj.is_draft' => 0,
+                'Ttuj.status' => 1,
+            ),
         ));
         $this->set('ttujs', $ttujs);
 
         $this->loadModel('Customer');
-        $customers = $this->Customer->find('list', array(
+        $customers = $this->Customer->getData('list', array(
             'conditions' => array(
                 'Customer.status' => 1
-            )
+            ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name'
+            ),
         ));
         $this->set('customers', $customers);
 

@@ -1,27 +1,5 @@
 <div class="form-group">
 	<?php 
-			echo $this->Form->input('Revenue.date_revenue',array(
-				'type' => 'text',
-				'label'=> __('Tanggal Revenue *'), 
-				'class'=>'form-control custom-date',
-				'required' => false,
-				'placeholder' => __('Tanggal Revenue')
-			));
-	?>
-</div>
-<div class="form-group">
-	<?php 
-			echo $this->Form->input('Revenue.customer_id',array(
-				'label'=> __('Customer'), 
-				'class'=>'form-control',
-				'required' => false,
-				'options' => $customers,
-				'empty' => __('pilih customer')
-			));
-	?>
-</div>
-<div class="form-group">
-	<?php 
 			echo $this->Form->input('Ttuj.nopol',array(
 				'label'=> __('Nopol'), 
 				'class'=>'form-control',

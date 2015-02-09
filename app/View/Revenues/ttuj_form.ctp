@@ -98,20 +98,43 @@
 							</div>
 				        </div>
 				        <div class="form-group">
-				        	<?php 
-									$disabled = !empty($this->request->data['Ttuj']['to_city_id'])?false:true;
-									echo $this->Form->input('truck_id',array(
-										'label'=> __('No. Pol *'), 
-										'class'=>'form-control',
-										'required' => false,
-										'empty' => __('Pilih No. Pol --'),
-										'disabled' => $disabled,
-										'div' => array(
-											'class' => 'truck_id'
-										),
-										'id' => 'getInfoTruck',
-									));
-							?>
+		                    <?php 
+		                            echo $this->Form->label('truck_id', __('No. Pol *'));
+		                    ?>
+		                    <div class="row">
+		                        <div class="col-sm-10">
+						        	<?php 
+											$disabled = !empty($this->request->data['Ttuj']['to_city_id'])?false:true;
+											echo $this->Form->input('truck_id',array(
+												'label'=> false, 
+												'class'=>'form-control',
+												'required' => false,
+												'empty' => __('Pilih No. Pol --'),
+												'disabled' => $disabled,
+												'div' => array(
+													'class' => 'truck_id'
+												),
+												'id' => 'truckID',
+											));
+									?>
+		                        </div>
+		                        <div class="col-sm-2">
+		                            <?php 
+		                                    echo $this->Html->link('<i class="fa fa-plus-square"></i>', array(
+		                                        'controller'=> 'ajax', 
+		                                        'action' => 'getTrucks',
+		                                    ), array(
+		                                        'class' => 'btn bg-maroon ajaxModal',
+		                                        'escape' => false,
+		                                        'title' => __('Data Truk'),
+		                                        'data-action' => 'browse-form',
+		                                        'data-change' => 'truckID',
+		                                        'id' => 'truckBrowse',
+												'disabled' => $disabled,
+		                                    ));
+		                            ?>
+		                        </div>
+		                    </div>
 				        </div>
 				        <div class="form-group">
 				        	<?php 

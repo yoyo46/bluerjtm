@@ -347,7 +347,7 @@ class TrucksController extends AppController {
             )
         ));
         $drivers = $this->Truck->Driver->getData('list', array(
-           'conditions' => $driverConditions,
+            'conditions' => $driverConditions,
             'fields' => array(
                 'Driver.id', 'Driver.driver_name'
             ),
@@ -999,20 +999,10 @@ class TrucksController extends AppController {
                         'Truck.id' => $name,
                     ),
                 ));
-
-                if( !empty($truck) ) {
-                    $this->request->data['Kir']['from_date'] = $this->MkCommon->customDate($truck['Truck']['tgl_kir'], 'd/m/Y', '');
-                    $this->request->data['Kir']['price_estimate'] = $this->MkCommon->convertPriceToString($truck['Truck']['kir']);
-
-                    if( !empty($this->request->data['Kir']['from_date']) ) {
-                        $toDate = date('d/m/Y', strtotime('+1 year', strtotime($truck['Truck']['tgl_kir'])) );
-                        $this->request->data['Kir']['to_date'] = $toDate;
-                    }
-                }
             }
         }
 
-        if( !empty($this->request->data['Kir']['tgl_kir']) ){
+        if( !empty($this->request->data) ){
             $data = $this->request->data;
 
             if($id && $kir){
@@ -1064,6 +1054,22 @@ class TrucksController extends AppController {
 
             $this->request->data['Kir']['from_date'] = (!empty($this->request->data['Kir']['from_date'])) ? $this->MkCommon->customDate($this->request->data['Kir']['from_date'], 'd/m/Y') : '';
             $this->request->data['Kir']['to_date'] = (!empty($this->request->data['Kir']['to_date'])) ? $this->MkCommon->customDate($this->request->data['Kir']['to_date'], 'd/m/Y') : '';
+        }
+
+        if( !empty($this->params['named']) && !empty($truck) ){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['truck_id'])){
+                if( !empty($truck) ) {
+                    $this->request->data['Kir']['from_date'] = $this->MkCommon->customDate($truck['Truck']['tgl_kir'], 'd/m/Y', '');
+                    $this->request->data['Kir']['price_estimate'] = $this->MkCommon->convertPriceToString($truck['Truck']['kir']);
+
+                    if( !empty($this->request->data['Kir']['from_date']) ) {
+                        $toDate = date('d/m/Y', strtotime('+1 year', strtotime($truck['Truck']['tgl_kir'])) );
+                        $this->request->data['Kir']['to_date'] = $toDate;
+                    }
+                }
+            }
         }
 
         $this->loadModel('Truck');

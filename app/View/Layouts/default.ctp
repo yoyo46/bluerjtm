@@ -87,7 +87,7 @@
         </aside><!-- /.right-side -->
     </div><!-- ./wrapper -->
 	<div id="myModal" class="modal fade">
-		<div class="modal-dialog">
+		<div class="modal-dialog modal-lg">
 			<div class="modal-content no-radius">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">close</button>
