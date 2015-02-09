@@ -602,6 +602,10 @@ body > .header .logo .icon {
   .navbar .navbar-right {
     float: right;
   }
+
+  label .visible-xs {
+    display: inline-block !important;
+  }
 }
 @media screen and (max-width: 560px) {
   body > .header {

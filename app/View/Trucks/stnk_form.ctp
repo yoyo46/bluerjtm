@@ -20,7 +20,18 @@
 		    <div class="box-body">
 		    	<div class="form-group">
         			<?php 
-							echo $this->Form->label('truck_id', __('Truk *'));
+        					$attrTruck = array(
+								'class' => 'ajaxModal visible-xs',
+								'escape' => false,
+								'title' => __('Data Truk'),
+								'data-action' => 'browse-form',
+								'data-change' => 'truckID',
+							);
+        					$urlTruck = array(
+								'controller'=> 'ajax', 
+								'action' => 'getTrucks',
+							);
+							echo $this->Form->label('truck_id', __('Truk * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlTruck, $attrTruck));
 					?>
 		        	<div class="row">
 		        		<div class="col-sm-10">
@@ -37,18 +48,10 @@
 									));
 							?>
 		        		</div>
-		        		<div class="col-sm-2">
+		        		<div class="col-sm-2 hidden-xs">
 		        			<?php 
-									echo $this->Html->link('<i class="fa fa-plus-square"></i>', array(
-										'controller'=> 'ajax', 
-										'action' => 'getTrucks',
-									), array(
-										'class' => 'btn bg-maroon ajaxModal',
-										'escape' => false,
-										'title' => __('Data Truk'),
-										'data-action' => 'browse-form',
-										'data-change' => 'truckID',
-									));
+		        					$attrTruck['class'] = 'btn bg-maroon ajaxModal';
+									echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlTruck, $attrTruck);
 							?>
 		        		</div>
 		        	</div>

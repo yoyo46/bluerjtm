@@ -95,7 +95,19 @@
 											'disabled' => true,
 										));
 									} else {
-		                            	echo $this->Form->label('no_ttuj', __('No. TTUJ *'));
+			        					$attrBrowse = array(
+	                                    	'class' => 'ajaxModal visible-xs',
+	                                        'escape' => false,
+	                                        'title' => __('Data TTUJ'),
+	                                        'data-action' => 'browse-form',
+	                                        'data-change' => 'no_ttuj',
+		                                );
+			        					$urlBrowse = array(
+	                                     	'controller'=> 'ajax', 
+	                                        'action' => 'getTtujs',
+	                                        $action_type,
+		                                );
+		                            	echo $this->Form->label('no_ttuj', __('No. TTUJ * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 		                    ?>
 		                    <div class="row">
 		                        <div class="col-sm-10">
@@ -111,21 +123,12 @@
 												));
 									?>
 		                        </div>
-		                        <div class="col-sm-2">
-		                            <?php 
-		                                    echo $this->Html->link('<i class="fa fa-plus-square"></i>', array(
-		                                        'controller'=> 'ajax', 
-		                                        'action' => 'getTtujs',
-		                                        $action_type,
-		                                    ), array(
-		                                        'class' => 'btn bg-maroon ajaxModal',
-		                                        'escape' => false,
-		                                        'title' => __('Data TTUJ'),
-		                                        'data-action' => 'browse-form',
-		                                        'data-change' => 'no_ttuj',
-		                                    ));
-		                            ?>
-		                        </div>
+		        				<div class="col-sm-2 hidden-xs">
+			                        <?php 
+		        							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+			                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+			                        ?>
+			                    </div>
 		                    </div>
 							<?php
 									}

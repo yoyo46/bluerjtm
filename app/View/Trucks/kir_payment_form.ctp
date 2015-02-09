@@ -20,7 +20,18 @@
             <div class="box-body">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->label('kir_id', __('No. Pol *'));
+                            $attrBrowse = array(
+                                'class' => 'ajaxModal visible-xs',
+                                'escape' => false,
+                                'title' => __('Data KIR'),
+                                'data-action' => 'browse-form',
+                                'data-change' => 'truckID',
+                            );
+                            $urlBrowse = array(
+                                'controller'=> 'ajax', 
+                                'action' => 'getKirs',
+                            );
+                            echo $this->Form->label('kir_id', __('No. Pol * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
                     ?>
                     <div class="row">
                         <div class="col-sm-10">
@@ -38,18 +49,10 @@
                                     ));
                             ?>
                         </div>
-                        <div class="col-sm-2">
+                        <div class="col-sm-2 hidden-xs">
                             <?php 
-                                    echo $this->Html->link('<i class="fa fa-plus-square"></i>', array(
-                                        'controller'=> 'ajax', 
-                                        'action' => 'getKirs',
-                                    ), array(
-                                        'class' => 'btn bg-maroon ajaxModal',
-                                        'escape' => false,
-                                        'title' => __('Data KIR'),
-                                        'data-action' => 'browse-form',
-                                        'data-change' => 'truckID',
-                                    ));
+                                    $attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+                                    echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
                             ?>
                         </div>
                     </div>

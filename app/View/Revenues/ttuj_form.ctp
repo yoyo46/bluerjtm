@@ -99,7 +99,20 @@
 				        </div>
 				        <div class="form-group">
 		                    <?php 
-		                            echo $this->Form->label('truck_id', __('No. Pol *'));
+		        					$attrBrowse = array(
+	                                    'class' => 'ajaxModal visible-xs',
+                                        'escape' => false,
+                                        'title' => __('Data Truk'),
+                                        'data-action' => 'browse-form',
+                                        'data-change' => 'truckID',
+                                        'id' => 'truckBrowse',
+										'disabled' => $disabled,
+	                                );
+		        					$urlBrowse = array(
+	                                    'controller'=> 'ajax', 
+                                        'action' => 'getTrucks',
+	                                );
+		                            echo $this->Form->label('truck_id', __('No. Pol * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 		                    ?>
 		                    <div class="row">
 		                        <div class="col-sm-10">
@@ -118,22 +131,12 @@
 											));
 									?>
 		                        </div>
-		                        <div class="col-sm-2">
-		                            <?php 
-		                                    echo $this->Html->link('<i class="fa fa-plus-square"></i>', array(
-		                                        'controller'=> 'ajax', 
-		                                        'action' => 'getTrucks',
-		                                    ), array(
-		                                        'class' => 'btn bg-maroon ajaxModal',
-		                                        'escape' => false,
-		                                        'title' => __('Data Truk'),
-		                                        'data-action' => 'browse-form',
-		                                        'data-change' => 'truckID',
-		                                        'id' => 'truckBrowse',
-												'disabled' => $disabled,
-		                                    ));
-		                            ?>
-		                        </div>
+		        				<div class="col-sm-2 hidden-xs">
+			                        <?php 
+		        							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+			                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+			                        ?>
+			                    </div>
 		                    </div>
 				        </div>
 				        <div class="form-group">

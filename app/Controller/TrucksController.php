@@ -1002,7 +1002,7 @@ class TrucksController extends AppController {
             }
         }
 
-        if( !empty($this->request->data) ){
+        if( !empty($this->request->data) && !empty($this->request->data['Kir']) && count($this->request->data['Kir']) > 1 ){
             $data = $this->request->data;
 
             if($id && $kir){

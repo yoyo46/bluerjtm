@@ -507,7 +507,7 @@ class AjaxController extends AppController {
 		$this->set(compact('revenue_detail', 'action'));
 	}
 
-	function getDrivers ( $id ) {
+	function getDrivers ( $id = false ) {
 		$this->loadModel('Driver');
 		$title = __('Supir Truk');
 		$data_action = 'browse-form';

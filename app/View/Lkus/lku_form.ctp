@@ -31,7 +31,19 @@
 	        </div>
 	        <div class="form-group">
 	        	<?php 
-                    	echo $this->Form->label('ttuj_id', __('No. TTUJ *'));
+    					$attrBrowse = array(
+                            'class' => 'ajaxModal visible-xs',
+                            'escape' => false,
+                            'title' => __('Data TTUJ'),
+                            'data-action' => 'browse-form',
+                            'data-change' => 'getTtujInfo',
+                        );
+    					$urlBrowse = array(
+                            'controller'=> 'ajax', 
+                            'action' => 'getTtujs',
+                            'lku',
+                        );
+                    	echo $this->Form->label('ttuj_id', __('No. TTUJ * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
                 ?>
                 <div class="row">
                     <div class="col-sm-10">
@@ -46,19 +58,10 @@
 								));
 						?>
                     </div>
-                    <div class="col-sm-2">
+    				<div class="col-sm-2 hidden-xs">
                         <?php 
-                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', array(
-                                    'controller'=> 'ajax', 
-                                    'action' => 'getTtujs',
-                                    'lku',
-                                ), array(
-                                    'class' => 'btn bg-maroon ajaxModal',
-                                    'escape' => false,
-                                    'title' => __('Data TTUJ'),
-                                    'data-action' => 'browse-form',
-                                    'data-change' => 'getTtujInfo',
-                                ));
+    							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
                         ?>
                     </div>
                 </div>

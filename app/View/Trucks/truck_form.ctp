@@ -129,7 +129,19 @@
 		        </div>
 		        <div class="form-group">
         			<?php 
-							echo $this->Form->label('driver_id', __('Supir Truk'));
+                            $attrBrowse = array(
+                                'class' => 'ajaxModal visible-xs',
+                                'escape' => false,
+								'title' => __('Supir Truk'),
+								'data-action' => 'browse-form',
+								'data-change' => 'driverID',
+                            );
+                            $urlBrowse = array(
+                                'controller'=> 'ajax', 
+								'action' => 'getDrivers',
+								!empty($data_local['Truck']['driver_id'])?$data_local['Truck']['driver_id']:false,
+                            );
+							echo $this->Form->label('driver_id', __('Supir Truk ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 					?>
 		        	<div class="row">
 		        		<div class="col-sm-10">
@@ -144,21 +156,12 @@
 									));
 							?>
 		        		</div>
-		        		<div class="col-sm-2">
-		        			<?php 
-									echo $this->Html->link('<i class="fa fa-plus-square"></i>', array(
-										'controller'=> 'ajax', 
-										'action' => 'getDrivers',
-										!empty($data_local['Truck']['driver_id'])?$data_local['Truck']['driver_id']:false,
-									), array(
-										'class' => 'btn bg-maroon ajaxModal',
-										'escape' => false,
-										'title' => __('Supir Truk'),
-										'data-action' => 'browse-form',
-										'data-change' => 'driverID',
-									));
-							?>
-		        		</div>
+        				<div class="col-sm-2 hidden-xs">
+	                        <?php 
+        							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+	                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+	                        ?>
+	                    </div>
 		        	</div>
 		        </div>
 		        <div class="form-group">
