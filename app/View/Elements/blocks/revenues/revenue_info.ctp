@@ -15,18 +15,6 @@
 				));
 		?>
 	</div>
-	<div class="form-group">
-		<?php 
-				echo $this->Form->input('Revenue.customer_id',array(
-					'label'=> __('Customer'), 
-					'class'=>'form-control',
-					'required' => false,
-					'options' => $customers,
-					'empty' => __('Pilih Customer'),
-					'readonly' => true
-				));
-		?>
-	</div>
 <?php 
 		}
 ?>

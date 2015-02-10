@@ -1840,14 +1840,14 @@ class RevenuesController extends AppController {
     }
 
     function add(){
-        if( in_array('insert_revenues', $this->allowModule) ) {
+        // if( in_array('insert_revenues', $this->allowModule) ) {
             $this->loadModel('Revenue');
             $module_title = __('Tambah Revenue');
             $this->set('sub_module_title', trim($module_title));
             $this->doRevenue();
-        } else {
-            $this->redirect($this->referer());
-        }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
     }
 
     function edit( $id ){

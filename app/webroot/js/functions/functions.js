@@ -1106,12 +1106,46 @@ var submitForm = function ( obj ) {
     closeModal();
 }
 
+function findInfoTTujRevenue(url){
+    $.ajax({
+        url: url,
+        type: 'POST',
+        success: function(response, status) {
+            $('#ttuj-info').html($(response).filter('#form-ttuj-main').html());
+            $('#detail-tipe-motor').html($(response).filter('#form-ttuj-detail').html());
+            $('#customer-form').html($(response).filter('#form-customer').html());
+
+            revenue_detail();
+            duplicate_row();
+            datepicker();
+            city_revenue_change();
+            change_customer_revenue();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+            return false;
+        }
+    });
+}
+
 var input_price = function () {
     $('.input_price').priceFormat({
         doneFunc: function(obj, val) {
             currencyVal = val;
             currencyVal = currencyVal.replace(/,/gi, "")
             obj.next(".input_hidden").val(currencyVal);
+        }
+    });
+}
+
+var change_customer_revenue = function(){
+    $('.change-customer-revenue').change(function(){
+        var self = $(this);
+        var ttuj_id = $('#getTtujInfoRevenue').val();
+        var val_id = self.val();
+
+        if( ttuj_id != '' && self.val() != '' ) {
+            findInfoTTujRevenue('/ajax/getInfoTtujRevenue/'+self.val()+'/'+val_id+'/');
         }
     });
 }
@@ -1437,25 +1471,10 @@ $(function() {
         var self = $(this);
 
         if( self.val() != '' ) {
-            $.ajax({
-                url: '/ajax/getInfoTtujRevenue/'+self.val()+'/',
-                type: 'POST',
-                success: function(response, status) {
-                    $('#ttuj-info').html($(response).filter('#form-ttuj-main').html());
-                    $('#detail-tipe-motor').html($(response).filter('#form-ttuj-detail').html());
-
-                    revenue_detail();
-                    duplicate_row();
-                    datepicker();
-                    city_revenue_change();
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                    return false;
-                }
-            });
+            findInfoTTujRevenue('/ajax/getInfoTtujRevenue/'+self.val()+'/');
         }
     });
+    change_customer_revenue();
 
     $('#laka-driver-change').change(function(){
         var self = $(this);

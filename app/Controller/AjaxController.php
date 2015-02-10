@@ -179,7 +179,7 @@ class AjaxController extends AppController {
 		$this->set('lku', $lku);
 	}
 
-	function getInfoTtujRevenue($ttuj_id){
+	function getInfoTtujRevenue($ttuj_id, $customer_id = false){
 		$this->loadModel('Ttuj');
 		$this->loadModel('TarifAngkutan');
 		$this->loadModel('Customer');
@@ -195,6 +195,9 @@ class AjaxController extends AppController {
 		$data_revenue_detail = array();
 
 		if(!empty($data_ttuj)){
+			if(!empty($customer_id)){
+				$data_ttuj['Ttuj']['customer_id'] = $customer_id;
+			}
 			$data_ttuj = $this->Ttuj->Customer->getMerge($data_ttuj, $data_ttuj['Ttuj']['customer_id']);
 			$this->request->data = $data_ttuj;
 			$this->request->data['Revenue']['customer_id'] = $data_ttuj['Ttuj']['customer_id'];

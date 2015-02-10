@@ -9,7 +9,7 @@
                     'class' => 'box-title'
                 ));
 
-                if( in_array('insert_revenues', $allowModule) ) {
+                // if( in_array('insert_revenues', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -24,7 +24,7 @@
             <div class="clear"></div>
         </div>
         <?php 
-                }
+                // }
         ?>
     </div>
     <div class="box-body table-responsive">
