@@ -116,7 +116,7 @@ class City extends AppModel {
         return $this->getData('list', array(
             'conditions' => array(
                 'City.status' => 1,
-                'City.is_asal' => 1,
+                // 'City.is_asal' => 1,
             ),
         ));
     }
@@ -124,7 +124,7 @@ class City extends AppModel {
     function toCities($id = false){
         $default_conditions = array(
             'City.status' => 1,
-            'City.is_tujuan' => 1,
+            // 'City.is_tujuan' => 1,
         );
         
         if(!empty($id)){
