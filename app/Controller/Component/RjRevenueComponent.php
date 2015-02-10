@@ -42,6 +42,15 @@ class RjRevenueComponent extends Component {
 				if( !empty($refine['Revenue']['no_doc']) ) {
 					$refine_conditions['Revenue']['no_doc'] = urlencode($refine['Revenue']['no_doc']);
 				}
+				if( !empty($refine['Invoice']['customer_id']) ) {
+					$refine_conditions['Invoice']['customer'] = urlencode($refine['Invoice']['customer_id']);
+				}
+				if( !empty($refine['Invoice']['from_date']) ) {
+					$refine_conditions['Invoice']['from'] = urlencode($refine['Invoice']['from_date']);
+				}
+				if( !empty($refine['Invoice']['to_date']) ) {
+					$refine_conditions['Invoice']['to'] = urlencode($refine['Invoice']['to_date']);
+				}
 			}
 				
 			return $refine_conditions;
@@ -59,6 +68,13 @@ class RjRevenueComponent extends Component {
 		}
 		if(isset($refine['Revenue']) && !empty($refine['Revenue'])) {
 			foreach($refine['Revenue'] as $param => $value) {
+				if($value) {
+					$parameters[trim($param)] = rawurlencode($value);
+				}
+			}
+		}
+		if(isset($refine['Invoice']) && !empty($refine['Invoice'])) {
+			foreach($refine['Invoice'] as $param => $value) {
 				if($value) {
 					$parameters[trim($param)] = rawurlencode($value);
 				}

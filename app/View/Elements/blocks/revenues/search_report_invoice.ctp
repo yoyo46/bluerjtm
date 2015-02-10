@@ -9,9 +9,9 @@
         <?php 
                 echo $this->Form->create('Invoice', array(
                     'url'=> $this->Html->url( array(
-                        'controller' => 'trucks',
+                        'controller' => 'revenues',
                         'action' => 'search',
-                        'reports'
+                        'invoice_reports'
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),

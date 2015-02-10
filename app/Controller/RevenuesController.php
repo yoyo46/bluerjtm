@@ -2554,13 +2554,13 @@ class RevenuesController extends AppController {
     }
 
     function invoice_add($action = false){
-        if( in_array('insert_invoices', $this->allowModule) ) {
+        // if( in_array('insert_invoices', $this->allowModule) ) {
             $module_title = __('Tambah Invoice');
             $this->set('sub_module_title', trim($module_title));
             $this->doInvoice($action);
-        } else {
-            $this->redirect($this->referer());
-        }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
     }
 
     // function invoice_edit( $id ){
@@ -2606,24 +2606,34 @@ class RevenuesController extends AppController {
             if($this->Invoice->validates()){
                 $customer_id = $data['Invoice']['customer_id'];
 
-                $customer = $this->Customer->getData('first', array(
+                $customer = $this->Invoice->Customer->getData('first', array(
                     'conditions' => array(
                         'Customer.id' => $customer_id
                     )
                 ));
+                $this->loadModel('Revenue');
+                $revenues = $this->Revenue->getData('all', array(
+                    'conditions' => array(
+                        'Revenue.customer_id' => $customer_id,
+                        'Revenue.transaction_status' => 'posting',
+                        'Revenue.status' => 1,                      
+                    ),
+                    'order' => array(
+                        'Revenue.date_revenue' => 'ASC'
+                    ),
+                ));
+
+                if(!empty($revenues)){
+                    $total = 0;
+                    foreach ($revenues as $key => $value) {
+                        $total += $value['Revenue']['total'];   
+                    }
+                    $data['Invoice']['total'] = $total;
+                }
+                
+                $this->Invoice->set($data);
 
                 if($action == 'tarif'){
-                    $this->loadModel('Revenue');
-                    $revenues = $this->Revenue->getData('all', array(
-                        'conditions' => array(
-                            'Revenue.customer_id' => $customer_id,
-                            'Revenue.transaction_status' => 'posting',
-                            'Revenue.status' => 1,                      
-                        ),
-                        'order' => array(
-                            'Revenue.date_revenue' => 'ASC'
-                        ),
-                    ));
 
                     if(!empty($revenues) && !empty($customer)){
                         $revenue_id = Set::extract('/Revenue/id', $revenues);
@@ -2829,19 +2839,53 @@ class RevenuesController extends AppController {
     function invoice_reports(){
         if( in_array('view_revenue_reports', $this->allowModule) ) {
             $this->loadModel('Invoice');
+            $this->loadModel('Customer');
+
             $this->set('active_menu', 'revenue');
             $this->set('sub_module_title', __('Laporan Invoice Aging'));
 
-            $customers = $this->Invoice->Customer->getData('all', array(
-                'conditions' => array(
-                    'Customer.status' => 1
-                )
+            $default_conditions = array(
+                 'Customer.status' => 1
+            );
+            $invoice_conditions = array();
+
+            if( !empty($this->params['named']) ){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['customer'])){
+                    $keyword = urldecode($refine['customer']);
+                    $default_conditions['Customer.id'] = $keyword;
+                    $this->request->data['Invoice']['customer_id'] = $keyword;
+                }
+
+                if( !empty($refine['from']) || !empty($refine['to']) ){
+                    if(!empty($refine['from'])){
+                        $keyword = urldecode(rawurldecode($refine['from']));
+                        $invoice_conditions['DATE_FORMAT(Invoice.period_from, \'%Y-%m-%d\') >= '] = $keyword;
+                        $this->request->data['Invoice']['from_date'] = $keyword;
+                    }
+                    if(!empty($refine['to'])){
+                        $keyword = urldecode(rawurldecode($refine['to']));
+                        $invoice_conditions['DATE_FORMAT(Invoice.period_to, \'%Y-%m-%d\') <= '] = $keyword;
+                        $this->request->data['Invoice']['to_date'] = $keyword;
+                    }
+                }
+            }
+
+            $this->paginate = $this->Customer->getData('paginate', array(
+                'conditions' => $default_conditions
             ));
+
+            $customers = $this->paginate('Customer');
+
             $list_customer = array();
             foreach ($customers as $key => $value) {
                 $default_conditions = array(
                     'Invoice.paid' => 0
                 );
+                if(!empty($invoice_conditions)){
+                    $default_conditions = array_merge($default_conditions, $invoice_conditions);
+                }
                 $customers[$key]['piutang'] = $this->Invoice->getData('all', array(
                     'conditions' => $default_conditions,
                     'fields' => array(
@@ -2852,6 +2896,9 @@ class RevenuesController extends AppController {
                 $default_conditions = array(
                     'Invoice.paid' => 1
                 );
+                if(!empty($invoice_conditions)){
+                    $default_conditions = array_merge($default_conditions, $invoice_conditions);
+                }
                 $customers[$key]['current'] = $this->Invoice->getData('all', array(
                     'conditions' => $default_conditions,
                     'fields' => array(
@@ -2863,6 +2910,9 @@ class RevenuesController extends AppController {
                     'Invoice.due_invoice >=' => 1,
                     'Invoice.due_invoice <=' => 15,
                 );
+                if(!empty($invoice_conditions)){
+                    $default_conditions = array_merge($default_conditions, $invoice_conditions);
+                }
                 $customers[$key]['current_rev1to15'] = $this->Invoice->getData('all', array(
                     'conditions' => $default_conditions,
                     'fields' => array(
@@ -2873,6 +2923,9 @@ class RevenuesController extends AppController {
                     'Invoice.due_invoice >=' => 16,
                     'Invoice.due_invoice <=' => 30,
                 );
+                if(!empty($invoice_conditions)){
+                    $default_conditions = array_merge($default_conditions, $invoice_conditions);
+                }
                 $customers[$key]['current_rev16to30'] = $this->Invoice->getData('all', array(
                     'conditions' => $default_conditions,
                     'fields' => array(
@@ -2883,16 +2936,26 @@ class RevenuesController extends AppController {
                 $default_conditions = array(
                     'Invoice.due_invoice >' => 30,
                 );
+                if(!empty($invoice_conditions)){
+                    $default_conditions = array_merge($default_conditions, $invoice_conditions);
+                }
                 $customers[$key]['current_rev30'] = $this->Invoice->getData('all', array(
                     'conditions' => $default_conditions,
                     'fields' => array(
                         'SUM(Invoice.total) as current_rev30'
                     )
                 ));
-
-                $list_customer[$value['Customer']['id']] = $value['Customer']['name'];
             }
             $this->set('active_menu', 'invoice_reports');
+
+            $list_customer = $this->Customer->find('list', array(
+                'conditions' => array(
+                    'Customer.status' => 1
+                ),
+                'order' => array(
+                    'Customer.name' => 'ASC'
+                )
+            ));
 
             $this->set(compact('customers', 'list_customer'));
         } else {

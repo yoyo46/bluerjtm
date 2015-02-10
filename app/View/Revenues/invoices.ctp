@@ -6,7 +6,7 @@
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <?php 
-                if( in_array('insert_invoices', $allowModule) ) {
+                // if( in_array('insert_invoices', $allowModule) ) {
         ?>
         <div class="box-tools">
             <div class="btn-group pull-right">
@@ -39,7 +39,7 @@
             </div>
         </div>
         <?php 
-                }
+                // }
         ?>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
@@ -77,7 +77,7 @@
                                 'action' => 'invoice_print',
                                 $id
                             ), array(
-                                'class' => 'btn btn-primary btn-xs print-window'
+                                'class' => 'btn btn-primary btn-xs'
                             ));
 
                             // echo $this->Html->link(__('Hapus'), array(
