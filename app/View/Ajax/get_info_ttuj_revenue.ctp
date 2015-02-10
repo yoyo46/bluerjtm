@@ -1,3 +1,8 @@
+<?php 
+		echo $this->Form->hidden('Revenue.date_revenue',array(
+			'id' => 'date_revenue',
+		));
+?>
 <div id="form-ttuj-main">
 	<?php
 			echo $this->element('blocks/revenues/revenue_info');

@@ -202,6 +202,7 @@ class AjaxController extends AppController {
 			$data_ttuj = $this->Ttuj->Customer->getMerge($data_ttuj, $data_ttuj['Ttuj']['customer_id']);
 			$this->request->data = $data_ttuj;
 			$this->request->data['Revenue']['customer_id'] = $data_ttuj['Ttuj']['customer_id'];
+            $this->request->data['Revenue']['date_revenue'] = $this->MkCommon->customDate($data_ttuj['Ttuj']['ttuj_date'], 'd/m/Y');
 			$toCities = array();
 
 			if(!empty($data_ttuj['TtujTipeMotor'])){

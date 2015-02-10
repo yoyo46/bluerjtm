@@ -79,7 +79,8 @@
 									'label'=> __('Tanggal Revenue *'), 
 									'class'=>'form-control custom-date',
 									'required' => false,
-									'placeholder' => __('Tanggal Revenue')
+									'placeholder' => __('Tanggal Revenue'),
+									'id' => 'date_revenue',
 								));
 						?>
 					</div>

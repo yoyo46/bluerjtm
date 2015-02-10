@@ -1142,6 +1142,7 @@ function findInfoTTujRevenue(url){
         url: url,
         type: 'POST',
         success: function(response, status) {
+            $('#date_revenue').val($(response).filter('#date_revenue').val());
             $('#ttuj-info').html($(response).filter('#form-ttuj-main').html());
             $('#detail-tipe-motor').html($(response).filter('#form-ttuj-detail').html());
             $('#customer-form').html($(response).filter('#form-customer').html());
