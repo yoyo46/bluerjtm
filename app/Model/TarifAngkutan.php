@@ -39,12 +39,6 @@ class TarifAngkutan extends AppModel {
                 'message' => 'tarif angkutan harap diisi'
             ),
         ),
-        'group_motor_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'group motor harap dipilih'
-            ),
-        ),
         'customer_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

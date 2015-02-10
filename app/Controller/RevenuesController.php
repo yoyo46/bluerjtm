@@ -2508,7 +2508,7 @@ class RevenuesController extends AppController {
     }
 
     function invoices(){
-        // if( in_array('view_revenues', $this->allowModule) ) {
+        if( in_array('view_revenues', $this->allowModule) ) {
             $this->loadModel('Invoice');
             $this->set('active_menu', 'invoices');
             $this->set('sub_module_title', __('Invoice'));
@@ -2548,19 +2548,19 @@ class RevenuesController extends AppController {
                 )
             ));
             $this->set('customers', $customers);
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function invoice_add($action = false){
-        // if( in_array('insert_invoices', $this->allowModule) ) {
+        if( in_array('insert_invoices', $this->allowModule) ) {
             $module_title = __('Tambah Invoice');
             $this->set('sub_module_title', trim($module_title));
             $this->doInvoice($action);
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     // function invoice_edit( $id ){
@@ -2841,7 +2841,7 @@ class RevenuesController extends AppController {
     }
 
     function invoice_reports(){
-        // if( in_array('view_revenue_reports', $this->allowModule) ) {
+        if( in_array('view_revenue_reports', $this->allowModule) ) {
             $this->loadModel('Invoice');
             $this->loadModel('Customer');
 
@@ -2962,8 +2962,8 @@ class RevenuesController extends AppController {
             ));
 
             $this->set(compact('customers', 'list_customer'));
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 }
