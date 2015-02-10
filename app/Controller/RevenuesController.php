@@ -2093,6 +2093,12 @@ class RevenuesController extends AppController {
                         $this->Ttuj->save($dataTtuj);
                     }
 
+                    if( !empty($data_local) && $data_local['Ttuj']['id'] <> $data['Revenue']['ttuj_id'] ) {
+                        $this->Ttuj->set('is_revenue', 0);
+                        $this->Ttuj->id = $data_local['Ttuj']['id'];
+                        $this->Ttuj->save();
+                    }
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Revenue'), $msg), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses %s Revenue'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
                     $this->redirect(array(
@@ -2299,6 +2305,7 @@ class RevenuesController extends AppController {
         }
         $this->set('data_revenue_detail', $data_revenue_detail);
 
+        $ttuj_id = !empty($data_local['Ttuj']['id'])?$data_local['Ttuj']['id']:false;
         $ttujs = $this->Ttuj->getData('list', array(
             'fields' => array(
                 'Ttuj.id', 'Ttuj.no_ttuj'
@@ -2307,7 +2314,10 @@ class RevenuesController extends AppController {
                 'Ttuj.is_pool' => 1,
                 'Ttuj.is_draft' => 0,
                 'Ttuj.status' => 1,
-                'Ttuj.is_revenue' => 0,
+                'OR' => array(
+                    'Ttuj.is_revenue' => 0,
+                    'Ttuj.id' => $ttuj_id,
+                ),
             ),
         ));
         $this->set('ttujs', $ttujs);
