@@ -179,12 +179,13 @@ class AjaxController extends AppController {
 		$this->set('lku', $lku);
 	}
 
-	function getInfoTtujRevenue($ttuj_id, $customer_id = false){
+	function getInfoTtujRevenue( $ttuj_id = false, $customer_id = false ){
 		$this->loadModel('Ttuj');
 		$this->loadModel('TarifAngkutan');
 		$this->loadModel('Customer');
 		$this->loadModel('City');
 		$this->loadModel('TipeMotor');
+		$data_revenue_detail = array();
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
@@ -192,19 +193,20 @@ class AjaxController extends AppController {
 			)
 		));
 
-		$data_revenue_detail = array();
 
 		if(!empty($data_ttuj)){
 			if(!empty($customer_id)){
 				$data_ttuj['Ttuj']['customer_id'] = $customer_id;
 			}
+
 			$data_ttuj = $this->Ttuj->Customer->getMerge($data_ttuj, $data_ttuj['Ttuj']['customer_id']);
 			$this->request->data = $data_ttuj;
 			$this->request->data['Revenue']['customer_id'] = $data_ttuj['Ttuj']['customer_id'];
-
 			$toCities = array();
+
 			if(!empty($data_ttuj['TtujTipeMotor'])){
 				$tipe_motor_list = array();
+
 				foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
 					$tipe_motor = $this->TipeMotor->getData('first', array(
 						'conditions' => array(
@@ -218,6 +220,7 @@ class AjaxController extends AppController {
 					}
 					
 					$price_unit = false;
+
 					if($data_ttuj['Ttuj']['is_retail']){
 						$city = $this->City->getData('first', array(
 							'conditions' => array(
@@ -229,12 +232,12 @@ class AjaxController extends AppController {
 							$to_city_id = $city['City']['id'];
 						}
 
-						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $value['city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity']);
+						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $value['city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity'], $tipe_motor['TipeMotor']['group_motor_id']);
 					}else{
 						$to_city_name = $data_ttuj['Ttuj']['to_city_name'];
 						$to_city_id = $data_ttuj['Ttuj']['to_city_id'];
 
-						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity']);
+						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity'], $tipe_motor['TipeMotor']['group_motor_id']);
 					}
 
 					$data_revenue_detail[$key] = array(
@@ -251,17 +254,21 @@ class AjaxController extends AppController {
 							'TipeMotor' => array(
 								'name' => $tipe_motor_name,
 							),
-							'ttuj_tipe_motor_id' => $value['id']
+							'ttuj_tipe_motor_id' => $value['id'],
+                        	// 'max_qty_unit' => $value['qty'],
 						)
 					);
 				}
 			}
 		}
 
-		$customers = $this->Customer->find('list', array(
+		$customers = $this->Customer->getData('list', array(
 			'conditions' => array(
 				'Customer.status' => 1
-			)
+			),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name'
+            ),
 		));
 
 		$toCities = $this->City->toCities();
@@ -381,27 +388,39 @@ class AjaxController extends AppController {
         ));
 	}
 
-	function getInfoRevenueDetail($ttuj_id, $city_id){
+	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $city_id = false, $tipe_motor_id = false ){
 		$this->loadModel('Ttuj');
+		$this->loadModel('TipeMotor');
 		$this->loadModel('TarifAngkutan');
-
+		$detail = array();
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
-				'Ttuj.id' => $ttuj_id
+				'Ttuj.id' => $ttuj_id,
+				'Ttuj.is_pool' => 1,
+                'Ttuj.is_draft' => 0,
+                'Ttuj.status' => 1,
 			),
-			'contain' => array(
-				'TtujTipeMotor' => array(
-					'conditions' => array(
-						'TtujTipeMotor.city_id' => $city_id
-					)
-				)
-			)
-		));
+		), false);
+		$group_motor_id = false;
 
-		$detail = array();
+		if( !empty($tipe_motor_id) ) {
+			$tipeMotor = $this->TipeMotor->getData('first', array(
+				'conditions' => array(
+					'TipeMotor.id' => $tipe_motor_id,
+	                'TipeMotor.status' => 1,
+				),
+	            'contain' => array(
+	                'ColorMotor',
+	            ),
+			), false);
+
+			if( !empty($tipeMotor) ) {
+				$group_motor_id = $tipeMotor['TipeMotor']['group_motor_id'];
+			}
+		}
+
 		if(!empty($data_ttuj)){
-			$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $city_id, $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity']);
-
+			$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $city_id, $customer_id, $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
 			$detail = array(
 				'RevenueDetail' => array(
 					'price_unit' => $tarif,
@@ -414,7 +433,7 @@ class AjaxController extends AppController {
 
 	function getInvoiceInfo($customer_id = false){
 		$this->loadModel('Revenue');
-		$revenues = $this->Revenue->getData('all', array(
+		$revenues = $this->Revenue->getData('first', array(
 			'conditions' => array(
 				'Revenue.customer_id' => $customer_id,
 				'Revenue.transaction_status' => 'posting',
@@ -422,23 +441,21 @@ class AjaxController extends AppController {
 			),
 			'order' => array(
 				'Revenue.date_revenue' => 'ASC'
-			)
+			),
+			'fields' => array(
+				'SUM(total) total',
+				'MAX(Revenue.date_revenue) period_to',
+				'MIN(Revenue.date_revenue) period_from',
+			),
+			'group' => array(
+				'Revenue.customer_id'
+			),
 		));
+
 		if(!empty($revenues)){
-			$total = 0;
-			foreach ($revenues as $key => $value) {
-				if(!empty($value['Revenue']['total'])){
-					$total += $value['Revenue']['total'];
-				}
-
-				$date_rev = $value['Revenue']['date_revenue'];
-				if($key == 0){
-					$this->request->data['Invoice']['period_from'] = $date_rev;
-				}
-
-				$this->request->data['Invoice']['period_to'] = $date_rev;
-			}
-			$this->request->data['Invoice']['total'] = $total;
+			$this->request->data['Invoice']['period_from'] = !empty($revenues[0]['period_from'])?$this->MkCommon->customDate($revenues[0]['period_from'], 'd/m/Y'):false;
+			$this->request->data['Invoice']['period_to'] = !empty($revenues[0]['period_to'])?$this->MkCommon->customDate($revenues[0]['period_to'], 'd/m/Y'):false;
+			$this->request->data['Invoice']['total'] = !empty($revenues[0]['total'])?$revenues[0]['total']:0;;
 		}
 	}
 

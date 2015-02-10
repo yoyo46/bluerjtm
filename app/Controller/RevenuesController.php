@@ -1894,7 +1894,7 @@ class RevenuesController extends AppController {
         if(!empty($this->request->data)){
             $data = $this->request->data;
             $data['Revenue']['date_sj'] = !empty($data['Revenue']['date_sj']) ? date('Y-m-d', strtotime($data['Revenue']['date_sj'])) : '';
-            $data['Revenue']['date_revenue'] = !empty($data['Revenue']['date_revenue']) ? date('Y-m-d', strtotime($data['Revenue']['date_revenue'])) : '';
+            $data['Revenue']['date_revenue'] = $this->MkCommon->getDate($data['Revenue']['date_revenue']);
 
             if($id && $data_local){
                 $this->Revenue->id = $id;
@@ -1909,9 +1909,12 @@ class RevenuesController extends AppController {
             $validate_detail = true;
             $validate_qty = true;
             $total_revenue = 0;
+            $total_qty = 0;
             $array_ttuj_tipe_motor = array();
+
             if(!empty($data['RevenueDetail'])){
                 foreach ($data['RevenueDetail']['no_do'] as $key => $value) {
+                    $total_qty += $data['RevenueDetail']['qty_unit'][$key];
                     $data_detail['RevenueDetail'] = array(
                         'no_do' => $value,
                         'no_sj' => $data['RevenueDetail']['no_sj'][$key],
@@ -2016,6 +2019,32 @@ class RevenuesController extends AppController {
             $this->Revenue->set($data);
 
             if($this->Revenue->validates($data) && $validate_detail && $validate_qty){
+                // if( !empty($data['Revenue']['transaction_status']) && $data['Revenue']['transaction_status'] == 'posting' ) {
+                    if( isset($free_space) ) {
+                        if( $free_space <= 0 ) {
+                            $dataTtuj['Ttuj']['is_revenue'] = 1;
+                        } else {
+                            $dataTtuj['Ttuj']['is_revenue'] = 0;
+                        }
+                    } else {
+                        $qty = $this->Ttuj->TtujTipeMotor->find('first', array(
+                            'conditions' => array(
+                                'TtujTipeMotor.ttuj_id' => $data['Revenue']['ttuj_id'],
+                                'TtujTipeMotor.status' => 1,
+                            ),
+                            'fields' => array(
+                                'SUM(TtujTipeMotor.qty) as count_qty'
+                            )
+                        ));
+
+                        if( !empty($qty[0]['count_qty']) && $qty[0]['count_qty'] >= $total_qty ) {
+                            $dataTtuj['Ttuj']['is_revenue'] = 1;
+                        } else {
+                            $dataTtuj['Ttuj']['is_revenue'] = 0;
+                        }
+                    }
+                // }
+
                 if($this->Revenue->save($data)){
                     $revenue_id = $this->Revenue->id;
 
@@ -2059,6 +2088,11 @@ class RevenuesController extends AppController {
                         $this->Revenue->RevenueDetail->save();
                     }
 
+                    if( !empty($dataTtuj) ) {
+                        $this->Ttuj->id = $data['Revenue']['ttuj_id'];
+                        $this->Ttuj->save($dataTtuj);
+                    }
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Revenue'), $msg), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses %s Revenue'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
                     $this->redirect(array(
@@ -2099,7 +2133,7 @@ class RevenuesController extends AppController {
                         )
                     ));
                     $ttuj_tipe_motor = $this->TipeMotor->getMerge($ttuj_tipe_motor, $ttuj_tipe_motor['TtujTipeMotor']['tipe_motor_id']);
-                    
+
                     if($ttuj_temp_data['Ttuj']['is_retail']){
                         if(!empty($ttuj_tipe_motor)){                            
                             $qty = $ttuj_tipe_motor['TtujTipeMotor']['qty'];
@@ -2140,11 +2174,19 @@ class RevenuesController extends AppController {
 
                         $tarif = $this->TarifAngkutan->findTarif($ttuj_temp_data['Ttuj']['from_city_id'], $ttuj_temp_data['Ttuj']['to_city_id'], $ttuj_temp_data['Ttuj']['customer_id'], $ttuj_temp_data['Ttuj']['truck_capacity']);
                     }
-                    
+
+                    // $ttujTipeMotor = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                    //     'conditions' => array(
+                    //         'TtujTipeMotor.tipe_motor_id' => $value['tipe_motor_id'][$key],
+                    //         'TtujTipeMotor.ttuj_id' => $this->request->data['Revenue']['ttuj_id'],
+                    //         'TtujTipeMotor.status' => 1,
+                    //     )
+                    // ));
                     
                     $data_revenue_detail[$key] = array(
                         'TtujTipeMotor' => array(
-                            'qty' => $qty
+                            'qty' => $qty,
+                            // 'max_qty_unit' => !empty($ttujTipeMotor['TtujTipeMotor']['qty'])?$ttujTipeMotor['TtujTipeMotor']['qty']:0,
                         ),
                         'RevenueDetail' => array(
                             'no_do' => $value['no_do'],
@@ -2224,9 +2266,18 @@ class RevenuesController extends AppController {
                         $tarif = $this->TarifAngkutan->findTarif($ttuj_data['Ttuj']['from_city_id'], $ttuj_data['Ttuj']['to_city_id'], $ttuj_data['Ttuj']['customer_id'], $ttuj_data['Ttuj']['truck_capacity']);
                     }
 
+                    // $ttujTipeMotor = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                    //     'conditions' => array(
+                    //         'TtujTipeMotor.tipe_motor_id' => $this->request->data['RevenueDetail']['tipe_motor_id'][$key],
+                    //         'TtujTipeMotor.ttuj_id' => $this->request->data['Revenue']['ttuj_id'],
+                    //         'TtujTipeMotor.status' => 1,
+                    //     )
+                    // ));
+
                     $data_revenue_detail[$key] = array(
                         'TtujTipeMotor' => array(
-                            'qty' => $qty
+                            'qty' => $qty,
+                            // 'max_qty_unit' => !empty($ttujTipeMotor['TtujTipeMotor']['qty'])?$ttujTipeMotor['TtujTipeMotor']['qty']:0,
                         ),
                         'RevenueDetail' => array(
                             'no_do' => $this->request->data['RevenueDetail']['no_do'][$key],
@@ -2256,6 +2307,7 @@ class RevenuesController extends AppController {
                 'Ttuj.is_pool' => 1,
                 'Ttuj.is_draft' => 0,
                 'Ttuj.status' => 1,
+                'Ttuj.is_revenue' => 0,
             ),
         ));
         $this->set('ttujs', $ttujs);
@@ -2298,6 +2350,7 @@ class RevenuesController extends AppController {
                     $value = false;
                 }
 
+                $this->Revenue->set('status', $value);
                 $this->Revenue->id = $id;
 
                 if($this->Revenue->save()){
@@ -2601,6 +2654,8 @@ class RevenuesController extends AppController {
                 $msg = 'membuat';
             }
 
+            $data['Invoice']['period_from'] = $this->MkCommon->getDate($data['Invoice']['period_from']);
+            $data['Invoice']['period_to'] = $this->MkCommon->getDate($data['Invoice']['period_to']);
             $this->Invoice->set($data);
 
             if($this->Invoice->validates()){

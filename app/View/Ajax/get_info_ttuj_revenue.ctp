@@ -1,8 +1,6 @@
 <div id="form-ttuj-main">
 	<?php
-			echo $this->element('blocks/revenues/revenue_info', array(
-				'info' => true,
-			));
+			echo $this->element('blocks/revenues/revenue_info');
 	?>
 </div>
 <div id="form-ttuj-detail">

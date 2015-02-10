@@ -17,47 +17,43 @@
             </thead>
             <tbody class="tipe-motor-table">
                 <?php
-                    $total = 0;
-                    $arr_duplicate = array();
-                    foreach ($data as $key => $detail) {
-                        if(!empty($detail['RevenueDetail']['price_unit'])){
-                            $price = $detail['RevenueDetail']['price_unit'];
-                        }else{
-                            $link = $this->Html->link(__('disini'), 
-                                array('controller' => 'settings', 'action' => 'tarif_angkutan_add'),
-                                array('target' => 'blank')
-                            );
-                            $price = sprintf(__('Tarif tidak ditemukan, silahkan buat tarif angkutan %s'), $link);
-                        }
-                        
+                        $total = 0;
+                        $arr_duplicate = array();
+
+                        foreach ($data as $key => $detail) {
+                            if(!empty($detail['RevenueDetail']['price_unit'])){
+                                $price = $detail['RevenueDetail']['price_unit'];
+                            }else{
+                                $link = $this->Html->link(__('disini'), array(
+                                    'controller' => 'settings', 
+                                    'action' => 'tarif_angkutan_add'
+                                ), array(
+                                    'target' => 'blank'
+                                ));
+                                $price = sprintf(__('Tarif tidak ditemukan, silahkan buat tarif angkutan %s'), $link);
+                            }
                 ?>
-                <tr>
+                <tr rel="<?php echo $key; ?>">
                     <td class="city-data">
                         <?php
-                            // if(!empty($detail['RevenueDetail']['to_city_name'])){
-                            //     echo $detail['RevenueDetail']['to_city_name'];
-                            // }else{
-                            //     echo ' - ';
-                            // }
+                                echo $this->Form->input('RevenueDetail.city_id.', array(
+                                    'empty' => __('Pilih Kota Tujuan'),
+                                    'options' => $toCities,
+                                    'required' => false,
+                                    'label' => false,
+                                    'class' => 'form-control city-revenue-change',
+                                    'value' => (!empty($detail['RevenueDetail']['city_id'])) ? $detail['RevenueDetail']['city_id'] : 0
+                                ));
 
-                            echo $this->Form->input('RevenueDetail.city_id.', array(
-                                'empty' => __('Pilih Kota Tujuan'),
-                                'options' => $toCities,
-                                'required' => false,
-                                'label' => false,
-                                'class' => 'form-control city-revenue-change',
-                                'value' => (!empty($detail['RevenueDetail']['city_id'])) ? $detail['RevenueDetail']['city_id'] : 0
-                            ));
+                                echo $this->Form->hidden('RevenueDetail.ttuj_tipe_motor_id.', array(
+                                    'required' => false,
+                                    'value' => (!empty($detail['RevenueDetail']['ttuj_tipe_motor_id'])) ? $detail['RevenueDetail']['ttuj_tipe_motor_id'] : 0
+                                ));
 
-                            echo $this->Form->hidden('RevenueDetail.ttuj_tipe_motor_id.', array(
-                                'required' => false,
-                                'value' => (!empty($detail['RevenueDetail']['ttuj_tipe_motor_id'])) ? $detail['RevenueDetail']['ttuj_tipe_motor_id'] : 0
-                            ));
-
-                            echo $this->Form->hidden('RevenueDetail.tarif_angkutan_id.', array(
-                                'required' => false,
-                                'value' => (!empty($price['tarif_angkutan_id'])) ? $price['tarif_angkutan_id'] : 0
-                            ));
+                                echo $this->Form->hidden('RevenueDetail.tarif_angkutan_id.', array(
+                                    'required' => false,
+                                    'value' => (!empty($price['tarif_angkutan_id'])) ? $price['tarif_angkutan_id'] : 0
+                                ));
                         ?>
                     </td>
                     <td class="no-do-data" align="center">
@@ -92,45 +88,33 @@
 
                             echo $this->Form->input('RevenueDetail.tipe_motor_id.', array(
                                 'label' => false,
-                                'class' => 'form-control',
+                                'class' => 'form-control revenue-tipe-motor',
                                 'required' => false,
                                 'value' => (!empty($detail['RevenueDetail']['tipe_motor_id'])) ? $detail['RevenueDetail']['tipe_motor_id'] : 0,
                                 'options' => $list_tipe_motor,
-                                'empty' => __('Pilih Tipe Motor')
+                                'empty' => __('Pilih Tipe Motor'),
                             ));
                         ?>
                     </td>
                     <td class="qty-tipe-motor-data" align="center">
                         <?php
-                            $qty = '';
-                            if( (isset($detail['RevenueDetail']['qty_unit']) && !empty($detail['RevenueDetail']['qty_unit'])) ){
-                                $qty = $detail['RevenueDetail']['qty_unit'];
-                            }else if( !empty($detail['TtujTipeMotor']['qty']) ){
-                                $qty = $detail['TtujTipeMotor']['qty'];
-                            }
+                                $qty = '';
 
-                            // if(!empty($price) && is_array($price) && $price['jenis_unit'] == 'per_truck'){
-                            //     echo $qty;
+                                if( (isset($detail['RevenueDetail']['qty_unit']) && !empty($detail['RevenueDetail']['qty_unit'])) ){
+                                    $qty = $detail['RevenueDetail']['qty_unit'];
+                                }else if( !empty($detail['TtujTipeMotor']['qty']) ){
+                                    $qty = $detail['TtujTipeMotor']['qty'];
+                                }
 
-                            //     echo $this->Form->hidden('RevenueDetail.qty_unit.', array(
-                            //         'type' => 'text',
-                            //         'label' => false,
-                            //         'class' => 'form-control revenue-qty input_number',
-                            //         'required' => false,
-                            //         'value' =>  $qty,
-                            //         'max' => $detail['TtujTipeMotor']['qty']
-                            //     ));
-                            // }else{
                                 echo $this->Form->input('RevenueDetail.qty_unit.', array(
                                     'type' => 'text',
                                     'label' => false,
                                     'class' => 'form-control revenue-qty input_number',
                                     'required' => false,
                                     'value' =>  $qty,
-                                    'max' => $detail['TtujTipeMotor']['qty']
+                                    // 'max' => !empty($detail['TtujTipeMotor']['max_qty_unit'])?$detail['TtujTipeMotor']['max_qty_unit']:0,
                                 ));
-                            // }
-                            echo $this->Form->hidden('RevenueDetail.payment_type.', array(
+                                echo $this->Form->hidden('RevenueDetail.payment_type.', array(
                                     'type' => 'text',
                                     'label' => false,
                                     'class' => 'jenis_unit',

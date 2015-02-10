@@ -116,16 +116,18 @@ class TarifAngkutan extends AppModel {
         return $data;
     }
 
-    function check_availability($data){
+    function check_availability( $data = false, $id = false ){
         $data = $data['TarifAngkutan'];
+        $conditions = array(
+            'from_city_id' => $data['from_city_id'],
+            'to_city_id' => $data['to_city_id'],
+            'jenis_unit' => $data['jenis_unit'],
+            'customer_id' => $data['customer_id'],
+            'TarifAngkutan.id <>' => $id,
+        );
+
         $check_availability = $this->find('count', array(
-            'conditions' => array(
-                'from_city_id' => $data['from_city_id'],
-                'to_city_id' => $data['to_city_id'],
-                'jenis_unit' => $data['jenis_unit'],
-                'tarif' => $data['tarif'],
-                'customer_id' => $data['customer_id'],
-            )
+            'conditions' => $conditions,
         ));
 
         if( empty($check_availability) ){
@@ -135,22 +137,41 @@ class TarifAngkutan extends AppModel {
         }
     }
 
-    function findTarif($from_city_id, $to_city_id, $customer_id, $capacity){
+    function findTarif( $from_city_id, $to_city_id, $customer_id, $capacity = false, $group_motor_id = false ){
+        $conditions = array(
+            'from_city_id' => $from_city_id,
+            'to_city_id' => $to_city_id,
+            'customer_id' => $customer_id,
+        );
+
         $result = $this->find('first', array(
-            'conditions' => array(
-                'from_city_id' => $from_city_id,
-                'to_city_id' => $to_city_id,
-                'customer_id' => $customer_id,
-                'capacity' => $capacity
-            )
+            'conditions' => $conditions,
         ));
 
         if(!empty($result)){
-            return array(
-                'jenis_unit' => $result['TarifAngkutan']['jenis_unit'],
-                'tarif' => $result['TarifAngkutan']['tarif'],
-                'tarif_angkutan_id' => $result['TarifAngkutan']['id']
-            );
+            $addConditions = $conditions;
+
+            if( !empty($result['TarifAngkutan']['capacity']) ) {
+                $addConditions['capacity'] = $capacity;
+            }
+            if( !empty($result['TarifAngkutan']['group_motor_id']) && $result['TarifAngkutan']['jenis_unit'] == 'per_unit' ) {
+                $addConditions['group_motor_id'] = $result['TarifAngkutan']['group_motor_id'];
+            }
+            if( !empty($group_motor_id) && $result['TarifAngkutan']['jenis_unit'] == 'per_unit' ) {
+                $addConditions['group_motor_id'] = $group_motor_id;
+            }
+
+            $result = $this->find('first', array(
+                'conditions' => $addConditions,
+            ));
+
+            if( !empty($result) ) {
+                return array(
+                    'jenis_unit' => $result['TarifAngkutan']['jenis_unit'],
+                    'tarif' => $result['TarifAngkutan']['tarif'],
+                    'tarif_angkutan_id' => $result['TarifAngkutan']['id']
+                );
+            }
         }else{
             return false;
         }

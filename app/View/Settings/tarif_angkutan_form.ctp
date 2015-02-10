@@ -71,7 +71,7 @@
 						
 						echo $this->Form->input('jenis_unit',array(
 							'label'=> __('Jenis Tarif *'), 
-							'class'=>'form-control',
+							'class'=>'form-control jenis-unit',
 							'required' => false,
 							'options' => array(
 								'per_unit' => 'per unit',
@@ -94,6 +94,12 @@
 		    </div>
 		    <div class="box-body">
 		    	<?php 
+		    			$groupClass = '';
+
+		    			if( !empty($this->request->data['TarifAngkutan']['jenis_unit']) && $this->request->data['TarifAngkutan']['jenis_unit'] == 'per_truck' ) {
+		    				$groupClass = 'hide';
+		    			}
+
 						echo $this->Form->input('group_motor_id',array(
 							'label'=> __('Grup motor'), 
 							'class'=>'form-control',
@@ -101,8 +107,8 @@
 							'options' => $group_motors,
 							'empty' => __('pilih group motor'),
 							'div' => array(
-								'class' => 'form-group'
-							)
+								'class' => sprintf('form-group group-motor %s', $groupClass),
+							),
 						));
 
 						echo $this->Form->input('capacity',array(

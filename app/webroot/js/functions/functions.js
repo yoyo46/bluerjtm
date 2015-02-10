@@ -581,7 +581,8 @@ var duplicate_row = function(){
         var self = $(this);
         var parent = self.parents('tr');
         var tag_element = parent.html();
-        var html = '<tr>'+
+        var uniqid = Date.now();
+        var html = '<tr rel="'+uniqid+'">'+
             '<td class="city-data">'+$(tag_element).filter('.city-data').html()+'</td>'+
             '<td class="no-do-data" align="center">'+$(tag_element).filter('.no-do-data').html()+'</td>'+
             '<td class="no-sj-data">'+$(tag_element).filter('.no-sj-data').html()+'</td>'+
@@ -593,36 +594,66 @@ var duplicate_row = function(){
         '</tr>';
         
         parent.after(html);
-
-        delete_custom_field();
         revenue_detail();
         grandTotalRevenue();
+        delete_custom_field( $('tr[rel="'+uniqid+'"] .delete-custom-field') );
+        city_revenue_change( $('tr[rel="'+uniqid+'"] .city-revenue-change'), $('tr[rel="'+uniqid+'"] .revenue-tipe-motor') );
     });
 }
 
-var city_revenue_change = function(){
-    $('.city-revenue-change').change(function(){
+var changeDetailRevenue = function ( parent, city_id, tipe_motor_id ) {
+    var ttuj_id = $('#getTtujInfoRevenue').val();
+    var customer_id = $('.change-customer-revenue').val();
+
+    $.ajax({
+        url: '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+tipe_motor_id+'/',
+        type: 'POST',
+        success: function(response, status) {
+            parent.find('td.price-data').html($(response).filter('#price-data').html());
+            parent.find('td.qty-tipe-motor-data').html($(response).filter('#qty-tipe-motor-data').html());
+            parent.find('td.total-price-revenue').html($(response).filter('#total-price-revenue').html());
+
+            // if( parent.attr('rel') == 0 ) {
+            //     parent.find('td.handle-row').html($(response).filter('#handle-row').html());
+            // }
+
+            revenue_detail();
+            grandTotalRevenue();
+            // duplicate_row();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+            return false;
+        }
+    });
+}
+
+var city_revenue_change = function( obj_city, obj_tipe_motor ){
+    if( typeof obj_city == 'undefined' ){
+        obj_city = $('.city-revenue-change');
+    }
+    if( typeof obj_tipe_motor == 'undefined' ){
+        obj_tipe_motor = $('.revenue-tipe-motor')
+    }
+
+    obj_city.change(function(){
         var self = $(this);
+        var val = self.val();
         var parent = self.parents('tr');
+        var tipe_motor_id = parent.find('.revenue-tipe-motor').val();
 
-        $.ajax({
-            url: '/ajax/getInfoRevenueDetail/'+$('#getTtujInfoRevenue').val()+'/'+self.val()+'/',
-            type: 'POST',
-            success: function(response, status) {
-                parent.find('td.price-data').html($(response).filter('#price-data').html());
-                parent.find('td.qty-tipe-motor-data').html($(response).filter('#qty-tipe-motor-data').html());
-                parent.find('td.total-price-revenue').html($(response).filter('#total-price-revenue').html());
-                parent.find('td.handle-row').html($(response).filter('#handle-row').html());
+        changeDetailRevenue( parent, val, tipe_motor_id );
+    });
 
-                revenue_detail();
-                grandTotalRevenue();
-                duplicate_row();
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
-                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                return false;
-            }
-        });
+    obj_tipe_motor.change(function() {
+        var self = $(this);
+        var val = self.val();
+        var parent = self.parents('tr');
+        var city_id = $('.city-revenue-change').val();
+
+        changeDetailRevenue( parent, city_id, val );
+
+        return false;
     });
 }
 
@@ -821,19 +852,19 @@ var choose_item_info = function(){
 choose_item_info();
 
 var revenue_detail = function(){
-    $('.revenue-qty').keyup(function(event){
-        var self = $(this);
-        var max = parseInt(self.attr('max'));
-        var val = parseInt(self.val());
+    // $('.revenue-qty').keyup(function(event){
+    //     var self = $(this);
+    //     var max = parseInt(self.attr('max'));
+    //     var val = parseInt(self.val());
 
-        if(val > max){
-            alert('qty tidak boleh lebih besar dari '+max)
-            self.val(max);
-        }else if(val <= 0){
-            self.val(1);
-        }
-        total_revenue_unit(self);
-    });
+    //     if(val > max){
+    //         alert('Qty muatan tidak boleh lebih besar dari '+max)
+    //         self.val(max);
+    //     }else if(val <= 0){
+    //         self.val(1);
+    //     }
+    //     total_revenue_unit(self);
+    // });
 
     $('.price-unit-revenue').keyup(function(){
         total_revenue_unit(self);
@@ -1145,7 +1176,7 @@ var change_customer_revenue = function(){
         var val_id = self.val();
 
         if( ttuj_id != '' && self.val() != '' ) {
-            findInfoTTujRevenue('/ajax/getInfoTtujRevenue/'+self.val()+'/'+val_id+'/');
+            findInfoTTujRevenue('/ajax/getInfoTtujRevenue/'+ttuj_id+'/'+val_id+'/');
         }
     });
 }
@@ -1587,6 +1618,20 @@ $(function() {
                 self.children('i').removeClass().addClass(result);
             },
         });
+
+        return false;
+    });
+
+    $('.jenis-unit').change(function() {
+        var self = $(this);
+        var val = self.val();
+        var group_motor = $('.group-motor');
+
+        if( val == 'per_truck' ) {
+            group_motor.addClass('hide');
+        } else {
+            group_motor.removeClass('hide');
+        }
 
         return false;
     });

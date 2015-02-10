@@ -2614,6 +2614,7 @@ class SettingsController extends AppController {
                 $msg = 'menambah';
             }
 
+            $data['TarifAngkutan']['group_motor_id'] = !empty($data['TarifAngkutan']['group_motor_id'])?$data['TarifAngkutan']['group_motor_id']:0;
             $data['TarifAngkutan']['tarif'] = !empty($data['TarifAngkutan']['tarif'])?str_replace(',', '', $data['TarifAngkutan']['tarif']):false;
             $data['TarifAngkutan']['capacity'] = !empty($data['TarifAngkutan']['capacity'])?$data['TarifAngkutan']['capacity']:0;
 
@@ -2649,17 +2650,15 @@ class SettingsController extends AppController {
                 }
             }
 
+            if( !empty($data['TarifAngkutan']['jenis_unit']) && $data['TarifAngkutan']['jenis_unit'] == 'per_truck' ){
+                $data['TarifAngkutan']['group_motor_id'] = 0;
+            }
             // if(!empty($data['TarifAngkutan']['from_city_name']) && !empty($data['TarifAngkutan']['to_city_name'])){
             //     $data['TarifAngkutan']['name_tarif'] = sprintf('%s - %s', $data['TarifAngkutan']['from_city_name'], $data['TarifAngkutan']['to_city_name']);
             // }
 
             $this->TarifAngkutan->set($data);
-
-            $check_availability = true;
-            
-            if(!$id){
-                $check_availability = $this->TarifAngkutan->check_availability($data);
-            }
+            $check_availability = $this->TarifAngkutan->check_availability( $data, $id );
 
             if($this->TarifAngkutan->validates($data) && $check_availability){
                 if($this->TarifAngkutan->save($data)){
