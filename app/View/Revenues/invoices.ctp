@@ -79,6 +79,15 @@
                             ), array(
                                 'class' => 'btn btn-primary btn-xs'
                             ));
+                            echo $this->Html->link('<i class="fa fa-download"></i> download PDF', array(
+                                'controller' => 'revenues',
+                                'action' => 'invoice_print',
+                                $id,
+                                'pdf'
+                            ), array(
+                                'class' => 'btn btn-danger hidden-print btn-xs',
+                                'escape' => false
+                            ));
 
                             // echo $this->Html->link(__('Hapus'), array(
                             //     'controller' => 'revenues',

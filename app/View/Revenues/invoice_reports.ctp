@@ -8,6 +8,11 @@
                 echo $this->Html->tag('h3', $sub_module_title, array(
                     'class' => 'box-title'
                 ));
+
+                echo $this->Html->link('<i class="fa fa-print"></i> print', 'javascript:', array(
+                    'class' => 'btn btn-primary hidden-print print-window pull-right',
+                    'escape' => false
+                ));
         ?>
     </div>
     <div class="box-body table-responsive">
@@ -35,11 +40,11 @@
             ?>
             <tr>
                 <td><?php echo $value['Customer']['name'];?></td>
-                <td><?php echo $value['piutang'][0][0]['total_pituang'];?></td>
-                <td><?php echo $value['current'][0][0]['current'];?></td>
-                <td><?php echo $value['current_rev1to15'][0][0]['current_rev1to15'];?></td>
-                <td><?php echo $value['current_rev16to30'][0][0]['current_rev16to30'];?></td>
-                <td><?php echo $value['current_rev30'][0][0]['current_rev30'];?></td>
+                <td><?php echo $this->Number->currency($value['piutang'][0][0]['total_pituang'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
+                <td><?php echo $this->Number->currency($value['current'][0][0]['current'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
+                <td><?php echo $this->Number->currency($value['current_rev1to15'][0][0]['current_rev1to15'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
+                <td><?php echo $this->Number->currency($value['current_rev16to30'][0][0]['current_rev16to30'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
+                <td><?php echo $this->Number->currency($value['current_rev30'][0][0]['current_rev30'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
             </tr>
             <?php
                         }

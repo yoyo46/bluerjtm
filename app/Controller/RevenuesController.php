@@ -2841,7 +2841,7 @@ class RevenuesController extends AppController {
     }
 
     function invoice_reports(){
-        if( in_array('view_revenue_reports', $this->allowModule) ) {
+        // if( in_array('view_revenue_reports', $this->allowModule) ) {
             $this->loadModel('Invoice');
             $this->loadModel('Customer');
 
@@ -2962,8 +2962,8 @@ class RevenuesController extends AppController {
             ));
 
             $this->set(compact('customers', 'list_customer'));
-        } else {
-            $this->redirect($this->referer());
-        }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
     }
 }
