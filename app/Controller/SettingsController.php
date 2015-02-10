@@ -3409,4 +3409,121 @@ class SettingsController extends AppController {
             $this->redirect($this->referer());
         }
     }
+
+    function parts_motor(){
+        $this->loadModel('PartsMotor');
+        $options = array();
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['PartsMotor']['name'] = $name;
+                $options['conditions']['PartsMotor.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+        $this->paginate = $this->PartsMotor->getData('paginate', $options);
+        $parts_motor = $this->paginate('PartsMotor');
+
+        $this->set('active_menu', 'parts_motor');
+        $this->set('sub_module_title', 'Part Motor');
+        $this->set('parts_motor', $parts_motor);
+    }
+
+    function parts_motor_add(){
+        $this->set('sub_module_title', 'Tambah Part Motor');
+        $this->doPartsMotor();
+    }
+
+    function parts_motor_edit($id){
+        $this->loadModel('PartsMotor');
+        $this->set('sub_module_title', 'Rubah Part Motor');
+        $parts_motor = $this->PartsMotor->getData('first', array(
+            'conditions' => array(
+                'PartsMotor.id' => $id
+            )
+        ));
+
+        if(!empty($parts_motor)){
+            $this->doPartsMotor($id, $parts_motor);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Part Motor tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'parts_motor'
+            ));
+        }
+    }
+
+    function doPartsMotor($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->PartsMotor->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('PartsMotor');
+                $this->PartsMotor->create();
+                $msg = 'menambah';
+            }
+            $this->PartsMotor->set($data);
+
+            if($this->PartsMotor->validates($data)){
+                if($this->PartsMotor->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Part Motor'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Part Motor'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'parts_motor'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Part Motor'), $msg), 'error');  
+                    $this->Log->logActivity( sprintf(__('Gagal %s Part Motor'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Part Motor'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->set('active_menu', 'parts_motor');
+        $this->render('parts_motor_form');
+    }
+
+    function parts_motor_toggle($id){
+        $this->loadModel('PartsMotor');
+        $locale = $this->PartsMotor->getData('first', array(
+            'conditions' => array(
+                'PartsMotor.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['PartsMotor']['status']){
+                $value = false;
+            }
+
+            $this->PartsMotor->id = $id;
+            $this->PartsMotor->set('status', $value);
+            if($this->PartsMotor->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status jenis perlengkapan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status jenis perlengkapan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Part Motor tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
 }

@@ -1,6 +1,6 @@
 <?php
-		$this->Html->addCrumb(__('Jenis Perlengkapan'), array(
-			'action' => 'jenis_perlengkapan'
+		$this->Html->addCrumb(__('Part Motor'), array(
+			'action' => 'parts_motor'
 		));
 		$this->Html->addCrumb($sub_module_title);
 ?>
@@ -9,7 +9,7 @@
         <h3 class="box-title"><?php echo $sub_module_title?></h3>
     </div>
     <?php 
-		echo $this->Form->create('JenisPerlengkapan', array(
+		echo $this->Form->create('PartsMotor', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
@@ -18,13 +18,13 @@
     <div class="box-body">
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('name',__('Nama Jenis Perlengkapan *')); 
+				echo $this->Form->label('name',__('Nama Part Motor *')); 
 
 				echo $this->Form->input('name',array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('Nama Jenis Perlengkapan')
+					'placeholder' => __('Nama Part Motor')
 				));
 			?>
         </div>

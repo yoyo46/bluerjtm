@@ -806,6 +806,17 @@
                                     'class' => ( !empty($active_menu) && $active_menu == 'calendar_icons' )?'active':'',
                                 ));
                             }
+
+                            if( in_array('view_parts_motor', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Icon Kalender', array(
+                                    'controller' => 'settings',
+                                    'action' => 'parts_motor',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'parts_motor' )?'active':'',
+                                ));
+                            }
                     ?>
                 </ul>
             </li>
