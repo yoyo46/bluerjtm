@@ -2766,7 +2766,7 @@ class RevenuesController extends AppController {
         $this->render('invoice_form');
     }
 
-    function invoice_print($id){
+    function invoice_print($id, $action_print = false){
         $this->loadModel('Invoice');
         $this->loadModel('Revenue');
         $this->loadModel('TipeMotor');
@@ -2832,7 +2832,11 @@ class RevenuesController extends AppController {
             }
             
             $action = $invoice['Invoice']['type_invoice'];
-            $this->set(compact('invoice', 'revenue_detail', 'action'));
+            $this->set(compact('invoice', 'revenue_detail', 'action', 'action_print'));
+        }
+
+        if($action == 'pdf'){
+            $this->layout = 'pdf';
         }
     }
 
