@@ -57,9 +57,19 @@ class UserPermissionsController extends AppController {
                 )
             ),
         ));
+        $layout_css = array(
+            '/css/acl/treeview'
+        );
+        $layout_js = array(
+            '/js/acl/jquery.cookie',
+            '/js/acl/treeview',
+            '/js/acl/acos',
+            '/js/bootstrap',
+        );
 
         $this->set(compact(
-            'groups', 'modules', 'group_id'
+            'groups', 'modules', 'group_id',
+            'layout_js', 'layout_css'
         ));
     }
 

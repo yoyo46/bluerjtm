@@ -1,12 +1,4 @@
 <?php
-        echo $this->Html->css(array('/css/acl/treeview'));
-        echo $this->Html->script(array(
-            '/js/acl/jquery.cookie',
-            '/js/acl/treeview',
-            '/js/acl/acos',
-            '/js/bootstrap',
-        ));
-
         echo $this->Form->create('Group', array(
             'url'=> $this->Html->url( null, true ), 
             'inputDefaults' => array('div' => false),

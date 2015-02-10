@@ -10,7 +10,7 @@
                 $border = 1;
                 $tdStyle = 'text-align: center;';
             } else {
-                echo $this->element('blocks/trucks/search_report_point_perday');
+                echo $this->element('blocks/trucks/search_report_point_perplant');
             }
 ?>
 <section class="content invoice">

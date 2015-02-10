@@ -2879,7 +2879,8 @@ class TrucksController extends AppController {
 
     public function point_perplant_report( $data_type = 'depo', $data_action = false ) {
         if( in_array('view_point_perplant_report', $this->allowModule) ) {
-            $this->loadModel('UangJalan');
+            // $this->loadModel('UangJalan');
+            $this->loadModel('City');
             $this->loadModel('Ttuj');
             $this->loadModel('TtujTipeMotor');
             $this->loadModel('Customer');
@@ -2907,6 +2908,7 @@ class TrucksController extends AppController {
             $lastDay = date('t', strtotime($currentMonth));
             $conditionsCustomer = array(
                 'Customer.status' => 1,
+                'Customer.customer_type_id' => 2,
             );
 
             if( $data_type == 'retail' ) {
@@ -2938,23 +2940,23 @@ class TrucksController extends AppController {
                 unset($group['Ttuj.from_city_id']);
                 $this->set('active_menu', 'retail_point_perplant_report');
             } else {
-                $cities = $this->UangJalan->getData('list', array(
-                    'conditions' => array(
-                        'UangJalan.status' => 1,
-                    ),
-                    'fields' => array(
-                        'FromCity.id', 'FromCity.name'
-                    ),
-                    'contain' => array(
-                        'FromCity'
-                    ),
-                    'order' => array(
-                        'FromCity.name' => 'ASC',
-                    ),
-                    'group' => array(
-                        'FromCity.id',
-                    )
-                ), false);
+                // $cities = $this->UangJalan->getData('list', array(
+                //     'conditions' => array(
+                //         'UangJalan.status' => 1,
+                //     ),
+                //     'fields' => array(
+                //         'FromCity.id', 'FromCity.name'
+                //     ),
+                //     'contain' => array(
+                //         'FromCity'
+                //     ),
+                //     'order' => array(
+                //         'FromCity.name' => 'ASC',
+                //     ),
+                //     'group' => array(
+                //         'FromCity.id',
+                //     )
+                // ), false);
                 $this->set('active_menu', 'point_perplant_report');
             }
 
@@ -2965,6 +2967,7 @@ class TrucksController extends AppController {
                     'Ttuj.is_draft'=> 0,
                     'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')' => $currentMonth,
                     'Ttuj.customer_id' => $customerArr,
+                    'Ttuj.is_retail' => 0,
                 ),
                 'contain' => array(
                     'Ttuj',
@@ -2980,6 +2983,7 @@ class TrucksController extends AppController {
             ), false);
             $dataTtuj = array();
             $targetUnit = array();
+            $cities = array();
             $customerTargetUnits = $this->CustomerTargetUnitDetail->find('all', array(
                 'conditions' => array(
                     'CustomerTargetUnit.status' => 1,
@@ -3006,6 +3010,14 @@ class TrucksController extends AppController {
                     $totalMuatan = 0;
                     $customer_id = $value['Ttuj']['customer_id'];
                     $from_city_id = $value['Ttuj']['from_city_id'];
+
+                    if( empty($cities[$from_city_id]) ) {
+                        $value = $this->City->getMerge( $value, $from_city_id );
+
+                        if( !empty($value['City']['name']) ) {
+                            $cities[$from_city_id] = $value['City']['name'];
+                        }
+                    }
 
                     if( !empty($value[0]['cnt']) ) {
                         $totalMuatan = $value[0]['cnt'];
