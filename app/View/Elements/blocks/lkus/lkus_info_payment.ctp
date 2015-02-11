@@ -73,7 +73,7 @@
                             }
                         ?>
                     </td>
-                    <td class="data-total-claim">
+                    <td class="data-total-claim" align="right">
                         <?php
                             if(!empty($this->request->data['LkuPaymentDetail'][$i]['Lku']['total_klaim'])){
 

@@ -32,7 +32,9 @@ if($action_print == 'pdf'){
 					$colom = $this->Html->tag('td', $no++);
 					$colom .= $this->Html->tag('td', $value['TipeMotor']['name']);
 					$colom .= $this->Html->tag('td', $value['RevenueDetail']['qty_unit']);
-					$colom .= $this->Html->tag('td', $this->Number->currency($value['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)));
+					$colom .= $this->Html->tag('td', $this->Number->currency($value['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+						'align' => 'right'
+					));
 					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_reference']);
 
 					if(!empty($value['RevenueDetail']['payment_type']) && $value['RevenueDetail']['payment_type'] == 'per_truck'){
@@ -194,7 +196,9 @@ readfile($path.'/'.$filename);
 						$colom = $this->Html->tag('td', $no++);
 						$colom .= $this->Html->tag('td', $value['TipeMotor']['name']);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['qty_unit']);
-						$colom .= $this->Html->tag('td', $this->Number->currency($value['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)));
+						$colom .= $this->Html->tag('td', $this->Number->currency($value['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+							'align' => 'right'
+						));
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_reference']);
 
 						if(!empty($value['RevenueDetail']['payment_type']) && $value['RevenueDetail']['payment_type'] == 'per_truck'){

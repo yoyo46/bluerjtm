@@ -102,7 +102,7 @@
                             }
                         ?>
                     </td>
-                    <td>
+                    <td align="right">
                         <?php 
                             echo $this->Form->input('LkuDetail.price.', array(
                                 'type' => 'text',
@@ -188,7 +188,7 @@
                     ?>
                 </td>
                 <td class="qty-tipe-motor" align="center">-</td>
-                <td>
+                <td align="right">
                     <?php 
                         echo $this->Form->input('LkuDetail.price.', array(
                             'type' => 'text',
