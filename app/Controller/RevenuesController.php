@@ -2926,7 +2926,7 @@ class RevenuesController extends AppController {
         }
     }
 
-    function invoice_reports(){
+    function invoice_reports( $data_action = false ){
         if( in_array('view_revenue_reports', $this->allowModule) ) {
             $this->loadModel('Invoice');
             $this->loadModel('Customer');
@@ -2971,11 +2971,13 @@ class RevenuesController extends AppController {
             $list_customer = array();
             foreach ($customers as $key => $value) {
                 $default_conditions = array(
-                    'Invoice.paid' => 0
+                    'Invoice.paid' => 0,
+                    'Invoice.customer_id' => $value['Customer']['id'],
                 );
                 if(!empty($invoice_conditions)){
                     $default_conditions = array_merge($default_conditions, $invoice_conditions);
                 }
+
                 $customers[$key]['piutang'] = $this->Invoice->getData('all', array(
                     'conditions' => $default_conditions,
                     'fields' => array(
@@ -2984,21 +2986,9 @@ class RevenuesController extends AppController {
                 ));
 
                 $default_conditions = array(
-                    'Invoice.paid' => 1
-                );
-                if(!empty($invoice_conditions)){
-                    $default_conditions = array_merge($default_conditions, $invoice_conditions);
-                }
-                $customers[$key]['current'] = $this->Invoice->getData('all', array(
-                    'conditions' => $default_conditions,
-                    'fields' => array(
-                        'SUM(Invoice.total) as current'
-                    )
-                ));
-
-                $default_conditions = array(
-                    'Invoice.due_invoice >=' => 1,
-                    'Invoice.due_invoice <=' => 15,
+                    'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >=' => 1,
+                    'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 15,
+                    'Invoice.customer_id' => $value['Customer']['id'],
                 );
                 if(!empty($invoice_conditions)){
                     $default_conditions = array_merge($default_conditions, $invoice_conditions);
@@ -3010,8 +3000,9 @@ class RevenuesController extends AppController {
                     )
                 ));
                 $default_conditions = array(
-                    'Invoice.due_invoice >=' => 16,
-                    'Invoice.due_invoice <=' => 30,
+                    'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >=' => 16,
+                    'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 30,
+                    'Invoice.customer_id' => $value['Customer']['id'],
                 );
                 if(!empty($invoice_conditions)){
                     $default_conditions = array_merge($default_conditions, $invoice_conditions);
@@ -3024,7 +3015,8 @@ class RevenuesController extends AppController {
                 ));
 
                 $default_conditions = array(
-                    'Invoice.due_invoice >' => 30,
+                    'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >' => 30,
+                    'Invoice.customer_id' => $value['Customer']['id'],
                 );
                 if(!empty($invoice_conditions)){
                     $default_conditions = array_merge($default_conditions, $invoice_conditions);
@@ -3047,7 +3039,15 @@ class RevenuesController extends AppController {
                 )
             ));
 
-            $this->set(compact('customers', 'list_customer'));
+            if($data_action == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($data_action == 'excel'){
+                $this->layout = 'ajax';
+            }
+
+            $this->set(compact(
+                'customers', 'list_customer', 'data_action'
+            ));
         } else {
             $this->redirect($this->referer());
         }

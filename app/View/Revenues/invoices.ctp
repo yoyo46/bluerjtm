@@ -53,6 +53,7 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Invoice.period_from', __('Periode Invoice'), array(
                             'escape' => false
                         )));
+                        echo $this->Html->tag('th', __('Total'));
                         echo $this->Html->tag('th', __('Action'));
                 ?>
             </tr>
@@ -70,6 +71,7 @@
                         echo $this->Common->customDate($value['Invoice']['period_from']).' sampai '.$this->Common->customDate($value['Invoice']['period_to']);
                     ?>
                 </td>
+                <td><?php echo $this->Number->currency($value['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <td class="action">
                     <?php 
                             echo $this->Html->link('print', array(
