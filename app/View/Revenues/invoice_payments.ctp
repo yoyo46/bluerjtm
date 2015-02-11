@@ -54,7 +54,7 @@
             <tr>
                 <td><?php echo $value['Invoice']['no_invoice'];?></td>
                 <td><?php echo $value['InvoicePayment']['nodoc'];?></td>
-                <td><?php echo $this->Number->currency($value['InvoicePayment']['total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
+                <td align="right"><?php echo $this->Number->currency($value['InvoicePayment']['total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <td><?php echo $this->Common->customDate($value['InvoicePayment']['date_payment']);?></td>
                 <td>
                     <?php 
