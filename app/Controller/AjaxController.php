@@ -862,5 +862,30 @@ class AjaxController extends AppController {
         	'data_change', 'action_type'
     	));
 	}
+
+	function getInfoInvoicePayment($id = false){
+		$this->loadModel('Invoice');
+
+		$invoice = $this->Invoice->InvoicePayment->getdata('first', array(
+			'conditions' => array(
+				'InvoicePayment.invoice_id' => $id
+			),
+			'fields' => array(
+				'SUM(total_payment) as total_payment'
+			)
+		));
+		
+		$invoice_real = $this->Invoice->getdata('first', array(
+			'conditions' => array(
+				'Invoice.id' => $id
+			),
+		));
+
+		if(!empty($invoice)){
+			$this->request->data['InvoicePayment']['total_payment_before'] = (!empty($invoice[0]['total_payment'])) ? $invoice[0]['total_payment'] : 0;
+		}
+
+		$this->set(compact('invoice_real', 'invoice'));
+	}
 }
 ?>

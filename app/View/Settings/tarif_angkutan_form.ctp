@@ -101,7 +101,7 @@
 		    			}
 
 						echo $this->Form->input('group_motor_id',array(
-							'label'=> __('Grup motor'), 
+							'label'=> __('Grup motor *'), 
 							'class'=>'form-control',
 							'required' => false,
 							'options' => $group_motors,

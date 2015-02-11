@@ -50,6 +50,10 @@ class Invoice extends AppModel {
             'className' => 'InvoiceDetail',
             'foreignKey' => 'invoice_id',
         ),
+        'InvoicePayment' => array(
+            'className' => 'InvoicePayment',
+            'foreignKey' => 'invoice_id',
+        ),
     );
 
 	function getData( $find, $options = false, $is_merge = true ){

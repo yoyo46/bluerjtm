@@ -598,4 +598,299 @@ class LkusController extends AppController {
         $this->set('ttujs', $ttujs);
         $this->render('lku_payment_form');
     }
+
+    public function lku_parts() {
+        // if( in_array('view_lku_parts', $this->allowModule) ) {
+            $this->loadModel('LkuPart');
+            $this->set('active_menu', 'lku_parts');
+            $this->set('sub_module_title', __('Data LKU Parts'));
+            $conditions = array();
+            
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['nodoc'])){
+                    $no_doc = urldecode($refine['nodoc']);
+                    $this->request->data['LkuPart']['no_doc'] = $no_doc;
+                    $conditions['LkuPart.no_doc LIKE '] = '%'.$no_doc.'%';
+                }
+            }
+
+            $this->paginate = $this->LkuPart->getData('paginate', array(
+                'conditions' => $conditions
+            ));
+            $LkuParts = $this->paginate('LkuPart');
+
+            $this->set('LkuParts', $LkuParts);
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    function lku_part_detail($id = false){
+        if( in_array('view_lku_parts', $this->allowModule) ) {
+            if(!empty($id)){
+                $LkuPart = $this->LkuPart->getLkuPart($id);
+
+                if(!empty($LkuPart)){
+                    $sub_module_title = __('Detail LKU Part');
+                    $this->set(compact('LkuPart', 'sub_module_title'));
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Lku Part tidak ditemukan.'), 'error');
+                    $this->redirect($this->referer());
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('Lku Part tidak ditemukan.'), 'error');
+                $this->redirect($this->referer());
+            }
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
+
+    function lku_part_add(){
+        // if( in_array('insert_lku_parts', $this->allowModule) ) {
+            $this->set('sub_module_title', __('Tambah LKU Part'));
+            $this->DoLkuPart();
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    function lku_part_edit($id){
+        if( in_array('update_lku_parts', $this->allowModule) ) {
+            $this->loadModel('LkuPart');
+            $this->set('sub_module_title', 'Rubah LKU Part');
+            $LkuPart = $this->LkuPart->getData('first', array(
+                'conditions' => array(
+                    'LkuPart.id' => $id
+                ),
+            ));
+
+            if(!empty($LkuPart)){
+                $this->DoLkuPart($id, $LkuPart);
+            }else{
+                $this->MkCommon->setCustomFlash(__('LKU Part tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'lkus',
+                    'action' => 'lku_parts'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
+
+    function DoLkuPart($id = false, $data_local = false){
+        $this->loadModel('Ttuj');
+        $this->loadModel('PartsMotor');
+
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+
+            if($id && $data_local){
+                $this->LkuPart->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('LkuPart');
+                $this->LkuPart->create();
+                $msg = 'menambah';
+            }
+            
+            $data['LkuPart']['tgl_lku'] = (!empty($data['LkuPart']['tgl_lku'])) ? $this->MkCommon->getDate($data['LkuPart']['tgl_lku']) : '';
+            
+            $validate_lku_detail = true;
+            $temp_detail = array();
+            $total_price = 0;
+            $total_klaim = 0;
+            if(!empty($data['LkuPartDetail']['parts_motor_id'])){
+                foreach ($data['LkuPartDetail']['parts_motor_id'] as $key => $value) {
+                    if( !empty($value) ){
+                        $data_detail['LkuPartDetail'] = array(
+                            'parts_motor_id' => $value,
+                            'qty' => (!empty($data['LkuPartDetail']['qty'][$key])) ? $data['LkuPartDetail']['qty'][$key] : '',
+                            'price' => (!empty($data['LkuPartDetail']['price'][$key])) ? $data['LkuPartDetail']['price'][$key] : '',
+                        );
+                        
+                        $temp_detail[] = $data_detail;
+                        $this->LkuPart->LkuPartDetail->set($data_detail);
+                        if( !$this->LkuPart->LkuPartDetail->validates() ){
+                            $validate_lku_detail = false;
+                            break;
+                        }else{
+                            $total_price += $data_detail['LkuPartDetail']['qty'] * $data_detail['LkuPartDetail']['price'];
+                            $total_klaim += $data_detail['LkuPartDetail']['qty'];
+                        }
+                    }
+                }
+            }else{
+                $validate_lku_detail = false;
+            }
+            
+            $data['LkuPart']['total_price'] = $total_price;
+            $data['LkuPart']['total_klaim'] = $total_klaim;
+            $this->LkuPart->set($data);
+
+            if($this->LkuPart->validates($data) && $validate_lku_detail){
+                if($this->LkuPart->save($data)){
+                    $lku_part_id = $this->LkuPart->id;
+
+                    if($id && $data_local){
+                        $this->LkuPart->LkuPartDetail->deleteAll(array(
+                            'LkuPartDetail.lku_part_id' => $lku_part_id
+                        ));
+                    }
+
+                    foreach ($temp_detail as $key => $value) {
+                        $this->LkuPart->LkuPartDetail->create();
+                        $value['LkuPartDetail']['lku_part_id'] = $lku_part_id;
+
+                        $this->LkuPart->LkuPartDetail->set($value);
+                        $this->LkuPart->LkuPartDetail->save();
+                    }
+
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s LKU Part'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Berhasil %s LKU Part'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+
+                    $this->redirect(array(
+                        'controller' => 'LkuParts',
+                        'action' => 'index',
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LKU Part'), $msg), 'error');
+                    $this->Log->logActivity( sprintf(__('Berhasil %s LKU Part #%s'), $msg, $lku_part_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LKU Part'), $msg), 'error');
+            }
+        } else if($id && $data_local){
+            $this->request->data = $data_local;
+
+            if(!empty($this->request->data['LkuPartDetail'])){
+                foreach ($this->request->data['LkuPartDetail'] as $key => $value) {
+                    $tipe_motor = $this->PartsMotor->getData('first', array(
+                        'conditions' => array(
+                            'PartsMotor.id' => $value['parts_motor_id']
+                        ),
+                    ));
+                    if(!empty($tipe_motor)){
+                        $Ttuj_Tipe_Motor = $this->Ttuj->TtujPartsMotor->getData('first', array(
+                            'conditions' => array(
+                                'TtujPartsMotor.ttuj_id' => $this->request->data['LkuPart']['ttuj_id'],
+                                'TtujPartsMotor.parts_motor_id' => $value['parts_motor_id']
+                            )
+                        ));
+                        $this->request->data['LkuPartDetail'][$key]['PartsMotor'] = array_merge($tipe_motor['PartsMotor'], $Ttuj_Tipe_Motor);
+                    }
+                }
+            }
+        }
+
+        if(!empty($this->request->data['LkuPartDetail']['parts_motor_id'])){
+            $temp = array();
+            foreach ($this->request->data['LkuPartDetail']['parts_motor_id'] as $key => $value) {
+                if( !empty($value) ){
+                    $temp['LkuPartDetail'][$key] = array(
+                        'parts_motor_id' => $value,
+                        'qty' => (!empty($data['LkuPartDetail']['qty'][$key])) ? $data['LkuPartDetail']['qty'][$key] : '',
+                        'price' => (!empty($data['LkuPartDetail']['price'][$key])) ? $data['LkuPartDetail']['price'][$key] : '',
+                    );
+
+                    $tipe_motor = $this->PartsMotor->getData('first', array(
+                        'conditions' => array(
+                            'PartsMotor.id' => $value
+                        )
+                    ));
+                    if(!empty($tipe_motor)){
+                        $Ttuj_Tipe_Motor = $this->Ttuj->TtujPartsMotor->getData('first', array(
+                            'conditions' => array(
+                                'TtujPartsMotor.ttuj_id' => $this->request->data['LkuPart']['ttuj_id'],
+                                'TtujPartsMotor.parts_motor_id' => $value
+                            )
+                        ));
+                        $temp['LkuPartDetail'][$key]['PartsMotor'] = array_merge($tipe_motor['PartsMotor'], $Ttuj_Tipe_Motor);
+                    }
+                }
+            }
+
+            unset($this->request->data['LkuPartDetail']);
+            $this->request->data['LkuPartDetail'] = $temp['LkuPartDetail'];
+        }
+
+        $ttujs = $this->Ttuj->getData('list', array(
+            'fields' => array(
+                'Ttuj.id', 'Ttuj.no_ttuj'
+            ),
+            'conditions' => array(
+                'Ttuj.is_pool' => 1,
+                'Ttuj.is_draft' => 0,
+                'Ttuj.status' => 1,
+            ),
+        ));
+
+        if(!empty($this->request->data['LkuPart']['ttuj_id'])){
+            $data_ttuj = $this->Ttuj->getData('first', array(
+                'conditions' => array(
+                    'Ttuj.id' => $this->request->data['LkuPart']['ttuj_id']
+                ),
+            ));
+            
+            if(!empty($data_ttuj)){
+                if(!empty($data_ttuj['TtujPartsMotor'])){
+                    $tipe_motor_list = array();
+                    foreach ($data_ttuj['TtujPartsMotor'] as $key => $value) {
+                        $tipe_motor = $this->PartsMotor->getData('first', array(
+                            'conditions' => array(
+                                'PartsMotor.id' => $value['parts_motor_id']
+                            )
+                        ));
+                        $tipe_motor_list[$tipe_motor['PartsMotor']['id']] = $tipe_motor['PartsMotor']['name'];
+                    }
+                    $this->set('tipe_motor_list', $tipe_motor_list);
+                }
+                $this->request->data = array_merge($this->request->data, $data_ttuj);
+            }
+            
+        }
+
+        $this->set('active_menu', 'lku_parts');
+        $this->set('ttujs', $ttujs);
+        $this->set('id', $id);
+        $this->render('lku_form');
+    }
+
+    function lku_part_toggle($id){
+        if( in_array('delete_lku_parts', $this->allowModule) ) {
+            $this->loadModel('LkuPart');
+            $locale = $this->LkuPart->getData('first', array(
+                'conditions' => array(
+                    'LkuPart.id' => $id
+                )
+            ));
+
+            if($locale){
+                $value = true;
+                if($locale['LkuPart']['status']){
+                    $value = false;
+                }
+
+                $this->LkuPart->id = $id;
+                $this->LkuPart->set('status', 0);
+
+                if($this->LkuPart->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status LKU Part ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status LKU Part ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('LKU Part tidak ditemukan.'), 'error');
+            }
+
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
 }

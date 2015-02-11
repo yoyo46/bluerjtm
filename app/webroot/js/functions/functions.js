@@ -1640,4 +1640,22 @@ $(function() {
     $('.print-window').click(function(){
         window.print();
     });
+
+    $('.invoice-ajax').change(function(){
+        var self = $(this);
+        var val = self.val();
+
+        $.ajax({
+            url: '/ajax/getInfoInvoicePayment/'+val+'/',
+            type: 'POST',
+            success: function(response, status) {
+                $('#invoice-info').html(response);
+                $('#invoice-info').removeClass('hide');
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    });
 });
