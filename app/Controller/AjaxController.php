@@ -497,7 +497,7 @@ class AjaxController extends AppController {
 		$this->loadModel('City');
 		$this->loadModel('TarifAngkutan');
 
-		$revenues = $this->Revenue->getData('all', array(
+		$revenue_id = $this->Revenue->getData('list', array(
 			'conditions' => array(
 				'Revenue.customer_id' => $customer_id,
 				'Revenue.transaction_status' => 'posting',
@@ -506,11 +506,12 @@ class AjaxController extends AppController {
 			'order' => array(
 				'Revenue.date_revenue' => 'ASC'
 			),
-		));
+			'fields' => array(
+				'Revenue.id', 'Revenue.id',
+			),
+		), false);
 
-		if(!empty($revenues)){
-			$revenue_id = Set::extract('/Revenue/id', $revenues);
-			
+		if(!empty($revenue_id)){
 			if($action == 'tarif'){
 				$revenue_detail = $this->Revenue->RevenueDetail->getData('all', array(
 					'conditions' => array(
@@ -518,7 +519,12 @@ class AjaxController extends AppController {
 					),
 					'order' => array(
 						'RevenueDetail.price_unit' => 'DESC'
-					)
+					),
+					'contain' => array(
+						'Revenue' => array(
+							'Ttuj'
+						),
+					),
 				));
 			}else{
 				$revenue_detail = $this->Revenue->RevenueDetail->getData('all', array(
@@ -527,7 +533,12 @@ class AjaxController extends AppController {
 					),
 					'order' => array(
 						'RevenueDetail.city_id'
-					)
+					),
+					'contain' => array(
+						'Revenue' => array(
+							'Ttuj'
+						),
+					),
 				));
 			}
 
@@ -555,8 +566,14 @@ class AjaxController extends AppController {
 				$revenue_detail = $result;
 			}
 		}
-// debug($revenue_detail);die();
-		$this->set(compact('revenue_detail', 'action'));
+		$this->layout = 'ajax';
+		$layout_css = array(
+			'print'
+		);
+
+		$this->set(compact(
+			'revenue_detail', 'action', 'layout_css'
+		));
 	}
 
 	function getDrivers ( $id = false ) {

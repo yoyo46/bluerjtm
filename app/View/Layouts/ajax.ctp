@@ -13,5 +13,13 @@
  * @since         CakePHP(tm) v 0.10.0.1076
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
+	if( isset($layout_js) && !empty($layout_js) ) {
+		echo $this->Html->script($layout_js);
+	}
+
+	if(isset($layout_css) && !empty($layout_css) ) {
+		echo $this->Html->css($layout_css);
+	}
 ?>
 <?php echo $this->fetch('content'); ?>

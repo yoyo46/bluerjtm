@@ -1,0 +1,21 @@
+table{
+	border-color:#000000;
+	border-collapse:collapse;
+}
+
+table td,
+table th {
+	padding: 5px;
+}
+
+table th {
+	font-weight:bold;
+	font-family:verdana;
+	font-size: 14px;
+	background-color:#E4E4E4;
+	text-align:center
+}
+table td {
+	font-family:verdana;
+	font-size: 14px;
+}
