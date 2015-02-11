@@ -2816,15 +2816,36 @@ class RevenuesController extends AppController {
              $this->request->data = $data_local;
         }
 
+        $this->loadModel('Revenue');
         $this->loadModel('Customer');
-        $customers = $this->Customer->getData('list', array(
+        $revenues = $this->Revenue->getData('all', array(
             'conditions' => array(
-                'Customer.status' => 1
+                'Revenue.transaction_status' => 'posting',
+                'Revenue.status' => 1,                      
             ),
-            'fields' => array(
-                'Customer.id', 'Customer.customer_name'
+            'order' => array(
+                'Revenue.date_revenue' => 'ASC'
             ),
-        ));
+            'group' => array(
+                'Revenue.customer_id'
+            ),
+        ), false);
+        $customers = array();
+
+        if( !empty($revenues) ) {
+            foreach ($revenues as $key => $revenue) {
+                $revenueCustomer = $this->Customer->getData('first', array(
+                    'conditions' => array(
+                        'Customer.status' => 1,
+                        'Customer.id' => $revenue['Revenue']['customer_id'],
+                    ),
+                ));
+
+                if( !empty($revenueCustomer) ) {
+                    $customers[$revenue['Revenue']['customer_id']] = $revenueCustomer['Customer']['customer_name'];
+                }
+            }
+        }
         
         $this->set(compact('customers', 'id', 'action'));
         $this->set('active_menu', 'invoices');

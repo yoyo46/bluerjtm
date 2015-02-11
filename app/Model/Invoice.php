@@ -12,6 +12,12 @@ class Invoice extends AppModel {
                 'message' => 'Kode Invoice telah terdaftar',
             ),
         ),
+        'invoice_date' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl Invoice harap dipilih'
+            ),
+        ),
         'customer_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

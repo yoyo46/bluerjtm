@@ -41,6 +41,15 @@
 	    	?>
 	        <div class="form-group">
 	        	<?php 
+						echo $this->Form->input('invoice_date',array(
+							'label'=> __('Tgl Invoice *'), 
+							'class'=>'form-control custom-date',
+							'required' => false,
+						));
+				?>
+	        </div>
+	        <div class="form-group">
+	        	<?php 
 						echo $this->Form->input('customer_id',array(
 							'label'=> __('Customer *'), 
 							'class'=>'form-control custom-find-invoice',
