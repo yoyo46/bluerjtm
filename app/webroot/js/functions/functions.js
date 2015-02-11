@@ -925,13 +925,39 @@ function total_revenue_unit(self){
 }
 
 revenue_detail();
-var datepicker = function(){
-    $( ".custom-date" ).datepicker({
+var datepicker = function( obj ){
+    if( typeof obj == 'undefined' ) {
+        obj = $( ".custom-date" );
+    }
+
+    obj.datepicker({
         format: 'dd/mm/yyyy',
     });
 }
 
+var timepicker = function( obj ){
+    if( typeof obj == 'undefined' ) {
+        obj = $('.timepicker');
+    }
 
+    if( obj.length > 0 ) {
+        obj.timepicker({
+            showMeridian: false
+        });
+    }
+}
+
+var daterangepicker = function( obj ){
+    if( typeof obj == 'undefined' ) {
+        obj = $('.date-range');
+    }
+
+    if( obj.length > 0 ) {
+        obj.daterangepicker({
+            format: 'DD/MM/YYYY',
+        });
+    }
+}
 
 var pickIcon = function(){
     $('.pick-icon select').change(function(){
@@ -1047,6 +1073,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                 } else if( type_action == 'browse-form' ) {
                     ajaxModal( $('.modal-body .pagination li a, .modal-body .ajaxModal') );
                     pickData();
+                    daterangepicker( $('.modal-body .date-range') );
                 }
 
                 return false;
@@ -1399,16 +1426,6 @@ $(function() {
     
     delete_custom_field();
 
-    if( $('.timepicker').length > 0 ) {
-        $('.timepicker').timepicker({
-            showMeridian: false
-        });
-    }
-
-    if( $('.date-range').length > 0 ) {
-        $('.date-range').daterangepicker();
-    }
-
     $('.submit-form').click(function() {
         var action_type = $(this).attr('action_type');
 
@@ -1689,4 +1706,7 @@ $(function() {
             }
         });
     });
+
+    timepicker();
+    daterangepicker();
 });

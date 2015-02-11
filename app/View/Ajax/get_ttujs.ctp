@@ -13,6 +13,16 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
+                    echo $this->Form->input('date',array(
+                        'label'=> __('Tanggal'),
+                        'class'=>'form-control date-range',
+                        'required' => false,
+                        'placeholder' => __('Dari')
+                    ));
+            ?>
+        </div>
+        <div class="form-group">
+            <?php 
                     echo $this->Form->input('nottuj',array(
                         'label'=> __('No. Doc'),
                         'class'=>'form-control',
@@ -31,6 +41,16 @@
                     ));
             ?>
         </div>
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->input('City.name',array(
+                        'label'=> __('Tujuan'),
+                        'class'=>'form-control',
+                        'required' => false,
+                        'placeholder' => __('Tujuan')
+                    ));
+            ?>
+        </div>
     </div>
     <div class="col-sm-6">
         <div class="form-group">
@@ -40,6 +60,16 @@
                         'class'=>'form-control',
                         'required' => false,
                         'placeholder' => __('Nama Supir')
+                    ));
+            ?>
+        </div>
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->input('Customer.name',array(
+                        'label'=> __('Customer'),
+                        'class'=>'form-control',
+                        'required' => false,
+                        'placeholder' => __('Customer')
                     ));
             ?>
         </div>
@@ -74,6 +104,7 @@
         <tr>
             <?php 
                     echo $this->Html->tag('th', __('No TTUJ'));
+                    echo $this->Html->tag('th', __('Tanggal'));
                     echo $this->Html->tag('th', __('No Pol'));
                     echo $this->Html->tag('th', __('Supir'));
                     echo $this->Html->tag('th', __('Supir Pengganti'));
@@ -88,6 +119,7 @@
         ?>
         <tr data-value="<?php echo $value['Ttuj']['id'];?>" data-change="#<?php echo $data_change;?>">
             <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
+            <td><?php echo date('d/m/Y', strtotime($value['Ttuj']['ttuj_date']));?></td>
             <td><?php echo $value['Ttuj']['nopol'];?></td>
             <td><?php echo $value['Ttuj']['driver_name'];?></td>
             <td><?php echo !empty($value['DriverPenganti']['driver_name'])?$value['DriverPenganti']['driver_name']:'-';?></td>

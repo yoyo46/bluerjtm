@@ -3841,3 +3841,7 @@ table th i {
 .action-print a{
   margin-left: 15px;
 }
+
+.datepicker.dropdown-menu {
+  z-index: 9999 !important;
+}

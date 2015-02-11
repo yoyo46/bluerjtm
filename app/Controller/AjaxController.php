@@ -863,6 +863,38 @@ class AjaxController extends AppController {
                 $name = urldecode($this->request->data['Driver']['name']);
                 $conditions['Ttuj.driver_name LIKE '] = '%'.$name.'%';
             }
+            if(!empty($this->request->data['Customer']['name'])){
+                $name = urldecode($this->request->data['Customer']['name']);
+                $customers = $this->Ttuj->Customer->getData('list', array(
+                	'conditions' => array(
+                		'Customer.customer_name LIKE' => '%'.$name.'%',
+            		),
+            		'fields' => array(
+            			'Customer.id', 'Customer.id'
+        			),
+            	));
+                $conditions['Ttuj.customer_id'] = $customers;
+            }
+            if(!empty($this->request->data['City']['name'])){
+                $name = urldecode($this->request->data['City']['name']);
+                $conditions['Ttuj.to_city_name LIKE '] = '%'.$name.'%';
+            }
+            if(!empty($this->request->data['Ttuj']['date'])){
+                $date = urldecode($this->request->data['Ttuj']['date']);
+                $date = explode('-', $date);
+
+                if( !empty($date[0]) ) {
+                	$from_date = trim($date[0]);
+            		$from_date = $this->MkCommon->getDate($from_date);
+                	$conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $from_date;
+                }
+
+                if( !empty($date[1]) ) {
+                	$to_date = trim($date[1]);
+            		$to_date = $this->MkCommon->getDate($to_date);
+                	$conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $to_date;
+                }
+            }
         }
 
         switch ($action_type) {

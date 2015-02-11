@@ -5,7 +5,7 @@
 <table border="1">
 	<thead>
 		<tr>
-			<th colspan="7" class="text-center">
+			<th colspan="8" class="text-center">
 				<?php 
 						if($action == 'tarif'){
 							printf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)) );
@@ -31,7 +31,11 @@
 				if(!empty($val_detail)){
 					$no=1;
 					$total = 0;
+					$qtyTotal = 0;
+
 					foreach ($val_detail as $key => $value) {
+						$qtyTotal += $value['RevenueDetail']['qty_unit'];
+
 						$colom = $this->Html->tag('td', $no++);
 						$colom .= $this->Html->tag('td', !empty($value['Revenue']['Ttuj']['nopol'])?$value['Revenue']['Ttuj']['nopol']:'-');
 						$colom .= $this->Html->tag('td', !empty($value['RevenueDetail']['no_do'])?$value['RevenueDetail']['no_do']:'-');
@@ -51,6 +55,7 @@
 					$colom = $this->Html->tag('td', __('Total'), array(
 						'colspan' => 5
 					));
+					$colom .= $this->Html->tag('td', $this->Number->currency($qtyTotal, '', array('places' => 0)), array('colspan' => 1) );
 					$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0)), array('colspan' => 1) );
 					echo $this->Html->tag('tr', $colom);
 				}else{
