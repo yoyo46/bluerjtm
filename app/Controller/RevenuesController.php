@@ -3052,4 +3052,81 @@ class RevenuesController extends AppController {
             $this->redirect($this->referer());
         }
     }
+
+    public function ar_period_reports( $data_action = false ) {
+        if( in_array('view_ar_period_reports', $this->allowModule) ) {
+            $this->loadModel('Revenue');
+            $this->loadModel('Invoice');
+            $fromYear = date('Y');
+            $toMonth = 12;
+
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if( !empty($refine['fromYear']) ){
+                    $fromYear = urldecode($refine['fromYear']);
+                    $this->request->data['Ttuj']['from']['year'] = $fromYear;
+                }
+            }
+
+            $conditions = array(
+                'Revenue.status'=> 1,
+                'Revenue.transaction_status <>' => 'invoiced',
+            );
+            $defaultConditionsInvoice = array(
+                'Invoice.status'=> 1,
+                'Invoice.paid'=> 0,
+            );
+            $totalAr = array();
+
+            for ($i=1; $i <= $toMonth; $i++) {
+                $month = date('Y-m', mktime(0, 0, 0, $i, 1, $fromYear));
+
+                $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\')'] = $month;
+                $revenues = $this->Revenue->getData('first', array(
+                    'conditions' => $conditions,
+                    'fields' => array(
+                        'SUM(Revenue.total) total'
+                    ),
+                ), false);
+                $totalAr['AR'][$month] = !empty($revenues[0]['total'])?$revenues[0]['total']:0;
+
+                $conditionsInvoice = $defaultConditionsInvoice;
+                $conditionsInvoice['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\')'] = $month;
+                $invoice = $this->Invoice->getData('first', array(
+                    'conditions' => $conditionsInvoice,
+                    'fields' => array(
+                        'SUM(Invoice.total) total'
+                    ),
+                ), false);
+                $totalAr['Invoice'][$month] = !empty($invoice[0]['total'])?$invoice[0]['total']:0;
+
+                if( $month <= date('Y-m') ) {
+                    $conditionsInvoice = $defaultConditionsInvoice;
+                    $conditionsInvoice['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <'] = $month;
+                    $invoice = $this->Invoice->getData('first', array(
+                        'conditions' => $conditionsInvoice,
+                        'fields' => array(
+                            'SUM(Invoice.total) total'
+                        ),
+                    ), false);
+                    $totalAr['LastInvoice'][$month] = !empty($invoice[0]['total'])?$invoice[0]['total']:0;
+                }
+            }
+
+            if($data_action == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($data_action == 'excel'){
+                $this->layout = 'ajax';
+            }
+
+            $this->set('sub_module_title', sprintf(__('Laporan AR Per Period %s'), $fromYear));
+            $this->set('active_menu', 'ar_period_reports');
+
+            $this->set(compact(
+                'toMonth', 'fromYear', 'totalCnt',
+                'totalAr', 'data_action'
+            ));
+        }
+    }
 }

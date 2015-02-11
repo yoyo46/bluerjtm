@@ -513,7 +513,7 @@
                         $activeMenu = false;
                         $dataMenu = array(
                             'index', 'tarif_angkutan', 'invoices',
-                            'invoice_reports', 'revenues'
+                            'invoice_reports', 'revenues', 'ar_period_reports'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -569,6 +569,17 @@
                                     'escape' => false
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'invoice_reports' )?'active':'',
+                                ));
+                            }
+
+                            if( in_array('view_ar_period_reports', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan AR Per Period', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'ar_period_reports',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'ar_period_reports' )?'active':'',
                                 ));
                             }
                     ?>
