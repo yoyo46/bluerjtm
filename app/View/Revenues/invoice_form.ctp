@@ -45,6 +45,7 @@
 							'label'=> __('Tgl Invoice *'), 
 							'class'=>'form-control custom-date',
 							'required' => false,
+							'type' => 'text',
 						));
 				?>
 	        </div>

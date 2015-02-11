@@ -700,6 +700,39 @@ function grandTotalRevenue(){
     $('#all-total-revenue').html('IDR '+formatNumber(total));
 }
 
+function calcPPNPPH(){
+    var total = parseInt($('#grand-total-revenue').html().replace(/,/gi, "").replace(/IDR/gi, ""));
+    var ppn = 0;
+    var pph = 0;
+    var revenue_ppn = $('.revenue-ppn').val();
+    var revenue_pph = $('.revenue-pph').val();
+
+    if( isNaN(total) ) {
+        total = 0;
+    }
+
+    if(typeof revenue_ppn != 'undefined' && revenue_ppn != ''){
+        ppn = total * (parseInt(revenue_ppn) / 100);
+    }
+
+    $('#ppn-total-revenue').html(formatNumber(ppn));
+
+    if(typeof revenue_pph != 'undefined' && revenue_pph != ''){
+        pph = total * (parseInt(revenue_pph) / 100);
+    }
+    
+    $('#pph-total-revenue').html(formatNumber(pph));
+    
+    if(pph > 0){
+        total -= pph;
+    }
+    if(ppn > 0){
+        total += ppn;
+    }
+
+    $('#all-total-revenue').html('IDR '+formatNumber(total));
+}
+
 var price_tipe_motor = function(){
     $('.price-tipe-motor').keyup(function(){
         getTotalLKU( $(this) );
@@ -871,7 +904,7 @@ var revenue_detail = function(){
     });
 
     $('.revenue-pph, .revenue-ppn').keyup(function(){
-        grandTotalRevenue();
+        calcPPNPPH();
     });
 }
 

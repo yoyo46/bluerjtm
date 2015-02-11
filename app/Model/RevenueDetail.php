@@ -45,6 +45,10 @@ class RevenueDetail extends AppModel {
             'className' => 'Revenue',
             'foreignKey' => 'revenue_id',
         ),
+        'City' => array(
+            'className' => 'City',
+            'foreignKey' => 'city_id',
+        ),
     );
 
 	function getData($find, $options = false){

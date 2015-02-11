@@ -185,6 +185,8 @@ class AjaxController extends AppController {
 		$this->loadModel('Customer');
 		$this->loadModel('City');
 		$this->loadModel('TipeMotor');
+		$this->loadModel('Revenue');
+		$this->loadModel('TtujTipeMotorUse');
 		$data_revenue_detail = array();
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
@@ -195,6 +197,12 @@ class AjaxController extends AppController {
 
 
 		if(!empty($data_ttuj)){
+            $tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity']);
+
+            if( !empty($tarif['jenis_unit']) && $tarif['jenis_unit'] == 'per_truck' ) {
+                $tarifTruck = $tarif;
+            }
+
 			if(!empty($customer_id)){
 				$data_ttuj['Ttuj']['customer_id'] = $customer_id;
 			}
@@ -214,6 +222,27 @@ class AjaxController extends AppController {
 							'TipeMotor.id' => $value['tipe_motor_id']
 						)
 					));
+		            $revenue_id = $this->Revenue->find('list', array(
+		                'conditions' => array(
+		                    'Revenue.ttuj_id' => $ttuj_id,
+		                    'Revenue.status' => 1,
+		                ),
+		            ));
+		            $qtyUsed = $this->TtujTipeMotorUse->find('first', array(
+		                'conditions' => array(
+		                    'TtujTipeMotorUse.revenue_id' => $revenue_id,
+		                    'TtujTipeMotorUse.ttuj_tipe_motor_id' => $value['id'],
+		                ),
+		                'fields' => array(
+		                    'SUM(TtujTipeMotorUse.qty) as count_qty'
+		                )
+		            ));
+
+		            if( !empty($qtyUsed[0]['count_qty']) ) {
+		                $qtyUsed = $qtyUsed[0]['count_qty'];
+		            } else {
+		            	$qtyUsed = 0;
+		            }
 
 					if(!empty($tipe_motor['TipeMotor']['name'])){
 						$tipe_motor_name = sprintf('%s - %s', $tipe_motor['TipeMotor']['name'], $tipe_motor['ColorMotor']['name']);
@@ -243,13 +272,12 @@ class AjaxController extends AppController {
 
 					$data_revenue_detail[$key] = array(
 						'TtujTipeMotor' => array(
-							
-							'qty' => $value['qty']
+							'qty' => $value['qty'],
 						),
 						'RevenueDetail' => array(
 							'to_city_name' => $to_city_name,
 							'price_unit' => $tarif,
-							'qty_unit' => $value['qty'],
+							'qty_unit' => $value['qty'] - $qtyUsed,
 							'tipe_motor_id' => $tipe_motor_id,
 							'city_id' => $to_city_id,
 							'TipeMotor' => array(
@@ -279,7 +307,10 @@ class AjaxController extends AppController {
 			)
 		));
 		// debug($data_revenue_detail);die();
-		$this->set(compact('data_revenue_detail', 'customers', 'toCities', 'list_tipe_motor'));
+		$this->set(compact(
+			'data_revenue_detail', 'customers', 'toCities', 'list_tipe_motor',
+			'tarifTruck'
+		));
 	}
 
 	public function event_add( $nopol = false, $date = false ) {
@@ -444,7 +475,7 @@ class AjaxController extends AppController {
 				'Revenue.date_revenue' => 'ASC'
 			),
 			'fields' => array(
-				'SUM(total) total',
+				'SUM(Revenue.total) total',
 				'MAX(Revenue.date_revenue) period_to',
 				'MIN(Revenue.date_revenue) period_from',
 			),
@@ -787,7 +818,7 @@ class AjaxController extends AppController {
     	));
 	}
 
-	function getTtujs ( $action_type = false ) {
+	function getTtujs ( $action_type = false, $ttuj_id = false ) {
 		$this->loadModel('Ttuj');
 		$title = __('Data TTUJ');
 		$data_action = 'browse-form';
@@ -795,6 +826,11 @@ class AjaxController extends AppController {
 		$conditions = array(
 		 	'Ttuj.status' => 1,
             'Ttuj.is_draft' => 0,
+            'Ttuj.is_revenue' => 0,
+            'OR' => array(
+                'Ttuj.is_revenue' => 0,
+                'Ttuj.id' => $ttuj_id,
+            ),
         );
 
         if(!empty($this->request->data)){

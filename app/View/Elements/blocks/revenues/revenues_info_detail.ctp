@@ -17,13 +17,13 @@
             </thead>
             <tbody class="tipe-motor-table">
                 <?php
-                        $total = 0;
+                        $total = !empty($this->request->data['Revenue']['total_without_tax'])?$this->request->data['Revenue']['total_without_tax']:0;
                         $arr_duplicate = array();
 
                         foreach ($data as $key => $detail) {
-                            if(!empty($detail['RevenueDetail']['price_unit'])){
+                            if( !empty($detail['RevenueDetail']['price_unit']) ){
                                 $price = $detail['RevenueDetail']['price_unit'];
-                            }else{
+                            } else if( empty($id) ) {
                                 $link = $this->Html->link(__('disini'), array(
                                     'controller' => 'settings', 
                                     'action' => 'tarif_angkutan_add'
@@ -31,6 +31,8 @@
                                     'target' => 'blank'
                                 ));
                                 $price = sprintf(__('Tarif tidak ditemukan, silahkan buat tarif angkutan %s'), $link);
+                            } else {
+                                $price = '';
                             }
                 ?>
                 <tr rel="<?php echo $key; ?>">
@@ -80,20 +82,14 @@
                     </td>
                     <td class="tipe-motor-data">
                         <?php 
-                            // if(!empty($detail['RevenueDetail']['TipeMotor']['name'])){
-                            //     echo $detail['RevenueDetail']['TipeMotor']['name'];
-                            // }else{
-                            //     echo ' - ';
-                            // }
-
-                            echo $this->Form->input('RevenueDetail.tipe_motor_id.', array(
-                                'label' => false,
-                                'class' => 'form-control revenue-tipe-motor',
-                                'required' => false,
-                                'value' => (!empty($detail['RevenueDetail']['tipe_motor_id'])) ? $detail['RevenueDetail']['tipe_motor_id'] : 0,
-                                'options' => $list_tipe_motor,
-                                'empty' => __('Pilih Tipe Motor'),
-                            ));
+                                echo $this->Form->input('RevenueDetail.tipe_motor_id.', array(
+                                    'label' => false,
+                                    'class' => 'form-control revenue-tipe-motor',
+                                    'required' => false,
+                                    'value' => (!empty($detail['RevenueDetail']['tipe_motor_id'])) ? $detail['RevenueDetail']['tipe_motor_id'] : 0,
+                                    'options' => $list_tipe_motor,
+                                    'empty' => __('Pilih Tipe Motor'),
+                                ));
                         ?>
                     </td>
                     <td class="qty-tipe-motor-data" align="center">
@@ -112,7 +108,6 @@
                                     'class' => 'form-control revenue-qty input_number',
                                     'required' => false,
                                     'value' =>  $qty,
-                                    // 'max' => !empty($detail['TtujTipeMotor']['max_qty_unit'])?$detail['TtujTipeMotor']['max_qty_unit']:0,
                                 ));
                                 echo $this->Form->hidden('RevenueDetail.payment_type.', array(
                                     'type' => 'text',
@@ -125,68 +120,70 @@
                     </td>
                     <td class="price-data">
                         <?php 
-                            if(is_array($price)){
-                                echo $this->Number->format($price['tarif'], Configure::read('__Site.config_currency_code'), array('places' => 0));
-                            }else{
-                                echo $price;
-                            }
-                            echo $this->Form->hidden('RevenueDetail.price_unit.', array(
-                                'type' => 'text',
-                                'label' => false,
-                                'class' => 'form-control price-unit-revenue input_number',
-                                'required' => false,
-                                'value' => (is_array($price)) ? $price['tarif'] : 0
-                            ));
+                                if( empty($tarifTruck) ) {
+                                    if(is_array($price)){
+                                        echo $this->Number->format($price['tarif'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+                                    }else{
+                                        echo $price;
+                                    }
+                                    echo $this->Form->hidden('RevenueDetail.price_unit.', array(
+                                        'type' => 'text',
+                                        'label' => false,
+                                        'class' => 'form-control price-unit-revenue input_number',
+                                        'required' => false,
+                                        'value' => (is_array($price)) ? $price['tarif'] : 0
+                                    ));
+                                }
                         ?>
                     </td>
                     <td class="total-price-revenue" align="right">
                         <?php 
-                            $value_price = 0;
-                            if(is_array($price)){
-                                if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_unit'){
-                                    $value_price = $price['tarif'] * $qty;
-                                }else if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_truck'){
-                                    $value_price = $price['tarif'];
+                                if( empty($tarifTruck) ) {
+                                    $value_price = 0;
+                                    if(is_array($price)){
+                                        if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_unit'){
+                                            $value_price = $price['tarif'] * $qty;
+                                        }else if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_truck'){
+                                            $value_price = $price['tarif'];
+                                        }
+                                    }
+
+                                    echo $this->Html->tag('span', $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                                        'class' => 'total-revenue-perunit'
+                                    ));
+
+                                    echo $this->Form->hidden('RevenueDetail.total_price_unit.', array(
+                                        'class' => 'total-price-perunit',
+                                        'required' => false,
+                                        'value' => $value_price
+                                    ));
                                 }
-                            }
-
-                            $total += $value_price;
-
-                            echo $this->Html->tag('span', $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
-                                'class' => 'total-revenue-perunit'
-                            ));
-
-                            echo $this->Form->hidden('RevenueDetail.total_price_unit.', array(
-                                'class' => 'total-price-perunit',
-                                'required' => false,
-                                'value' => $value_price
-                            ));
                         ?>
                     </td>
                     <td class="handle-row">
                         <?php
-                            if( !empty($price['tarif']) && is_numeric($price['tarif'])){
-                                $open_duplicate = false;
-                                if(empty($arr_duplicate[$detail['RevenueDetail']['ttuj_tipe_motor_id']])){
-                                    $arr_duplicate[$detail['RevenueDetail']['ttuj_tipe_motor_id']] = true;
-                                    $open_duplicate = true;
-                                }
+                                if( !empty($price['tarif']) && is_numeric($price['tarif'])){
+                                    $open_duplicate = false;
+                                    if(empty($arr_duplicate[$detail['RevenueDetail']['ttuj_tipe_motor_id']])){
+                                        $arr_duplicate[$detail['RevenueDetail']['ttuj_tipe_motor_id']] = true;
+                                        $open_duplicate = true;
+                                    }
 
-                                if($open_duplicate){
-                                    echo $this->Html->link('<i class="fa fa-copy"></i>', 'javascript:', array(
-                                        'class' => 'duplicate-row btn btn-warning btn-xs',
+                                    if($open_duplicate){
+                                        echo $this->Html->link('<i class="fa fa-copy"></i>', 'javascript:', array(
+                                            'class' => 'duplicate-row btn btn-warning btn-xs',
+                                            'escape' => false,
+                                            'title' => 'Duplicate'
+                                        ));
+                                    }else{
+                                        echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
+                                        'class' => 'delete-custom-field btn btn-danger btn-xs',
                                         'escape' => false,
-                                        'title' => 'Duplicate'
+                                        'action_type' => 'revenue_detail',
+                                        'title' => __('hapus baris')
                                     ));
-                                }else{
-                                    echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
-                                    'class' => 'delete-custom-field btn btn-danger btn-xs',
-                                    'escape' => false,
-                                    'action_type' => 'revenue_detail',
-                                    'title' => __('hapus baris')
-                                ));
+                                    }
                                 }
-                            }
                         ?>
                     </td>
                 </tr>
@@ -197,7 +194,11 @@
                     <td align="right" colspan="6"><?php echo __('Total')?></td>
                     <td align="right" id="grand-total-revenue">
                         <?php 
-                            echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                                if( !empty($tarifTruck) ) {
+                                    $total = $tarifTruck['tarif'];
+                                }
+
+                                echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
                         ?>
                     </td>
                     <td>

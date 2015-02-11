@@ -101,5 +101,51 @@ class Revenue extends AppModel {
 
         return $data;
     }
+
+    function checkQtyUsed ( $ttuj_id = false, $id = false ) {
+        $this->TtujTipeMotorUse = ClassRegistry::init('TtujTipeMotorUse');
+        $this->Ttuj = ClassRegistry::init('Ttuj');
+
+        $revenue_id = $this->find('list', array(
+            'conditions' => array(
+                'Revenue.ttuj_id' => $ttuj_id,
+                'Revenue.status' => 1,
+            ),
+        ));
+        $qtyUsed = $this->TtujTipeMotorUse->find('first', array(
+            'conditions' => array(
+                'TtujTipeMotorUse.revenue_id' => $revenue_id,
+                'TtujTipeMotorUse.revenue_id <>' => $id,
+            ),
+            'fields' => array(
+                'SUM(TtujTipeMotorUse.qty) as count_qty'
+            )
+        ));
+        $qtyTtuj = $this->Ttuj->TtujTipeMotor->find('first', array(
+            'conditions' => array(
+                'TtujTipeMotor.ttuj_id' => $ttuj_id,
+                'TtujTipeMotor.status' => 0,
+            ),
+            'fields' => array(
+                'SUM(TtujTipeMotor.qty) as count_qty'
+            )
+        ));
+
+        if( !empty($qtyUsed[0]['count_qty']) ) {
+            $qtyUsed = $qtyUsed[0]['count_qty'];
+        } else {
+            $qtyUsed = 0;
+        }
+        if( !empty($qtyTtuj[0]['count_qty']) ) {
+            $qtyTtuj = $qtyTtuj[0]['count_qty'];
+        } else {
+            $qtyTtuj = 0;
+        }
+
+        return array(
+            'qtyUsed' => $qtyUsed,
+            'qtyTtuj' => $qtyTtuj,
+        );
+    }
 }
 ?>
