@@ -588,8 +588,8 @@ var duplicate_row = function(){
             '<td class="no-sj-data">'+$(tag_element).filter('.no-sj-data').html()+'</td>'+
             '<td class="tipe-motor-data">'+$(tag_element).filter('.tipe-motor-data').html()+'</td>'+
             '<td class="qty-tipe-motor-data" align="center">'+$(tag_element).filter('.qty-tipe-motor-data').html()+'</td>'+
-            '<td class="price-data">'+$(tag_element).filter('.price-data').html()+'</td>'+
-            '<td class="total-price-revenue" align="right">'+$(tag_element).filter('.total-price-revenue').html()+'</td>'+
+            '<td class="price-data text-right">'+$(tag_element).filter('.price-data').html()+'</td>'+
+            '<td class="total-price-revenue text-right">'+$(tag_element).filter('.total-price-revenue').html()+'</td>'+
             '<td class="handle-row"><a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="revenue_detail" title="hapus baris"><i class="fa fa-times"></i></a></td>'+
         '</tr>';
         
@@ -885,19 +885,19 @@ var choose_item_info = function(){
 choose_item_info();
 
 var revenue_detail = function(){
-    // $('.revenue-qty').keyup(function(event){
-    //     var self = $(this);
-    //     var max = parseInt(self.attr('max'));
-    //     var val = parseInt(self.val());
+    $('.revenue-qty').keyup(function(event){
+        var self = $(this);
+        // var max = parseInt(self.attr('max'));
+        // var val = parseInt(self.val());
 
-    //     if(val > max){
-    //         alert('Qty muatan tidak boleh lebih besar dari '+max)
-    //         self.val(max);
-    //     }else if(val <= 0){
-    //         self.val(1);
-    //     }
-    //     total_revenue_unit(self);
-    // });
+        // if(val > max){
+        //     alert('Qty muatan tidak boleh lebih besar dari '+max)
+        //     self.val(max);
+        // }else if(val <= 0){
+        //     self.val(1);
+        // }
+        total_revenue_unit(self);
+    });
 
     $('.price-unit-revenue').keyup(function(){
         total_revenue_unit(self);
@@ -913,14 +913,12 @@ function total_revenue_unit(self){
     var price = target.find('.price-unit-revenue').val();
     var qty = target.find('.revenue-qty').val();
     var jenis_unit = $('.jenis_unit');
-
     total = 0;
-    if(typeof qty != 'undefined' && qty != '' && typeof price != 'undefined' && price != ''){
+
+    if( price != '' && qty != '' ){
         total += price * qty;
-        if(typeof target.find('.jenis_unit').val() != 'undefined' && target.find('.jenis_unit').val() == 'per_unit'){
-            target.find('.total-revenue-perunit').html('IDR '+formatNumber(total));
-            target.find('.total-price-perunit').val(total);
-        }
+        target.find('.total-revenue-perunit').html('IDR '+formatNumber(total));
+        target.find('.total-price-perunit').val(total);
     }
 
     grandTotalRevenue();

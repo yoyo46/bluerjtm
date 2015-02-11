@@ -6,13 +6,13 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th width="15%"><?php echo __('Tujuan');?></th>
-                    <th width="15%"><?php echo __('No. DO');?></th>
-                    <th width="15%"><?php echo __('No. SJ');?></th>
-                    <th width="15%"><?php echo __('Tipe Motor');?></th>
-                    <th width="5%"><?php echo __('Jumlah Unit');?></th>
-                    <th><?php printf(__('Harga Unit'), Configure::read('__Site.config_currency_code'));?></th>
-                    <th><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
+                    <th width="15%" class="text-top"><?php echo __('Tujuan');?></th>
+                    <th width="15%" class="text-top"><?php echo __('No. DO');?></th>
+                    <th width="15%" class="text-top"><?php echo __('No. SJ');?></th>
+                    <th width="15%" class="text-top"><?php echo __('Tipe Motor');?></th>
+                    <th width="5%" class="text-top"><?php echo __('Jumlah Unit');?></th>
+                    <th class="text-top text-center"><?php printf(__('Harga Unit'), Configure::read('__Site.config_currency_code'));?></th>
+                    <th class="text-top text-center"><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
                 </tr>
             </thead>
             <tbody class="tipe-motor-table">
@@ -118,34 +118,42 @@
                                 ));
                         ?>
                     </td>
-                    <td class="price-data">
+                    <td class="price-data text-right">
                         <?php 
                                 if( empty($tarifTruck) ) {
-                                    if(is_array($price)){
-                                        echo $this->Number->format($price['tarif'], Configure::read('__Site.config_currency_code'), array('places' => 0));
-                                    }else{
+                                    if( is_array($price) ){
+                                        $price = $price['tarif'];
+                                    }
+
+                                    if( is_numeric($price) ) {
+                                        echo $this->Number->format($price, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                                    } else {
                                         echo $price;
                                     }
+
                                     echo $this->Form->hidden('RevenueDetail.price_unit.', array(
                                         'type' => 'text',
                                         'label' => false,
                                         'class' => 'form-control price-unit-revenue input_number',
                                         'required' => false,
-                                        'value' => (is_array($price)) ? $price['tarif'] : 0
+                                        'value' => $price,
                                     ));
                                 }
                         ?>
                     </td>
-                    <td class="total-price-revenue" align="right">
+                    <td class="total-price-revenue text-right">
                         <?php 
                                 if( empty($tarifTruck) ) {
                                     $value_price = 0;
+
                                     if(is_array($price)){
                                         if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_unit'){
                                             $value_price = $price['tarif'] * $qty;
                                         }else if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_truck'){
                                             $value_price = $price['tarif'];
                                         }
+                                    } else {
+                                        $value_price = $price * $qty;
                                     }
 
                                     echo $this->Html->tag('span', $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(

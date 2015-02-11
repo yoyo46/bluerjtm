@@ -3668,6 +3668,10 @@ input[type=radio], input[type=checkbox] {
   vertical-align: middle !important;
 }
 
+.text-top {
+  vertical-align: top !important;
+}
+
 .print-action {
   margin-bottom: 20px;
 }
