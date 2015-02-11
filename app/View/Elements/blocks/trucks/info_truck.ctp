@@ -9,6 +9,21 @@
                 ?>
             </div>
             <div class="box-body">
+                <?php
+                        if(!empty($truck['Truck']['photo']) && !is_array($truck['Truck']['photo'])){
+                            $photo = $this->Common->photo_thumbnail(array(
+                                'save_path' => Configure::read('__Site.truck_photo_folder'), 
+                                'src' => $truck['Truck']['photo'], 
+                                'thumb'=>true,
+                                'size' => 'pm',
+                                'thumb' => true,
+                            ));
+
+                            echo $this->Html->tag('div', $photo, array(
+                                'class' => 'form-group',
+                            ));
+                        }
+                ?>
                 <dl class="dl-horizontal">
                     <dt><?php echo __('Nopol')?></dt>
                     <dd><?php echo $truck['Truck']['nopol'];?></dd>
