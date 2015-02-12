@@ -355,6 +355,7 @@ var add_custom_field = function(){
             case 'ttuj':
                 var idx = $('#ttujDetail tbody tr').length;
                 var optionTipeMotor = $('#tipe_motor_id select').html();
+                var optionColorMotor = $('#color_motor_id select').html();
                 var additionalField = '';
 
                 if( data_custom == 'retail' ) {
@@ -373,6 +374,11 @@ var add_custom_field = function(){
                     '<td> \
                         <select name="data[TtujTipeMotor][tipe_motor_id]['+idx+']" class="form-control tipe_motor_id" rel="'+idx+'"> \
                         ' + optionTipeMotor +
+                        '</select> \
+                    </td> \
+                    <td> \
+                        <select name="data[TtujTipeMotor][color_motor_id]['+idx+']" class="form-control color_motor_id" rel="'+idx+'"> \
+                        ' + optionColorMotor +
                         '</select> \
                     </td> \
                     <td> \

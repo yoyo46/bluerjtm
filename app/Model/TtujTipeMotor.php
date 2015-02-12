@@ -20,6 +20,12 @@ class TtujTipeMotor extends AppModel {
                 'message' => 'Tipe motor harap dipilih.'
             ),
         ),
+        'color_motor_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Warna motor harap dipilih.'
+            ),
+        ),
         'qty' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -43,6 +49,13 @@ class TtujTipeMotor extends AppModel {
         'TipeMotor' => array(
             'className' => 'TipeMotor',
             'foreignKey' => 'tipe_motor_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
+        'ColorMotor' => array(
+            'className' => 'ColorMotor',
+            'foreignKey' => 'color_motor_id',
             'conditions' => '',
             'fields' => '',
             'order' => ''

@@ -30,19 +30,6 @@
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('color_motor_id',__('Kode Warna *')); 
-
-				echo $this->Form->input('color_motor_id',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'empty' => __('Pilih Kode Warna'),
-					'options' => $colors
-				));
-			?>
-        </div>
-        <div class="form-group">
-        	<?php 
 				echo $this->Form->label('code_motor_id',__('Kode Motor *')); 
 
 				echo $this->Form->input('code_motor_id',array(

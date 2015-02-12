@@ -8,12 +8,6 @@ class TipeMotor extends AppModel {
                 'message' => 'Tipe motor harap diisi'
             ),
         ),
-        'color_motor_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Warna motor harap diisi'
-            ),
-        ),
         'code_motor_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -29,10 +23,6 @@ class TipeMotor extends AppModel {
 	);
 
 	var $belongsTo = array(
-        'ColorMotor' => array(
-            'className' => 'ColorMotor',
-            'foreignKey' => 'color_motor_id',
-        ),
         'GroupMotor' => array(
             'className' => 'GroupMotor',
             'foreignKey' => 'group_motor_id',
@@ -48,7 +38,6 @@ class TipeMotor extends AppModel {
                 'TipeMotor.name' => 'ASC'
             ),
             'contain' => array(
-                'ColorMotor',
                 'GroupMotor'
             ),
             'fields' => array()
@@ -88,9 +77,6 @@ class TipeMotor extends AppModel {
                 'conditions' => array(
                     'TipeMotor.id' => $id
                 ),
-                'contain' => array(
-                    'ColorMotor'
-                )
             ));
 
             if(!empty($data_merge)){
@@ -101,9 +87,9 @@ class TipeMotor extends AppModel {
         return $data;
     }
 
-    function __construct($id = false, $table = null, $ds = null) {
-        parent::__construct($id, $table, $ds);
-        $this->virtualFields['tipe_motor_color'] = sprintf('CONCAT(%s.name, " - ", ColorMotor.name)', $this->alias);
-    }
+    // function __construct($id = false, $table = null, $ds = null) {
+    //     parent::__construct($id, $table, $ds);
+    //     $this->virtualFields['tipe_motor_color'] = sprintf('CONCAT(%s.name, " - ", ColorMotor.name)', $this->alias);
+    // }
 }
 ?>

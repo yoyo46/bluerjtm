@@ -1,12 +1,4 @@
-<?php 
-		if( !empty($step) ) {
-?>
-<script type="text/javascript">
-	window.location.hash = '<?php echo $step; ?>';
-</script>
 <?php
-		}
-
 		$this->Html->addCrumb(__('TTUJ'), array(
 			'controller' => 'revenues',
 			'action' => 'ttuj'
@@ -221,19 +213,6 @@
 				    </div>
 				</div>
 			</div>
-			<!-- <div class="box-footer text-center action">
-				<?php
-			   //  		echo $this->Html->link(__('Kembali'), array(
-						// 	'action' => 'ttuj', 
-						// ), array(
-						// 	'class'=> 'btn btn-default',
-						// ));
-			   //  		echo $this->Html->link(__('Next'), '#step2', array(
-						// 	'class'=> 'btn btn-success',
-						// 	'id' => 'nextTTUJ'
-						// ));
-				?>
-			</div> -->
 			<div class="col-sm-6">
 				<div class="box box-primary">
 				    <div class="box-header">
@@ -244,7 +223,7 @@
 							<?php
 									$dataCustom = '';
 									$totalUnitMuatan = 0;
-									$colSpan = 1;
+									$colSpan = 2;
 
 									if( $data_action == 'retail' ) {
 										$dataCustom = 'retail';
@@ -267,6 +246,7 @@
 												echo $this->Html->tag('th', __('Tujuan'));
 											}
 											echo $this->Html->tag('th', __('Tipe Motor'));
+											echo $this->Html->tag('th', __('Warna Motor'));
 											echo $this->Html->tag('th', __('Jumlah Unit'));
 											echo $this->Html->tag('th', __('Action'));
 									?>
@@ -277,6 +257,7 @@
 										if( !empty($this->request->data['TtujTipeMotor']['tipe_motor_id']) ) {
 											foreach ($this->request->data['TtujTipeMotor']['tipe_motor_id'] as $key => $tipe_motor_id) {
 												$qty = !empty($this->request->data['TtujTipeMotor']['qty'][$key])?$this->request->data['TtujTipeMotor']['qty'][$key]:false;
+												$color_motor_id = !empty($this->request->data['TtujTipeMotor']['color_motor_id'][$key])?$this->request->data['TtujTipeMotor']['color_motor_id'][$key]:false;
 												$totalUnitMuatan += $qty;
 								?>
 								<tr>
@@ -297,6 +278,15 @@
 												'empty' => __('Pilih Tipe Motor --'),
 												'options' => $tipeMotors,
 												'value' => $tipe_motor_id,
+												'required' => false,
+												'rel' => $key,
+											)));
+											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.color_motor_id.'.$key, array(
+												'class' => 'form-control',
+												'label' => false,
+												'empty' => __('Pilih Warna Motor --'),
+												'options' => $colors,
+												'value' => $color_motor_id,
 												'required' => false,
 												'rel' => $key,
 											)));
@@ -337,6 +327,15 @@
 												'required' => false,
 												'empty' => __('Pilih Tipe Motor --'),
 												'options' => $tipeMotors,
+												'rel' => 0,
+											)));
+
+											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.color_motor_id.0',array(
+												'label'=> false, 
+												'class'=>'form-control color_motor_id',
+												'required' => false,
+												'empty' => __('Pilih Warna Motor --'),
+												'options' => $colors,
 												'rel' => 0,
 											)));
 
@@ -635,10 +634,6 @@
 		</div>
 		<div class="box-footer text-center action">
 			<?php
-		   //  		echo $this->Html->link(__('Kembali'), '#step1', array(
-					// 	'class'=> 'btn btn-default',
-					// 	'id' => 'backTTUJ'
-					// ));
 					echo $this->Html->link(__('Kembali'), array(
 						'action' => 'ttuj', 
 					), array(
@@ -708,6 +703,17 @@
 					'required' => false,
 					'empty' => __('Pilih Tipe Motor --'),
 					'options' => $tipeMotors
+				));
+		?>
+	</div>
+	<div id="color_motor_id">
+		<?php 
+				echo $this->Form->input('color_motor_id',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Warna Motor --'),
+					'options' => $colors
 				));
 		?>
 	</div>

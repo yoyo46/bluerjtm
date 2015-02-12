@@ -496,6 +496,7 @@
 												echo $this->Html->tag('th', __('Tujuan'));
 											}
 											echo $this->Html->tag('th', __('Tipe Motor'));
+											echo $this->Html->tag('th', __('Warna Motor'));
 											echo $this->Html->tag('th', __('Jumlah Unit'));
 									?>
 								</tr>
@@ -505,6 +506,7 @@
 										if( !empty($this->request->data['TtujTipeMotor']['tipe_motor_id']) ) {
 											foreach ($this->request->data['TtujTipeMotor']['tipe_motor_id'] as $key => $tipe_motor_id) {
 												$qty = !empty($this->request->data['TtujTipeMotor']['qty'][$key])?$this->request->data['TtujTipeMotor']['qty'][$key]:false;
+												$color_motor_id = !empty($this->request->data['TtujTipeMotor']['color_motor_id'][$key])?$this->request->data['TtujTipeMotor']['color_motor_id'][$key]:false;
 												$city = !empty($this->request->data['TtujTipeMotor']['city'][$key])?$this->request->data['TtujTipeMotor']['city'][$key]:false;
 								?>
 								<tr>
@@ -526,6 +528,16 @@
 												'empty' => __('Pilih Tipe Motor --'),
 												'options' => $tipeMotors,
 												'value' => $tipe_motor_id,
+												'required' => false,
+												'disabled' => true,
+											)));
+
+											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.color_motor_id.'.$key, array(
+												'class' => 'form-control',
+												'label' => false,
+												'empty' => __('Pilih Warna Motor --'),
+												'options' => $colors,
+												'value' => $color_motor_id,
 												'required' => false,
 												'disabled' => true,
 											)));
@@ -683,6 +695,17 @@
 					'required' => false,
 					'empty' => __('Pilih Tipe Motor --'),
 					'options' => $tipeMotors
+				));
+		?>
+	</div>
+	<div id="color_motor_id">
+		<?php 
+				echo $this->Form->input('color_motor_id',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Warna Motor --'),
+					'options' => $color
 				));
 		?>
 	</div>

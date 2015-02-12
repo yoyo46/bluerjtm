@@ -51,11 +51,11 @@
                     </td>
                     <td class="lku-color-motor" align="center">
                         <?php
-                            if( isset($this->request->data['LkuDetail'][$i]['ColorMotor']['name']) && !empty($this->request->data['LkuDetail'][$i]['ColorMotor']['name']) ){
-                                echo $this->request->data['LkuDetail'][$i]['ColorMotor']['name'];
-                            }else{
-                                echo '-';
-                            }
+                                if( isset($this->request->data['LkuDetail'][$i]['ColorMotor']['name']) && !empty($this->request->data['LkuDetail'][$i]['ColorMotor']['name']) ){
+                                    echo $this->request->data['LkuDetail'][$i]['ColorMotor']['name'];
+                                }else{
+                                    echo '-';
+                                }
                         ?>
                     </td>
                     <td>

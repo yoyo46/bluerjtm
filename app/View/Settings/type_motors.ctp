@@ -22,7 +22,6 @@
             <tr>
                 <th>Tipe Motor</th>
                 <th>Group Motor</th>
-                <th>Kode Warna</th>
                 <th>Dibuat</th>
                 <th>Action</th>
             </tr>
@@ -36,7 +35,6 @@
             <tr>
                 <td><?php echo $value_data['name'];?></td>
                 <td><?php echo $value['GroupMotor']['name'];?></td>
-                <td><?php echo $value['ColorMotor']['name'];?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td class="action">
                     <?php 

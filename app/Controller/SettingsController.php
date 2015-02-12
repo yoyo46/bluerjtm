@@ -1007,7 +1007,7 @@ class SettingsController extends AppController {
         ));
         $tipeMotors = $this->TipeMotor->getData('list', array(
             'fields' => array(
-                'TipeMotor.id', 'TipeMotor.tipe_motor_color',
+                'TipeMotor.id', 'TipeMotor.name',
             ),
         ));
 
@@ -1230,11 +1230,7 @@ class SettingsController extends AppController {
 
     function type_motors(){
         $this->loadModel('TipeMotor');
-        $options = array(
-            'contain' => array(
-                'ColorMotor'
-            )
-        );
+        $options = array( );
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -1315,19 +1311,8 @@ class SettingsController extends AppController {
             }
         }
 
-        $this->loadModel('ColorMotor');
         $this->loadModel('CodeMotor');
         $this->loadModel('GroupMotor');
-
-        $colors = $this->ColorMotor->getData('list', array(
-            'conditions' => array(
-                'ColorMotor.status' => 1
-            ),
-            'fields' => array(
-                'ColorMotor.id', 'ColorMotor.name'
-            )
-        ));
-        $this->set('colors', $colors);
 
         $group_motors = $this->GroupMotor->getData('list', array(
             'conditions' => array(

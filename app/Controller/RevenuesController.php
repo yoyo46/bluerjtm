@@ -129,6 +129,7 @@ class RevenuesController extends AppController {
 
             foreach ($dataTtujTipeMotor as $key => $tipe_motor_id) {
                 $dataValidate['TtujTipeMotor']['tipe_motor_id'] = $tipe_motor_id;
+                $dataValidate['TtujTipeMotor']['color_motor_id'] = !empty($data['TtujTipeMotor']['color_motor_id'][$key])?$data['TtujTipeMotor']['color_motor_id'][$key]:false;
                 $dataValidate['TtujTipeMotor']['qty'] = !empty($data['TtujTipeMotor']['qty'][$key])?$data['TtujTipeMotor']['qty'][$key]:false;
 
                 if( $data_action == 'retail' ) {
@@ -198,7 +199,7 @@ class RevenuesController extends AppController {
         $this->loadModel('TipeMotor');
         $this->loadModel('Perlengkapan');
         $this->loadModel('Truck');
-        $step = false;
+        $this->loadModel('ColorMotor');
         $is_draft = isset($data_local['Ttuj']['is_draft'])?$data_local['Ttuj']['is_draft']:true;
 
         if( !empty($this->request->data) && in_array('update_ttuj_commit', $this->allowModule) ) {
@@ -334,20 +335,16 @@ class RevenuesController extends AppController {
                                 $this->Log->logActivity( sprintf(__('Gagal %s TTUJ'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
                             }
                         } else {
-                            $step = '#step2';
                             $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj, Mohon lengkapi muatan truk.'), $msg), 'error');  
                         }
                     } else {
-                        $step = '#step2';
                         $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj, Silahkan masukan muatan truk.'), $msg), 'error');  
                     }
                 } else {
-                    $step = '#step2';
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj, Silahkan masukan muatan truk.'), $msg), 'error');  
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj'), $msg), 'error');
-                $step = '#step1';
             }
 
             // if( !empty($data['Ttuj']['customer_id']) ) {
@@ -533,19 +530,44 @@ class RevenuesController extends AppController {
             // }
         }
 
+        $customerConditions = array(
+            'Customer.customer_type_id' => 2,
+            'Customer.status' => 1,
+        );
+
+        if( $data_action == 'retail' ) {
+            $customerConditions['Customer.customer_type_id'] = 1;
+        }
+
+        $this->Truck->bindModel(array(
+            'hasOne' => array(
+                'Ttuj' => array(
+                    'className' => 'Ttuj',
+                    'foreignKey' => 'truck_id',
+                    'conditions' => array(
+                        'Ttuj.status' => 1,
+                        'Ttuj.is_pool' => 0,
+                    ),
+                )
+            )
+        ));
+
         $trucks = $this->Truck->getData('list', array(
             'conditions' => array(
                 'Truck.driver_id <>' => 0,
                 'Truck.status' => 1,
+                'Ttuj.id' => NULL,
             ),
             'fields' => array(
                 'Truck.id', 'Truck.nopol'
             ),
-        ));
-        $customers = $this->Ttuj->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1
+            'contain' => array(
+                'Ttuj'
             ),
+        ));
+
+        $customers = $this->Ttuj->Customer->getData('list', array(
+            'conditions' => $customerConditions,
             'fields' => array(
                 'Customer.id', 'Customer.customer_name'
             )
@@ -571,9 +593,14 @@ class RevenuesController extends AppController {
                 'Perlengkapan.jenis_perlengkapan_id' => 2,
             ),
         ));
-        $tipeMotorsTmp = $this->TipeMotor->getData('all', array(
+        $tipeMotors = $this->TipeMotor->getData('list', array(
             'fields' => array(
-                'TipeMotor.id', 'TipeMotor.tipe_motor_color',
+                'TipeMotor.id', 'TipeMotor.name',
+            ),
+        ));
+        $colors = $this->ColorMotor->getData('list', array(
+            'fields' => array(
+                'ColorMotor.id', 'ColorMotor.name',
             ),
         ));
         $cities = $this->City->getData('list', array(
@@ -582,21 +609,14 @@ class RevenuesController extends AppController {
                 // 'City.is_asal' => 1,
             ),
         ));
-        $tipeMotors = array();
-
-        if( !empty($tipeMotorsTmp) ) {
-            foreach ($tipeMotorsTmp as $key => $tipeMotor) {
-                $tipeMotors[$tipeMotor['TipeMotor']['id']] = $tipeMotor['TipeMotor']['tipe_motor_color'];
-            }
-        }
 
         $this->set('active_menu', 'ttuj');
         $this->set(compact(
             'trucks', 'customers', 'driverPengantis',
             'fromCities', 'toCities', 'uangJalan',
-            'tipeMotors', 'perlengkapans', 'step',
+            'tipeMotors', 'perlengkapans',
             'truckInfo', 'data_local', 'data_action',
-            'cities'
+            'cities', 'colors'
         ));
         $this->render('ttuj_form');
     }
@@ -708,6 +728,7 @@ class RevenuesController extends AppController {
         $this->loadModel('TipeMotor');
         $this->loadModel('Perlengkapan');
         $this->loadModel('Truck');
+        $this->loadModel('ColorMotor');
         $module_title = __('Truk Tiba');
         $data_action = false;
 
@@ -933,22 +954,21 @@ class RevenuesController extends AppController {
                 'Perlengkapan.jenis_perlengkapan_id' => 2,
             ),
         ));
-        $tipeMotorsTmp = $this->TipeMotor->getData('all', array(
+        $tipeMotors = $this->TipeMotor->getData('list', array(
             'fields' => array(
-                'TipeMotor.id', 'TipeMotor.tipe_motor_color',
+                'TipeMotor.id', 'TipeMotor.name',
             ),
         ));
-        $tipeMotors = array();
-
-        if( !empty($tipeMotorsTmp) ) {
-            foreach ($tipeMotorsTmp as $key => $tipeMotor) {
-                $tipeMotors[$tipeMotor['TipeMotor']['id']] = $tipeMotor['TipeMotor']['tipe_motor_color'];
-            }
-        }
+        $colors = $this->ColorMotor->getData('list', array(
+            'fields' => array(
+                'ColorMotor.id', 'ColorMotor.name',
+            ),
+        ));
 
         $this->set(compact(
             'ttujs', 'data_local', 'perlengkapans', 
-            'tipeMotors', 'action_type', 'data_action'
+            'tipeMotors', 'action_type', 'data_action',
+            'colors'
         ));
         $this->render('ttuj_lanjutan_form');
     }
@@ -957,6 +977,7 @@ class RevenuesController extends AppController {
         $this->loadModel('Ttuj');
         $this->loadModel('TipeMotor');
         $this->loadModel('Perlengkapan');
+        $this->loadModel('ColorMotor');
         $conditions = array(
             'Ttuj.id' => $ttuj_id,
             'Ttuj.is_draft' => 0,
@@ -1032,25 +1053,23 @@ class RevenuesController extends AppController {
                     'Perlengkapan.jenis_perlengkapan_id' => 2,
                 ),
             ));
-            $tipeMotorsTmp = $this->TipeMotor->getData('all', array(
+            $tipeMotors = $this->TipeMotor->getData('list', array(
                 'fields' => array(
-                    'TipeMotor.id', 'TipeMotor.tipe_motor_color',
+                    'TipeMotor.id', 'TipeMotor.name',
                 ),
             ));
-            $tipeMotors = array();
-
-            if( !empty($tipeMotorsTmp) ) {
-                foreach ($tipeMotorsTmp as $key => $tipeMotor) {
-                    $tipeMotors[$tipeMotor['TipeMotor']['id']] = $tipeMotor['TipeMotor']['tipe_motor_color'];
-                }
-            }
+            $colors = $this->ColorMotor->getData('list', array(
+                'fields' => array(
+                    'ColorMotor.id', 'ColorMotor.name',
+                ),
+            ));
 
             $this->set('sub_module_title', $module_title);
             $this->set('active_menu', 'truk_tiba');
             $this->set(compact(
                 'ttujs', 'data_local', 'perlengkapans', 
                 'tipeMotors', 'ttuj_id', 'action_type',
-                'data_action'
+                'data_action', 'colors'
             ));
             $this->render('ttuj_lanjutan_form');
         } else {
