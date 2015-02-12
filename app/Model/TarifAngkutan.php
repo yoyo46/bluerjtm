@@ -49,9 +49,6 @@ class TarifAngkutan extends AppModel {
                 'message' => 'Tarif Angkut sudah terdaftar'
             ),
         ),
-        'group_motor_id' => array(
-            ''
-        )
 	);
 
 	var $belongsTo = array(

@@ -69,22 +69,17 @@ class TtujTipeMotor extends AppModel {
         ),
     );
 
-    var $hasMany = array(
-        'TtujTipeMotorUse' => array(
-            'className' => 'TtujTipeMotorUse',
-            'foreignKey' => 'ttuj_tipe_motor_id',
-        ),
-    );
-
 	function getData($find, $options = false, $is_merge = true){
         $default_options = array(
             'conditions'=> array(
                 'TtujTipeMotor.status' => 1,
             ),
             'contain' => array(
-                'ColorMotor'
+                'ColorMotor',
+                'TipeMotor',
             ),
             'fields' => array(),
+            'group' => array(),
         );
 
         if( !empty($options) && $is_merge ){
@@ -100,6 +95,9 @@ class TtujTipeMotor extends AppModel {
             if(!empty($options['fields'])){
                 $default_options['fields'] = array_merge($default_options['fields'], $options['fields']);
             }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
+            }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
             }
@@ -113,6 +111,32 @@ class TtujTipeMotor extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
+    }
+
+    function getMergeTtujTipeMotor ( $data = false, $ttuj_id = false ) {
+        if( empty($data['TtujTipeMotor']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'TtujTipeMotor.ttuj_id'=> $ttuj_id,
+                    'TtujTipeMotor.status'=> 1,
+                ),
+                // 'group' => array(
+                //     'TipeMotor.group_motor_id',
+                // ),
+                // 'fields' => array(
+                //     'TtujTipeMotor.id', 'TipeMotor.group_motor_id',
+                //     'TtujTipeMotor.city_id', 'SUM(TtujTipeMotor.qty) qty'
+                // ),
+            );
+            
+            $ttujTipeMotor = $this->getData('all', $default_options);
+
+            if( !empty($ttujTipeMotor) ) {
+                $data['TtujTipeMotor'] = $ttujTipeMotor;
+            }
+        }
+
+        return $data;
     }
 }
 ?>

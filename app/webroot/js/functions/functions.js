@@ -215,18 +215,21 @@ var getUangjalan = function ( response ) {
         }
 
         if( uang_jalan_per_unit == 1 ) {
-            uang_jalan_1 = uang_jalan_tipe_motor;
+            if( uang_jalan_tipe_motor != 0 ) {
+                uang_jalan_1 = uang_jalan_tipe_motor;
+            }
+
             uang_jalan_2 = 0;
             $('.wrapper_uang_jalan_2').addClass('hide');
         } else {
             $('.wrapper_uang_jalan_2').removeClass('hide');
         }
 
-        if( uang_kuli_muat_per_unit == 1 ) {
+        if( uang_kuli_muat_per_unit == 1 && uang_kuli_muat_tipe_motor != 0 ) {
             uang_kuli_muat = uang_kuli_muat_tipe_motor;
         }
 
-        if( uang_kuli_bongkar_per_unit == 1 ) {
+        if( uang_kuli_bongkar_per_unit == 1 && uang_kuli_bongkar_tipe_motor != 0 ) {
             uang_kuli_bongkar = uang_kuli_bongkar_tipe_motor;
         }
 
@@ -344,14 +347,6 @@ var add_custom_field = function(){
                     </div> \
                 </div>');
               break;
-            // case 'ttuj':
-            //     var idx = $('#ttujDetail tbody tr').length;
-            //     var optionTipeMotor = $('#tipe_motor_id select').html();
-            //         $('#box-field-input').append('<div class="form-group" id="'+action_type+idx+'">'+
-            //             '<label for="PerlengkapanName'+idx+'">perlengkapan '+idx+'</label>'+
-            //             '<input name="data[Perlengkapan][name]['+(idx-1)+']" class="form-control" placeholder="perlengkapan" type="text" id="name'+idx+'">'+
-            //             '</div>');
-            //     break;
             case 'ttuj':
                 var idx = $('#ttujDetail tbody tr').length;
                 var optionTipeMotor = $('#tipe_motor_id select').html();
@@ -603,16 +598,16 @@ var duplicate_row = function(){
         revenue_detail();
         grandTotalRevenue();
         delete_custom_field( $('tr[rel="'+uniqid+'"] .delete-custom-field') );
-        city_revenue_change( $('tr[rel="'+uniqid+'"] .city-revenue-change'), $('tr[rel="'+uniqid+'"] .revenue-tipe-motor') );
+        city_revenue_change( $('tr[rel="'+uniqid+'"] .city-revenue-change'), $('tr[rel="'+uniqid+'"] .revenue-group-motor') );
     });
 }
 
-var changeDetailRevenue = function ( parent, city_id, tipe_motor_id ) {
+var changeDetailRevenue = function ( parent, city_id, group_motor_id ) {
     var ttuj_id = $('#getTtujInfoRevenue').val();
     var customer_id = $('.change-customer-revenue').val();
 
     $.ajax({
-        url: '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+tipe_motor_id+'/',
+        url: '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/',
         type: 'POST',
         success: function(response, status) {
             parent.find('td.price-data').html($(response).filter('#price-data').html());
@@ -639,16 +634,16 @@ var city_revenue_change = function( obj_city, obj_tipe_motor ){
         obj_city = $('.city-revenue-change');
     }
     if( typeof obj_tipe_motor == 'undefined' ){
-        obj_tipe_motor = $('.revenue-tipe-motor')
+        obj_tipe_motor = $('.revenue-group-motor')
     }
 
     obj_city.change(function(){
         var self = $(this);
         var val = self.val();
         var parent = self.parents('tr');
-        var tipe_motor_id = parent.find('.revenue-tipe-motor').val();
+        var group_motor_id = parent.find('.revenue-group-motor').val();
 
-        changeDetailRevenue( parent, val, tipe_motor_id );
+        changeDetailRevenue( parent, val, group_motor_id );
     });
 
     obj_tipe_motor.change(function() {

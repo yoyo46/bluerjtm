@@ -184,19 +184,22 @@ class AjaxController extends AppController {
 		$this->loadModel('TarifAngkutan');
 		$this->loadModel('Customer');
 		$this->loadModel('City');
-		$this->loadModel('TipeMotor');
+		$this->loadModel('GroupMotor');
 		$this->loadModel('Revenue');
 		$this->loadModel('TtujTipeMotorUse');
 		$data_revenue_detail = array();
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
-				'Ttuj.id' => $ttuj_id
-			)
-		));
-
+				'Ttuj.id' => $ttuj_id,
+				'Ttuj.status' => 1,
+				'Ttuj.is_pool' => 1,
+				'Ttuj.is_draft' => 0,
+			),
+		), false);
 
 		if(!empty($data_ttuj)){
+			$data_ttuj = $this->Ttuj->TtujTipeMotor->getMergeTtujTipeMotor( $data_ttuj, $ttuj_id );
             $tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity']);
 
             if( !empty($tarif['jenis_unit']) && $tarif['jenis_unit'] == 'per_truck' ) {
@@ -214,14 +217,12 @@ class AjaxController extends AppController {
 			$toCities = array();
 
 			if(!empty($data_ttuj['TtujTipeMotor'])){
-				$tipe_motor_list = array();
-
 				foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
-					$tipe_motor = $this->TipeMotor->getData('first', array(
-						'conditions' => array(
-							'TipeMotor.id' => $value['tipe_motor_id']
-						)
-					));
+					$price_unit = false;
+					$group_motor_name = false;
+					$qtyTtuj = !empty($value['TtujTipeMotor']['qty'])?$value['TtujTipeMotor']['qty']:0;
+					$group_motor_id = !empty($value['TipeMotor']['group_motor_id'])?$value['TipeMotor']['group_motor_id']:false;
+					$groupMotor = $this->GroupMotor->getMerge($value, $group_motor_id);
 		            $revenue_id = $this->Revenue->find('list', array(
 		                'conditions' => array(
 		                    'Revenue.ttuj_id' => $ttuj_id,
@@ -231,7 +232,7 @@ class AjaxController extends AppController {
 		            $qtyUsed = $this->TtujTipeMotorUse->find('first', array(
 		                'conditions' => array(
 		                    'TtujTipeMotorUse.revenue_id' => $revenue_id,
-		                    'TtujTipeMotorUse.ttuj_tipe_motor_id' => $value['id'],
+		                    'TtujTipeMotorUse.ttuj_tipe_motor_id' => $value['TtujTipeMotor']['id'],
 		                ),
 		                'fields' => array(
 		                    'SUM(TtujTipeMotorUse.qty) as count_qty'
@@ -244,17 +245,15 @@ class AjaxController extends AppController {
 		            	$qtyUsed = 0;
 		            }
 
-					if(!empty($tipe_motor['TipeMotor']['name'])){
-						$tipe_motor_name = sprintf('%s - %s', $tipe_motor['TipeMotor']['name'], $tipe_motor['ColorMotor']['name']);
-						$tipe_motor_id = $tipe_motor['TipeMotor']['id'];
+					if(!empty($groupMotor)){
+						$group_motor_name = $groupMotor['GroupMotor']['name'];
+						$tipe_motor_id = $groupMotor['GroupMotor']['id'];
 					}
-					
-					$price_unit = false;
 
 					if($data_ttuj['Ttuj']['is_retail']){
 						$city = $this->City->getData('first', array(
 							'conditions' => array(
-								'City.id' => $value['city_id']
+								'City.id' => $value['TtujTipeMotor']['city_id']
 							)
 						));
 						if(!empty($city['City']['name'])){
@@ -262,29 +261,27 @@ class AjaxController extends AppController {
 							$to_city_id = $city['City']['id'];
 						}
 
-						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $value['city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity'], $tipe_motor['TipeMotor']['group_motor_id']);
+						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $value['TtujTipeMotor']['city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
 					}else{
 						$to_city_name = $data_ttuj['Ttuj']['to_city_name'];
 						$to_city_id = $data_ttuj['Ttuj']['to_city_id'];
 
-						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity'], $tipe_motor['TipeMotor']['group_motor_id']);
+						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
 					}
 
 					$data_revenue_detail[$key] = array(
 						'TtujTipeMotor' => array(
-							'qty' => $value['qty'],
+							'qty' => $qtyTtuj,
 						),
 						'RevenueDetail' => array(
 							'to_city_name' => $to_city_name,
 							'price_unit' => $tarif,
-							'qty_unit' => $value['qty'] - $qtyUsed,
-							'tipe_motor_id' => $tipe_motor_id,
+							'qty_unit' => $qtyTtuj - $qtyUsed,
+							'group_motor_id' => $group_motor_id,
 							'city_id' => $to_city_id,
-							'TipeMotor' => array(
-								'name' => $tipe_motor_name,
+							'GroupMotor' => array(
+								'name' => $group_motor_name,
 							),
-							'ttuj_tipe_motor_id' => $value['id'],
-                        	// 'max_qty_unit' => $value['qty'],
 						)
 					);
 				}
@@ -301,14 +298,14 @@ class AjaxController extends AppController {
 		));
 
 		$toCities = $this->City->toCities();
-		$list_tipe_motor = $this->TipeMotor->getData('list', array(
+		$groupMotors = $this->GroupMotor->getData('list', array(
 			'conditions' => array(
-				'TipeMotor.status' => 1
+				'GroupMotor.status' => 1
 			)
 		));
 		// debug($data_revenue_detail);die();
 		$this->set(compact(
-			'data_revenue_detail', 'customers', 'toCities', 'list_tipe_motor',
+			'data_revenue_detail', 'customers', 'toCities', 'groupMotors',
 			'tarifTruck'
 		));
 	}
@@ -420,9 +417,9 @@ class AjaxController extends AppController {
         ));
 	}
 
-	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $city_id = false, $tipe_motor_id = false ){
+	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $city_id = false, $group_motor_id = false ){
 		$this->loadModel('Ttuj');
-		$this->loadModel('TipeMotor');
+		$this->loadModel('GroupMotor');
 		$this->loadModel('TarifAngkutan');
 		$detail = array();
 		$data_ttuj = $this->Ttuj->getData('first', array(
@@ -433,21 +430,17 @@ class AjaxController extends AppController {
                 'Ttuj.status' => 1,
 			),
 		), false);
-		$group_motor_id = false;
 
-		if( !empty($tipe_motor_id) ) {
-			$tipeMotor = $this->TipeMotor->getData('first', array(
+		if( !empty($group_motor_id) ) {
+			$groupMotor = $this->GroupMotor->getData('first', array(
 				'conditions' => array(
-					'TipeMotor.id' => $tipe_motor_id,
-	                'TipeMotor.status' => 1,
+					'GroupMotor.id' => $group_motor_id,
+	                'GroupMotor.status' => 1,
 				),
-	            'contain' => array(
-	                'ColorMotor',
-	            ),
 			), false);
 
-			if( !empty($tipeMotor) ) {
-				$group_motor_id = $tipeMotor['TipeMotor']['group_motor_id'];
+			if( !empty($groupMotor) ) {
+				$group_motor_id = $groupMotor['GroupMotor']['id'];
 			}
 		}
 
@@ -544,7 +537,7 @@ class AjaxController extends AppController {
 
 			foreach ($revenue_detail as $key => $value) {
 				if(!empty($value['RevenueDetail'])){
-					$value = $this->TipeMotor->getMerge($value, $value['RevenueDetail']['tipe_motor_id']);
+					$value = $this->TipeMotor->getMerge($value, $value['RevenueDetail']['group_motor_id']);
 					$value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
 					$value = $this->TarifAngkutan->getMerge($value, $value['RevenueDetail']['tarif_angkutan_id']);
 					

@@ -116,7 +116,8 @@ class Ttuj extends AppModel {
             'contain' => array(
                 'DriverPenganti',
                 'TtujTipeMotor' => array(
-                    'City'
+                    'City',
+                    'TipeMotor'
                 ),
                 'TtujPerlengkapan',
                 'UangJalan'

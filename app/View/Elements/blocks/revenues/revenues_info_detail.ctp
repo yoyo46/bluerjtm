@@ -17,8 +17,9 @@
             </thead>
             <tbody class="tipe-motor-table">
                 <?php
-                        $total = !empty($this->request->data['Revenue']['total_without_tax'])?$this->request->data['Revenue']['total_without_tax']:0;
+                        // $total = !empty($this->request->data['Revenue']['total_without_tax'])?$this->request->data['Revenue']['total_without_tax']:0;
                         $arr_duplicate = array();
+                        $total = 0;
 
                         foreach ($data as $key => $detail) {
                             if( !empty($detail['RevenueDetail']['price_unit']) ){
@@ -45,11 +46,6 @@
                                     'label' => false,
                                     'class' => 'form-control city-revenue-change',
                                     'value' => (!empty($detail['RevenueDetail']['city_id'])) ? $detail['RevenueDetail']['city_id'] : 0
-                                ));
-
-                                echo $this->Form->hidden('RevenueDetail.ttuj_tipe_motor_id.', array(
-                                    'required' => false,
-                                    'value' => (!empty($detail['RevenueDetail']['ttuj_tipe_motor_id'])) ? $detail['RevenueDetail']['ttuj_tipe_motor_id'] : 0
                                 ));
 
                                 echo $this->Form->hidden('RevenueDetail.tarif_angkutan_id.', array(
@@ -82,13 +78,13 @@
                     </td>
                     <td class="tipe-motor-data">
                         <?php 
-                                echo $this->Form->input('RevenueDetail.tipe_motor_id.', array(
+                                echo $this->Form->input('RevenueDetail.group_motor_id.', array(
                                     'label' => false,
-                                    'class' => 'form-control revenue-tipe-motor',
+                                    'class' => 'form-control revenue-group-motor',
                                     'required' => false,
-                                    'value' => (!empty($detail['RevenueDetail']['tipe_motor_id'])) ? $detail['RevenueDetail']['tipe_motor_id'] : 0,
-                                    'options' => $list_tipe_motor,
-                                    'empty' => __('Pilih Tipe Motor'),
+                                    'value' => (!empty($detail['RevenueDetail']['group_motor_id'])) ? $detail['RevenueDetail']['group_motor_id'] : 0,
+                                    'options' => $groupMotors,
+                                    'empty' => __('Pilih Group Motor'),
                                 ));
                         ?>
                     </td>
@@ -155,7 +151,8 @@
                                     } else {
                                         $value_price = $price * $qty;
                                     }
-
+                                    $total += $value_price;
+                                    
                                     echo $this->Html->tag('span', $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
                                         'class' => 'total-revenue-perunit'
                                     ));
@@ -172,8 +169,8 @@
                         <?php
                                 if( !empty($price['tarif']) && is_numeric($price['tarif'])){
                                     $open_duplicate = false;
-                                    if(empty($arr_duplicate[$detail['RevenueDetail']['ttuj_tipe_motor_id']])){
-                                        $arr_duplicate[$detail['RevenueDetail']['ttuj_tipe_motor_id']] = true;
+                                    if(empty($arr_duplicate[$detail['RevenueDetail']['group_motor_id']])){
+                                        $arr_duplicate[$detail['RevenueDetail']['group_motor_id']] = true;
                                         $open_duplicate = true;
                                     }
 

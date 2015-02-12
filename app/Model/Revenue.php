@@ -124,7 +124,7 @@ class Revenue extends AppModel {
         $qtyTtuj = $this->Ttuj->TtujTipeMotor->find('first', array(
             'conditions' => array(
                 'TtujTipeMotor.ttuj_id' => $ttuj_id,
-                'TtujTipeMotor.status' => 0,
+                'TtujTipeMotor.status' => 1,
             ),
             'fields' => array(
                 'SUM(TtujTipeMotor.qty) as count_qty'
