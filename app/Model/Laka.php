@@ -78,6 +78,13 @@ class Laka extends AppModel {
         ),
     );
 
+    var $hasMany = array(
+        'LakaMedias' => array(
+            'className' => 'LakaMedias',
+            'foreignKey' => 'laka_id',
+        ),
+    );
+
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(

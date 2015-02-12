@@ -497,6 +497,11 @@ var add_custom_field = function(){
                     $('#box-field-input .list-uang-jalan:last-child .uang_jalan_2').removeClass('hide');
                 }
               break;
+            case 'file-laka':
+                var length = $('.laka-form-media input').length + 1;
+                var html = '<input type="file" name="data[LakaMedias][name][]" class="form-control" id="LakaMediasName'+length+'">';
+                $('.laka-form-media').append(html);
+            break;
         }
     });
 }
@@ -540,6 +545,32 @@ var delete_custom_field = function( obj ) {
                 var length = parseInt($('#box-field-input .list-uang-jalan').length);
                 var parent = self.parents('.list-uang-jalan');
                 parent.remove();
+            } else if( action_type == 'file-laka' ) {
+                var lengthTable = $('.laka-form-media input').length;
+                $('#LakaMediasName'+lengthTable).remove();
+            } else if( action_type == 'delete-image-laka' ) {
+                $.ajax({
+                    url: self.attr('href'),
+                    type: 'POST',
+                    success: function(response, status) {
+                        var status = $(response).filter('#status').text();
+                        
+                        if(status == 'success'){
+                            self.parents('li').remove();
+                        }else{
+                            var msg = $(response).filter('#message').text();
+                            if(typeof msg != 'undefined' && msg != ''){
+                                alert(msg);
+                            }
+                        }
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                        return false;
+                    }
+                });
+
+                return false;
             }
         }
 

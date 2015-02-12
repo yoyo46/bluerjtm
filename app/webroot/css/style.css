@@ -65,6 +65,9 @@ body > .header {
   width: 220px;
   top: 0;
 }
+.relative {
+  position: relative;
+}
 @media screen and (min-width: 992px) {
   .left-side {
     top: 50px;
@@ -3844,4 +3847,28 @@ table th i {
 
 .datepicker.dropdown-menu {
   z-index: 9999 !important;
+}
+.action-media-laka a{
+  margin-left: 5px;
+}
+.laka-form-media{
+  margin-top: 5px;
+}
+.laka-form-media input{
+  margin-bottom: 5px;
+}
+.laka-image-file ul{
+  padding-left: 0;
+}
+.laka-image-file ul li{
+  list-style: none;
+  float: left;
+  margin-right: 10px;
+}
+.time-circle-laka{
+  position: absolute;
+  color: #F4543C;
+  right: 0px;
+  top: -4px;
+  font-size: 20px;
 }

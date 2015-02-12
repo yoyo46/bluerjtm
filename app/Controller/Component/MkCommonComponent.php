@@ -149,5 +149,54 @@ class MkCommonComponent extends Component {
     function toSlug($string) {
         return strtolower(Inflector::slug($string, '-'));
     }
+
+    function deletePathPhoto( $pathfolder = false, $filename = false, $dimensions = false, $deleteUploadFile = true, $project_path = false ) {
+        if( !empty($filename) ) {
+            if( !empty($project_path) ) {
+                $project_path = DS.$project_path;
+            } else {
+                $project_path = '';
+            }
+
+            $path = Configure::read('__Site.thumbnail_view_path').DS.$pathfolder;
+            $pathUpload = Configure::read('__Site.upload_path').DS.$pathfolder.$project_path.$filename;
+            $pathUpload = str_replace('/', DS, $pathUpload);
+
+            if( $deleteUploadFile && file_exists($pathUpload) ) {
+                unlink($pathUpload);
+            }
+
+            if( !$dimensions ) {
+                $dimensions = array();
+                if( $pathfolder == 'users' ) {
+                    $dimensions = Configure::read('__Site.dimension_profile');
+                }
+                $dimensions = array_merge($dimensions, Configure::read('__Site.dimension'));
+            }
+
+            foreach ($dimensions as $key => $dimension) {
+                $urlPhoto = $path.DS.$key.$project_path.$filename;
+                $this->deletePhoto($urlPhoto);
+            }
+
+            $urlPhoto = $path.DS.Configure::read('__Site.fullsize').$project_path.$filename;
+            $this->deletePhoto($urlPhoto);
+        }
+    }
+
+    /**
+    *
+    *   menghapus foto yan ada
+    *
+    *   @param string $urlPhoto - path sampai ke file tujuan
+    */
+    function deletePhoto ( $urlPhoto ) {
+        $urlPhoto = str_replace('/', DS, $urlPhoto);
+
+        if(file_exists($urlPhoto)) {
+            chown($urlPhoto,465);
+            unlink($urlPhoto);
+        }
+    }
 }
 ?>

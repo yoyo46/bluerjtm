@@ -371,30 +371,69 @@
 									));
 							?>
 				        </div>
-				        <?php
-				    			if(!empty($this->request->data['Laka']['ilustration_photo']) && !is_array($this->request->data['Laka']['ilustration_photo'])){
-				    				$photo = $this->Common->photo_thumbnail(array(
-										'save_path' => Configure::read('__Site.laka_photo_folder'), 
-										'src' => $this->request->data['Laka']['ilustration_photo'], 
-										'thumb'=>true,
-										'size' => 'pm',
-										'thumb' => true,
-									));
-
-									echo $this->Html->tag('div', $photo, array(
-										'class' => 'form-group',
-									));
-				    			}
-				    	?>
-				        <div class="form-group">
+				        <div class="form-group" id="laka-media-form">
+				        	<?php
+				        		if(!empty($this->request->data['LakaMedias'])){
+				        	?>
+				        	<div class="laka-image-file">
+				        		<?php
+			        				$list = '';
+			        				foreach ($this->request->data['LakaMedias'] as $key => $value) {
+			        					$photo = $this->Common->photo_thumbnail(array(
+											'save_path' => Configure::read('__Site.laka_photo_folder'), 
+											'src' => $value['name'], 
+											'thumb'=>true,
+											'size' => 'pm',
+											'thumb' => true,
+										));
+										$link = $this->Html->link('<i class="fa fa-times-circle"></i>', array(
+											'controller' => 'ajax',
+											'action' => 'delete_laka_media',
+											$value['id']
+										), array(
+											'escape' => false,
+											'class' => 'delete-custom-field time-circle-laka',
+											'action_type' => 'delete-image-laka',
+											'title' => __('Hapus Media')
+										));
+			        					$list .= $this->Html->tag('li', $photo.$link, array(
+			        						'class' => 'relative'
+			        					));
+			        				}
+			        				echo $this->Html->tag('ul', $list);
+				        		?>
+				        	</div>
+				        	<div class="clear"></div>
 				        	<?php 
-									echo $this->Form->input('ilustration_photo',array(
-										'type' => 'file',
-										'label'=> __('Foto Ilustrasi LAKA'), 
-										'class'=>'form-control',
-										'required' => false
-									));
-							?>
+				        		}
+				        			echo $this->Form->label('LakaMedias.name.', 'LAKA Media');
+				        	?>
+				        	<span class="action-media-laka pull-right text-right">
+				        		<?php
+					        			echo $this->Html->link('Tambah <i class="fa fa-plus"></i>', 'javascript:', array(
+					        				'escape' => false,
+					        				'class' => 'add-custom-field btn btn-info btn-xs',
+					        				'action_type' => 'file-laka'
+					        			));
+
+					        			echo $this->Html->link('Hapus <i class="fa fa-times"></i>', 'javascript:', array(
+					        				'escape' => false,
+					        				'class' => 'delete-custom-field btn btn-danger btn-xs',
+					        				'action_type' => 'file-laka'
+					        			));
+					        	?>
+				        	</span>
+				        	<div class="clear"></div>
+				        	<div class="laka-form-media">
+				        		<?php
+										echo $this->Form->input('LakaMedias.name.',array(
+											'type' => 'file',
+											'label'=> false, 
+											'class'=>'form-control',
+											'required' => false
+										));
+								?>
+				        	</div>
 				        </div>
 				    </div>
 				</div>
@@ -518,6 +557,31 @@
 				        </div>
 				    </div>
 				</div>
+				<?php
+					if(!empty($id)){
+				?>
+				<div class="box box-primary">
+				    <div class="box-header">
+				        <h3 class="box-title"><?php echo __('Status LAKA'); ?></h3>
+				    </div>
+				    <div class="box-body">
+				    	<?php 
+				    		echo $this->Html->tag('p', __('Status selesai digunakan jika proses kejadian LAKA sudah selesai.'));
+				    	?>
+				    	<div class="form-group">
+				    		<div class="checkbox">
+		                        <label class="date-resign-handle">
+		                        	<?php 
+		                        		echo $this->Form->checkbox('complated').' Proses LAKA sudah selesai?';
+		                        	?>
+		                        </label>
+		                    </div>
+				    	</div>
+				    </div>
+				</div>
+				<?php
+					}
+				?>
 			</div>
 		</div>
 		<div class="box-footer text-center action">

@@ -964,5 +964,36 @@ class AjaxController extends AppController {
 
 		$this->set(compact('invoice_real', 'invoice'));
 	}
+
+	function delete_laka_media($id = false){
+		$this->loadModel('LakaMedias');
+		$msg = array(
+			'msg' => 'ID Media tidak ditemukan.',
+			'type' => 'error'
+		);
+		if($id){
+			$laka_media = $this->LakaMedias->getData('first', array(
+				'conditions' => array(
+					'LakaMedias.id' => $id
+				)
+			));
+
+			if(!empty($laka_media)){
+				$this->LakaMedias->delete($id);
+				$this->MkCommon->deletePathPhoto(Configure::read('__Site.laka_photo_folder'), $laka_media['LakaMedias']['name']);
+
+				$msg = array(
+					'msg' => 'Media berhasil di hapus.',
+					'type' => 'success'
+				);
+			}
+		}
+
+		$this->set('msg', $msg);
+		if( !$this->RequestHandler->isAjax() ){
+			$this->MkCommon->setCustomFlash($msg['msg'], $msg['type']);
+			$this->redirect($this->referer());
+		}
+	}
 }
 ?>
