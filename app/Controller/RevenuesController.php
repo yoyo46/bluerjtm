@@ -2132,14 +2132,15 @@ class RevenuesController extends AppController {
         if(!empty($this->request->data['Revenue']['ttuj_id'])){
             $ttuj_data = $this->Ttuj->getData('first', array(
                 'conditions' => array(
-                    'Ttuj.id' => $this->request->data['Revenue']['ttuj_id']
+                    'Ttuj.id' => $this->request->data['Revenue']['ttuj_id'],
+                    'Ttuj.status' => 1,
+                    'Ttuj.is_draft' => 0,
                 )
-            ));
+            ), false);
 
             if(!empty($ttuj_data) && !empty($this->request->data['RevenueDetail']['no_do'])){
                 foreach ($this->request->data['RevenueDetail']['no_do'] as $key => $value) {
                     $group_motor_id = $this->request->data['RevenueDetail']['group_motor_id'][$key];
-
                     $groupMotor = $this->GroupMotor->getData('first', array(
                         'conditions' => array(
                             'GroupMotor.id' => $group_motor_id
@@ -2164,16 +2165,15 @@ class RevenuesController extends AppController {
                             $to_city_id = $city['City']['id'];
                         }
 
-                        $ttujTipeMotor = $this->Ttuj->TtujTipeMotor->getData('first', array(
-                            'conditions' => array(
-                                'TtujTipeMotor.ttuj_id' => $this->request->data['Revenue']['ttuj_id'],
-                                'TtujTipeMotor.group_motor_id' => $group_motor_id,
-                                'TtujTipeMotor.city_id' => $to_city_id
-                            )
+                        $ttujTipeMotor = $this->Ttuj->TtujTipeMotor->getMergeTtujTipeMotor( $ttuj_data, $this->request->data['Revenue']['ttuj_id'], 'first', array(
+                            'TtujTipeMotor.ttuj_id' => $this->request->data['Revenue']['ttuj_id'],
+                            'TipeMotor.group_motor_id' => $group_motor_id,
+                            'TtujTipeMotor.city_id' => $to_city_id,
+                            'TtujTipeMotor.status'=> 1,
                         ));
 
                         if(!empty($ttujTipeMotor)){
-                            $qty = $ttujTipeMotor['TtujTipeMotor']['qty'];
+                            $qty = $ttujTipeMotor[0]['qty'];
                         }
 
                         $tarif = $this->TarifAngkutan->findTarif($ttuj_data['Ttuj']['from_city_id'], $this->request->data['RevenueDetail']['city_id'][$key], $ttuj_data['Ttuj']['customer_id'], $ttuj_data['Ttuj']['truck_capacity']);

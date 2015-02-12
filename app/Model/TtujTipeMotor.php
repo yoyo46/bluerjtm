@@ -113,26 +113,32 @@ class TtujTipeMotor extends AppModel {
         return $result;
     }
 
-    function getMergeTtujTipeMotor ( $data = false, $ttuj_id = false ) {
+    function getMergeTtujTipeMotor ( $data = false, $ttuj_id = false, $list = 'all', $conditions = false ) {
         if( empty($data['TtujTipeMotor']) ) {
             $default_options = array(
                 'conditions' => array(
                     'TtujTipeMotor.ttuj_id'=> $ttuj_id,
                     'TtujTipeMotor.status'=> 1,
                 ),
-                // 'group' => array(
-                //     'TipeMotor.group_motor_id',
-                // ),
-                // 'fields' => array(
-                //     'TtujTipeMotor.id', 'TipeMotor.group_motor_id',
-                //     'TtujTipeMotor.city_id', 'SUM(TtujTipeMotor.qty) qty'
-                // ),
+                'group' => array(
+                    'TipeMotor.group_motor_id',
+                ),
+                'fields' => array(
+                    'TtujTipeMotor.id', 'TipeMotor.group_motor_id',
+                    'TtujTipeMotor.city_id', 'SUM(TtujTipeMotor.qty) qty'
+                ),
             );
-            
-            $ttujTipeMotor = $this->getData('all', $default_options);
 
-            if( !empty($ttujTipeMotor) ) {
+            if( !empty($conditions) ) {
+                $default_options['conditions'] = $conditions;
+            }
+
+            $ttujTipeMotor = $this->getData($list, $default_options);
+
+            if( !empty($ttujTipeMotor) && $list != 'first' ) {
                 $data['TtujTipeMotor'] = $ttujTipeMotor;
+            } else {
+                $data = $ttujTipeMotor;
             }
         }
 

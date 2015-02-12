@@ -219,7 +219,7 @@ class AjaxController extends AppController {
 				foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
 					$price_unit = false;
 					$group_motor_name = false;
-					$qtyTtuj = !empty($value['TtujTipeMotor']['qty'])?$value['TtujTipeMotor']['qty']:0;
+					$qtyTtuj = !empty($value[0]['qty'])?$value[0]['qty']:0;
 					$group_motor_id = !empty($value['TipeMotor']['group_motor_id'])?$value['TipeMotor']['group_motor_id']:false;
 					$groupMotor = $this->GroupMotor->getMerge($value, $group_motor_id);
 		            $revenue_id = $this->Revenue->find('list', array(
