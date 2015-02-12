@@ -2213,9 +2213,8 @@ class RevenuesController extends AppController {
                 'Ttuj.id', 'Ttuj.no_ttuj'
             ),
             'conditions' => array(
-                'Ttuj.is_pool' => 1,
-                'Ttuj.is_draft' => 0,
                 'Ttuj.status' => 1,
+                'Ttuj.is_draft' => 0,
                 'OR' => array(
                     'Ttuj.is_revenue' => 0,
                     'Ttuj.id' => $ttuj_id,
@@ -2244,7 +2243,7 @@ class RevenuesController extends AppController {
 
         $this->set(compact(
             'toCities', 'groupMotors', 'tarifTruck',
-            'id'
+            'id', 'data_local'
         ));
         $this->set('active_menu', 'revenues');
         $this->render('revenue_form');

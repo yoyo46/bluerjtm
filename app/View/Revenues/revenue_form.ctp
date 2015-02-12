@@ -48,7 +48,7 @@
 	                                'controller'=> 'ajax', 
                                     'action' => 'getTtujs',
                                     'revenues',
-                                    $id,
+                                    !empty($data_local['Revenue']['ttuj_id'])?$data_local['Revenue']['ttuj_id']:false,
 	                            );
                             	echo $this->Form->label('ttuj_id', __('No. TTUJ * ' ).$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 	                    ?>

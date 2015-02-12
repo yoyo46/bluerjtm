@@ -191,10 +191,12 @@ class AjaxController extends AppController {
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
-				'Ttuj.id' => $ttuj_id,
 				'Ttuj.status' => 1,
-				'Ttuj.is_pool' => 1,
 				'Ttuj.is_draft' => 0,
+                'OR' => array(
+                    'Ttuj.is_revenue' => 0,
+                    'Ttuj.id' => $ttuj_id,
+                ),
 			),
 		), false);
 
@@ -837,10 +839,6 @@ class AjaxController extends AppController {
 		 	'Ttuj.status' => 1,
             'Ttuj.is_draft' => 0,
             'Ttuj.is_revenue' => 0,
-            'OR' => array(
-                'Ttuj.is_revenue' => 0,
-                'Ttuj.id' => $ttuj_id,
-            ),
         );
 
         if(!empty($this->request->data)){
@@ -910,7 +908,11 @@ class AjaxController extends AppController {
                 break;
 
             case 'revenues':
-                $conditions['Ttuj.is_pool'] = 1;
+            	unset($conditions['Ttuj.is_revenue']);
+            	$conditions['OR'] = array(
+	                'Ttuj.is_revenue' => 0,
+	                'Ttuj.id' => $ttuj_id,
+	            );
 				$data_change = 'getTtujInfoRevenue';
                 break;
 
