@@ -1709,4 +1709,12 @@ $(function() {
 
     timepicker();
     daterangepicker();
+
+    $('.date-resign-handle').click(function(){
+        if($('.date-resign-handle input').is(':checked')) {
+            $('#resign-date').removeClass('hide');
+        }else{
+            $('#resign-date').addClass('hide');
+        }
+    });
 });

@@ -79,7 +79,12 @@
                                 $title = __('Aktif');
                                 $class = 'success';
                             } else {
-                                $title = __('Non-Aktif');
+                                if(!empty($value['Driver']['is_resign'])){
+                                    $title = __('Resign');
+                                }else{
+                                    $title = __('Non-Aktif');    
+                                }
+                                
                                 $class = 'danger';
                             }
 

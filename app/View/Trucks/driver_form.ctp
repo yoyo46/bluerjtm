@@ -403,6 +403,68 @@
 		        </div>
 		    </div>
 		</div>
+		<?php
+			if(!empty($id)){
+		?>
+		<div class="box box-primary">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Resign'); ?></h3>
+		    </div>
+		    <div class="box-body">
+		    	<?php echo $this->Html->tag('p', __('Dengan mengisi tanggal resign, maka, supir akan secara otomatis tidak akan tampil lagi atau menjadi non-aktif statusnya.'));?>
+		    	<div class="form-group">
+		    		<div class="checkbox">
+                        <label class="date-resign-handle">
+                        	<?php 
+                        		echo $this->Form->checkbox('is_resign').' Resign?';
+                        	?>
+                        </label>
+                    </div>
+		    	</div>
+		        <div class="form-group <?php echo (!empty($this->request->data['Driver']['is_resign'])) ? '' : 'hide';?>" id="resign-date">
+		        	<?php 
+							echo $this->Form->label('date_resign', __('Tgl Resign *'));
+					?>
+					<div class="row">
+						<div class="col-sm-4">
+				        	<?php 
+									echo $this->Form->day('date_resign', array(
+										'label'=> false, 
+										'class'=>'form-control selectbox-date',
+										'required' => false,
+										'empty' => __('Hari'),
+										'id' => 'day',
+									));
+							?>
+						</div>
+						<div class="col-sm-4">
+				        	<?php 
+									echo $this->Form->month('date_resign', array(
+										'label'=> false, 
+										'class'=>'form-control selectbox-date',
+										'required' => false,
+										'empty' => __('Bulan'),
+										'id' => 'month',
+									));
+							?>
+						</div>
+						<div class="col-sm-4">
+				        	<?php 
+									echo $this->Form->year('date_resign', 1949, date('Y'), array(
+										'label'=> false, 
+										'class'=>'form-control selectbox-date',
+										'empty' => __('Tahun'),
+										'id' => 'year',
+									));
+							?>
+						</div>
+					</div>
+		        </div>
+		    </div>
+		</div>
+		<?php
+			}
+		?>
 	</div>
 </div>
 <div class="box-footer text-center action">

@@ -792,6 +792,17 @@ class TrucksController extends AppController {
                 }
             }
 
+            if(!empty($data['Driver']['date_resign']['day']) && !empty($data['Driver']['date_resign']['month']) && $data['Driver']['date_resign']['year']){
+                $data['Driver']['date_resign'] = sprintf('%s-%s-%s', $data['Driver']['date_resign']['year'], $data['Driver']['date_resign']['month'], $data['Driver']['date_resign']['day']);
+                $data['Driver']['is_resign'] = 1;
+            }else{
+                $data['Driver']['date_resign'] = '';
+            }
+
+            if(!empty($data['Driver']['is_resign'])){
+                $data['Driver']['status'] = 0;
+            }
+
             if($id && $data_local){
                 $this->Driver->id = $id;
                 $msg = 'merubah';
@@ -817,8 +828,13 @@ class TrucksController extends AppController {
                 }
                 
                 if($this->Driver->save($data)){
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Supir Truk'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Supir Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );  
+                    $text = sprintf(__('Sukses %s Supir Truk'), $msg);
+                    if(!empty($data['Driver']['is_resign'])){
+                        $text .= ' dan mengubah status supir menjadi resign.';
+                    }
+
+                    $this->MkCommon->setCustomFlash($text, 'success');
+                    $this->Log->logActivity( $text, $this->user_data, $this->RequestHandler, $this->params, 1 );  
                     $this->redirect(array(
                         'controller' => 'trucks',
                         'action' => 'drivers'
@@ -842,6 +858,15 @@ class TrucksController extends AppController {
                 $this->request->data['Driver']['expired_date_sim'] = date('d/m/Y', strtotime($this->request->data['Driver']['expired_date_sim']));
             } else {
                 $this->request->data['Driver']['expired_date_sim'] = '';
+            }
+
+            if(!empty($this->request->data['Driver']['date_resign'])){
+                $date_arr = explode('-', $this->request->data['Driver']['date_resign']);
+                $this->request->data['Driver']['date_resign'] = array(
+                    'day' => $date_arr[2],
+                    'month' => $date_arr[1],
+                    'year' => $date_arr[0]
+                );
             }
         }
 
@@ -880,7 +905,7 @@ class TrucksController extends AppController {
 
         $this->set('active_menu', 'drivers');
         $this->set(compact(
-            'driverRelations', 'branches', 'jenisSims'
+            'driverRelations', 'branches', 'jenisSims', 'id'
         ));
         $this->render('driver_form');
     }
