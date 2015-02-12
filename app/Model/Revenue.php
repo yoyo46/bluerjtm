@@ -51,7 +51,10 @@ class Revenue extends AppModel {
             'conditions'=> array(
                 'Revenue.status' => 1,
             ),
-            'order'=> array(),
+            'order'=> array(
+                'Revenue.created' => 'DESC',
+                'Revenue.id' => 'DESC',
+            ),
             'contain' => array(
                 'Ttuj'
             ),
