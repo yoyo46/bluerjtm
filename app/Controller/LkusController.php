@@ -199,9 +199,6 @@ class LkusController extends AppController {
                         'conditions' => array(
                             'TipeMotor.id' => $value['tipe_motor_id']
                         ),
-                        'contain' => array(
-                            'ColorMotor'
-                        )
                     ));
                     if(!empty($tipe_motor)){
                         $Ttuj_Tipe_Motor = $this->Ttuj->TtujTipeMotor->getData('first', array(
@@ -211,7 +208,7 @@ class LkusController extends AppController {
                             )
                         ));
                         $this->request->data['LkuDetail'][$key]['TipeMotor'] = array_merge($tipe_motor['TipeMotor'], $Ttuj_Tipe_Motor);
-                        $this->request->data['LkuDetail'][$key]['ColorMotor'] = $tipe_motor['ColorMotor'];
+                        $this->request->data['LkuDetail'][$key]['ColorMotor'] = !empty($Ttuj_Tipe_Motor['ColorMotor'])?$Ttuj_Tipe_Motor['ColorMotor']:false;
                     }
                 }
             }
@@ -232,9 +229,6 @@ class LkusController extends AppController {
                         'conditions' => array(
                             'TipeMotor.id' => $value
                         ),
-                        'contain' => array(
-                            'ColorMotor'
-                        )
                     ));
                     if(!empty($tipe_motor)){
                         $Ttuj_Tipe_Motor = $this->Ttuj->TtujTipeMotor->getData('first', array(
@@ -244,7 +238,7 @@ class LkusController extends AppController {
                             )
                         ));
                         $temp['LkuDetail'][$key]['TipeMotor'] = array_merge($tipe_motor['TipeMotor'], $Ttuj_Tipe_Motor);
-                        $temp['LkuDetail'][$key]['ColorMotor'] = $tipe_motor['ColorMotor'];
+                        $temp['LkuDetail'][$key]['ColorMotor'] = !empty($Ttuj_Tipe_Motor['ColorMotor'])?$Ttuj_Tipe_Motor['ColorMotor']:false;
                     }
                 }
             }

@@ -5,21 +5,25 @@ class LkuDetail extends AppModel {
         'tipe_motor_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
+                'message' => 'Tipe Motor harap diisi',
             ),
         ),
         'no_rangka' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
+                'message' => 'No. Rangka harap diisi',
             ),
         ),
         'qty' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
+                'message' => 'Jumlah Motor harap diisi',
             ),
         ),
         'price' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
+                'message' => 'Harga Klaim harap diisi',
             ),
         ),
 	);

@@ -9,7 +9,7 @@
                     <th width="15%" class="text-top"><?php echo __('Tujuan');?></th>
                     <th width="15%" class="text-top"><?php echo __('No. DO');?></th>
                     <th width="15%" class="text-top"><?php echo __('No. SJ');?></th>
-                    <th width="15%" class="text-top"><?php echo __('Tipe Motor');?></th>
+                    <th width="15%" class="text-top"><?php echo __('Group Motor');?></th>
                     <th width="5%" class="text-top"><?php echo __('Jumlah Unit');?></th>
                     <th class="text-top text-center"><?php printf(__('Harga Unit'), Configure::read('__Site.config_currency_code'));?></th>
                     <th class="text-top text-center"><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>

@@ -81,7 +81,9 @@ class TtujTipeMotor extends AppModel {
             'conditions'=> array(
                 'TtujTipeMotor.status' => 1,
             ),
-            'contain' => array(),
+            'contain' => array(
+                'ColorMotor'
+            ),
             'fields' => array(),
         );
 

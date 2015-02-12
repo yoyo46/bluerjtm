@@ -547,6 +547,7 @@ class RevenuesController extends AppController {
                     'conditions' => array(
                         'Ttuj.status' => 1,
                         'Ttuj.is_pool' => 0,
+                        'Ttuj.id <>' => $id,
                     ),
                 )
             )

@@ -2,7 +2,7 @@
 	if(!empty($data_ttuj)){
 ?>
 	<div id="color-motor">
-		<?php echo $data_ttuj['ColorMotor']['name'];?>
+		<?php echo !empty($data_ttuj['ColorMotor']['name'])?$data_ttuj['ColorMotor']['name']:false;?>
 	</div>
 	<div id="form-qty">
 		<?php
