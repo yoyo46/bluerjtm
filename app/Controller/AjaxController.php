@@ -193,10 +193,7 @@ class AjaxController extends AppController {
 			'conditions' => array(
 				'Ttuj.status' => 1,
 				'Ttuj.is_draft' => 0,
-                'OR' => array(
-                    'Ttuj.is_revenue' => 0,
-                    'Ttuj.id' => $ttuj_id,
-                ),
+                'Ttuj.id' => $ttuj_id,
 			),
 		), false);
 
