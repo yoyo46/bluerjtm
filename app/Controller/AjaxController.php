@@ -64,6 +64,8 @@ class AjaxController extends AppController {
 
 	function getInfoTtuj($ttuj_id, $is_payment = false){
 		$this->loadModel('Ttuj');
+		$this->loadModel('PartsMotor');
+
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
 				'Ttuj.id' => $ttuj_id
@@ -91,6 +93,15 @@ class AjaxController extends AppController {
 		
 		$this->set('tipe_motor_list', $tipe_motor_list);
 
+		$part_motors = $this->PartsMotor->getData('list', array(
+            'conditions' => array(
+                'PartsMotor.status' => 1
+            ),
+            'fields' => array(
+                'PartsMotor.id', 'PartsMotor.name'
+            )
+        ));
+        $this->set(compact('part_motors'));
 	}
 
 	function getColorTipeMotor($tipe_motor_id, $ttuj_id){

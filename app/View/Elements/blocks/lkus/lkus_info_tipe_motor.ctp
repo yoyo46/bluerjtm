@@ -19,6 +19,7 @@
                     <th><?php echo __('Warna');?></th>
                     <th><?php echo __('No. Rangka');?></th>
                     <th><?php echo __('Keterangan');?></th>
+                    <th><?php echo __('Part Motor');?></th>
                     <th><?php echo __('Jumlah Unit');?></th>
                     <th><?php printf(__('Biaya Klaim (%s)'), Configure::read('__Site.config_currency_code'));?></th>
                     <th><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
@@ -77,6 +78,18 @@
                                 'class' => 'form-control',
                                 'required' => false,
                                 'value' => (isset($this->request->data['LkuDetail'][$i]['note']) && !empty($this->request->data['LkuDetail'][$i]['note'])) ? $this->request->data['LkuDetail'][$i]['note'] : ''
+                            ));
+                        ?>
+                    </td>
+                    <td>
+                        <?php 
+                            echo $this->Form->input('LkuDetail.part_motor_id.', array(
+                                'label' => false,
+                                'class' => 'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Part Motor'),
+                                'options' => $part_motors,
+                                'value' => (isset($this->request->data['LkuDetail'][$i]['part_motor_id']) && !empty($this->request->data['LkuDetail'][$i]['part_motor_id'])) ? $this->request->data['LkuDetail'][$i]['part_motor_id'] : ''
                             ));
                         ?>
                     </td>
@@ -184,6 +197,17 @@
                             'label' => false,
                             'class' => 'form-control',
                             'required' => false,
+                        ));
+                    ?>
+                </td>
+                <td>
+                    <?php 
+                        echo $this->Form->input('LkuDetail.part_motor_id.', array(
+                            'label' => false,
+                            'class' => 'form-control',
+                            'required' => false,
+                            'empty' => __('Pilih Part Motor'),
+                            'options' => $part_motors,
                         ));
                     ?>
                 </td>

@@ -110,6 +110,7 @@ class LkusController extends AppController {
     function DoLku($id = false, $data_local = false){
         $this->loadModel('Ttuj');
         $this->loadModel('TipeMotor');
+        $this->loadModel('PartsMotor');
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -137,6 +138,9 @@ class LkusController extends AppController {
                             'no_rangka' => (!empty($data['LkuDetail']['no_rangka'][$key])) ? $data['LkuDetail']['no_rangka'][$key] : '',
                             'qty' => (!empty($data['LkuDetail']['qty'][$key])) ? $data['LkuDetail']['qty'][$key] : '',
                             'price' => (!empty($data['LkuDetail']['price'][$key])) ? $data['LkuDetail']['price'][$key] : '',
+                            'part_motor_id' => (!empty($data['LkuDetail']['part_motor_id'][$key])) ? $data['LkuDetail']['part_motor_id'][$key] : '',
+                            'note' => (!empty($data['LkuDetail']['note'][$key])) ? $data['LkuDetail']['note'][$key] : '',
+                            'no_rangka' => (!empty($data['LkuDetail']['no_rangka'][$key])) ? $data['LkuDetail']['no_rangka'][$key] : '',
                         );
                         
                         $temp_detail[] = $data_detail;
@@ -223,6 +227,9 @@ class LkusController extends AppController {
                         'no_rangka' => (!empty($data['LkuDetail']['no_rangka'][$key])) ? $data['LkuDetail']['no_rangka'][$key] : '',
                         'qty' => (!empty($data['LkuDetail']['qty'][$key])) ? $data['LkuDetail']['qty'][$key] : '',
                         'price' => (!empty($data['LkuDetail']['price'][$key])) ? $data['LkuDetail']['price'][$key] : '',
+                        'part_motor_id' => (!empty($data['LkuDetail']['part_motor_id'][$key])) ? $data['LkuDetail']['part_motor_id'][$key] : '',
+                        'note' => (!empty($data['LkuDetail']['note'][$key])) ? $data['LkuDetail']['note'][$key] : '',
+                        'no_rangka' => (!empty($data['LkuDetail']['no_rangka'][$key])) ? $data['LkuDetail']['no_rangka'][$key] : '',
                     );
 
                     $tipe_motor = $this->TipeMotor->getData('first', array(
@@ -285,6 +292,16 @@ class LkusController extends AppController {
             }
             
         }
+
+        $part_motors = $this->PartsMotor->getData('list', array(
+            'conditions' => array(
+                'PartsMotor.status' => 1
+            ),
+            'fields' => array(
+                'PartsMotor.id', 'PartsMotor.name'
+            )
+        ));
+        $this->set(compact('part_motors'));
 
         $this->set('active_menu', 'lkus');
         $this->set('ttujs', $ttujs);

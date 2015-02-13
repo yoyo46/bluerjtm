@@ -43,6 +43,13 @@ class LkuDetail extends AppModel {
                 'TipeMotor.status' => 1,
             ),
         ),
+        'PartsMotor' => array(
+            'className' => 'PartsMotor',
+            'foreignKey' => 'part_motor_id',
+            'conditions' => array(
+                'PartsMotor.status' => 1,
+            ),
+        ),
     );
 
 	function getData($find, $options = false){
