@@ -42,17 +42,17 @@
 			'id' => 'commission_per_unit',
 		));
 
-		echo $this->Html->tag('div', !empty($uangKuliMuat['uangKuli']['uang_kuli'])?$uangKuliMuat['uangKuli']['uang_kuli']:0, array(
+		echo $this->Html->tag('div', !empty($uangKuliMuat['UangKuli']['uang_kuli'])?$uangKuliMuat['UangKuli']['uang_kuli']:0, array(
 			'id' => 'uang_kuli_muat',
 		));
-		echo $this->Html->tag('div', ( !empty($uangKuliMuat['uangKuli']['uang_kuli_type']) && $uangKuliMuat['uangKuli']['uang_kuli_type'] == 'per_unit' )?1:0, array(
+		echo $this->Html->tag('div', ( !empty($uangKuliMuat['UangKuli']['uang_kuli_type']) && $uangKuliMuat['UangKuli']['uang_kuli_type'] == 'per_unit' )?1:0, array(
 			'id' => 'uang_kuli_muat_per_unit',
 		));
 
-		echo $this->Html->tag('div', !empty($uangKuliBongkar['uangKuli']['uang_kuli'])?$uangKuliBongkar['uangKuli']['uang_kuli']:0, array(
+		echo $this->Html->tag('div', !empty($uangKuliBongkar['UangKuli']['uang_kuli'])?$uangKuliBongkar['UangKuli']['uang_kuli']:0, array(
 			'id' => 'uang_kuli_bongkar',
 		));
-		echo $this->Html->tag('div', ( !empty($uangKuliBongkar['uangKuli']['uang_kuli_type']) && $uangKuliBongkar['uangKuli']['uang_kuli_type'] == 'per_unit' )?1:0, array(
+		echo $this->Html->tag('div', ( !empty($uangKuliBongkar['UangKuli']['uang_kuli_type']) && $uangKuliBongkar['UangKuli']['uang_kuli_type'] == 'per_unit' )?1:0, array(
 			'id' => 'uang_kuli_bongkar_per_unit',
 		));
 
