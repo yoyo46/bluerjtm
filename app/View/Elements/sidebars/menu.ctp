@@ -421,7 +421,8 @@
                         $activeTtuj = false;
                         $ttujMenu = array(
                             'ttuj', 'truk_tiba', 'bongkaran',
-                            'balik', 'pool', 'uang_jalan'
+                            'balik', 'pool', 'uang_jalan',
+                            'uang_kuli_muat', 'uang_kuli_bongkar'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $ttujMenu) ) {
@@ -446,6 +447,30 @@
                                     'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan' )?'active':'',
                                 ));
                             }
+
+                            // if( in_array('view_uang_kuli_muat', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Kuli Muat', array(
+                                    'controller' => 'settings',
+                                    'action' => 'uang_kuli',
+                                    'muat',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_kuli_muat' )?'active':'',
+                                ));
+                            // }
+
+                            // if( in_array('view_uang_kuli_bongkar', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Kuli Bongkar', array(
+                                    'controller' => 'settings',
+                                    'action' => 'uang_kuli',
+                                    'bongkar',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_kuli_bongkar' )?'active':'',
+                                ));
+                            // }
 
                             if( in_array('view_ttuj', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> TTUJ', array(

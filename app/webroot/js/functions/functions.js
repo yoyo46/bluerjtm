@@ -45,6 +45,7 @@ var qtyMuatanPress = function ( obj ) {
 
         for (var i = 0; i < qtyLen; i++) {
             var tipe_motor_id = parseInt($('#ttujDetail tbody tr .tipe_motor_id[rel="'+i+'"] option:selected').val());
+            var group_motor_id = parseInt($('#group_tipe_motor_id option[value="'+tipe_motor_id+'"]').text());
             var qtyMuatan = parseInt($('#ttujDetail tbody tr .qty-muatan[rel="'+i+'"]').val());
             
             if( isNaN(qtyMuatan) ) {
@@ -52,20 +53,20 @@ var qtyMuatanPress = function ( obj ) {
             }
             total_muatan += qtyMuatan;
 
-            if( typeof $('.uang-jalan-1-'+tipe_motor_id).html() != 'undefined' ) {
-                uang_jalan_tipe_motor += parseInt($('.uang-jalan-1-'+tipe_motor_id).html()) * qtyMuatan;
+            if( typeof $('.uang-jalan-1-'+group_motor_id).html() != 'undefined' ) {
+                uang_jalan_tipe_motor += parseInt($('.uang-jalan-1-'+group_motor_id).html()) * qtyMuatan;
             } else {
                 uang_jalan_tipe_motor += uang_jalan_1 * qtyMuatan;
             }
 
-            if( typeof $('.uang-kuli-muat-'+tipe_motor_id).html() != 'undefined' ) {
-                uang_kuli_muat_tipe_motor += parseInt($('.uang-kuli-muat-'+tipe_motor_id).html()) * qtyMuatan;
+            if( typeof $('.uang-kuli-muat-'+group_motor_id).html() != 'undefined' ) {
+                uang_kuli_muat_tipe_motor += parseInt($('.uang-kuli-muat-'+group_motor_id).html()) * qtyMuatan;
             } else {
                 uang_kuli_muat_tipe_motor += uang_kuli_muat * qtyMuatan;
             }
 
-            if( typeof $('.uang-kuli-bongkar-'+tipe_motor_id).html() != 'undefined' ) {
-                uang_kuli_bongkar_tipe_motor += parseInt($('.uang-kuli-bongkar-'+tipe_motor_id).html()) * qtyMuatan;
+            if( typeof $('.uang-kuli-bongkar-'+group_motor_id).html() != 'undefined' ) {
+                uang_kuli_bongkar_tipe_motor += parseInt($('.uang-kuli-bongkar-'+group_motor_id).html()) * qtyMuatan;
             } else {
                 uang_kuli_bongkar_tipe_motor += uang_kuli_bongkar * qtyMuatan;
             }
@@ -184,27 +185,28 @@ var getUangjalan = function ( response ) {
 
         for (var i = 0; i < qtyLen; i++) {
             var tipe_motor_id = parseInt($('#ttujDetail tbody tr .tipe_motor_id[rel="'+i+'"] option:selected').val());
+            var group_motor_id = parseInt($('#group_tipe_motor_id option[value="'+tipe_motor_id+'"]').text());
             var qtyMuatan = parseInt($('#ttujDetail tbody tr .qty-muatan[rel="'+i+'"]').val());
-            
+
             if( isNaN(qtyMuatan) ) {
                 qtyMuatan = 0;
             }
             total_muatan += qtyMuatan;
 
-            if( typeof $('.uang-jalan-1-'+tipe_motor_id).html() != 'undefined' ) {
-                uang_jalan_tipe_motor += parseInt($('.uang-jalan-1-'+tipe_motor_id).html()) * qtyMuatan;
+            if( typeof $('.uang-jalan-1-'+group_motor_id).html() != 'undefined' ) {
+                uang_jalan_tipe_motor += parseInt($('.uang-jalan-1-'+group_motor_id).html()) * qtyMuatan;
             } else {
                 uang_jalan_tipe_motor += uang_jalan_1 * qtyMuatan;
             }
 
-            if( typeof $('.uang-kuli-muat-'+tipe_motor_id).html() != 'undefined' ) {
-                uang_kuli_muat_tipe_motor += parseInt($('.uang-kuli-muat-'+tipe_motor_id).html()) * qtyMuatan;
+            if( typeof $('.uang-kuli-muat-'+group_motor_id).html() != 'undefined' ) {
+                uang_kuli_muat_tipe_motor += parseInt($('.uang-kuli-muat-'+group_motor_id).html()) * qtyMuatan;
             } else {
                 uang_kuli_muat_tipe_motor += uang_kuli_muat * qtyMuatan;
             }
 
-            if( typeof $('.uang-kuli-bongkar-'+tipe_motor_id).html() != 'undefined' ) {
-                uang_kuli_bongkar_tipe_motor += parseInt($('.uang-kuli-bongkar-'+tipe_motor_id).html()) * qtyMuatan;
+            if( typeof $('.uang-kuli-bongkar-'+group_motor_id).html() != 'undefined' ) {
+                uang_kuli_bongkar_tipe_motor += parseInt($('.uang-kuli-bongkar-'+group_motor_id).html()) * qtyMuatan;
             } else {
                 uang_kuli_bongkar_tipe_motor += uang_kuli_bongkar * qtyMuatan;
             }
@@ -386,6 +388,9 @@ var add_custom_field = function(){
 
                 delete_custom_field( $('#ttujDetail tbody tr:last-child .delete-custom-field') );
                 qtyMuatanPress( $('#ttujDetail tbody tr:last-child .qty-muatan') );
+                $('#ttujDetail tbody tr:last-child .tipe_motor_id').change(function() {
+                    getNopol();
+                });
                 break;
             case 'alocation':
                 $('#box-field-input #main-alocation .list-alocation').clone().appendTo('#advance-box-field-input');
@@ -447,38 +452,20 @@ var add_custom_field = function(){
                 var idx = length+1;
 
                 $('#box-field-input').append('<div rel="'+(idx-1)+'" class="row list-uang-jalan"> \
-                    <div class="col-sm-2"> \
+                    <div class="col-sm-3"> \
                         <div class="form-group"> \
-                            <label for="UangJalanTipeMotorTipeMotorId'+(idx-1)+'">Tipe Motor</label> \
+                            <label for="UangJalanTipeMotorTipeMotorId'+(idx-1)+'">Group Motor</label> \
                             <select name="data[UangJalanTipeMotor][tipe_motor_id]['+(idx-1)+']" class="form-control" id="UangJalanTipeMotorTipeMotorId'+(idx-1)+'"> \
                                 '+$('#tipe_motor select').html()+' \
                             </select> \
                         </div> \
                     </div> \
-                    <div class="col-sm-3"> \
+                    <div class="col-sm-4"> \
                         <div class="form-group"> \
                             <label for="UangJalanTipeMotorUangJalan1'+(idx-1)+'">Uang Jalan Pertama</label> \
                             <div class="input-group"> \
                                 <span class="input-group-addon">IDR </span> \
                                 <input name="data[UangJalanTipeMotor][uang_jalan_1]['+(idx-1)+']" class="form-control input_price" type="text" id="UangJalanTipeMotorUangJalan1'+(idx-1)+'"> \
-                            </div> \
-                        </div> \
-                    </div> \
-                    <div class="col-sm-3"> \
-                        <div class="form-group"> \
-                            <label for="UangJalanTipeMotorUangKuliMuat'+(idx-1)+'">Uang Kuli Muat</label> \
-                            <div class="input-group"> \
-                                <span class="input-group-addon">IDR </span> \
-                                <input name="data[UangJalanTipeMotor][uang_kuli_muat]['+(idx-1)+']" class="form-control input_price" type="text" id="UangJalanTipeMotorUangKuliMuat'+(idx-1)+'"> \
-                            </div> \
-                        </div> \
-                    </div> \
-                    <div class="col-sm-3"> \
-                        <div class="form-group"> \
-                            <label for="UangJalanTipeMotorUangKuliBongkar'+(idx-1)+'">Uang Kuli Bongkar</label> \
-                            <div class="input-group"> \
-                                <span class="input-group-addon">IDR </span> \
-                                <input name="data[UangJalanTipeMotor][uang_kuli_bongkar]['+(idx-1)+']" class="form-control input_price" type="text" id="UangJalanTipeMotorUangKuliBongkar'+(idx-1)+'"> \
                             </div> \
                         </div> \
                     </div> \
@@ -496,6 +483,38 @@ var add_custom_field = function(){
                 } else {
                     $('#box-field-input .list-uang-jalan:last-child .uang_jalan_2').removeClass('hide');
                 }
+              break;
+            case 'uang_kuli':
+                var class_count = $('#box-uang-kuli .list-uang-kuli');
+                var length = parseInt(class_count.length);
+                var idx = length+1;
+
+                $('#box-uang-kuli').append('<div rel="'+(idx-1)+'" class="row list-uang-kuli"> \
+                    <div class="col-sm-3"> \
+                        <div class="form-group"> \
+                            <label for="UangKuliGroupMotorId'+(idx-1)+'">Group Motor</label> \
+                            <select name="data[UangKuliGroupMotor][group_motor_id]['+(idx-1)+']" class="form-control" id="UangKuliGroupMotorTipeMotorId'+(idx-1)+'"> \
+                                '+$('#group_motor select').html()+' \
+                            </select> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-5"> \
+                        <div class="form-group"> \
+                            <label for="UangKuliGroupMotorUangKuli'+(idx-1)+'">Uang Kuli</label> \
+                            <div class="input-group"> \
+                                <span class="input-group-addon">IDR </span> \
+                                <input name="data[UangKuliGroupMotor][uang_kuli]['+(idx-1)+']" class="form-control input_price" type="text" id="UangKuliGroupMotorUangKuli'+(idx-1)+'"> \
+                            </div> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-1"> \
+                        <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="uang_kuli"> \
+                            <i class="fa fa-times"></i> Hapus \
+                        </a> \
+                    </div> \
+                </div>');
+                input_price( $('#box-uang-kuli .list-uang-kuli:last-child .input_price') );
+                delete_custom_field( $('#box-uang-kuli .list-uang-kuli:last-child .delete-custom-field') );
               break;
             case 'file-laka':
                 var length = $('.laka-form-media input').length + 1;
@@ -519,6 +538,7 @@ var delete_custom_field = function( obj ) {
             if( action_type == 'ttuj' ) {
                 var lengthTable = $('#ttujDetail tbody tr').length;
                 $(this).parents('tr').remove();
+                getNopol();
             } else if( action_type == 'perlengkapan' ) {
                 var length = parseInt($('#box-field-input .list-perlengkapan .seperator').length);
                 var action_type = self.attr('action_type');
@@ -544,6 +564,10 @@ var delete_custom_field = function( obj ) {
             } else if( action_type == 'uang_jalan' ) {
                 var length = parseInt($('#box-field-input .list-uang-jalan').length);
                 var parent = self.parents('.list-uang-jalan');
+                parent.remove();
+            } else if( action_type == 'uang_kuli' ) {
+                var length = parseInt($('#box-field-input .list-uang-kuli').length);
+                var parent = self.parents('.list-uang-kuli');
                 parent.remove();
             } else if( action_type == 'file-laka' ) {
                 var lengthTable = $('.laka-form-media input').length;
@@ -1272,6 +1296,30 @@ var change_customer_revenue = function(){
     });
 }
 
+var getNopol = function () {
+    var self = $('#truckID');
+    var from_city_id = $('.from_city #getKotaTujuan').val();
+    var to_city_id = $('.to_city #getTruck').val();
+
+    if( self.val() != '' ) {
+        $.ajax({
+            url: '/ajax/getInfoTruck/' + from_city_id + '/' + to_city_id + '/' + self.val() + '/',
+            type: 'POST',
+            success: function(response, status) {
+                getUangjalan( response );
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    } else {
+        $('.driver_name').val('');
+        $('.truck_capacity').val('');
+        $('#biaya-uang-jalan input').val('');
+    }
+}
+
 $(function() {
 	$('.aset-handling').click(function(){
 		if($('.aset-handling .aset-handling-form').is(':checked')) {
@@ -1414,28 +1462,8 @@ $(function() {
         }
     });
 
-    $('#truckID').change(function() {
-        var self = $(this);
-        var from_city_id = $('.from_city #getKotaTujuan').val();
-        var to_city_id = $('.to_city #getTruck').val();
-
-        if( self.val() != '' ) {
-            $.ajax({
-                url: '/ajax/getInfoTruck/' + from_city_id + '/' + to_city_id + '/' + self.val() + '/',
-                type: 'POST',
-                success: function(response, status) {
-                    getUangjalan( response );
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                    return false;
-                }
-            });
-        } else {
-            $('.driver_name').val('');
-            $('.truck_capacity').val('');
-            $('#biaya-uang-jalan input').val('');
-        }
+    $('#truckID,.tipe_motor_id').change(function() {
+        getNopol();
     });
 
     if( $('.ttuj-form, .laka-form').length > 0 && window.location.hash == '#step2' ) {
@@ -1747,6 +1775,19 @@ $(function() {
             $('#resign-date').removeClass('hide');
         }else{
             $('#resign-date').addClass('hide');
+        }
+    });
+
+    $('.uang_kuli').change(function(){
+        if( $(this).val() == 'per_unit' ) {
+            $('.biaya-per-unit').removeClass('hide');
+            $('.capacity_truck').addClass('hide');
+        } else if( $(this).val() == 'per_truck' ) {
+            $('.biaya-per-unit').addClass('hide');
+            $('.capacity_truck').removeClass('hide');
+        } else {
+            $('.biaya-per-unit').addClass('hide');
+            $('.capacity_truck').addClass('hide');
         }
     });
 });

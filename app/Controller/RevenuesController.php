@@ -594,11 +594,22 @@ class RevenuesController extends AppController {
                 'Perlengkapan.jenis_perlengkapan_id' => 2,
             ),
         ));
-        $tipeMotors = $this->TipeMotor->getData('list', array(
+
+        $tipeMotors = array();
+        $groupTipeMotors = array();
+        $tipeMotorTemps = $this->TipeMotor->getData('all', array(
             'fields' => array(
-                'TipeMotor.id', 'TipeMotor.name',
+                'TipeMotor.id', 'TipeMotor.name', 'GroupMotor.id',
             ),
         ));
+
+        if( !empty($tipeMotorTemps) ) {
+            foreach ($tipeMotorTemps as $key => $tipeMotorTemp) {
+                $tipeMotors[$tipeMotorTemp['TipeMotor']['id']] = $tipeMotorTemp['TipeMotor']['name'];
+                $groupTipeMotors[$tipeMotorTemp['TipeMotor']['id']] = $tipeMotorTemp['GroupMotor']['id'];
+            }
+        }
+
         $colors = $this->ColorMotor->getData('list', array(
             'fields' => array(
                 'ColorMotor.id', 'ColorMotor.name',
@@ -617,7 +628,8 @@ class RevenuesController extends AppController {
             'fromCities', 'toCities', 'uangJalan',
             'tipeMotors', 'perlengkapans',
             'truckInfo', 'data_local', 'data_action',
-            'cities', 'colors'
+            'cities', 'colors', 'tipeMotorTemps',
+            'groupTipeMotors'
         ));
         $this->render('ttuj_form');
     }

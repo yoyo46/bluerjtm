@@ -5,12 +5,12 @@
     <div class="col-sm-2">
 		<div class="form-group">
             <?php
-                    echo $this->Form->input('UangJalanTipeMotor.tipe_motor_id.'.$idx, array(
-                        'label' => __('Tipe Motor'),
-                        'empty' => __('Pilih Tipe Motor'),
+                    echo $this->Form->input('UangJalanTipeMotor.group_motor_id.'.$idx, array(
+                        'label' => __('Group Motor'),
+                        'empty' => __('Pilih Group Motor'),
                         'class' => 'form-control',
                         'required' => false,
-                        'options' => $tipeMotors,
+                        'options' => $groupMotors,
                     ));
             ?>
     	</div>
@@ -35,6 +35,8 @@
 			</div>
 		</div>
     </div>
+    <?php 
+    /*
     <div class="col-sm-3">
 		<div class="form-group">
     		<?php 
@@ -75,6 +77,8 @@
 			</div>
     	</div>
     </div>
+    */
+    ?>
     <div class="col-sm-1">
         <?php
                 echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(

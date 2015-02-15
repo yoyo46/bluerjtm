@@ -501,7 +501,7 @@
 	<div class="col-sm-12 biaya-per-unit">
 		<div class="box box-success">
 			<div class="box-header">
-		        <h3 class="box-title"><?php echo __('Biaya Per Tipe Motor <small>(* Semua biaya berlaku apabila per unit)</small>'); ?></h3>
+		        <h3 class="box-title"><?php echo __('Biaya Per Group Motor <small>(* Semua biaya berlaku apabila per unit)</small>'); ?></h3>
 		    </div>
 		    <div class="box-body">
 		        <div class="form-group">
@@ -515,8 +515,8 @@
 		        </div>
 		        <div id="box-field-input">
 		        	<?php 
-		        			if( !empty($this->request->data['UangJalanTipeMotor']['tipe_motor_id']) ) {
-								foreach ($this->request->data['UangJalanTipeMotor']['tipe_motor_id'] as $key => $tipe_motor_id) {
+		        			if( !empty($this->request->data['UangJalanTipeMotor']['group_motor_id']) ) {
+								foreach ($this->request->data['UangJalanTipeMotor']['group_motor_id'] as $key => $group_motor_id) {
 									echo $this->element('blocks/settings/list_uang_jalan', array(
 										'idx' => $key,
 									));
@@ -549,12 +549,12 @@
 <div class="hide">
 	<div id="tipe_motor">
 		<?php
-                echo $this->Form->input('tipe_motor_id', array(
+                echo $this->Form->input('group_motor_id', array(
                     'label'=> false, 
                     'class'=>'form-control',
                     'required' => false,
                     'empty' => false,
-                    'empty' => __('Pilih Tipe Motor'),
+                    'empty' => __('Pilih Group Motor'),
                	 	'options' => $tipeMotors,
                 ));
         ?>

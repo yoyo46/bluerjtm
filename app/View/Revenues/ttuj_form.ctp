@@ -273,7 +273,7 @@
 											}
 
 											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.tipe_motor_id.'.$key, array(
-												'class' => 'form-control',
+												'class' => 'form-control tipe_motor_id',
 												'label' => false,
 												'empty' => __('Pilih Tipe Motor --'),
 												'options' => $tipeMotors,
@@ -703,6 +703,17 @@
 					'required' => false,
 					'empty' => __('Pilih Tipe Motor --'),
 					'options' => $tipeMotors
+				));
+		?>
+	</div>
+	<div id="group_tipe_motor_id">
+		<?php 
+				echo $this->Form->input('group_tipe_motor_id',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Group Motor --'),
+					'options' => $groupTipeMotors
 				));
 		?>
 	</div>

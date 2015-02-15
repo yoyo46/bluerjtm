@@ -128,19 +128,35 @@ class MkCommonComponent extends Component {
     	return $result;
     }
 
-    function getUangJalanTipeMotor ( $data ) {
+    function getUangJalanGroupMotor ( $data ) {
         if( !empty($data['UangJalanTipeMotor']) ) {
-            $tempTipeMotor = array();
+            $tempGroupMotor = array();
 
-            foreach ($data['UangJalanTipeMotor'] as $key => $tipeMotor) {
-                $tempTipeMotor['UangJalanTipeMotor']['tipe_motor_id'][$key] = $tipeMotor['tipe_motor_id'];
-                $tempTipeMotor['UangJalanTipeMotor']['uang_jalan_1'][$key] = $tipeMotor['uang_jalan_1'];
-                $tempTipeMotor['UangJalanTipeMotor']['uang_kuli_muat'][$key] = $tipeMotor['uang_kuli_muat'];
-                $tempTipeMotor['UangJalanTipeMotor']['uang_kuli_bongkar'][$key] = $tipeMotor['uang_kuli_bongkar'];
+            foreach ($data['UangJalanTipeMotor'] as $key => $groupMotor) {
+                $tempGroupMotor['UangJalanTipeMotor']['group_motor_id'][$key] = $groupMotor['group_motor_id'];
+                $tempGroupMotor['UangJalanTipeMotor']['uang_jalan_1'][$key] = $groupMotor['uang_jalan_1'];
+                // $tempTipeMotor['UangJalanTipeMotor']['uang_kuli_muat'][$key] = $tipeMotor['uang_kuli_muat'];
+                // $tempTipeMotor['UangJalanTipeMotor']['uang_kuli_bongkar'][$key] = $tipeMotor['uang_kuli_bongkar'];
             }
 
             unset($data['UangJalanTipeMotor']);
-            $data['UangJalanTipeMotor'] = $tempTipeMotor['UangJalanTipeMotor'];
+            $data['UangJalanTipeMotor'] = $tempGroupMotor['UangJalanTipeMotor'];
+        }
+
+        return $data;
+    }
+
+    function getUangKuliGroupMotor ( $data ) {
+        if( !empty($data['UangKuliGroupMotor']) ) {
+            $tempGroupMotor = array();
+
+            foreach ($data['UangKuliGroupMotor'] as $key => $groupMotor) {
+                $tempGroupMotor['UangKuliGroupMotor']['group_motor_id'][$key] = $groupMotor['group_motor_id'];
+                $tempGroupMotor['UangKuliGroupMotor']['uang_kuli'][$key] = $groupMotor['uang_kuli'];
+            }
+
+            unset($data['UangKuliGroupMotor']);
+            $data['UangKuliGroupMotor'] = $tempGroupMotor['UangKuliGroupMotor'];
         }
 
         return $data;

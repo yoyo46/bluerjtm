@@ -42,17 +42,17 @@
 			'id' => 'commission_per_unit',
 		));
 
-		echo $this->Html->tag('div', !empty($uangJalan['UangJalan']['uang_kuli_muat'])?$uangJalan['UangJalan']['uang_kuli_muat']:0, array(
+		echo $this->Html->tag('div', !empty($uangKuliMuat['uangKuli']['uang_kuli'])?$uangKuliMuat['uangKuli']['uang_kuli']:0, array(
 			'id' => 'uang_kuli_muat',
 		));
-		echo $this->Html->tag('div', !empty($uangJalan['UangJalan']['uang_kuli_muat_per_unit'])?$uangJalan['UangJalan']['uang_kuli_muat_per_unit']:0, array(
+		echo $this->Html->tag('div', ( !empty($uangKuliMuat['uangKuli']['uang_kuli_type']) && $uangKuliMuat['uangKuli']['uang_kuli_type'] == 'per_unit' )?1:0, array(
 			'id' => 'uang_kuli_muat_per_unit',
 		));
 
-		echo $this->Html->tag('div', !empty($uangJalan['UangJalan']['uang_kuli_bongkar'])?$uangJalan['UangJalan']['uang_kuli_bongkar']:0, array(
+		echo $this->Html->tag('div', !empty($uangKuliBongkar['uangKuli']['uang_kuli'])?$uangKuliBongkar['uangKuli']['uang_kuli']:0, array(
 			'id' => 'uang_kuli_bongkar',
 		));
-		echo $this->Html->tag('div', !empty($uangJalan['UangJalan']['uang_kuli_bongkar_per_unit'])?$uangJalan['UangJalan']['uang_kuli_bongkar_per_unit']:0, array(
+		echo $this->Html->tag('div', ( !empty($uangKuliBongkar['uangKuli']['uang_kuli_type']) && $uangKuliBongkar['uangKuli']['uang_kuli_type'] == 'per_unit' )?1:0, array(
 			'id' => 'uang_kuli_bongkar_per_unit',
 		));
 
@@ -103,11 +103,21 @@
 					echo $this->Html->tag('div', $value['uang_jalan_2'], array(
 						'class' => sprintf('uang-jalan-2-%s', $value['tipe_motor_id'])
 					));
-					echo $this->Html->tag('div', $value['uang_kuli_muat'], array(
-						'class' => sprintf('uang-kuli-muat-%s', $value['tipe_motor_id'])
+				}
+			}
+
+			if( !empty($uangKuliMuat['UangKuliGroupMotor']) ) {
+				foreach ($uangKuliMuat['UangKuliGroupMotor'] as $key => $value) {
+					echo $this->Html->tag('div', $value['uang_kuli'], array(
+						'class' => sprintf('uang-kuli-muat-%s', $value['group_motor_id'])
 					));
-					echo $this->Html->tag('div', $value['uang_kuli_bongkar'], array(
-						'class' => sprintf('uang-kuli-bongkar-%s', $value['tipe_motor_id'])
+				}
+			}
+
+			if( !empty($uangKuliBongkar['UangKuliGroupMotor']) ) {
+				foreach ($uangKuliBongkar['UangKuliGroupMotor'] as $key => $value) {
+					echo $this->Html->tag('div', $value['uang_kuli'], array(
+						'class' => sprintf('uang-kuli-bongkar-%s', $value['group_motor_id'])
 					));
 				}
 			}

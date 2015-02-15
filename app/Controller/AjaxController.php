@@ -48,16 +48,21 @@ class AjaxController extends AppController {
 	// }
 
 	function getInfoTruck( $from_city_id = false, $to_city_id = false, $truck_id = false ) {
+		$this->loadModel('uangKuli');
 		$this->loadModel('UangJalan');
 		$this->loadModel('Truck');
 		$result = $this->Truck->getInfoTruck($truck_id);
 
 		if( !empty($result) ) {
 			$uangJalan = $this->UangJalan->getNopol( $from_city_id, $to_city_id, $result['Truck']['capacity'] );
+			$uangKuli = $this->uangKuli->getUangKuli( $from_city_id, $to_city_id );
+			$uangKuliMuat = !empty($uangKuli['UangKuliMuat'])?$uangKuli['UangKuliMuat']:false;
+			$uangKuliBongkar = !empty($uangKuli['UangKuliBongkar'])?$uangKuli['UangKuliBongkar']:false;
 		}
 
 		$this->set(compact(
-			'result', 'uangJalan'
+			'result', 'uangJalan', 'uangKuliMuat',
+			'uangKuliBongkar'
 		));
 		$this->render('get_nopol');
 	}

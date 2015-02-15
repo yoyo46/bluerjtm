@@ -13,13 +13,17 @@ class SettingsController extends AppController {
         $this->set('module_title', __('Setting'));
     }
 
-    function search( $index = 'index' ){
+    function search( $index = 'index', $param_get = false ){
         $refine = array();
 
         if(!empty($this->request->data)) {
             $refine = $this->RjSetting->processRefine($this->request->data);
             $params = $this->RjSetting->generateSearchURL($refine);
             $params['action'] = $index;
+
+            if( !empty($param_get) ) {
+                $params[] = $param_get;
+            }
 
             $this->redirect($params);
         }
@@ -867,7 +871,7 @@ class SettingsController extends AppController {
         }
     }
 
-    function saveTipeMotor ( $data = false, $uang_jalan_id = false ) {
+    function saveGroupMotor ( $data = false, $uang_jalan_id = false ) {
         $result = array(
             'validates' => true,
             'data' => false,
@@ -880,12 +884,12 @@ class SettingsController extends AppController {
             ));
         }
 
-        if( !empty($data['UangJalanTipeMotor']['tipe_motor_id']) ) {
-            foreach ($data['UangJalanTipeMotor']['tipe_motor_id'] as $key => $tipe_motor_id) {
-                $dataValidate['UangJalanTipeMotor']['tipe_motor_id'] = $tipe_motor_id;
+        if( !empty($data['UangJalanTipeMotor']['group_motor_id']) ) {
+            foreach ($data['UangJalanTipeMotor']['group_motor_id'] as $key => $group_motor_id) {
+                $dataValidate['UangJalanTipeMotor']['group_motor_id'] = $group_motor_id;
                 $dataValidate['UangJalanTipeMotor']['uang_jalan_1'] = !empty($data['UangJalanTipeMotor']['uang_jalan_1'][$key])?$this->MkCommon->convertPriceToString($data['UangJalanTipeMotor']['uang_jalan_1'][$key], 0):0;
-                $dataValidate['UangJalanTipeMotor']['uang_kuli_muat'] = !empty($data['UangJalanTipeMotor']['uang_kuli_muat'][$key])?$this->MkCommon->convertPriceToString($data['UangJalanTipeMotor']['uang_kuli_muat'][$key], 0):0;
-                $dataValidate['UangJalanTipeMotor']['uang_kuli_bongkar'] = !empty($data['UangJalanTipeMotor']['uang_kuli_bongkar'][$key])?$this->MkCommon->convertPriceToString($data['UangJalanTipeMotor']['uang_kuli_bongkar'][$key], 0):0;
+                // $dataValidate['UangJalanTipeMotor']['uang_kuli_muat'] = !empty($data['UangJalanTipeMotor']['uang_kuli_muat'][$key])?$this->MkCommon->convertPriceToString($data['UangJalanTipeMotor']['uang_kuli_muat'][$key], 0):0;
+                // $dataValidate['UangJalanTipeMotor']['uang_kuli_bongkar'] = !empty($data['UangJalanTipeMotor']['uang_kuli_bongkar'][$key])?$this->MkCommon->convertPriceToString($data['UangJalanTipeMotor']['uang_kuli_bongkar'][$key], 0):0;
                 
                 $this->UangJalan->UangJalanTipeMotor->set($dataValidate);
 
@@ -906,9 +910,39 @@ class SettingsController extends AppController {
         return $result;
     }
 
+    function saveUangKuliGroupMotor ( $data = false, $uang_kuli_id = false ) {
+        $result = array(
+            'validates' => true,
+            'data' => false,
+        );
+
+        if( !empty($data['UangKuliGroupMotor']['group_motor_id']) ) {
+            foreach ($data['UangKuliGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
+                $dataValidate['UangKuliGroupMotor']['group_motor_id'] = !empty($group_motor_id)?$group_motor_id:'';
+                $dataValidate['UangKuliGroupMotor']['uang_kuli'] = !empty($data['UangKuliGroupMotor']['uang_kuli'][$key])?$this->MkCommon->convertPriceToString($data['UangKuliGroupMotor']['uang_kuli'][$key], 0):'';
+                
+                $this->UangKuli->UangKuliGroupMotor->set($dataValidate);
+
+                if( !empty($uang_kuli_id) ) {
+                    $dataValidate['UangKuliGroupMotor']['uang_kuli_id'] = $uang_kuli_id;
+                    $this->UangKuli->UangKuliGroupMotor->create();
+                    $this->UangKuli->UangKuliGroupMotor->save($dataValidate);
+                } else {
+                    if(!$this->UangKuli->UangKuliGroupMotor->validates($dataValidate)){
+                        $result['validates'] = false;
+                    } else {
+                        $result['data'][$key] = $dataValidate;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
     function doUangJalan($id = false, $data_local = false){
         $this->loadModel('City');
-        $this->loadModel('TipeMotor');
+        $this->loadModel('GroupMotor');
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -943,17 +977,17 @@ class SettingsController extends AppController {
             $this->UangJalan->set($data);
 
             if($this->UangJalan->validates($data)){
-                $saveTipeMotor = false;
+                $saveGroupMotor = false;
 
-                if( !empty($data['UangJalanTipeMotor']['tipe_motor_id']) ) {
-                    $resultTipeMotor = $this->saveTipeMotor($data);
-                    $saveTipeMotor = !empty($resultTipeMotor['validates'])?$resultTipeMotor['validates']:false;
+                if( !empty($data['UangJalanTipeMotor']['group_motor_id']) ) {
+                    $resultGroupMotor = $this->saveGroupMotor($data);
+                    $saveGroupMotor = !empty($resultGroupMotor['validates'])?$resultGroupMotor['validates']:false;
                 } else {
-                    $saveTipeMotor = true;
+                    $saveGroupMotor = true;
                 }
 
-                if( $saveTipeMotor && $this->UangJalan->save($data) ){
-                    $this->saveTipeMotor($data, $this->UangJalan->id);
+                if( $saveGroupMotor && $this->UangJalan->save($data) ){
+                    $this->saveGroupMotor($data, $this->UangJalan->id);
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Uang jalan'), $msg), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses %s Uang jalan'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );    
@@ -971,7 +1005,7 @@ class SettingsController extends AppController {
         }else{
             
             if($id && $data_local){
-                $data_local = $this->MkCommon->getUangJalanTipeMotor($data_local);
+                $data_local = $this->MkCommon->getUangJalanGroupMotor($data_local);
                 $this->request->data = $data_local;
                 $this->request->data['UangJalan']['commission_min_qty'] = !empty($this->request->data['UangJalan']['commission_min_qty'])?$this->request->data['UangJalan']['commission_min_qty']:'';
             }
@@ -1005,9 +1039,9 @@ class SettingsController extends AppController {
                 'status' => 1
             ),
         ));
-        $tipeMotors = $this->TipeMotor->getData('list', array(
+        $groupMotors = $this->GroupMotor->getData('list', array(
             'fields' => array(
-                'TipeMotor.id', 'TipeMotor.name',
+                'GroupMotor.id', 'GroupMotor.name',
             ),
         ));
 
@@ -1015,7 +1049,7 @@ class SettingsController extends AppController {
         $this->set('module_title', 'Data Master');
         $this->set(compact(
             'fromCities', 'groupClassifications', 'toCities',
-            'tipeMotors'
+            'groupMotors'
         ));
         $this->render('uang_jalan_form');
     }
@@ -1076,6 +1110,199 @@ class SettingsController extends AppController {
         } else {
             $this->redirect($this->referer());
         }
+    }
+
+    public function uang_kuli( $data_action = 'muat' ) {
+        $this->loadModel('UangKuli');
+        $options = array(
+            'conditions' => array(
+                'UangKuli.category' => $data_action,
+            ),
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['city'])){
+                $city = urldecode($refine['city']);
+                $this->request->data['UangKuli']['city'] = $city;
+                $options['conditions']['City.name LIKE '] = '%'.$city.'%';
+            }
+        }
+        $this->paginate = $this->UangKuli->getData('paginate', $options);
+        $uangKulis = $this->paginate('UangKuli');
+
+        $this->set('active_menu', sprintf('uang_kuli_%s', $data_action));
+        $this->set('module_title', 'Data Master');
+        $this->set('sub_module_title', sprintf('Uang Kuli %s', ucwords($data_action)));
+        $this->set(compact(
+            'uangKulis', 'data_action'
+        ));
+    }
+
+    public function uang_kuli_add( $data_action = 'muat' ) {
+        // if( in_array('insert_uang_jalan', $this->allowModule) ) {
+            $this->loadModel('UangKuli');
+            $this->set('sub_module_title', sprintf('Tambah Uang Kuli %s', ucwords($data_action)));
+            $this->doUangKuli( $data_action );
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    function doUangKuli( $data_action = false, $id = false, $data_local = false ){
+        $this->loadModel('City');
+        $this->loadModel('GroupMotor');
+
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->UangKuli->id = $id;
+                $data['UangKuli']['id'] = $id;
+                $msg = 'merubah';
+            }else{
+                $this->UangKuli->create();
+                $msg = 'menambah';
+            }
+
+            $data['UangKuli']['uang_kuli'] = $this->MkCommon->convertPriceToString($data['UangKuli']['uang_kuli'], 0);
+            $data['UangKuli']['category'] = $data_action;
+
+            if( !empty($data['UangKuli']['uang_kuli_type']) && $data['UangKuli']['uang_kuli_type'] == 'per_unit' ) {
+                $data['UangKuli']['capacity'] = 0;
+            }
+            
+            $this->UangKuli->set($data);
+
+            if($this->UangKuli->validates($data)){
+                $saveGroupMotor = true;
+
+                if( !empty($data['UangKuli']['uang_kuli_type']) && $data['UangKuli']['uang_kuli_type'] == 'per_unit' ) {
+                    if( !empty($data['UangKuliGroupMotor']['group_motor_id']) ) {
+                        $resultGroupMotor = $this->saveUangKuliGroupMotor($data);
+                        $saveGroupMotor = !empty($resultGroupMotor['validates'])?$resultGroupMotor['validates']:false;
+                    } else {
+                        $saveGroupMotor = false;
+                    }
+                }
+
+                if( $saveGroupMotor && $this->UangKuli->save($data) ){
+                    $this->UangKuli->UangKuliGroupMotor->updateAll( array(
+                        'UangKuliGroupMotor.status' => 0,
+                    ), array(
+                        'UangKuliGroupMotor.uang_kuli_id' => $this->UangKuli->id,
+                    ));
+
+                    if( !empty($data['UangKuli']['uang_kuli_type']) && $data['UangKuli']['uang_kuli_type'] == 'per_unit' ) {
+                        $this->saveUangKuliGroupMotor($data, $this->UangKuli->id);
+                    }
+
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Uang Kuli'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Uang Kuli'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );    
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'uang_kuli',
+                        $data_action,
+                    ));
+                }else{
+                    if( empty($saveGroupMotor) ) {
+                        $this->MkCommon->setCustomFlash(sprintf(__('Biaya Per Group Motor harap dilengkapi'), $msg), 'error'); 
+                    } else {
+                        $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Uang Kuli'), $msg), 'error'); 
+                    }
+                    $this->Log->logActivity( sprintf(__('Gagal %s Uang Kuli'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );     
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Uang Kuli'), $msg), 'error');
+            }
+        }else{
+            
+            if($id && $data_local){
+                $data_local = $this->MkCommon->getUangKuliGroupMotor($data_local);
+                $this->request->data = $data_local;
+            }
+        }
+
+        $cities = $this->City->getData('list', array(
+            'conditions' => array(
+                'City.status' => 1,
+            ),
+            'order' => array(
+                'City.name' => 'ASC',
+            ),
+        ), false);
+        $groupMotors = $this->GroupMotor->getData('list', array(
+            'fields' => array(
+                'GroupMotor.id', 'GroupMotor.name',
+            ),
+        ));
+
+        $this->set('active_menu', sprintf('uang_kuli_%s', $data_action));
+        $this->set('module_title', 'Data Master');
+        $this->set(compact(
+            'groupClassifications', 'cities',
+            'groupMotors', 'data_action'
+        ));
+        $this->render('uang_kuli_form');
+    }
+
+    function uang_kuli_edit( $data_action = 'muat', $id = false ){
+        // if( in_array('update_uang_jalan', $this->allowModule) ) {
+            $this->loadModel('UangKuli');
+            $this->set('sub_module_title', 'Rubah Uang Kuli Muat');
+            $uangKuli = $this->UangKuli->getData('first', array(
+                'conditions' => array(
+                    'UangKuli.id' => $id,
+                    'UangKuli.category' => $data_action,
+                )
+            ));
+
+            if(!empty($uangKuli)){
+                $this->doUangKuli($data_action, $id, $uangKuli);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Uang Kuli tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'uang_kuli'
+                ));
+            }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    function uang_kuli_toggle( $data_action = 'muat', $id = false ){
+        // if( in_array('delete_uang_jalan', $this->allowModule) ) {
+            $this->loadModel('UangKuli');
+            $locale = $this->UangKuli->getData('first', array(
+                'conditions' => array(
+                    'UangKuli.id' => $id
+                )
+            ));
+
+            if($locale){
+                $value = true;
+                if($locale['UangKuli']['status']){
+                    $value = false;
+                }
+
+                $this->UangKuli->id = $id;
+                $this->UangKuli->set('status', $value);
+                if($this->UangKuli->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status Uang Kuli ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status Uang Kuli ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('Uang Kuli tidak ditemukan.'), 'error');
+            }
+
+            $this->redirect($this->referer());
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
     }
 
     function perlengkapan(){
