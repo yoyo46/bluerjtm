@@ -135,6 +135,7 @@
                                     'hiddenField' => false,
                                     'checked' => (!empty($detail['RevenueDetail']['is_charge'])) ? true : false,
                                     'value' => 1,
+                                    'disabled' => !empty($flagTruck)?false:true,
                                 ));
                                 echo $this->Form->hidden('RevenueDetail.is_charge.', array(
                                     'value' => !empty($is_charge)?1:0,
