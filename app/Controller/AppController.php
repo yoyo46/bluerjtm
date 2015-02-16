@@ -32,7 +32,7 @@ App::uses('Controller', 'Controller');
  */
 class AppController extends Controller {
 	public $components = array(
-		'MkCommon', 'Auth', 'Acl', 'Session', 'RequestHandler'
+		'MkCommon', 'Auth', 'Acl', 'Session', 'RequestHandler', 'Cookie'
 	);
 
 	var $helpers = array(

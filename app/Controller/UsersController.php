@@ -35,12 +35,31 @@ class UsersController extends AppController {
         // debug($this->Auth->password('admin'));die();
         $this->layout = 'login';
     	if(!$this->MkCommon->loggedIn()){
-			if(!empty($this->request->data)){			
-				if($this->Auth->login()){
-					$this->redirect($this->Auth->redirect());	
-				}else{
-					$this->MkCommon->setCustomFlash(__('Gagal melakukan login, username atau password Anda tidak valid.'), 'error');
-				}
+			if(!empty($this->request->data)){
+                $session_error = false;
+                $session_name_ip = 'login_auth.'.$this->RequestHandler->getClientIP();
+
+                if( $this->Cookie->read($session_name_ip) ){
+                    $session_error = true;
+                }
+
+                if( !$session_error ){
+                    if($this->Auth->login()){
+                        $this->redirect($this->Auth->redirect());   
+                    }else{
+                        $get_cookie_session = $this->Cookie->read('login');
+                        if($get_cookie_session > 3){
+                            $this->Cookie->write($session_name_ip, 1, '1 hour');
+                            $this->MkCommon->setCustomFlash(__('Gagal melakukan login, Anda sudah melakukan 3x percobaan login, silahkan tunggu 1 jam kemudian untuk melakukan login kembali.'), 'error');
+                        }else{
+                            $this->MkCommon->setCustomFlash(__('Gagal melakukan login, username atau password Anda tidak valid.'), 'error');
+                            $get_cookie_session++;
+                            $this->Cookie->write('login', $get_cookie_session);
+                        }
+                    }
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal melakukan login, Anda sudah melakukan 3x percobaan login, silahkan tunggu 1 jam kemudian untuk melakukan login kembali.'), 'error');
+                }
 			}
     	}else{
     		$this->redirect($this->Auth->loginRedirect);
