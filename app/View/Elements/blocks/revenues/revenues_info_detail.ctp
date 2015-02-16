@@ -11,6 +11,7 @@
                     <th width="15%" class="text-top"><?php echo __('No. SJ');?></th>
                     <th width="15%" class="text-top"><?php echo __('Group Motor');?></th>
                     <th width="5%" class="text-top"><?php echo __('Jumlah Unit');?></th>
+                    <th width="5%" class="text-top text-center"><?php echo __('Charge');?></th>
                     <th class="text-top text-center"><?php printf(__('Harga Unit'), Configure::read('__Site.config_currency_code'));?></th>
                     <th class="text-top text-center"><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
                 </tr>
@@ -35,8 +36,19 @@
                             } else {
                                 $price = '';
                             }
+
+                            $flagShowPrice = false;
+                            $flagTruck = false;
+
+                            if( empty($tarifTruck) && $price['jenis_unit'] != 'per_truck' ) {
+                                $flagShowPrice = true;
+                            }
+
+                            if( $price['jenis_unit'] == 'per_truck' ) {
+                                $flagTruck = true;
+                            }
                 ?>
-                <tr rel="<?php echo $key; ?>">
+                <tr rel="<?php echo $key; ?>" class="list-revenue">
                     <td class="city-data">
                         <?php
                                 echo $this->Form->input('RevenueDetail.city_id.', array(
@@ -114,9 +126,26 @@
                                 ));
                         ?>
                     </td>
+                    <td class="additional-charge-data" align="center">
+                        <?php
+                                echo $this->Form->checkbox('RevenueDetail.is_charge_temp.', array(
+                                    'label' => false,
+                                    'class' => 'additional-charge',
+                                    'required' => false,
+                                    'hiddenField' => false,
+                                    'checked' => (!empty($detail['RevenueDetail']['is_charge'])) ? true : false,
+                                    'value' => 1,
+                                ));
+                                echo $this->Form->hidden('RevenueDetail.is_charge.', array(
+                                    'value' => !empty($is_charge)?1:0,
+                                    'class' => 'additional-charge-hidden',
+                                ));
+                        ?>
+                    </td>
                     <td class="price-data text-right">
                         <?php 
-                                if( empty($tarifTruck) ) {
+
+                                if( $flagShowPrice ) {
                                     if( is_array($price) ){
                                         $price = $price['tarif'];
                                     }
@@ -139,9 +168,9 @@
                     </td>
                     <td class="total-price-revenue text-right">
                         <?php 
-                                if( empty($tarifTruck) ) {
-                                    $value_price = 0;
+                                $value_price = 0;
 
+                                if( $flagShowPrice ) {
                                     if(is_array($price)){
                                         if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_unit'){
                                             $value_price = $price['tarif'] * $qty;
@@ -152,23 +181,26 @@
                                         $value_price = $price * $qty;
                                     }
                                     $total += $value_price;
-                                    
-                                    echo $this->Html->tag('span', $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
-                                        'class' => 'total-revenue-perunit'
-                                    ));
-
-                                    echo $this->Form->hidden('RevenueDetail.total_price_unit.', array(
-                                        'class' => 'total-price-perunit',
-                                        'required' => false,
-                                        'value' => $value_price
-                                    ));
+                                } else if ( !empty($detail['RevenueDetail']['is_charge']) && !empty($detail['RevenueDetail']['total_price_unit']) ) {
+                                    $value_price = $detail['RevenueDetail']['total_price_unit'];
                                 }
+                                    
+                                echo $this->Html->tag('span', $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                                    'class' => 'total-revenue-perunit'
+                                ));
+
+                                echo $this->Form->hidden('RevenueDetail.total_price_unit.', array(
+                                    'class' => 'total-price-perunit',
+                                    'required' => false,
+                                    'value' => $value_price
+                                ));
                         ?>
                     </td>
                     <td class="handle-row">
                         <?php
-                                if( !empty($price['tarif']) && is_numeric($price['tarif'])){
+                                if( isset($price['tarif']) && is_numeric($price['tarif'])){
                                     $open_duplicate = false;
+
                                     if(empty($arr_duplicate[$detail['RevenueDetail']['group_motor_id']])){
                                         $arr_duplicate[$detail['RevenueDetail']['group_motor_id']] = true;
                                         $open_duplicate = true;
@@ -196,7 +228,7 @@
                     }
                 ?>
                 <tr id="field-grand-total-revenue">
-                    <td align="right" colspan="6"><?php echo __('Total')?></td>
+                    <td align="right" colspan="7"><?php echo __('Total')?></td>
                     <td align="right" id="grand-total-revenue">
                         <?php 
                                 if( !empty($tarifTruck) ) {
@@ -204,19 +236,36 @@
                                 }
 
                                 echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                                echo $this->Form->hidden('Revenue.tarif_per_truck', array(
+                                    'class' => 'tarif_per_truck',
+                                    'value' => $total,
+                                ));
                         ?>
                     </td>
                     <td>
                         <?php
-                            echo $this->Form->hidden('total_temp', array(
-                                'id' => 'total_retail_revenue',
-                                'value' => $total
-                            ));
+                                echo $this->Form->hidden('total_temp', array(
+                                    'id' => 'total_retail_revenue',
+                                    'value' => $total
+                                ));
+                        ?>
+                    </td>
+                </tr>
+                <tr id="field-additional-total-revenue" class="<?php echo ($flagTruck)?'':'hide'; ?>">
+                    <td align="right" colspan="7"><?php echo __('Additional Charge')?></td>
+                    <td align="right" id="additional-total-revenue">
+                        <?php 
+                                if( !empty($tarifTruck['addCharge']) ) {
+                                    $total += $tarifTruck['addCharge'];
+                                    echo $this->Number->currency($tarifTruck['addCharge'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+                                } else {
+                                    echo 0;
+                                }
                         ?>
                     </td>
                 </tr>
                 <tr class="additional-input-revenue" id="ppn-grand-total-revenue">
-                    <td align="right" colspan="6" class="relative">
+                    <td align="right" colspan="7" class="relative">
                         <?php 
                             echo $this->Form->input('Revenue.ppn', array(
                                 'type' => 'text',
@@ -229,49 +278,46 @@
                     </td>
                     <td align="right" id="ppn-total-revenue">
                         <?php 
-                            $ppn = 0;
-                            if(!empty($total) && !empty($this->request->data['Revenue']['ppn'])){
-                                $ppn = $total * ($this->request->data['Revenue']['ppn'] / 100);
-                            }
-                            echo $this->Number->format($ppn);
+                                $ppn = !empty($this->request->data['Revenue']['ppn'])?$this->request->data['Revenue']['ppn']:0;
+                                $ppn = $this->Common->calcFloat($total, $ppn);
+                                echo $this->Number->currency($ppn, Configure::read('__Site.config_currency_code'), array('places' => 0));
                         ?>
                     </td>
                     <td>&nbsp;</td>
                 </tr>
                 <tr class="additional-input-revenue" id="pph-grand-total-revenue">
-                    <td align="right" colspan="6" class="relative">
+                    <td align="right" colspan="7" class="relative">
                         <?php 
-                            echo $this->Form->input('Revenue.pph', array(
-                                'type' => 'text',
-                                'label' => __('PPH'),
-                                'class' => 'input_number revenue-pph',
-                                'required' => false,
-                                'div' => false
-                            )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
+                                echo $this->Form->input('Revenue.pph', array(
+                                    'type' => 'text',
+                                    'label' => __('PPH'),
+                                    'class' => 'input_number revenue-pph',
+                                    'required' => false,
+                                    'div' => false
+                                )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
                         ?>
                     </td>
                     <td align="right" id="pph-total-revenue">
                         <?php 
-                            $pph = 0;
-                            if(!empty($total) && !empty($this->request->data['Revenue']['pph'])){
-                                $pph = $total * ($this->request->data['Revenue']['pph'] / 100);
-                            }
-                            echo $this->Number->format($pph);
+                                $pph = !empty($this->request->data['Revenue']['pph'])?$this->request->data['Revenue']['pph']:0;
+                                $pph = $this->Common->calcFloat($total, $pph);
+                                echo $this->Number->currency($pph, Configure::read('__Site.config_currency_code'), array('places' => 0));
                         ?>
                     </td>
                     <td>&nbsp;</td>
                 </tr>
                 <tr id="all-grand-total-revenue">
-                    <td align="right" colspan="6"><?php echo __('Total');?></td>
+                    <td align="right" colspan="7"><?php echo __('Total');?></td>
                     <td align="right" id="all-total-revenue">
                         <?php 
-                            if($pph > 0){
-                                $total -= $pph;
-                            }
-                            if($ppn > 0){
-                                $total += $ppn;
-                            }
-                            echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                                if($pph > 0){
+                                    $total -= $pph;
+                                }
+                                if($ppn > 0){
+                                    $total += $ppn;
+                                }
+                                
+                                echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
                         ?>
                     </td>
                     <td>&nbsp;</td>
@@ -280,3 +326,11 @@
         </table>
     </div>
 </div>
+<?php 
+        echo $this->Form->hidden('Revenue.revenue_tarif_type', array(
+            'class' => 'revenue_tarif_type',
+        ));
+        echo $this->Form->hidden('Revenue.additional_charge', array(
+            'class' => 'additional_charge',
+        ));
+?>

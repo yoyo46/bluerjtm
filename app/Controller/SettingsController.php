@@ -876,13 +876,6 @@ class SettingsController extends AppController {
             'validates' => true,
             'data' => false,
         );
-        if( !empty($uang_jalan_id) ) {
-            $this->UangJalan->UangJalanTipeMotor->updateAll( array(
-                'UangJalanTipeMotor.status' => 0,
-            ), array(
-                'UangJalanTipeMotor.uang_jalan_id' => $uang_jalan_id,
-            ));
-        }
 
         if( !empty($data['UangJalanTipeMotor']['group_motor_id']) ) {
             foreach ($data['UangJalanTipeMotor']['group_motor_id'] as $key => $group_motor_id) {
@@ -959,8 +952,8 @@ class SettingsController extends AppController {
             $data['UangJalan']['commission_min_qty'] = $this->MkCommon->convertPriceToString($data['UangJalan']['commission_min_qty'], 0);
             $data['UangJalan']['uang_jalan_1'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_jalan_1']);
             $data['UangJalan']['uang_jalan_2'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_jalan_2'], 0);
-            $data['UangJalan']['uang_kuli_muat'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_kuli_muat'], 0);
-            $data['UangJalan']['uang_kuli_bongkar'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_kuli_bongkar'], 0);
+            // $data['UangJalan']['uang_kuli_muat'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_kuli_muat'], 0);
+            // $data['UangJalan']['uang_kuli_bongkar'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_kuli_bongkar'], 0);
             $data['UangJalan']['asdp'] = $this->MkCommon->convertPriceToString($data['UangJalan']['asdp'], 0);
             $data['UangJalan']['uang_kawal'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_kawal'], 0);
             $data['UangJalan']['uang_keamanan'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_keamanan'], 0);
@@ -987,7 +980,17 @@ class SettingsController extends AppController {
                 }
 
                 if( $saveGroupMotor && $this->UangJalan->save($data) ){
-                    $this->saveGroupMotor($data, $this->UangJalan->id);
+                    if( !empty($id) ) {
+                        $this->UangJalan->UangJalanTipeMotor->updateAll( array(
+                            'UangJalanTipeMotor.status' => 0,
+                        ), array(
+                            'UangJalanTipeMotor.uang_jalan_id' => $id,
+                        ));
+                    }
+
+                    if( !empty($data['UangJalan']['uang_jalan_per_unit']) ) {
+                        $this->saveGroupMotor($data, $this->UangJalan->id);
+                    }
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Uang jalan'), $msg), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses %s Uang jalan'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );    

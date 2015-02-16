@@ -149,16 +149,26 @@
 			), array(
 				'class'=> 'btn btn-default',
 			));
-    		echo $this->Form->button(__('Posting'), array(
-    			'type' => 'submit',
-				'class'=> 'btn btn-success submit-form btn-lg',
-				'action_type' => 'posting'
-			));
-			echo $this->Form->button(__('Unposting'), array(
-    			'type' => 'submit',
-				'class'=> 'btn btn-primary submit-form',
-				'action_type' => 'unposting'
-			));
+
+			$posting = false;
+
+			if( !empty($data_local['Revenue']['transaction_status']) && $data_local['Revenue']['transaction_status'] == 'posting' ) {
+				$posting = true;
+			}
+
+			// if( !$posting ) {
+	    		echo $this->Form->button(__('Posting'), array(
+	    			'type' => 'submit',
+					'class'=> 'btn btn-success submit-form btn-lg',
+					'action_type' => 'posting'
+				));
+				
+				echo $this->Form->button(__('Unposting'), array(
+	    			'type' => 'submit',
+					'class'=> 'btn btn-primary submit-form',
+					'action_type' => 'unposting'
+				));
+			// }
 	?>
 </div>
 <?php

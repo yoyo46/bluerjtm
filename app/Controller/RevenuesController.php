@@ -1892,7 +1892,7 @@ class RevenuesController extends AppController {
                 'contain' => array(
                     'RevenueDetail'=> array(
                         'order' => array(
-                            'RevenueDetail.group_motor_id'
+                            'RevenueDetail.id' => 'ASC',
                         ),
                         'City'
                     ),
@@ -1951,6 +1951,10 @@ class RevenuesController extends AppController {
 
                 if( !empty($tarif['jenis_unit']) && $tarif['jenis_unit'] == 'per_truck' ) {
                     $tarifTruck = $tarif;
+
+                    if( !empty($data['Revenue']['additional_charge']) ) {
+                        $tarifTruck['addCharge'] = $data['Revenue']['additional_charge'];
+                    }
                 }
             }
 
@@ -1962,10 +1966,12 @@ class RevenuesController extends AppController {
                         'no_sj' => $data['RevenueDetail']['no_sj'][$key],
                         'qty_unit' => $data['RevenueDetail']['qty_unit'][$key],
                         'price_unit' => !empty($data['RevenueDetail']['price_unit'][$key])?$data['RevenueDetail']['price_unit'][$key]:0,
+                        'total_price_unit' => !empty($data['RevenueDetail']['total_price_unit'][$key])?$data['RevenueDetail']['total_price_unit'][$key]:0,
                         'city_id' => $data['RevenueDetail']['city_id'][$key],
                         'group_motor_id' => $data['RevenueDetail']['group_motor_id'][$key],
                         'tarif_angkutan_id' => $data['RevenueDetail']['tarif_angkutan_id'][$key],
                         'payment_type' => $data['RevenueDetail']['payment_type'][$key],
+                        'is_charge' => !empty($data['RevenueDetail']['is_charge'][$key])?$data['RevenueDetail']['is_charge'][$key]:0,
                     );
 
                     $this->Revenue->RevenueDetail->set($data_detail);
@@ -1993,11 +1999,14 @@ class RevenuesController extends AppController {
                 }
             }
 
-            if( !empty($tarifTruck) ) {
-                $total_revenue = $tarifTruck['tarif'];
+            if( !empty($data['Revenue']['revenue_tarif_type']) && $data['Revenue']['revenue_tarif_type'] == 'per_truck' ) {
+                $total_revenue = $data['Revenue']['tarif_per_truck'];
             }
 
             $totalWithoutTax = $total_revenue;
+            if( !empty($data['Revenue']['additional_charge']) && $data['Revenue']['additional_charge'] > 0 ){
+                $total_revenue += $data['Revenue']['additional_charge'];
+            }
 
             if( !empty($data['Revenue']['pph']) && $data['Revenue']['pph'] > 0 ){
                 $pph = $total_revenue * ($data['Revenue']['pph'] / 100);
@@ -2012,6 +2021,7 @@ class RevenuesController extends AppController {
             if( !empty($data['Revenue']['ppn']) && $data['Revenue']['ppn'] > 0 ){
                 $total_revenue += $ppn;
             }
+
             $data['Revenue']['total'] = $total_revenue;
             $data['Revenue']['total_without_tax'] = $totalWithoutTax;
             /*end validasi revenue detail*/
@@ -2058,6 +2068,7 @@ class RevenuesController extends AppController {
                     }
 
                     $getLastReference = intval($this->Revenue->RevenueDetail->getLastReference())+1;
+
                     foreach ($data['RevenueDetail']['no_do'] as $key => $value) {
                         $this->Revenue->RevenueDetail->create();
                         $data_detail['RevenueDetail'] = array(
@@ -2065,12 +2076,14 @@ class RevenuesController extends AppController {
                             'no_sj' => $data['RevenueDetail']['no_sj'][$key],
                             'qty_unit' => $data['RevenueDetail']['qty_unit'][$key],
                             'price_unit' => !empty($data['RevenueDetail']['price_unit'][$key])?$data['RevenueDetail']['price_unit'][$key]:0,
+                            'total_price_unit' => !empty($data['RevenueDetail']['total_price_unit'][$key])?$data['RevenueDetail']['total_price_unit'][$key]:0,
                             'revenue_id' => $revenue_id,
                             'city_id' => $data['RevenueDetail']['city_id'][$key],
                             'group_motor_id' => $data['RevenueDetail']['group_motor_id'][$key],
                             'tarif_angkutan_id' => $data['RevenueDetail']['tarif_angkutan_id'][$key],
                             'no_reference' => str_pad ( $getLastReference++ , 10, "0", STR_PAD_LEFT),
                             'payment_type' => $data['RevenueDetail']['payment_type'][$key],
+                            'is_charge' => !empty($data['RevenueDetail']['is_charge'][$key])?$data['RevenueDetail']['is_charge'][$key]:0,
                         );
                         $this->Revenue->RevenueDetail->set($data_detail);
                         $this->Revenue->RevenueDetail->save();
@@ -2110,6 +2123,18 @@ class RevenuesController extends AppController {
         }else if($id && $data_local){
             $this->request->data = $data_local;
 
+            if( !empty($data_local['Revenue']['tarif_per_truck']) ) {
+                $tarifAmount = $data_local['Revenue']['tarif_per_truck'];
+                $addCharge = $data_local['Revenue']['additional_charge'];
+
+                $tarifTruck = array(
+                    'jenis_unit' => 'per_truck',
+                    'tarif' => $tarifAmount,
+                    'addCharge' => $addCharge,
+                    'tarif_angkutan_id' => false,
+                );
+            }
+
             if(!empty($this->request->data['RevenueDetail'])){
                 if( !empty($this->request->data['RevenueDetail']) ) {
                     foreach ($this->request->data['RevenueDetail'] as $key => $value) {
@@ -2122,11 +2147,17 @@ class RevenuesController extends AppController {
                                 'no_do' => $value['no_do'],
                                 'no_sj' => $value['no_sj'],
                                 'to_city_name' => !empty($value['City']['name'])?$value['City']['name']:'',
-                                'price_unit' => $value['price_unit'],
+                                'price_unit' => array(
+                                    'jenis_unit' => $value['payment_type'],
+                                    'tarif' => ( $value['payment_type'] == 'per_truck' && empty($value['is_charge']) )?$data_local['Revenue']['tarif_per_truck']:$value['price_unit'],
+                                    'tarif_angkutan_id' => $value['tarif_angkutan_id'],
+                                ),
+                                'total_price_unit' => !empty($value['total_price_unit'])?$value['total_price_unit']:0,
                                 'payment_type' => $value['payment_type'],
                                 'qty_unit' => $value['qty_unit'],
                                 'group_motor_id' => $value['group_motor_id'],
                                 'city_id' => $value['city_id'],
+                                'is_charge' => $value['is_charge'],
                                 'TipeMotor' => array(
                                     'name' => !empty($value['TipeMotor']['name'])?$value['TipeMotor']['name']:'',
                                 ),
@@ -2135,7 +2166,6 @@ class RevenuesController extends AppController {
                     }
                 }
             }
-            // debug($data_revenue_detail);die();
         }
 
         $ttuj_retail = false;
@@ -2205,10 +2235,12 @@ class RevenuesController extends AppController {
                             'no_sj' => $this->request->data['RevenueDetail']['no_sj'][$key],
                             'to_city_name' => $to_city_name,
                             'price_unit' => $tarif,
+                            'total_price_unit' => $this->request->data['RevenueDetail']['total_price_unit'][$key],
                             'payment_type' => $tarif['jenis_unit'],
                             'qty_unit' => $this->request->data['RevenueDetail']['qty_unit'][$key],
                             'group_motor_id' => $this->request->data['RevenueDetail']['group_motor_id'][$key],
                             'city_id' => $to_city_id,
+                            'is_charge' => $this->request->data['RevenueDetail']['is_charge'][$key],
                             'TipeMotor' => array(
                                 'name' => $group_motor_name,
                             ),
@@ -2739,11 +2771,17 @@ class RevenuesController extends AppController {
 
         $this->loadModel('Revenue');
         $this->loadModel('Customer');
+        $conditionsRevenue = array(
+            'Revenue.transaction_status' => 'posting',
+            'Revenue.status' => 1,                      
+        );
+
+        if($action == 'tarif'){
+            $conditionsRevenue['revenue_tarif_type'] = 'per_unit';
+        }
+
         $revenues = $this->Revenue->getData('all', array(
-            'conditions' => array(
-                'Revenue.transaction_status' => 'posting',
-                'Revenue.status' => 1,                      
-            ),
+            'conditions' => $conditionsRevenue,
             'order' => array(
                 'Revenue.date_revenue' => 'ASC'
             ),
@@ -2776,7 +2814,7 @@ class RevenuesController extends AppController {
     function invoice_print($id, $action_print = false){
         $this->loadModel('Invoice');
         $this->loadModel('Revenue');
-        $this->loadModel('TipeMotor');
+        $this->loadModel('GroupMotor');
         $this->loadModel('City');
         $this->loadModel('Customer');
 
@@ -2816,7 +2854,7 @@ class RevenuesController extends AppController {
             if(!empty($revenue_detail)){
                 foreach ($revenue_detail as $key => $value) {
                     if(!empty($value['RevenueDetail'])){
-                        $value = $this->TipeMotor->getMerge($value, $value['RevenueDetail']['tipe_motor_id']);
+                        $value = $this->GroupMotor->getMerge($value, $value['RevenueDetail']['group_motor_id']);
                         $value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
                         
                         $revenue_detail[$key] = $value;

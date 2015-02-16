@@ -463,4 +463,14 @@ class CommonHelper extends AppHelper {
             return $label;
         }
     }
+
+    function calcFloat ( $total, $float ) {
+        $result = 0;
+
+        if(!empty($total) && !empty($float)){
+            $result = $total * ($float / 100);
+        }
+        
+        return $result;
+    }
 }

@@ -360,6 +360,8 @@
 							));
 		        	?>
 				</div>
+				<?php 
+				/*
 		    	<div class="form-group">
 		    		<?php 
 		    				echo $this->Form->label('uang_kuli_muat', __('Uang Kuli Muat'));
@@ -414,6 +416,8 @@
 							));
 					?>
 				</div>
+				*/
+				?>
 		    	<div class="form-group">
 		    		<?php 
 		    				echo $this->Form->label('asdp', __('Uang Penyebrangan'));
@@ -498,7 +502,7 @@
 		    </div>
 		</div>
 	</div>
-	<div class="col-sm-12 biaya-per-unit">
+	<div class="col-sm-12 biaya-per-unit <?php echo !empty($this->request->data['UangJalan']['uang_jalan_per_unit'])?'':'hide'; ?>">
 		<div class="box box-success">
 			<div class="box-header">
 		        <h3 class="box-title"><?php echo __('Biaya Per Group Motor <small>(* Semua biaya berlaku apabila per unit)</small>'); ?></h3>

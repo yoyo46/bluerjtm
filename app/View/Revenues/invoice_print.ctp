@@ -30,7 +30,7 @@ if($action_print == 'pdf'){
 				$total = 0;
 				foreach ($val_detail as $key => $value) {
 					$colom = $this->Html->tag('td', $no++);
-					$colom .= $this->Html->tag('td', $value['TipeMotor']['name']);
+					$colom .= $this->Html->tag('td', !empty($value['TipeMotor']['name'])?$value['TipeMotor']['name']:'-');
 					$colom .= $this->Html->tag('td', $value['RevenueDetail']['qty_unit']);
 					$colom .= $this->Html->tag('td', $this->Number->currency($value['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
 						'align' => 'right'
@@ -194,7 +194,7 @@ readfile($path.'/'.$filename);
 					$total = 0;
 					foreach ($val_detail as $key => $value) {
 						$colom = $this->Html->tag('td', $no++);
-						$colom .= $this->Html->tag('td', $value['TipeMotor']['name']);
+						$colom .= $this->Html->tag('td', $value['GroupMotor']['name']);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['qty_unit']);
 						$colom .= $this->Html->tag('td', $this->Number->currency($value['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
 							'align' => 'right'

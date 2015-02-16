@@ -638,36 +638,57 @@ var duplicate_row = function(){
         var parent = self.parents('tr');
         var tag_element = parent.html();
         var uniqid = Date.now();
-        var html = '<tr rel="'+uniqid+'">'+
+        var html = '<tr rel="'+uniqid+'" class="list-revenue">'+
             '<td class="city-data">'+$(tag_element).filter('.city-data').html()+'</td>'+
             '<td class="no-do-data" align="center">'+$(tag_element).filter('.no-do-data').html()+'</td>'+
             '<td class="no-sj-data">'+$(tag_element).filter('.no-sj-data').html()+'</td>'+
             '<td class="tipe-motor-data">'+$(tag_element).filter('.tipe-motor-data').html()+'</td>'+
             '<td class="qty-tipe-motor-data" align="center">'+$(tag_element).filter('.qty-tipe-motor-data').html()+'</td>'+
+            '<td class="additional-charge-data" align="center">'+$(tag_element).filter('.additional-charge-data').html()+'</td>'+
             '<td class="price-data text-right">'+$(tag_element).filter('.price-data').html()+'</td>'+
             '<td class="total-price-revenue text-right">'+$(tag_element).filter('.total-price-revenue').html()+'</td>'+
             '<td class="handle-row"><a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="revenue_detail" title="hapus baris"><i class="fa fa-times"></i></a></td>'+
         '</tr>';
-        
+
         parent.after(html);
+
+        $('tr[rel="'+uniqid+'"] .city-revenue-change').val('');
+        $('tr[rel="'+uniqid+'"] .revenue-qty').val('');
+        $('tr[rel="'+uniqid+'"] .additional-charge').attr('checked', false);
+        $('tr[rel="'+uniqid+'"] .total-revenue-perunit').html('');
+        $('tr[rel="'+uniqid+'"] .total-price-perunit').html('');
+
         revenue_detail();
         grandTotalRevenue();
         delete_custom_field( $('tr[rel="'+uniqid+'"] .delete-custom-field') );
         city_revenue_change( $('tr[rel="'+uniqid+'"] .city-revenue-change'), $('tr[rel="'+uniqid+'"] .revenue-group-motor') );
+        checkCharge( $('tr[rel="'+uniqid+'"] .additional-charge') );
+
     });
 }
 
-var changeDetailRevenue = function ( parent, city_id, group_motor_id ) {
+var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge ) {
     var ttuj_id = $('#getTtujInfoRevenue').val();
     var customer_id = $('.change-customer-revenue').val();
 
+    if( typeof is_charge == 'undefined' ){
+        is_charge = 0;
+    }
+
     $.ajax({
-        url: '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/',
+        url: '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/',
         type: 'POST',
         success: function(response, status) {
             parent.find('td.price-data').html($(response).filter('#price-data').html());
-            parent.find('td.qty-tipe-motor-data').html($(response).filter('#qty-tipe-motor-data').html());
-            parent.find('td.total-price-revenue').html($(response).filter('#total-price-revenue').html());
+            // parent.find('td.qty-tipe-motor-data').html($(response).filter('#qty-tipe-motor-data').html());
+            parent.find('td.additional-charge-data').html($(response).filter('#additional-charge-data').html());
+
+            if( is_charge == 1 ) {
+                parent.find('td.total-price-revenue').html(0);
+                parent.find('td.total-price-revenue').html($(response).filter('#total-price-revenue').html());
+            } else {
+                parent.find('td.total-price-revenue').html($(response).filter('#total-price-revenue').html());
+            }
 
             // if( parent.attr('rel') == 0 ) {
             //     parent.find('td.handle-row').html($(response).filter('#handle-row').html());
@@ -675,6 +696,7 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id ) {
 
             revenue_detail();
             grandTotalRevenue();
+            checkCharge( parent.find('td.additional-charge-data .additional-charge') );
             // duplicate_row();
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -717,23 +739,54 @@ function grandTotalRevenue(){
     var qty = $('.revenue-qty');
     var price = $('.price-unit-revenue');
     var total_price = $('.total-price-perunit');
+    var is_additional_charge = $('.additional-charge');
     var jenis_unit = $('.jenis_unit');
-    var length = price.length;
+    var length = $('.tipe-motor-table tr.list-revenue').length;
     var total_temp = $('#total_retail_revenue').val();
+    var revenue_tarif_type = $('.revenue_tarif_type').val();
     var total = 0;
+    var additional_charge = 0;
+    var ppn = 0;
+    var revenue_ppn = $('.revenue-ppn').val();
+    var formatAdditionalCharge = 0;
 
     for (var i = 0; i < length; i++) {
-        if(typeof qty[i] != 'undefined' && qty[i] != '' && typeof jenis_unit[i] != 'undefined' && jenis_unit[i].value == 'per_unit'){
-            total += parseInt(price[i].value) * parseInt(qty[i].value);
-        }else{
-            total += parseInt(total_price[i].value);
+        if( revenue_tarif_type != 'per_truck' || is_additional_charge[i].checked == true ) {
+            if( is_additional_charge[i].checked == true ) {
+                addCharge = parseInt(total_price[i].value);
+
+                if( isNaN(addCharge) ) {
+                    addCharge = 0;
+                }
+
+                additional_charge += addCharge;
+            } else if(typeof qty[i] != 'undefined' && qty[i] != '' && typeof jenis_unit[i] != 'undefined' && jenis_unit[i].value == 'per_unit'){
+                total += parseInt(price[i].value) * parseInt(qty[i].value);
+            }else{
+                total += parseInt(total_price[i].value);
+            }
         }
     };
 
-    $('#grand-total-revenue').html('IDR '+formatNumber(total));
+    if( revenue_tarif_type == 'per_truck' ) {
+        total = parseInt(total_temp);
 
-    var ppn = 0;
-    var revenue_ppn = $('.revenue-ppn').val();
+        if( isNaN(total) ) {
+            total = 0;
+        }
+    }
+
+    if( revenue_tarif_type != 'per_truck' ) {
+        $('#grand-total-revenue').html('IDR '+formatNumber(total));
+        $('.tarif_per_truck').val(total);
+    } else if( additional_charge != 0 ) {
+        total += additional_charge;
+        formatAdditionalCharge = 'IDR '+formatNumber(additional_charge);
+    }
+
+    $('#additional-total-revenue').html(formatAdditionalCharge);
+    $('.additional_charge').val(additional_charge);
+
     if(typeof revenue_ppn != 'undefined' && revenue_ppn != ''){
         ppn = total * (parseInt(revenue_ppn) / 100);
     }
@@ -758,6 +811,7 @@ function grandTotalRevenue(){
 
 function calcPPNPPH(){
     var total = parseInt($('#grand-total-revenue').html().replace(/,/gi, "").replace(/IDR/gi, ""));
+    var additional_charge = parseInt($('#additional-total-revenue').html().replace(/,/gi, "").replace(/IDR/gi, ""));
     var ppn = 0;
     var pph = 0;
     var revenue_ppn = $('.revenue-ppn').val();
@@ -766,6 +820,12 @@ function calcPPNPPH(){
     if( isNaN(total) ) {
         total = 0;
     }
+
+    if( isNaN(additional_charge) ) {
+        additional_charge = 0;
+    }
+
+    total += additional_charge;
 
     if(typeof revenue_ppn != 'undefined' && revenue_ppn != ''){
         ppn = total * (parseInt(revenue_ppn) / 100);
@@ -969,9 +1029,10 @@ function total_revenue_unit(self){
     var price = target.find('.price-unit-revenue').val();
     var qty = target.find('.revenue-qty').val();
     var jenis_unit = $('.jenis_unit');
-    total = 0;
+    var revenue_tarif_type = $('.revenue_tarif_type').val();
+    var total = 0;
 
-    if( price != '' && qty != '' ){
+    if( price != '' && qty != '' && revenue_tarif_type != 'per_truck' ){
         total += price * qty;
         target.find('.total-revenue-perunit').html('IDR '+formatNumber(total));
         target.find('.total-price-perunit').val(total);
@@ -1260,12 +1321,14 @@ function findInfoTTujRevenue(url){
             $('#ttuj-info').html($(response).filter('#form-ttuj-main').html());
             $('#detail-tipe-motor').html($(response).filter('#form-ttuj-detail').html());
             $('#customer-form').html($(response).filter('#form-customer').html());
+            $('.revenue_tarif_type').val($(response).filter('#revenue_tarif_type').val());
 
             revenue_detail();
             duplicate_row();
             datepicker();
             city_revenue_change();
             change_customer_revenue();
+            checkCharge( $('.additional-charge') );
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
@@ -1320,6 +1383,22 @@ var getNopol = function () {
     }
 }
 
+var checkCharge = function ( obj ) {
+    obj.click(function(){
+        var parent = $(this).parents('tr');
+        var val = 0;
+        var city_id = parent.find('.city-revenue-change').val();
+        var group_motor_id = parent.find('.revenue-group-motor').val();
+
+        if( $(this).is(':checked') ) {
+            val = 1;
+        }
+
+        parent.find('.additional-charge-hidden').val(val);
+        changeDetailRevenue( parent, city_id, group_motor_id, val );
+    });
+}
+
 $(function() {
 	$('.aset-handling').click(function(){
 		if($('.aset-handling .aset-handling-form').is(':checked')) {
@@ -1360,8 +1439,10 @@ $(function() {
 
         if( self.is(':checked') ) {
             $('.uang_jalan_2').addClass('hide');
+            $('.biaya-per-unit').removeClass('hide');
         } else {
             $('.uang_jalan_2').removeClass('hide');
+            $('.biaya-per-unit').addClass('hide');
         }
     });
 
@@ -1678,6 +1759,7 @@ $(function() {
     duplicate_row();
     ajaxModal();
     city_revenue_change();
+    checkCharge( $('.additional-charge') );
 
     $('.custom-find-invoice').change(function(){
         var self = $(this);

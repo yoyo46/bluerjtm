@@ -26,10 +26,10 @@ class RevenueDetail extends AppModel {
                 'message' => 'Quantity harap diisi'
             ),
         ),
-        'tipe_motor_id' => array(
+        'group_motor_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'tipe motor harap diisi'
+                'message' => 'Group Motor harap diisi'
             ),
         ),
         'tarif_angkutan_id' => array(
@@ -48,6 +48,10 @@ class RevenueDetail extends AppModel {
         'City' => array(
             'className' => 'City',
             'foreignKey' => 'city_id',
+        ),
+        'GroupMotor' => array(
+            'className' => 'GroupMotor',
+            'foreignKey' => 'group_motor_id',
         ),
     );
 

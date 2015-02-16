@@ -432,7 +432,7 @@ class AjaxController extends AppController {
         ));
 	}
 
-	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $city_id = false, $group_motor_id = false ){
+	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $city_id = false, $group_motor_id = false, $is_charge = false ){
 		$this->loadModel('Ttuj');
 		$this->loadModel('GroupMotor');
 		$this->loadModel('TarifAngkutan');
@@ -440,7 +440,6 @@ class AjaxController extends AppController {
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
 				'Ttuj.id' => $ttuj_id,
-				'Ttuj.is_pool' => 1,
                 'Ttuj.is_draft' => 0,
                 'Ttuj.status' => 1,
 			),
@@ -468,7 +467,9 @@ class AjaxController extends AppController {
 			);
 		}
 
-		$this->set(compact('detail'));
+		$this->set(compact(
+			'detail', 'is_charge'
+		));
 	}
 
 	function getInvoiceInfo($customer_id = false){
@@ -532,6 +533,7 @@ class AjaxController extends AppController {
 						'Revenue' => array(
 							'Ttuj'
 						),
+						'GroupMotor'
 					),
 				));
 			}else{
@@ -540,15 +542,18 @@ class AjaxController extends AppController {
 						'RevenueDetail.revenue_id' => $revenue_id,
 					),
 					'order' => array(
-						'RevenueDetail.city_id'
+						'RevenueDetail.total_price_unit',
+						'RevenueDetail.id',
 					),
 					'contain' => array(
 						'Revenue' => array(
-							'Ttuj'
+							'Ttuj',
 						),
+						'GroupMotor'
 					),
 				));
 			}
+
 
 			foreach ($revenue_detail as $key => $value) {
 				if(!empty($value['RevenueDetail'])){
@@ -569,7 +574,7 @@ class AjaxController extends AppController {
 			}else{
 				$result = array();
 				foreach ($revenue_detail as $key => $value) {
-					$result[$value['City']['id']][] = $value;
+					$result[$value['Revenue']['id']][] = $value;
 				}
 				$revenue_detail = $result;
 			}

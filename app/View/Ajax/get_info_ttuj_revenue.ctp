@@ -24,3 +24,10 @@
 			));
 	?>
 </div>
+<?php 
+		echo $this->Form->hidden('Revenue.revenue_tarif_type', array(
+			'class'=>'form-control',
+			'value' => !empty($tarifTruck['jenis_unit'])?$tarifTruck['jenis_unit']:'per_unit',
+			'id' => 'revenue_tarif_type',
+		));
+?>
