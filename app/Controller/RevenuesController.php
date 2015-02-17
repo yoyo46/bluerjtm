@@ -1043,6 +1043,7 @@ class RevenuesController extends AppController {
                 $data_action = 'retail';
             }
 
+            $data_local['Ttuj']['ttuj_date'] = date('d/m/Y', strtotime($data_local['Ttuj']['ttuj_date']));
             $data_local = $this->MkCommon->getTtujTipeMotor($data_local);
             $data_local = $this->MkCommon->getTtujPerlengkapan($data_local);
 
