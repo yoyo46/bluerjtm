@@ -103,6 +103,8 @@
 		        					$urlBrowse = array(
 	                                    'controller'=> 'ajax', 
                                         'action' => 'getTrucks',
+                                        'ttuj',
+                                        !empty($data_local['Ttuj']['id'])?$data_local['Ttuj']['id']:false,
 	                                );
 		                            echo $this->Form->label('truck_id', __('No. Pol * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 		                    ?>

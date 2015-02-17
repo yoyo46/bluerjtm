@@ -645,33 +645,54 @@ class AjaxController extends AppController {
     	));
 	}
 
-	function getTrucks () {
+	function getTrucks ( $action_type = false, $action_id = false ) {
 		$this->loadModel('Truck');
 		$title = __('Data Truk');
 		$data_action = 'browse-form';
 		$data_change = 'truckID';
-		$conditions = array(
-            'Truck.status' => 1
-        );
-
-        if(!empty($this->request->data)){
-            if(!empty($this->request->data['Truck']['nopol'])){
-                $nopol = urldecode($this->request->data['Truck']['nopol']);
-                $conditions['Truck.nopol LIKE '] = '%'.$nopol.'%';
-            }
-            if(!empty($this->request->data['Driver']['name'])){
-                $name = urldecode($this->request->data['Driver']['name']);
-                $conditions['Driver.name LIKE '] = '%'.$name.'%';
-            }
-        }
-
-		$this->paginate = $this->Truck->getData('paginate', array(
-            'conditions' => $conditions,
+		$options = array(
+            'conditions' => array(
+	            'Truck.status' => 1
+	        ),
             'limit' => 10,
             'contain' => array(
                 'Driver'
             ),
-        ));
+        );
+
+        switch ($action_type) {
+        	case 'ttuj':
+        	$this->Truck->bindModel(array(
+	            'hasOne' => array(
+	                'Ttuj' => array(
+	                    'className' => 'Ttuj',
+	                    'foreignKey' => 'truck_id',
+	                    'conditions' => array(
+	                        'Ttuj.status' => 1,
+	                        'Ttuj.is_pool' => 0,
+	                        'Ttuj.id <>' => $action_id,
+	                    ),
+	                )
+	            )
+	        ));
+
+        		$options['conditions']['Ttuj.id'] = NULL;
+        		$options['contain'][] = 'Ttuj';
+        		break;
+        }
+
+        if(!empty($this->request->data)){
+            if(!empty($this->request->data['Truck']['nopol'])){
+                $nopol = urldecode($this->request->data['Truck']['nopol']);
+                $options['conditions']['Truck.nopol LIKE '] = '%'.$nopol.'%';
+            }
+            if(!empty($this->request->data['Driver']['name'])){
+                $name = urldecode($this->request->data['Driver']['name']);
+                $options['conditions']['Driver.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+		$this->paginate = $this->Truck->getData('paginate', $options);
         $trucks = $this->paginate('Truck');
 
         if(!empty($trucks)){
