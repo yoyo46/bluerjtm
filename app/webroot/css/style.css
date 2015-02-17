@@ -3872,3 +3872,7 @@ table th i {
   top: -4px;
   font-size: 20px;
 }
+
+textarea.small {
+  height: 75px;
+}

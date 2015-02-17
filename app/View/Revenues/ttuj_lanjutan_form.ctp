@@ -256,6 +256,18 @@
 				        		</div>
 				        	</div>
 				        </div>
+				        <?php 
+				        		if ( in_array($action_type, array( 'truk_tiba', 'bongkaran', 'balik', 'pool' )) ) {
+				        			echo $this->Html->tag('div', $this->Form->input('note', array(
+										'label'=> __('Keterangan Berangkat'), 
+										'class'=>'form-control small',
+										'required' => false,
+										'disabled' => true,
+									)), array(
+										'class'=>'form-group',
+									));
+				        		}
+				        ?>
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->label('tgljam_tiba', __('Tgl & Jam Tiba *'));
@@ -300,6 +312,16 @@
 				        </div>
 				        <?php 
 				        		if ( in_array($action_type, array( 'bongkaran', 'balik', 'pool' )) ) {
+				        			if ( in_array($action_type, array( 'bongkaran', 'balik', 'pool' )) ) {
+				        				echo $this->Html->tag('div', $this->Form->input('note_tiba', array(
+											'label'=> __('Keterangan Tiba'), 
+											'class'=>'form-control small',
+											'required' => false,
+											'disabled' => true,
+										)), array(
+											'class'=>'form-group',
+										));
+				        			}
 						?>
 				        <div class="form-group">
 				        	<?php 
@@ -355,6 +377,17 @@
 										));
 				        			}
 		        				}
+
+		        				if ( in_array($action_type, array( 'balik', 'pool' )) ) {
+			        				echo $this->Html->tag('div', $this->Form->input('note_bongkaran', array(
+										'label'=> __('Keterangan Bongkaran'), 
+										'class'=>'form-control small',
+										'required' => false,
+										'disabled' => true,
+									)), array(
+										'class'=>'form-group',
+									));
+			        			}
 
 				        		if ( in_array($action_type, array( 'balik', 'pool' )) ) {
 						?>
@@ -412,6 +445,17 @@
 										));
 				        			}
 		        				}
+
+		        				if ( in_array($action_type, array( 'pool' )) ) {
+			        				echo $this->Html->tag('div', $this->Form->input('note_balik', array(
+										'label'=> __('Keterangan Balik'), 
+										'class'=>'form-control small',
+										'required' => false,
+										'disabled' => true,
+									)), array(
+										'class'=>'form-group',
+									));
+			        			}
 
 				        		if ( $action_type == 'pool' ) {
 						?>

@@ -1004,28 +1004,35 @@ class RevenuesController extends AppController {
             case 'bongkaran':
                 $conditions['Ttuj.is_arrive'] = 1;
                 $conditions['Ttuj.is_bongkaran'] = 1;
+                $module_title = __('Info Bongkaran');
+                $this->set('active_menu', 'bongkaran');
                 break;
 
             case 'balik':
                 $conditions['Ttuj.is_arrive'] = 1;
                 $conditions['Ttuj.is_bongkaran'] = 1;
                 $conditions['Ttuj.is_balik'] = 1;
+                $module_title = __('Info Truk Balik');
+                $this->set('active_menu', 'balik');
                 break;
 
-            case 'balik':
+            case 'pool':
                 $conditions['Ttuj.is_arrive'] = 1;
                 $conditions['Ttuj.is_bongkaran'] = 1;
                 $conditions['Ttuj.is_balik'] = 1;
                 $conditions['Ttuj.is_pool'] = 1;
+                $module_title = __('Info Sampai Pool');
+                $this->set('active_menu', 'pool');
                 break;
             
             default:
                 $conditions['Ttuj.is_arrive'] = 1;
+                $module_title = __('Info Truk Tiba');
+                $this->set('active_menu', 'truk_tiba');
                 break;
         }
 
         $data_action = false;
-        $module_title = __('Info Truk Tiba');
         $data_local = $this->Ttuj->getData('first', array(
             'conditions' => $conditions
         ));
@@ -1081,7 +1088,6 @@ class RevenuesController extends AppController {
             ));
 
             $this->set('sub_module_title', $module_title);
-            $this->set('active_menu', 'truk_tiba');
             $this->set(compact(
                 'ttujs', 'data_local', 'perlengkapans', 
                 'tipeMotors', 'ttuj_id', 'action_type',
