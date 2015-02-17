@@ -187,14 +187,14 @@
 		        	<div class="col-sm-3">
 		        		<ul class="second-revenue">
 		        			<?php
-		        				$label = $this->Html->tag('label', 'Total Ritase');
-			        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $total_ritase));
+			        				$label = $this->Html->tag('label', 'Total Ritase');
+				        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $total_ritase));
 
-		        				$label = $this->Html->tag('label', 'Total Unit');
-			        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $total_unit));
-		        				
-		        				$label = $this->Html->tag('label', 'NG Unit');
-			        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $total_lku));
+			        				$label = $this->Html->tag('label', 'Total Unit');
+				        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $total_unit));
+			        				
+			        				$label = $this->Html->tag('label', 'NG Unit');
+				        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $total_lku));
 			        		?>
 		        		</ul>
 		        	</div>

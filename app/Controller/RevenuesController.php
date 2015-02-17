@@ -2433,8 +2433,8 @@ class RevenuesController extends AppController {
 
                 if(isset($this->request->data['Ttuj']['date']) && !empty($this->request->data['Ttuj']['date'])){
                     $date_explode = explode('-', trim($this->request->data['Ttuj']['date']));
-                    $date_from = $date_explode[0];
-                    $date_to = $date_explode[1];
+                    $date_from = $this->MkCommon->getDate($date_explode[0]);
+                    $date_to = $this->MkCommon->getDate($date_explode[1]);
                     $default_conditions['OR'] = array(
                         array(
                             'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') >='=> $date_from,
@@ -2470,12 +2470,12 @@ class RevenuesController extends AppController {
                     )
                 ));
                 $truk_ritase = $this->paginate('Ttuj');
+                $total_lku = 0;
 
                 if(!empty($truk_ritase)){
                     $this->loadModel('Lku');
                     $this->loadModel('TtujTipeMotor');
 
-                    $total_lku = 0;
                     foreach ($truk_ritase as $key => $value) {
                         $qty_ritase = $this->TtujTipeMotor->getData('first', array(
                             'conditions' => array(
