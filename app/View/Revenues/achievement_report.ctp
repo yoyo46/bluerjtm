@@ -151,7 +151,7 @@
             <thead>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.customer_name', __('ALOKASI')), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('ALOKASI')), array(
                                 'style' => 'width: 100px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                                 'rowspan' => 2,
@@ -195,7 +195,7 @@
                         if(!empty($ttujs)){
                             foreach ($ttujs as $key => $value) {
                                 $id = $value['Customer']['id'];
-                                $customer_name = !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';
+                                $customer_name = !empty($value['Customer']['code'])?$value['Customer']['code']:'-';
                 ?>
                 <tr>
                     <?php 
@@ -266,7 +266,7 @@
             if(!empty($ttujs)){
                 foreach ($ttujs as $key => $value) {
                     $id = $value['Customer']['id'];
-                    $customer_name = !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';
+                    $customer_name = !empty($value['Customer']['code'])?$value['Customer']['code']:'-';
                     $target_rit = !empty($value['Customer']['target_rit'])?$value['Customer']['target_rit']:'-';
 
                     $content = $this->Html->tag('td', $no);
