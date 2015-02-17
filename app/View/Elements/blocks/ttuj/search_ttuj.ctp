@@ -7,18 +7,35 @@
     </div>
     <div class="box-body">
         <?php 
-            echo $this->Form->create('Ttuj', array(
-                'url'=> $this->Html->url( array(
-                    'controller' => 'revenues',
-                    'action' => 'search',
-                    $this->action,
-                )), 
-                'role' => 'form',
-                'inputDefaults' => array('div' => false),
-            ));
+                echo $this->Form->create('Ttuj', array(
+                    'url'=> $this->Html->url( array(
+                        'controller' => 'revenues',
+                        'action' => 'search',
+                        $this->action,
+                    )), 
+                    'role' => 'form',
+                    'inputDefaults' => array('div' => false),
+                ));
         ?>
         <div class="row">
             <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->label('date', $label_tgl);
+                    ?>
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <?php 
+                                echo $this->Form->input('Ttuj.date',array(
+                                    'label'=> false,
+                                    'class'=>'form-control pull-right date-range',
+                                    'required' => false,
+                                ));
+                        ?>
+                    </div>
+                </div>
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('nottuj',array(
@@ -26,16 +43,6 @@
                                 'class'=>'form-control',
                                 'required' => false,
                                 'placeholder' => __('No. Doc')
-                            ));
-                    ?>
-                </div>
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->input('nopol',array(
-                                'label'=> __('Nopol'),
-                                'class'=>'form-control',
-                                'required' => false,
-                                'placeholder' => __('Nopol')
                             ));
                     ?>
                 </div>
@@ -47,7 +54,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'ttuj', 
+                                'action' => $this->action, 
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',
@@ -56,6 +63,16 @@
                 </div>
             </div>
             <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('nopol',array(
+                                'label'=> __('Nopol'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Nopol')
+                            ));
+                    ?>
+                </div>
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('customer',array(

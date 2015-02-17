@@ -111,21 +111,10 @@
                             echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.ttuj_date', __('Tgl TTUJ'), array(
                                 'escape' => false
                             )));
-
+                            echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_berangkat', __('Tgl Berangkat'), array(
+                                'escape' => false
+                            )));
                         }
-
-                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.nopol', __('No Pol'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.customer_name', __('Customer'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.from_city_name', __('Dari'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.to_city_name', __('Tujuan'), array(
-                            'escape' => false
-                        )));
 
                         switch ($active_menu) {
                             case 'truk_tiba':
@@ -164,6 +153,19 @@
                                 )));
                                 break;
                         }
+
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.nopol', __('No Pol'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.customer_name', __('Customer'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.from_city_name', __('Dari'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.to_city_name', __('Tujuan'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', __('Status'));
 
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.created', __('Dibuat'), array(
@@ -184,13 +186,10 @@
                 <?php 
                         if( $active_menu == 'ttuj' ) {
                             echo $this->Html->tag('td', date('d M Y', strtotime($value['Ttuj']['ttuj_date'])));
+                            echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_berangkat'])));
                         }
-                ?>
-                <td><?php echo $value['Ttuj']['nopol'];?></td>
-                <td><?php echo $value['Ttuj']['customer_name'];?></td>
-                <td><?php echo $value['Ttuj']['from_city_name'];?></td>
-                <td><?php echo $value['Ttuj']['to_city_name'];?></td>
-                <?php 
+
+
                         switch ($active_menu) {
                             case 'truk_tiba':
                                 echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_berangkat'])));
@@ -212,7 +211,12 @@
                                 echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_pool'])));
                                 break;
                         }
-
+                ?>
+                <td><?php echo $value['Ttuj']['nopol'];?></td>
+                <td><?php echo $value['Ttuj']['customer_name'];?></td>
+                <td><?php echo $value['Ttuj']['from_city_name'];?></td>
+                <td><?php echo $value['Ttuj']['to_city_name'];?></td>
+                <?php 
                         if(!empty($value['Ttuj']['is_pool'])){
                             echo $this->Html->tag('td', '<span class="label label-success">Sampai Pool</span>');
                         } else if(!empty($value['Ttuj']['is_balik'])){

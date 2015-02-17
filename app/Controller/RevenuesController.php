@@ -37,6 +37,7 @@ class RevenuesController extends AppController {
             $this->loadModel('Ttuj');
     		$this->set('active_menu', 'ttuj');
     		$this->set('sub_module_title', __('TTUJ'));
+            $this->set('label_tgl', __('Tanggal Berangkat'));
 
             $conditions = array();
             if(!empty($this->params['named'])){
@@ -56,6 +57,22 @@ class RevenuesController extends AppController {
                     $customer = urldecode($refine['customer']);
                     $this->request->data['Ttuj']['customer'] = $customer;
                     $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
+                }
+
+                if(!empty($refine['date'])){
+                    $dateStr = urldecode($refine['date']);
+                    $date = explode('-', $dateStr);
+
+                    if( !empty($date) ) {
+                        $date[0] = urldecode($date[0]);
+                        $date[1] = urldecode($date[1]);
+                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                        $dateFrom = $this->MkCommon->getDate($date[0]);
+                        $dateTo = $this->MkCommon->getDate($date[1]);
+                        $conditions['DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') >='] = $dateFrom;
+                        $conditions['DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') <='] = $dateTo;
+                    }
+                    $this->request->data['Ttuj']['date'] = $dateStr;
                 }
             }
 
@@ -694,6 +711,7 @@ class RevenuesController extends AppController {
             $this->loadModel('Ttuj');
             $this->set('active_menu', 'truk_tiba');
             $this->set('sub_module_title', __('Truk Tiba'));
+            $this->set('label_tgl', __('Tanggal Tiba'));
             $conditions = array(
                 'Ttuj.is_arrive' => 1,
             );
@@ -715,6 +733,22 @@ class RevenuesController extends AppController {
                     $customer = urldecode($refine['customer']);
                     $this->request->data['Ttuj']['customer'] = $customer;
                     $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
+                }
+
+                if(!empty($refine['date'])){
+                    $dateStr = urldecode($refine['date']);
+                    $date = explode('-', $dateStr);
+
+                    if( !empty($date) ) {
+                        $date[0] = urldecode($date[0]);
+                        $date[1] = urldecode($date[1]);
+                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                        $dateFrom = $this->MkCommon->getDate($date[0]);
+                        $dateTo = $this->MkCommon->getDate($date[1]);
+                        $conditions['DATE_FORMAT(Ttuj.tgljam_tiba, \'%Y-%m-%d\') >='] = $dateFrom;
+                        $conditions['DATE_FORMAT(Ttuj.tgljam_tiba, \'%Y-%m-%d\') <='] = $dateTo;
+                    }
+                    $this->request->data['Ttuj']['date'] = $dateStr;
                 }
             }
 
@@ -1109,6 +1143,7 @@ class RevenuesController extends AppController {
             $this->loadModel('Ttuj');
             $this->set('active_menu', 'bongkaran');
             $this->set('sub_module_title', __('Bongkaran'));
+            $this->set('label_tgl', __('Tanggal Bongkaran'));
             $conditions = array(
                 'Ttuj.is_arrive' => 1,
                 'Ttuj.is_bongkaran' => 1,
@@ -1131,6 +1166,22 @@ class RevenuesController extends AppController {
                     $customer = urldecode($refine['customer']);
                     $this->request->data['Ttuj']['customer'] = $customer;
                     $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
+                }
+
+                if(!empty($refine['date'])){
+                    $dateStr = urldecode($refine['date']);
+                    $date = explode('-', $dateStr);
+
+                    if( !empty($date) ) {
+                        $date[0] = urldecode($date[0]);
+                        $date[1] = urldecode($date[1]);
+                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                        $dateFrom = $this->MkCommon->getDate($date[0]);
+                        $dateTo = $this->MkCommon->getDate($date[1]);
+                        $conditions['DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m-%d\') >='] = $dateFrom;
+                        $conditions['DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m-%d\') <='] = $dateTo;
+                    }
+                    $this->request->data['Ttuj']['date'] = $dateStr;
                 }
             }
 
@@ -1162,6 +1213,7 @@ class RevenuesController extends AppController {
             $this->loadModel('Ttuj');
             $this->set('active_menu', 'balik');
             $this->set('sub_module_title', __('Balik'));
+            $this->set('label_tgl', __('Tanggal Balik'));
             $conditions = array(
                 'Ttuj.is_balik' => 1,
                 'Ttuj.is_bongkaran' => 1,
@@ -1184,6 +1236,22 @@ class RevenuesController extends AppController {
                     $customer = urldecode($refine['customer']);
                     $this->request->data['Ttuj']['customer'] = $customer;
                     $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
+                }
+
+                if(!empty($refine['date'])){
+                    $dateStr = urldecode($refine['date']);
+                    $date = explode('-', $dateStr);
+
+                    if( !empty($date) ) {
+                        $date[0] = urldecode($date[0]);
+                        $date[1] = urldecode($date[1]);
+                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                        $dateFrom = $this->MkCommon->getDate($date[0]);
+                        $dateTo = $this->MkCommon->getDate($date[1]);
+                        $conditions['DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m-%d\') >='] = $dateFrom;
+                        $conditions['DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m-%d\') <='] = $dateTo;
+                    }
+                    $this->request->data['Ttuj']['date'] = $dateStr;
                 }
             }
 
@@ -1215,6 +1283,7 @@ class RevenuesController extends AppController {
             $this->loadModel('Ttuj');
             $this->set('active_menu', 'pool');
             $this->set('sub_module_title', __('Sampai di Pool'));
+            $this->set('label_tgl', __('Tanggal Sampai Pool'));
             $conditions = array(
                 'Ttuj.is_balik' => 1,
                 'Ttuj.is_bongkaran' => 1,
@@ -1239,6 +1308,22 @@ class RevenuesController extends AppController {
                     $customer = urldecode($refine['customer']);
                     $this->request->data['Ttuj']['customer'] = $customer;
                     $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
+                }
+
+                if(!empty($refine['date'])){
+                    $dateStr = urldecode($refine['date']);
+                    $date = explode('-', $dateStr);
+
+                    if( !empty($date) ) {
+                        $date[0] = urldecode($date[0]);
+                        $date[1] = urldecode($date[1]);
+                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                        $dateFrom = $this->MkCommon->getDate($date[0]);
+                        $dateTo = $this->MkCommon->getDate($date[1]);
+                        $conditions['DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='] = $dateFrom;
+                        $conditions['DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <='] = $dateTo;
+                    }
+                    $this->request->data['Ttuj']['date'] = $dateStr;
                 }
             }
 
