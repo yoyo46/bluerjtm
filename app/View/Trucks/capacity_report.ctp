@@ -44,7 +44,7 @@
             <thead>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.customer_name', __('ALOKASI')), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('ALOKASI')), array(
                                 'rowspan' => 2,
                                 'class' => 'text-middle text-center',
                                 'style' => $tdStyle,
@@ -88,7 +88,7 @@
                 <tr>
                     <?php
                             $customer_id = $customer['Customer']['id'];
-                            echo $this->Html->tag('td', $customer['Customer']['customer_name'], array(
+                            echo $this->Html->tag('td', $customer['Customer']['code'], array(
                                 'style' => $tdStyle,
                             ));
 
@@ -198,7 +198,7 @@
                 ));
                 
                 $customer_id = $customer['Customer']['id'];
-                $content .= $this->Html->tag('td', $customer['Customer']['customer_name'], array(
+                $content .= $this->Html->tag('td', $customer['Customer']['code'], array(
                     'style' => 'text-align: center;',
                 ));
 

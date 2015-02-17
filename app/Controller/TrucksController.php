@@ -751,7 +751,8 @@ class TrucksController extends AppController {
             $this->set('sub_module_title', 'Rubah Supir Truk');
             $driver = $this->Driver->getData('first', array(
                 'conditions' => array(
-                    'Driver.id' => $id
+                    'Driver.id' => $id,
+                    'Driver.status' => array( 0, 1 ),
                 )
             ));
 

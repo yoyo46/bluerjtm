@@ -572,7 +572,7 @@
 				    		<div class="checkbox">
 		                        <label class="date-resign-handle">
 		                        	<?php 
-		                        		echo $this->Form->checkbox('complated').' Proses LAKA sudah selesai?';
+		                        		echo $this->Form->checkbox('completed').' Proses LAKA sudah selesai?';
 		                        	?>
 		                        </label>
 		                    </div>
