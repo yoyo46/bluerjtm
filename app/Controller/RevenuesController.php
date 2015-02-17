@@ -1304,8 +1304,10 @@ class RevenuesController extends AppController {
                     $date = explode('-', $dateStr);
 
                     if( !empty($date) ) {
-                        $dateFrom = date('Y-m-d', strtotime(urldecode($date[0])));
-                        $dateTo = date('Y-m-d', strtotime(urldecode($date[1])));
+                        $date[0] = urldecode($date[0]);
+                        $date[1] = urldecode($date[1]);
+                        $dateFrom = $this->MkCommon->getDate($date[0]);
+                        $dateTo = $this->MkCommon->getDate($date[1]);
                     }
                     $this->request->data['Ttuj']['date'] = $dateStr;
                 }
@@ -1414,7 +1416,7 @@ class RevenuesController extends AppController {
             $module_title = __('Laporan Ritase Truk');
 
             if( !empty($dateFrom) && !empty($dateTo) ) {
-                $this->request->data['Ttuj']['date'] = sprintf('%s - %s', date('m/d/Y', strtotime($dateFrom)), date('m/d/Y', strtotime($dateTo)));
+                $this->request->data['Ttuj']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
                 $module_title .= sprintf(' Periode %s - %s', date('d M Y', strtotime($dateFrom)), date('d M Y', strtotime($dateTo)));
             }
 

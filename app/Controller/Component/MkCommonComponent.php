@@ -90,6 +90,7 @@ class MkCommonComponent extends Component {
 
     function getDate ( $date ) {
     	$dtString = false;
+        $date = trim($date);
 
     	if( !empty($date) ) {
     		$dtArr = explode('/', $date);
