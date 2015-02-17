@@ -658,23 +658,26 @@ class AjaxController extends AppController {
             'contain' => array(
                 'Driver'
             ),
+            'order' => array(
+                'Truck.nopol' => 'ASC',
+            ),
         );
 
         switch ($action_type) {
         	case 'ttuj':
-        	$this->Truck->bindModel(array(
-	            'hasOne' => array(
-	                'Ttuj' => array(
-	                    'className' => 'Ttuj',
-	                    'foreignKey' => 'truck_id',
-	                    'conditions' => array(
-	                        'Ttuj.status' => 1,
-	                        'Ttuj.is_pool' => 0,
-	                        'Ttuj.id <>' => $action_id,
-	                    ),
-	                )
-	            )
-	        ));
+	        	$this->Truck->bindModel(array(
+		            'hasOne' => array(
+		                'Ttuj' => array(
+		                    'className' => 'Ttuj',
+		                    'foreignKey' => 'truck_id',
+		                    'conditions' => array(
+		                        'Ttuj.status' => 1,
+		                        'Ttuj.is_pool' => 0,
+		                        'Ttuj.id <>' => $action_id,
+		                    ),
+		                )
+		            )
+		        ));
 
         		$options['conditions']['Ttuj.id'] = NULL;
         		$options['contain'][] = 'Ttuj';

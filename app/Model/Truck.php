@@ -246,9 +246,7 @@ class Truck extends AppModel {
             'conditions'=> array(
                 'Truck.status' => 1,
             ),
-            'order'=> array(
-                'Truck.status' => 'DESC'
-            ),
+            'order'=> array(),
             'contain' => array(),
             'fields' => array(),
         );

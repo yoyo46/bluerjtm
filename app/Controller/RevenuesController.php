@@ -565,6 +565,9 @@ class RevenuesController extends AppController {
             'contain' => array(
                 'Ttuj'
             ),
+            'order' => array(
+                'Truck.nopol'
+            ),
         ));
 
         $customers = $this->Ttuj->Customer->getData('list', array(
