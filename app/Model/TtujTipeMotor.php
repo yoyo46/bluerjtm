@@ -122,6 +122,7 @@ class TtujTipeMotor extends AppModel {
                 ),
                 'group' => array(
                     'TipeMotor.group_motor_id',
+                    'TtujTipeMotor.city_id',
                 ),
                 'fields' => array(
                     'TtujTipeMotor.id', 'TipeMotor.group_motor_id',

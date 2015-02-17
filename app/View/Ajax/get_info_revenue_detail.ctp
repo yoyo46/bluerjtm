@@ -48,6 +48,8 @@
                     'required' => false,
                     'value' => (is_array($price)) ? $price['tarif'] : 0
                 ));
+            } else if( is_string($price) ) {
+                echo $price;
             }
     ?>
 </div>
@@ -110,7 +112,7 @@
 </div>
 <div id="additional-total-revenue">
     <?php
-            if( !empty($is_charge) ){
+            if( !empty($is_charge) && !is_string($price) ){
                 echo $formatValuePrice;
             }
     ?>

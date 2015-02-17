@@ -10,10 +10,10 @@
                     <th width="15%" class="text-top"><?php echo __('No. DO');?></th>
                     <th width="15%" class="text-top"><?php echo __('No. SJ');?></th>
                     <th width="15%" class="text-top"><?php echo __('Group Motor');?></th>
-                    <th width="5%" class="text-top"><?php echo __('Jumlah Unit');?></th>
+                    <th width="10%" class="text-top"><?php echo __('Jumlah Unit');?></th>
                     <th width="5%" class="text-top text-center"><?php echo __('Charge');?></th>
-                    <th class="text-top text-center"><?php printf(__('Harga Unit'), Configure::read('__Site.config_currency_code'));?></th>
-                    <th class="text-top text-center"><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
+                    <th width="15%" class="text-top text-center"><?php printf(__('Harga Unit'), Configure::read('__Site.config_currency_code'));?></th>
+                    <th width="15%" class="text-top text-center"><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
                 </tr>
             </thead>
             <tbody class="tipe-motor-table">
@@ -21,6 +21,12 @@
                         // $total = !empty($this->request->data['Revenue']['total_without_tax'])?$this->request->data['Revenue']['total_without_tax']:0;
                         $arr_duplicate = array();
                         $total = 0;
+                        $flagTruck = false;
+                        $jenis_unit = !empty($tarifTruck['jenis_unit'])?$tarifTruck['jenis_unit']:false;
+
+                        if( $jenis_unit == 'per_truck' ) {
+                            $flagTruck = true;
+                        }
 
                         foreach ($data as $key => $detail) {
                             if( !empty($detail['RevenueDetail']['price_unit']) ){
@@ -38,14 +44,9 @@
                             }
 
                             $flagShowPrice = false;
-                            $flagTruck = false;
 
-                            if( empty($tarifTruck) && $price['jenis_unit'] != 'per_truck' ) {
+                            if( empty($tarifTruck) && $jenis_unit != 'per_truck' ) {
                                 $flagShowPrice = true;
-                            }
-
-                            if( $price['jenis_unit'] == 'per_truck' ) {
-                                $flagTruck = true;
                             }
                 ?>
                 <tr rel="<?php echo $key; ?>" class="list-revenue">
@@ -122,7 +123,7 @@
                                     'label' => false,
                                     'class' => 'jenis_unit',
                                     'required' => false,
-                                    'value' =>  !empty($price['jenis_unit']) ? $price['jenis_unit'] : 0
+                                    'value' =>  !empty($jenis_unit) ? $jenis_unit : 0
                                 ));
                         ?>
                     </td>
@@ -173,9 +174,9 @@
 
                                 if( $flagShowPrice ) {
                                     if(is_array($price)){
-                                        if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_unit'){
+                                        if(!empty($price) && !empty($qty) && $jenis_unit == 'per_unit'){
                                             $value_price = $price['tarif'] * $qty;
-                                        }else if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_truck'){
+                                        }else if(!empty($price) && !empty($qty) && $jenis_unit == 'per_truck'){
                                             $value_price = $price['tarif'];
                                         }
                                     } else {
@@ -185,7 +186,7 @@
                                 } else if ( !empty($detail['RevenueDetail']['is_charge']) && !empty($detail['RevenueDetail']['total_price_unit']) ) {
                                     $value_price = $detail['RevenueDetail']['total_price_unit'];
                                 }
-                                    
+                                
                                 echo $this->Html->tag('span', $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
                                     'class' => 'total-revenue-perunit'
                                 ));
@@ -199,11 +200,11 @@
                     </td>
                     <td class="handle-row">
                         <?php
-                                if( isset($price['tarif']) && is_numeric($price['tarif'])){
+                                // if( isset($price['tarif']) && is_numeric($price['tarif'])){
                                     $open_duplicate = false;
 
-                                    if(empty($arr_duplicate[$detail['RevenueDetail']['group_motor_id']])){
-                                        $arr_duplicate[$detail['RevenueDetail']['group_motor_id']] = true;
+                                    if(empty($arr_duplicate[$detail['RevenueDetail']['group_motor_id']][$detail['RevenueDetail']['city_id']])){
+                                        $arr_duplicate[$detail['RevenueDetail']['group_motor_id']][$detail['RevenueDetail']['city_id']] = true;
                                         $open_duplicate = true;
                                     }
 
@@ -221,7 +222,7 @@
                                         'title' => __('hapus baris')
                                     ));
                                     }
-                                }
+                                // }
                         ?>
                     </td>
                 </tr>
