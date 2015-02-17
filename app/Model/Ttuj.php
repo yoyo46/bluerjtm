@@ -48,6 +48,12 @@ class Ttuj extends AppModel {
                 'message' => 'Truk harap dipilih'
             ),
         ),
+        'driver_penganti_id' => array(
+            'getDriver' => array(
+                'rule' => array('getDriver'),
+                'message' => 'Supir pengganti harap dipilih'
+            ),
+        ),
         'tgljam_berangkat' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -151,6 +157,14 @@ class Ttuj extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
+    }
+
+    function getDriver () {
+        if( empty($this->data['Ttuj']['driver_name']) && empty($this->data['Ttuj']['driver_penganti_id']) ) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
 ?>

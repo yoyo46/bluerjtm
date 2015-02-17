@@ -60,7 +60,7 @@
                 'value' => 1,
                 'checked' => !empty($is_charge)?true:false,
                 'hiddenField' => false,
-                'disabled' => !empty($flagTruck)?false:true,
+                'disabled' => ( !empty($flagTruck) || !empty($is_charge) )?false:true,
             ));
             echo $this->Form->hidden('RevenueDetail.is_charge.', array(
                 'value' => !empty($is_charge)?1:0,

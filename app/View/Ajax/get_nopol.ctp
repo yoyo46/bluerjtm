@@ -1,20 +1,10 @@
 <?php 
-		// echo $this->Form->input('truck_id',array(
-		// 	'label'=> false, 
-		// 	'class'=>'form-control nopol',
-		// 	'required' => false,
-		// 	'empty' => __('Pilih No. Pol --'),
-		// 	'options' => $result,
-		// 	'div' => false,
-		// 	'id' => 'truck_id',
-		// ));
-
 		if( !empty($result) ) {
 			echo $this->Html->tag('div', $result['Truck']['capacity'], array(
 				'id' => 'truck_capacity',
 			));
 
-			$driver_name = $result['Driver']['name'];
+			$driver_name = !empty($result['Driver']['name'])?$result['Driver']['name']:'';
 
 			if( !empty($result['Driver']['alias']) ) {
 				$driver_name = sprintf('%s ( %s )', $driver_name, $result['Driver']['alias']);

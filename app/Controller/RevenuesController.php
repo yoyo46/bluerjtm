@@ -555,7 +555,7 @@ class RevenuesController extends AppController {
 
         $trucks = $this->Truck->getData('list', array(
             'conditions' => array(
-                'Truck.driver_id <>' => 0,
+                // 'Truck.driver_id <>' => 0,
                 'Truck.status' => 1,
                 'Ttuj.id' => NULL,
             ),
