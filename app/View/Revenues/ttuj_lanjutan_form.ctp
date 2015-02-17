@@ -257,7 +257,7 @@
 				        	</div>
 				        </div>
 				        <?php 
-				        		if ( in_array($action_type, array( 'truk_tiba', 'bongkaran', 'balik', 'pool' )) ) {
+				        		if ( in_array($action_type, array( 'truk_tiba', 'bongkaran', 'balik', 'pool' )) && !empty($this->request->data['Ttuj']['note']) ) {
 				        			echo $this->Html->tag('div', $this->Form->input('note', array(
 										'label'=> __('Keterangan Berangkat'), 
 										'class'=>'form-control small',
@@ -312,7 +312,7 @@
 				        </div>
 				        <?php 
 				        		if ( in_array($action_type, array( 'bongkaran', 'balik', 'pool' )) ) {
-				        			if ( in_array($action_type, array( 'bongkaran', 'balik', 'pool' )) ) {
+				        			if ( in_array($action_type, array( 'bongkaran', 'balik', 'pool' )) && !empty($this->request->data['Ttuj']['note_tiba']) ) {
 				        				echo $this->Html->tag('div', $this->Form->input('note_tiba', array(
 											'label'=> __('Keterangan Tiba'), 
 											'class'=>'form-control small',
@@ -378,7 +378,7 @@
 				        			}
 		        				}
 
-		        				if ( in_array($action_type, array( 'balik', 'pool' )) ) {
+		        				if ( in_array($action_type, array( 'balik', 'pool' )) && !empty($this->request->data['Ttuj']['note_bongkaran']) ) {
 			        				echo $this->Html->tag('div', $this->Form->input('note_bongkaran', array(
 										'label'=> __('Keterangan Bongkaran'), 
 										'class'=>'form-control small',
@@ -446,7 +446,7 @@
 				        			}
 		        				}
 
-		        				if ( in_array($action_type, array( 'pool' )) ) {
+		        				if ( in_array($action_type, array( 'pool' )) && !empty($this->request->data['Ttuj']['note_balik']) ) {
 			        				echo $this->Html->tag('div', $this->Form->input('note_balik', array(
 										'label'=> __('Keterangan Balik'), 
 										'class'=>'form-control small',
