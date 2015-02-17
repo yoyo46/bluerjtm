@@ -1858,7 +1858,7 @@ class SettingsController extends AppController {
         $this->paginate = $this->GroupMotor->getData('paginate', $options);
         $group_motors = $this->paginate('GroupMotor');
 
-        $this->set('active_menu', 'type_motor');
+        $this->set('active_menu', 'group_motors');
         $this->set('sub_module_title', 'Grup Motor');
         $this->set('group_motors', $group_motors);
     }
@@ -1924,7 +1924,7 @@ class SettingsController extends AppController {
             }
         }
 
-        $this->set('active_menu', 'type_motor');
+        $this->set('active_menu', 'group_motors');
         $this->render('group_motor_form');
     }
 
