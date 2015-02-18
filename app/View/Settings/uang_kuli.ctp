@@ -31,6 +31,9 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('UangKuli.title', __('Nama'), array(
                             'escape' => false
                         )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Customer.name', __('Customer'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('City.name', __('Kota Asal'), array(
                             'escape' => false
                         )));
@@ -48,6 +51,7 @@
             ?>
             <tr>
                 <td><?php echo $value['UangKuli']['title'];?></td>
+                <td><?php echo $value['Customer']['customer_name'];?></td>
                 <td><?php echo $value['City']['name'];?></td>
                 <td><?php echo $this->Common->customDate($value['UangKuli']['created']);?></td>
                 <td class="action">

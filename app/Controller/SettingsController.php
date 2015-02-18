@@ -1117,6 +1117,7 @@ class SettingsController extends AppController {
 
     public function uang_kuli( $data_action = 'muat' ) {
         $this->loadModel('UangKuli');
+        $this->loadModel('Customer');
         $options = array(
             'conditions' => array(
                 'UangKuli.category' => $data_action,
@@ -1134,6 +1135,13 @@ class SettingsController extends AppController {
         }
         $this->paginate = $this->UangKuli->getData('paginate', $options);
         $uangKulis = $this->paginate('UangKuli');
+
+        if( !empty($uangKulis) ) {
+            foreach ($uangKulis as $key => $uangKuli) {
+                unset($uangKuli['Customer']);
+                $uangKulis[$key] = $this->Customer->getMerge($uangKuli, $uangKuli['UangKuli']['customer_id']);
+            }
+        }
 
         $this->set('active_menu', sprintf('uang_kuli_%s', $data_action));
         $this->set('module_title', 'Data Master');
@@ -1156,6 +1164,7 @@ class SettingsController extends AppController {
     function doUangKuli( $data_action = false, $id = false, $data_local = false ){
         $this->loadModel('City');
         $this->loadModel('GroupMotor');
+        $this->loadModel('Customer');
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -1239,12 +1248,20 @@ class SettingsController extends AppController {
                 'GroupMotor.id', 'GroupMotor.name',
             ),
         ));
+        $customers = $this->Customer->getData('list', array(
+            'conditions' => array(
+                'Customer.status' => 1,
+            ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name'
+            )
+        ));
 
         $this->set('active_menu', sprintf('uang_kuli_%s', $data_action));
         $this->set('module_title', 'Data Master');
         $this->set(compact(
             'groupClassifications', 'cities',
-            'groupMotors', 'data_action'
+            'groupMotors', 'data_action', 'customers'
         ));
         $this->render('uang_kuli_form');
     }

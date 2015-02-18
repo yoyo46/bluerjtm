@@ -15,7 +15,13 @@ class UangKuli extends AppModel {
             ),
             'checkUniq' => array(
                 'rule' => array('checkUniq'),
-                'message' => 'Kota sudah terdaftar'
+                'message' => 'Uang Kuli sudah terdaftar'
+            ),
+        ),
+        'customer_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Customer harap dipilih'
             ),
         ),
         'capacity' => array(
@@ -48,6 +54,10 @@ class UangKuli extends AppModel {
             'className' => 'City',
             'foreignKey' => 'city_id',
         ),
+        'Customer' => array(
+            'className' => 'Customer',
+            'foreignKey' => 'customer_id',
+        ),
     );
 
     var $hasMany = array(
@@ -71,7 +81,7 @@ class UangKuli extends AppModel {
             ),
             'contain' => array(
                 'City',
-                'UangKuliGroupMotor'
+                'UangKuliGroupMotor',
             )
         );
 
@@ -120,8 +130,10 @@ class UangKuli extends AppModel {
     function checkUniq($data) {
         $city_id = !empty($this->data['UangKuli']['city_id'])?trim($this->data['UangKuli']['city_id']):false;
         $category = !empty($this->data['UangKuli']['category'])?trim($this->data['UangKuli']['category']):false;
+        $customer_id = !empty($this->data['UangKuli']['customer_id'])?trim($this->data['UangKuli']['customer_id']):false;
         $checkCity = $this->getData('first', array(
             'conditions' => array(
+                'UangKuli.customer_id' => $customer_id,
                 'UangKuli.city_id' => $city_id,
                 'UangKuli.category' => $category,
                 'UangKuli.id <>' => $this->id,

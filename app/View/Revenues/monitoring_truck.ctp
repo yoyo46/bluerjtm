@@ -199,9 +199,9 @@
                                         }
                                     }
                                     if( empty($point) ){
-                                        if( date('d') < $i ) {
-                                            $bg = '';
-                                        }
+                                        // if( date('d') < $i ) {
+                                        //     $bg = '';
+                                        // }
                                         echo $this->Html->tag('td', $this->Html->link('&nbsp;', array(
                                             'controller' => 'ajax',
                                             'action' => 'event_add',

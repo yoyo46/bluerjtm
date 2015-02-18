@@ -42,6 +42,15 @@
 							'class' => 'form-group'
 						));
 
+						echo $this->Html->tag('div', $this->Form->input('customer_id',array(
+							'label'=> __('Customer *'), 
+							'class'=>'form-control',
+							'required' => false,
+							'empty' => __('Pilih Customer'),
+						)), array(
+							'class' => 'form-group'
+						));
+
 						$titleLabel = ( $data_action == 'bongkar' )?__('Tujuan'):__('Dari');
 						echo $this->Html->tag('div', $this->Form->input('city_id',array(
 							'label'=> $titleLabel, 
