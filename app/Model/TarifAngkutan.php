@@ -144,6 +144,7 @@ class TarifAngkutan extends AppModel {
             'from_city_id' => $from_city_id,
             'to_city_id' => $to_city_id,
             'customer_id' => $customer_id,
+            'status' => 1,
         );
 
         $result = $this->find('first', array(
