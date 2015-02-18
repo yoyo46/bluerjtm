@@ -376,9 +376,12 @@ class RevenuesController extends AppController {
                         }
                         
                         if( !empty($validates) && !empty($validates_perlengkapan) ) {
+                            if( empty($data['Ttuj']['is_draft']) && empty($data_local['Ttuj']['is_revenue']) ) {
+                                $data['Ttuj']['is_revenue'] = 1;
+                            }
+                            
                             if($this->Ttuj->save($data)){
-                                if( empty($data['Ttuj']['is_draft']) ) {
-                                    $data['Ttuj']['is_revenue'] = 1;
+                                if( empty($data['Ttuj']['is_draft']) && empty($data_local['Ttuj']['is_revenue']) ) {
                                     $tarif = $this->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity']);
 
                                     $dataRevenue['Revenue'] = array(
