@@ -153,7 +153,6 @@ class UangKuli extends AppModel {
         $uangKuliMuat = $this->getData('first', array(
             'conditions' => array(
                 'UangKuli.status' => 1,
-                'UangKuli.customer_id' => $customer_id,
                 'UangKuli.city_id' => $from_city_id,
                 'UangKuli.category' => 'muat',
             ),
