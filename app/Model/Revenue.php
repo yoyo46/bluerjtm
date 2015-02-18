@@ -151,5 +151,21 @@ class Revenue extends AppModel {
             'qtyTtuj' => $qtyTtuj,
         );
     }
+
+    function getPaid ( $data, $ttuj_id ) {
+        $revenue = $this->getData('first', array(
+            'conditions' => array(
+                'Revenue.ttuj_id' => $ttuj_id,
+                'Revenue.status' => 1,
+                'Revenue.transaction_status' => 'invoiced',
+            ),
+        ));
+
+        if( !empty($revenue) ) {
+            $data['Ttuj']['is_invoice'] = true;
+        }
+
+        return $data;
+    }
 }
 ?>

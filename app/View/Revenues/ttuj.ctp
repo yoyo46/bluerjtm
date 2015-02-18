@@ -228,7 +228,11 @@
                         } else if(!empty($value['Ttuj']['is_draft'])){
                             echo $this->Html->tag('td', '<span class="label label-default">Draft</span>');
                         } else{
-                            echo $this->Html->tag('td', '<span class="label label-primary">Commit</span>');
+                            if( !empty($value['Ttuj']['is_invoice']) ) {
+                                echo $this->Html->tag('td', '<span class="label label-primary">Invoiced</span>');
+                            } else {
+                                echo $this->Html->tag('td', '<span class="label label-primary">Commit</span>');
+                            }
                         }
                 ?>
                 <td><?php echo $this->Common->customDate($value['Ttuj']['created']);?></td>
@@ -256,7 +260,7 @@
                                     ), __('Apakah Anda yakin akan membatalkan data ini?'));
                                 }
                             } else {
-                                if( in_array('update_ttuj', $allowModule) ) {
+                                if( empty($value['Ttuj']['is_invoice']) && in_array('update_ttuj', $allowModule) ) {
                                     echo $this->Html->link('Rubah', array(
                                         'controller' => 'revenues',
                                         'action' => 'ttuj_edit',

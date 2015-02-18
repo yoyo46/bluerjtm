@@ -35,6 +35,7 @@ class RevenuesController extends AppController {
 	public function ttuj() {
         if( in_array('view_ttuj', $this->allowModule) ) {
             $this->loadModel('Ttuj');
+            $this->loadModel('Revenue');
     		$this->set('active_menu', 'ttuj');
     		$this->set('sub_module_title', __('TTUJ'));
             $this->set('label_tgl', __('Tanggal Berangkat'));
@@ -80,6 +81,12 @@ class RevenuesController extends AppController {
                 'conditions' => $conditions
             ));
             $ttujs = $this->paginate('Ttuj');
+
+            if( !empty($ttujs) ) {
+                foreach ($ttujs as $key => $ttuj) {
+                    $ttujs[$key] = $this->Revenue->getPaid( $ttuj, $ttuj['Ttuj']['id'] );
+                }
+            }
 
             $this->set('ttujs', $ttujs);
         } else {
