@@ -51,7 +51,7 @@
             ?>
             <tr>
                 <td><?php echo $value['UangKuli']['title'];?></td>
-                <td><?php echo $value['Customer']['customer_name'];?></td>
+                <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:false;?></td>
                 <td><?php echo $value['City']['name'];?></td>
                 <td><?php echo $this->Common->customDate($value['UangKuli']['created']);?></td>
                 <td class="action">

@@ -119,11 +119,13 @@ class TarifAngkutan extends AppModel {
     function check_availability( $data = false, $id = false ){
         $data = $data['TarifAngkutan'];
         $conditions = array(
-            'from_city_id' => $data['from_city_id'],
-            'to_city_id' => $data['to_city_id'],
-            'jenis_unit' => $data['jenis_unit'],
-            'customer_id' => $data['customer_id'],
+            'TarifAngkutan.from_city_id' => $data['from_city_id'],
+            'TarifAngkutan.to_city_id' => $data['to_city_id'],
+            'TarifAngkutan.jenis_unit' => $data['jenis_unit'],
+            'TarifAngkutan.customer_id' => $data['customer_id'],
+            'TarifAngkutan.group_motor_id' => $data['group_motor_id'],
             'TarifAngkutan.id <>' => $id,
+            'TarifAngkutan.status' => 1,
         );
 
         $check_availability = $this->find('count', array(
@@ -183,6 +185,7 @@ class TarifAngkutan extends AppModel {
             'TarifAngkutan.from_city_id' => $this->data['TarifAngkutan']['from_city_id'],
             'TarifAngkutan.to_city_id' => $this->data['TarifAngkutan']['to_city_id'],
             'TarifAngkutan.jenis_unit' => $this->data['TarifAngkutan']['jenis_unit'],
+            'TarifAngkutan.group_motor_id' => $this->data['TarifAngkutan']['group_motor_id'],
             'TarifAngkutan.status' => 1,
         );
 
