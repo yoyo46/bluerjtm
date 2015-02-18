@@ -129,7 +129,7 @@ class RevenuesController extends AppController {
         }
     }
 
-    function saveTtujTipeMotor ( $data_action, $dataTtujTipeMotor = false, $data = false, $ttuj_id = false ) {
+    function saveTtujTipeMotor ( $data_action, $dataTtujTipeMotor = false, $data = false, $dataRevenue = false, $ttuj_id = false, $revenue_id = false ) {
         $result = array(
             'validates' => true,
             'data' => false,
@@ -145,6 +145,7 @@ class RevenuesController extends AppController {
             }
 
             foreach ($dataTtujTipeMotor as $key => $tipe_motor_id) {
+                $group_motor_id = 0;
                 $dataValidate['TtujTipeMotor']['tipe_motor_id'] = $tipe_motor_id;
                 $dataValidate['TtujTipeMotor']['color_motor_id'] = !empty($data['TtujTipeMotor']['color_motor_id'][$key])?$data['TtujTipeMotor']['color_motor_id'][$key]:false;
                 $dataValidate['TtujTipeMotor']['qty'] = !empty($data['TtujTipeMotor']['qty'][$key])?$data['TtujTipeMotor']['qty'][$key]:false;
@@ -159,6 +160,39 @@ class RevenuesController extends AppController {
                     $dataValidate['TtujTipeMotor']['ttuj_id'] = $ttuj_id;
                     $this->Ttuj->TtujTipeMotor->create();
                     $this->Ttuj->TtujTipeMotor->save($dataValidate);
+
+                    if( empty($data['Ttuj']['is_draft']) ) {
+                        if( !empty($tipe_motor_id) ) {
+                            $groupMotor = $this->TipeMotor->getData('first', array(
+                                'conditions' => array(
+                                    'TipeMotor.id' => $tipe_motor_id,
+                                    'TipeMotor.status' => 1,
+                                ),
+                            ));
+
+                            if( !empty($groupMotor['GroupMotor']['id']) ) {
+                                $group_motor_id = $groupMotor['GroupMotor']['id'];
+                            }
+                        }
+
+                        if( !empty($dataRevenue['Revenue']['revenue_tarif_type']) && $dataRevenue['Revenue']['revenue_tarif_type'] == 'per_unit' ) {
+                            if( $data_action == 'retail' ) {
+                                $tarif = $this->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $dataValidate['TtujTipeMotor']['city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity'], $group_motor_id);
+                            } else {
+                                $tarif = $this->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity'], $group_motor_id);
+                            }
+                        }
+
+                        $dataRevenue['RevenueDetail'] = array(
+                            'revenue_id' => $revenue_id,
+                            'group_motor_id' => $group_motor_id,
+                            'qty_unit' => $dataValidate['TtujTipeMotor']['qty'],
+                            'city_id' => !empty($data['TtujTipeMotor']['city_id'][$key])?$data['TtujTipeMotor']['city_id'][$key]:$data['Ttuj']['to_city_id'],
+                        );
+
+                        $this->RevenueDetail->create();
+                        $this->RevenueDetail->save($dataRevenue);
+                    }
                 } else {
                     if(!$this->Ttuj->TtujTipeMotor->validates($dataValidate)){
                         $result['validates'] = false;
@@ -217,6 +251,9 @@ class RevenuesController extends AppController {
         $this->loadModel('Perlengkapan');
         $this->loadModel('Truck');
         $this->loadModel('ColorMotor');
+        $this->loadModel('TarifAngkutan');
+        $this->loadModel('Revenue');
+        $this->loadModel('RevenueDetail');
         $is_draft = isset($data_local['Ttuj']['is_draft'])?$data_local['Ttuj']['is_draft']:true;
 
         if( !empty($this->request->data) && in_array('update_ttuj_commit', $this->allowModule) ) {
@@ -302,6 +339,28 @@ class RevenuesController extends AppController {
             }
 
             $this->Ttuj->set($data);
+            $dataRevenue = array();
+
+            if( empty($data['Ttuj']['is_draft']) ) {
+                $data['Ttuj']['is_revenue'] = 1;
+                $tarif = $this->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity']);
+
+                $dataRevenue['Revenue'] = array(
+                    'transaction_status' => 'unposting',
+                    'ttuj_id' => $this->Ttuj->id,
+                    'date_revenue' => $data['Ttuj']['ttuj_date'],
+                    'customer_id' => $data['Ttuj']['customer_id'],
+                    'ppn' => 0,
+                    'pph' => 0,
+                    'revenue_tarif_type' => !empty($tarif['jenis_unit'])?$tarif['jenis_unit']:'per_unit',
+                );
+
+                if( !empty($tarif['jenis_unit']) && $tarif['jenis_unit'] == 'per_truck' ) {
+                    $dataRevenue['Revenue']['total'] = $tarif['tarif'];
+                    $dataRevenue['Revenue']['total_without_tax'] = $tarif['tarif'];
+                    $dataRevenue['Revenue']['tarif_per_truck'] = $tarif['tarif'];
+                }
+            }
 
             if($this->Ttuj->validates($data)){
                 if( !empty($data['TtujTipeMotor']['tipe_motor_id']) ) {
@@ -317,7 +376,7 @@ class RevenuesController extends AppController {
                         $result_data_perlengkapan = array();
                         $validates_perlengkapan = true;
 
-                        $resultTtujTipeMotor = $this->saveTtujTipeMotor($data_action, $dataTtujTipeMotor, $data);
+                        $resultTtujTipeMotor = $this->saveTtujTipeMotor($data_action, $dataTtujTipeMotor, $data, $dataRevenue);
 
                         if( !empty($dataTtujPerlengkapan) ) {
                             $resultTtujPerlengkapan = $this->saveTtujPerlengkapan($dataTtujPerlengkapan, $data);
@@ -334,7 +393,12 @@ class RevenuesController extends AppController {
                         
                         if( !empty($validates) && !empty($validates_perlengkapan) ) {
                             if($this->Ttuj->save($data)){
-                                $this->saveTtujTipeMotor($data_action, $dataTtujTipeMotor, $data, $this->Ttuj->id);
+                                if( empty($data['Ttuj']['is_draft']) ) {
+                                    $this->Revenue->create();
+                                    $this->Revenue->save($dataRevenue);
+                                }
+
+                                $this->saveTtujTipeMotor($data_action, $dataTtujTipeMotor, $data, $dataRevenue, $this->Ttuj->id, $this->Revenue->id);
 
                                 if( !empty($dataTtujPerlengkapan) ) {
                                     $this->saveTtujPerlengkapan($dataTtujPerlengkapan, $data, $this->Ttuj->id);
@@ -2028,6 +2092,7 @@ class RevenuesController extends AppController {
             $data['Revenue']['date_revenue'] = $this->MkCommon->getDate($data['Revenue']['date_revenue']);
             $data['Revenue']['ppn'] = !empty($data['Revenue']['ppn'])?$data['Revenue']['ppn']:0;
             $data['Revenue']['pph'] = !empty($data['Revenue']['pph'])?$data['Revenue']['pph']:0;
+            $data['Revenue']['additional_charge'] = !empty($data['Revenue']['additional_charge'])?$data['Revenue']['additional_charge']:0;
 
             if($id && $data_local){
                 $this->Revenue->id = $id;
