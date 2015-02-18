@@ -1363,10 +1363,11 @@ var getNopol = function () {
     var self = $('#truckID');
     var from_city_id = $('.from_city #getKotaTujuan').val();
     var to_city_id = $('.to_city #getTruck').val();
+    var customer_id = $('#getKotaAsal').val();
 
     if( self.val() != '' ) {
         $.ajax({
-            url: '/ajax/getInfoTruck/' + from_city_id + '/' + to_city_id + '/' + self.val() + '/',
+            url: '/ajax/getInfoTruck/' + from_city_id + '/' + to_city_id + '/' + self.val() + '/' + customer_id + '/',
             type: 'POST',
             success: function(response, status) {
                 getUangjalan( response );
@@ -1506,6 +1507,7 @@ $(function() {
         // var customer_id = $('.customer').val();
         var from_city_id = $('.from_city #getKotaTujuan').val();
         var nopol = $('#truckID').val();
+        var customer_id = $('#getKotaAsal').val();
 
         if( self.val() != '' ) {
             // $.ajax({
@@ -1517,7 +1519,7 @@ $(function() {
             
             if( nopol != '' ) {
                 $.ajax({
-                    url: '/ajax/getInfoTruck/' + from_city_id + '/' + self.val() + '/' + nopol + '/',
+                    url: '/ajax/getInfoTruck/' + from_city_id + '/' + self.val() + '/' + nopol + '/' + customer_id + '/',
                     type: 'POST',
                     success: function(response, status) {
                         getUangjalan( response );

@@ -148,11 +148,12 @@ class UangKuli extends AppModel {
         }
     }
 
-    function getUangKuli ( $from_city_id, $to_city_id ) {
+    function getUangKuli ( $from_city_id, $to_city_id, $customer_id ) {
         $capacity = !empty($capacity)?$capacity:0;
         $uangKuliMuat = $this->getData('first', array(
             'conditions' => array(
                 'UangKuli.status' => 1,
+                'UangKuli.customer_id' => $customer_id,
                 'UangKuli.city_id' => $from_city_id,
                 'UangKuli.category' => 'muat',
             ),
@@ -160,6 +161,7 @@ class UangKuli extends AppModel {
         $uangKuliBongkar = $this->getData('first', array(
             'conditions' => array(
                 'UangKuli.status' => 1,
+                'UangKuli.customer_id' => $customer_id,
                 'UangKuli.city_id' => $to_city_id,
                 'UangKuli.category' => 'bongkar',
             ),
