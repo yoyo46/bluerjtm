@@ -7,13 +7,13 @@
             <thead>
                 <tr>
                     <th width="15%" class="text-top"><?php echo __('Tujuan');?></th>
-                    <th width="15%" class="text-top"><?php echo __('No. DO');?></th>
-                    <th width="15%" class="text-top"><?php echo __('No. SJ');?></th>
+                    <th width="13%" class="text-top"><?php echo __('No. DO');?></th>
+                    <th width="12%" class="text-top"><?php echo __('No. SJ');?></th>
                     <th width="15%" class="text-top"><?php echo __('Group Motor');?></th>
                     <th width="10%" class="text-top"><?php echo __('Jumlah Unit');?></th>
                     <th width="5%" class="text-top text-center"><?php echo __('Charge');?></th>
                     <th width="15%" class="text-top text-center"><?php printf(__('Harga Unit'), Configure::read('__Site.config_currency_code'));?></th>
-                    <th width="15%" class="text-top text-center"><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
+                    <th width="20%" class="text-top text-center"><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
                 </tr>
             </thead>
             <tbody class="tipe-motor-table">
@@ -41,6 +41,10 @@
                                 $price = sprintf(__('Tarif tidak ditemukan, silahkan buat tarif angkutan %s'), $link);
                             } else {
                                 $price = '';
+                            }
+
+                            if( $jenis_unit != 'per_truck' ) {
+                                $jenis_unit = !empty($detail['RevenueDetail']['payment_type'])?$detail['RevenueDetail']['payment_type']:false;
                             }
 
                             $flagShowPrice = false;

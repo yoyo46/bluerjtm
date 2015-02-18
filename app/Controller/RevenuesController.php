@@ -2317,7 +2317,7 @@ class RevenuesController extends AppController {
         }else if($id && $data_local){
             $this->request->data = $data_local;
 
-            if( !empty($data_local['Revenue']['tarif_per_truck']) ) {
+            if( !empty($data_local['Revenue']['tarif_per_truck']) && !empty($data_local['Revenue']['revenue_tarif_type']) && $data_local['Revenue']['revenue_tarif_type'] == 'per_truck' ) {
                 $tarifAmount = $data_local['Revenue']['tarif_per_truck'];
                 $addCharge = $data_local['Revenue']['additional_charge'];
 
@@ -2412,12 +2412,12 @@ class RevenuesController extends AppController {
                             $qty = $ttujTipeMotor[0]['qty'];
                         }
 
-                        $tarif = $this->TarifAngkutan->findTarif($ttuj_data['Ttuj']['from_city_id'], $this->request->data['RevenueDetail']['city_id'][$key], $ttuj_data['Ttuj']['customer_id'], $ttuj_data['Ttuj']['truck_capacity']);
+                        $tarif = $this->TarifAngkutan->findTarif($ttuj_data['Ttuj']['from_city_id'], $this->request->data['RevenueDetail']['city_id'][$key], $ttuj_data['Ttuj']['customer_id'], $ttuj_data['Ttuj']['truck_capacity'], $this->request->data['RevenueDetail']['group_motor_id'][$key]);
                     }else{
                         $to_city_name = $ttuj_data['Ttuj']['to_city_name'];
                         $to_city_id = $ttuj_data['Ttuj']['to_city_id'];  
 
-                        $tarif = $this->TarifAngkutan->findTarif($ttuj_data['Ttuj']['from_city_id'], $ttuj_data['Ttuj']['to_city_id'], $ttuj_data['Ttuj']['customer_id'], $ttuj_data['Ttuj']['truck_capacity']);
+                        $tarif = $this->TarifAngkutan->findTarif($ttuj_data['Ttuj']['from_city_id'], $ttuj_data['Ttuj']['to_city_id'], $ttuj_data['Ttuj']['customer_id'], $ttuj_data['Ttuj']['truck_capacity'], $this->request->data['RevenueDetail']['group_motor_id'][$key]);
                     }
 
                     $data_revenue_detail[$key] = array(

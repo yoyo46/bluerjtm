@@ -27,11 +27,11 @@
 			        <div class="form-group">
 			        	<?php 
 								echo $this->Form->input('no_doc',array(
-									'label'=> __('No. Dokumen *'), 
+									'label'=> __('No. Dokumen'), 
 									'class'=>'form-control',
 									'required' => false,
 									'placeholder' => __('No. Dokumen'),
-									'readonly' => (!empty($id)) ? true : false
+									'readonly' => (!empty($id) && !empty($this->request->data['Revenue']['no_doc'])) ? true : false
 								));
 						?>
 			        </div>
