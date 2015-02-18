@@ -31,9 +31,13 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('UangKuli.title', __('Nama'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Customer.name', __('Customer'), array(
-                            'escape' => false
-                        )));
+
+                        if( $data_action == 'bongkar' ) {
+                            echo $this->Html->tag('th', $this->Paginator->sort('Customer.name', __('Customer'), array(
+                                'escape' => false
+                            )));
+                        }
+
                         echo $this->Html->tag('th', $this->Paginator->sort('City.name', __('Kota Asal'), array(
                             'escape' => false
                         )));
@@ -51,7 +55,11 @@
             ?>
             <tr>
                 <td><?php echo $value['UangKuli']['title'];?></td>
-                <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:false;?></td>
+                <?php 
+                        if( $data_action == 'bongkar' ) {
+                            echo $this->Html->tag('td', !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:false);
+                        }
+                ?>
                 <td><?php echo $value['City']['name'];?></td>
                 <td><?php echo $this->Common->customDate($value['UangKuli']['created']);?></td>
                 <td class="action">
