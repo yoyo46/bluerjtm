@@ -214,7 +214,8 @@ class Driver extends AppModel {
         if(empty($data['Driver'])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
-                    'id' => $id
+                    'Driver.id' => $id,
+                    'Driver.status' => 1,
                 )
             ));
 

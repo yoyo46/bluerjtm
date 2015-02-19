@@ -381,7 +381,7 @@
 			        				foreach ($this->request->data['LakaMedias'] as $key => $value) {
 			        					$photo = $this->Common->photo_thumbnail(array(
 											'save_path' => Configure::read('__Site.laka_photo_folder'), 
-											'src' => $value['name'], 
+											'src' => !empty($value['name'])?$value['name']:false, 
 											'thumb'=>true,
 											'size' => 'pm',
 											'thumb' => true,
@@ -389,7 +389,7 @@
 										$link = $this->Html->link('<i class="fa fa-times-circle"></i>', array(
 											'controller' => 'ajax',
 											'action' => 'delete_laka_media',
-											$value['id']
+											!empty($value['id'])?$value['id']:false,
 										), array(
 											'escape' => false,
 											'class' => 'delete-custom-field time-circle-laka',

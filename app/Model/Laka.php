@@ -150,7 +150,7 @@ class Laka extends AppModel {
                 'conditions' => array(
                     'Ttuj.truck_id' => $truck_id,
                     'Laka.status' => 1,
-                    'Laka.complated' => 0,
+                    'Laka.completed' => 0,
                 ),
                 'contain' => array(
                     'Ttuj'

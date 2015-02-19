@@ -183,6 +183,9 @@ class Truck extends AppModel {
         'Driver' => array(
             'className' => 'Driver',
             'foreignKey' => 'driver_id',
+            'conditions' => array(
+                'Driver.status' => 1,
+            ),
         ),
         'Stnk' => array(
             'className' => 'Stnk',
