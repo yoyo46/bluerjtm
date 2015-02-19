@@ -216,6 +216,7 @@ class Driver extends AppModel {
                 'conditions' => array(
                     'Driver.id' => $id,
                     'Driver.status' => 1,
+                    'Driver.is_resign' => 0,
                 )
             ));
 

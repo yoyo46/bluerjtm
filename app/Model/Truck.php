@@ -185,6 +185,7 @@ class Truck extends AppModel {
             'foreignKey' => 'driver_id',
             'conditions' => array(
                 'Driver.status' => 1,
+                'Driver.is_resign' => 0,
             ),
         ),
         'Stnk' => array(
