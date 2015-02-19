@@ -31,7 +31,9 @@
                 'url'=> $this->Html->url( array(
                     'controller' => 'revenues',
                     'action' => 'search',
-                    'ritase_report'
+                    'ritase_report',
+                    0,
+                    $data_type,
                 )), 
                 'role' => 'form',
                 'inputDefaults' => array('div' => false),
@@ -65,6 +67,7 @@
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
                                 'action' => 'ritase_report', 
+                                $data_type,
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',

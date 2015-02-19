@@ -17,13 +17,16 @@ class RevenuesController extends AppController {
         $this->set('module_title', __('Revenue'));
     }
 
-    function search( $index = 'index', $id = false ){
+    function search( $index = 'index', $id = false, $data_action = false ){
         $refine = array();
         if(!empty($this->request->data)) {
             $refine = $this->RjRevenue->processRefine($this->request->data);
             $params = $this->RjRevenue->generateSearchURL($refine);
             if(!empty($id)){
                 array_push($params, $id);
+            }
+            if(!empty($data_action)){
+                array_push($params, $data_action);
             }
             $params['action'] = $index;
 
