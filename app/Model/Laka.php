@@ -41,27 +41,33 @@ class Laka extends AppModel {
         'status_muatan' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'status muatan harap dipilih'
+                'message' => 'Status muatan harap dipilih'
             ),
         ),
         'driver_condition' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'kondisi supir harap diisi'
+                'message' => 'Kondisi supir harap diisi'
             ),
         ),
         'truck_condition' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'kondisi armada dan muatan harap diisi'
+                'message' => 'Kondisi armada dan muatan harap diisi'
             ),
         ),
         'description_laka' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'deskripsi LAKA harap diisi'
+                'message' => 'Deskripsi LAKA harap diisi'
             ),
         ),
+        'completed' => array(
+            'completeValidate' => array(
+                'rule' => array('completeValidate'),
+                'message' => 'Keterangan LAKA harap diisi'
+            ),
+        )
 	);
 
     var $belongsTo = array(
@@ -84,6 +90,18 @@ class Laka extends AppModel {
             'foreignKey' => 'laka_id',
         ),
     );
+
+    function completeValidate($data){
+        if(!empty($data['completed'])){
+            if(!empty($this->data['Laka']['complete_desc'])){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return true;
+        }
+    }
 
 	function getData($find, $options = false){
         $default_options = array(

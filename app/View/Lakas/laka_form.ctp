@@ -570,11 +570,25 @@
 				    	?>
 				    	<div class="form-group">
 				    		<div class="checkbox">
-		                        <label class="date-resign-handle">
+		                        <label class="completed-handle">
 		                        	<?php 
 		                        		echo $this->Form->checkbox('completed').' Proses LAKA sudah selesai?';
 		                        	?>
 		                        </label>
+		                    </div>
+		                    <div id="desc-laka-complete" class="<?php echo !empty($this->request->data['Laka']['completed']) ? '' : 'hide';?>">
+		                    	<?php 
+										echo $this->Form->input('complete_desc',array(
+											'label'=> __('Keterangan *'), 
+											'class'=>'form-control',
+											'required' => false,
+											'type' => 'textarea'
+										));
+
+										if ($this->Form->isFieldError('completed')) {
+										    echo $this->Form->error('completed');
+										}
+								?>
 		                    </div>
 				    	</div>
 				    </div>

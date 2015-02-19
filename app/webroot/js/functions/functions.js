@@ -2401,6 +2401,14 @@ $(function() {
         }
     });
 
+    $('.completed-handle').click(function(){
+        if($('.completed-handle input').is(':checked')) {
+            $('#desc-laka-complete').removeClass('hide');
+        }else{
+            $('#desc-laka-complete').addClass('hide');
+        }
+    });
+
     $('.uang_kuli').change(function(){
         if( $(this).val() == 'per_unit' ) {
             $('.biaya-per-unit').removeClass('hide');
