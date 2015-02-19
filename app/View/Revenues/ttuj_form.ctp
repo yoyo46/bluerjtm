@@ -449,7 +449,9 @@
 										?>
 									</div>
 								</div>
-						    	<div class="form-group wrapper_uang_jalan_2 <?php echo (isset($this->request->data['Ttuj']['uang_jalan_2']) && !$this->request->data['Ttuj']['uang_jalan_2'])?'hide':''; ?>">
+							</div>
+				    		<div class="col-sm-6 wrapper_uang_jalan_2">
+						    	<div class="form-group <?php echo (isset($this->request->data['Ttuj']['uang_jalan_2']) && !$this->request->data['Ttuj']['uang_jalan_2'])?'hide':''; ?>">
 						    		<?php 
 						    				echo $this->Form->label('uang_jalan_2', __('Uang Jalan Kedua'));
 						    		?>
@@ -468,6 +470,8 @@
 										?>
 									</div>
 								</div>
+							</div>
+				    		<div class="col-sm-6 wrapper_uang_jalan_extra">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_jalan_extra', __('Uang Jalan Extra'));
@@ -491,6 +495,8 @@
 										?>
 									</div>
 								</div>
+							</div>
+				    		<div class="col-sm-6 wrapper_min_capacity">
 						    	<div class="form-group">
 							    	<?php 
 											echo $this->Form->input('min_capacity',array(
@@ -503,6 +509,8 @@
 											));
 									?>
 								</div>
+							</div>
+				    		<div class="col-sm-6 wrapper_uang_kuli_muat">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_kuli_muat', __('Uang Kuli Muat'));
@@ -527,7 +535,7 @@
 									</div>
 								</div>
 				    		</div>
-				    		<div class="col-sm-6">
+				    		<div class="col-sm-6 wrapper_uang_kuli_bongkar">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_kuli_bongkar', __('Uang Kuli Bongkar'));
@@ -551,6 +559,8 @@
 										?>
 									</div>
 								</div>
+							</div>
+				    		<div class="col-sm-6 wrapper_asdp">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('asdp', __('Uang Penyebrangan'));
@@ -574,6 +584,8 @@
 										?>
 									</div>
 								</div>
+							</div>
+				    		<div class="col-sm-6 wrapper_uang_kawal">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_kawal', __('Uang Kawal'));
@@ -597,6 +609,8 @@
 										?>
 									</div>
 								</div>
+							</div>
+				    		<div class="col-sm-6 wrapper_uang_keamanan">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_keamanan', __('Uang Keamanan'));
@@ -763,5 +777,65 @@
 		?>
 	</div>
 	<div class="list-tipe-motor">
+		<?php 
+				if( !empty($uangJalan['UangJalanTipeMotor']) ) {
+					foreach ($uangJalan['UangJalanTipeMotor'] as $key => $value) {
+						echo $this->Html->tag('div', $value['uang_jalan_1'], array(
+							'class' => sprintf('uang-jalan-1-%s', $value['tipe_motor_id'])
+						));
+						echo $this->Html->tag('div', $value['uang_jalan_2'], array(
+							'class' => sprintf('uang-jalan-2-%s', $value['tipe_motor_id'])
+						));
+					}
+				}
+
+				if( !empty($uangKuli['UangKuliMuat']['UangKuliGroupMotor']) ) {
+					foreach ($uangKuli['UangKuliMuat']['UangKuliGroupMotor'] as $key => $value) {
+						echo $this->Html->tag('div', $value['uang_kuli'], array(
+							'class' => sprintf('uang-kuli-muat-%s', $value['group_motor_id'])
+						));
+					}
+				}
+
+				if( !empty($uangKuli['UangKuliBongkar']['UangKuliGroupMotor']) ) {
+					foreach ($uangKuli['UangKuliBongkar']['UangKuliGroupMotor'] as $key => $value) {
+						echo $this->Html->tag('div', $value['uang_kuli'], array(
+							'class' => sprintf('uang-kuli-bongkar-%s', $value['group_motor_id'])
+						));
+					}
+				}
+
+				if( !empty($uangJalan['CommissionGroupMotor']) ) {
+					foreach ($uangJalan['CommissionGroupMotor'] as $key => $value) {
+						echo $this->Html->tag('div', $value['commission'], array(
+							'class' => sprintf('commission-%s', $value['group_motor_id'])
+						));
+					}
+				}
+
+				if( !empty($uangJalan['AsdpGroupMotor']) ) {
+					foreach ($uangJalan['AsdpGroupMotor'] as $key => $value) {
+						echo $this->Html->tag('div', $value['asdp'], array(
+							'class' => sprintf('asdp-%s', $value['group_motor_id'])
+						));
+					}
+				}
+
+				if( !empty($uangJalan['UangKawalGroupMotor']) ) {
+					foreach ($uangJalan['UangKawalGroupMotor'] as $key => $value) {
+						echo $this->Html->tag('div', $value['uang_kawal'], array(
+							'class' => sprintf('uang-kawal-%s', $value['group_motor_id'])
+						));
+					}
+				}
+
+				if( !empty($uangJalan['UangKeamananGroupMotor']) ) {
+					foreach ($uangJalan['UangKeamananGroupMotor'] as $key => $value) {
+						echo $this->Html->tag('div', $value['uang_keamanan'], array(
+							'class' => sprintf('uang-keamanan-%s', $value['group_motor_id'])
+						));
+					}
+				}
+		?>
 	</div>
 </div>

@@ -126,7 +126,13 @@ class Ttuj extends AppModel {
                     'TipeMotor'
                 ),
                 'TtujPerlengkapan',
-                'UangJalan'
+                'UangJalan' => array(
+                    'UangJalanTipeMotor',
+                    'CommissionGroupMotor',
+                    'AsdpGroupMotor',
+                    'UangKawalGroupMotor',
+                    'UangKeamananGroupMotor',
+                ),
             ),
             'fields' => array(),
         );

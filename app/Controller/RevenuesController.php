@@ -280,6 +280,7 @@ class RevenuesController extends AppController {
         $this->loadModel('TarifAngkutan');
         $this->loadModel('Revenue');
         $this->loadModel('RevenueDetail');
+        $this->loadModel('UangKuli');
         $is_draft = isset($data_local['Ttuj']['is_draft'])?$data_local['Ttuj']['is_draft']:true;
 
         if( !empty($this->request->data) && in_array('update_ttuj_commit', $this->allowModule) ) {
@@ -476,9 +477,25 @@ class RevenuesController extends AppController {
                     if( !empty($data['Ttuj']['to_city_id']) ) {
                         if( !empty($truck['Truck']['capacity']) ) {
                             $dataTruck = $this->UangJalan->getNopol($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $truck['Truck']['capacity']);
+                            $uangKuli = $this->UangKuli->getUangKuli( $data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'] );
+                            $uangJalan['UangJalan']['uang_kuli_muat_per_unit'] = 1;
 
                             if( !empty($dataTruck) ) {
                                 $uangJalan = $dataTruck;
+
+                                if( !empty($uangKuli) ) {
+                                    $uangJalan['UangJalan']['uang_kuli_muat'] = !empty($uangKuli['UangKuliMuat']['UangKuli']['uang_kuli'])?$uangKuli['UangKuliMuat']['UangKuli']['uang_kuli']:0;
+                                    $uangJalan['UangJalan']['uang_kuli_bongkar'] = !empty($uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli'])?$uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli']:0;
+
+                                    if( !empty($uangKuli['UangKuliMuat']['UangKuli']['uang_kuli_type']) && $uangKuli['UangKuliMuat']['UangKuli']['uang_kuli_type'] == 'per_unit' ) {
+                                        $uangJalan['UangJalan']['uang_kuli_muat_per_unit'] = 1;
+                                    }
+
+                                    if( !empty($uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli_type']) && $uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli_type'] == 'per_unit' ) {
+                                        $uangJalan['UangJalan']['uang_kuli_bongkar_per_unit'] = 1;
+                                    }
+                                }
+
                                 $this->request->data['Ttuj']['uang_jalan_1_ori'] = $uang_jalan_1 = !empty($uangJalan['UangJalan']['uang_jalan_1'])?$uangJalan['UangJalan']['uang_jalan_1']:0;
                                 $uang_jalan_2 = !empty($uangJalan['UangJalan']['uang_jalan_2'])?$uangJalan['UangJalan']['uang_jalan_2']:0;
                                 $this->request->data['Ttuj']['uang_kuli_muat_ori'] = $uang_kuli_muat = !empty($uangJalan['UangJalan']['uang_kuli_muat'])?$uangJalan['UangJalan']['uang_kuli_muat']:0;
@@ -492,14 +509,46 @@ class RevenuesController extends AppController {
                                 $uang_jalan_tipe_motor = 0;
                                 $uang_kuli_bongkar_tipe_motor = 0;
                                 $uang_kuli_muat_tipe_motor = 0;
+                                $asdp_tipe_motor = 0;
+                                $uang_kawal_tipe_motor = 0;
+                                $uang_keamanan_tipe_motor = 0;
+                                $commission_tipe_motor = 0;
                                 $totalMuatan = 0;
                                 $uangJalanTipeMotor = array();
 
                                 if( !empty($uangJalan['UangJalanTipeMotor']) ) {
                                     foreach ($uangJalan['UangJalanTipeMotor'] as $key => $tipeMotor) {
-                                        $uangJalanTipeMotor['UangJalan'][$tipeMotor['tipe_motor_id']] = $tipeMotor['uang_jalan_1'];
-                                        $uangJalanTipeMotor['UangKuliMuat'][$tipeMotor['tipe_motor_id']] = $tipeMotor['uang_kuli_muat'];
-                                        $uangJalanTipeMotor['UangKuliBongkar'][$tipeMotor['tipe_motor_id']] = $tipeMotor['uang_kuli_bongkar'];
+                                        $uangJalanTipeMotor['UangJalan'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_jalan_1'];
+                                    }
+                                }
+                                if( !empty($uangJalan['CommissionGroupMotor']) ) {
+                                    foreach ($uangJalan['CommissionGroupMotor'] as $key => $tipeMotor) {
+                                        $uangJalanTipeMotor['Commission'][$tipeMotor['group_motor_id']] = $tipeMotor['commission'];
+                                    }
+                                }
+                                if( !empty($uangJalan['AsdpGroupMotor']) ) {
+                                    foreach ($uangJalan['AsdpGroupMotor'] as $key => $tipeMotor) {
+                                        $uangJalanTipeMotor['Asdp'][$tipeMotor['group_motor_id']] = $tipeMotor['asdp'];
+                                    }
+                                }
+                                if( !empty($uangJalan['UangKawalGroupMotor']) ) {
+                                    foreach ($uangJalan['UangKawalGroupMotor'] as $key => $tipeMotor) {
+                                        $uangJalanTipeMotor['UangKawal'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_kawal'];
+                                    }
+                                }
+                                if( !empty($uangJalan['UangKeamananGroupMotor']) ) {
+                                    foreach ($uangJalan['UangKeamananGroupMotor'] as $key => $tipeMotor) {
+                                        $uangJalanTipeMotor['UangKeamanan'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_keamanan'];
+                                    }
+                                }
+                                if( !empty($uangKuli['UangKuliMuat']['UangKuliGroupMotor']) ) {
+                                    foreach ($uangKuli['UangKuliMuat']['UangKuliGroupMotor'] as $key => $tipeMotor) {
+                                        $uangJalanTipeMotor['UangKuliMuat'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_kuli'];
+                                    }
+                                }
+                                if( !empty($uangKuli['UangKuliBongkar']['UangKuliGroupMotor']) ) {
+                                    foreach ($uangKuli['UangKuliBongkar']['UangKuliGroupMotor'] as $key => $tipeMotor) {
+                                        $uangJalanTipeMotor['UangKuliBongkar'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_kuli'];
                                     }
                                 }
 
@@ -507,24 +556,59 @@ class RevenuesController extends AppController {
                                     foreach ($data['TtujTipeMotor']['qty'] as $key => $qty) {
                                         if( !empty($qty) ) {
                                             $tipe_motor_id = !empty($data['TtujTipeMotor']['tipe_motor_id'][$key])?$data['TtujTipeMotor']['tipe_motor_id'][$key]:false;
+                                            $group_motor_id = 0;
                                             $totalMuatan += $qty;
+                                            $groupMotor = $this->TipeMotor->find('first', array(
+                                                'conditions' => array(
+                                                    'TipeMotor.id' => $tipe_motor_id,
+                                                    'TipeMotor.status' => 1,
+                                                ),
+                                            ));
 
-                                            if( !empty($uangJalanTipeMotor['UangJalan'][$tipe_motor_id]) ) {
-                                                $uang_jalan_tipe_motor += $uangJalanTipeMotor['UangJalan'][$tipe_motor_id] * $qty;
+                                            if( !empty($groupMotor) ) {
+                                                $group_motor_id = $groupMotor['TipeMotor']['group_motor_id'];
+                                            }
+
+                                            if( !empty($uangJalanTipeMotor['UangJalan'][$group_motor_id]) ) {
+                                                $uang_jalan_tipe_motor += $uangJalanTipeMotor['UangJalan'][$group_motor_id] * $qty;
                                             } else {
                                                 $uang_jalan_tipe_motor += $uang_jalan_1 * $qty;
                                             }
 
-                                            if( !empty($uangJalanTipeMotor['UangKuliMuat'][$tipe_motor_id]) ) {
-                                                $uang_kuli_muat_tipe_motor += $uangJalanTipeMotor['UangKuliMuat'][$tipe_motor_id] * $qty;
+                                            if( !empty($uangJalanTipeMotor['UangKuliMuat'][$group_motor_id]) ) {
+                                                $uang_kuli_muat_tipe_motor += $uangJalanTipeMotor['UangKuliMuat'][$group_motor_id] * $qty;
                                             } else {
                                                 $uang_kuli_muat_tipe_motor += $uang_kuli_muat * $qty;
                                             }
 
-                                            if( !empty($uangJalanTipeMotor['UangKuliBongkar'][$tipe_motor_id]) ) {
-                                                $uang_kuli_bongkar_tipe_motor += $uangJalanTipeMotor['UangKuliBongkar'][$tipe_motor_id] * $qty;
+                                            if( !empty($uangJalanTipeMotor['UangKuliBongkar'][$group_motor_id]) ) {
+                                                $uang_kuli_bongkar_tipe_motor += $uangJalanTipeMotor['UangKuliBongkar'][$group_motor_id] * $qty;
                                             } else {
                                                 $uang_kuli_bongkar_tipe_motor += $uang_kuli_bongkar * $qty;
+                                            }
+
+                                            if( !empty($uangJalanTipeMotor['Asdp'][$group_motor_id]) ) {
+                                                $asdp_tipe_motor += $uangJalanTipeMotor['Asdp'][$group_motor_id] * $qty;
+                                            } else {
+                                                $asdp_tipe_motor += $asdp * $qty;
+                                            }
+
+                                            if( !empty($uangJalanTipeMotor['UangKawal'][$group_motor_id]) ) {
+                                                $uang_kawal_tipe_motor += $uangJalanTipeMotor['UangKawal'][$group_motor_id] * $qty;
+                                            } else {
+                                                $uang_kawal_tipe_motor += $uang_kawal * $qty;
+                                            }
+
+                                            if( !empty($uangJalanTipeMotor['UangKeamanan'][$group_motor_id]) ) {
+                                                $uang_keamanan_tipe_motor += $uangJalanTipeMotor['UangKeamanan'][$group_motor_id] * $qty;
+                                            } else {
+                                                $uang_keamanan_tipe_motor += $uang_keamanan * $qty;
+                                            }
+
+                                            if( !empty($uangJalanTipeMotor['Commission'][$group_motor_id]) ) {
+                                                $commission_tipe_motor += $uangJalanTipeMotor['Commission'][$group_motor_id] * $qty;
+                                            } else {
+                                                $commission_tipe_motor += $commission * $qty;
                                             }
                                         }
                                     }
@@ -548,15 +632,19 @@ class RevenuesController extends AppController {
                                 }
 
                                 if( !empty($uangJalan['UangJalan']['asdp_per_unit']) ) {
-                                    $asdp = $asdp*$totalMuatan;
+                                    $asdp = $asdp_tipe_motor;
                                 }
 
                                 if( !empty($uangJalan['UangJalan']['uang_kawal_per_unit']) ) {
-                                    $uang_kawal = $uang_kawal*$totalMuatan;
+                                    $uang_kawal = $uang_kawal_tipe_motor;
                                 }
 
                                 if( !empty($uangJalan['UangJalan']['uang_keamanan_per_unit']) ) {
-                                    $uang_keamanan = $uang_keamanan*$totalMuatan;
+                                    $uang_keamanan = $uang_keamanan_tipe_motor;
+                                }
+
+                                if( !empty($uangJalan['UangJalan']['commission_per_unit']) ) {
+                                    $commission = $commission_tipe_motor;
                                 }
 
                                 if( !empty($uangJalan['UangJalan']['uang_jalan_extra']) && !empty($uangJalan['UangJalan']['min_capacity']) ) {
@@ -565,7 +653,24 @@ class RevenuesController extends AppController {
                                             $capacityCost = $totalMuatan - $uangJalan['UangJalan']['min_capacity'];
                                             $uang_jalan_extra = $uang_jalan_extra*$capacityCost;
                                         }
+                                    } else {
+                                        $uang_jalan_extra = 0;
                                     }
+                                } else {
+                                    $uang_jalan_extra = 0;
+                                }
+
+                                if( !empty($uangJalan['UangJalan']['commission_extra']) && !empty($uangJalan['UangJalan']['commission_min_qty']) ) {
+                                    if( $totalMuatan > $uangJalan['UangJalan']['commission_min_qty'] ) {
+                                        if( !empty($uangJalan['UangJalan']['commission_extra_per_unit']) ) {
+                                            $capacityCost = $totalMuatan - $uangJalan['UangJalan']['commission_min_qty'];
+                                            $commission_extra = $commission_extra*$capacityCost;
+                                        }
+                                    } else {
+                                        $commission_extra = 0;
+                                    }
+                                } else {
+                                    $commission_extra = 0;
                                 }
 
                                 $this->request->data['Ttuj']['uang_jalan_1'] = number_format($uang_jalan_1, 0);
@@ -616,6 +721,11 @@ class RevenuesController extends AppController {
                 $data_local = $this->MkCommon->getTtujTipeMotor($data_local);
                 $data_local = $this->MkCommon->getTtujPerlengkapan($data_local);
 
+                if( !empty($data_local['UangJalan']) ) {
+                    $uangJalan = $data_local['UangJalan'];
+                    $uangKuli = $this->UangKuli->getUangKuli( $data_local['Ttuj']['from_city_id'], $data_local['Ttuj']['to_city_id'], $data_local['Ttuj']['customer_id'] );
+                }
+
                 if( !empty($data_local['Ttuj']['tgljam_berangkat']) ) {
                     $data_local['Ttuj']['tgl_berangkat'] = date('d/m/Y', strtotime($data_local['Ttuj']['tgljam_berangkat']));
                     $data_local['Ttuj']['jam_berangkat'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_berangkat']));
@@ -624,14 +734,31 @@ class RevenuesController extends AppController {
 
                 if( !empty($data_local['UangJalan']) ) {
                     $this->request->data['Ttuj']['uang_jalan_1_ori'] = $this->MkCommon->convertPriceToString($data_local['UangJalan']['uang_jalan_1'], 0);
-                    $this->request->data['Ttuj']['uang_kuli_muat_ori'] = $this->MkCommon->convertPriceToString($data_local['UangJalan']['uang_kuli_muat'], 0);
-                    $this->request->data['Ttuj']['uang_kuli_bongkar_ori'] = $this->MkCommon->convertPriceToString($data_local['UangJalan']['uang_kuli_bongkar'], 0);
                     $this->request->data['Ttuj']['asdp_ori'] = $this->MkCommon->convertPriceToString($data_local['UangJalan']['asdp'], 0);
                     $this->request->data['Ttuj']['uang_kawal_ori'] = $this->MkCommon->convertPriceToString($data_local['UangJalan']['uang_kawal'], 0);
                     $this->request->data['Ttuj']['uang_keamanan_ori'] = $this->MkCommon->convertPriceToString($data_local['UangJalan']['uang_keamanan'], 0);
                     $this->request->data['Ttuj']['uang_jalan_extra_ori'] = $this->MkCommon->convertPriceToString($data_local['UangJalan']['uang_jalan_extra'], 0);
                     $this->request->data['Ttuj']['commission_ori'] = $this->MkCommon->convertPriceToString($data_local['UangJalan']['commission'], 0);
                     $this->request->data['Ttuj']['commission_extra_ori'] = $this->MkCommon->convertPriceToString($data_local['UangJalan']['commission_extra'], 0);
+
+                    $this->request->data['Ttuj']['uang_jalan_per_unit'] = !empty($data_local['UangJalan']['uang_jalan_per_unit'])?$data_local['UangJalan']['uang_jalan_per_unit']:0;
+                    $this->request->data['Ttuj']['asdp_per_unit'] = !empty($data_local['UangJalan']['asdp_per_unit'])?$data_local['UangJalan']['asdp_per_unit']:0;
+                    $this->request->data['Ttuj']['uang_kawal_per_unit'] = !empty($data_local['UangJalan']['uang_kawal_per_unit'])?$data_local['UangJalan']['uang_kawal_per_unit']:0;
+                    $this->request->data['Ttuj']['uang_keamanan_per_unit'] = !empty($data_local['UangJalan']['uang_keamanan_per_unit'])?$data_local['UangJalan']['uang_keamanan_per_unit']:0;
+                    $this->request->data['Ttuj']['uang_jalan_extra_per_unit'] = !empty($data_local['UangJalan']['uang_jalan_extra_per_unit'])?$data_local['UangJalan']['uang_jalan_extra_per_unit']:0;
+
+                    if( !empty($uangKuli) ) {
+                        $this->request->data['Ttuj']['uang_kuli_muat_ori'] = !empty($uangKuli['UangKuliMuat']['UangKuli']['uang_kuli'])?$uangKuli['UangKuliMuat']['UangKuli']['uang_kuli']:0;
+                        $this->request->data['Ttuj']['uang_kuli_bongkar_ori'] = !empty($uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli'])?$uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli']:0;
+
+                        if( !empty($uangKuli['UangKuliMuat']['UangKuli']['uang_kuli_type']) && $uangKuli['UangKuliMuat']['UangKuli']['uang_kuli_type'] == 'per_unit' ) {
+                            $uangJalan['UangJalan']['uang_kuli_muat_per_unit'] = 1;
+                        }
+
+                        if( !empty($uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli_type']) && $uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli_type'] == 'per_unit' ) {
+                            $uangJalan['UangJalan']['uang_kuli_bongkar_per_unit'] = 1;
+                        }
+                    }
                 }
 
                 if( !empty($this->request->data['Ttuj']['ttuj_date']) && $this->request->data['Ttuj']['ttuj_date'] != '0000-00-00' ) {
@@ -754,7 +881,7 @@ class RevenuesController extends AppController {
             'tipeMotors', 'perlengkapans',
             'truckInfo', 'data_local', 'data_action',
             'cities', 'colors', 'tipeMotorTemps',
-            'groupTipeMotors'
+            'groupTipeMotors', 'uangKuli'
         ));
         $this->render('ttuj_form');
     }
