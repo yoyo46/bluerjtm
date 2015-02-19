@@ -881,7 +881,6 @@ class AjaxController extends AppController {
 		$conditions = array(
 		 	'Ttuj.status' => 1,
             'Ttuj.is_draft' => 0,
-            'Ttuj.is_revenue' => 0,
         );
 
         if(!empty($this->request->data)){
