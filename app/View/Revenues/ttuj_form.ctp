@@ -450,8 +450,8 @@
 									</div>
 								</div>
 							</div>
-				    		<div class="col-sm-6 wrapper_uang_jalan_2">
-						    	<div class="form-group <?php echo (isset($this->request->data['Ttuj']['uang_jalan_2']) && !$this->request->data['Ttuj']['uang_jalan_2'])?'hide':''; ?>">
+				    		<div class="col-sm-6 wrapper_uang_jalan_2 <?php echo (isset($this->request->data['Ttuj']['uang_jalan_2']) && !$this->request->data['Ttuj']['uang_jalan_2'])?'hide':''; ?>">
+						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_jalan_2', __('Uang Jalan Kedua'));
 						    		?>
@@ -471,7 +471,7 @@
 									</div>
 								</div>
 							</div>
-				    		<div class="col-sm-6 wrapper_uang_jalan_extra">
+				    		<div class="col-sm-6 wrapper_uang_jalan_extra <?php echo (isset($this->request->data['Ttuj']['uang_jalan_extra']) && !$this->request->data['Ttuj']['uang_jalan_extra'])?'hide':''; ?>">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_jalan_extra', __('Uang Jalan Extra'));
@@ -496,7 +496,7 @@
 									</div>
 								</div>
 							</div>
-				    		<div class="col-sm-6 wrapper_min_capacity">
+				    		<div class="col-sm-6 wrapper_min_capacity <?php echo (isset($this->request->data['Ttuj']['min_capacity']) && !$this->request->data['Ttuj']['min_capacity'])?'hide':''; ?>">
 						    	<div class="form-group">
 							    	<?php 
 											echo $this->Form->input('min_capacity',array(
@@ -510,7 +510,7 @@
 									?>
 								</div>
 							</div>
-				    		<div class="col-sm-6 wrapper_uang_kuli_muat">
+				    		<div class="col-sm-6 wrapper_uang_kuli_muat <?php echo (isset($this->request->data['Ttuj']['uang_kuli_muat']) && !$this->request->data['Ttuj']['uang_kuli_muat'])?'hide':''; ?>">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_kuli_muat', __('Uang Kuli Muat'));
@@ -535,7 +535,7 @@
 									</div>
 								</div>
 				    		</div>
-				    		<div class="col-sm-6 wrapper_uang_kuli_bongkar">
+				    		<div class="col-sm-6 wrapper_uang_kuli_bongkar <?php echo (isset($this->request->data['Ttuj']['uang_kuli_bongkar']) && !$this->request->data['Ttuj']['uang_kuli_bongkar'])?'hide':''; ?>">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_kuli_bongkar', __('Uang Kuli Bongkar'));
@@ -560,7 +560,7 @@
 									</div>
 								</div>
 							</div>
-				    		<div class="col-sm-6 wrapper_asdp">
+				    		<div class="col-sm-6 wrapper_asdp <?php echo (isset($this->request->data['Ttuj']['asdp']) && !$this->request->data['Ttuj']['asdp'])?'hide':''; ?>">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('asdp', __('Uang Penyebrangan'));
@@ -585,7 +585,7 @@
 									</div>
 								</div>
 							</div>
-				    		<div class="col-sm-6 wrapper_uang_kawal">
+				    		<div class="col-sm-6 wrapper_uang_kawal <?php echo (isset($this->request->data['Ttuj']['uang_kawal']) && !$this->request->data['Ttuj']['uang_kawal'])?'hide':''; ?>">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_kawal', __('Uang Kawal'));
@@ -610,7 +610,7 @@
 									</div>
 								</div>
 							</div>
-				    		<div class="col-sm-6 wrapper_uang_keamanan">
+				    		<div class="col-sm-6 wrapper_uang_keamanan <?php echo (isset($this->request->data['Ttuj']['uang_keamanan']) && !$this->request->data['Ttuj']['uang_keamanan'])?'hide':''; ?>">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_keamanan', __('Uang Keamanan'));

@@ -48,7 +48,7 @@
                 <td><?php echo $value_data['name_tarif'];?></td>
                 <td><?php echo $value_data['from_city_name'];?></td>
                 <td><?php echo $value_data['to_city_name'];?></td>
-                <td><?php echo $value['Customer']['customer_name'];?></td>
+                <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';?></td>
                 <td>
                     <?php
                             switch ($value_data['jenis_unit']) {
