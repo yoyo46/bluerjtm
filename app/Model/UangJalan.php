@@ -185,6 +185,48 @@ class UangJalan extends AppModel {
                 'UangJalanTipeMotor.status' => 1,
             ),
         ),
+        'UangExtraGroupMotor' => array(
+            'className' => 'UangExtraGroupMotor',
+            'foreignKey' => 'uang_jalan_id',
+            'conditions' => array(
+                'UangExtraGroupMotor.status' => 1,
+            ),
+        ),
+        'CommissionGroupMotor' => array(
+            'className' => 'CommissionGroupMotor',
+            'foreignKey' => 'uang_jalan_id',
+            'conditions' => array(
+                'CommissionGroupMotor.status' => 1,
+            ),
+        ),
+        'CommissionExtraGroupMotor' => array(
+            'className' => 'CommissionExtraGroupMotor',
+            'foreignKey' => 'uang_jalan_id',
+            'conditions' => array(
+                'CommissionExtraGroupMotor.status' => 1,
+            ),
+        ),
+        'AsdpGroupMotor' => array(
+            'className' => 'AsdpGroupMotor',
+            'foreignKey' => 'uang_jalan_id',
+            'conditions' => array(
+                'AsdpGroupMotor.status' => 1,
+            ),
+        ),
+        'UangKawalGroupMotor' => array(
+            'className' => 'UangKawalGroupMotor',
+            'foreignKey' => 'uang_jalan_id',
+            'conditions' => array(
+                'UangKawalGroupMotor.status' => 1,
+            ),
+        ),
+        'UangKeamananGroupMotor' => array(
+            'className' => 'UangKeamananGroupMotor',
+            'foreignKey' => 'uang_jalan_id',
+            'conditions' => array(
+                'UangKeamananGroupMotor.status' => 1,
+            ),
+        ),
     );
 
 	function getData($find, $options = false){
@@ -199,7 +241,13 @@ class UangJalan extends AppModel {
             'contain' => array(
                 'FromCity',
                 'ToCity',
-                'UangJalanTipeMotor'
+                'UangJalanTipeMotor',
+                // 'UangExtraGroupMotor',
+                'CommissionGroupMotor',
+                // 'CommissionExtraGroupMotor',
+                'AsdpGroupMotor',
+                'UangKawalGroupMotor',
+                'UangKeamananGroupMotor',
             )
         );
 

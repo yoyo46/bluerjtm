@@ -39,9 +39,27 @@ var qtyMuatanPress = function ( obj ) {
         var uang_jalan_1 = $('.uang_jalan_1_ori').val();
         var uang_kuli_muat = $('.uang_kuli_muat_ori').val();
         var uang_kuli_bongkar = $('.uang_kuli_bongkar_ori').val();
+        var uang_jalan_extra = $('.uang_jalan_extra_ori').val();
+        var min_capacity = $('.min_capacity').val();
+        var commission = $('.commission_ori').val();
+        var commission_extra = $('.commission_extra_ori').val();
+        var asdp = $('.asdp_ori').val();
+        var uang_kawal = $('.uang_kawal_ori').val();
+        var uang_keamanan = $('.uang_keamanan_ori').val();
         var uang_jalan_tipe_motor = 0;
         var uang_kuli_bongkar_tipe_motor = 0;
         var uang_kuli_muat_tipe_motor = 0;
+        var uang_jalan_extra_tipe_motor = 0;
+        var min_capacity_uang_jalan_extra = 0;
+        var asdp_tipe_motor = 0;
+        var uang_kawal_tipe_motor = 0;
+        var uang_keamanan_tipe_motor = 0;
+        var commission_tipe_motor = 0;
+        var min_capacity_use = 0;
+        var total_uang_jalan_extra = 0;
+        var commission_extra_tipe_motor = 0;
+        var min_capacity_commission_extra = 0;
+        var total_commission_extra = 0;
 
         for (var i = 0; i < qtyLen; i++) {
             var tipe_motor_id = parseInt($('#ttujDetail tbody tr .tipe_motor_id[rel="'+i+'"] option:selected').val());
@@ -70,27 +88,73 @@ var qtyMuatanPress = function ( obj ) {
             } else {
                 uang_kuli_bongkar_tipe_motor += uang_kuli_bongkar * qtyMuatan;
             }
+
+            if( typeof $('.asdp-'+group_motor_id).html() != 'undefined' ) {
+                asdp_tipe_motor += parseInt($('.asdp-'+group_motor_id).html()) * qtyMuatan;
+            } else {
+                asdp_tipe_motor += asdp * qtyMuatan;
+            }
+
+            if( typeof $('.uang-kawal-'+group_motor_id).html() != 'undefined' ) {
+                uang_kawal_tipe_motor += parseInt($('.uang-kawal-'+group_motor_id).html()) * qtyMuatan;
+            } else {
+                uang_kawal_tipe_motor += uang_kawal * qtyMuatan;
+            }
+
+            if( typeof $('.uang-keamanan-'+group_motor_id).html() != 'undefined' ) {
+                uang_keamanan_tipe_motor += parseInt($('.uang-keamanan-'+group_motor_id).html()) * qtyMuatan;
+            } else {
+                uang_keamanan_tipe_motor += uang_keamanan * qtyMuatan;
+            }
+
+            if( typeof $('.commission-'+group_motor_id).html() != 'undefined' ) {
+                commission_tipe_motor += parseInt($('.commission-'+group_motor_id).html()) * qtyMuatan;
+            } else {
+                commission_tipe_motor += commission * qtyMuatan;
+            }
+
+            if( typeof $('.uang-jalan-extra-'+group_motor_id).html() != 'undefined' ) {
+                uang_jalan_extra_tipe_motor = parseInt($('.uang-jalan-extra-'+group_motor_id).html());
+                min_capacity_uang_jalan_extra = parseInt($('.uang-jalan-extra-min-capacity-'+group_motor_id).html());
+
+
+                if( qtyMuatan > min_capacity_uang_jalan_extra ) {
+                    var capacityCost = qtyMuatan - min_capacity_uang_jalan_extra;
+                    total_uang_jalan_extra += uang_jalan_extra_tipe_motor*capacityCost;
+                    min_capacity_use += capacityCost;
+                }
+            }
+
+            if( typeof $('.commission-extra-'+group_motor_id).html() != 'undefined' ) {
+                commission_extra_tipe_motor = parseInt($('.commission-extra-'+group_motor_id).html());
+                min_capacity_commission = parseInt($('.commission-extra-min-capacity-'+group_motor_id).html());
+
+
+                if( qtyMuatan > min_capacity_commission ) {
+                    var capacityCost = qtyMuatan - min_capacity_commission;
+                    total_commission_extra += commission_extra_tipe_motor*capacityCost;
+                    min_capacity_use += capacityCost;
+                }
+            }
         };
 
         $('.total-unit-muatan').html(total_muatan);
 
         if( isNaN( total_muatan ) || total_muatan == 0 ) {
             total_muatan = 1;
+            $('.total-unit-muatan').html('');
         }
 
         var uang_jalan_2 = $('.uang_jalan_2').val().replace(/,/gi, "");
         var uang_jalan_per_unit = $('.uang_jalan_per_unit').val();
         var uang_kuli_muat_per_unit = $('.uang_kuli_muat_per_unit').val();
         var uang_kuli_bongkar_per_unit = $('.uang_kuli_bongkar_per_unit').val();
-        var asdp = $('.asdp_ori').val();
         var asdp_per_unit = $('.asdp_per_unit').val();
-        var uang_kawal = $('.uang_kawal_ori').val();
         var uang_kawal_per_unit = $('.uang_kawal_per_unit').val();
-        var uang_keamanan = $('.uang_keamanan_ori').val();
         var uang_keamanan_per_unit = $('.uang_keamanan_per_unit').val();
-        var min_capacity = $('.min_capacity').val();
-        var uang_jalan_extra = $('.uang_jalan_extra_ori').val();
+        var commission_per_unit = $('.commission_per_unit').val();
         var uang_jalan_extra_per_unit = $('.uang_jalan_extra_per_unit').val();
+        var commission_extra_per_unit = $('.commission_extra_per_unit').val();
 
         if( uang_jalan_per_unit == 1 ) {
             uang_jalan_1 = uang_jalan_tipe_motor;
@@ -106,28 +170,49 @@ var qtyMuatanPress = function ( obj ) {
         }
 
         if( asdp_per_unit == 1 ) {
-            asdp = asdp*total_muatan;
+            asdp = asdp_tipe_motor;
         }
 
         if( uang_kawal_per_unit == 1 ) {
-            uang_kawal = uang_kawal*total_muatan;
+            uang_kawal = uang_kawal_tipe_motor;
         }
 
         if( uang_keamanan_per_unit == 1 ) {
-            uang_keamanan = uang_keamanan*total_muatan;
+            uang_keamanan = uang_keamanan_tipe_motor;
         }
 
-        if( uang_jalan_extra != 0 && uang_jalan_extra != '' && min_capacity != 0 && min_capacity != '' ) {
-            if( total_muatan > min_capacity ) {
-                if( uang_jalan_extra_per_unit == 1 ) {
-                    var capacityCost = total_muatan - min_capacity;
-                    uang_jalan_extra = uang_jalan_extra*capacityCost;
-                }
-            } else {
-                uang_jalan_extra = 0;
+        if( commission_per_unit == 1 ) {
+            commission = commission_tipe_motor;
+        }
+
+        if( total_muatan > min_capacity ) {
+            var capacityCost = total_muatan - min_capacity;
+            
+            if( capacityCost > min_capacity_use ) {
+                capacityCost = capacityCost - min_capacity_use;
+                total_uang_jalan_extra += uang_jalan_extra*capacityCost;
+            }
+
+            if( uang_jalan_extra_per_unit == 1 ) {
+                uang_jalan_extra = total_uang_jalan_extra;
             }
         } else {
             uang_jalan_extra = 0;
+        }
+
+        if( total_muatan > min_capacity ) {
+            var capacityCost = total_muatan - min_capacity;
+            
+            if( capacityCost > min_capacity_use ) {
+                capacityCost = capacityCost - min_capacity_use;
+                total_commission_extra += commission_extra*capacityCost;
+            }
+
+            if( commission_extra_per_unit == 1 ) {
+                commission_extra = total_commission_extra;
+            }
+        } else {
+            commission_extra = 0;
         }
 
         $('.uang_jalan_1').val( formatNumber( uang_jalan_1, 0 ) );
@@ -137,7 +222,9 @@ var qtyMuatanPress = function ( obj ) {
         $('.asdp').val( formatNumber( asdp, 0 ) );
         $('.uang_kawal').val( formatNumber( uang_kawal, 0 ) );
         $('.uang_keamanan').val( formatNumber( uang_keamanan, 0 ) );
+        $('.commission').val( commission );
         $('.uang_jalan_extra').val( formatNumber( uang_jalan_extra, 0 ) );
+        $('.commission_extra').val( commission_extra );
     });
 }
 
@@ -177,11 +264,29 @@ var getUangjalan = function ( response ) {
         var uang_keamanan_ori = uang_keamanan;
         var uang_keamanan_per_unit = $(response).filter('#uang_keamanan_per_unit').html();
 
+        var commission = $(response).filter('#commission').html().replace(/,/gi, "");
+        var commission_ori = commission;
+        var commission_extra = $(response).filter('#commission_extra').html().replace(/,/gi, "");
+        var commission_extra_ori = commission_extra;
+        var commission_per_unit = $(response).filter('#commission_per_unit').html();
+        var commission_extra_per_unit = $(response).filter('#commission_extra_per_unit').html();
+
         var uang_jalan_extra = $(response).filter('#uang_jalan_extra').html().replace(/,/gi, "");
         var uang_jalan_extra_ori = uang_jalan_extra;
         var min_capacity = $(response).filter('#min_capacity').html();
         var uang_jalan_extra_per_unit = $(response).filter('#uang_jalan_extra_per_unit').html();
         $('.list-tipe-motor').html( $(response).filter('#list-tipe-motor').html() );
+        var min_capacity_uang_jalan_extra = 0;
+        var uang_jalan_extra_tipe_motor = 0;
+        var commission_tipe_motor = 0;
+        var total_uang_jalan_extra = 0;
+        var asdp_tipe_motor = 0;
+        var uang_kawal_tipe_motor = 0;
+        var uang_keamanan_tipe_motor = 0;
+        var min_capacity_use = 0;
+        var commission_extra_tipe_motor = 0;
+        var min_capacity_commission_extra = 0;
+        var total_commission_extra = 0;
 
         for (var i = 0; i < qtyLen; i++) {
             var tipe_motor_id = parseInt($('#ttujDetail tbody tr .tipe_motor_id[rel="'+i+'"] option:selected').val());
@@ -210,10 +315,59 @@ var getUangjalan = function ( response ) {
             } else {
                 uang_kuli_bongkar_tipe_motor += uang_kuli_bongkar * qtyMuatan;
             }
+
+            if( typeof $('.asdp-'+group_motor_id).html() != 'undefined' ) {
+                asdp_tipe_motor += parseInt($('.asdp-'+group_motor_id).html()) * qtyMuatan;
+            } else {
+                asdp_tipe_motor += asdp * qtyMuatan;
+            }
+
+            if( typeof $('.uang-kawal-'+group_motor_id).html() != 'undefined' ) {
+                uang_kawal_tipe_motor += parseInt($('.uang-kawal-'+group_motor_id).html()) * qtyMuatan;
+            } else {
+                uang_kawal_tipe_motor += uang_kawal * qtyMuatan;
+            }
+
+            if( typeof $('.uang-keamanan-'+group_motor_id).html() != 'undefined' ) {
+                uang_keamanan_tipe_motor += parseInt($('.uang-keamanan-'+group_motor_id).html()) * qtyMuatan;
+            } else {
+                uang_keamanan_tipe_motor += uang_keamanan * qtyMuatan;
+            }
+
+            if( typeof $('.commission-'+group_motor_id).html() != 'undefined' ) {
+                commission_tipe_motor += parseInt($('.commission-'+group_motor_id).html()) * qtyMuatan;
+            } else {
+                commission_tipe_motor += commission * qtyMuatan;
+            }
+
+            if( typeof $('.uang-jalan-extra-'+group_motor_id).html() != 'undefined' ) {
+                uang_jalan_extra_tipe_motor = parseInt($('.uang-jalan-extra-'+group_motor_id).html());
+                min_capacity_uang_jalan_extra = parseInt($('.uang-jalan-extra-min-capacity-'+group_motor_id).html());
+
+                if( qtyMuatan > min_capacity_uang_jalan_extra ) {
+                    var capacityCost = qtyMuatan - min_capacity_uang_jalan_extra;
+                    total_uang_jalan_extra += uang_jalan_extra_tipe_motor*capacityCost;
+                    min_capacity_use += capacityCost;
+                }
+            }
+
+            if( typeof $('.commission-extra'+group_motor_id).html() != 'undefined' ) {
+                commission_extra_tipe_motor = parseInt($('.commission-extra'+group_motor_id).html());
+                min_capacity_commission = parseInt($('.commission-extra-min-capacity-'+group_motor_id).html());
+
+
+                if( qtyMuatan > min_capacity_commission ) {
+                    var capacityCost = qtyMuatan - min_capacity_commission;
+                    total_commission_extra += commission_extra_tipe_motor*capacityCost;
+                    min_capacity_use += capacityCost;
+                }
+            }
         };
+        $('.total-unit-muatan').html(total_muatan);
 
         if( isNaN( total_muatan ) || total_muatan == 0 ) {
             total_muatan = 1;
+            $('.total-unit-muatan').html('');
         }
 
         if( uang_jalan_per_unit == 1 ) {
@@ -236,28 +390,49 @@ var getUangjalan = function ( response ) {
         }
 
         if( asdp_per_unit == 1 ) {
-            asdp = asdp*total_muatan;
+            asdp = asdp_tipe_motor;
         }
 
         if( uang_kawal_per_unit == 1 ) {
-            uang_kawal = uang_kawal*total_muatan;
+            uang_kawal = uang_kawal_tipe_motor;
         }
 
         if( uang_keamanan_per_unit == 1 ) {
-            uang_keamanan = uang_keamanan*total_muatan;
+            uang_keamanan = uang_keamanan_tipe_motor;
         }
 
-        if( uang_jalan_extra != 0 && uang_jalan_extra != '' && min_capacity != 0 && min_capacity != '' ) {
-            if( total_muatan > min_capacity ) {
-                if( uang_jalan_extra_per_unit == 1 ) {
-                    var capacityCost = total_muatan - min_capacity;
-                    uang_jalan_extra = uang_jalan_extra*capacityCost;
-                }
-            } else {
-                uang_jalan_extra = 0;
+        if( commission_per_unit == 1 ) {
+            commission = commission_tipe_motor;
+        }
+
+        if( total_muatan > min_capacity ) {
+            var capacityCost = total_muatan - min_capacity;
+            
+            if( capacityCost > min_capacity_use ) {
+                capacityCost = capacityCost - min_capacity_use;
+                total_uang_jalan_extra += uang_jalan_extra*capacityCost;
+            }
+
+            if( uang_jalan_extra_per_unit == 1 ) {
+                uang_jalan_extra = total_uang_jalan_extra;
             }
         } else {
             uang_jalan_extra = 0;
+        }
+
+        if( total_muatan > min_capacity ) {
+            var capacityCost = total_muatan - min_capacity;
+            
+            if( capacityCost > min_capacity_use ) {
+                capacityCost = capacityCost - min_capacity_use;
+                total_commission_extra += commission_extra*capacityCost;
+            }
+
+            if( commission_extra_per_unit == 1 ) {
+                commission_extra = total_commission_extra;
+            }
+        } else {
+            commission_extra = 0;
         }
     } else {
         var uang_jalan_1 = '';
@@ -284,6 +459,13 @@ var getUangjalan = function ( response ) {
         var uang_jalan_extra_ori = 0;
         var uang_jalan_extra_per_unit = '';
         var min_capacity = 0;
+
+        var commission = '';
+        var commission_ori = '';
+        var commission_extra = '';
+        var commission_extra_ori = '';
+        var commission_extra_per_unit = '';
+        var commission_per_unit = '';
     }
 
     $('.uang_jalan_1').val( formatNumber( uang_jalan_1, 0 ) );
@@ -316,6 +498,12 @@ var getUangjalan = function ( response ) {
     $('.uang_jalan_extra_ori').val( uang_jalan_extra_ori );
     $('.uang_jalan_extra_per_unit').val( uang_jalan_extra_per_unit );
     $('.min_capacity').val( min_capacity );
+    $('.commission').val( commission );
+    $('.commission_ori').val( commission_ori );
+    $('.commission_extra').val( commission_extra );
+    $('.commission_extra_ori').val( commission_extra_ori );
+    $('.commission_per_unit').val( commission_per_unit );
+    $('.commission_extra_per_unit').val( commission_extra_per_unit );
 }
 
 var add_custom_field = function(){
@@ -452,7 +640,7 @@ var add_custom_field = function(){
                 var idx = length+1;
 
                 $('#box-field-input').append('<div rel="'+(idx-1)+'" class="row list-uang-jalan"> \
-                    <div class="col-sm-3"> \
+                    <div class="col-sm-4"> \
                         <div class="form-group"> \
                             <label for="UangJalanTipeMotorTipeMotorId'+(idx-1)+'">Group Motor</label> \
                             <select name="data[UangJalanTipeMotor][tipe_motor_id]['+(idx-1)+']" class="form-control" id="UangJalanTipeMotorTipeMotorId'+(idx-1)+'"> \
@@ -460,7 +648,7 @@ var add_custom_field = function(){
                             </select> \
                         </div> \
                     </div> \
-                    <div class="col-sm-4"> \
+                    <div class="col-sm-6"> \
                         <div class="form-group"> \
                             <label for="UangJalanTipeMotorUangJalan1'+(idx-1)+'">Uang Jalan Pertama</label> \
                             <div class="input-group"> \
@@ -469,7 +657,7 @@ var add_custom_field = function(){
                             </div> \
                         </div> \
                     </div> \
-                    <div class="col-sm-1"> \
+                    <div class="col-sm-2"> \
                         <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="uang_jalan"> \
                             <i class="fa fa-times"></i> Hapus \
                         </a> \
@@ -483,6 +671,218 @@ var add_custom_field = function(){
                 } else {
                     $('#box-field-input .list-uang-jalan:last-child .uang_jalan_2').removeClass('hide');
                 }
+              break;
+            case 'uang_jalan_extra':
+                var class_count = $('#box-field-input-extra .list-uang-jalan-extra');
+                var length = parseInt(class_count.length);
+                var idx = length+1;
+
+                $('#box-field-input-extra').append('<div rel="'+(idx-1)+'" class="row list-uang-jalan-extra"> \
+                    <div class="col-sm-3"> \
+                        <div class="form-group"> \
+                            <label for="UangExtraGroupMotorGroupMotorId'+(idx-1)+'">Group Motor</label> \
+                            <select name="data[UangExtraGroupMotor][group_motor_id]['+(idx-1)+']" class="form-control" id="UangExtraGroupMotorGroupMotorId'+(idx-1)+'"> \
+                                '+$('#tipe_motor select').html()+' \
+                            </select> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-7"> \
+                        <div class="form-group"> \
+                            <label for="UangExtraGroupMotorUangJalanExtra'+(idx-1)+'">Uang Jalan Extra</label> \
+                            <div class="row"> \
+                                <div class="col-sm-4 no-pright"> \
+                                    <div class="input-group"> \
+                                        <span class="input-group-addon">></span> \
+                                        <input name="data[UangExtraGroupMotor][min_capacity]['+(idx-1)+']" class="form-control input_number" type="text" id="UangExtraGroupMotorMinCapacity'+(idx-1)+'"> \
+                                    </div> \
+                                </div> \
+                                <div class="col-sm-8"> \
+                                    <div class="input-group"> \
+                                        <span class="input-group-addon">IDR </span> \
+                                        <input name="data[UangExtraGroupMotor][uang_jalan_extra]['+(idx-1)+']" class="form-control input_price" type="text" id="UangExtraGroupMotorUangJalanExtra'+(idx-1)+'"> \
+                                    </div> \
+                                </div> \
+                            </div> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-2"> \
+                        <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="uang_jalan_extra"> \
+                            <i class="fa fa-times"></i> Hapus \
+                        </a> \
+                    </div> \
+                </div>');
+                input_price( $('#box-field-input-extra .list-uang-jalan-extra:last-child .input_price') );
+                delete_custom_field( $('#box-field-input-extra .list-uang-jalan-extra:last-child .delete-custom-field') );
+              break;
+            case 'commission':
+                var class_count = $('#box-field-input-commission .list-commission');
+                var length = parseInt(class_count.length);
+                var idx = length+1;
+
+                $('#box-field-input-commission').append('<div rel="'+(idx-1)+'" class="row list-commission"> \
+                    <div class="col-sm-4"> \
+                        <div class="form-group"> \
+                            <label for="CommissionGroupMotorGroupMotorId'+(idx-1)+'">Group Motor</label> \
+                            <select name="data[CommissionGroupMotor][group_motor_id]['+(idx-1)+']" class="form-control" id="CommissionGroupMotorGroupMotorId'+(idx-1)+'"> \
+                                '+$('#tipe_motor select').html()+' \
+                            </select> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-6"> \
+                        <div class="form-group"> \
+                            <label for="CommissionGroupMotorCommission'+(idx-1)+'">Komisi</label> \
+                            <div class="input-group"> \
+                                <span class="input-group-addon">IDR </span> \
+                                <input name="data[CommissionGroupMotor][commission]['+(idx-1)+']" class="form-control input_price" type="text" id="CommissionGroupMotorCommission'+(idx-1)+'"> \
+                            </div> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-2"> \
+                        <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="commission"> \
+                            <i class="fa fa-times"></i> Hapus \
+                        </a> \
+                    </div> \
+                </div>');
+                input_price( $('#box-field-input-commission .list-commission:last-child .input_price') );
+                delete_custom_field( $('#box-field-input-commission .list-commission:last-child .delete-custom-field') );
+              break;
+            case 'commission_extra':
+                var class_count = $('#box-field-input-commission-extra .list-commission-extra');
+                var length = parseInt(class_count.length);
+                var idx = length+1;
+
+                $('#box-field-input-commission-extra').append('<div rel="'+(idx-1)+'" class="row list-commission-extra"> \
+                    <div class="col-sm-3"> \
+                        <div class="form-group"> \
+                            <label for="CommissionExtraGroupMotorGroupMotorId'+(idx-1)+'">Group Motor</label> \
+                            <select name="data[CommissionExtraGroupMotor][group_motor_id]['+(idx-1)+']" class="form-control" id="CommissionExtraGroupMotorGroupMotorId'+(idx-1)+'"> \
+                                '+$('#tipe_motor select').html()+' \
+                            </select> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-7"> \
+                        <div class="form-group"> \
+                            <label for="CommissionExtraGroupMotorCommission'+(idx-1)+'">Komisi Extra</label> \
+                            <div class="row"> \
+                                <div class="col-sm-4 no-pright"> \
+                                    <div class="input-group"> \
+                                        <span class="input-group-addon">></span> \
+                                        <input name="data[CommissionExtraGroupMotor][min_capacity]['+(idx-1)+']" class="form-control input_number" type="text" id="CommissionExtraGroupMotorMinCapacity'+(idx-1)+'"> \
+                                    </div> \
+                                </div> \
+                                <div class="col-sm-8"> \
+                                    <div class="input-group"> \
+                                        <span class="input-group-addon">IDR </span> \
+                                        <input name="data[CommissionExtraGroupMotor][commission]['+(idx-1)+']" class="form-control input_price" type="text" id="CommissionExtraGroupMotorCommission'+(idx-1)+'"> \
+                                    </div> \
+                                </div> \
+                            </div> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-2"> \
+                        <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="commission_extra"> \
+                            <i class="fa fa-times"></i> Hapus \
+                        </a> \
+                    </div> \
+                </div>');
+                input_price( $('#box-field-input-commission-extra .list-commission-extra:last-child .input_price') );
+                delete_custom_field( $('#box-field-input-commission-extra .list-commission-extra:last-child .delete-custom-field') );
+              break;
+            case 'asdp':
+                var class_count = $('#box-field-input-asdp .list-asdp');
+                var length = parseInt(class_count.length);
+                var idx = length+1;
+
+                $('#box-field-input-asdp').append('<div rel="'+(idx-1)+'" class="row list-asdp"> \
+                    <div class="col-sm-4"> \
+                        <div class="form-group"> \
+                            <label for="AsdpGroupMotorGroupMotorId'+(idx-1)+'">Group Motor</label> \
+                            <select name="data[AsdpGroupMotor][group_motor_id]['+(idx-1)+']" class="form-control" id="AsdpGroupMotorGroupMotorId'+(idx-1)+'"> \
+                                '+$('#tipe_motor select').html()+' \
+                            </select> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-6"> \
+                        <div class="form-group"> \
+                            <label for="AsdpGroupMotorAsdp'+(idx-1)+'">Uang Penyebrangan</label> \
+                            <div class="input-group"> \
+                                <span class="input-group-addon">IDR </span> \
+                                <input name="data[AsdpGroupMotor][asdp]['+(idx-1)+']" class="form-control input_price" type="text" id="AsdpGroupMotorAsdp'+(idx-1)+'"> \
+                            </div> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-2"> \
+                        <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="asdp"> \
+                            <i class="fa fa-times"></i> Hapus \
+                        </a> \
+                    </div> \
+                </div>');
+                input_price( $('#box-field-input-asdp .list-asdp:last-child .input_price') );
+                delete_custom_field( $('#box-field-input-asdp .list-asdp:last-child .delete-custom-field') );
+              break;
+            case 'uang_kawal':
+                var class_count = $('#box-field-input-uang-kawal .list-uang-kawal');
+                var length = parseInt(class_count.length);
+                var idx = length+1;
+
+                $('#box-field-input-uang-kawal').append('<div rel="'+(idx-1)+'" class="row list-uang-kawal"> \
+                    <div class="col-sm-4"> \
+                        <div class="form-group"> \
+                            <label for="UangKawalGroupMotorGroupMotorId'+(idx-1)+'">Group Motor</label> \
+                            <select name="data[UangKawalGroupMotor][group_motor_id]['+(idx-1)+']" class="form-control" id="UangKawalGroupMotorGroupMotorId'+(idx-1)+'"> \
+                                '+$('#tipe_motor select').html()+' \
+                            </select> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-6"> \
+                        <div class="form-group"> \
+                            <label for="UangKawalGroupMotorUangKawal'+(idx-1)+'">Uang Kawal</label> \
+                            <div class="input-group"> \
+                                <span class="input-group-addon">IDR </span> \
+                                <input name="data[UangKawalGroupMotor][uang_kawal]['+(idx-1)+']" class="form-control input_price" type="text" id="UangKawalGroupMotorUangKawal'+(idx-1)+'"> \
+                            </div> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-2"> \
+                        <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="uang_kawal"> \
+                            <i class="fa fa-times"></i> Hapus \
+                        </a> \
+                    </div> \
+                </div>');
+                input_price( $('#box-field-input-uang-kawal .list-uang-kawal:last-child .input_price') );
+                delete_custom_field( $('#box-field-input-uang-kawal .list-uang-kawal:last-child .delete-custom-field') );
+              break;
+            case 'uang_keamanan':
+                var class_count = $('#box-field-input-uang-keamanan .list-uang-kawal');
+                var length = parseInt(class_count.length);
+                var idx = length+1;
+
+                $('#box-field-input-uang-keamanan').append('<div rel="'+(idx-1)+'" class="row list-uang-keamanan"> \
+                    <div class="col-sm-4"> \
+                        <div class="form-group"> \
+                            <label for="UangKeamananGroupMotorGroupMotorId'+(idx-1)+'">Group Motor</label> \
+                            <select name="data[UangKeamananGroupMotor][group_motor_id]['+(idx-1)+']" class="form-control" id="UangKeamananGroupMotorGroupMotorId'+(idx-1)+'"> \
+                                '+$('#tipe_motor select').html()+' \
+                            </select> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-6"> \
+                        <div class="form-group"> \
+                            <label for="UangKeamananGroupMotorUangKeamanan'+(idx-1)+'">Uang Keamanan</label> \
+                            <div class="input-group"> \
+                                <span class="input-group-addon">IDR </span> \
+                                <input name="data[UangKeamananGroupMotor][uang_keamanan]['+(idx-1)+']" class="form-control input_price" type="text" id="UangKeamananGroupMotorUangKeamanan'+(idx-1)+'"> \
+                            </div> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-2"> \
+                        <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="uang_keamanan"> \
+                            <i class="fa fa-times"></i> Hapus \
+                        </a> \
+                    </div> \
+                </div>');
+                input_price( $('#box-field-input-uang-keamanan .list-uang-keamanan:last-child .input_price') );
+                delete_custom_field( $('#box-field-input-uang-keamanan .list-uang-keamanan:last-child .delete-custom-field') );
               break;
             case 'uang_kuli':
                 var class_count = $('#box-uang-kuli .list-uang-kuli');
@@ -564,6 +964,30 @@ var delete_custom_field = function( obj ) {
             } else if( action_type == 'uang_jalan' ) {
                 var length = parseInt($('#box-field-input .list-uang-jalan').length);
                 var parent = self.parents('.list-uang-jalan');
+                parent.remove();
+            } else if( action_type == 'uang_jalan_extra' ) {
+                var length = parseInt($('#box-field-input-extra .list-uang-jalan-extra').length);
+                var parent = self.parents('.list-uang-jalan-extra');
+                parent.remove();
+            } else if( action_type == 'commission' ) {
+                var length = parseInt($('#box-field-input-commission .list-commission').length);
+                var parent = self.parents('.list-commission');
+                parent.remove();
+            } else if( action_type == 'commission_extra' ) {
+                var length = parseInt($('#box-field-input-commission-extra .list-commission-extra').length);
+                var parent = self.parents('.list-commission-extra');
+                parent.remove();
+            } else if( action_type == 'asdp' ) {
+                var length = parseInt($('#box-field-input-asdp .list-asdp').length);
+                var parent = self.parents('.list-asdp');
+                parent.remove();
+            } else if( action_type == 'uang_kawal' ) {
+                var length = parseInt($('#box-field-input-uang-kawal .list-uang-kawal').length);
+                var parent = self.parents('.list-uang-kawal');
+                parent.remove();
+            } else if( action_type == 'uang_keamanan' ) {
+                var length = parseInt($('#box-field-input-uang-keamanan .list-uang-keamanan').length);
+                var parent = self.parents('.list-uang-keamanan');
                 parent.remove();
             } else if( action_type == 'uang_kuli' ) {
                 var length = parseInt($('#box-field-input .list-uang-kuli').length);
@@ -1381,6 +1805,23 @@ var getNopol = function () {
         $('.driver_name').val('');
         $('.truck_capacity').val('');
         $('#biaya-uang-jalan input').val('');
+
+        var qtyLen = $('#ttujDetail tbody tr').length;
+        var total_muatan = 0;
+
+        for (var i = 0; i < qtyLen; i++) {
+            var qtyMuatan = parseInt($('#ttujDetail tbody tr .qty-muatan[rel="'+i+'"]').val());
+
+            if( isNaN(qtyMuatan) ) {
+                qtyMuatan = 0;
+            }
+            total_muatan += qtyMuatan;
+        };
+
+        if( isNaN( total_muatan ) || total_muatan == 0 ) {
+            total_muatan = 1;
+        }
+        $('.total-unit-muatan').html(total_muatan);
     }
 }
 
@@ -1444,6 +1885,66 @@ $(function() {
         } else {
             $('.uang_jalan_2').removeClass('hide');
             $('.biaya-per-unit').addClass('hide');
+        }
+    });
+
+    $('.chk-uang-jalan-extra').click(function() {
+        var self = $(this);
+
+        if( self.is(':checked') ) {
+            $('.uang-extra-unit').removeClass('hide');
+        } else {
+            $('.uang-extra-unit').addClass('hide');
+        }
+    });
+
+    $('.chk-commission').click(function() {
+        var self = $(this);
+
+        if( self.is(':checked') ) {
+            $('.commission-unit').removeClass('hide');
+        } else {
+            $('.commission-unit').addClass('hide');
+        }
+    });
+
+    $('.chk-commission-extra').click(function() {
+        var self = $(this);
+
+        if( self.is(':checked') ) {
+            $('.commission-extra-unit').removeClass('hide');
+        } else {
+            $('.commission-extra-unit').addClass('hide');
+        }
+    });
+
+    $('.chk-asdp').click(function() {
+        var self = $(this);
+
+        if( self.is(':checked') ) {
+            $('.asdp-unit').removeClass('hide');
+        } else {
+            $('.asdp-unit').addClass('hide');
+        }
+    });
+
+    $('.chk-uang-kawal').click(function() {
+        var self = $(this);
+
+        if( self.is(':checked') ) {
+            $('.uang-kawal-unit').removeClass('hide');
+        } else {
+            $('.uang-kawal-unit').addClass('hide');
+        }
+    });
+
+    $('.chk-uang-keamanan').click(function() {
+        var self = $(this);
+
+        if( self.is(':checked') ) {
+            $('.uang-keamanan-unit').removeClass('hide');
+        } else {
+            $('.uang-keamanan-unit').addClass('hide');
         }
     });
 

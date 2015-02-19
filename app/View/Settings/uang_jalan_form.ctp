@@ -184,7 +184,7 @@
 	<div class="col-sm-6">
 		<div class="box box-success">
 		    <div class="box-header">
-		        <h3 class="box-title"><?php echo __('Biaya   Jalan');?></h3>
+		        <h3 class="box-title"><?php echo __('Uang Jalan');?></h3>
 		    </div>
 		    <div class="box-body">
 		    	<div class="form-group">
@@ -211,7 +211,7 @@
 								'required' => false,
 								'type' => 'checkbox',
 								'value' => 1,
-								'class' => 'chk-uang-jalan'
+								'class' => 'chk-uang-jalan',
 							));
 					?>
 				</div>
@@ -234,6 +234,40 @@
 						?>
 					</div>
 				</div>
+				<div class="biaya-per-unit <?php echo !empty($this->request->data['UangJalan']['uang_jalan_per_unit'])?'':'hide'; ?>">
+					<?php 
+		    				echo $this->Form->label('uang_jalan', __('Biaya Per Group Motor <small>(* Semua biaya berlaku apabila per unit)</small>'));
+		    		?>
+			        <div class="form-group">
+			            <?php
+			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+			                        'class' => 'add-custom-field btn btn-success btn-xs',
+			                        'action_type' => 'uang_jalan',
+			                        'escape' => false
+			                    ));
+			            ?>
+			        </div>
+			        <div id="box-field-input">
+			        	<?php 
+			        			if( !empty($this->request->data['UangJalanTipeMotor']['group_motor_id']) ) {
+									foreach ($this->request->data['UangJalanTipeMotor']['group_motor_id'] as $key => $group_motor_id) {
+										echo $this->element('blocks/settings/list_uang_jalan', array(
+											'idx' => $key,
+										));
+									}
+								}
+			        	?>
+			        </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="box box-success">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Uang Jalan Extra');?></h3>
+		    </div>
+		    <div class="box-body">
 		    	<div class="form-group">
 		    		<?php 
 		    				echo $this->Form->label('uang_jalan_extra', __('Uang Jalan Extra'));
@@ -282,10 +316,49 @@
 								'label'=> __('Per Unit ?'), 
 								'required' => false,
 								'type' => 'checkbox',
-								'value' => 1
+								'value' => 1,
+								'class' => 'chk-uang-jalan-extra',
 							));
 		        	?>
 				</div>
+				<?php
+				/*
+				<div class="uang-extra-unit <?php echo !empty($this->request->data['UangJalan']['uang_jalan_extra_per_unit'])?'':'hide'; ?>">
+					<?php 
+		    				echo $this->Form->label('uang_jalan', __('Biaya Per Group Motor <small>(* Semua biaya berlaku apabila per unit)</small>'));
+		    		?>
+			        <div class="form-group">
+			            <?php
+			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+			                        'class' => 'add-custom-field btn btn-success btn-xs',
+			                        'action_type' => 'uang_jalan_extra',
+			                        'escape' => false
+			                    ));
+			            ?>
+			        </div>
+			        <div id="box-field-input-extra">
+			        	<?php 
+			        			if( !empty($this->request->data['UangExtraGroupMotor']['group_motor_id']) ) {
+									foreach ($this->request->data['UangExtraGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
+										echo $this->element('blocks/settings/list_uang_extra', array(
+											'idx' => $key,
+										));
+									}
+								}
+			        	?>
+			        </div>
+				</div>
+				*/
+				?>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="box box-success">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Komisi');?></h3>
+		    </div>
+		    <div class="box-body">
 		    	<div class="form-group">
 		    		<?php 
 		    				echo $this->Form->label('commission', __('Komisi *'));
@@ -309,10 +382,45 @@
 								'label'=> __('Per Unit ?'), 
 								'required' => false,
 								'type' => 'checkbox',
-								'value' => 1
+								'value' => 1,
+								'class' => 'chk-commission',
 							));
 					?>
 				</div>
+				<div class="commission-unit <?php echo !empty($this->request->data['UangJalan']['commission_per_unit'])?'':'hide'; ?>">
+					<?php 
+		    				echo $this->Form->label('uang_jalan', __('Biaya Per Group Motor <small>(* Semua biaya berlaku apabila per unit)</small>'));
+		    		?>
+			        <div class="form-group">
+			            <?php
+			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+			                        'class' => 'add-custom-field btn btn-success btn-xs',
+			                        'action_type' => 'commission',
+			                        'escape' => false
+			                    ));
+			            ?>
+			        </div>
+			        <div id="box-field-input-commission">
+			        	<?php 
+			        			if( !empty($this->request->data['CommissionGroupMotor']['group_motor_id']) ) {
+									foreach ($this->request->data['CommissionGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
+										echo $this->element('blocks/settings/list_commission', array(
+											'idx' => $key,
+										));
+									}
+								}
+			        	?>
+			        </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="box box-success">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Komisi Extra');?></h3>
+		    </div>
+		    <div class="box-body">
 		    	<div class="form-group">
 		    		<?php 
 		    				echo $this->Form->label('commission_extra', __('Komisi Extra'));
@@ -358,66 +466,53 @@
 								'wrap' => 'div', 
 								'class' => 'error-message',
 							));
+                			echo $this->Form->input('commission_extra_per_unit',array(
+								'label'=> __('Per Unit ?'), 
+								'required' => false,
+								'type' => 'checkbox',
+								'value' => 1,
+								'class' => 'chk-commission-extra',
+							));
 		        	?>
 				</div>
-				<?php 
+				<?php
 				/*
-		    	<div class="form-group">
-		    		<?php 
-		    				echo $this->Form->label('uang_kuli_muat', __('Uang Kuli Muat'));
-		    		?>
-                    <div class="input-group">
-				    	<?php 
-				    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-				    				'class' => 'input-group-addon'
-			    				));
-								echo $this->Form->input('uang_kuli_muat',array(
-									'label'=> false, 
-									'class'=>'form-control input_price',
-									'required' => false,
-									'empty' => __('Uang Kuli Muat'),
-									'type' => 'text',
-								));
-						?>
-					</div>
+				<div class="commission-extra-unit <?php echo !empty($this->request->data['UangJalan']['commission_extra_per_unit'])?'':'hide'; ?>">
 					<?php 
-                			echo $this->Form->input('uang_kuli_muat_per_unit',array(
-								'label'=> __('Per Unit ?'), 
-								'required' => false,
-								'type' => 'checkbox',
-								'value' => 1
-							));
-					?>
-				</div>
-		    	<div class="form-group">
-		    		<?php 
-		    				echo $this->Form->label('uang_kuli_bongkar', __('Uang Kuli Bongkar'));
+		    				echo $this->Form->label('uang_jalan', __('Biaya Per Group Motor <small>(* Semua biaya berlaku apabila per unit)</small>'));
 		    		?>
-                    <div class="input-group">
-				    	<?php 
-				    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-				    				'class' => 'input-group-addon'
-			    				));
-								echo $this->Form->input('uang_kuli_bongkar',array(
-									'label'=> false, 
-									'class'=>'form-control input_price',
-									'required' => false,
-									'empty' => __('Uang Kuli Bongkar'),
-									'type' => 'text',
-								));
-						?>
-					</div>
-					<?php 
-                			echo $this->Form->input('uang_kuli_bongkar_per_unit',array(
-								'label'=> __('Per Unit ?'), 
-								'required' => false,
-								'type' => 'checkbox',
-								'value' => 1
-							));
-					?>
+			        <div class="form-group">
+			            <?php
+			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+			                        'class' => 'add-custom-field btn btn-success btn-xs',
+			                        'action_type' => 'commission_extra',
+			                        'escape' => false
+			                    ));
+			            ?>
+			        </div>
+			        <div id="box-field-input-commission-extra">
+			        	<?php 
+			        			if( !empty($this->request->data['CommissionExtraGroupMotor']['group_motor_id']) ) {
+									foreach ($this->request->data['CommissionExtraGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
+										echo $this->element('blocks/settings/list_commission_extra', array(
+											'idx' => $key,
+										));
+									}
+								}
+			        	?>
+			        </div>
 				</div>
 				*/
 				?>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="box box-success">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Uang Penyebrangan');?></h3>
+		    </div>
+		    <div class="box-body">
 		    	<div class="form-group">
 		    		<?php 
 		    				echo $this->Form->label('asdp', __('Uang Penyebrangan'));
@@ -441,10 +536,45 @@
 								'label'=> __('Per Unit ?'), 
 								'required' => false,
 								'type' => 'checkbox',
-								'value' => 1
+								'value' => 1,
+								'class' => 'chk-asdp',
 							));
 					?>
 				</div>
+				<div class="asdp-unit <?php echo !empty($this->request->data['UangJalan']['asdp_per_unit'])?'':'hide'; ?>">
+					<?php 
+		    				echo $this->Form->label('uang_jalan', __('Biaya Per Group Motor <small>(* Semua biaya berlaku apabila per unit)</small>'));
+		    		?>
+			        <div class="form-group">
+			            <?php
+			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+			                        'class' => 'add-custom-field btn btn-success btn-xs',
+			                        'action_type' => 'asdp',
+			                        'escape' => false
+			                    ));
+			            ?>
+			        </div>
+			        <div id="box-field-input-asdp">
+			        	<?php 
+			        			if( !empty($this->request->data['AsdpGroupMotor']['group_motor_id']) ) {
+									foreach ($this->request->data['AsdpGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
+										echo $this->element('blocks/settings/list_asdp', array(
+											'idx' => $key,
+										));
+									}
+								}
+			        	?>
+			        </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="box box-success">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Uang Kawal');?></h3>
+		    </div>
+		    <div class="box-body">
 		    	<div class="form-group">
 		    		<?php 
 		    				echo $this->Form->label('uang_kawal', __('Uang Kawal'));
@@ -468,10 +598,45 @@
 								'label'=> __('Per Unit ?'), 
 								'required' => false,
 								'type' => 'checkbox',
-								'value' => 1
+								'value' => 1,
+								'class' => 'chk-uang-kawal',
 							));
 					?>
 				</div>
+				<div class="uang-kawal-unit <?php echo !empty($this->request->data['UangJalan']['uang_kawal_per_unit'])?'':'hide'; ?>">
+					<?php 
+		    				echo $this->Form->label('uang_jalan', __('Biaya Per Group Motor <small>(* Semua biaya berlaku apabila per unit)</small>'));
+		    		?>
+			        <div class="form-group">
+			            <?php
+			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+			                        'class' => 'add-custom-field btn btn-success btn-xs',
+			                        'action_type' => 'uang_kawal',
+			                        'escape' => false
+			                    ));
+			            ?>
+			        </div>
+			        <div id="box-field-input-uang-kawal">
+			        	<?php 
+			        			if( !empty($this->request->data['UangKawalGroupMotor']['group_motor_id']) ) {
+									foreach ($this->request->data['UangKawalGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
+										echo $this->element('blocks/settings/list_uang_kawal', array(
+											'idx' => $key,
+										));
+									}
+								}
+			        	?>
+			        </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="box box-success">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Uang Keamanan');?></h3>
+		    </div>
+		    <div class="box-body">
 		    	<div class="form-group">
 		    		<?php 
 		    				echo $this->Form->label('uang_keamanan', __('Uang Keamanan'));
@@ -495,40 +660,37 @@
 								'label'=> __('Per Unit ?'), 
 								'required' => false,
 								'type' => 'checkbox',
-								'value' => 1
+								'value' => 1,
+								'class' => 'chk-uang-keamanan',
 							));
 					?>
 				</div>
-		    </div>
-		</div>
-	</div>
-	<div class="col-sm-12 biaya-per-unit <?php echo !empty($this->request->data['UangJalan']['uang_jalan_per_unit'])?'':'hide'; ?>">
-		<div class="box box-success">
-			<div class="box-header">
-		        <h3 class="box-title"><?php echo __('Biaya Per Group Motor <small>(* Semua biaya berlaku apabila per unit)</small>'); ?></h3>
-		    </div>
-		    <div class="box-body">
-		        <div class="form-group">
-		            <?php
-		                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
-		                        'class' => 'add-custom-field btn btn-success btn-xs',
-		                        'action_type' => 'uang_jalan',
-		                        'escape' => false
-		                    ));
-		            ?>
-		        </div>
-		        <div id="box-field-input">
-		        	<?php 
-		        			if( !empty($this->request->data['UangJalanTipeMotor']['group_motor_id']) ) {
-								foreach ($this->request->data['UangJalanTipeMotor']['group_motor_id'] as $key => $group_motor_id) {
-									echo $this->element('blocks/settings/list_uang_jalan', array(
-										'idx' => $key,
-									));
+				<div class="uang-keamanan-unit <?php echo !empty($this->request->data['UangJalan']['uang_keamanan_per_unit'])?'':'hide'; ?>">
+					<?php 
+		    				echo $this->Form->label('uang_keamanan', __('Biaya Per Group Motor <small>(* Semua biaya berlaku apabila per unit)</small>'));
+		    		?>
+			        <div class="form-group">
+			            <?php
+			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+			                        'class' => 'add-custom-field btn btn-success btn-xs',
+			                        'action_type' => 'uang_keamanan',
+			                        'escape' => false
+			                    ));
+			            ?>
+			        </div>
+			        <div id="box-field-input-uang-keamanan">
+			        	<?php 
+			        			if( !empty($this->request->data['UangKeamananGroupMotor']['group_motor_id']) ) {
+									foreach ($this->request->data['UangKeamananGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
+										echo $this->element('blocks/settings/list_uang_keamanan', array(
+											'idx' => $key,
+										));
+									}
 								}
-							}
-		        	?>
-		        </div>
-		   	</div>
+			        	?>
+			        </div>
+				</div>
+		    </div>
 		</div>
 	</div>
 </div>

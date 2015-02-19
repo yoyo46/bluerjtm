@@ -694,6 +694,27 @@
 		echo $this->Form->hidden('uang_jalan_extra_per_unit',array(
 			'class'=>'uang_jalan_extra_per_unit',
 		));
+		echo $this->Form->hidden('uang_jalan_extra_per_unit',array(
+			'class'=>'uang_jalan_extra_per_unit',
+		));
+		echo $this->Form->hidden('commission',array(
+			'class'=>'commission',
+		));
+		echo $this->Form->hidden('commission_ori',array(
+			'class'=>'commission_ori',
+		));
+		echo $this->Form->hidden('commission_per_unit',array(
+			'class'=>'commission_per_unit',
+		));
+		echo $this->Form->hidden('commission_extra',array(
+			'class'=>'commission_extra',
+		));
+		echo $this->Form->hidden('commission_extra_ori',array(
+			'class'=>'commission_extra_ori',
+		));
+		echo $this->Form->hidden('commission_extra_per_unit',array(
+			'class'=>'commission_extra_per_unit',
+		));
 		echo $this->Form->end();
 ?>
 <div class="hide">

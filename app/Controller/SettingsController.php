@@ -903,6 +903,188 @@ class SettingsController extends AppController {
         return $result;
     }
 
+    // function saveUangExtraGroupMotor ( $data = false, $uang_jalan_id = false ) {
+    //     $result = array(
+    //         'validates' => true,
+    //         'data' => false,
+    //     );
+
+    //     if( !empty($data['UangExtraGroupMotor']['group_motor_id']) ) {
+    //         foreach ($data['UangExtraGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
+    //             $dataValidate['UangExtraGroupMotor']['group_motor_id'] = $group_motor_id;
+    //             $dataValidate['UangExtraGroupMotor']['min_capacity'] = !empty($data['UangExtraGroupMotor']['min_capacity'][$key])?$this->MkCommon->convertPriceToString($data['UangExtraGroupMotor']['min_capacity'][$key], 0):0;
+    //             $dataValidate['UangExtraGroupMotor']['uang_jalan_extra'] = !empty($data['UangExtraGroupMotor']['uang_jalan_extra'][$key])?$this->MkCommon->convertPriceToString($data['UangExtraGroupMotor']['uang_jalan_extra'][$key], 0):0;
+
+    //             $this->UangJalan->UangExtraGroupMotor->set($dataValidate);
+
+    //             if( !empty($uang_jalan_id) ) {
+    //                 $dataValidate['UangExtraGroupMotor']['uang_jalan_id'] = $uang_jalan_id;
+    //                 $this->UangJalan->UangExtraGroupMotor->create();
+    //                 $this->UangJalan->UangExtraGroupMotor->save($dataValidate);
+    //             } else {
+    //                 if(!$this->UangJalan->UangExtraGroupMotor->validates($dataValidate)){
+    //                     $result['validates'] = false;
+    //                 } else {
+    //                     $result['data'][$key] = $dataValidate;
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     return $result;
+    // }
+
+    function saveCommissionGroupMotor ( $data = false, $uang_jalan_id = false ) {
+        $result = array(
+            'validates' => true,
+            'data' => false,
+        );
+
+        if( !empty($data['CommissionGroupMotor']['group_motor_id']) ) {
+            foreach ($data['CommissionGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
+                $dataValidate['CommissionGroupMotor']['group_motor_id'] = $group_motor_id;
+                $dataValidate['CommissionGroupMotor']['commission'] = !empty($data['CommissionGroupMotor']['commission'][$key])?$this->MkCommon->convertPriceToString($data['CommissionGroupMotor']['commission'][$key], 0):0;
+                
+                $this->UangJalan->CommissionGroupMotor->set($dataValidate);
+
+                if( !empty($uang_jalan_id) ) {
+                    $dataValidate['CommissionGroupMotor']['uang_jalan_id'] = $uang_jalan_id;
+                    $this->UangJalan->CommissionGroupMotor->create();
+                    $this->UangJalan->CommissionGroupMotor->save($dataValidate);
+                } else {
+                    if(!$this->UangJalan->CommissionGroupMotor->validates($dataValidate)){
+                        $result['validates'] = false;
+                    } else {
+                        $result['data'][$key] = $dataValidate;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    // function saveCommissionExtraGroupMotor ( $data = false, $uang_jalan_id = false ) {
+    //     $result = array(
+    //         'validates' => true,
+    //         'data' => false,
+    //     );
+
+    //     if( !empty($data['CommissionExtraGroupMotor']['group_motor_id']) ) {
+    //         foreach ($data['CommissionExtraGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
+    //             $dataValidate['CommissionExtraGroupMotor']['group_motor_id'] = $group_motor_id;
+    //             $dataValidate['CommissionExtraGroupMotor']['min_capacity'] = !empty($data['CommissionExtraGroupMotor']['min_capacity'][$key])?$this->MkCommon->convertPriceToString($data['CommissionExtraGroupMotor']['min_capacity'][$key], 0):0;
+    //             $dataValidate['CommissionExtraGroupMotor']['commission'] = !empty($data['CommissionExtraGroupMotor']['commission'][$key])?$this->MkCommon->convertPriceToString($data['CommissionExtraGroupMotor']['commission'][$key], 0):0;
+
+    //             $this->UangJalan->CommissionExtraGroupMotor->set($dataValidate);
+
+    //             if( !empty($uang_jalan_id) ) {
+    //                 $dataValidate['CommissionExtraGroupMotor']['uang_jalan_id'] = $uang_jalan_id;
+    //                 $this->UangJalan->CommissionExtraGroupMotor->create();
+    //                 $this->UangJalan->CommissionExtraGroupMotor->save($dataValidate);
+    //             } else {
+    //                 if(!$this->UangJalan->CommissionExtraGroupMotor->validates($dataValidate)){
+    //                     $result['validates'] = false;
+    //                 } else {
+    //                     $result['data'][$key] = $dataValidate;
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     return $result;
+    // }
+
+    function saveAsdpGroupMotor ( $data = false, $uang_jalan_id = false ) {
+        $result = array(
+            'validates' => true,
+            'data' => false,
+        );
+
+        if( !empty($data['AsdpGroupMotor']['group_motor_id']) ) {
+            foreach ($data['AsdpGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
+                $dataValidate['AsdpGroupMotor']['group_motor_id'] = $group_motor_id;
+                $dataValidate['AsdpGroupMotor']['asdp'] = !empty($data['AsdpGroupMotor']['asdp'][$key])?$this->MkCommon->convertPriceToString($data['AsdpGroupMotor']['asdp'][$key], 0):0;
+
+                $this->UangJalan->AsdpGroupMotor->set($dataValidate);
+
+                if( !empty($uang_jalan_id) ) {
+                    $dataValidate['AsdpGroupMotor']['uang_jalan_id'] = $uang_jalan_id;
+                    $this->UangJalan->AsdpGroupMotor->create();
+                    $this->UangJalan->AsdpGroupMotor->save($dataValidate);
+                } else {
+                    if(!$this->UangJalan->AsdpGroupMotor->validates($dataValidate)){
+                        $result['validates'] = false;
+                    } else {
+                        $result['data'][$key] = $dataValidate;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    function saveUangKawalGroupMotor ( $data = false, $uang_jalan_id = false ) {
+        $result = array(
+            'validates' => true,
+            'data' => false,
+        );
+
+        if( !empty($data['UangKawalGroupMotor']['group_motor_id']) ) {
+            foreach ($data['UangKawalGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
+                $dataValidate['UangKawalGroupMotor']['group_motor_id'] = $group_motor_id;
+                $dataValidate['UangKawalGroupMotor']['uang_kawal'] = !empty($data['UangKawalGroupMotor']['uang_kawal'][$key])?$this->MkCommon->convertPriceToString($data['UangKawalGroupMotor']['uang_kawal'][$key], 0):0;
+
+                $this->UangJalan->UangKawalGroupMotor->set($dataValidate);
+
+                if( !empty($uang_jalan_id) ) {
+                    $dataValidate['UangKawalGroupMotor']['uang_jalan_id'] = $uang_jalan_id;
+                    $this->UangJalan->UangKawalGroupMotor->create();
+                    $this->UangJalan->UangKawalGroupMotor->save($dataValidate);
+                } else {
+                    if(!$this->UangJalan->UangKawalGroupMotor->validates($dataValidate)){
+                        $result['validates'] = false;
+                    } else {
+                        $result['data'][$key] = $dataValidate;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    function saveUangKeamananGroupMotor ( $data = false, $uang_jalan_id = false ) {
+        $result = array(
+            'validates' => true,
+            'data' => false,
+        );
+
+        if( !empty($data['UangKeamananGroupMotor']['group_motor_id']) ) {
+            foreach ($data['UangKeamananGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
+                $dataValidate['UangKeamananGroupMotor']['group_motor_id'] = $group_motor_id;
+                $dataValidate['UangKeamananGroupMotor']['uang_keamanan'] = !empty($data['UangKeamananGroupMotor']['uang_keamanan'][$key])?$this->MkCommon->convertPriceToString($data['UangKeamananGroupMotor']['uang_keamanan'][$key], 0):0;
+
+                $this->UangJalan->UangKeamananGroupMotor->set($dataValidate);
+
+                if( !empty($uang_jalan_id) ) {
+                    $dataValidate['UangKeamananGroupMotor']['uang_jalan_id'] = $uang_jalan_id;
+                    $this->UangJalan->UangKeamananGroupMotor->create();
+                    $this->UangJalan->UangKeamananGroupMotor->save($dataValidate);
+                } else {
+                    if(!$this->UangJalan->UangKeamananGroupMotor->validates($dataValidate)){
+                        $result['validates'] = false;
+                    } else {
+                        $result['data'][$key] = $dataValidate;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
     function saveUangKuliGroupMotor ( $data = false, $uang_kuli_id = false ) {
         $result = array(
             'validates' => true,
@@ -971,6 +1153,12 @@ class SettingsController extends AppController {
 
             if($this->UangJalan->validates($data)){
                 $saveGroupMotor = false;
+                // $saveUangExtraGroupMotor = false;
+                $saveCommissionGroupMotor = false;
+                // $saveCommissionExtraGroupMotor = false;
+                $saveAsdpGroupMotor = false;
+                $saveUangKawalGroupMotor = false;
+                $saveUangKeamananGroupMotor = false;
 
                 if( !empty($data['UangJalanTipeMotor']['group_motor_id']) ) {
                     $resultGroupMotor = $this->saveGroupMotor($data);
@@ -979,17 +1167,113 @@ class SettingsController extends AppController {
                     $saveGroupMotor = true;
                 }
 
-                if( $saveGroupMotor && $this->UangJalan->save($data) ){
+                // if( !empty($data['UangExtraGroupMotor']['group_motor_id']) ) {
+                //     $resultUangExtraGroupMotor = $this->saveUangExtraGroupMotor($data);
+                //     $saveUangExtraGroupMotor = !empty($resultUangExtraGroupMotor['validates'])?$resultUangExtraGroupMotor['validates']:false;
+                // } else {
+                //     $saveUangExtraGroupMotor = true;
+                // }
+
+                if( !empty($data['CommissionGroupMotor']['group_motor_id']) ) {
+                    $resultCommissionGroupMotor = $this->saveCommissionGroupMotor($data);
+                    $saveCommissionGroupMotor = !empty($resultCommissionGroupMotor['validates'])?$resultCommissionGroupMotor['validates']:false;
+                } else {
+                    $saveCommissionGroupMotor = true;
+                }
+
+                // if( !empty($data['CommissionExtraGroupMotor']['group_motor_id']) ) {
+                //     $resultCommissionExtraGroupMotor = $this->saveCommissionExtraGroupMotor($data);
+                //     $saveCommissionExtraGroupMotor = !empty($resultCommissionExtraGroupMotor['validates'])?$resultCommissionExtraGroupMotor['validates']:false;
+                // } else {
+                //     $saveCommissionExtraGroupMotor = true;
+                // }
+
+                if( !empty($data['AsdpGroupMotor']['group_motor_id']) ) {
+                    $resultAsdpGroupMotor = $this->saveAsdpGroupMotor($data);
+                    $saveAsdpGroupMotor = !empty($resultAsdpGroupMotor['validates'])?$resultAsdpGroupMotor['validates']:false;
+                } else {
+                    $saveAsdpGroupMotor = true;
+                }
+
+                if( !empty($data['UangKawalGroupMotor']['group_motor_id']) ) {
+                    $resultUangKawalGroupMotor = $this->saveUangKawalGroupMotor($data);
+                    $saveUangKawalGroupMotor = !empty($resultUangKawalGroupMotor['validates'])?$resultUangKawalGroupMotor['validates']:false;
+                } else {
+                    $saveUangKawalGroupMotor = true;
+                }
+
+                if( !empty($data['UangKeamananGroupMotor']['group_motor_id']) ) {
+                    $resultUangKeamananGroupMotor = $this->saveUangKeamananGroupMotor($data);
+                    $saveUangKeamananGroupMotor = !empty($resultUangKeamananGroupMotor['validates'])?$resultUangKeamananGroupMotor['validates']:false;
+                } else {
+                    $saveUangKeamananGroupMotor = true;
+                }
+
+                if( $saveGroupMotor && $saveCommissionGroupMotor && $saveAsdpGroupMotor && $saveUangKawalGroupMotor && $saveUangKeamananGroupMotor && $this->UangJalan->save($data) ){
                     if( !empty($id) ) {
                         $this->UangJalan->UangJalanTipeMotor->updateAll( array(
                             'UangJalanTipeMotor.status' => 0,
                         ), array(
                             'UangJalanTipeMotor.uang_jalan_id' => $id,
                         ));
+                        // $this->UangJalan->UangExtraGroupMotor->updateAll( array(
+                        //     'UangExtraGroupMotor.status' => 0,
+                        // ), array(
+                        //     'UangExtraGroupMotor.uang_jalan_id' => $id,
+                        // ));
+                        $this->UangJalan->CommissionGroupMotor->updateAll( array(
+                            'CommissionGroupMotor.status' => 0,
+                        ), array(
+                            'CommissionGroupMotor.uang_jalan_id' => $id,
+                        ));
+                        // $this->UangJalan->CommissionExtraGroupMotor->updateAll( array(
+                        //     'CommissionExtraGroupMotor.status' => 0,
+                        // ), array(
+                        //     'CommissionExtraGroupMotor.uang_jalan_id' => $id,
+                        // ));
+                        $this->UangJalan->AsdpGroupMotor->updateAll( array(
+                            'AsdpGroupMotor.status' => 0,
+                        ), array(
+                            'AsdpGroupMotor.uang_jalan_id' => $id,
+                        ));
+                        $this->UangJalan->UangKawalGroupMotor->updateAll( array(
+                            'UangKawalGroupMotor.status' => 0,
+                        ), array(
+                            'UangKawalGroupMotor.uang_jalan_id' => $id,
+                        ));
+                        $this->UangJalan->UangKeamananGroupMotor->updateAll( array(
+                            'UangKeamananGroupMotor.status' => 0,
+                        ), array(
+                            'UangKeamananGroupMotor.uang_jalan_id' => $id,
+                        ));
                     }
 
                     if( !empty($data['UangJalan']['uang_jalan_per_unit']) ) {
                         $this->saveGroupMotor($data, $this->UangJalan->id);
+                    }
+
+                    // if( !empty($data['UangJalan']['uang_jalan_extra_per_unit']) ) {
+                    //     $this->saveUangExtraGroupMotor($data, $this->UangJalan->id);
+                    // }
+
+                    if( !empty($data['UangJalan']['commission_per_unit']) ) {
+                        $this->saveCommissionGroupMotor($data, $this->UangJalan->id);
+                    }
+
+                    // if( !empty($data['UangJalan']['commission_extra_per_unit']) ) {
+                    //     $this->saveCommissionExtraGroupMotor($data, $this->UangJalan->id);
+                    // }
+
+                    if( !empty($data['UangJalan']['asdp_per_unit']) ) {
+                        $this->saveAsdpGroupMotor($data, $this->UangJalan->id);
+                    }
+
+                    if( !empty($data['UangJalan']['uang_kawal_per_unit']) ) {
+                        $this->saveUangKawalGroupMotor($data, $this->UangJalan->id);
+                    }
+
+                    if( !empty($data['UangJalan']['uang_keamanan_per_unit']) ) {
+                        $this->saveUangKeamananGroupMotor($data, $this->UangJalan->id);
                     }
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Uang jalan'), $msg), 'success');

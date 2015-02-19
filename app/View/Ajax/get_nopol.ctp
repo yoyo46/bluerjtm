@@ -32,6 +32,13 @@
 			'id' => 'commission_per_unit',
 		));
 
+		echo $this->Html->tag('div', !empty($uangJalan['UangJalan']['commission_extra'])?$uangJalan['UangJalan']['commission_extra']:0, array(
+			'id' => 'commission_extra',
+		));
+		echo $this->Html->tag('div', !empty($uangJalan['UangJalan']['commission_extra_per_unit'])?$uangJalan['UangJalan']['commission_extra_per_unit']:0, array(
+			'id' => 'commission_extra_per_unit',
+		));
+
 		echo $this->Html->tag('div', !empty($uangKuliMuat['UangKuli']['uang_kuli'])?$uangKuliMuat['UangKuli']['uang_kuli']:0, array(
 			'id' => 'uang_kuli_muat',
 		));
@@ -108,6 +115,60 @@
 				foreach ($uangKuliBongkar['UangKuliGroupMotor'] as $key => $value) {
 					echo $this->Html->tag('div', $value['uang_kuli'], array(
 						'class' => sprintf('uang-kuli-bongkar-%s', $value['group_motor_id'])
+					));
+				}
+			}
+
+			// if( !empty($uangJalan['UangExtraGroupMotor']) ) {
+			// 	foreach ($uangJalan['UangExtraGroupMotor'] as $key => $value) {
+			// 		echo $this->Html->tag('div', $value['uang_jalan_extra'], array(
+			// 			'class' => sprintf('uang-jalan-extra-%s', $value['group_motor_id'])
+			// 		));
+			// 		echo $this->Html->tag('div', $value['min_capacity'], array(
+			// 			'class' => sprintf('uang-jalan-extra-min-capacity-%s', $value['group_motor_id'])
+			// 		));
+			// 	}
+			// }
+
+			if( !empty($uangJalan['CommissionGroupMotor']) ) {
+				foreach ($uangJalan['CommissionGroupMotor'] as $key => $value) {
+					echo $this->Html->tag('div', $value['commission'], array(
+						'class' => sprintf('commission-%s', $value['group_motor_id'])
+					));
+				}
+			}
+
+			// if( !empty($uangJalan['CommissionExtraGroupMotor']) ) {
+			// 	foreach ($uangJalan['CommissionExtraGroupMotor'] as $key => $value) {
+			// 		echo $this->Html->tag('div', $value['commission'], array(
+			// 			'class' => sprintf('commission-extra-%s', $value['group_motor_id'])
+			// 		));
+			// 		echo $this->Html->tag('div', $value['min_capacity'], array(
+			// 			'class' => sprintf('commission-extra-min-capacity-%s', $value['group_motor_id'])
+			// 		));
+			// 	}
+			// }
+
+			if( !empty($uangJalan['AsdpGroupMotor']) ) {
+				foreach ($uangJalan['AsdpGroupMotor'] as $key => $value) {
+					echo $this->Html->tag('div', $value['asdp'], array(
+						'class' => sprintf('asdp-%s', $value['group_motor_id'])
+					));
+				}
+			}
+
+			if( !empty($uangJalan['UangKawalGroupMotor']) ) {
+				foreach ($uangJalan['UangKawalGroupMotor'] as $key => $value) {
+					echo $this->Html->tag('div', $value['uang_kawal'], array(
+						'class' => sprintf('uang-kawal-%s', $value['group_motor_id'])
+					));
+				}
+			}
+
+			if( !empty($uangJalan['UangKeamananGroupMotor']) ) {
+				foreach ($uangJalan['UangKeamananGroupMotor'] as $key => $value) {
+					echo $this->Html->tag('div', $value['uang_keamanan'], array(
+						'class' => sprintf('uang-keamanan-%s', $value['group_motor_id'])
 					));
 				}
 			}
