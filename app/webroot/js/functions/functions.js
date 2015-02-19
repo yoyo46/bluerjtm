@@ -286,7 +286,7 @@ var getUangjalan = function ( response ) {
     var total_muatan = 0;
     var qtyLen = $('#ttujDetail tbody tr').length;
 
-    if( uang_jalan_1 != 0 ) {
+    // if( uang_jalan_1 != 0 ) {
         var uang_jalan_1_ori = uang_jalan_1;
         var uang_jalan_2 = $(response).filter('#uang_jalan_2').html().replace(/,/gi, "");
         var uang_jalan_per_unit = $(response).filter('#uang_jalan_per_unit').html();
@@ -323,39 +323,39 @@ var getUangjalan = function ( response ) {
         var min_capacity = $(response).filter('#min_capacity').html();
         var uang_jalan_extra_per_unit = $(response).filter('#uang_jalan_extra_per_unit').html();
         $('.list-tipe-motor').html( $(response).filter('#list-tipe-motor').html() );
-    } else {
-        var uang_jalan_1 = '';
-        var uang_jalan_1_ori = 0;
-        var uang_jalan_2 = '';
-        var uang_jalan_per_unit = '';
-        var uang_kuli_muat = '';
-        var uang_kuli_muat_ori = 0;
-        var uang_kuli_muat_per_unit = '';
-        var uang_kuli_bongkar = '';
-        var uang_kuli_bongkar_ori = 0;
-        var uang_kuli_bongkar_per_unit = '';
-        var asdp = '';
-        var asdp_ori = 0;
-        var asdp_per_unit = '';
-        var uang_kawal = '';
-        var uang_kawal_ori = 0;
-        var uang_kawal_per_unit = '';
-        var uang_keamanan = '';
-        var uang_keamanan_ori = 0;
-        var uang_keamanan_per_unit = '';
+    // } else {
+    //     var uang_jalan_1 = '';
+    //     var uang_jalan_1_ori = 0;
+    //     var uang_jalan_2 = '';
+    //     var uang_jalan_per_unit = '';
+    //     var uang_kuli_muat = '';
+    //     var uang_kuli_muat_ori = 0;
+    //     var uang_kuli_muat_per_unit = '';
+    //     var uang_kuli_bongkar = '';
+    //     var uang_kuli_bongkar_ori = 0;
+    //     var uang_kuli_bongkar_per_unit = '';
+    //     var asdp = '';
+    //     var asdp_ori = 0;
+    //     var asdp_per_unit = '';
+    //     var uang_kawal = '';
+    //     var uang_kawal_ori = 0;
+    //     var uang_kawal_per_unit = '';
+    //     var uang_keamanan = '';
+    //     var uang_keamanan_ori = 0;
+    //     var uang_keamanan_per_unit = '';
 
-        var uang_jalan_extra = '';
-        var uang_jalan_extra_ori = 0;
-        var uang_jalan_extra_per_unit = '';
-        var min_capacity = 0;
+    //     var uang_jalan_extra = '';
+    //     var uang_jalan_extra_ori = 0;
+    //     var uang_jalan_extra_per_unit = '';
+    //     var min_capacity = 0;
 
-        var commission = '';
-        var commission_ori = '';
-        var commission_extra = '';
-        var commission_extra_ori = '';
-        var commission_extra_per_unit = '';
-        var commission_per_unit = '';
-    }
+    //     var commission = '';
+    //     var commission_ori = '';
+    //     var commission_extra = '';
+    //     var commission_extra_ori = '';
+    //     var commission_extra_per_unit = '';
+    //     var commission_per_unit = '';
+    // }
 
     $('.uang_jalan_1_ori').val( uang_jalan_1 );
     $('.uang_jalan_per_unit').val( uang_jalan_per_unit );
