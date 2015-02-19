@@ -24,6 +24,24 @@
 			        <h3 class="box-title"><?php echo __('Informasi Revenue'); ?></h3>
 			    </div>
 			    <div class="box-body">
+			    	<?php 
+			    			if( !empty($id) ) {
+			    	?>
+			        <div class="form-group">
+			        	<?php 
+								echo $this->Form->input('id',array(
+									'label'=> __('No. Ref'), 
+									'class'=>'form-control',
+									'required' => false,
+									'value' => str_pad($id, 5, '0', STR_PAD_LEFT),
+									'disabled' => true,
+									'type' => 'text',
+								));
+						?>
+			        </div>
+			        <?php 
+			        		}
+			        ?>
 			        <div class="form-group">
 			        	<?php 
 								echo $this->Form->input('no_doc',array(

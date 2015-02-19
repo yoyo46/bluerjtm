@@ -31,10 +31,13 @@
         <table class="table table-hover">
             <tr>
                 <?php 
-                        echo $this->Html->tag('th', $this->Paginator->sort('Revenue.no_doc', __('No Dokumen'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Revenue.id', __('No. Ref'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.no_ttuj', __('No TTUJ'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Revenue.no_doc', __('No. Dokumen'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.no_ttuj', __('No. TTUJ'), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Customer.name', __('Customer'), array(
@@ -57,6 +60,7 @@
                             $id = $value['Revenue']['id'];
             ?>
             <tr>
+                <td><?php echo str_pad($value['Revenue']['id'], 5, '0', STR_PAD_LEFT);?></td>
                 <td><?php echo $value['Revenue']['no_doc'];?></td>
                 <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
                 <td><?php echo $value['Customer']['name'];?></td>
