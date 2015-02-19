@@ -2,12 +2,6 @@
 class Leasing extends AppModel {
 	var $name = 'Leasing';
 	var $validate = array(
-        'truck_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Truk harap dipilih'
-            ),
-        ),
         'installment' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -16,6 +10,18 @@ class Leasing extends AppModel {
             'numeric' => array(
                 'rule' => array('numeric'),
                 'message' => 'Cicilan perbulan harap diisi dengan angka',
+            ),
+        ),
+        'no_contract' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'No Kontral harap diisi'
+            ),
+        ),
+        'leasing_company_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Perusahaan leasing harap dipilih'
             ),
         ),
         'paid_date' => array(
@@ -34,12 +40,49 @@ class Leasing extends AppModel {
                 'message' => 'Denda harap diisi dengan angka',
             ),
         ),
+        'date_first_installment' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tanggal angsuran pertama harap diisi'
+            ),
+        ),
+        'date_last_installment' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tanggal angsuran terakhir harap diisi'
+            ),
+        ),
+        'leasing_month' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Bulan angsuran harap dipilih'
+            ),
+        ),
+        'down_payment' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'DP harap diisi'
+            ),
+        ),
+        'installment_rate' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Bunga harap diisi'
+            ),
+        ),
 	);
 
     var $belongsTo = array(
-        'Truck' => array(
-            'className' => 'Truck',
-            'foreignKey' => 'truck_id',
+        'LeasingCompany' => array(
+            'className' => 'LeasingCompany',
+            'foreignKey' => 'leasing_company_id',
+        ),
+    );
+
+    var $hasMany = array(
+        'LeasingDetail' => array(
+            'className' => 'LeasingDetail',
+            'foreignKey' => 'leasing_id',
         ),
     );
 
@@ -50,7 +93,7 @@ class Leasing extends AppModel {
                 'Leasing.status' => 'DESC'
             ),
             'contain' => array(
-                'Truck'
+                'LeasingCompany'
             ),
         );
 

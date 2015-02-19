@@ -921,6 +921,23 @@ var add_custom_field = function(){
                 var html = '<input type="file" name="data[LakaMedias][name][]" class="form-control" id="LakaMediasName'+length+'">';
                 $('.laka-form-media').append(html);
             break;
+            case 'leasing': 
+                var option_form = $('#form-truck-id').html();
+                var content_clone = '<tr>'+
+                    '<td>'+option_form+'</td>'+
+                    '<td align="right box-price">'+
+                        '<input name="data[LeasingDetail][price][]" class="form-control price-leasing-truck input_price input_number" value="0" type="text" id="LeasingDetailPrice">'+
+                    '</td>'+
+                    '<td class="action-table">'+
+                        '<a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="leasing_first"><i class="fa fa-times"></i> Hapus</a>'+
+                    '</td>'+
+                '</tr>';
+
+                $('.leasing-body #field-grand-total-leasing').before(content_clone);
+                input_price( $('#box-field-input .box-price:last-child .input_price') );
+                delete_custom_field( $('.table-leasing .action-table:last-child .delete-custom-field') );
+                leasing_action();
+            break;
         }
     });
 }
@@ -944,9 +961,10 @@ var delete_custom_field = function( obj ) {
                 var action_type = self.attr('action_type');
                 var idx = length;
                 $('#'+action_type+(idx-1)).remove();
-            } else if( action_type == 'lku_first'){
+            } else if( action_type == 'lku_first' || action_type == 'leasing_first' ){
                 self.parents('tr').remove();
                 grandTotalLku();
+                grandTotalLeasing();
             } else if( action_type == 'lku_second'){
                 self.parents('tr').remove();
                 getTotalLkuPayment();
@@ -1336,6 +1354,21 @@ function grandTotalLku(){
     };
 
     $('#grand-total-lku').text('IDR '+formatNumber(total_price));
+}
+
+function grandTotalLeasing(){
+    var price_tipe_motor = $('.price-leasing-truck');
+    var length = price_tipe_motor.length;
+
+    var total_price = 0;
+    for (var i = 0; i < length; i++) {
+        if(typeof price_tipe_motor[i] != 'undefined'){
+            var price = price_tipe_motor[i].value
+            total_price += parseInt(price.replace(',', ''));
+        }
+    };
+
+    $('#grand-total-leasing').text('IDR '+formatNumber(total_price));
 }
 
 var choose_item_info = function(){
@@ -1840,8 +1873,14 @@ var checkCharge = function ( obj ) {
         changeDetailRevenue( parent, city_id, group_motor_id, val );
     });
 }
-
+var leasing_action = function(){
+    $('.price-leasing-truck').keyup(function(){
+        grandTotalLeasing()
+    });
+}
 $(function() {
+    leasing_action();
+
 	$('.aset-handling').click(function(){
 		if($('.aset-handling .aset-handling-form').is(':checked')) {
 			$('.neraca-form').prop('disabled', false);
@@ -1858,7 +1897,6 @@ $(function() {
             $('.sj-date input').val('');
         }
     });
-
     
     add_custom_field();
 

@@ -44,7 +44,7 @@ class UsersController extends AppController {
                     $session_error = true;
                 }
 
-                if( !$session_error ){
+                // if( !$session_error ){
                     if($this->Auth->login()){
                         $this->redirect($this->Auth->redirect());   
                     }else{
@@ -60,9 +60,9 @@ class UsersController extends AppController {
                             $this->Cookie->write('login_'.$emailCache, $get_cookie_session);
                         }
                     }
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal melakukan login, Anda sudah melakukan 3x percobaan login, silahkan tunggu 1 jam kemudian untuk melakukan login kembali.'), 'error');
-                }
+                // }else{
+                //     $this->MkCommon->setCustomFlash(__('Gagal melakukan login, Anda sudah melakukan 3x percobaan login, silahkan tunggu 1 jam kemudian untuk melakukan login kembali.'), 'error');
+                // }
 
                 if( !empty($this->request->data['User']['password']) ) {
                     unset($this->request->data['User']['password']);

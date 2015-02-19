@@ -7,11 +7,11 @@
     </div>
     <div class="box-body">
         <?php 
-            echo $this->Form->create('Leasing', array(
+            echo $this->Form->create('LeasingCompany', array(
                 'url'=> $this->Html->url( array(
                     'controller' => 'leasings',
                     'action' => 'search',
-                    'index'
+                    'leasing_companies'
                 )), 
                 'role' => 'form',
                 'inputDefaults' => array('div' => false),
@@ -21,11 +21,11 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('no_contract',array(
-                                'label'=> __('No. Kontrak'),
+                            echo $this->Form->input('name',array(
+                                'label'=> __('Nama Perusahaan Leasing'),
                                 'class'=>'form-control',
                                 'required' => false,
-                                'placeholder' => __('No. Kontrak')
+                                'placeholder' => __('Nama Perusahaan Leasing')
                             ));
                     ?>
                 </div>
@@ -37,7 +37,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'index', 
+                                'action' => 'leasing_companies', 
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',

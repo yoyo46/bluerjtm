@@ -212,5 +212,35 @@
     </div>
     <?php 
             }
+    
+            if( !empty($leasing) ) {
+    ?>
+    <div class="col-sm-6">
+        <div class="box box-warning">
+            <div class="box-header">
+                <?php 
+                        echo $this->Html->tag('h3', __('Leasing Truk'), array(
+                            'class' => 'box-title',
+                        ));
+                ?>
+            </div>
+            <div class="box-body">
+                <dl class="dl-horizontal">
+                    <?php 
+                        echo $this->Html->tag('dt', 'No. Kontrak');
+                        echo $this->Html->tag('dd', $leasing['Leasing']['no_contract']);
+
+                        echo $this->Html->tag('dt', 'Perusahaan Leasing');
+                        echo $this->Html->tag('dd', $leasing['Leasing']['LeasingCompany']['name']);
+
+                        echo $this->Html->tag('dt', 'Tanggal Angsuran Terakhir');
+                        echo $this->Html->tag('dd', $this->Common->customDate($leasing['Leasing']['date_last_installment']));
+                    ?>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <?php 
+            }
     ?>
 </div>

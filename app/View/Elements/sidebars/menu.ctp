@@ -216,7 +216,7 @@
                             'siup', 'siup_payments', 'achievement_report',
                             'monitoring_truck', 'capacity_report',
                             'point_perday_report', 'point_perplant_report',
-                            'retail_point_perplant_report'
+                            'retail_point_perplant_report', 'view_leasing'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -407,6 +407,17 @@
                                     'class' => ( !empty($active_menu) && $active_menu == 'point_perplant_report' )?'active':'',
                                 ));
                             }
+
+                            // if( in_array('view_leasing', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Leasing', array(
+                                    'controller' => 'leasings',
+                                    'action' => 'index',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'view_leasing' )?'active':'',
+                                ));
+                            // }
                     ?>
                 </ul>
             </li>

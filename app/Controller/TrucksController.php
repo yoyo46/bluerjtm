@@ -82,6 +82,8 @@ class TrucksController extends AppController {
         if(!empty($id)){
             $this->loadModel('TruckCustomer');
             $this->loadModel('TruckPerlengkapan');
+            $this->loadModel('LeasingDetail');
+
             $truck = $this->Truck->getTruck($id);
 
             if(!empty($truck)){
@@ -91,12 +93,23 @@ class TrucksController extends AppController {
                         'TruckPerlengkapan.truck_id' => $truck['Truck']['id'],
                     )
                 ));
+                $leasing = $this->LeasingDetail->getData('first', array(
+                    'conditions' => array(
+                        'LeasingDetail.truck_id' => $id
+                    ),
+                    'contain' => array(
+                        'Leasing' => array(
+                            'LeasingCompany'
+                        )
+                    )
+                ));
+                
                 $_show_perlengkapan = true;
                 $sub_module_title = __('Detail Truk');
                 $this->set('active_menu', 'trucks');
                 $this->set(compact(
                     'truck', 'sub_module_title', 'truckPerlengkapans',
-                    '_show_perlengkapan'
+                    '_show_perlengkapan', 'leasing'
                 ));
             }else{
                 $this->MkCommon->setCustomFlash(__('Truk tidak ditemukan.'), 'error');
