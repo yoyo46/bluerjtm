@@ -105,6 +105,40 @@ class RevenueDetail extends AppModel {
         return $data;
     }
 
+    function getMergeAll($data, $revenue_id){
+        if(empty($data['RevenueDetail'])){
+            $data_merge = $this->find('all', array(
+                'conditions' => array(
+                    'RevenueDetail.revenue_id' => $revenue_id,
+                ),
+                'contain' => array(
+                    'City',
+                ),
+                'order' => array(
+                    'RevenueDetail.id' => 'ASC',
+                ),
+                'group' => array(
+                    'RevenueDetail.group_motor_id',
+                    'RevenueDetail.city_id',
+                ),
+                'fields' => array(
+                    'RevenueDetail.id', 'RevenueDetail.group_motor_id',
+                    'SUM(RevenueDetail.qty_unit) AS qty_unit', 'RevenueDetail.no_do',
+                    'RevenueDetail.no_sj', 'City.name',
+                    'RevenueDetail.payment_type', 'RevenueDetail.is_charge',
+                    'RevenueDetail.price_unit', 'RevenueDetail.tarif_angkutan_id',
+                    'RevenueDetail.total_price_unit', 'RevenueDetail.city_id',
+                ),
+            ));
+
+            if(!empty($data_merge)){
+                $data['RevenueDetail'] = $data_merge;
+            }
+        }
+
+        return $data;
+    }
+
     function getLastReference(){
         return $this->find('first', array(
             'conditions' => array(

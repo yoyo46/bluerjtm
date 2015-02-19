@@ -1,4 +1,12 @@
 <?php
+        echo $this->Form->hidden('Revenue.payment_type', array(
+            'type' => 'text',
+            'label' => false,
+            'id' => 'main_jenis_unit',
+            'required' => false,
+            'value' =>  !empty($mainTarif['jenis_unit']) ? $mainTarif['jenis_unit'] : 0
+        ));
+
         if(!empty($detail['RevenueDetail']['price_unit'])){
             $price = $detail['RevenueDetail']['price_unit'];
         }else{
@@ -37,20 +45,22 @@
     <?php 
             if( !$flagTruck && empty($is_charge) ) {
                 if(is_array($price)){
-                    echo $this->Number->format($price['tarif'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+                    $price = $price['tarif'];
+                    echo $this->Number->format($price, Configure::read('__Site.config_currency_code'), array('places' => 0));
                 }else{
                     echo $price;
                 }
-                echo $this->Form->hidden('RevenueDetail.price_unit.', array(
-                    'type' => 'text',
-                    'label' => false,
-                    'class' => 'form-control price-unit-revenue input_number',
-                    'required' => false,
-                    'value' => (is_array($price)) ? $price['tarif'] : 0
-                ));
             } else if( is_string($price) ) {
                 echo $price;
             }
+
+            echo $this->Form->hidden('RevenueDetail.price_unit.', array(
+                'type' => 'text',
+                'label' => false,
+                'class' => 'form-control price-unit-revenue input_number',
+                'required' => false,
+                'value' => (is_numeric($price)) ? $price : 0
+            ));
     ?>
 </div>
 <div id="additional-charge-data">

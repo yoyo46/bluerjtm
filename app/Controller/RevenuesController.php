@@ -2220,17 +2220,12 @@ class RevenuesController extends AppController {
                     'Revenue.id' => $id
                 ),
                 'contain' => array(
-                    'RevenueDetail'=> array(
-                        'order' => array(
-                            'RevenueDetail.id' => 'ASC',
-                        ),
-                        'City'
-                    ),
                     'Ttuj'
                 )
             ));
 
             if(!empty($revenue)){
+                $revenue = $this->Revenue->RevenueDetail->getMergeAll( $revenue, $revenue['Revenue']['id'] );
                 $module_title = __('Rubah Revenue');
                 $this->set('sub_module_title', trim($module_title));
                 $this->doRevenue($id, $revenue);
@@ -2471,29 +2466,26 @@ class RevenuesController extends AppController {
             if(!empty($this->request->data['RevenueDetail'])){
                 if( !empty($this->request->data['RevenueDetail']) ) {
                     foreach ($this->request->data['RevenueDetail'] as $key => $value) {
-                        $value = $this->GroupMotor->getMerge( $value, $value['group_motor_id'] );
+                        $value = $this->GroupMotor->getMerge( $value, $value['RevenueDetail']['group_motor_id'] );
                         $data_revenue_detail[$key] = array(
                             'TtujTipeMotor' => array(
-                                'qty' => $value['qty_unit'],
+                                'qty' => !empty($value[0]['qty_unit'])?$value[0]['qty_unit']:0,
                             ),
                             'RevenueDetail' => array(
-                                'no_do' => $value['no_do'],
-                                'no_sj' => $value['no_sj'],
+                                'no_do' => $value['RevenueDetail']['no_do'],
+                                'no_sj' => $value['RevenueDetail']['no_sj'],
                                 'to_city_name' => !empty($value['City']['name'])?$value['City']['name']:'',
                                 'price_unit' => array(
-                                    'jenis_unit' => $value['payment_type'],
-                                    'tarif' => ( $value['payment_type'] == 'per_truck' && empty($value['is_charge']) )?$data_local['Revenue']['tarif_per_truck']:$value['price_unit'],
-                                    'tarif_angkutan_id' => $value['tarif_angkutan_id'],
+                                    'jenis_unit' => $value['RevenueDetail']['payment_type'],
+                                    'tarif' => ( $value['RevenueDetail']['payment_type'] == 'per_truck' && empty($value['RevenueDetail']['is_charge']) )?$data_local['Revenue']['tarif_per_truck']:$value['RevenueDetail']['price_unit'],
+                                    'tarif_angkutan_id' => $value['RevenueDetail']['tarif_angkutan_id'],
                                 ),
-                                'total_price_unit' => !empty($value['total_price_unit'])?$value['total_price_unit']:0,
-                                'payment_type' => $value['payment_type'],
-                                'qty_unit' => $value['qty_unit'],
-                                'group_motor_id' => $value['group_motor_id'],
-                                'city_id' => $value['city_id'],
-                                'is_charge' => $value['is_charge'],
-                                'TipeMotor' => array(
-                                    'name' => !empty($value['TipeMotor']['name'])?$value['TipeMotor']['name']:'',
-                                ),
+                                'total_price_unit' => !empty($value['RevenueDetail']['total_price_unit'])?$value['RevenueDetail']['total_price_unit']:0,
+                                'payment_type' => $value['RevenueDetail']['payment_type'],
+                                'qty_unit' => !empty($value[0]['qty_unit'])?$value[0]['qty_unit']:0,
+                                'group_motor_id' => $value['RevenueDetail']['group_motor_id'],
+                                'city_id' => $value['RevenueDetail']['city_id'],
+                                'is_charge' => $value['RevenueDetail']['is_charge'],
                             )
                         );
                     }

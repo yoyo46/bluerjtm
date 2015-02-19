@@ -22,7 +22,14 @@
                         $arr_duplicate = array();
                         $total = 0;
                         $flagTruck = false;
-                        $jenis_unit = !empty($tarifTruck['jenis_unit'])?$tarifTruck['jenis_unit']:false;
+
+                        if( !empty($tarifTruck['jenis_unit']) ) {
+                            $jenis_unit = $tarifTruck['jenis_unit'];
+                        } else if( !empty($data_local['Revenue']['revenue_tarif_type']) ) {
+                            $jenis_unit = $data_local['Revenue']['revenue_tarif_type'];
+                        } else {
+                            $jenis_unit = false;
+                        }
 
                         if( $jenis_unit == 'per_truck' ) {
                             $flagTruck = true;
@@ -150,7 +157,6 @@
                     </td>
                     <td class="price-data text-right">
                         <?php 
-
                                 if( $flagShowPrice ) {
                                     if( is_array($price) ){
                                         $price = $price['tarif'];
@@ -161,15 +167,17 @@
                                     } else {
                                         echo $price;
                                     }
-
-                                    echo $this->Form->hidden('RevenueDetail.price_unit.', array(
-                                        'type' => 'text',
-                                        'label' => false,
-                                        'class' => 'form-control price-unit-revenue input_number',
-                                        'required' => false,
-                                        'value' => $price,
-                                    ));
+                                } else {
+                                    $price = '';
                                 }
+
+                                echo $this->Form->hidden('RevenueDetail.price_unit.', array(
+                                    'type' => 'text',
+                                    'label' => false,
+                                    'class' => 'form-control price-unit-revenue input_number',
+                                    'required' => false,
+                                    'value' => is_numeric($price)?$price:0,
+                                ));
                         ?>
                     </td>
                     <td class="total-price-revenue text-right">
