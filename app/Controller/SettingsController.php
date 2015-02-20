@@ -1549,6 +1549,8 @@ class SettingsController extends AppController {
                 }else{
                     if( empty($saveGroupMotor) ) {
                         $this->MkCommon->setCustomFlash(sprintf(__('Biaya Per Group Motor harap dilengkapi'), $msg), 'error'); 
+                    } if( empty($saveCapacity) ) {
+                        $this->MkCommon->setCustomFlash(sprintf(__('Biaya Per Kapasitas harap dilengkapi'), $msg), 'error'); 
                     } else {
                         $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Uang Kuli'), $msg), 'error'); 
                     }

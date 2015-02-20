@@ -139,16 +139,20 @@ class UangKuli extends AppModel {
         $city_id = !empty($this->data['UangKuli']['city_id'])?trim($this->data['UangKuli']['city_id']):false;
         $category = !empty($this->data['UangKuli']['category'])?trim($this->data['UangKuli']['category']):false;
         $customer_id = !empty($this->data['UangKuli']['customer_id'])?trim($this->data['UangKuli']['customer_id']):0;
+        $conditions = array(
+            'UangKuli.city_id' => $city_id,
+            'UangKuli.category' => $category,
+            // 'UangKuli.capacity' => $capacity,
+            'UangKuli.id <>' => $this->id,
+            'UangKuli.status' => 1,
+        );
+
+        if( $category == 'bongkar' ) {
+            $conditions['UangKuli.customer_id'] = $customer_id;
+        }
         // $capacity = !empty($this->data['UangKuli']['capacity'])?trim($this->data['UangKuli']['capacity']):0;
         $checkCity = $this->getData('first', array(
-            'conditions' => array(
-                'UangKuli.customer_id' => $customer_id,
-                'UangKuli.city_id' => $city_id,
-                'UangKuli.category' => $category,
-                // 'UangKuli.capacity' => $capacity,
-                'UangKuli.id <>' => $this->id,
-                'UangKuli.status' => 1,
-            ),
+            'conditions' => $conditions,
         ), false);
 
         if( !empty($checkCity) ) {
