@@ -799,6 +799,37 @@ var add_custom_field = function(){
                 input_price( $('#box-uang-kuli .list-uang-kuli:last-child .input_price') );
                 delete_custom_field( $('#box-uang-kuli .list-uang-kuli:last-child .delete-custom-field') );
               break;
+            case 'uang_kuli_capacity':
+                var class_count = $('#box-uang-kuli-capacity .list-uang-kuli-capacity');
+                var length = parseInt(class_count.length);
+                var idx = length+1;
+
+                $('#box-uang-kuli-capacity').append('<div rel="'+(idx-1)+'" class="row list-uang-kuli-capacity"> \
+                    <div class="col-sm-3"> \
+                        <div class="form-group"> \
+                            <label for="UangKuliCapacityCapacity'+(idx-1)+'">Kapasitas</label> \
+                            <input name="data[UangKuliCapacity][capacity]['+(idx-1)+']" class="form-control input_number" type="text" id="UangKuliCapacityCapacity'+(idx-1)+'"> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-5"> \
+                        <div class="form-group"> \
+                            <label for="UangKuliCapacityUangKuli'+(idx-1)+'">Uang Kuli</label> \
+                            <div class="input-group"> \
+                                <span class="input-group-addon">IDR </span> \
+                                <input name="data[UangKuliCapacity][uang_kuli]['+(idx-1)+']" class="form-control input_price" type="text" id="UangKuliCapacityUangKuli'+(idx-1)+'"> \
+                            </div> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-1"> \
+                        <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="uang_kuli"> \
+                            <i class="fa fa-times"></i> Hapus \
+                        </a> \
+                    </div> \
+                </div>');
+                input_price( $('#box-uang-kuli-capacity .list-uang-kuli-capacity:last-child .input_price') );
+                input_number( $('#box-uang-kuli-capacity .list-uang-kuli-capacity:last-child .input_number') );
+                delete_custom_field( $('#box-uang-kuli-capacity .list-uang-kuli-capacity:last-child .delete-custom-field') );
+              break;
             case 'file-laka':
                 var length = $('.laka-form-media input').length + 1;
                 var html = '<input type="file" name="data[LakaMedias][name][]" class="form-control" id="LakaMediasName'+length+'">';
@@ -894,6 +925,10 @@ var delete_custom_field = function( obj ) {
                 var length = parseInt($('#box-field-input .list-uang-kuli').length);
                 var parent = self.parents('.list-uang-kuli');
                 parent.remove();
+            } else if( action_type == 'uang_kuli_capacity' ) {
+                var length = parseInt($('#box-field-input .list-uang-kuli-capacity').length);
+                var parent = self.parents('.list-uang-kuli-capacity');
+                parent.remove();
             } else if( action_type == 'file-laka' ) {
                 var lengthTable = $('.laka-form-media input').length;
                 $('#LakaMediasName'+lengthTable).remove();
@@ -927,8 +962,12 @@ var delete_custom_field = function( obj ) {
     });
 }
 
-var input_number = function () {
-    $('.input_number').keypress(function(event) {    
+var input_number = function ( obj ) {
+    if( typeof obj == 'undefined' ) {
+        obj = $('.input_number');
+    }
+
+    obj.keypress(function(event) {    
         if( (this.value.length == 0 && event.which == 46) || event.keyCode == 33 || event.keyCode == 64 || event.keyCode == 35 || event.keyCode == 36 || event.keyCode == 37 || event.keyCode == 94 || event.keyCode == 38 || event.keyCode == 42 || event.keyCode == 40 || event.keyCode == 41
             ){
             return false;
@@ -1693,8 +1732,12 @@ function findInfoTTujRevenue(url){
     });
 }
 
-var input_price = function () {
-    $('.input_price').priceFormat({
+var input_price = function ( obj ) {
+    if( typeof obj == 'undefined' ) {
+        obj = $('.input_price');
+    }
+
+    obj.priceFormat({
         doneFunc: function(obj, val) {
             currencyVal = val;
             currencyVal = currencyVal.replace(/,/gi, "")

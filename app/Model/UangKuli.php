@@ -68,6 +68,13 @@ class UangKuli extends AppModel {
                 'UangKuliGroupMotor.status' => 1,
             ),
         ),
+        'UangKuliCapacity' => array(
+            'className' => 'UangKuliCapacity',
+            'foreignKey' => 'uang_kuli_id',
+            'conditions' => array(
+                'UangKuliCapacity.status' => 1,
+            ),
+        ),
     );
 
     function getData($find, $options = false, $is_merge = true){
@@ -82,6 +89,7 @@ class UangKuli extends AppModel {
             'contain' => array(
                 'City',
                 'UangKuliGroupMotor',
+                'UangKuliCapacity',
             )
         );
 
@@ -117,7 +125,7 @@ class UangKuli extends AppModel {
         $uang_kuli_type = !empty($this->data['UangKuli']['uang_kuli_type'])?$this->data['UangKuli']['uang_kuli_type']:false;
 
         if( $uang_kuli_type == 'per_truck' ) {
-            if( empty($this->data['UangKuli']['capacity']) ) {
+            if( empty($this->data['UangKuliCapacity']['capacity']) ) {
                 return false;
             } else {
                 return true; 
@@ -131,13 +139,13 @@ class UangKuli extends AppModel {
         $city_id = !empty($this->data['UangKuli']['city_id'])?trim($this->data['UangKuli']['city_id']):false;
         $category = !empty($this->data['UangKuli']['category'])?trim($this->data['UangKuli']['category']):false;
         $customer_id = !empty($this->data['UangKuli']['customer_id'])?trim($this->data['UangKuli']['customer_id']):0;
-        $capacity = !empty($this->data['UangKuli']['capacity'])?trim($this->data['UangKuli']['capacity']):0;
+        // $capacity = !empty($this->data['UangKuli']['capacity'])?trim($this->data['UangKuli']['capacity']):0;
         $checkCity = $this->getData('first', array(
             'conditions' => array(
                 'UangKuli.customer_id' => $customer_id,
                 'UangKuli.city_id' => $city_id,
                 'UangKuli.category' => $category,
-                'UangKuli.capacity' => $capacity,
+                // 'UangKuli.capacity' => $capacity,
                 'UangKuli.id <>' => $this->id,
                 'UangKuli.status' => 1,
             ),
@@ -150,13 +158,20 @@ class UangKuli extends AppModel {
         }
     }
 
-    function getUangKuli ( $from_city_id, $to_city_id, $customer_id ) {
-        $capacity = !empty($capacity)?$capacity:0;
+    function getUangKuli ( $from_city_id, $to_city_id, $customer_id, $capacity = false ) {
         $uangKuliMuat = $this->getData('first', array(
             'conditions' => array(
                 'UangKuli.status' => 1,
                 'UangKuli.city_id' => $from_city_id,
                 'UangKuli.category' => 'muat',
+            ),
+            'contain' => array(
+                'UangKuliCapacity' => array(
+                    'conditions' => array(
+                        'UangKuliCapacity.capacity' => $capacity,
+                        'UangKuliCapacity.status' => 1,
+                    ),
+                ),
             ),
         ));
         $uangKuliBongkar = $this->getData('first', array(
@@ -166,7 +181,33 @@ class UangKuli extends AppModel {
                 'UangKuli.city_id' => $to_city_id,
                 'UangKuli.category' => 'bongkar',
             ),
+            'contain' => array(
+                'UangKuliCapacity' => array(
+                    'conditions' => array(
+                        'UangKuliCapacity.capacity' => $capacity,
+                        'UangKuliCapacity.status' => 1,
+                    ),
+                ),
+            ),
         ));
+
+        if( !empty($uangKuliMuat) && $uangKuliMuat['UangKuli']['uang_kuli_type'] == 'per_truck' ) {
+            if( !empty($uangKuliMuat['UangKuliCapacity']) ) {
+                $uangKuliMuat['UangKuli']['uang_kuli'] = $uangKuliMuat['UangKuliCapacity'][0]['uang_kuli'];
+                $uangKuliMuat['UangKuli']['capacity'] = $uangKuliMuat['UangKuliCapacity'][0]['capacity'];
+            } else {
+                $uangKuliMuat['UangKuli']['uang_kuli'] = 0;
+            }
+        }
+
+        if( !empty($uangKuliBongkar) && $uangKuliBongkar['UangKuli']['uang_kuli_type'] == 'per_truck' ) {
+            if( !empty($uangKuliBongkar['UangKuliCapacity']) ) {
+                $uangKuliBongkar['UangKuli']['uang_kuli'] = $uangKuliBongkar['UangKuliCapacity'][0]['uang_kuli'];
+                $uangKuliBongkar['UangKuli']['capacity'] = $uangKuliBongkar['UangKuliCapacity'][0]['capacity'];
+            } else {
+                $uangKuliBongkar['UangKuli']['uang_kuli'] = 0;
+            }
+        }
 
         return array(
             'UangKuliMuat' => $uangKuliMuat,

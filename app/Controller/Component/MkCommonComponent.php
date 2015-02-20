@@ -235,6 +235,22 @@ class MkCommonComponent extends Component {
         return $data;
     }
 
+    function getUangKuliCapacity ( $data ) {
+        if( !empty($data['UangKuliCapacity']) ) {
+            $tempCapacity = array();
+
+            foreach ($data['UangKuliCapacity'] as $key => $capacity) {
+                $tempCapacity['UangKuliCapacity']['capacity'][$key] = $capacity['capacity'];
+                $tempCapacity['UangKuliCapacity']['uang_kuli'][$key] = $capacity['uang_kuli'];
+            }
+
+            unset($data['UangKuliCapacity']);
+            $data['UangKuliCapacity'] = $tempCapacity['UangKuliCapacity'];
+        }
+
+        return $data;
+    }
+
     function toSlug($string) {
         return strtolower(Inflector::slug($string, '-'));
     }

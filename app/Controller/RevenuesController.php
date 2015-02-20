@@ -481,7 +481,7 @@ class RevenuesController extends AppController {
                     if( !empty($data['Ttuj']['to_city_id']) ) {
                         if( !empty($truck['Truck']['capacity']) ) {
                             $dataTruck = $this->UangJalan->getNopol($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $truck['Truck']['capacity']);
-                            $uangKuli = $this->UangKuli->getUangKuli( $data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'] );
+                            $uangKuli = $this->UangKuli->getUangKuli( $data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $truck['Truck']['capacity'] );
                             $uangJalan['UangJalan']['uang_kuli_muat_per_unit'] = 1;
 
                             if( !empty($dataTruck) ) {
@@ -727,7 +727,7 @@ class RevenuesController extends AppController {
 
                 if( !empty($data_local['UangJalan']) ) {
                     $uangJalan = $data_local['UangJalan'];
-                    $uangKuli = $this->UangKuli->getUangKuli( $data_local['Ttuj']['from_city_id'], $data_local['Ttuj']['to_city_id'], $data_local['Ttuj']['customer_id'] );
+                    $uangKuli = $this->UangKuli->getUangKuli( $data_local['Ttuj']['from_city_id'], $data_local['Ttuj']['to_city_id'], $data_local['Ttuj']['customer_id'], $data_local['Ttuj']['truck_capacity'] );
                 }
 
                 if( !empty($data_local['Ttuj']['tgljam_berangkat']) ) {

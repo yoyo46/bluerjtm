@@ -83,21 +83,6 @@
 						?>
 					</div>
 				</div>
-				<?php
-						$addClass = 'hide';
-
-						if( !empty($this->request->data['UangKuli']['uang_kuli_type']) && $this->request->data['UangKuli']['uang_kuli_type'] == 'per_truck' ) {
-							$addClass = '';
-						}
-
-						echo $this->Html->tag('div', $this->Form->input('capacity',array(
-							'label'=> __('Kapasitas Truk'), 
-							'class'=>'form-control',
-							'required' => false,
-						)), array(
-							'class' => 'form-group capacity_truck '.$addClass,
-						));
-				?>
 		    </div>
 		</div>
 	</div>
@@ -130,6 +115,43 @@
 									echo $this->element('blocks/settings/list_uang_kuli', array(
 										'idx' => $key,
 										'model' => 'UangKuliGroupMotor',
+									));
+								}
+							}
+		        	?>
+		        </div>
+		   	</div>
+		</div>
+	</div>
+	<?php
+			$addClass = 'hide';
+
+			if( !empty($this->request->data['UangKuli']['uang_kuli_type']) && $this->request->data['UangKuli']['uang_kuli_type'] == 'per_truck' ) {
+				$addClass = '';
+			}
+	?>
+	<div class="col-sm-6 <?php echo $addClass; ?> capacity_truck">
+		<div class="box box-success">
+			<div class="box-header">
+		        <h3 class="box-title"><?php echo __('Biaya Per Kapasitas'); ?></h3>
+		    </div>
+		    <div class="box-body">
+		        <div class="form-group">
+		            <?php
+		                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+		                        'class' => 'add-custom-field btn btn-success btn-xs',
+		                        'action_type' => 'uang_kuli_capacity',
+		                        'escape' => false
+		                    ));
+		            ?>
+		        </div>
+		        <div id="box-uang-kuli-capacity">
+		        	<?php 
+		        			if( !empty($this->request->data['UangKuliCapacity']['capacity']) ) {
+								foreach ($this->request->data['UangKuliCapacity']['capacity'] as $key => $capacity) {
+									echo $this->element('blocks/settings/list_uang_kuli_capacities', array(
+										'idx' => $key,
+										'model' => 'UangKuliCapacity',
 									));
 								}
 							}

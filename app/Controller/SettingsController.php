@@ -1115,6 +1115,36 @@ class SettingsController extends AppController {
         return $result;
     }
 
+    function saveUangKuliCapacity ( $data = false, $uang_kuli_id = false ) {
+        $result = array(
+            'validates' => true,
+            'data' => false,
+        );
+
+        if( !empty($data['UangKuliCapacity']['capacity']) ) {
+            foreach ($data['UangKuliCapacity']['capacity'] as $key => $capacity) {
+                $dataValidate['UangKuliCapacity']['capacity'] = !empty($capacity)?$capacity:0;
+                $dataValidate['UangKuliCapacity']['uang_kuli'] = !empty($data['UangKuliCapacity']['uang_kuli'][$key])?$this->MkCommon->convertPriceToString($data['UangKuliCapacity']['uang_kuli'][$key], 0):'';
+                
+                $this->UangKuli->UangKuliCapacity->set($dataValidate);
+
+                if( !empty($uang_kuli_id) ) {
+                    $dataValidate['UangKuliCapacity']['uang_kuli_id'] = $uang_kuli_id;
+                    $this->UangKuli->UangKuliCapacity->create();
+                    $this->UangKuli->UangKuliCapacity->save($dataValidate);
+                } else {
+                    if(!$this->UangKuli->UangKuliCapacity->validates($dataValidate)){
+                        $result['validates'] = false;
+                    } else {
+                        $result['data'][$key] = $dataValidate;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
     function doUangJalan($id = false, $data_local = false){
         $this->loadModel('City');
         $this->loadModel('GroupMotor');
@@ -1472,6 +1502,7 @@ class SettingsController extends AppController {
 
             if($this->UangKuli->validates($data)){
                 $saveGroupMotor = true;
+                $saveCapacity = true;
 
                 if( !empty($data['UangKuli']['uang_kuli_type']) && $data['UangKuli']['uang_kuli_type'] == 'per_unit' ) {
                     if( !empty($data['UangKuliGroupMotor']['group_motor_id']) ) {
@@ -1480,17 +1511,32 @@ class SettingsController extends AppController {
                     } else {
                         $saveGroupMotor = false;
                     }
+                } else if( !empty($data['UangKuli']['uang_kuli_type']) && $data['UangKuli']['uang_kuli_type'] == 'per_truck' ) {
+                    if( !empty($data['UangKuliCapacity']['capacity']) ) {
+                        $resultCapacity = $this->saveUangKuliCapacity($data);
+                        $saveCapacity = !empty($resultCapacity['validates'])?$resultCapacity['validates']:false;
+                    } else {
+                        $saveCapacity = false;
+                    }
                 }
 
-                if( $saveGroupMotor && $this->UangKuli->save($data) ){
+                if( $saveGroupMotor && $saveCapacity && $this->UangKuli->save($data) ){
                     $this->UangKuli->UangKuliGroupMotor->updateAll( array(
                         'UangKuliGroupMotor.status' => 0,
                     ), array(
                         'UangKuliGroupMotor.uang_kuli_id' => $this->UangKuli->id,
                     ));
 
+                    $this->UangKuli->UangKuliCapacity->updateAll( array(
+                        'UangKuliCapacity.status' => 0,
+                    ), array(
+                        'UangKuliCapacity.uang_kuli_id' => $this->UangKuli->id,
+                    ));
+
                     if( !empty($data['UangKuli']['uang_kuli_type']) && $data['UangKuli']['uang_kuli_type'] == 'per_unit' ) {
                         $this->saveUangKuliGroupMotor($data, $this->UangKuli->id);
+                    } else if( !empty($data['UangKuli']['uang_kuli_type']) && $data['UangKuli']['uang_kuli_type'] == 'per_truck' ) {
+                        $this->saveUangKuliCapacity($data, $this->UangKuli->id);
                     }
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Uang Kuli'), $msg), 'success');
@@ -1515,6 +1561,7 @@ class SettingsController extends AppController {
             
             if($id && $data_local){
                 $data_local = $this->MkCommon->getUangKuliGroupMotor($data_local);
+                $data_local = $this->MkCommon->getUangKuliCapacity($data_local);
                 $this->request->data = $data_local;
             }
         }
