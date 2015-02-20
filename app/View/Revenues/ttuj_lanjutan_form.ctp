@@ -87,7 +87,7 @@
 				    <div class="box-body">
 				        <div class="form-group">
 				        	<?php 
-				        			if( !empty($ttuj_id) ) {
+				        			if( !empty($ttuj_id) || !empty($id) ) {
 										echo $this->Form->input('no_ttuj',array(
 											'label'=> __('No. TTUJ'), 
 											'class'=>'form-control',

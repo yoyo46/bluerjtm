@@ -1010,7 +1010,23 @@ class RevenuesController extends AppController {
         }
     }
 
-    function doTTUJLanjutan( $action_type = 'truk_tiba' ){
+    public function ttuj_lanjutan_edit( $action_type = 'truk_tiba', $id = false ) {
+        if( in_array(sprintf('update_%s', $action_type), $this->allowModule) ) {
+            $this->loadModel('Ttuj');
+            $this->set('active_menu', 'truk_tiba');
+
+            $ttuj = $this->Ttuj->getData('first', array(
+                'conditions' => array(
+                    'Ttuj.id' => $id
+                )
+            ));
+            $this->doTTUJLanjutan( 'truk_tiba', $id, $ttuj );
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
+
+    function doTTUJLanjutan( $action_type = 'truk_tiba', $id = false, $ttuj = false ){
         $this->loadModel('TipeMotor');
         $this->loadModel('Perlengkapan');
         $this->loadModel('Truck');
@@ -1060,10 +1076,15 @@ class RevenuesController extends AppController {
 
         $this->set('sub_module_title', trim($module_title));
 
-        if( !empty($this->request->data) && !empty($data_local) ){
+        if( !empty($this->request->data) && ( !empty($data_local) || $id ) ){
             $data = $this->request->data;
 
-            $this->Ttuj->id = $data_local['Ttuj']['id'];
+            if( !empty($id) ) {
+                $this->Ttuj->id = $id;
+                $data_local = $ttuj;
+            } else {
+                $this->Ttuj->id = $data_local['Ttuj']['id'];
+            }
 
             switch ($action_type) {
                 case 'bongkaran':
@@ -1167,29 +1188,19 @@ class RevenuesController extends AppController {
                     $this->Log->logActivity( sprintf(__('Gagal merubah TTUJ.')), $this->user_data, $this->RequestHandler, $this->params, 1 );     
                 }
             }
+        } else if( !empty($ttuj) ) {
+            $this->request->data = $data_local = $ttuj;
         }
 
         if( !empty($data_local) ){
             $data_local = $this->MkCommon->getTtujTipeMotor($data_local);
             $data_local = $this->MkCommon->getTtujPerlengkapan($data_local);
-
-            if( !empty($data_local['Ttuj']['tgljam_berangkat']) && $data_local['Ttuj']['tgljam_berangkat'] != '0000-00-00 00:00:00' ) {
-                $data_local['Ttuj']['tgl_berangkat'] = date('d/m/Y', strtotime($data_local['Ttuj']['tgljam_berangkat']));
-                $data_local['Ttuj']['jam_berangkat'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_berangkat']));
-            }
-            if( !empty($data_local['Ttuj']['tgljam_tiba']) && $data_local['Ttuj']['tgljam_tiba'] != '0000-00-00 00:00:00' ) {
-                $data_local['Ttuj']['tgl_tiba'] = date('d/m/Y', strtotime($data_local['Ttuj']['tgljam_tiba']));
-                $data_local['Ttuj']['jam_tiba'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_tiba']));
-            }
-            if( !empty($data_local['Ttuj']['tgljam_bongkaran']) && $data_local['Ttuj']['tgljam_bongkaran'] != '0000-00-00 00:00:00' ) {
-                $data_local['Ttuj']['tgl_bongkaran'] = date('d/m/Y', strtotime($data_local['Ttuj']['tgljam_bongkaran']));
-                $data_local['Ttuj']['jam_bongkaran'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_bongkaran']));
-            }
-            if( !empty($data_local['Ttuj']['tgljam_balik']) && $data_local['Ttuj']['tgljam_balik'] != '0000-00-00 00:00:00' ) {
-                $data_local['Ttuj']['tgl_balik'] = date('d/m/Y', strtotime($data_local['Ttuj']['tgljam_balik']));
-                $data_local['Ttuj']['jam_balik'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_balik']));
-            }
+            $data_local = $this->MkCommon->generateDateTTUJ($data_local);
             $this->request->data = $data_local;
+
+            if( !empty($id) ) {
+                $ttuj_id = $id;
+            }
         }
 
         if( !empty($this->params['named']['no_ttuj']) ) {
@@ -1203,25 +1214,75 @@ class RevenuesController extends AppController {
 
         switch ($action_type) {
             case 'bongkaran':
-                $conditionsTtuj['Ttuj.is_arrive'] = 1;
-                $conditionsTtuj['Ttuj.is_bongkaran <>'] = 1;
+                if( !empty($id) ) {
+                    $conditionsTtuj['OR'] = array(
+                        array(
+                            'Ttuj.id' => $id,
+                        ),
+                        array(
+                            'Ttuj.is_arrive' => 1,
+                            'Ttuj.is_bongkaran <>' => 1,
+                        ),
+                    );
+                } else {
+                    $conditionsTtuj['Ttuj.is_arrive'] = 1;
+                    $conditionsTtuj['Ttuj.is_bongkaran <>'] = 1;
+                }
                 break;
 
             case 'balik':
-                $conditionsTtuj['Ttuj.is_arrive'] = 1;
-                $conditionsTtuj['Ttuj.is_bongkaran'] = 1;
-                $conditionsTtuj['Ttuj.is_balik <>'] = 1;
+                if( !empty($id) ) {
+                    $conditionsTtuj['OR'] = array(
+                        array(
+                            'Ttuj.id' => $id,
+                        ),
+                        array(
+                            'Ttuj.is_arrive' => 1,
+                            'Ttuj.is_bongkaran' => 1,
+                            'Ttuj.is_balik <>' => 1,
+                        ),
+                    );
+                } else {
+                    $conditionsTtuj['Ttuj.is_arrive'] = 1;
+                    $conditionsTtuj['Ttuj.is_bongkaran'] = 1;
+                    $conditionsTtuj['Ttuj.is_balik <>'] = 1;
+                }
                 break;
 
             case 'pool':
-                $conditionsTtuj['Ttuj.is_arrive'] = 1;
-                $conditionsTtuj['Ttuj.is_bongkaran'] = 1;
-                $conditionsTtuj['Ttuj.is_balik'] = 1;
-                $conditionsTtuj['Ttuj.is_pool <>'] = 1;
+                if( !empty($id) ) {
+                    $conditionsTtuj['OR'] = array(
+                        array(
+                            'Ttuj.id' => $id,
+                        ),
+                        array(
+                            'Ttuj.is_arrive' => 1,
+                            'Ttuj.is_bongkaran' => 1,
+                            'Ttuj.is_balik' => 1,
+                            'Ttuj.is_pool <>' => 1,
+                        ),
+                    );
+                } else {
+                    $conditionsTtuj['Ttuj.is_arrive'] = 1;
+                    $conditionsTtuj['Ttuj.is_bongkaran'] = 1;
+                    $conditionsTtuj['Ttuj.is_balik'] = 1;
+                    $conditionsTtuj['Ttuj.is_pool <>'] = 1;
+                }
                 break;
             
             default:
-                $conditionsTtuj['Ttuj.is_arrive'] = 0;
+                if( !empty($id) ) {
+                    $conditionsTtuj['OR'] = array(
+                        array(
+                            'Ttuj.id' => $id,
+                        ),
+                        array(
+                            'Ttuj.is_arrive' => 0,
+                        ),
+                    );
+                } else {
+                    $conditionsTtuj['Ttuj.is_arrive'] = 0;
+                }
                 break;
         }
 
@@ -1254,7 +1315,7 @@ class RevenuesController extends AppController {
         $this->set(compact(
             'ttujs', 'data_local', 'perlengkapans', 
             'tipeMotors', 'action_type', 'data_action',
-            'colors'
+            'colors', 'ttuj', 'id'
         ));
         $this->render('ttuj_lanjutan_form');
     }

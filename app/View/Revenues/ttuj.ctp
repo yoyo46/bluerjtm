@@ -245,8 +245,19 @@
                                     $active_menu,
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-primary btn-xs'
+                                    'class' => 'btn btn-info btn-xs'
                                 ));
+
+                                if( in_array(sprintf('update_%s', $active_menu), $allowModule) ) {
+                                    echo $this->Html->link('Rubah', array(
+                                        'controller' => 'revenues',
+                                        'action' => 'ttuj_lanjutan_edit',
+                                        $active_menu,
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-primary btn-xs'
+                                    ));
+                                }
 
                                 if( in_array(sprintf('delete_%s', $active_menu), $allowModule) ) {
                                     echo $this->Html->link(__('Batalkan'), array(
