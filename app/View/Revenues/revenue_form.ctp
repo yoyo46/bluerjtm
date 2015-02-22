@@ -128,6 +128,8 @@
 			        			echo $this->element('blocks/revenues/revenue_info');
 			        	?>
 			        </div>
+			        <?php 
+			        /*
 			        <div class="checkbox">
 		                <label>
 		                    <?php 
@@ -148,6 +150,8 @@
 								));
 						?>
 					</div>
+		            */
+		            ?>
 			    </div>
 			</div>
 		</div>

@@ -316,5 +316,22 @@ class Truck extends AppModel {
 
         return $result;
     }
+
+    function getMerge($data, $id){
+        if(empty($data['Truck'])){
+            $data_merge = $this->find('first', array(
+                'conditions' => array(
+                    'Truck.id' => $id,
+                    'Truck.status' => 1,
+                )
+            ));
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

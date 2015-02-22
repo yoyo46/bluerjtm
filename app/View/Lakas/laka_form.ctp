@@ -74,6 +74,7 @@
 										'class'=>'form-control',
 										'required' => false,
 										'type' => 'text',
+										'id' => 'no_sim',
 									));
 							?>
 				        </div>
@@ -154,7 +155,7 @@
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('driver_condition',array(
-										'label'=> __('Kondisi Supir dan kenek'), 
+										'label'=> __('Kondisi Supir dan kenek *'), 
 										'class'=>'form-control',
 										'required' => false
 									));
@@ -163,7 +164,7 @@
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('truck_condition',array(
-										'label'=> __('Kondisi Armada dan Muatan'), 
+										'label'=> __('Kondisi Armada dan Muatan *'), 
 										'class'=>'form-control',
 										'required' => false
 									));
@@ -356,7 +357,7 @@
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('description_laka',array(
-										'label'=> __('Deskripsi LAKA'), 
+										'label'=> __('Deskripsi LAKA *'), 
 										'class'=>'form-control',
 										'required' => false
 									));
@@ -576,7 +577,9 @@
 		                        	?>
 		                        </label>
 		                    </div>
-		                    <div id="desc-laka-complete" class="<?php echo !empty($this->request->data['Laka']['completed']) ? '' : 'hide';?>">
+				    	</div>
+	                    <div id="desc-laka-complete" class="<?php echo !empty($this->request->data['Laka']['completed']) ? '' : 'hide';?>">
+				    		<div class="form-group">
 		                    	<?php 
 										echo $this->Form->input('complete_desc',array(
 											'label'=> __('Keterangan *'), 
@@ -589,8 +592,22 @@
 										    echo $this->Form->error('completed');
 										}
 								?>
-		                    </div>
-				    	</div>
+	                    	</div>
+				    		<div class="form-group">
+		                    	<?php 
+										echo $this->Form->input('completed_date',array(
+											'label'=> __('Tgl Selesai *'), 
+											'class'=>'form-control custom-date',
+											'required' => false,
+											'type' => 'text'
+										));
+
+										if ($this->Form->isFieldError('completed')) {
+										    echo $this->Form->error('completed');
+										}
+								?>
+	                    	</div>
+	                    </div>
 				    </div>
 				</div>
 				<?php
@@ -600,6 +617,9 @@
 		</div>
 		<div class="box-footer text-center action">
 			<?php
+					echo $this->Form->hidden('truck_id',array(
+						'id' => 'truck_id',
+					));
 		    		echo $this->Html->link(__('Kembali'), '#step1', array(
 						'class'=> 'btn btn-default',
 						'id' => 'backLaka'

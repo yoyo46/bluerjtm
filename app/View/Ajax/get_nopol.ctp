@@ -5,6 +5,7 @@
 			));
 
 			$driver_name = !empty($result['Driver']['name'])?$result['Driver']['name']:'';
+			$driver_id = !empty($result['Driver']['id'])?$result['Driver']['id']:'';
 
 			if( !empty($result['Driver']['alias']) ) {
 				$driver_name = sprintf('%s ( %s )', $driver_name, $result['Driver']['alias']);
@@ -12,6 +13,10 @@
 
 			echo $this->Html->tag('div', $driver_name, array(
 				'id' => 'driver_name',
+			));
+
+			echo $this->Html->tag('div', $driver_id, array(
+				'id' => 'driver_id',
 			));
 		}
 

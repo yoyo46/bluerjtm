@@ -118,17 +118,29 @@ td.multiple a {
 	color: #FFFFFF;
 }
 
-table.monitoring td img {
-	width: 40px;
-}
-
 table.monitoring td > div {
 	font-size: 22px;
 	vertical-align: middle;
 	font-weight: bold;
 }
+
+ul.list-calendar {
+	padding: 0;
+}
+
 .list-calendar li {
 	margin-bottom: 10px;
+	list-style-type: none;
+}
+
+table.monitoring .icon-popup,
+.multiple-modal .list-calendar .ico-calendar {
+	display: none;
+}
+
+.multiple-modal .list-calendar .icon-popup,
+table.monitoring .ico-calendar {
+	display: block;
 }
 /*
 **	END Truck

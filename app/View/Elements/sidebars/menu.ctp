@@ -597,6 +597,17 @@
                                 ));
                             }
 
+                            if( in_array('view_invoice_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Invoice', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'invoice_payments',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
+                                ));
+                            }
+
                             if( in_array('view_revenue_reports', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Revenue', array(
                                     'controller' => 'revenues',
@@ -616,17 +627,6 @@
                                     'escape' => false
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'ar_period_reports' )?'active':'',
-                                ));
-                            }
-
-                            if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Invoice', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'invoice_payments',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
                                 ));
                             }
                     ?>

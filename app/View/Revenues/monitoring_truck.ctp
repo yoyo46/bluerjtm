@@ -74,7 +74,6 @@
                                     'style' => 'width: 100px;',
                                 ));
                                 $bg = '';
-                                $style = '';
 
                                 for ($i=1; $i <= $lastDay; $i++) {
                                     $idx = $i;
@@ -83,125 +82,116 @@
                                         $idx = sprintf('0%s', $idx);
                                     }
                                     $point = array();
+                                    $style = '';
 
+                                    if( !empty($dataTtuj[$nopol][$idx]) ) {
+                                        foreach ($dataTtuj[$nopol][$idx] as $key => $data) {
+                                            $style = sprintf('background: %s;', $data['color']);
 
-                                    if( !empty($dataTtuj[$nopol]['Berangkat'][$idx]) ) {
-                                        $data = $dataTtuj[$nopol]['Berangkat'][$idx];
-                                        $checkDate = date('Y-m-d', strtotime($dataTtuj[$nopol]['Berangkat'][$idx]['datetime']));
+                                            if( !empty($data['is_laka']) ) {
+                                                $formLaka = $this->Html->tag('p', sprintf(__('Supir: %s', $data['driver_name'])));
+                                                $formLaka .= $this->Html->tag('p', sprintf(__('Lokasi: %s', $data['lokasi_laka'])));
+                                                $formLaka .= $this->Html->tag('p', sprintf(__('Kondisi Truk: %s', $data['truck_condition'])));
+                                                $formLaka .= $this->Html->tag('p', sprintf(__('Tanggal: %s', $data['from_date'])));
+                                                $formLaka .= $this->Html->tag('p', sprintf(__('Sampai: %s', $data['to_date'])));
+                                                
+                                                if( !empty($data['icon']) ) {
+                                                    $icon = $this->Html->image('/img/accident.png', array(
+                                                        'class' => 'ico-calendar'
+                                                    ));
+                                                } else {
+                                                    $icon = '&nbsp;';
+                                                }
+                                                if( !empty($data['iconPopup']) ) {
+                                                    $icon .= $this->Html->image($data['iconPopup'], array(
+                                                        'class' => 'icon-popup'
+                                                    ));
+                                                }
+                                            } else {
+                                                $formTtuj = $this->Html->tag('p', sprintf(__('Tanggal: %s', $data['from_date'])));
+                                                $formTtuj .= $this->Html->tag('p', sprintf(__('Sampai: %s', $data['to_date'])));
+                                            }
 
-                                        if ( $checkDate == date('Y-m-d', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth)))) ) {
-                                            $dateTime = date('d M Y H:i', strtotime($dataTtuj[$nopol]['Berangkat'][$idx]['datetime']));
-                                            $point[] = $this->Html->tag('div', $this->Html->tag('div', $this->Html->image('/img/truck.png'), array(
-                                                'title' => __('Truk Berangkat'),
-                                                'class' => 'popover-hover-bottom',
-                                                'data-content' => sprintf('%s %s %s %s %s', $this->Html->tag('label', $data['Tujuan']), $this->Html->tag('p', sprintf(__('Supir: %s', $data['Driver']))), $this->Html->tag('p', sprintf(__('Truk: %s', $nopol))), $this->Html->tag('p', sprintf(__('Muatan: %s', $data['Muatan']))), $this->Html->tag('p', sprintf(__('Tanggal: %s', $dateTime))))
-                                            )), array(
-                                                'class' => 'text-center berangkat',
-                                                'style' => 'width: 40px;',
-                                            ));
-                                            $bg = 'berangkat';
+                                            if( !empty($data['icon']) ) {
+                                                $icon = $this->Html->image($data['icon'], array(
+                                                    'class' => 'ico-calendar'
+                                                ));
+                                            } else {
+                                                $icon = $this->Html->tag('span', '&nbsp;', array(
+                                                    'class' => 'ico-calendar'
+                                                ));
+                                            }
+                                            if( !empty($data['iconPopup']) ) {
+                                                $icon .= $this->Html->image($data['iconPopup'], array(
+                                                    'class' => 'icon-popup'
+                                                ));
+                                            }
+                                            if( !empty($data['url']) ) {
+                                                $icon = $this->Html->link($icon, $data['url'], array(
+                                                    'escape' => false,
+                                                    'target' => 'blank',
+                                                ));
+                                            }
+
+                                            if( !empty($data['is_laka']) ) {
+                                                $point[] = $this->Html->tag('div', $this->Html->tag('div', $icon, array(
+                                                    'title' => __('LAKA'),
+                                                    'class' => 'popover-hover-top',
+                                                    'data-content' => $formLaka,
+                                                )), array(
+                                                    'class' => 'text-center',
+                                                ));
+                                            } else {
+                                                $point[] = $this->Html->tag('div', $this->Html->tag('div', $icon, array(
+                                                    'title' => __('Truk Berangkat'),
+                                                    'class' => 'popover-hover-top',
+                                                    'data-content' => sprintf('%s %s %s %s %s', $this->Html->tag('label', $data['Tujuan']), $this->Html->tag('p', sprintf(__('Supir: %s', $data['Driver']))), $this->Html->tag('p', sprintf(__('Truk: %s', $nopol))), $this->Html->tag('p', sprintf(__('Muatan: %s', $data['Muatan']))), $formTtuj)
+                                                )), array(
+                                                    'class' => 'text-center',
+                                                ));
+                                            }
                                         }
                                     }
-                                    if( !empty($dataTtuj[$nopol]['Tiba'][$idx]) ) {
-                                        $data = $dataTtuj[$nopol]['Tiba'][$idx];
-                                        $checkDate = date('Y-m-d', strtotime($dataTtuj[$nopol]['Tiba'][$idx]['datetime']));
 
-                                        if ( $checkDate == date('Y-m-d', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth)))) ) {
-                                            $dateTime = date('d M Y H:i', strtotime($dataTtuj[$nopol]['Tiba'][$idx]['datetime']));
-                                            $point[] = $this->Html->tag('div', $this->Html->tag('div', $this->Html->image('/img/arrive.png'), array(
-                                                'title' => __('Sampai Tujuan'),
-                                                'class' => 'popover-hover-bottom',
-                                                'data-content' => sprintf('%s %s %s %s %s', $this->Html->tag('label', $data['Tujuan']), $this->Html->tag('p', sprintf(__('Supir: %s', $data['Driver']))), $this->Html->tag('p', sprintf(__('Truk: %s', $nopol))), $this->Html->tag('p', sprintf(__('Muatan: %s', $data['Muatan']))), $this->Html->tag('p', sprintf(__('Tanggal: %s', $dateTime))))
-                                            )), array(
-                                                'class' => 'text-center tiba',
-                                                'style' => 'width: 40px;',
-                                            ));
-                                            $bg = 'tiba';
-                                        }
-                                    }
-                                    if( !empty($dataTtuj[$nopol]['Bongkaran'][$idx]) ) {
-                                        $data = $dataTtuj[$nopol]['Bongkaran'][$idx];
-                                        $checkDate = date('Y-m-d', strtotime($dataTtuj[$nopol]['Bongkaran'][$idx]['datetime']));
-
-                                        if ( $checkDate == date('Y-m-d', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth)))) ) {
-                                            $dateTime = date('d M Y H:i', strtotime($dataTtuj[$nopol]['Bongkaran'][$idx]['datetime']));
-                                            $point[] = $this->Html->tag('div', $this->Html->tag('div', $this->Html->image('/img/bongkaran.png'), array(
-                                                'title' => __('Truk Bongkaran'),
-                                                'class' => 'popover-hover-bottom',
-                                                'data-content' => sprintf('%s %s %s %s %s', $this->Html->tag('label', $data['Tujuan']), $this->Html->tag('p', sprintf(__('Supir: %s', $data['Driver']))), $this->Html->tag('p', sprintf(__('Truk: %s', $nopol))), $this->Html->tag('p', sprintf(__('Muatan: %s', $data['Muatan']))), $this->Html->tag('p', sprintf(__('Tanggal: %s', $dateTime))))
-                                            )), array(
-                                                'class' => 'text-center bongkaran',
-                                                'style' => 'width: 40px;',
-                                            ));
-                                            $bg = 'bongkaran';
-                                        }
-                                    }
-                                    if( !empty($dataTtuj[$nopol]['Balik'][$idx]) ) {
-                                        $data = $dataTtuj[$nopol]['Balik'][$idx];
-                                        $checkDate = date('Y-m-d', strtotime($dataTtuj[$nopol]['Balik'][$idx]['datetime']));
-
-                                        if ( $checkDate == date('Y-m-d', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth)))) ) {
-                                            $dateTime = date('d M Y H:i', strtotime($dataTtuj[$nopol]['Balik'][$idx]['datetime']));
-                                            $point[] = $this->Html->tag('div', $this->Html->tag('div', $this->Html->image('/img/on-the-way.gif'), array(
-                                                'title' => __('Truk Balik'),
-                                                'class' => 'popover-hover-bottom',
-                                                'data-content' => sprintf('%s %s %s %s %s', $this->Html->tag('label', $data['Tujuan']), $this->Html->tag('p', sprintf(__('Supir: %s', $data['Driver']))), $this->Html->tag('p', sprintf(__('Truk: %s', $nopol))), $this->Html->tag('p', sprintf(__('Muatan: %s', $data['Muatan']))), $this->Html->tag('p', sprintf(__('Tanggal: %s', $dateTime))))
-                                            )), array(
-                                                'class' => 'text-center balik',
-                                                'style' => 'width: 40px;',
-                                            ));
-                                            $bg = 'balik';
-                                        }
-                                    }
-                                    if( !empty($dataTtuj[$nopol]['Pool'][$idx]) ) {
-                                        $data = $dataTtuj[$nopol]['Pool'][$idx];
-                                        $checkDate = date('Y-m-d', strtotime($dataTtuj[$nopol]['Pool'][$idx]['datetime']));
-
-                                        if ( $checkDate == date('Y-m-d', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth)))) ) {
-                                            $dateTime = date('d M Y H:i', strtotime($dataTtuj[$nopol]['Pool'][$idx]['datetime']));
-                                            $point[] = $this->Html->tag('div', $this->Html->tag('div', $this->Html->image('/img/pool.png'), array(
-                                                'title' => __('Sampai Pool'),
-                                                'class' => 'popover-hover-bottom',
-                                                'data-content' => sprintf('%s %s %s %s %s', $this->Html->tag('label', $data['Tujuan']), $this->Html->tag('p', sprintf(__('Supir: %s', $data['Driver']))), $this->Html->tag('p', sprintf(__('Truk: %s', $nopol))), $this->Html->tag('p', sprintf(__('Muatan: %s', $data['Muatan']))), $this->Html->tag('p', sprintf(__('Tanggal: %s', $dateTime))))
-                                            )), array(
-                                                'class' => 'text-center pool',
-                                                'style' => 'width: 40px;',
-                                            ));
-                                            $bg = '';
-                                        }
-                                    }
                                     if( !empty($dataEvent[$nopol][sprintf("%02s", $i)]) ) {
                                         foreach ($dataEvent[$nopol][sprintf("%02s", $i)] as $key => $event) {
                                             $title = $event['title'];
-                                            $dateTime = date('d M Y', strtotime($event['date']));
+                                            $fromDateTime = $this->Html->tag('p', sprintf(__('Tanggal: %s', $event['from_date'])));
+                                            $toDateTime = $this->Html->tag('p', sprintf(__('Sampai: %s', $event['to_date'])));
 
-                                            if( !empty($event['time']) ) {
-                                                $time = $this->Html->tag('p', sprintf(__('Pukul: %s', $event['time'])));
+                                            if( !empty($event['icon']) ) {
+                                                $icon = $this->Common->photo_thumbnail(array(
+                                                    'save_path' => Configure::read('__Site.truck_photo_folder'), 
+                                                    'src' => $event['icon'], 
+                                                    'thumb'=>true,
+                                                    'size' => 'ps',
+                                                    'thumb' => true,
+                                                ), array(
+                                                    'class' => 'ico-calendar'
+                                                ));
+                                            } else {
+                                                $icon = $this->Html->tag('span', '&nbsp;', array(
+                                                    'class' => 'ico-calendar'
+                                                ));
+                                            }
+                                            if( !empty($event['iconPopup']) ) {
+                                                $icon .= $this->Html->image($event['iconPopup'], array(
+                                                    'class' => 'icon-popup'
+                                                ));
                                             }
 
-                                            $point[] = $this->Html->tag('div', $this->Html->tag('div', $this->Common->photo_thumbnail(array(
-                                                'save_path' => Configure::read('__Site.truck_photo_folder'), 
-                                                'src' => $event['icon'], 
-                                                'thumb'=>true,
-                                                'size' => 'ps',
-                                                'thumb' => true,
-                                            ), array(
-                                                'class' => 'icon-calendar'
-                                            )), array(
+                                            $point[] = $this->Html->tag('div', $this->Html->tag('div', $icon, array(
                                                 'title' => $title,
-                                                'class' => 'popover-hover-bottom',
-                                                'data-content' => sprintf('%s %s%s', $this->Html->tag('p', $event['note']), $this->Html->tag('p', sprintf(__('Tanggal: %s', $dateTime))), $time)
+                                                'class' => 'popover-hover-top',
+                                                'data-content' => sprintf('%s%s%s', $this->Html->tag('p', $event['note']), $fromDateTime, $toDateTime)
                                             )), array(
                                                 'class' => 'text-center',
-                                                'style' => 'width: 40px;',
                                             ));
                                             $style = sprintf('background: %s;', $event['color']);
                                         }
                                     }
+
                                     if( empty($point) ){
-                                        // if( date('d') < $i ) {
-                                        //     $bg = '';
-                                        // }
                                         echo $this->Html->tag('td', $this->Html->link('&nbsp;', array(
                                             'controller' => 'ajax',
                                             'action' => 'event_add',
@@ -214,7 +204,7 @@
                                             'data-action' => 'event',
                                         )), array(
                                             'class' => 'text-center '.$bg,
-                                            'style' => 'width: 40px;',
+                                            'style' => $style,
                                         ));
                                     } else {
                                         if( count($point) > 1 ) {
@@ -222,11 +212,11 @@
                                                 'escape' => false,
                                             )), array(
                                                 'class' => 'text-center',
-                                                'style' => 'width: 40px;',
                                                 'data-toggle' => 'modal',
                                                 'data-target' => '#myModal'.$i
                                             )), array(
-                                                'class' => 'multiple',  
+                                                'class' => 'multiple', 
+                                                'style' => $style,
                                             ));
                 ?>
                 <div class="modal fade multiple-modal" id="myModal<?php echo $i; ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -238,9 +228,9 @@
                             </div>
                             <div class="modal-body">
                                 <ul class="row list-calendar">
-                                    <li class="col-sm-3 text-center">
+                                    <li class="col-sm-2 text-center">
                                         <?php 
-                                                echo implode('</li><li class="col-sm-3 text-center">', $point);
+                                                echo str_replace('popover-hover-top', 'popover-hover-bottom', implode('</li><li class="col-sm-2 text-center">', $point));
                                         ?>
                                     </li>
                                 </ul>
@@ -250,7 +240,9 @@
                 </div>
                 <?php
                                         } else {
-                                            echo $this->Html->tag('td', implode('', $point));
+                                            echo $this->Html->tag('td', implode('', $point), array(
+                                                'style' => $style,
+                                            ));
                                         }
                                     }
                                 }

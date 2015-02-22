@@ -151,6 +151,9 @@
 										'required' => false,
 										'readonly' => true,
 									));
+									echo $this->Form->hidden('driver_id',array(
+										'class' => 'driver_id',
+									));
 							?>
 				        </div>
 				        <div class="form-group">
@@ -212,6 +215,36 @@
 									));
 							?>
 				        </div>
+				    </div>
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<div class="box box-primary">
+				    <div class="box-header">
+				        <h3 class="box-title"><?php echo __('Surat Jalan Kembali'); ?></h3>
+				    </div>
+				    <div class="box-body">
+		    			<?php echo $this->Html->tag('p', __('Centang apabila semua Surat Jalan telah diterima'));?>
+				        <div class="checkbox">
+			                <label>
+			                    <?php 
+									echo $this->Form->checkbox('Revenue.getting_sj',array(
+										'label'=> false, 
+										'required' => false,
+										'id' => 'sj-handle',
+									)).__('SJ sudah diterima??');
+								?>
+			                </label>
+			            </div>
+						<div class="form-group sj-date <?php echo (!empty($this->request->data['Revenue']['getting_sj'])) ? '' : 'hide'; ?>">
+							<?php 
+									echo $this->Form->input('Revenue.date_sj',array(
+										'label'=> __('Tgl SJ diterima'), 
+										'class'=>'form-control custom-date',
+										'type' => 'text'
+									));
+							?>
+						</div>
 				    </div>
 				</div>
 			</div>

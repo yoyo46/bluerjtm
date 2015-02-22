@@ -29,21 +29,77 @@
 	    </div>
 	    <div class="form-group">
 	    	<?php 
-					echo $this->Form->label('time', __('Pukul'));
+					echo $this->Form->label('from_date', __('Dari Tanggal'));
 			?>
-			<div class="input-group">
-	            <div class="input-group-addon">
-	                <i class="fa fa-clock-o"></i>
-	            </div>
-				<?php 
-						echo $this->Form->input('time',array(
-							'label'=> false, 
-							'class'=>'form-control pull-right timepicker',
-							'required' => false,
-							'type' => 'text'
-						));
-				?>
-	        </div>
+			<div class="row">
+				<div class="col-sm-8">
+					<div class="input-group">
+			            <div class="input-group-addon">
+			                <i class="fa fa-calendar"></i>
+			            </div>
+						<?php 
+								echo $this->Form->input('from_date',array(
+									'label'=> false, 
+									'class'=>'form-control pull-right custom-date',
+									'required' => false,
+									'type' => 'text'
+								));
+						?>
+			        </div>
+				</div>
+				<div class="col-sm-4">
+					<div class="input-group">
+			            <div class="input-group-addon">
+			                <i class="fa fa-clock-o"></i>
+			            </div>
+						<?php 
+								echo $this->Form->input('from_time',array(
+									'label'=> false, 
+									'class'=>'form-control pull-right timepicker',
+									'required' => false,
+									'type' => 'text'
+								));
+						?>
+			        </div>
+				</div>
+			</div>
+	    </div>
+	    <div class="form-group">
+	    	<?php 
+					echo $this->Form->label('to_date', __('Sampai Tanggal'));
+			?>
+			<div class="row">
+				<div class="col-sm-8">
+					<div class="input-group">
+			            <div class="input-group-addon">
+			                <i class="fa fa-calendar"></i>
+			            </div>
+						<?php 
+								echo $this->Form->input('to_date',array(
+									'label'=> false, 
+									'class'=>'form-control pull-right custom-date',
+									'required' => false,
+									'type' => 'text'
+								));
+						?>
+			        </div>
+				</div>
+				<div class="col-sm-4">
+					<div class="input-group">
+			            <div class="input-group-addon">
+			                <i class="fa fa-clock-o"></i>
+			            </div>
+						<?php 
+								echo $this->Form->input('to_time',array(
+									'label'=> false, 
+									'class'=>'form-control pull-right timepicker',
+									'required' => false,
+									'type' => 'text'
+								));
+						?>
+			        </div>
+				</div>
+			</div>
 	    </div>
 	    <div class="form-group pick-icon">
 	    	<?php 

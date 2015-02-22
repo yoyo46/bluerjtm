@@ -281,6 +281,7 @@ var qtyMuatanPress = function ( obj ) {
 var getUangjalan = function ( response ) {
     $('.truck_capacity').val($(response).filter('#truck_capacity').html());
     $('.driver_name').val($(response).filter('#driver_name').html());
+    $('.driver_id').val($(response).filter('#driver_id').html());
     var uang_jalan_1 = $(response).filter('#uang_jalan_1').html().replace(/,/gi, "");
 
     var total_muatan = 0;
@@ -1521,7 +1522,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
         var custom_backdrop_modal = vthis.attr('backdrop-modal');
         var data = false;
         
-        $('.modal-body').html('');
+        $('#myModal .modal-body').html('');
 
         if( prettyPhoto ) {
             $.prettyPhoto.close();
@@ -1563,7 +1564,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                     type_action = vthis.attr('data-action');
                 }
 
-                $('.modal-body').html(response);
+                $('#myModal .modal-body').html(response);
 
                 var backdrop_modal = true;                  
                 if( typeof custom_backdrop_modal != 'undefined' ){
@@ -1579,13 +1580,12 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                     pickIcon();
                     pickColor()
                     submitForm();
-                    $('.timepicker').timepicker({
-                        showMeridian: false
-                    });
+                    timepicker();
+                    datepicker();
                 } else if( type_action == 'browse-form' ) {
-                    ajaxModal( $('.modal-body .pagination li a, .modal-body .ajaxModal') );
+                    ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
                     pickData();
-                    daterangepicker( $('.modal-body .date-range') );
+                    daterangepicker( $('#myModal .modal-body .date-range') );
                 }
 
                 return false;
@@ -1668,7 +1668,7 @@ var formInput = function( obj ) {
                             window.location.reload();
                         } else {
                             $('#myModal #myModalLabel').html(modal_title);
-                            $('.modal-body').html(modal_content);
+                            $('#myModal .modal-body').html(modal_content);
                             $('h4#myModalLabel').show();
                             $('#myModal').modal({
                                 show: true,
@@ -1778,6 +1778,7 @@ var getNopol = function () {
         });
     } else {
         $('.driver_name').val('');
+        $('.driver_id').val('');
         $('.truck_capacity').val('');
         $('#biaya-uang-jalan input').val('');
 
@@ -1978,6 +1979,7 @@ $(function() {
             $('#truckID').val('').attr('disabled', true);
             $('#truckBrowse').attr('disabled', true);
             $('.driver_name').val('');
+            $('.driver_id').val('');
             $('.truck_capacity').val('');
             $('#biaya-uang-jalan input').val('');
         }
@@ -2021,6 +2023,7 @@ $(function() {
             $('#truckID').val('').attr('disabled', true);
             $('#truckBrowse').attr('disabled', true);
             $('.driver_name').val('');
+            $('.driver_id').val('');
             $('.truck_capacity').val('');
             $('#biaya-uang-jalan input').val('');
         }
@@ -2166,6 +2169,7 @@ $(function() {
             $('#truckID').val('').attr('disabled', true);
             $('#truckBrowse').attr('disabled', true);
             $('.driver_name').val('');
+            $('.driver_id').val('');
             $('.truck_capacity').val('');
             $('#biaya-uang-jalan input').val('');
         }
@@ -2190,6 +2194,8 @@ $(function() {
             success: function(response, status) {
                 $('#nopol-laka').html($(response).filter('#nopol-laka').html());
                 $('#city-laka').html($(response).filter('#destination-laka').html());
+                $('#no_sim').val($(response).filter('#no_sim').val());
+                $('#truck_id').val($(response).filter('#truck_id').val());
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
@@ -2223,7 +2229,14 @@ $(function() {
     $('.popover-hover-bottom').popover({
         trigger: 'hover',
         html: true,
-        placement: 'bottom'
+        placement: 'bottom',
+        container: 'body',
+    });
+    $('.popover-hover-top').popover({
+        trigger: 'hover',
+        html: true,
+        placement: 'top',
+        container: 'body',
     });
 
     if( $("#acos").length > 0 ) {
@@ -2346,8 +2359,10 @@ $(function() {
     $('.completed-handle').click(function(){
         if($('.completed-handle input').is(':checked')) {
             $('#desc-laka-complete').removeClass('hide');
+            $('#date-laka-complete').removeClass('hide');
         }else{
             $('#desc-laka-complete').addClass('hide');
+            $('#date-laka-complete').addClass('hide');
         }
     });
 

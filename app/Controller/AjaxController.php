@@ -136,11 +136,16 @@ class AjaxController extends AppController {
 
 	function getInfoLaka($ttuj_id = false){
 		$this->loadModel('Ttuj');
+		$this->loadModel('Driver');
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
 				'Ttuj.id' => $ttuj_id
 			)
-		));
+		), false);
+
+		if( !empty($data_ttuj) ) {
+			$data_ttuj = $this->Driver->getMerge($data_ttuj, $data_ttuj['Ttuj']['driver_id']);
+		}
 
 		$this->set(compact('data_ttuj'));
 	}
@@ -357,6 +362,25 @@ class AjaxController extends AppController {
                 $this->CalendarEvent->create();
                 $msg = 'menambah';
             }
+
+            if( !empty($data['CalendarEvent']['from_date']) ) {
+                $data['CalendarEvent']['from_date'] = $this->MkCommon->getDate($data['CalendarEvent']['from_date']);
+
+                if( !empty($data['CalendarEvent']['from_time']) ) {
+                    $data['CalendarEvent']['from_time'] = date('H:i', strtotime($data['CalendarEvent']['from_time']));
+                    $data['CalendarEvent']['from_date'] = sprintf('%s %s', $data['CalendarEvent']['from_date'], $data['CalendarEvent']['from_time']);
+                }
+            }
+
+            if( !empty($data['CalendarEvent']['to_date']) ) {
+                $data['CalendarEvent']['to_date'] = $this->MkCommon->getDate($data['CalendarEvent']['to_date']);
+
+                if( !empty($data['CalendarEvent']['to_time']) ) {
+                    $data['CalendarEvent']['to_time'] = date('H:i', strtotime($data['CalendarEvent']['to_time']));
+                    $data['CalendarEvent']['to_date'] = sprintf('%s %s', $data['CalendarEvent']['to_date'], $data['CalendarEvent']['from_time']);
+                }
+            }
+
             $this->CalendarEvent->set($data);
 
             if($this->CalendarEvent->validates($data)){
@@ -392,6 +416,8 @@ class AjaxController extends AppController {
                     'action' => 'monitoring_truck'
                 ));
 			}
+        } else {
+        	$this->request->data['CalendarEvent']['from_date'] = date('d/m/Y', strtotime($date));
         }
 
         $this->loadModel('CalendarIcon');

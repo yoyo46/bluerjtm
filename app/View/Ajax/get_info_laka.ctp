@@ -1,3 +1,13 @@
+<?php 
+		echo $this->Form->hidden('no_sim',array(
+			'id'=>'no_sim',
+			'value' => (!empty($data_ttuj['Driver']['no_sim'])) ? $data_ttuj['Driver']['no_sim'] : ''
+		));
+		echo $this->Form->hidden('truck_id',array(
+			'id'=>'truck_id',
+			'value' => (!empty($data_ttuj['Ttuj']['truck_id'])) ? $data_ttuj['Ttuj']['truck_id'] : ''
+		));
+?>
 <div id="nopol-laka">
 	<?php 
 			echo $this->Form->input('Laka.nopol',array(

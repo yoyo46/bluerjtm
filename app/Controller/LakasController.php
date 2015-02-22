@@ -126,6 +126,11 @@ class LakasController extends AppController {
             
             $data['Laka']['tgl_laka'] = (!empty($data['Laka']['tgl_laka'])) ? $this->MkCommon->getDate($data['Laka']['tgl_laka']) : '';
             $data['LakaDetail']['date_birth'] = (!empty($data['LakaDetail']['date_birth'])) ? $this->MkCommon->getDate($data['LakaDetail']['date_birth']) : '';
+
+            if( empty($laka['Laka']['completed']) ) {
+                $data['Laka']['complete_desc'] = '';
+                $data['Laka']['completed_date'] = '';
+            }
             
             if(!empty($data['Laka']['ttuj_id'])){
                 $this->loadModel('Ttuj');
@@ -143,7 +148,6 @@ class LakasController extends AppController {
             $this->Laka->set($data);
 
             if($this->Laka->validates($data)){
-                
                 $data['Laka']['completeness'] = (!empty($data['Laka']['completeness'])) ? serialize($data['Laka']['completeness']) : '';
                 $data['Laka']['completeness_insurance'] = (!empty($data['Laka']['completeness_insurance'])) ? serialize($data['Laka']['completeness_insurance']) : '';
 
@@ -176,32 +180,43 @@ class LakasController extends AppController {
                     }
 
                     $this->Laka->LakaDetail->set($data);
-                    $this->Laka->LakaDetail->save();
 
-                    if(!empty($data['LakaMedias']['name'])){
-                        foreach ($data['LakaMedias']['name'] as $key => $value) {
-                            $this->Laka->LakaMedias->create();
-                            $this->Laka->LakaMedias->set(array(
-                                'laka_id' => $laka_id,
-                                'name' => $value,
-                                'status' => 1
-                            ));
-                            $this->Laka->LakaMedias->save();
+                    if( $this->Laka->LakaDetail->save() ) {
+                        if(!empty($data['LakaMedias']['name'])){
+                            foreach ($data['LakaMedias']['name'] as $key => $value) {
+                                $this->Laka->LakaMedias->create();
+                                $this->Laka->LakaMedias->set(array(
+                                    'laka_id' => $laka_id,
+                                    'name' => $value,
+                                    'status' => 1
+                                ));
+                                $this->Laka->LakaMedias->save();
+                            }
                         }
-                    }
 
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s LAKA'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Berhasil %s LAKA #%s'), $msg, $laka_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                    
-                    $this->redirect(array(
-                        'controller' => 'Lakas',
-                        'action' => 'index',
-                    ));
+                        $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s LAKA'), $msg), 'success');
+                        $this->Log->logActivity( sprintf(__('Berhasil %s LAKA #%s'), $msg, $laka_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                        
+                        $this->redirect(array(
+                            'controller' => 'Lakas',
+                            'action' => 'index',
+                        ));
+                    } else {
+                        $step = 'step2';
+                        $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LAKA'), $msg), 'error');
+                        $this->Log->logActivity( sprintf(__('Gagal %s LAKA'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    }
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LAKA'), $msg), 'error');
                     $this->Log->logActivity( sprintf(__('Gagal %s LAKA'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 }
             }else{
+                $validationErrors = $this->Laka->validationErrors;
+                
+                if( !empty($validationErrors['description_laka']) || !empty($validationErrors['complete_desc']) || !empty($validationErrors['completed_date']) ) {
+                    $step = 'step2';
+                }
+
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LAKA'), $msg), 'error');
             }
         } else if($id && $data_local){
@@ -209,6 +224,7 @@ class LakasController extends AppController {
             
             $this->request->data['Laka']['completeness'] = !empty($this->request->data['Laka']['completeness']) ? unserialize($this->request->data['Laka']['completeness']) : '';
             $this->request->data['Laka']['completeness_insurance'] = !empty($this->request->data['Laka']['completeness_insurance']) ? unserialize($this->request->data['Laka']['completeness_insurance']) : '';
+            $this->request->data['Laka']['tgl_laka'] = $this->MkCommon->customDate($this->request->data['Laka']['tgl_laka'], 'd/m/Y');
         }
 
         $this->loadModel('Ttuj');
@@ -237,7 +253,7 @@ class LakasController extends AppController {
         $material = $this->LakaMaterial->find('list');
         $insurance = $this->LakaInsurance->find('list');
 
-        $this->set(compact('material', 'insurance'));
+        $this->set(compact('material', 'insurance', 'step'));
 
         $this->set('active_menu', 'lakas');
         $this->set('ttujs', $ttujs);

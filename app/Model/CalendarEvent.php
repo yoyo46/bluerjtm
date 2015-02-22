@@ -14,10 +14,16 @@ class CalendarEvent extends AppModel {
                 'message' => 'Keterangan harap diisi'
             ),
         ),
-        'time' => array(
+        'from_date' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Pukul harap dipilih'
+                'message' => 'Tanggal harap dipilih'
+            ),
+        ),
+        'to_date' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tanggal harap dipilih'
             ),
         )
 	);

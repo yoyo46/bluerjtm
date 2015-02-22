@@ -62,10 +62,16 @@ class Laka extends AppModel {
                 'message' => 'Deskripsi LAKA harap diisi'
             ),
         ),
-        'completed' => array(
+        'complete_desc' => array(
             'completeValidate' => array(
                 'rule' => array('completeValidate'),
-                'message' => 'Keterangan LAKA harap diisi'
+                'message' => 'Keterangan selesai LAKA harap diisi'
+            ),
+        ),
+        'completed_date' => array(
+            'completeDateValidate' => array(
+                'rule' => array('completeDateValidate'),
+                'message' => 'Tgl selesai LAKA harap diisi'
             ),
         )
 	);
@@ -92,8 +98,8 @@ class Laka extends AppModel {
     );
 
     function completeValidate($data){
-        if(!empty($data['completed'])){
-            if(!empty($this->data['Laka']['complete_desc'])){
+        if(!empty($this->data['Laka']['completed'])){
+            if( !empty($this->data['Laka']['complete_desc']) ){
                 return true;
             }else{
                 return false;
@@ -103,7 +109,19 @@ class Laka extends AppModel {
         }
     }
 
-	function getData($find, $options = false){
+    function completeDateValidate($data){
+        if(!empty($this->data['Laka']['completed'])){
+            if( !empty($this->data['Laka']['completed_date']) ){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return true;
+        }
+    }
+
+	function getData($find, $options = false, $is_merge = true){
         $default_options = array(
             'conditions'=> array(
                 'Laka.status' => 1,
@@ -118,7 +136,7 @@ class Laka extends AppModel {
             'fields' => array(),
         );
 
-        if(!empty($options)){
+        if( !empty($options) && !empty($is_merge) ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
@@ -134,6 +152,8 @@ class Laka extends AppModel {
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
             }
+        } else if( !empty($options) ){
+            $default_options = $options;
         }
 
         if( $find == 'paginate' ) {
@@ -156,6 +176,29 @@ class Laka extends AppModel {
                     'Ttuj'
                 ),
             ));
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
+
+    function getMergeTtuj( $ttuj_id, $data, $conditions = false ){
+        if( empty($data['Laka'])){
+            $condition_default = array(
+                'Laka.ttuj_id' => $ttuj_id,
+                'Laka.status' => 1,
+            );
+
+            if( !empty($conditions) ) {
+                $condition_default = array_merge($condition_default, $conditions);
+            }
+
+            $data_merge = $this->getData('first', array(
+                'conditions' => $condition_default,
+            ), false);
 
             if(!empty($data_merge)){
                 $data = array_merge($data, $data_merge);
