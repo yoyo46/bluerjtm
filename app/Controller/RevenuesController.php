@@ -2105,7 +2105,6 @@ class RevenuesController extends AppController {
 
                     if( !empty($value['Laka']['id']) ) {
                         $date = date('Y-m-d', strtotime($value['Laka']['tgl_laka']));
-                        $end_date = date('Y-m-d', strtotime($value['Ttuj']['tgljam_pool']));
                         $icon = '/img/pool.png';
                         $addClass = 'pool';
                         $color = '#dd545f';
@@ -2118,7 +2117,8 @@ class RevenuesController extends AppController {
                             $end_date = $date;
                         }
                     } else if( !empty($value['Ttuj']['is_pool']) ) {
-                        $end_date = date('Y-m-d', strtotime($value['Ttuj']['tgljam_pool']));
+                        $toDate = $value['Ttuj']['tgljam_pool'];
+                        $end_date = date('Y-m-d', strtotime($toDate));
                         $icon = '/img/pool.png';
                         $addClass = 'pool';
                         $color = '#00a65a';
@@ -2129,7 +2129,8 @@ class RevenuesController extends AppController {
                             $value['Ttuj']['id'],
                         );
                     } else if( !empty($value['Ttuj']['is_balik']) ) {
-                        $end_date = date('Y-m-d', strtotime($value['Ttuj']['tgljam_balik']));
+                        $toDate = $value['Ttuj']['tgljam_balik'];
+                        $end_date = date('Y-m-d', strtotime($toDate));
                         $icon = '/img/on-the-way.gif';
                         $addClass = 'balik';
                         $color = '#3d9970';
@@ -2140,7 +2141,8 @@ class RevenuesController extends AppController {
                             $value['Ttuj']['id'],
                         );
                     } else if( !empty($value['Ttuj']['is_bongkaran']) ) {
-                        $end_date = date('Y-m-d', strtotime($value['Ttuj']['tgljam_bongkaran']));
+                        $toDate = $value['Ttuj']['tgljam_bongkaran'];
+                        $end_date = date('Y-m-d', strtotime($toDate));
                         $icon = '/img/bongkaran.png';
                         $color = '#d9516f';
                         $urlTtuj = array(
@@ -2150,7 +2152,8 @@ class RevenuesController extends AppController {
                             $value['Ttuj']['id'],
                         );
                     } else if( !empty($value['Ttuj']['is_arrive']) ) {
-                        $end_date = date('Y-m-d', strtotime($value['Ttuj']['tgljam_tiba']));
+                        $toDate = $value['Ttuj']['tgljam_tiba'];
+                        $end_date = date('Y-m-d', strtotime($toDate));
                         $icon = '/img/arrive.png';
                         $color = '#f39c12';
                         $urlTtuj = array(
@@ -2160,7 +2163,8 @@ class RevenuesController extends AppController {
                             $value['Ttuj']['id'],
                         );
                     } else if( empty($value['Ttuj']['is_draft']) ) {
-                        $end_date = date('Y-m-d', strtotime($value['Ttuj']['tgljam_berangkat']));
+                        $toDate = $value['Ttuj']['tgljam_berangkat'];
+                        $end_date = date('Y-m-d', strtotime($toDate));
                         $icon = '/img/truck.png';
                         $color = '#4389fe';
                         $urlTtuj = array(
@@ -2195,7 +2199,7 @@ class RevenuesController extends AppController {
                                 } else {
                                 $dataTtuj[$nopol][$currDay][] = array_merge($dataTmp, array(
                                     'from_date' => $this->MkCommon->customDate($value['Ttuj']['tgljam_berangkat'], 'd/m/Y - H:i'),
-                                    'to_date' => $this->MkCommon->customDate($end_date, 'd/m/Y - H:i'),
+                                    'to_date' => $this->MkCommon->customDate($toDate, 'd/m/Y - H:i'),
                                     'icon' => ( empty($i) || $date == $end_date )?$icon:false,
                                     'iconPopup' => $icon,
                                     'color' => $color,
