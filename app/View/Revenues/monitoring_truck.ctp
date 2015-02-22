@@ -108,8 +108,19 @@
                                                     ));
                                                 }
                                             } else {
-                                                $formTtuj = $this->Html->tag('p', sprintf(__('Tanggal: %s', $data['from_date'])));
-                                                $formTtuj .= $this->Html->tag('p', sprintf(__('Sampai: %s', $data['to_date'])));
+                                                $formTtuj = $this->Html->tag('p', sprintf(__('Berangkat: %s', $data['from_date'])));
+
+                                                if( !empty($data['tglTiba']) ) {
+                                                    $formTtuj .= $this->Html->tag('p', sprintf(__('Tiba: %s', $data['tglTiba'])));
+                                                }
+                                                if( !empty($data['tglBongkaran']) ) {
+                                                    $formTtuj .= $this->Html->tag('p', sprintf(__('Bongkaran: %s', $data['tglBongkaran'])));
+                                                }
+                                                if( !empty($data['tglBalik']) ) {
+                                                    $formTtuj .= $this->Html->tag('p', sprintf(__('Balik: %s', $data['tglBalik'])));
+                                                }
+
+                                                $formTtuj .= $this->Html->tag('p', sprintf(__('Sampai Pool: %s', $data['to_date'])));
                                             }
 
                                             if( !empty($data['icon']) ) {
@@ -143,7 +154,7 @@
                                                 ));
                                             } else {
                                                 $point[] = $this->Html->tag('div', $this->Html->tag('div', $icon, array(
-                                                    'title' => __('Truk Berangkat'),
+                                                    'title' => $data['title'],
                                                     'class' => 'popover-hover-top',
                                                     'data-content' => sprintf('%s %s %s %s %s', $this->Html->tag('label', $data['Tujuan']), $this->Html->tag('p', sprintf(__('Supir: %s', $data['Driver']))), $this->Html->tag('p', sprintf(__('Truk: %s', $nopol))), $this->Html->tag('p', sprintf(__('Muatan: %s', $data['Muatan']))), $formTtuj)
                                                 )), array(
@@ -230,6 +241,7 @@
                                 <ul class="row list-calendar">
                                     <li class="col-sm-2 text-center">
                                         <?php 
+                                                rsort($point);
                                                 echo str_replace('popover-hover-top', 'popover-hover-bottom', implode('</li><li class="col-sm-2 text-center">', $point));
                                         ?>
                                     </li>

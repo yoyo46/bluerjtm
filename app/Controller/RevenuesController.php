@@ -2076,6 +2076,7 @@ class RevenuesController extends AppController {
 
             if( !empty($ttujs) ) {
                 foreach ($ttujs as $key => $value) {
+                    $inArr = array();
                     $value = $this->Laka->getMergeTtuj($value['Ttuj']['id'], $value, array(
                         'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\')' => $currentMonth,
                     ));
@@ -2101,7 +2102,13 @@ class RevenuesController extends AppController {
                         'Muatan' => $totalMuatan,
                     );
                     $date = date('Y-m-d', strtotime($value['Ttuj']['tgljam_berangkat']));
+                    $tglBerangkat = $this->MkCommon->customDate($value['Ttuj']['tgljam_berangkat'], 'Y-m-d H:i:s');
+                    $tglTiba = $this->MkCommon->customDate($value['Ttuj']['tgljam_tiba'], 'Y-m-d H:i:s');
+                    $tglBongkaran = $this->MkCommon->customDate($value['Ttuj']['tgljam_bongkaran'], 'Y-m-d H:i:s');
+                    $tglBalik = $this->MkCommon->customDate($value['Ttuj']['tgljam_balik'], 'Y-m-d H:i:s');
+                    $tglPool = $this->MkCommon->customDate($value['Ttuj']['tgljam_pool'], 'Y-m-d H:i:s');
                     $i = 0;
+                    $differentTtuj = false;
 
                     if( !empty($value['Laka']['id']) ) {
                         $date = date('Y-m-d', strtotime($value['Laka']['tgl_laka']));
@@ -2117,6 +2124,7 @@ class RevenuesController extends AppController {
                             $end_date = $date;
                         }
                     } else if( !empty($value['Ttuj']['is_pool']) ) {
+                        $titleTtuj = __('Sampai Pool');
                         $toDate = $value['Ttuj']['tgljam_pool'];
                         $end_date = date('Y-m-d', strtotime($toDate));
                         $icon = '/img/pool.png';
@@ -2129,8 +2137,7 @@ class RevenuesController extends AppController {
                             $value['Ttuj']['id'],
                         );
                     } else if( !empty($value['Ttuj']['is_balik']) ) {
-                        $toDate = $value['Ttuj']['tgljam_balik'];
-                        $end_date = date('Y-m-d', strtotime($toDate));
+                        $titleTtuj = __('Balik');
                         $icon = '/img/on-the-way.gif';
                         $addClass = 'balik';
                         $color = '#3d9970';
@@ -2141,10 +2148,9 @@ class RevenuesController extends AppController {
                             $value['Ttuj']['id'],
                         );
                     } else if( !empty($value['Ttuj']['is_bongkaran']) ) {
-                        $toDate = $value['Ttuj']['tgljam_bongkaran'];
-                        $end_date = date('Y-m-d', strtotime($toDate));
+                        $titleTtuj = __('Bongkaran');
                         $icon = '/img/bongkaran.png';
-                        $color = '#d9516f';
+                        $color = '#d3e3d4';
                         $urlTtuj = array(
                             'controller' => 'revenues',
                             'action' => 'info_truk',
@@ -2152,8 +2158,7 @@ class RevenuesController extends AppController {
                             $value['Ttuj']['id'],
                         );
                     } else if( !empty($value['Ttuj']['is_arrive']) ) {
-                        $toDate = $value['Ttuj']['tgljam_tiba'];
-                        $end_date = date('Y-m-d', strtotime($toDate));
+                        $titleTtuj = __('Berangkat');
                         $icon = '/img/arrive.png';
                         $color = '#f39c12';
                         $urlTtuj = array(
@@ -2163,8 +2168,6 @@ class RevenuesController extends AppController {
                             $value['Ttuj']['id'],
                         );
                     } else if( empty($value['Ttuj']['is_draft']) ) {
-                        $toDate = $value['Ttuj']['tgljam_berangkat'];
-                        $end_date = date('Y-m-d', strtotime($toDate));
                         $icon = '/img/truck.png';
                         $color = '#4389fe';
                         $urlTtuj = array(
@@ -2174,8 +2177,77 @@ class RevenuesController extends AppController {
                         );
                     }
 
+                    if( empty($value['Laka']['id']) && empty($value['Ttuj']['is_pool']) ) {
+                        if( date('Y-m-d') >= $date ) {
+                            $end_date = date('Y-m-d');
+                        } else {
+                            $end_date = $date;
+                        }
+                    }
+
+                    if( empty($value['Laka']['id']) ) {
+                        $dataTtujCalendar = array_merge($dataTmp, array(
+                            'id' => $value['Ttuj']['id'],
+                            'title' => __('Berangkat'),
+                            'from_date' => $this->MkCommon->customDate($tglBerangkat, 'd/m/Y - H:i'),
+                            'to_date' => !empty($tglPool)?$this->MkCommon->customDate($tglPool, 'd/m/Y - H:i'):'-',
+                            'iconPopup' => $icon,
+                            'color' => $color,
+                            'url' => $urlTtuj,
+                        ));
+
+                        if( !empty($tglTiba) ) {
+                            $dataTtujCalendar['tglTiba'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_tiba'], 'd/m/Y - H:i');
+                        }
+                        if( !empty($tglBongkaran) ) {
+                            $dataTtujCalendar['tglBongkaran'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_bongkaran'], 'd/m/Y - H:i');
+                        }
+                        if( !empty($tglBalik) ) {
+                            $dataTtujCalendar['tglBalik'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_balik'], 'd/m/Y - H:i');
+                        }
+
+                        if( !empty($tglPool) && $this->MkCommon->customDate($tglPool, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglPool, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglPool, 'd'), $inArr) ) {
+                            $dataTtujCalendar['title'] = __('Sampai Pool');
+                            $dataTtujCalendar['icon'] = '/img/pool.png';
+                            $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
+                            $dataTtujCalendar['color'] = '#00a65a';
+                            $dataTtuj[$nopol][$this->MkCommon->customDate($tglPool, 'd')][] = $dataTtujCalendar;
+                            $differentTtuj = true;
+                            $inArr[] = $this->MkCommon->customDate($tglPool, 'd');
+                        }
+                        if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglBalik, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglBalik, 'd'), $inArr) ) {
+                            $dataTtujCalendar['title'] = __('Balik');
+                            $dataTtujCalendar['icon'] = '/img/on-the-way.gif';
+                            $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
+                            $dataTtujCalendar['color'] = '#3d9970';
+                            $dataTtuj[$nopol][$this->MkCommon->customDate($tglBalik, 'd')][] = $dataTtujCalendar;
+                            $differentTtuj = true;
+                            $inArr[] = $this->MkCommon->customDate($tglBalik, 'd');
+                        }
+                        if( !empty($tglBongkaran) && $this->MkCommon->customDate($tglBongkaran, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglBongkaran, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglBongkaran, 'd'), $inArr) ) {
+                            $dataTtujCalendar['title'] = __('Bongkaran');
+                            $dataTtujCalendar['icon'] = '/img/bongkaran.png';
+                            $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
+                            $dataTtujCalendar['color'] = '#d3e3d4';
+                            $dataTtuj[$nopol][$this->MkCommon->customDate($tglBongkaran, 'd')][] = $dataTtujCalendar;
+                            $differentTtuj = true;
+                            $inArr[] = $this->MkCommon->customDate($tglBongkaran, 'd');
+                        }
+                        if( !empty($tglTiba) && $this->MkCommon->customDate($tglTiba, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglTiba, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglTiba, 'd'), $inArr) ) {
+                            $dataTtujCalendar['title'] = __('Tiba');
+                            $dataTtujCalendar['icon'] = '/img/arrive.png';
+                            $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
+                            $dataTtujCalendar['color'] = '#f39c12';
+                            $dataTtuj[$nopol][$this->MkCommon->customDate($tglTiba, 'd')][] = $dataTtujCalendar;
+                            $differentTtuj = true;
+                            $inArr[] = $this->MkCommon->customDate($tglTiba, 'd');
+                        }
+                    }
+
                     while (strtotime($date) <= strtotime($end_date)) {
-                        if( date('Y-m', strtotime($date)) == $currentMonth ) {
+                        $currMonth = date('Y-m', strtotime($date));
+
+                        if( $currMonth == $currentMonth ) {
                             $currDay = date('d', strtotime($date));
                             // $dataTtuj[$nopol][$currDay] = $dataTmp;
                             
@@ -2196,15 +2268,46 @@ class RevenuesController extends AppController {
                                         $value['Laka']['id'],
                                     ),
                                 );
+                            } else if( !in_array($currDay, $inArr) ) {
+                                $popIcon = false;
+
+                                if( !empty($tglPool) && $this->MkCommon->customDate($tglPool, 'Y-m-d') <= $date ) {
+                                    $dataTtujCalendar['color'] = '#00a65a';
+                                    $icon = '/img/pool.png';
+                                } else if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m-d') <= $date ) {
+                                    $dataTtujCalendar['color'] = '#3d9970';
+                                    $icon = '/img/on-the-way.gif';
+                                } else if( !empty($tglBongkaran) && $this->MkCommon->customDate($tglBongkaran, 'Y-m-d') <= $date ) {
+                                    $dataTtujCalendar['color'] = '#d3e3d4';
+                                    $icon = '/img/bongkaran.png';
+                                } else if( !empty($tglTiba) && $this->MkCommon->customDate($tglTiba, 'Y-m-d') <= $date ) {
+                                    $dataTtujCalendar['color'] = '#f39c12';
+                                    $icon = '/img/arrive.png';
                                 } else {
-                                $dataTtuj[$nopol][$currDay][] = array_merge($dataTmp, array(
-                                    'from_date' => $this->MkCommon->customDate($value['Ttuj']['tgljam_berangkat'], 'd/m/Y - H:i'),
-                                    'to_date' => $this->MkCommon->customDate($toDate, 'd/m/Y - H:i'),
-                                    'icon' => ( empty($i) || $date == $end_date )?$icon:false,
-                                    'iconPopup' => $icon,
-                                    'color' => $color,
-                                    'url' => $urlTtuj,
-                                ));
+                                    $dataTtujCalendar['color'] = '#4389fe';
+                                    $icon = '/img/truck.png';
+                                }
+
+                                if( $differentTtuj ) {
+                                    if( empty($i) || ( $date == $end_date && !empty($toDate) ) ) {
+                                        $dataTtujCalendar['icon'] = $icon;
+                                        $popIcon = $dataTtujCalendar['icon'];
+                                    } else {
+                                        $popIcon = $icon;
+                                        $dataTtujCalendar['icon'] = false;
+                                    }
+                                } else {
+                                    if( empty($i) || ( $date == $end_date && !empty($toDate) ) ) {
+                                        $popIcon = $icon;
+                                        $dataTtujCalendar['icon'] = $icon;
+                                    } else {
+                                        $popIcon = $icon;
+                                        $dataTtujCalendar['icon'] = false;
+                                    }
+                                }
+
+                                $dataTtujCalendar['iconPopup'] = $popIcon;
+                                $dataTtuj[$nopol][$currDay][] = $dataTtujCalendar;
                             }
 
                             $date = date ("Y-m-d", strtotime("+1 day", strtotime($date)));
