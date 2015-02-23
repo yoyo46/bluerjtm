@@ -18,21 +18,19 @@
                 ));
                 $i = 0;
         ?>
-        <ul class="list-report-monitoring">
-            <li>
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->input('Ttuj.monitoring_customer_id.'.$i,array(
-                                'type' => 'checkbox',
-                                'label'=> __('Pilih Semua'),
-                                'required' => false,
-                                'div' => array(
-                                    'class' => 'checkbox'
-                                ),
-                                'class' => 'checkAll',
-                            ));
-                    ?>
-                </div>
+        <ul class="list-report-monitoring row">
+            <li class="col-sm-4">
+                <?php 
+                        echo $this->Form->input('Ttuj.monitoring_customer_id.'.$i,array(
+                            'type' => 'checkbox',
+                            'label'=> __('Pilih Semua'),
+                            'required' => false,
+                            'div' => array(
+                                'class' => 'checkbox'
+                            ),
+                            'class' => 'checkAll',
+                        ));
+                ?>
             </li>
             <?php 
                     if( !empty($customers) ) {
@@ -42,22 +40,20 @@
                                 $checked = true;
                             }
             ?>
-            <li>
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->input('Ttuj.monitoring_customer_id.'.$i,array(
-                                'type' => 'checkbox',
-                                'label'=> $customer,
-                                'required' => false,
-                                'value' => $key,
-                                'div' => array(
-                                    'class' => 'checkbox'
-                                ),
-                                'checked' => $checked,
-                                'class' => 'check-option',
-                            ));
-                    ?>
-                </div>
+            <li class="col-sm-4">
+                <?php 
+                        echo $this->Form->input('Ttuj.monitoring_customer_id.'.$i,array(
+                            'type' => 'checkbox',
+                            'label'=> $customer,
+                            'required' => false,
+                            'value' => $key,
+                            'div' => array(
+                                'class' => 'checkbox'
+                            ),
+                            'checked' => $checked,
+                            'class' => 'check-option',
+                        ));
+                ?>
             </li>
             <?php 
                             $i++;

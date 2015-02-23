@@ -157,9 +157,7 @@ table.monitoring td {
 }
 
 .list-report-monitoring li {
-	float: left;
 	list-style-type: none;
-	width: 50%;
 }
 /*
 **	END Truck
