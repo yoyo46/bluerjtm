@@ -2727,7 +2727,13 @@ class RevenuesController extends AppController {
                         $this->Ttuj->save();
                     }
 
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Revenue'), $msg), 'success');
+                    if( empty($id) ) {
+                        $msgAlert = sprintf(__('Sukses %s Revenue! No Ref: %s'), $msg, str_pad($this->Revenue->id, 5, '0', STR_PAD_LEFT));
+                    } else {
+                        $msgAlert = sprintf(__('Sukses %s Revenue!'), $msg);
+                    }
+
+                    $this->MkCommon->setCustomFlash($msgAlert, 'success');
                     $this->Log->logActivity( sprintf(__('Sukses %s Revenue'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
                     $this->redirect(array(
                         'controller' => 'revenues',

@@ -3877,7 +3877,8 @@ textarea.small {
   height: 75px;
 }
 
-.headcol {
+.table>tbody>tr>td.headcol,
+.table>thead>tr>th.headcol {
   position: absolute;
   width: 5em;
   left: 0;
@@ -3885,6 +3886,7 @@ textarea.small {
   border-right: none !important;
   margin-top: -1px;
   border-bottom: none !important;
+  vertical-align: middle;
 }
 
 .frame-frezee {
