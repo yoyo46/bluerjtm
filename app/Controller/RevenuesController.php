@@ -1210,7 +1210,20 @@ class RevenuesController extends AppController {
         $conditionsTtuj = array(
             'Ttuj.status' => 1,
             'Ttuj.is_draft' => 0,
+            'Laka.id' => NULL,
         );
+
+        $this->Ttuj->bindModel(array(
+            'hasOne' => array(
+                'Laka' => array(
+                    'className' => 'Laka',
+                    'foreignKey' => 'ttuj_id',
+                    'conditions' => array(
+                        'Laka.status' => 1,
+                    ),
+                )
+            )
+        ));
 
         switch ($action_type) {
             case 'bongkaran':
@@ -1286,11 +1299,14 @@ class RevenuesController extends AppController {
                 break;
         }
 
-        $ttujs = $this->Ttuj->getData('list', array(
+        $ttujs = $this->Ttuj->getData('all', array(
             'conditions' => $conditionsTtuj,
             'fields' => array(
                 'Ttuj.id', 'Ttuj.no_ttuj'
-            )
+            ),
+            'contain' => array(
+                'Laka'
+            ),
         ));
         $perlengkapans = $this->Perlengkapan->getData('list', array(
             'fields' => array(
@@ -1993,6 +2009,7 @@ class RevenuesController extends AppController {
 
     public function monitoring_truck( $data_action = false ) {
         if( in_array('view_monitoring_truck', $this->allowModule) ) {
+            $this->loadModel('Customer');
             $this->loadModel('Truck');
             $this->loadModel('Ttuj');
             $this->loadModel('TtujTipeMotor');
@@ -2027,6 +2044,7 @@ class RevenuesController extends AppController {
             $nextMonth = date('Y-m', mktime(0, 0, 0, date("m", strtotime($currentMonth))+1 , 1, date("Y", strtotime($currentMonth))));
             $leftDay = date('N', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , 0, date("Y", strtotime($currentMonth))));
             $lastDay = date('t', strtotime($currentMonth));
+            $customerId = array();
             $conditions = array(
                 'Ttuj.status'=> 1,
                 'Ttuj.is_draft'=> 0,
@@ -2042,6 +2060,16 @@ class RevenuesController extends AppController {
                 'CalendarEvent.status'=> 1,
                 'DATE_FORMAT(CalendarEvent.from_date, \'%Y-%m\')' => $currentMonth,
             );
+
+            if( !empty($this->params['named']) ) {
+                $refine = $this->params['named'];
+
+                if( !empty($refine['monitoring_customer_id']) ) {
+                    $refine['monitoring_customer_id'] = urldecode($refine['monitoring_customer_id']);
+                    $customerId = explode(',', $refine['monitoring_customer_id']);
+                    $conditions['Ttuj.customer_id'] = $customerId;
+                }
+            }
 
             $this->paginate = $this->Truck->getData('paginate', array(
                 'conditions' => array(
@@ -2359,11 +2387,20 @@ class RevenuesController extends AppController {
                     }
                 }
             }
+            $customers = $this->Customer->getData('list', array(
+                'conditions' => array(
+                    'Customer.status' => 1
+                ),
+                'fields' => array(
+                    'Customer.id', 'Customer.customer_name'
+                ),
+            ));
 
             $this->set(compact(
                 'data_action', 'lastDay', 'currentMonth',
                 'trucks', 'prevMonth', 'nextMonth',
-                'dataTtuj', 'dataEvent'
+                'dataTtuj', 'dataEvent', 'customers',
+                'customerId'
             ));
 
             if($data_action == 'pdf'){

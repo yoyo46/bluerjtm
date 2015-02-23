@@ -60,6 +60,10 @@ class RjRevenueComponent extends Component {
 				if( !empty($refine['InvoicePayment']['nodoc']) ) {
 					$refine_conditions['InvoicePayment']['nodoc'] = urlencode($refine['InvoicePayment']['nodoc']);
 				}
+				if( !empty($refine['Ttuj']['monitoring_customer_id']) ) {
+					$refine_conditions['Ttuj']['monitoring_customer_id'] = array_filter($refine['Ttuj']['monitoring_customer_id']);
+					$refine_conditions['Ttuj']['monitoring_customer_id'] = implode(',', $refine_conditions['Ttuj']['monitoring_customer_id']);
+				}
 			}
 				
 			return $refine_conditions;

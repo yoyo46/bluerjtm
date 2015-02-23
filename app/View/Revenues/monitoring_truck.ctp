@@ -3,7 +3,7 @@
         $addStyle = 'min-width: 1500px;';
         $tdStyle = '';
         $border = 0;
-
+        echo $this->element('blocks/trucks/search_report_monitoring_truck');
 ?>
 <section class="content invoice">
     <h2 class="page-header">

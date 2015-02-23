@@ -2378,4 +2378,8 @@ $(function() {
             $('.capacity_truck').addClass('hide');
         }
     });
+
+    $('.checkAll').click(function(){
+        $('.check-option').not(this).prop('checked', this.checked);
+    });
 });

@@ -142,6 +142,16 @@ table.monitoring .icon-popup,
 table.monitoring .ico-calendar {
 	display: block;
 }
+
+.list-report-monitoring {
+	padding: 0;
+}
+
+.list-report-monitoring li {
+	float: left;
+	list-style-type: none;
+	width: 50%;
+}
 /*
 **	END Truck
 */
