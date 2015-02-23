@@ -12,13 +12,13 @@
     <div class="month-name-container">
         <?php
                 $prevMonthName = date('F Y', strtotime($prevMonth));
+                $urlPrev = $this->passedArgs;
+                $urlPrev['month'] = $this->Common->toSlug($prevMonthName);
                 echo $this->Html->tag('div', $this->Html->link(sprintf('%s %s', $this->Html->tag('b', '', array(
                     'class' => 'fa fa-angle-left'
                 )), $this->Html->tag('span', $prevMonthName, array(
                     'class' => 'month-name'
-                ))), array(
-                    'month' => $this->Common->toSlug($prevMonthName),
-                ), array(
+                ))), $urlPrev, array(
                     'escape' => false
                 )), array(
                     'class' => 'last-month pull-left'
@@ -30,13 +30,13 @@
                 ));
                 
                 $nextMonthName = date('F Y', strtotime($nextMonth));
+                $urlNext = $this->passedArgs;
+                $urlNext['month'] = $this->Common->toSlug($nextMonthName);
                 echo $this->Html->tag('div', $this->Html->link(sprintf('%s %s', $this->Html->tag('span', $nextMonthName, array(
                     'class' => 'month-name'
                 )), $this->Html->tag('b', '', array(
                     'class' => 'fa fa-angle-right'
-                ))), array(
-                    'month' => $this->Common->toSlug($nextMonthName),
-                ), array(
+                ))), $urlNext, array(
                     'escape' => false
                 )), array(
                     'class' => 'next-month pull-right'
