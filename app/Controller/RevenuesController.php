@@ -2101,6 +2101,7 @@ class RevenuesController extends AppController {
             ));
             $dataTtuj = array();
             $dataEvent = array();
+            $dataRit = array();
 
             if( !empty($ttujs) ) {
                 foreach ($ttujs as $key => $value) {
@@ -2253,6 +2254,7 @@ class RevenuesController extends AppController {
                         $dataTtuj[$nopol][$this->MkCommon->customDate($tglPool, 'd')][] = $dataTtujCalendar;
                         $differentTtuj = true;
                         $inArr[] = $this->MkCommon->customDate($tglPool, 'd');
+                        $dataRit[$nopol]['rit'][$this->MkCommon->customDate($tglPool, 'd')][] = $tglPool;
                     }
                     if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglBalik, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglBalik, 'd'), $inArr) ) {
                         $dataTtujCalendar['title'] = __('Balik');
@@ -2400,7 +2402,7 @@ class RevenuesController extends AppController {
                 'data_action', 'lastDay', 'currentMonth',
                 'trucks', 'prevMonth', 'nextMonth',
                 'dataTtuj', 'dataEvent', 'customers',
-                'customerId'
+                'customerId', 'dataRit'
             ));
 
             if($data_action == 'pdf'){

@@ -43,14 +43,14 @@
                 ));
         ?>
     </div>
-    <div class="table-responsive margin">
+    <div class="table-responsive margin frame-frezee">
         <table class="table table-bordered report monitoring" style="<?php echo $addStyle; ?>" border="<?php echo $border; ?>">
             <thead>
                 <tr>
                     <?php 
                             echo $this->Html->tag('th', __('Truk'), array(
-                                'class' => 'text-center',
-                                'style' => 'width: 300px;',
+                                'class' => 'text-center headcol',
+                                'style' => 'width: 100px;',
                             ));
 
                             for ($i=1; $i <= $lastDay; $i++) {
@@ -70,7 +70,7 @@
                                 $nopol = $truck['Truck']['nopol'];
                                 echo '<tr>';
                                 echo $this->Html->tag('td', $nopol, array(
-                                    'class' => 'text-center',
+                                    'class' => 'text-center headcol',
                                     'style' => 'width: 100px;',
                                 ));
                                 $bg = '';
@@ -83,6 +83,11 @@
                                     }
                                     $point = array();
                                     $style = '';
+                                    $rit = '';
+
+                                    if( !empty($dataRit[$nopol]['rit'][$idx]) && count($dataRit[$nopol]['rit'][$idx]) > 1 ) {
+                                        $rit = count($dataRit[$nopol]['rit'][$idx]);
+                                    }
 
                                     if( !empty($dataTtuj[$nopol][$idx]) ) {
                                         foreach ($dataTtuj[$nopol][$idx] as $key => $data) {
@@ -212,7 +217,7 @@
                                         ));
                                     } else {
                                         if( count($point) > 1 ) {
-                                            echo $this->Html->tag('td', $this->Html->tag('div', $this->Html->link(sprintf('%s <i class="fa fa-list"></i>', count($point)), '#multiple-'.$i, array(
+                                            echo $this->Html->tag('td', $this->Html->tag('div', $this->Html->link(sprintf('%s <i class="fa fa-list"></i>', $rit), '#multiple-'.$i, array(
                                                 'escape' => false,
                                             )), array(
                                                 'class' => 'text-center',

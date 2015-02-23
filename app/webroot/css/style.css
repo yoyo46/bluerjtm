@@ -3876,3 +3876,21 @@ table th i {
 textarea.small {
   height: 75px;
 }
+
+.headcol {
+  position: absolute;
+  width: 5em;
+  left: 0;
+  top: auto;
+  border-right: none !important;
+  margin-top: -1px;
+}
+
+.frame-frezee {
+  margin-left: 84px;
+  border-left: none;
+}
+
+thead th.headcol {
+  border-top: 1px solid #ddd !important;
+}
