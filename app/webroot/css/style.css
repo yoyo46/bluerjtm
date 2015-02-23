@@ -3884,6 +3884,7 @@ textarea.small {
   top: auto;
   border-right: none !important;
   margin-top: -1px;
+  border-bottom: none !important;
 }
 
 .frame-frezee {
@@ -3893,4 +3894,5 @@ textarea.small {
 
 thead th.headcol {
   border-top: 1px solid #ddd !important;
+  border-bottom: 2px solid #ddd !important;
 }

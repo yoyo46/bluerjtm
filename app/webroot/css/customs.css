@@ -119,7 +119,7 @@ td.multiple a {
 }
 
 table.monitoring td > div {
-	font-size: 22px;
+	font-size: 18px;
 	vertical-align: middle;
 	font-weight: bold;
 }
@@ -141,6 +141,15 @@ table.monitoring .icon-popup,
 .multiple-modal .list-calendar .icon-popup,
 table.monitoring .ico-calendar {
 	display: block;
+}
+
+table.monitoring .ico-calendar {
+	height: 30px;
+	margin: 0 auto;
+}
+
+table.monitoring td {
+	height: 47px;
 }
 
 .list-report-monitoring {
