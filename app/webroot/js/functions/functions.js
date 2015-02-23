@@ -2238,6 +2238,36 @@ $(function() {
         placement: 'top',
         container: 'body',
     });
+    $('.popover-hover-top-click').popover({
+        html: true,
+        placement: 'top',
+        container: 'body',
+    });
+
+    $('.popover-hover-top-click').on('show.bs.popover', function () {
+        $('.popover-hover-top-click').popover('hide');
+    })
+
+    $('.popover-hover-top-click').on('shown.bs.popover', function () {
+        $('.popover-close').click(function () {
+            $('.popover-hover-top-click').popover('hide');
+        });
+    })
+    $('.popover-hover-bottom-click').popover({
+        html: true,
+        placement: 'bottom',
+        container: 'body',
+    });
+
+    $('.popover-hover-bottom-click').on('show.bs.popover', function () {
+        $('.popover-hover-bottom-click').popover('hide');
+    })
+
+    $('.popover-hover-bottom-click').on('shown.bs.popover', function () {
+        $('.popover-close').click(function () {
+            $('.popover-hover-bottom-click').popover('hide');
+        });
+    })
 
     if( $("#acos").length > 0 ) {
         $("#acos").treeview({collapsed: true});

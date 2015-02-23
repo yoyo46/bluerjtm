@@ -458,6 +458,36 @@ class AjaxController extends AppController {
         ));
 	}
 
+    function event_delete( $id = false ){
+        // if( in_array('delete_cities', $this->allowModule) ) {
+            $this->loadModel('CalendarEvent');
+            $locale = $this->CalendarEvent->getData('first', array(
+                'conditions' => array(
+                    'CalendarEvent.id' => $id
+                )
+            ), false);
+
+            if($locale){
+                $this->CalendarEvent->id = $id;
+                $this->CalendarEvent->set('status', 0);
+
+                if($this->CalendarEvent->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses menghapus event.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses menghapus event ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal menghapus cevent.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal menghapus cevent ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('Event tidak ditemukan.'), 'error');
+            }
+
+            $this->redirect($this->referer());
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
 	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $city_id = false, $group_motor_id = false, $is_charge = false, $to_city_id = false ){
 		$this->loadModel('Ttuj');
 		$this->loadModel('GroupMotor');

@@ -2373,6 +2373,7 @@ class RevenuesController extends AppController {
                         if( date('Y-m', strtotime($date)) == $currentMonth ) {
                             $toDate = date('Y-m-d', strtotime($event['CalendarEvent']['to_date']));
                             $dataEvent[$event['CalendarEvent']['nopol']][date('d', strtotime($date))][] = array(
+                                'id' => $event['CalendarEvent']['id'],
                                 'from_date' => $this->MkCommon->customDate($event['CalendarEvent']['from_date'], 'd/m/Y - H:i'),
                                 'to_date' => $this->MkCommon->customDate($event['CalendarEvent']['to_date'], 'd/m/Y - H:i'),
                                 'title' => $event['CalendarEvent']['name'],

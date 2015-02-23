@@ -190,11 +190,18 @@
                                             }
 
                                             $point[] = $this->Html->tag('div', $this->Html->tag('div', $icon, array(
-                                                'title' => $title,
-                                                'class' => 'popover-hover-top',
-                                                'data-content' => sprintf('%s%s%s', $this->Html->tag('p', $event['note']), $fromDateTime, $toDateTime)
+                                                'title' => $title.' <span class="pull-right"><a href="javascript:"><i class="popover-close">Tutup</i></a></span>',
+                                                'class' => 'popover-hover-top-click',
+                                                'data-content' => sprintf('%s%s%s%s', $this->Html->tag('p', $event['note']), $fromDateTime, $toDateTime, $this->Html->link('<i class="fa fa-times"></i> '.__('Hapus'), array(
+                                                    'controller' => 'ajax',
+                                                    'action' => 'event_delete',
+                                                    $event['id'],
+                                                ), array(
+                                                    'escape' => false,
+                                                    'class' => 'text-red',
+                                                ), __('Anda yakin ingin menghapus event ini ?'))),
                                             )), array(
-                                                'class' => 'text-center',
+                                                'class' => 'text-center parent-popover',
                                             ));
                                             $style = sprintf('background: %s;', $event['color']);
                                         }
@@ -240,7 +247,7 @@
                                     <li class="col-sm-2 text-center">
                                         <?php 
                                                 rsort($point);
-                                                echo str_replace('popover-hover-top', 'popover-hover-bottom', implode('</li><li class="col-sm-2 text-center">', $point));
+                                                echo str_replace('popover-hover-top-click', 'popover-hover-bottom-click', str_replace('popover-hover-top', 'popover-hover-bottom', implode('</li><li class="col-sm-2 text-center">', $point)));
                                         ?>
                                     </li>
                                 </ul>
