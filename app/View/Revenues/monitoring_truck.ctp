@@ -88,12 +88,27 @@
                                         foreach ($dataTtuj[$nopol][$idx] as $key => $data) {
                                             $style = sprintf('background: %s;', $data['color']);
 
+                                            $formTtuj = $this->Html->tag('p', sprintf(__('Berangkat: %s', $data['from_date'])));
+
+                                            if( !empty($data['tglTiba']) ) {
+                                                $formTtuj .= $this->Html->tag('p', sprintf(__('Tiba: %s', $data['tglTiba'])));
+                                            }
+                                            if( !empty($data['tglBongkaran']) ) {
+                                                $formTtuj .= $this->Html->tag('p', sprintf(__('Bongkaran: %s', $data['tglBongkaran'])));
+                                            }
+                                            if( !empty($data['tglBalik']) ) {
+                                                $formTtuj .= $this->Html->tag('p', sprintf(__('Balik: %s', $data['tglBalik'])));
+                                            }
+
                                             if( !empty($data['is_laka']) ) {
                                                 $formLaka = $this->Html->tag('p', sprintf(__('Supir: %s', $data['driver_name'])));
                                                 $formLaka .= $this->Html->tag('p', sprintf(__('Lokasi: %s', $data['lokasi_laka'])));
                                                 $formLaka .= $this->Html->tag('p', sprintf(__('Kondisi Truk: %s', $data['truck_condition'])));
-                                                $formLaka .= $this->Html->tag('p', sprintf(__('Tanggal: %s', $data['from_date'])));
-                                                $formLaka .= $this->Html->tag('p', sprintf(__('Sampai: %s', $data['to_date'])));
+                                                $formTtuj .= $this->Html->tag('p', sprintf(__('Tanggal LAKA: %s', $data['laka_date'])));
+
+                                                if( !empty($data['laka_completed_date']) ) {
+                                                    $formTtuj .= $this->Html->tag('p', sprintf(__('Selesai LAKA: %s', $data['laka_completed_date'])));
+                                                }
                                                 
                                                 if( !empty($data['icon']) ) {
                                                     $icon = $this->Html->image('/img/accident.png', array(
@@ -108,18 +123,6 @@
                                                     ));
                                                 }
                                             } else {
-                                                $formTtuj = $this->Html->tag('p', sprintf(__('Berangkat: %s', $data['from_date'])));
-
-                                                if( !empty($data['tglTiba']) ) {
-                                                    $formTtuj .= $this->Html->tag('p', sprintf(__('Tiba: %s', $data['tglTiba'])));
-                                                }
-                                                if( !empty($data['tglBongkaran']) ) {
-                                                    $formTtuj .= $this->Html->tag('p', sprintf(__('Bongkaran: %s', $data['tglBongkaran'])));
-                                                }
-                                                if( !empty($data['tglBalik']) ) {
-                                                    $formTtuj .= $this->Html->tag('p', sprintf(__('Balik: %s', $data['tglBalik'])));
-                                                }
-
                                                 $formTtuj .= $this->Html->tag('p', sprintf(__('Sampai Pool: %s', $data['to_date'])));
                                             }
 
@@ -144,23 +147,13 @@
                                                 ));
                                             }
 
-                                            if( !empty($data['is_laka']) ) {
-                                                $point[] = $this->Html->tag('div', $this->Html->tag('div', $icon, array(
-                                                    'title' => __('LAKA'),
-                                                    'class' => 'popover-hover-top',
-                                                    'data-content' => $formLaka,
-                                                )), array(
-                                                    'class' => 'text-center',
-                                                ));
-                                            } else {
-                                                $point[] = $this->Html->tag('div', $this->Html->tag('div', $icon, array(
-                                                    'title' => $data['title'],
-                                                    'class' => 'popover-hover-top',
-                                                    'data-content' => sprintf('%s %s %s %s %s', $this->Html->tag('label', $data['Tujuan']), $this->Html->tag('p', sprintf(__('Supir: %s', $data['Driver']))), $this->Html->tag('p', sprintf(__('Truk: %s', $nopol))), $this->Html->tag('p', sprintf(__('Muatan: %s', $data['Muatan']))), $formTtuj)
-                                                )), array(
-                                                    'class' => 'text-center',
-                                                ));
-                                            }
+                                            $point[] = $this->Html->tag('div', $this->Html->tag('div', $icon, array(
+                                                'title' => $data['title'],
+                                                'class' => 'popover-hover-top',
+                                                'data-content' => sprintf('%s %s %s %s %s', $this->Html->tag('label', $data['Tujuan']), $this->Html->tag('p', sprintf(__('Supir: %s', $data['Driver']))), $this->Html->tag('p', sprintf(__('Truk: %s', $nopol))), $this->Html->tag('p', sprintf(__('Muatan: %s', $data['Muatan']))), $formTtuj)
+                                            )), array(
+                                                'class' => 'text-center',
+                                            ));
                                         }
                                     }
 
