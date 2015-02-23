@@ -1020,7 +1020,7 @@ class RevenuesController extends AppController {
                     'Ttuj.id' => $id
                 )
             ));
-            $this->doTTUJLanjutan( 'truk_tiba', $id, $ttuj );
+            $this->doTTUJLanjutan( $action_type, $id, $ttuj );
         } else {
             $this->redirect($this->referer());
         }
@@ -1299,7 +1299,7 @@ class RevenuesController extends AppController {
                 break;
         }
 
-        $ttujs = $this->Ttuj->getData('all', array(
+        $ttujs = $this->Ttuj->getData('list', array(
             'conditions' => $conditionsTtuj,
             'fields' => array(
                 'Ttuj.id', 'Ttuj.no_ttuj'
@@ -2317,6 +2317,7 @@ class RevenuesController extends AppController {
                                 } else if( !empty($tglPool) && $this->MkCommon->customDate($tglPool, 'Y-m-d') <= $date ) {
                                     $dataTtujCalendar['color'] = '#00a65a';
                                     $icon = '/img/pool.png';
+                                    $dataRit[$nopol]['rit'][$currDay][] = $tglPool;
                                 } else if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m-d') <= $date ) {
                                     $dataTtujCalendar['color'] = '#3d9970';
                                     $icon = '/img/on-the-way.gif';
