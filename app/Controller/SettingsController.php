@@ -1159,7 +1159,7 @@ class SettingsController extends AppController {
                 $msg = 'menambah';
             }
 
-            $data['UangJalan']['commission'] = $this->MkCommon->convertPriceToString($data['UangJalan']['commission']);
+            $data['UangJalan']['commission'] = $this->MkCommon->convertPriceToString($data['UangJalan']['commission'], 0);
             $data['UangJalan']['commission_extra'] = $this->MkCommon->convertPriceToString($data['UangJalan']['commission_extra'], 0);
             $data['UangJalan']['commission_min_qty'] = $this->MkCommon->convertPriceToString($data['UangJalan']['commission_min_qty'], 0);
             $data['UangJalan']['uang_jalan_1'] = $this->MkCommon->convertPriceToString($data['UangJalan']['uang_jalan_1']);
