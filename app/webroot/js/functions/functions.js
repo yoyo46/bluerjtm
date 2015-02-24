@@ -2247,14 +2247,20 @@ $(function() {
     });
 
     $('.popover-hover-top-click').on('show.bs.popover', function () {
-        $('.popover-hover-top-click').popover('hide');
+        $('.popover-hover-top-click.in').trigger('click');
     })
 
     $('.popover-hover-top-click').on('shown.bs.popover', function () {
+        $(this).addClass('in');
         $('.popover-close').click(function () {
-            $('.popover-hover-top-click').popover('hide');
+            $('.popover-hover-top-click.in').trigger('click');
         });
     })
+
+    $('.popover-hover-top-click').on('hidden.bs.popover', function () {
+        $(this).removeClass('in');
+    })
+
     $('.popover-hover-bottom-click').popover({
         html: true,
         placement: 'bottom',

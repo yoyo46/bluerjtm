@@ -254,6 +254,17 @@
                                 ));
                             }
 
+                            // if( in_array('view_leasing', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Leasing', array(
+                                    'controller' => 'leasings',
+                                    'action' => 'index',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'view_leasing' )?'active':'',
+                                ));
+                            // }
+
                             if( in_array('view_kirs', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KIR - Perpanjang', array(
                                     'controller' => 'trucks',
@@ -408,17 +419,6 @@
                                     'class' => ( !empty($active_menu) && $active_menu == 'point_perplant_report' )?'active':'',
                                 ));
                             }
-
-                            // if( in_array('view_leasing', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Leasing', array(
-                                    'controller' => 'leasings',
-                                    'action' => 'index',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'view_leasing' )?'active':'',
-                                ));
-                            // }
                     ?>
                 </ul>
             </li>

@@ -9,7 +9,7 @@
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <?php 
-                // if( in_array('insert_leasing_companies', $allowModule) ) {
+                if( in_array('insert_leasing_companies', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -23,13 +23,15 @@
             ?>
         </div>
         <?php 
-                // }
+                }
         ?>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>
                 <th>Perusahaan Leasing</th>
+                <th>No Telepon</th>
+                <th>Alamat</th>
                 <th>Dibuat</th>
                 <th>Action</th>
             </tr>
@@ -42,10 +44,12 @@
             ?>
             <tr>
                 <td><?php echo $value_data['name'];?></td>
+                <td><?php echo $value_data['phone'];?></td>
+                <td><?php echo str_replace(PHP_EOL, '<br>', $value_data['address']);?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td class="action">
                     <?php 
-                            // if( in_array('insert_leasing_companies', $allowModule) ) {
+                            if( in_array('insert_leasing_companies', $allowModule) ) {
                                 echo $this->Html->link('Edit', array(
                                     'controller' => 'leasings',
                                     'action' => 'leasing_company_edit',
@@ -53,9 +57,9 @@
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
-                            // }
+                            }
 
-                            // if( in_array('delete_leasing_companies', $allowModule) ) {
+                            if( in_array('delete_leasing_companies', $allowModule) ) {
                                 echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'leasings',
                                     'action' => 'leasing_company_toggle',
@@ -64,7 +68,7 @@
                                     'class' => 'btn btn-danger btn-xs',
                                     'title' => 'disable status brand'
                                 ), __('Anda yakin ingin menghapus data perushaan leasing ini?'));
-                            // }
+                            }
                     ?>
                 </td>
             </tr>

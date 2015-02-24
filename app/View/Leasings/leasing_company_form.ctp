@@ -60,7 +60,7 @@
 					'type' => 'submit',
 				));
 	    		echo $this->Html->link(__('Kembali'), array(
-					'action' => 'index', 
+					'action' => 'leasing_companies', 
 				), array(
 					'class'=> 'btn btn-default',
 				));
