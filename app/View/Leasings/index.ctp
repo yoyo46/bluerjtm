@@ -11,17 +11,19 @@
         ?>
         <div class="box-tools">
             <?php
+                    if( in_array('view_leasing_companies', $allowModule) ) {
+                        echo $this->Html->link('<i class="fa fa-plus"></i> Perusahaan Leasing', array(
+                            'controller' => 'leasings',
+                            'action' => 'leasing_companies'
+                        ), array(
+                            'escape' => false,
+                            'class' => 'btn btn-app btn-success pull-right'
+                        ));
+                    }
+                    
                     echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Kontrak', array(
                         'controller' => 'leasings',
                         'action' => 'add'
-                    ), array(
-                        'escape' => false,
-                        'class' => 'btn btn-app btn-success pull-right'
-                    ));
-
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Perusahaan Leasing', array(
-                        'controller' => 'leasings',
-                        'action' => 'leasing_companies'
                     ), array(
                         'escape' => false,
                         'class' => 'btn btn-app btn-success pull-right'

@@ -26,75 +26,91 @@ class LeasingsController extends AppController {
     }
 
 	public function index() {
-        $this->loadModel('Leasing');
-        $this->loadModel('Leasing');
-		$this->set('active_menu', 'view_leasing');
-		$this->set('sub_module_title', __('Leasing'));
+        if( in_array('view_leasing', $this->allowModule) ) {
+            $this->loadModel('Leasing');
+            $this->loadModel('Leasing');
+    		$this->set('active_menu', 'view_leasing');
+    		$this->set('sub_module_title', __('Leasing'));
 
-        $conditions = array();
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+            $conditions = array();
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
 
-            if(!empty($refine['nocontract'])){
-                $no_contract = urldecode($refine['nocontract']);
-                $this->request->data['Leasing']['no_contract'] = $no_contract;
-                $conditions['Leasing.no_contract LIKE '] = '%'.$no_contract.'%';
+                if(!empty($refine['nocontract'])){
+                    $no_contract = urldecode($refine['nocontract']);
+                    $this->request->data['Leasing']['no_contract'] = $no_contract;
+                    $conditions['Leasing.no_contract LIKE '] = '%'.$no_contract.'%';
+                }
             }
+
+            $this->paginate = $this->Leasing->getData('paginate', array(
+                'conditions' => $conditions,
+                'contain' => array(
+                    'LeasingCompany'
+                )
+            ));
+            $leasings = $this->paginate('Leasing');
+
+            $this->set('leasings', $leasings);
+        } else {
+            $this->redirect($this->referer());
         }
-
-        $this->paginate = $this->Leasing->getData('paginate', array(
-            'conditions' => $conditions,
-            'contain' => array(
-                'LeasingCompany'
-            )
-        ));
-        $leasings = $this->paginate('Leasing');
-
-        $this->set('leasings', $leasings);
 	}
 
     function detail($id = false){
-        if(!empty($id)){
-            $truck = $this->Leasing->getLeasing($id);
+        if( in_array('view_leasing', $this->allowModule) ) {
+            if(!empty($id)){
+                $truck = $this->Leasing->getLeasing($id);
 
-            if(!empty($truck)){
-                $sub_module_title = __('Detail Leasing');
-                $this->set(compact('truck', 'sub_module_title'));
+                if(!empty($truck)){
+                    $sub_module_title = __('Detail Leasing');
+                    $this->set(compact('truck', 'sub_module_title'));
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Leasing tidak ditemukan.'), 'error');
+                    $this->redirect($this->referer());
+                }
             }else{
                 $this->MkCommon->setCustomFlash(__('Leasing tidak ditemukan.'), 'error');
                 $this->redirect($this->referer());
             }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Leasing tidak ditemukan.'), 'error');
+        } else {
             $this->redirect($this->referer());
         }
     }
 
     function add(){
-        $this->set('sub_module_title', __('Tambah Leasing'));
-        $this->doLeasing();
+        if( in_array('insert_leasing', $this->allowModule) ) {
+            $this->set('sub_module_title', __('Tambah Leasing'));
+            $this->doLeasing();
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function edit($id){
-        $this->loadModel('Leasing');
-        $this->set('sub_module_title', 'Rubah Leasing');
-        $truck = $this->Leasing->getData('first', array(
-            'conditions' => array(
-                'Leasing.id' => $id
-            ),
-            'contain' => array(
-                'LeasingDetail'
-            )
-        ));
-
-        if(!empty($truck)){
-            $this->doLeasing($id, $truck);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Leasing tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'trucks',
-                'action' => 'index'
+        if( in_array('update_leasing', $this->allowModule) ) {
+            $this->loadModel('Leasing');
+            $this->set('sub_module_title', 'Rubah Leasing');
+            $truck = $this->Leasing->getData('first', array(
+                'conditions' => array(
+                    'Leasing.id' => $id
+                ),
+                'contain' => array(
+                    'LeasingDetail'
+                )
             ));
+
+            if(!empty($truck)){
+                $this->doLeasing($id, $truck);
+            }else{
+                $this->MkCommon->setCustomFlash(__('Leasing tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'trucks',
+                    'action' => 'index'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
         }
     }
 
