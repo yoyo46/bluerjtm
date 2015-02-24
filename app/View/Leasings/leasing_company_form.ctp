@@ -32,7 +32,7 @@
         <div class="form-group">
         	<?php 
 					echo $this->Form->input('phone',array(
-						'label'=> __('Telepon *'), 
+						'label'=> __('Telepon'), 
 						'class'=>'form-control',
 						'required' => false,
 						'placeholder' => __('Telepon')
@@ -42,7 +42,7 @@
         <div class="form-group">
         	<?php 
 					echo $this->Form->input('address',array(
-						'label'=> __('Alamat *'), 
+						'label'=> __('Alamat'), 
 						'class'=>'form-control',
 						'required' => false,
 						'placeholder' => __('Alamat'),
