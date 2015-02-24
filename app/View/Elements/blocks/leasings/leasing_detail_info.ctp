@@ -12,7 +12,7 @@
                     ));
             ?>
         </div>
-        <table class="table table-hover table-leasing">
+        <table class="table table-hover" id="table-leasing">
             <thead>
                 <tr>
                     <th><?php echo __('Truk');?></th>
@@ -22,19 +22,19 @@
             </thead>
             <tbody class="leasing-body">
                 <?php
-                    $count = 1;
-                    if(!empty($this->request->data['LeasingDetail'])){
-                        $count = count($this->request->data['LeasingDetail']);
-                    }
-                    $total = 0;
-                    for ($i=0; $i < $count; $i++) { 
-                        $price = (isset($this->request->data['LeasingDetail'][$i]['price']) && !empty($this->request->data['LeasingDetail'][$i]['price'])) ? $this->request->data['LeasingDetail'][$i]['price'] : 0;
-
-                        if(!empty($price)){
-                            $total += $price;
+                        $count = 1;
+                        if(!empty($this->request->data['LeasingDetail'])){
+                            $count = count($this->request->data['LeasingDetail']);
                         }
+                        $total = 0;
+                        for ($i=0; $i < $count; $i++) { 
+                            $price = (isset($this->request->data['LeasingDetail'][$i]['price']) && !empty($this->request->data['LeasingDetail'][$i]['price'])) ? $this->request->data['LeasingDetail'][$i]['price'] : 0;
+
+                            if(!empty($price)){
+                                $total += $price;
+                            }
                 ?>
-                <tr>
+                <tr classs="child" rel="<?php echo $i; ?>">
                     <td>
                         <?php
                             echo $this->Form->input('LeasingDetail.truck_id.', array(
@@ -69,7 +69,7 @@
                     </td>
                 </tr>
                 <?php
-                    }
+                        }
                 ?>
                 <tr id="field-grand-total-leasing">
                     <td align="right" colspan="1"><?php echo __('Total')?></td>

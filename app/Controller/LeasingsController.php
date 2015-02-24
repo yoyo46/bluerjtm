@@ -28,7 +28,7 @@ class LeasingsController extends AppController {
 	public function index() {
         $this->loadModel('Leasing');
         $this->loadModel('Leasing');
-		$this->set('active_menu', 'view_leasings');
+		$this->set('active_menu', 'view_leasing');
 		$this->set('sub_module_title', __('Leasing'));
 
         $conditions = array();
@@ -269,7 +269,7 @@ class LeasingsController extends AppController {
     }
 
     function leasing_companies(){
-        // if( in_array('view_leasing_companies', $this->allowModule) ) {
+        if( in_array('view_leasing_companies', $this->allowModule) ) {
             $this->loadModel('LeasingCompany');
             $options = array();
 
@@ -286,25 +286,25 @@ class LeasingsController extends AppController {
             $this->paginate = $this->LeasingCompany->getData('paginate', $options);
             $leasing_companies = $this->paginate('LeasingCompany');
 
-            $this->set('active_menu', 'leasing_companies');
+            $this->set('active_menu', 'view_leasing_companies');
             $this->set('sub_module_title', 'Perusahaan Leasing');
             $this->set('leasing_companies', $leasing_companies);
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function leasing_company_add(){
-        // if( in_array('insert_leasing_companies', $this->allowModule) ) {
+        if( in_array('insert_leasing_companies', $this->allowModule) ) {
             $this->set('sub_module_title', 'Tambah Perusahaan Leasing');
             $this->doLeasingCompany();
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function leasing_company_edit($id){
-        // if( in_array('update_leasing_companies', $this->allowModule) ) {
+        if( in_array('update_leasing_companies', $this->allowModule) ) {
             $this->loadModel('LeasingCompany');
             $this->set('sub_module_title', 'Rubah Perusahaan Leasing');
             $type_property = $this->LeasingCompany->getData('first', array(
@@ -322,9 +322,9 @@ class LeasingsController extends AppController {
                     'action' => 'citys'
                 ));
             }
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function doLeasingCompany($id = false, $data_local = false){
@@ -362,13 +362,13 @@ class LeasingsController extends AppController {
                 $this->request->data = $data_local;
             }
         }
-
-        $this->set('active_menu', 'leasing_companies');
+        
+        $this->set('active_menu', 'view_leasing_companies');
         $this->render('leasing_company_form');
     }
 
     function toggle($id){
-        // if( in_array('delete_leasing', $this->allowModule) ) {
+        if( in_array('delete_leasing', $this->allowModule) ) {
             $this->loadModel('Leasing');
             $locale = $this->Leasing->getData('first', array(
                 'conditions' => array(
@@ -394,13 +394,13 @@ class LeasingsController extends AppController {
             }else{
                 $this->MkCommon->setCustomFlash(__('Leasing tidak ditemukan.'), 'error');
             }
-        // }
+        }
 
         $this->redirect($this->referer());
     }
 
     function leasing_company_toggle($id){
-        // if( in_array('delete_leasing_companies', $this->allowModule) ) {
+        if( in_array('delete_leasing_companies', $this->allowModule) ) {
             $this->loadModel('LeasingCompany');
             $locale = $this->LeasingCompany->getData('first', array(
                 'conditions' => array(
@@ -426,7 +426,7 @@ class LeasingsController extends AppController {
             }else{
                 $this->MkCommon->setCustomFlash(__('Perusahaan Leasing tidak ditemukan.'), 'error');
             }
-        // }
+        }
 
         $this->redirect($this->referer());
     }
