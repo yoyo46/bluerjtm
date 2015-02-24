@@ -285,7 +285,7 @@ class LeasingsController extends AppController {
     }
 
     function leasing_companies(){
-        if( in_array('view_leasing_companies', $this->allowModule) ) {
+        if( in_array('view_leasing', $this->allowModule) ) {
             $this->loadModel('LeasingCompany');
             $options = array();
 
@@ -302,7 +302,7 @@ class LeasingsController extends AppController {
             $this->paginate = $this->LeasingCompany->getData('paginate', $options);
             $leasing_companies = $this->paginate('LeasingCompany');
 
-            $this->set('active_menu', 'view_leasing_companies');
+            $this->set('active_menu', 'view_leasing');
             $this->set('sub_module_title', 'Perusahaan Leasing');
             $this->set('leasing_companies', $leasing_companies);
         } else {
@@ -311,7 +311,7 @@ class LeasingsController extends AppController {
     }
 
     function leasing_company_add(){
-        if( in_array('insert_leasing_companies', $this->allowModule) ) {
+        if( in_array('insert_leasing', $this->allowModule) ) {
             $this->set('sub_module_title', 'Tambah Perusahaan Leasing');
             $this->doLeasingCompany();
         } else {
@@ -320,7 +320,7 @@ class LeasingsController extends AppController {
     }
 
     function leasing_company_edit($id){
-        if( in_array('update_leasing_companies', $this->allowModule) ) {
+        if( in_array('update_leasing', $this->allowModule) ) {
             $this->loadModel('LeasingCompany');
             $this->set('sub_module_title', 'Rubah Perusahaan Leasing');
             $type_property = $this->LeasingCompany->getData('first', array(
@@ -379,7 +379,7 @@ class LeasingsController extends AppController {
             }
         }
         
-        $this->set('active_menu', 'view_leasing_companies');
+        $this->set('active_menu', 'view_leasing');
         $this->render('leasing_company_form');
     }
 
@@ -416,7 +416,7 @@ class LeasingsController extends AppController {
     }
 
     function leasing_company_toggle($id){
-        if( in_array('delete_leasing_companies', $this->allowModule) ) {
+        if( in_array('delete_leasing', $this->allowModule) ) {
             $this->loadModel('LeasingCompany');
             $locale = $this->LeasingCompany->getData('first', array(
                 'conditions' => array(

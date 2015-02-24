@@ -216,8 +216,7 @@
                             'siup', 'siup_payments', 'achievement_report',
                             'monitoring_truck', 'capacity_report',
                             'point_perday_report', 'point_perplant_report',
-                            'retail_point_perplant_report', 'view_leasing',
-                            'view_leasing_companies'
+                            'retail_point_perplant_report', 'view_leasing'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
