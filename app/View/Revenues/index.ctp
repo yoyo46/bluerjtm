@@ -9,7 +9,7 @@
                     'class' => 'box-title'
                 ));
 
-                // if( in_array('insert_revenues', $allowModule) ) {
+                if( in_array('insert_revenues', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -24,36 +24,36 @@
             <div class="clear"></div>
         </div>
         <?php 
-                // }
+                }
         ?>
     </div>
     <?php
-        echo $this->Form->create('Revenue', array(
-            'url'=> array(
-                'controller' => 'revenues',
-                'action' => 'action_post_revenue'
-            ), 
-            'role' => 'form',
-            'inputDefaults' => array('div' => false),
-            'autocomplete'=> 'off', 
-            'id' => 'rev_post_form'
-        ));
+            echo $this->Form->create('Revenue', array(
+                'url'=> array(
+                    'controller' => 'revenues',
+                    'action' => 'action_post_revenue'
+                ), 
+                'role' => 'form',
+                'inputDefaults' => array('div' => false),
+                'autocomplete'=> 'off', 
+                'id' => 'rev_post_form'
+            ));
 
-        echo $this->Form->hidden('posting_type', array(
-            'id' => 'posting_type'
-        ));
+            echo $this->Form->hidden('posting_type', array(
+                'id' => 'posting_type'
+            ));
     ?>
     <div class="box-body table-responsive">
-        <div class="rev-action-table action">
+        <div class="trigger-posting btn-group">
             <?php
-                echo $this->Html->tag('button', 'posting', array(
-                    'class' => 'btn btn-primary submit_butt',
-                    'data-val' => 'posting'
-                ));
-                echo $this->Html->tag('button', 'unposting', array(
-                    'class' => 'btn btn-warning submit_butt',
-                    'data-val' => 'unposting'
-                ));
+                    echo $this->Html->tag('button', __('Posting'), array(
+                        'class' => 'btn btn-default submit_butt',
+                        'data-val' => 'posting'
+                    ));
+                    echo $this->Html->tag('button', __('Unposting'), array(
+                        'class' => 'btn btn-default submit_butt',
+                        'data-val' => 'unposting'
+                    ));
             ?>
         </div>
         <table class="table table-hover">
