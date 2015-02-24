@@ -29,6 +29,27 @@
 					));
 			?>
         </div>
+        <div class="form-group">
+        	<?php 
+					echo $this->Form->input('phone',array(
+						'label'=> __('Telepon *'), 
+						'class'=>'form-control',
+						'required' => false,
+						'placeholder' => __('Telepon')
+					));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+					echo $this->Form->input('address',array(
+						'label'=> __('Alamat *'), 
+						'class'=>'form-control',
+						'required' => false,
+						'placeholder' => __('Alamat'),
+						'type' => 'textarea'
+					));
+			?>
+        </div>
     </div>
 
     <div class="box-footer text-center action">
