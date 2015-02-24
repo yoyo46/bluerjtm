@@ -11,7 +11,8 @@
 					'class'=>'form-control custom-date',
 					'required' => false,
 					'placeholder' => __('Tanggal Revenue'),
-					'readonly' => true
+					'readonly' => true,
+					'value' => (!empty($this->request->data['Revenue']['date_revenue'])) ? $this->request->data['Revenue']['date_revenue'] : date('Y-m-d')
 				));
 		?>
 	</div>

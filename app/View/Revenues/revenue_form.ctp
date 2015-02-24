@@ -100,6 +100,7 @@
 									'required' => false,
 									'placeholder' => __('Tanggal Revenue'),
 									'id' => 'date_revenue',
+									'value' => (!empty($this->request->data['Revenue']['date_revenue'])) ? $this->request->data['Revenue']['date_revenue'] : date('Y-m-d')
 								));
 						?>
 					</div>

@@ -114,6 +114,7 @@
 								'class'=>'form-control custom-date',
 								'type' => 'text',
 								'required' => false,
+								'value' => (!empty($this->request->data['Kir']['tgl_kir'])) ? $this->request->data['Kir']['tgl_kir'] : date('Y-m-d')
 							));
 					?>
 		        </div>

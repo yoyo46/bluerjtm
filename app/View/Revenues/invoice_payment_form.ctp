@@ -47,6 +47,7 @@
 							'class'=>'form-control custom-date',
 							'required' => false,
 							'placeholder' => __('Tanggal Pembayaran'),
+							'value' => (!empty($this->request->data['InvoicePayment']['date_payment'])) ? $this->request->data['InvoicePayment']['date_payment'] : date('Y-m-d')
 						));
 				?>
 	        </div>

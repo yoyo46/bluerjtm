@@ -145,6 +145,7 @@
                                 'class'=>'form-control custom-date',
                                 'type' => 'text',
                                 'required' => false,
+                                'value' => (!empty($this->request->data['KirPayment']['kir_payment_date'])) ? $this->request->data['KirPayment']['kir_payment_date'] : date('Y-m-d')
                             ));
                     ?>
                 </div>

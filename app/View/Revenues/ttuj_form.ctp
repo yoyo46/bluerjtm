@@ -38,6 +38,7 @@
 										'class'=>'form-control custom-date',
 										'required' => false,
 										'type' => 'text',
+										'value' => (!empty($this->request->data['Ttuj']['ttuj_date'])) ? $this->request->data['Ttuj']['ttuj_date'] : date('Y-m-d')
 									));
 							?>
 				        </div>
@@ -167,7 +168,8 @@
 												'label'=> false, 
 												'class'=>'form-control custom-date',
 												'required' => false,
-												'type' => 'text'
+												'type' => 'text',
+												'value' => (!empty($this->request->data['Ttuj']['tgl_berangkat'])) ? $this->request->data['Ttuj']['tgl_berangkat'] : date('Y-m-d')
 											));
 									?>
 				        		</div>
