@@ -233,6 +233,12 @@
                         echo $this->Html->tag('dt', 'Perusahaan Leasing');
                         echo $this->Html->tag('dd', $leasing['Leasing']['LeasingCompany']['name']);
 
+                        echo $this->Html->tag('dt', 'Telepon');
+                        echo $this->Html->tag('dd', $leasing['Leasing']['LeasingCompany']['phone']);
+
+                        echo $this->Html->tag('dt', 'Alamat');
+                        echo $this->Html->tag('dd', $leasing['Leasing']['LeasingCompany']['address']);
+
                         echo $this->Html->tag('dt', 'Tanggal Angsuran Terakhir');
                         echo $this->Html->tag('dd', $this->Common->customDate($leasing['Leasing']['date_last_installment']));
                     ?>
