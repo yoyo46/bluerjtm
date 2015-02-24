@@ -2414,4 +2414,15 @@ $(function() {
     $('.checkAll').click(function(){
         $('.check-option').not(this).prop('checked', this.checked);
     });
+
+    $('.submit_butt').click(function(){
+        if($('.check-option:checked').length > 0){
+            var val = $(this).attr('data-val');
+            $('#posting_type').val(val);
+            $('#rev_post_form').submit();
+        }else{
+            alert('Mohon pilih revenue!')
+        }
+        return false;
+    });
 });

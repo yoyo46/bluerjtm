@@ -27,10 +27,43 @@
                 // }
         ?>
     </div>
+    <?php
+        echo $this->Form->create('Revenue', array(
+            'url'=> array(
+                'controller' => 'revenues',
+                'action' => 'action_post_revenue'
+            ), 
+            'role' => 'form',
+            'inputDefaults' => array('div' => false),
+            'autocomplete'=> 'off', 
+            'id' => 'rev_post_form'
+        ));
+
+        echo $this->Form->hidden('posting_type', array(
+            'id' => 'posting_type'
+        ));
+    ?>
     <div class="box-body table-responsive">
+        <div>
+            <?php
+                echo $this->Html->tag('button', 'posting', array(
+                    'class' => 'btn btn-primary submit_butt',
+                    'data-val' => 'posting'
+                ));
+                echo $this->Html->tag('button', 'unposting', array(
+                    'class' => 'btn btn-warning submit_butt',
+                    'data-val' => 'unposting'
+                ));
+            ?>
+        </div>
         <table class="table table-hover">
             <tr>
                 <?php 
+                        $input_all = $this->Form->checkbox('checkbox_all', array(
+                            'class' => 'checkAll'
+                        ));
+                        echo $this->Html->tag('th', $input_all);
+
                         echo $this->Html->tag('th', $this->Paginator->sort('Revenue.id', __('No. Ref'), array(
                             'escape' => false
                         )));
@@ -60,6 +93,16 @@
                             $id = $value['Revenue']['id'];
             ?>
             <tr>
+                <td>
+                    <?php
+                        if($value['Revenue']['transaction_status'] != 'invoiced'){
+                            echo $this->Form->checkbox('revenue_id.', array(
+                                'class' => 'check-option',
+                                'value' => $id
+                            ));
+                        }
+                    ?>
+                </td>
                 <td><?php echo str_pad($value['Revenue']['id'], 5, '0', STR_PAD_LEFT);?></td>
                 <td><?php echo $value['Revenue']['no_doc'];?></td>
                 <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
@@ -115,5 +158,9 @@
             ?>
         </table>
     </div><!-- /.box-body -->
-    <?php echo $this->element('pagination');?>
+    <?php
+        echo $this->Form->end();
+
+        echo $this->element('pagination');
+    ?>
 </div>

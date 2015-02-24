@@ -3940,4 +3940,36 @@ class RevenuesController extends AppController {
         }
         $this->redirect($this->referer());
     }
+
+    function action_post_revenue(){
+        if(!empty($this->request->data['Revenue']['revenue_id'])){
+            $this->loadModel('Revenue');
+            $validasi = false;
+            $arr_id = array();
+            foreach ($this->request->data['Revenue']['revenue_id'] as $key => $value) {
+                if(!empty($value)){
+                    $validasi = true;
+                    $arr_id[] = $value;
+                }
+            }
+
+            if($validasi && in_array($this->request->data['Revenue']['posting_type'], array('posting', 'unposting'))){
+                $check_save = $this->Revenue->updateAll(
+                    array('transaction_status' => "'".$this->request->data['Revenue']['posting_type']."'"), 
+                    array('Revenue.id' => $arr_id)
+                );
+                if($check_save){
+                    $this->MkCommon->setCustomFlash(__('Berhasil merubah status revenue'), 'success');
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status revenue'), 'error');
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('Revenue belum dipilih'), 'error');
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Revenue belum dipilih'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
 }
