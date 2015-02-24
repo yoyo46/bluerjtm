@@ -3898,3 +3898,6 @@ thead th.headcol {
   border-top: 1px solid #ddd !important;
   border-bottom: 2px solid #ddd !important;
 }
+.rev-action-table{
+  padding-bottom: 10px;
+}

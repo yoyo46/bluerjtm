@@ -44,7 +44,7 @@
         ));
     ?>
     <div class="box-body table-responsive">
-        <div>
+        <div class="rev-action-table action">
             <?php
                 echo $this->Html->tag('button', 'posting', array(
                     'class' => 'btn btn-primary submit_butt',
