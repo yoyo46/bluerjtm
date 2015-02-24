@@ -3558,7 +3558,8 @@ fieldset[disabled] .btn-vk.active {
 }
 
 .box-footer .btn,
-.action .btn {
+.action .btn,
+.action-link a {
   margin-right: 5px;
 }
 

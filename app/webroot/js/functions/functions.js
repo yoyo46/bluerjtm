@@ -1579,6 +1579,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                 });
 
                 if( type_action == 'event' ) {
+                    $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
                     pickIcon();
                     pickColor()
                     submitForm();
@@ -2252,6 +2253,7 @@ $(function() {
 
     $('.popover-hover-top-click').on('shown.bs.popover', function () {
         $(this).addClass('in');
+        ajaxModal($('.popover-content .ajaxModal'));
         $('.popover-close').click(function () {
             $('.popover-hover-top-click.in').trigger('click');
         });
@@ -2272,6 +2274,7 @@ $(function() {
     })
 
     $('.popover-hover-bottom-click').on('shown.bs.popover', function () {
+        ajaxModal($('.popover-content .ajaxModal'));
         $('.popover-close').click(function () {
             $('.popover-hover-bottom-click').popover('hide');
         });

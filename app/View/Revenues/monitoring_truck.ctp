@@ -92,7 +92,6 @@
                                     if( !empty($dataTtuj[$nopol][$idx]) ) {
                                         foreach ($dataTtuj[$nopol][$idx] as $key => $data) {
                                             $style = sprintf('background: %s;', $data['color']);
-
                                             $formTtuj = $this->Html->tag('p', sprintf(__('Berangkat: %s', $data['from_date'])));
 
                                             if( !empty($data['tglTiba']) ) {
@@ -145,16 +144,17 @@
                                                     'class' => 'icon-popup'
                                                 ));
                                             }
+
                                             if( !empty($data['url']) ) {
-                                                $icon = $this->Html->link($icon, $data['url'], array(
+                                                $formTtuj .= $this->Html->tag('p', $this->Html->link(__('Selengkapnya..'), $data['url'], array(
                                                     'escape' => false,
                                                     'target' => 'blank',
-                                                ));
+                                                )));
                                             }
 
                                             $point[] = $this->Html->tag('div', $this->Html->tag('div', $icon, array(
-                                                'title' => $data['title'],
-                                                'class' => 'popover-hover-top',
+                                                'title' => $data['title'].' <span class="pull-right"><a href="javascript:"><i class="popover-close">Tutup</i></a></span>',
+                                                'class' => 'popover-hover-top-click',
                                                 'data-content' => sprintf('%s %s %s %s %s', $this->Html->tag('label', $data['Tujuan']), $this->Html->tag('p', sprintf(__('Supir: %s', $data['Driver']))), $this->Html->tag('p', sprintf(__('Truk: %s', $nopol))), $this->Html->tag('p', sprintf(__('Muatan: %s', $data['Muatan']))), $formTtuj)
                                             )), array(
                                                 'class' => 'text-center',
@@ -192,14 +192,25 @@
                                             $point[] = $this->Html->tag('div', $this->Html->tag('div', $icon, array(
                                                 'title' => $title.' <span class="pull-right"><a href="javascript:"><i class="popover-close">Tutup</i></a></span>',
                                                 'class' => 'popover-hover-top-click',
-                                                'data-content' => sprintf('%s%s%s%s', $this->Html->tag('p', $event['note']), $fromDateTime, $toDateTime, $this->Html->link('<i class="fa fa-times"></i> '.__('Hapus'), array(
+                                                'data-content' => $this->Html->tag('div', sprintf('%s%s%s%s%s', $this->Html->tag('p', $event['note']), $fromDateTime, $toDateTime, $this->Html->link('<i class="fa fa-edit"></i> '.__('Ubah'), array(
+                                                    'controller' => 'ajax',
+                                                    'action' => 'event_edit',
+                                                    $event['id'],
+                                                ), array(
+                                                    'escape' => false,
+                                                    'class' => 'text-green ajaxModal',
+                                                    'data-action' => 'event',
+                                                    'title' => __('Ubah Event'),
+                                                )), $this->Html->link('<i class="fa fa-times"></i> '.__('Hapus'), array(
                                                     'controller' => 'ajax',
                                                     'action' => 'event_delete',
                                                     $event['id'],
                                                 ), array(
                                                     'escape' => false,
-                                                    'class' => 'text-red',
-                                                ), __('Anda yakin ingin menghapus event ini ?'))),
+                                                    'class' => 'text-red pull-right',
+                                                ), __('Anda yakin ingin menghapus event ini ?'))), array(
+                                                    'class' => 'action-link',
+                                                )),
                                             )), array(
                                                 'class' => 'text-center parent-popover',
                                             ));
@@ -247,7 +258,7 @@
                                     <li class="col-sm-2 text-center">
                                         <?php 
                                                 rsort($point);
-                                                echo str_replace('popover-hover-top-click', 'popover-hover-bottom-click', str_replace('popover-hover-top', 'popover-hover-bottom', implode('</li><li class="col-sm-2 text-center">', $point)));
+                                                echo str_replace('popover-hover-top-click', 'popover-hover-bottom-click', implode('</li><li class="col-sm-2 text-center">', $point));
                                         ?>
                                     </li>
                                 </ul>

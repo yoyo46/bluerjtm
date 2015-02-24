@@ -339,11 +339,6 @@ class AjaxController extends AppController {
         $this->loadModel('CalendarEvent');
         $this->loadModel('Truck');
         $this->set('sub_module_title', 'Tambah Event');
-		$isAjax = $this->RequestHandler->isAjax();
-        $msg = array(
-			'class' => 'error',
-			'text' => ''
-		);
 		$truck = $this->Truck->getData('first', array(
 			'conditions' => array(
 				'Truck.nopol' => $nopol,
@@ -351,13 +346,41 @@ class AjaxController extends AppController {
 			)
 		), false);
 
-        if(!empty($this->request->data)){
+        $this->doEvent( $truck, $date );
+	}
+
+	public function event_edit( $id = false ) {
+        $this->loadModel('CalendarEvent');
+        $this->set('sub_module_title', 'Tambah Event');
+		$calendarEvent = $this->CalendarEvent->getData('first', array(
+			'conditions' => array(
+				'CalendarEvent.id' => $id,
+				'CalendarEvent.status' => 1
+			)
+		));
+		$truck = false;
+
+		if( !empty($calendarEvent['Truck']) ) {
+			$truck['Truck'] = $calendarEvent['Truck'];
+		}
+
+        $this->doEvent( $truck, false, $calendarEvent, $id );
+        $this->render('event_add');
+	}
+
+	function doEvent ( $truck = false, $date = false, $data_local = false, $id = false ) {
+		$isAjax = $this->RequestHandler->isAjax();
+        $msg = array(
+			'class' => 'error',
+			'text' => ''
+		);
+
+		if(!empty($this->request->data)){
             $data = $this->request->data;
-            $data['CalendarEvent']['date'] = $date;
-            $data['CalendarEvent']['nopol'] = $nopol;
 
             if( !empty($truck) ) {
             	$data['CalendarEvent']['truck_id'] = $truck['Truck']['id'];
+            	$data['CalendarEvent']['nopol'] = $truck['Truck']['nopol'];
             }
 
             if( !empty($id) ){
@@ -382,7 +405,7 @@ class AjaxController extends AppController {
 
                 if( !empty($data['CalendarEvent']['to_time']) ) {
                     $data['CalendarEvent']['to_time'] = date('H:i', strtotime($data['CalendarEvent']['to_time']));
-                    $data['CalendarEvent']['to_date'] = sprintf('%s %s', $data['CalendarEvent']['to_date'], $data['CalendarEvent']['from_time']);
+                    $data['CalendarEvent']['to_date'] = sprintf('%s %s', $data['CalendarEvent']['to_date'], $data['CalendarEvent']['to_time']);
                 }
             }
 
@@ -421,7 +444,18 @@ class AjaxController extends AppController {
                     'action' => 'monitoring_truck'
                 ));
 			}
-        } else {
+        } else if( !empty($data_local) ) {
+        	$this->request->data = $data_local;
+
+            if( !empty($data_local['CalendarEvent']['from_date']) ) {
+                $this->request->data['CalendarEvent']['from_date'] = date('d/m/Y', strtotime($data_local['CalendarEvent']['from_date']));
+                $this->request->data['CalendarEvent']['from_time'] = date('H:i', strtotime($data_local['CalendarEvent']['from_date']));
+            }
+            if( !empty($data_local['CalendarEvent']['to_date']) ) {
+                $this->request->data['CalendarEvent']['to_date'] = date('d/m/Y', strtotime($data_local['CalendarEvent']['to_date']));
+                $this->request->data['CalendarEvent']['to_time'] = date('H:i', strtotime($data_local['CalendarEvent']['to_date']));
+            }
+        } else if( !empty($date) ) {
         	$this->request->data['CalendarEvent']['from_date'] = date('d/m/Y', strtotime($date));
         }
 

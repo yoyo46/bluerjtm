@@ -36,6 +36,10 @@ class CalendarEvent extends AppModel {
         'CalendarColor' => array(
             'className' => 'CalendarColor',
             'foreignKey' => 'color_id',
+        ),
+        'Truck' => array(
+            'className' => 'Truck',
+            'foreignKey' => 'truck_id',
         )
 	);
 
@@ -49,7 +53,8 @@ class CalendarEvent extends AppModel {
             ),
             'contain' => array(
                 'CalendarIcon',
-                'CalendarColor'
+                'CalendarColor',
+                'Truck',
             ),
             'fields' => array(),
         );
