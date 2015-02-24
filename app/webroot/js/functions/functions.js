@@ -840,7 +840,7 @@ var add_custom_field = function(){
                 var rel = $('.leasing-body tr.child').length;
                 var length = rel + 1;
                 var option_form = $('#form-truck-id').html();
-                var content_clone = '<tr class="child" rel="'+rel+'">'+
+                var content_clone = '<tr class="child child-'+length+'" rel="'+length+'">'+
                     '<td>'+option_form+'</td>'+
                     '<td align="right box-price">'+
                         '<input name="data[LeasingDetail][price][]" class="form-control price-leasing-truck input_price input_number" value="0" type="text" id="LeasingDetailPrice">'+
@@ -851,8 +851,8 @@ var add_custom_field = function(){
                 '</tr>';
 
                 $('.leasing-body #field-grand-total-leasing').before(content_clone);
-                input_price( $('#box-field-input .box-price:last-child .input_price') );
-                delete_custom_field( $('#table-leasing tbody.leasing-body tr:last-child .delete-custom-field') );
+                input_price( $('#table-leasing tbody.leasing-body tr.child-'+length+' .input_price') );
+                delete_custom_field( $('#table-leasing tbody.leasing-body tr.child-'+length+' .delete-custom-field') );
                 leasing_action();
             break;
         }

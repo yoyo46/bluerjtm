@@ -34,7 +34,7 @@
                                 $total += $price;
                             }
                 ?>
-                <tr classs="child" rel="<?php echo $i; ?>">
+                <tr classs="child child-<?php echo $i; ?>" rel="<?php echo $i; ?>">
                     <td>
                         <?php
                             echo $this->Form->input('LeasingDetail.truck_id.', array(
