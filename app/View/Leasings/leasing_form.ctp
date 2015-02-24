@@ -45,7 +45,7 @@
 						'class'=>'form-control custom-date',
 						'required' => false,
 						'placeholder' => __('Tanggal Leasing'),
-						'value' => (!empty($this->request->data['Leasing']['paid_date'])) ? $this->request->data['Leasing']['paid_date'] : date('Y-m-d')
+						'value' => (!empty($this->request->data['Leasing']['paid_date'])) ? $this->request->data['Leasing']['paid_date'] : date('d/m/Y')
 					));
 			?>
         </div>
