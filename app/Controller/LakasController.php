@@ -127,7 +127,7 @@ class LakasController extends AppController {
             $data['Laka']['tgl_laka'] = (!empty($data['Laka']['tgl_laka'])) ? $this->MkCommon->getDate($data['Laka']['tgl_laka']) : '';
             $data['LakaDetail']['date_birth'] = (!empty($data['LakaDetail']['date_birth'])) ? $this->MkCommon->getDate($data['LakaDetail']['date_birth']) : '';
 
-            if( empty($laka['Laka']['completed']) ) {
+            if( empty($data['Laka']['completed']) ) {
                 $data['Laka']['complete_desc'] = '';
                 $data['Laka']['completed_date'] = '';
             }

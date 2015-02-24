@@ -75,6 +75,7 @@
 										'required' => false,
 										'type' => 'text',
 										'id' => 'no_sim',
+										'readonly' => true
 									));
 							?>
 				        </div>

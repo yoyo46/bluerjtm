@@ -144,7 +144,12 @@ class AjaxController extends AppController {
 		), false);
 
 		if( !empty($data_ttuj) ) {
-			$data_ttuj = $this->Driver->getMerge($data_ttuj, $data_ttuj['Ttuj']['driver_id']);
+			$driver_id = $data_ttuj['Ttuj']['driver_id'];
+			if(!empty($data_ttuj['Ttuj']['driver_penganti_id'])){
+				$driver_id = $data_ttuj['Ttuj']['driver_penganti_id'];
+			}
+			
+			$data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_id);
 		}
 
 		$this->set(compact('data_ttuj'));
