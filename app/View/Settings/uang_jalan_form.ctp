@@ -361,7 +361,7 @@
 		    <div class="box-body">
 		    	<div class="form-group">
 		    		<?php 
-		    				echo $this->Form->label('commission', __('Komisi *'));
+		    				echo $this->Form->label('commission', __('Komisi'));
 		    		?>
                     <div class="input-group">
 				    	<?php 
