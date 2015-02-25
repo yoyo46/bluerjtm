@@ -2390,6 +2390,24 @@ $(function() {
         });
     });
 
+    $('.invoice-ajax').change(function(){
+        var self = $(this);
+        var val = self.val();
+
+        $.ajax({
+            url: '/ajax/getInfoInvoicePayment/'+val+'/',
+            type: 'POST',
+            success: function(response, status) {
+                $('#invoice-info').html(response);
+                $('#invoice-info').removeClass('hide');
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    });
+
     timepicker();
     daterangepicker();
 
@@ -2432,7 +2450,10 @@ $(function() {
         if($('.check-option:checked').length > 0){
             var val = $(this).attr('data-val');
             $('#posting_type').val(val);
-            $('#rev_post_form').submit();
+
+            if(confirm('Apakah Anda yakin ingin '+val+' revenue yang Anda pilih?')){
+                $('#rev_post_form').submit();
+            }
         }else{
             alert('Mohon pilih revenue!')
         }
