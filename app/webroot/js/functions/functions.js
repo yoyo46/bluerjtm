@@ -2442,4 +2442,8 @@ $(function() {
     $('.multiple-modal').on('hide.bs.modal', function () {
         $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
     });
+
+    $( '.frame-frezee' ).scroll(function() {
+        $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
+    });
 });
