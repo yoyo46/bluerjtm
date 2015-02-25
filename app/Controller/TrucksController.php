@@ -137,9 +137,6 @@ class TrucksController extends AppController {
                 'conditions' => array(
                     'Truck.id' => $id
                 ),
-                'contain' => array(
-                    'Leasing'
-                )
             ));
 
             if(!empty($truck)){
