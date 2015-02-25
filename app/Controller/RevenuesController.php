@@ -2153,7 +2153,7 @@ class RevenuesController extends AppController {
                         if( !empty($value['Laka']['completed']) ) {
                             $end_date = date('Y-m-d', strtotime($value['Laka']['completed_date']));
                         } else if( date('Y-m-d') >= $lakaDate ) {
-                            $end_date = date('Y-m-d');
+                            $end_date = date('Y-m-d', strtotime("-1 day"));
                         } else {
                             $end_date = $lakaDate;
                         }
@@ -2203,7 +2203,7 @@ class RevenuesController extends AppController {
 
                     if( empty($value['Laka']['id']) && empty($value['Ttuj']['is_pool']) ) {
                         if( date('Y-m-d') >= $date ) {
-                            $end_date = date('Y-m-d');
+                            $end_date = date('Y-m-d', strtotime("-1 day"));
                         } else {
                             $end_date = $date;
                         }

@@ -235,10 +235,15 @@
                                         ));
                                     } else {
                                         if( count($point) > 1 ) {
-                                            echo $this->Html->tag('td', $this->Html->tag('div', $this->Html->link(sprintf('%s <i class="fa fa-list"></i>', $rit), '#multiple-'.$i, array(
+                                            if( !empty($rit) ) {
+                                                $iconPoint = $rit;
+                                            } else {
+                                                $iconPoint = str_replace('popover-hover-bottom-click', '', str_replace('popover-hover-top-click', '', $point[0]));
+                                            }
+                                            echo $this->Html->tag('td', $this->Html->tag('div', $this->Html->link($iconPoint, '#multiple-'.$i, array(
                                                 'escape' => false,
                                             )), array(
-                                                'class' => 'text-center',
+                                                'class' => 'text-center staticModal',
                                                 'data-toggle' => 'modal',
                                                 'data-target' => '#myModal'.$i
                                             )), array(

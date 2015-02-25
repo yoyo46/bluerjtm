@@ -1603,6 +1603,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
     });
 
     $('#myModal').on('hidden.bs.modal', function () {
+        $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
         $('.modal-dialog').removeClass('expand-modal');
         $('.modal-content').removeClass('expand-content-modal');
     });
@@ -1610,10 +1611,12 @@ var ajaxModal = function ( obj, prettyPhoto ) {
 
 var closeModal = function () {
     $('.close-modal').click(function(){
+        $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
         $('#myModal').modal('hide');
         return false;
     });
     $('.close-popup-modal').click(function(){
+        $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
         $('.popup-modal').modal('hide');
         return false;
     });
@@ -2259,7 +2262,7 @@ $(function() {
         });
     })
 
-    $('.popover-hover-top-click').on('hidden.bs.popover', function () {
+    $('.popover-hover-top-click,.popover-hover-bottom-click').on('hidden.bs.popover', function () {
         $(this).removeClass('in');
     })
 
@@ -2274,6 +2277,7 @@ $(function() {
     })
 
     $('.popover-hover-bottom-click').on('shown.bs.popover', function () {
+        $(this).addClass('in');
         ajaxModal($('.popover-content .ajaxModal'));
         $('.popover-close').click(function () {
             $('.popover-hover-bottom-click').popover('hide');
@@ -2433,5 +2437,13 @@ $(function() {
             alert('Mohon pilih revenue!')
         }
         return false;
+    });
+
+    $('.multiple-modal').modal({
+        keyboard: false
+    })
+
+    $('.multiple-modal').on('hide.bs.modal', function () {
+        $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
     });
 });

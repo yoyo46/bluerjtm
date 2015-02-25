@@ -3902,3 +3902,8 @@ thead th.headcol {
 .rev-action-table{
   padding-bottom: 10px;
 }
+
+.popover-hover-top-click,
+.popover-hover-bottom-click {
+  cursor: pointer;
+}
