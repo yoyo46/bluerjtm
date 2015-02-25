@@ -239,7 +239,7 @@
                         echo $this->Html->tag('dt', 'Alamat');
                         echo $this->Html->tag('dd', $leasing['Leasing']['LeasingCompany']['address']);
 
-                        echo $this->Html->tag('dt', 'Tanggal Angsuran Terakhir');
+                        echo $this->Html->tag('dt', 'Tgl Angsuran Terakhir');
                         echo $this->Html->tag('dd', $this->Common->customDate($leasing['Leasing']['date_last_installment']));
                     ?>
                 </dl>
