@@ -96,7 +96,7 @@
 						'label'=> __('DP *'), 
 						'class'=>'form-control input_price',
 						'required' => false,
-						'placeholder' => __('Tanggal Angsuran Terakhir'),
+						'placeholder' => __('DP'),
 					));
 			?>
         </div>
