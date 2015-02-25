@@ -73,18 +73,19 @@
         </div>
         <div class="form-group">
         	<?php 
-        			$months = array();
-					for ($i = 1; $i <= 12; $i++) {
-					    $timestamp = mktime(0, 0, 0, $i, 1);
-					    $months[date('n', $timestamp)] = date('F', $timestamp);
-					}
+     //    			$months = array();
+					// for ($i = 1; $i <= 12; $i++) {
+					//     $timestamp = mktime(0, 0, 0, $i, 1);
+					//     $months[date('n', $timestamp)] = date('F', $timestamp);
+					// }
 					echo $this->Form->input('leasing_month',array(
+						'type' => 'text',
 						'label'=> __('Bulan *'), 
 						'class'=>'form-control',
 						'required' => false,
 						'empty' => __('Pilih Bulan'),
-						'options' => $months,
-						'value' => (!empty($this->request->data['Leasing']['leasing_month'])) ? $this->request->data['Leasing']['leasing_month'] : 0
+						// 'options' => $months,
+						'value' => (!empty($this->request->data['Leasing']['leasing_month'])) ? $this->request->data['Leasing']['leasing_month'] : ''
 					));
 			?>
         </div>

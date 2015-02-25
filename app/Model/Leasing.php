@@ -57,6 +57,10 @@ class Leasing extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Bulan angsuran harap dipilih'
             ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'Bulan angsuran harus berupa angka'
+            ),
         ),
         'down_payment' => array(
             'notempty' => array(
