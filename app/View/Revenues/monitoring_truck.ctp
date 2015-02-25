@@ -43,7 +43,7 @@
                 ));
         ?>
     </div>
-    <div class="table-responsive margin frame-frezee">
+    <div class="table-responsive margin frame-frezee scroll-monitoring">
         <table class="table table-bordered report monitoring" style="<?php echo $addStyle; ?>" border="<?php echo $border; ?>">
             <thead>
                 <tr>

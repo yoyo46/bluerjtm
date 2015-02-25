@@ -2443,7 +2443,7 @@ $(function() {
         $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
     });
 
-    $( '.frame-frezee' ).scroll(function() {
+    $( '.scroll-monitoring' ).scroll(function() {
         $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
     });
 });
