@@ -673,7 +673,7 @@ class AjaxController extends AppController {
 					$revenue_detail[$key] = $value;
 				}
 			}
-			
+			// debug($revenue_detail);die();
 			if($action == 'tarif'){
 				$result = array();
 				foreach ($revenue_detail as $key => $value) {

@@ -39,7 +39,7 @@
 						$grandTotal += $total; 
 
 						$colom = $this->Html->tag('td', $no++);
-						$colom .= $this->Html->tag('td', $value['Ttuj']['nopol']);
+						$colom .= $this->Html->tag('td', $value['Revenue']['Ttuj']['nopol']);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
 						$colom .= $this->Html->tag('td', $value['Revenue']['date_revenue']);
 						$colom .= $this->Html->tag('td', $qty, array(
@@ -65,7 +65,7 @@
 						'align' => 'right'
 					));
 					$colom .= $this->Html->tag('td', $this->Number->format($grandTotalUnit), array(
-						'class' => 'text-center'
+						'align' => 'center'
 					));
 					$colom .= $this->Html->tag('td', '&nbsp;');
 					$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
