@@ -15,7 +15,7 @@ if($action_print == 'pdf'){
     $tcpdf->xheadercolor = array(255,255,255);
     $tcpdf->AddPage('L');
     // Table with rowspans and THEAD
-    $table_tr_head = 'background-color: #3C8DBC; border-right: 1px solid #FFFFFF; color: #FFFFFF; font-weight: bold; padding: 0 10px; text-align: left;';
+    $table_tr_head = 'background-color: #ccc; border-right: 1px solid #FFFFFF; color: #333; font-weight: bold; padding: 0 10px; text-align: center;';
     $table_th = 'padding-top: 3px';
     $table = 'width:100%;font-size: 24px; border: 1px solid #CCC; border-collapse: collapse; padding: 0; margin: 15px 0 0 0;';
 
@@ -27,12 +27,25 @@ if($action_print == 'pdf'){
 		foreach ($revenue_detail as $key => $val_detail) {
 			if(!empty($val_detail)){
 				$no=1;
-				$total = 0;
+				$grandTotal = 0;
+				$grandTotalUnit = 0;
 				foreach ($val_detail as $key => $value) {
+					$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
+					$price = $value['RevenueDetail']['price_unit'];
+					$total = $qty * $price;
+					$grandTotal += $total; 
+
 					$colom = $this->Html->tag('td', $no++);
-					$colom .= $this->Html->tag('td', !empty($value['TipeMotor']['name'])?$value['TipeMotor']['name']:'-');
-					$colom .= $this->Html->tag('td', $value['RevenueDetail']['qty_unit']);
-					$colom .= $this->Html->tag('td', $this->Number->currency($value['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+					$colom .= $this->Html->tag('td', $value['Ttuj']['nopol']);
+					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
+					$colom .= $this->Html->tag('td', $value['Revenue']['date_revenue']);
+					$colom .= $this->Html->tag('td', $qty, array(
+						'align' => 'center'
+					));
+					$colom .= $this->Html->tag('td', $this->Number->currency($price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+						'align' => 'right'
+					));
+					$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
 						'align' => 'right'
 					));
 					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_reference']);
@@ -45,11 +58,18 @@ if($action_print == 'pdf'){
 					$content .= $this->Html->tag('tr', $colom);
 				}
 				$colom = $this->Html->tag('td', __('Total '), array(
-					'colspan' => 3,
+					'colspan' => 4,
 					'align' => 'right'
 				));
-				$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0)), array('colspan' => 2) );
-				$content .= $this->Html->tag('tr', $colom);
+				$colom .= $this->Html->tag('td', $this->Number->format($grandTotalUnit), array(
+					'align' => 'center'
+				));
+				$colom .= $this->Html->tag('td', '&nbsp;');
+				$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+					'align' => 'right'
+				));
+				$colom .= $this->Html->tag('td', '&nbsp;');
+				$content .=  $this->Html->tag('tr', $colom);
 			}else{
 				$colom = $this->Html->tag('td', __('Data tidak ditemukan.'), array(
 					'colspan' => 5
@@ -70,7 +90,7 @@ if($action_print == 'pdf'){
     if($action == 'tarif'){
 		$title_tipe_invoice = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)) );
 	}else{
-		$title_tipe_invoice = sprintf('Kota : %s', $val_detail[0]['City']['name']);
+		$title_tipe_invoice = $val_detail[0]['City']['name'];
 	}
 
 $tbl = <<<EOD
@@ -96,14 +116,17 @@ $tbl = <<<EOD
 	<table cellpadding="2" cellspacing="2" nobr="true" style="$table">
 		<thead>
 			<tr style="$table_tr_head">
-				<th colspan="5" align="left">$title_tipe_invoice</th>
+				<th colspan="8" align="center">$title_tipe_invoice</th>
 			</tr>
 			<tr style="$table_tr_head">
-				<th>No</th>
-				<th>Nama Tipe Motor</th>
-				<th>Qty</th>
-				<th>Harga</th>
-				<th>No. Ref</th>
+				<th align="center">No.</th>
+				<th align="center">No. Truk</th>
+				<th align="center">No.DO/Shipping List</th>
+				<th align="center">Tanggal</th>
+				<th align="center">Total Unit</th>
+				<th align="center">Harga</th>
+				<th align="center">Total</th>
+				<th align="center">No. Ref</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -167,36 +190,52 @@ readfile($path.'/'.$filename);
 			foreach ($revenue_detail as $key => $val_detail) {
 	?>
 	<table border="1" width="100%">
-		<thead>
+		<thead class="header-invoice-print">
 			<tr>
-				<th colspan="5" align="left">
+				<th colspan="8" class="text-center" style="text-transform:uppercase;">
 					<?php 
 						if($action == 'tarif'){
 							printf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)) );
 						}else{
-							printf('Kota : %s', $val_detail[0]['City']['name']);
+							echo $val_detail[0]['City']['name'];
 						}
 					?>
 				</th>
 			</tr>
 			<tr>
-				<th><?php echo __('No.');?></th>
-				<th><?php echo __('Nama Tipe Motor.');?></th>
-				<th><?php echo __('qty.');?></th>
-				<th><?php echo __('Harga.');?></th>
-				<th><?php echo __('No. Ref');?></th>
+				<th class="text-center"><?php echo __('No.');?></th>
+				<th class="text-center"><?php echo __('No. Truk.');?></th>
+				<th class="text-center"><?php echo __('No.DO/Shipping List.');?></th>
+				<th class="text-center"><?php echo __('Tanggal');?></th>
+				<th class="text-center"><?php echo __('Total Unit');?></th>
+				<th class="text-center"><?php echo __('Harga');?></th>
+				<th class="text-center"><?php echo __('Total');?></th>
+				<th class="text-center"><?php echo __('No. Ref');?></th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php
 				if(!empty($val_detail)){
 					$no=1;
-					$total = 0;
+					$grandTotal = 0;
+					$grandTotalUnit = 0;
 					foreach ($val_detail as $key => $value) {
+						$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
+						$price = $value['RevenueDetail']['price_unit'];
+						$total = $qty * $price;
+						$grandTotal += $total; 
+
 						$colom = $this->Html->tag('td', $no++);
-						$colom .= $this->Html->tag('td', $value['GroupMotor']['name']);
-						$colom .= $this->Html->tag('td', $value['RevenueDetail']['qty_unit']);
-						$colom .= $this->Html->tag('td', $this->Number->currency($value['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+						$colom .= $this->Html->tag('td', $value['Ttuj']['nopol']);
+						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
+						$colom .= $this->Html->tag('td', $value['Revenue']['date_revenue']);
+						$colom .= $this->Html->tag('td', $qty, array(
+							'align' => 'center'
+						));
+						$colom .= $this->Html->tag('td', $this->Number->currency($price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+							'align' => 'right'
+						));
+						$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
 							'align' => 'right'
 						));
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_reference']);
@@ -209,11 +248,20 @@ readfile($path.'/'.$filename);
 						echo $this->Html->tag('tr', $colom);
 					}
 					$colom = $this->Html->tag('td', __('Total '), array(
-						'colspan' => 3,
+						'colspan' => 4,
 						'align' => 'right'
 					));
-					$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0)), array('colspan' => 2) );
-					echo $this->Html->tag('tr', $colom);
+					$colom .= $this->Html->tag('td', $this->Number->format($grandTotalUnit), array(
+						'class' => 'text-center'
+					));
+					$colom .= $this->Html->tag('td', '&nbsp;');
+					$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+						'align' => 'right'
+					));
+					$colom .= $this->Html->tag('td', '&nbsp;');
+					echo $this->Html->tag('tr', $colom, array(
+						'class' => 'total-row'
+					));
 				}else{
 					$colom = $this->Html->tag('td', __('Data tidak ditemukan.'), array(
 						'colspan' => 5

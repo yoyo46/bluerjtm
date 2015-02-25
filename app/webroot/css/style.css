@@ -3907,3 +3907,9 @@ thead th.headcol {
 .popover-hover-bottom-click {
   cursor: pointer;
 }
+.header-invoice-print{
+  background: #ccc;
+}
+.total-row{
+  font-weight: bold;
+}

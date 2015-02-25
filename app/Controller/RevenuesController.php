@@ -3448,6 +3448,7 @@ class RevenuesController extends AppController {
         $this->loadModel('GroupMotor');
         $this->loadModel('City');
         $this->loadModel('Customer');
+        $this->loadModel('Ttuj');
 
         $module_title = __('Invoice');
         $this->set('sub_module_title', trim($module_title));
@@ -3478,6 +3479,9 @@ class RevenuesController extends AppController {
                     ),
                     'order' => array(
                         'RevenueDetail.city_id'
+                    ),
+                    'contain' => array(
+                        'Revenue'
                     )
                 ));
             }
@@ -3487,6 +3491,18 @@ class RevenuesController extends AppController {
                     if(!empty($value['RevenueDetail'])){
                         $value = $this->GroupMotor->getMerge($value, $value['RevenueDetail']['group_motor_id']);
                         $value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
+                        $ttuj_tipe_motor = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                            'conditions' => array(
+                                'TtujTipeMotor.id' => $value['RevenueDetail']['ttuj_tipe_motor_id']
+                            ),
+                            'contain' => array(
+                                'Ttuj'
+                            )
+                        ));
+                        
+                        if(!empty($ttuj_tipe_motor['Ttuj'])){
+                            $value = array_merge($value, $ttuj_tipe_motor);
+                        }
                         
                         $revenue_detail[$key] = $value;
                     }
@@ -3510,7 +3526,7 @@ class RevenuesController extends AppController {
             $action = $invoice['Invoice']['type_invoice'];
             $this->set(compact('invoice', 'revenue_detail', 'action', 'action_print'));
         }
-
+// debug($revenue_detail);die();
         if($action == 'pdf'){
             $this->layout = 'pdf';
         }

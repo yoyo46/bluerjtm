@@ -601,6 +601,7 @@ class AjaxController extends AppController {
 		$this->loadModel('TipeMotor');
 		$this->loadModel('City');
 		$this->loadModel('TarifAngkutan');
+		$this->loadModel('Ttuj');
 
 		$revenue_id = $this->Revenue->getData('list', array(
 			'conditions' => array(
@@ -656,6 +657,18 @@ class AjaxController extends AppController {
 					$value = $this->TipeMotor->getMerge($value, $value['RevenueDetail']['group_motor_id']);
 					$value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
 					$value = $this->TarifAngkutan->getMerge($value, $value['RevenueDetail']['tarif_angkutan_id']);
+					$ttuj_tipe_motor = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                        'conditions' => array(
+                            'TtujTipeMotor.id' => $value['RevenueDetail']['ttuj_tipe_motor_id']
+                        ),
+                        'contain' => array(
+                            'Ttuj'
+                        )
+                    ));
+                    
+                    if(!empty($ttuj_tipe_motor['Ttuj'])){
+                        $value = array_merge($value, $ttuj_tipe_motor);
+                    }
 					
 					$revenue_detail[$key] = $value;
 				}
