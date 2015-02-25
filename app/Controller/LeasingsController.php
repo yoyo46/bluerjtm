@@ -253,6 +253,16 @@ class LeasingsController extends AppController {
                         }
                     }
                 }
+
+                if(!empty($this->request->data['Leasing']['paid_date'])){
+                    $this->request->data['Leasing']['paid_date'] = $this->MkCommon->getDate($this->request->data['Leasing']['paid_date'], true);
+                }
+                if(!empty($this->request->data['Leasing']['date_first_installment'])){
+                    $this->request->data['Leasing']['date_first_installment'] = $this->MkCommon->getDate($this->request->data['Leasing']['date_first_installment'], true);
+                }
+                if(!empty($this->request->data['Leasing']['date_last_installment'])){
+                    $this->request->data['Leasing']['date_last_installment'] = $this->MkCommon->getDate($this->request->data['Leasing']['date_last_installment'], true);
+                }
             }
         
         }

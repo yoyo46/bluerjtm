@@ -3793,8 +3793,6 @@ class RevenuesController extends AppController {
                 $msg = 'membuat';
             }
             
-            $data['InvoicePayment']['date_payment'] = $this->MkCommon->getDate($data['InvoicePayment']['date_payment']);
-            
             if(!empty($data['InvoicePayment']['invoice_id'])){
                 $invoice = $this->Invoice->InvoicePayment->getdata('first', array(
                     'conditions' => array(
@@ -3871,6 +3869,8 @@ class RevenuesController extends AppController {
             }
         }else if(!empty($id) && !empty($data_local)){
              $this->request->data = $data_local;
+
+             $this->request->data['InvoicePayment']['date_payment'] = !empty($this->request->data['InvoicePayment']['date_payment']) ? $this->MkCommon->getDate($this->request->data['InvoicePayment']['date_payment'], true) : '';
         }
 
         $list_invoices = $this->Invoice->getData('list', array(

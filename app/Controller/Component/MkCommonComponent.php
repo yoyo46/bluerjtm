@@ -88,22 +88,26 @@ class MkCommonComponent extends Component {
         return $data;
     }
 
-    function getDate ( $date ) {
+    function getDate ( $date, $reverse = false ) {
     	$dtString = false;
         $date = trim($date);
 
     	if( !empty($date) ) {
-    		$dtArr = explode('/', $date);
+            if($reverse){
+                $dtString = date('d/m/Y', strtotime($date));
+            }else{
+                $dtArr = explode('/', $date);
 
-    		if( count($dtArr) == 3 ) {
-    			$dtString = date('Y-m-d', strtotime(sprintf('%s-%s-%s', $dtArr[2], $dtArr[1], $dtArr[0])));
-    		} else {
-    			$dtArr = explode('-', $date);
+                if( count($dtArr) == 3 ) {
+                    $dtString = date('Y-m-d', strtotime(sprintf('%s-%s-%s', $dtArr[2], $dtArr[1], $dtArr[0])));
+                } else {
+                    $dtArr = explode('-', $date);
 
-	    		if( count($dtArr) == 3 ) {
-	    			$dtString = date('Y-m-d', strtotime(sprintf('%s-%s-%s', $dtArr[2], $dtArr[1], $dtArr[0])));
-	    		}
-    		}
+                    if( count($dtArr) == 3 ) {
+                        $dtString = date('Y-m-d', strtotime(sprintf('%s-%s-%s', $dtArr[2], $dtArr[1], $dtArr[0])));
+                    }
+                }
+            }
     	}
     	
     	return $dtString;

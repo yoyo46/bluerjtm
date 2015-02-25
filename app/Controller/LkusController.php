@@ -216,6 +216,8 @@ class LkusController extends AppController {
                     }
                 }
             }
+
+            $this->request->data['Lku']['tgl_lku'] = (!empty($this->request->data['Lku']['tgl_lku'])) ? $this->MkCommon->getDate($this->request->data['Lku']['tgl_lku'], true) : '';
         }
 
         if(!empty($this->request->data['LkuDetail']['tipe_motor_id'])){
@@ -513,6 +515,8 @@ class LkusController extends AppController {
                     }
                 }
             }
+
+            $this->request->data['LkuPayment']['tgl_bayar'] = (!empty($this->request->data['LkuPayment']['tgl_bayar'])) ? $this->MkCommon->getDate($this->request->data['LkuPayment']['tgl_bayar'], true) : '';
         }
 
         if(!empty($this->request->data['LkuPaymentDetail']['lku_id'])){
@@ -795,6 +799,8 @@ class LkusController extends AppController {
                     }
                 }
             }
+
+            $this->request->data['LkuPart']['tgl_lku'] = (!empty($this->request->data['LkuPart']['tgl_lku'])) ? $this->MkCommon->getDate($this->request->data['LkuPart']['tgl_lku'], true) : '';
         }
 
         if(!empty($this->request->data['LkuPartDetail']['parts_motor_id'])){
