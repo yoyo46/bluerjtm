@@ -175,7 +175,7 @@
                                 'class'=>'form-control custom-date',
                                 'type' => 'text',
                                 'required' => false,
-                                'value' => (!empty($this->request->data['StnkPayment']['stnk_payment_date'])) ? $this->request->data['StnkPayment']['stnk_payment_date'] : date('Y-m-d')
+                                'value' => (!empty($this->request->data['StnkPayment']['stnk_payment_date'])) ? $this->request->data['StnkPayment']['stnk_payment_date'] : date('d/m/Y')
                             ));
                     ?>
                 </div>

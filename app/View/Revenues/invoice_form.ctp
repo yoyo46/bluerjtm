@@ -46,7 +46,7 @@
 							'class'=>'form-control custom-date',
 							'required' => false,
 							'type' => 'text',
-							'value' => (!empty($this->request->data['Invoice']['invoice_date'])) ? $this->request->data['Invoice']['invoice_date'] : date('Y-m-d')
+							'value' => (!empty($this->request->data['Invoice']['invoice_date'])) ? $this->request->data['Invoice']['invoice_date'] : date('d/m/Y')
 						));
 				?>
 	        </div>

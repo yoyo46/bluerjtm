@@ -114,7 +114,7 @@
 								'class'=>'form-control custom-date',
 								'type' => 'text',
 								'required' => false,
-								'value' => (!empty($this->request->data['Siup']['tgl_siup'])) ? $this->request->data['Siup']['tgl_siup'] : date('Y-m-d')
+								'value' => (!empty($this->request->data['Siup']['tgl_siup'])) ? $this->request->data['Siup']['tgl_siup'] : date('d/m/Y')
 							));
 					?>
 		        </div>

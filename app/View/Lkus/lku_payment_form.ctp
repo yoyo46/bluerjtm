@@ -50,7 +50,7 @@
 										'label'=> __('Tanggal Bayar'), 
 										'class'=>'form-control custom-date',
 										'type' => 'text',
-										'value' => (!empty($this->request->data['LkuPayment']['tgl_bayar'])) ? $this->request->data['LkuPayment']['tgl_bayar'] : date('Y-m-d')
+										'value' => (!empty($this->request->data['LkuPayment']['tgl_bayar'])) ? $this->request->data['LkuPayment']['tgl_bayar'] : date('d/m/Y')
 									));
 							?>
 						</div>

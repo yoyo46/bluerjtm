@@ -38,7 +38,7 @@
 										'class'=>'form-control custom-date',
 										'required' => false,
 										'type' => 'text',
-										'value' => (!empty($this->request->data['Ttuj']['ttuj_date'])) ? $this->request->data['Ttuj']['ttuj_date'] : date('Y-m-d')
+										'value' => (!empty($this->request->data['Ttuj']['ttuj_date'])) ? $this->request->data['Ttuj']['ttuj_date'] : date('d/m/Y')
 									));
 							?>
 				        </div>
@@ -169,7 +169,7 @@
 												'class'=>'form-control custom-date',
 												'required' => false,
 												'type' => 'text',
-												'value' => (!empty($this->request->data['Ttuj']['tgl_berangkat'])) ? $this->request->data['Ttuj']['tgl_berangkat'] : date('Y-m-d')
+												'value' => (!empty($this->request->data['Ttuj']['tgl_berangkat'])) ? $this->request->data['Ttuj']['tgl_berangkat'] : date('d/m/Y')
 											));
 									?>
 				        		</div>

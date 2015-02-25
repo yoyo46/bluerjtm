@@ -12,7 +12,7 @@
 					'required' => false,
 					'placeholder' => __('Tanggal Revenue'),
 					'readonly' => true,
-					'value' => (!empty($this->request->data['Revenue']['date_revenue'])) ? $this->request->data['Revenue']['date_revenue'] : date('Y-m-d')
+					'value' => (!empty($this->request->data['Revenue']['date_revenue'])) ? $this->request->data['Revenue']['date_revenue'] : date('d/m/Y')
 				));
 		?>
 	</div>

@@ -151,7 +151,7 @@
 								'class'=>'form-control custom-date',
 								'type' => 'text',
 								'required' => false,
-								'value' => (!empty($this->request->data['Stnk']['tgl_bayar'])) ? $this->request->data['Stnk']['tgl_bayar'] : date('Y-m-d')
+								'value' => (!empty($this->request->data['Stnk']['tgl_bayar'])) ? $this->request->data['Stnk']['tgl_bayar'] : date('d/m/Y')
 							));
 					?>
 		        </div>
