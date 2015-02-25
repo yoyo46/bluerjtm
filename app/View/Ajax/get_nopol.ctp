@@ -100,10 +100,10 @@
 			if( !empty($uangJalan['UangJalanTipeMotor']) ) {
 				foreach ($uangJalan['UangJalanTipeMotor'] as $key => $value) {
 					echo $this->Html->tag('div', $value['uang_jalan_1'], array(
-						'class' => sprintf('uang-jalan-1-%s', $value['tipe_motor_id'])
+						'class' => sprintf('uang-jalan-1-%s', $value['group_motor_id'])
 					));
-					echo $this->Html->tag('div', $value['uang_jalan_2'], array(
-						'class' => sprintf('uang-jalan-2-%s', $value['tipe_motor_id'])
+					echo $this->Html->tag('div', !empty($value['uang_jalan_2'])?$value['uang_jalan_2']:0, array(
+						'class' => sprintf('uang-jalan-2-%s', $value['group_motor_id'])
 					));
 				}
 			}

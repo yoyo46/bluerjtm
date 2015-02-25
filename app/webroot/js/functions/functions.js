@@ -431,7 +431,7 @@ var add_custom_field = function(){
                     var contentOptionCities = $('#data-cities-options select').html();
 
                     additionalField = '<td> \
-                        <select name="data[TtujTipeMotor][city_id]['+idx+']" class="form-control"> \
+                        <select name="data[TtujTipeMotor][city_id][]" class="form-control"> \
                         ' + contentOptionCities +
                         '</select> \
                     </td>';
@@ -441,17 +441,17 @@ var add_custom_field = function(){
                 <tr rel="'+idx+'"> \
                     '+ additionalField +
                     '<td> \
-                        <select name="data[TtujTipeMotor][tipe_motor_id]['+idx+']" class="form-control tipe_motor_id" rel="'+idx+'"> \
+                        <select name="data[TtujTipeMotor][tipe_motor_id][]" class="form-control tipe_motor_id" rel="'+idx+'"> \
                         ' + optionTipeMotor +
                         '</select> \
                     </td> \
                     <td> \
-                        <select name="data[TtujTipeMotor][color_motor_id]['+idx+']" class="form-control color_motor_id" rel="'+idx+'"> \
+                        <select name="data[TtujTipeMotor][color_motor_id][]" class="form-control color_motor_id" rel="'+idx+'"> \
                         ' + optionColorMotor +
                         '</select> \
                     </td> \
                     <td> \
-                        <input name="data[TtujTipeMotor][qty]['+idx+']" class="form-control qty-muatan" type="text" rel="'+idx+'"> \
+                        <input name="data[TtujTipeMotor][qty][]" class="form-control qty-muatan" type="text" rel="'+idx+'"> \
                     </td> \
                     <td> \
                         <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="ttuj"><i class="fa fa-times"></i> Hapus</a> \
@@ -527,7 +527,7 @@ var add_custom_field = function(){
                     <div class="col-sm-4"> \
                         <div class="form-group"> \
                             <label for="UangJalanTipeMotorTipeMotorId'+(idx-1)+'">Group Motor</label> \
-                            <select name="data[UangJalanTipeMotor][tipe_motor_id]['+(idx-1)+']" class="form-control" id="UangJalanTipeMotorTipeMotorId'+(idx-1)+'"> \
+                            <select name="data[UangJalanTipeMotor][group_motor_id][]" class="form-control" id="UangJalanTipeMotorTipeMotorId'+(idx-1)+'"> \
                                 '+$('#tipe_motor select').html()+' \
                             </select> \
                         </div> \
@@ -537,7 +537,7 @@ var add_custom_field = function(){
                             <label for="UangJalanTipeMotorUangJalan1'+(idx-1)+'">Uang Jalan Pertama</label> \
                             <div class="input-group"> \
                                 <span class="input-group-addon">IDR </span> \
-                                <input name="data[UangJalanTipeMotor][uang_jalan_1]['+(idx-1)+']" class="form-control input_price" type="text" id="UangJalanTipeMotorUangJalan1'+(idx-1)+'"> \
+                                <input name="data[UangJalanTipeMotor][uang_jalan_1][]" class="form-control input_price" type="text" id="UangJalanTipeMotorUangJalan1'+(idx-1)+'"> \
                             </div> \
                         </div> \
                     </div> \
@@ -565,7 +565,7 @@ var add_custom_field = function(){
                     <div class="col-sm-3"> \
                         <div class="form-group"> \
                             <label for="UangExtraGroupMotorGroupMotorId'+(idx-1)+'">Group Motor</label> \
-                            <select name="data[UangExtraGroupMotor][group_motor_id]['+(idx-1)+']" class="form-control" id="UangExtraGroupMotorGroupMotorId'+(idx-1)+'"> \
+                            <select name="data[UangExtraGroupMotor][group_motor_id][]" class="form-control" id="UangExtraGroupMotorGroupMotorId'+(idx-1)+'"> \
                                 '+$('#tipe_motor select').html()+' \
                             </select> \
                         </div> \
@@ -577,13 +577,13 @@ var add_custom_field = function(){
                                 <div class="col-sm-4 no-pright"> \
                                     <div class="input-group"> \
                                         <span class="input-group-addon">></span> \
-                                        <input name="data[UangExtraGroupMotor][min_capacity]['+(idx-1)+']" class="form-control input_number" type="text" id="UangExtraGroupMotorMinCapacity'+(idx-1)+'"> \
+                                        <input name="data[UangExtraGroupMotor][min_capacity][]" class="form-control input_number" type="text" id="UangExtraGroupMotorMinCapacity'+(idx-1)+'"> \
                                     </div> \
                                 </div> \
                                 <div class="col-sm-8"> \
                                     <div class="input-group"> \
                                         <span class="input-group-addon">IDR </span> \
-                                        <input name="data[UangExtraGroupMotor][uang_jalan_extra]['+(idx-1)+']" class="form-control input_price" type="text" id="UangExtraGroupMotorUangJalanExtra'+(idx-1)+'"> \
+                                        <input name="data[UangExtraGroupMotor][uang_jalan_extra][]" class="form-control input_price" type="text" id="UangExtraGroupMotorUangJalanExtra'+(idx-1)+'"> \
                                     </div> \
                                 </div> \
                             </div> \
@@ -607,7 +607,7 @@ var add_custom_field = function(){
                     <div class="col-sm-4"> \
                         <div class="form-group"> \
                             <label for="CommissionGroupMotorGroupMotorId'+(idx-1)+'">Group Motor</label> \
-                            <select name="data[CommissionGroupMotor][group_motor_id]['+(idx-1)+']" class="form-control" id="CommissionGroupMotorGroupMotorId'+(idx-1)+'"> \
+                            <select name="data[CommissionGroupMotor][group_motor_id][]" class="form-control" id="CommissionGroupMotorGroupMotorId'+(idx-1)+'"> \
                                 '+$('#tipe_motor select').html()+' \
                             </select> \
                         </div> \
@@ -617,7 +617,7 @@ var add_custom_field = function(){
                             <label for="CommissionGroupMotorCommission'+(idx-1)+'">Komisi</label> \
                             <div class="input-group"> \
                                 <span class="input-group-addon">IDR </span> \
-                                <input name="data[CommissionGroupMotor][commission]['+(idx-1)+']" class="form-control input_price" type="text" id="CommissionGroupMotorCommission'+(idx-1)+'"> \
+                                <input name="data[CommissionGroupMotor][commission][]" class="form-control input_price" type="text" id="CommissionGroupMotorCommission'+(idx-1)+'"> \
                             </div> \
                         </div> \
                     </div> \
@@ -681,7 +681,7 @@ var add_custom_field = function(){
                     <div class="col-sm-4"> \
                         <div class="form-group"> \
                             <label for="AsdpGroupMotorGroupMotorId'+(idx-1)+'">Group Motor</label> \
-                            <select name="data[AsdpGroupMotor][group_motor_id]['+(idx-1)+']" class="form-control" id="AsdpGroupMotorGroupMotorId'+(idx-1)+'"> \
+                            <select name="data[AsdpGroupMotor][group_motor_id][]" class="form-control" id="AsdpGroupMotorGroupMotorId'+(idx-1)+'"> \
                                 '+$('#tipe_motor select').html()+' \
                             </select> \
                         </div> \
@@ -691,7 +691,7 @@ var add_custom_field = function(){
                             <label for="AsdpGroupMotorAsdp'+(idx-1)+'">Uang Penyebrangan</label> \
                             <div class="input-group"> \
                                 <span class="input-group-addon">IDR </span> \
-                                <input name="data[AsdpGroupMotor][asdp]['+(idx-1)+']" class="form-control input_price" type="text" id="AsdpGroupMotorAsdp'+(idx-1)+'"> \
+                                <input name="data[AsdpGroupMotor][asdp][]" class="form-control input_price" type="text" id="AsdpGroupMotorAsdp'+(idx-1)+'"> \
                             </div> \
                         </div> \
                     </div> \
@@ -713,7 +713,7 @@ var add_custom_field = function(){
                     <div class="col-sm-4"> \
                         <div class="form-group"> \
                             <label for="UangKawalGroupMotorGroupMotorId'+(idx-1)+'">Group Motor</label> \
-                            <select name="data[UangKawalGroupMotor][group_motor_id]['+(idx-1)+']" class="form-control" id="UangKawalGroupMotorGroupMotorId'+(idx-1)+'"> \
+                            <select name="data[UangKawalGroupMotor][group_motor_id][]" class="form-control" id="UangKawalGroupMotorGroupMotorId'+(idx-1)+'"> \
                                 '+$('#tipe_motor select').html()+' \
                             </select> \
                         </div> \
@@ -723,7 +723,7 @@ var add_custom_field = function(){
                             <label for="UangKawalGroupMotorUangKawal'+(idx-1)+'">Uang Kawal</label> \
                             <div class="input-group"> \
                                 <span class="input-group-addon">IDR </span> \
-                                <input name="data[UangKawalGroupMotor][uang_kawal]['+(idx-1)+']" class="form-control input_price" type="text" id="UangKawalGroupMotorUangKawal'+(idx-1)+'"> \
+                                <input name="data[UangKawalGroupMotor][uang_kawal][]" class="form-control input_price" type="text" id="UangKawalGroupMotorUangKawal'+(idx-1)+'"> \
                             </div> \
                         </div> \
                     </div> \
@@ -745,7 +745,7 @@ var add_custom_field = function(){
                     <div class="col-sm-4"> \
                         <div class="form-group"> \
                             <label for="UangKeamananGroupMotorGroupMotorId'+(idx-1)+'">Group Motor</label> \
-                            <select name="data[UangKeamananGroupMotor][group_motor_id]['+(idx-1)+']" class="form-control" id="UangKeamananGroupMotorGroupMotorId'+(idx-1)+'"> \
+                            <select name="data[UangKeamananGroupMotor][group_motor_id][]" class="form-control" id="UangKeamananGroupMotorGroupMotorId'+(idx-1)+'"> \
                                 '+$('#tipe_motor select').html()+' \
                             </select> \
                         </div> \
@@ -755,7 +755,7 @@ var add_custom_field = function(){
                             <label for="UangKeamananGroupMotorUangKeamanan'+(idx-1)+'">Uang Keamanan</label> \
                             <div class="input-group"> \
                                 <span class="input-group-addon">IDR </span> \
-                                <input name="data[UangKeamananGroupMotor][uang_keamanan]['+(idx-1)+']" class="form-control input_price" type="text" id="UangKeamananGroupMotorUangKeamanan'+(idx-1)+'"> \
+                                <input name="data[UangKeamananGroupMotor][uang_keamanan][]" class="form-control input_price" type="text" id="UangKeamananGroupMotorUangKeamanan'+(idx-1)+'"> \
                             </div> \
                         </div> \
                     </div> \
@@ -777,7 +777,7 @@ var add_custom_field = function(){
                     <div class="col-sm-3"> \
                         <div class="form-group"> \
                             <label for="UangKuliGroupMotorId'+(idx-1)+'">Group Motor</label> \
-                            <select name="data[UangKuliGroupMotor][group_motor_id]['+(idx-1)+']" class="form-control" id="UangKuliGroupMotorTipeMotorId'+(idx-1)+'"> \
+                            <select name="data[UangKuliGroupMotor][group_motor_id][]" class="form-control" id="UangKuliGroupMotorTipeMotorId'+(idx-1)+'"> \
                                 '+$('#group_motor select').html()+' \
                             </select> \
                         </div> \
@@ -787,7 +787,7 @@ var add_custom_field = function(){
                             <label for="UangKuliGroupMotorUangKuli'+(idx-1)+'">Uang Kuli</label> \
                             <div class="input-group"> \
                                 <span class="input-group-addon">IDR </span> \
-                                <input name="data[UangKuliGroupMotor][uang_kuli]['+(idx-1)+']" class="form-control input_price" type="text" id="UangKuliGroupMotorUangKuli'+(idx-1)+'"> \
+                                <input name="data[UangKuliGroupMotor][uang_kuli][]" class="form-control input_price" type="text" id="UangKuliGroupMotorUangKuli'+(idx-1)+'"> \
                             </div> \
                         </div> \
                     </div> \
@@ -809,7 +809,7 @@ var add_custom_field = function(){
                     <div class="col-sm-3"> \
                         <div class="form-group"> \
                             <label for="UangKuliCapacityCapacity'+(idx-1)+'">Kapasitas</label> \
-                            <input name="data[UangKuliCapacity][capacity]['+(idx-1)+']" class="form-control input_number" type="text" id="UangKuliCapacityCapacity'+(idx-1)+'"> \
+                            <input name="data[UangKuliCapacity][capacity][]" class="form-control input_number" type="text" id="UangKuliCapacityCapacity'+(idx-1)+'"> \
                         </div> \
                     </div> \
                     <div class="col-sm-5"> \
@@ -817,7 +817,7 @@ var add_custom_field = function(){
                             <label for="UangKuliCapacityUangKuli'+(idx-1)+'">Uang Kuli</label> \
                             <div class="input-group"> \
                                 <span class="input-group-addon">IDR </span> \
-                                <input name="data[UangKuliCapacity][uang_kuli]['+(idx-1)+']" class="form-control input_price" type="text" id="UangKuliCapacityUangKuli'+(idx-1)+'"> \
+                                <input name="data[UangKuliCapacity][uang_kuli][]" class="form-control input_price" type="text" id="UangKuliCapacityUangKuli'+(idx-1)+'"> \
                             </div> \
                         </div> \
                     </div> \

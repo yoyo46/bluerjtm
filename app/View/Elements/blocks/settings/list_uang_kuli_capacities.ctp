@@ -6,11 +6,12 @@
     <div class="col-sm-3">
 		<div class="form-group">
             <?php
-                    echo $this->Form->input($model.'.capacity.'.$idx, array(
+                    echo $this->Form->input($model.'.capacity.', array(
                         'label' => __('Kapasitas'),
                         'class' => 'form-control input_number',
                         'required' => false,
                         'error' => false,
+                        'value' => !empty($this->request->data[$model]['capacity'][$idx])?$this->request->data[$model]['capacity'][$idx]:false,
                     ));
             ?>
     	</div>
@@ -18,19 +19,20 @@
     <div class="col-sm-5">
 		<div class="form-group">
     		<?php 
-    				echo $this->Form->label($model.'.uang_kuli.'.$idx, __('Uang Kuli'));
+    				echo $this->Form->label($model.'.uang_kuli.', __('Uang Kuli'));
     		?>
             <div class="input-group">
 		    	<?php 
 		    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
 		    				'class' => 'input-group-addon'
 	    				));
-						echo $this->Form->input($model.'.uang_kuli.'.$idx,array(
+						echo $this->Form->input($model.'.uang_kuli.',array(
 							'label'=> false, 
 							'class'=>'form-control input_price',
 							'required' => false,
 							'type' => 'text',
                             'error' => false,
+                            'value' => !empty($this->request->data[$model]['uang_kuli'][$idx])?$this->request->data[$model]['uang_kuli'][$idx]:false,
 						));
 				?>
 			</div>

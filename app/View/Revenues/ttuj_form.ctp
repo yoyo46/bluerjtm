@@ -300,16 +300,19 @@
 								<tr>
 									<?php
 											if( $data_action == 'retail' ) {
-												echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.city_id.'.$key,array(
+												$city_id = !empty($this->request->data['TtujTipeMotor']['city_id'][$key])?$this->request->data['TtujTipeMotor']['city_id'][$key]:false;
+
+												echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.city_id.',array(
 													'label'=> false, 
 													'class'=>'form-control',
 													'required' => false,
 													'empty' => __('Pilih Tujuan --'),
 													'options' => $cities,
+													'value' => $city_id,
 												)));
 											}
 
-											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.tipe_motor_id.'.$key, array(
+											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.tipe_motor_id.', array(
 												'class' => 'form-control tipe_motor_id',
 												'label' => false,
 												'empty' => __('Pilih Tipe Motor --'),
@@ -318,7 +321,7 @@
 												'required' => false,
 												'rel' => $key,
 											)));
-											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.color_motor_id.'.$key, array(
+											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.color_motor_id.', array(
 												'class' => 'form-control',
 												'label' => false,
 												'empty' => __('Pilih Warna Motor --'),
@@ -327,7 +330,7 @@
 												'required' => false,
 												'rel' => $key,
 											)));
-											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.qty.'.$key, array(
+											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.qty.', array(
 												'class' => 'form-control qty-muatan',
 												'label' => false,
 												'required' => false,
