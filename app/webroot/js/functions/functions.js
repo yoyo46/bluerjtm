@@ -2439,10 +2439,6 @@ $(function() {
         return false;
     });
 
-    $('.multiple-modal').modal({
-        keyboard: false
-    })
-
     $('.multiple-modal').on('hide.bs.modal', function () {
         $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
     });
