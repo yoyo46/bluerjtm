@@ -122,7 +122,7 @@
 		        <div class="form-group">
 		        	<?php 
 						echo $this->Form->input('no_hp',array(
-							'label'=> __('No. HP'), 
+							'label'=> __('No. HP *'), 
 							'class'=>'form-control',
 							'required' => false,
 							'placeholder' => __('No. HP')
