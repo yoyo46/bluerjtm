@@ -38,7 +38,7 @@ if($action_print == 'pdf'){
 					$colom = $this->Html->tag('td', $no++);
 					$colom .= $this->Html->tag('td', $value['Ttuj']['nopol']);
 					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
-					$colom .= $this->Html->tag('td', $value['Revenue']['date_revenue']);
+					$colom .= $this->Html->tag('td', $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y'));
 					$colom .= $this->Html->tag('td', $qty, array(
 						'align' => 'center'
 					));
@@ -228,7 +228,7 @@ readfile($path.'/'.$filename);
 						$colom = $this->Html->tag('td', $no++);
 						$colom .= $this->Html->tag('td', $value['Ttuj']['nopol']);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
-						$colom .= $this->Html->tag('td', $value['Revenue']['date_revenue']);
+						$colom .= $this->Html->tag('td', $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y'));
 						$colom .= $this->Html->tag('td', $qty, array(
 							'align' => 'center'
 						));
