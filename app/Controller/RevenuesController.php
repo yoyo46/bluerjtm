@@ -2757,6 +2757,12 @@ class RevenuesController extends AppController {
         }else if($id && $data_local){
             $this->request->data = $data_local;
 
+            if( !empty($this->request->data['Revenue']['date_revenue']) && $this->request->data['Revenue']['date_revenue'] != '0000-00-00' ) {
+                $this->request->data['Revenue']['date_revenue'] = date('d/m/Y', strtotime($this->request->data['Revenue']['date_revenue']));
+            } else {
+                $this->request->data['Revenue']['date_revenue'] = '';
+            }
+
             if( !empty($data_local['Revenue']['tarif_per_truck']) && !empty($data_local['Revenue']['revenue_tarif_type']) && $data_local['Revenue']['revenue_tarif_type'] == 'per_truck' ) {
                 $tarifAmount = $data_local['Revenue']['tarif_per_truck'];
                 $addCharge = $data_local['Revenue']['additional_charge'];

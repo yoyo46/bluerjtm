@@ -54,11 +54,13 @@
 						}
 
 						$titleLabel = ( $data_action == 'bongkar' )?__('Tujuan'):__('Dari');
+						$titleEmpy = ( $data_action == 'bongkar' )?__('Pilih Kota Tujuan'):__('Pilih Kota Asal');
+
 						echo $this->Html->tag('div', $this->Form->input('city_id',array(
 							'label'=> $titleLabel, 
 							'class'=>'form-control',
 							'required' => false,
-							'empty' => __('Pilih Kota Asal'),
+							'empty' => $titleEmpy,
 							'options' => $cities,
 						)), array(
 							'class' => 'form-group'
@@ -171,6 +173,7 @@
 			));
     		echo $this->Html->link(__('Kembali'), array(
 				'action' => 'uang_kuli', 
+				$data_action,
 			), array(
 				'class'=> 'btn btn-default',
 			));
