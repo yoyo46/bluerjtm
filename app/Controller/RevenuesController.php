@@ -2010,6 +2010,7 @@ class RevenuesController extends AppController {
     public function monitoring_truck( $data_action = false ) {
         if( in_array('view_monitoring_truck', $this->allowModule) ) {
             $this->loadModel('Customer');
+            $this->loadModel('TruckCustomer');
             $this->loadModel('Truck');
             $this->loadModel('Ttuj');
             $this->loadModel('TtujTipeMotor');
@@ -2391,14 +2392,28 @@ class RevenuesController extends AppController {
                     }
                 }
             }
-            $customers = $this->Customer->getData('list', array(
+            $customers = array();
+            $truckCustomers = $this->TruckCustomer->getData('all', array(
                 'conditions' => array(
-                    'Customer.status' => 1
+                    'Truck.status' => 1,
+                    'TruckCustomer.primary' => 1,
                 ),
                 'fields' => array(
-                    'Customer.id', 'Customer.customer_name'
+                    'TruckCustomer.id', 'TruckCustomer.customer_id'
+                ),
+                'contain' => array(
+                    'Truck',
                 ),
             ));
+
+            if( !empty($truckCustomers) ) {
+                foreach ($truckCustomers as $key => $customer) {
+                    $customer = $this->Customer->getMerge($customer, $customer['TruckCustomer']['customer_id']);
+
+                    if( !empty($customer['Customer']) )
+                    $customers[$customer['Customer']['id']] = $customer['Customer']['customer_name'];
+                }
+            }
 
             $this->set(compact(
                 'data_action', 'lastDay', 'currentMonth',

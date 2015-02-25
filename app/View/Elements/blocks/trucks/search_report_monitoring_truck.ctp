@@ -18,50 +18,42 @@
                 ));
                 $i = 0;
         ?>
-        <ul class="list-report-monitoring row">
-            <li class="col-sm-4">
-                <?php 
-                        echo $this->Form->input('Ttuj.monitoring_customer_id.'.$i,array(
-                            'type' => 'checkbox',
-                            'label'=> __('Pilih Semua'),
-                            'required' => false,
-                            'div' => array(
-                                'class' => 'checkbox'
-                            ),
-                            'class' => 'checkAll',
-                        ));
-                ?>
-            </li>
+        <div class="form-group list-report-monitoring">
             <?php 
+                    echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.monitoring_customer_id.'.$i,array(
+                        'type' => 'checkbox',
+                        'label'=> false,
+                        'required' => false,
+                        'div' => false,
+                        'class' => 'checkAll',
+                    )).__('Pilih Semua')), array(
+                        'class' => 'checkbox col-sm-6',
+                    ));
+
                     if( !empty($customers) ) {
                         foreach ($customers as $key => $customer) {
                             $checked = false;
                             if( in_array($key, $customerId) ) {
                                 $checked = true;
                             }
-            ?>
-            <li class="col-sm-4">
-                <?php 
-                        echo $this->Form->input('Ttuj.monitoring_customer_id.'.$i,array(
-                            'type' => 'checkbox',
-                            'label'=> $customer,
-                            'required' => false,
-                            'value' => $key,
-                            'div' => array(
-                                'class' => 'checkbox'
-                            ),
-                            'checked' => $checked,
-                            'class' => 'check-option',
-                        ));
-                ?>
-            </li>
-            <?php 
+
+                            echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.monitoring_customer_id.'.$i,array(
+                                'type' => 'checkbox',
+                                'label'=> false,
+                                'required' => false,
+                                'value' => $key,
+                                'div' => false,
+                                'checked' => $checked,
+                                'class' => 'check-option',
+                            )).$customer), array(
+                                'class' => 'checkbox col-sm-6',
+                            ));
                             $i++;
                         }
                     }
             ?>
             <div class="clear"></div>
-        </ul>
+        </div>
         <div class="row">
             <div class="col-sm-12">
                 <div class="form-group action">

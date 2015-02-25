@@ -152,12 +152,8 @@ table.monitoring td {
 	height: 47px;
 }
 
-.list-report-monitoring {
-	padding: 0;
-}
-
-.list-report-monitoring li {
-	list-style-type: none;
+.list-report-monitoring .checkbox:first-child {
+	margin-top: -5px;
 }
 /*
 **	END Truck
