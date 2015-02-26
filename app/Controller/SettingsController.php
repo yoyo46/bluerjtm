@@ -4370,11 +4370,91 @@ class SettingsController extends AppController {
                                         $varGroup = sprintf('group_motor_uang_jalan_%s', $i);
 
                                         if( !empty($$varGroup) ) {
-                                            $varUangJalan = sprintf('biaya_uang_jalan_per_group_%s', $i);
+                                            $varBiaya = sprintf('biaya_uang_jalan_per_group_%s', $i);
                                             $group_motor_id = !empty($groupMotors[strtolower($$varGroup)])?$groupMotors[strtolower($$varGroup)]:'';
-                                            $uang_jalan_1 = !empty($$varUangJalan)?$$varUangJalan:'';
+                                            $biaya = !empty($$varBiaya)?$$varBiaya:'';
                                             $requestData['ROW'.($x-1)]['UangJalanTipeMotor']['group_motor_id'][$i] = $group_motor_id;
-                                            $requestData['ROW'.($x-1)]['UangJalanTipeMotor']['uang_jalan_1'][$i] = $uang_jalan_1;
+                                            $requestData['ROW'.($x-1)]['UangJalanTipeMotor']['uang_jalan_1'][$i] = $biaya;
+                                            $idx++;
+                                        } else {
+                                            $flag = false;
+                                        }
+                                        $i++;
+                                    }
+                                    
+                                    $i = 1;
+                                    $idx = 0;
+                                    $flag = true;
+
+                                    while ($flag) {
+                                        $varGroup = sprintf('group_motor_komisi_%s', $i);
+
+                                        if( !empty($$varGroup) ) {
+                                            $varBiaya = sprintf('biaya_komisi_per_group_%s', $i);
+                                            $group_motor_id = !empty($groupMotors[strtolower($$varGroup)])?$groupMotors[strtolower($$varGroup)]:'';
+                                            $biaya = !empty($$varBiaya)?$$varBiaya:'';
+                                            $requestData['ROW'.($x-1)]['CommissionGroupMotor']['group_motor_id'][$i] = $group_motor_id;
+                                            $requestData['ROW'.($x-1)]['CommissionGroupMotor']['commission'][$i] = $biaya;
+                                            $idx++;
+                                        } else {
+                                            $flag = false;
+                                        }
+                                        $i++;
+                                    }
+                                    
+                                    $i = 1;
+                                    $idx = 0;
+                                    $flag = true;
+
+                                    while ($flag) {
+                                        $varGroup = sprintf('group_motor_uang_penyebrangan_%s', $i);
+
+                                        if( !empty($$varGroup) ) {
+                                            $varBiaya = sprintf('biaya_uang_penyebrangan_per_group_%s', $i);
+                                            $group_motor_id = !empty($groupMotors[strtolower($$varGroup)])?$groupMotors[strtolower($$varGroup)]:'';
+                                            $biaya = !empty($$varBiaya)?$$varBiaya:'';
+                                            $requestData['ROW'.($x-1)]['AsdpGroupMotor']['group_motor_id'][$i] = $group_motor_id;
+                                            $requestData['ROW'.($x-1)]['AsdpGroupMotor']['asdp'][$i] = $biaya;
+                                            $idx++;
+                                        } else {
+                                            $flag = false;
+                                        }
+                                        $i++;
+                                    }
+                                    
+                                    $i = 1;
+                                    $idx = 0;
+                                    $flag = true;
+
+                                    while ($flag) {
+                                        $varGroup = sprintf('group_motor_uang_kawal_%s', $i);
+
+                                        if( !empty($$varGroup) ) {
+                                            $varBiaya = sprintf('biaya_uang_kawal_per_group_%s', $i);
+                                            $group_motor_id = !empty($groupMotors[strtolower($$varGroup)])?$groupMotors[strtolower($$varGroup)]:'';
+                                            $biaya = !empty($$varBiaya)?$$varBiaya:'';
+                                            $requestData['ROW'.($x-1)]['UangKawalGroupMotor']['group_motor_id'][$i] = $group_motor_id;
+                                            $requestData['ROW'.($x-1)]['UangKawalGroupMotor']['uang_kawal'][$i] = $biaya;
+                                            $idx++;
+                                        } else {
+                                            $flag = false;
+                                        }
+                                        $i++;
+                                    }
+                                    
+                                    $i = 1;
+                                    $idx = 0;
+                                    $flag = true;
+
+                                    while ($flag) {
+                                        $varGroup = sprintf('group_motor_uang_keamanan_%s', $i);
+
+                                        if( !empty($$varGroup) ) {
+                                            $varBiaya = sprintf('biaya_uang_keamanan_per_group_%s', $i);
+                                            $group_motor_id = !empty($groupMotors[strtolower($$varGroup)])?$groupMotors[strtolower($$varGroup)]:'';
+                                            $biaya = !empty($$varBiaya)?$$varBiaya:'';
+                                            $requestData['ROW'.($x-1)]['UangKeamananGroupMotor']['group_motor_id'][$i] = $group_motor_id;
+                                            $requestData['ROW'.($x-1)]['UangKeamananGroupMotor']['uang_keamanan'][$i] = $biaya;
                                             $idx++;
                                         } else {
                                             $flag = false;
@@ -4392,6 +4472,10 @@ class SettingsController extends AppController {
 
                                 foreach($requestData as $request){
                                     $saveGroupMotor = false;
+                                    $saveCommissionGroupMotor = false;
+                                    $saveAsdpGroupMotor = false;
+                                    $saveUangKawalGroupMotor = false;
+                                    $saveUangKeamananGroupMotor = false;
                                     $data = $request;
 
                                     if( !empty($data['UangJalanTipeMotor']['group_motor_id']) ) {
@@ -4400,10 +4484,54 @@ class SettingsController extends AppController {
                                     } else {
                                         $saveGroupMotor = true;
                                     }
+
+                                    if( !empty($data['CommissionGroupMotor']['group_motor_id']) ) {
+                                        $resultCommissionGroupMotor = $this->saveCommissionGroupMotor($data);
+                                        $saveCommissionGroupMotor = !empty($resultCommissionGroupMotor['validates'])?$resultCommissionGroupMotor['validates']:false;
+                                    } else {
+                                        $saveCommissionGroupMotor = true;
+                                    }
+
+                                    if( !empty($data['AsdpGroupMotor']['group_motor_id']) ) {
+                                        $resultAsdpGroupMotor = $this->saveAsdpGroupMotor($data);
+                                        $saveAsdpGroupMotor = !empty($resultAsdpGroupMotor['validates'])?$resultAsdpGroupMotor['validates']:false;
+                                    } else {
+                                        $saveAsdpGroupMotor = true;
+                                    }
+
+                                    if( !empty($data['UangKawalGroupMotor']['group_motor_id']) ) {
+                                        $resultUangKawalGroupMotor = $this->saveUangKawalGroupMotor($data);
+                                        $saveUangKawalGroupMotor = !empty($resultUangKawalGroupMotor['validates'])?$resultUangKawalGroupMotor['validates']:false;
+                                    } else {
+                                        $saveUangKawalGroupMotor = true;
+                                    }
+
+                                    if( !empty($data['UangKeamananGroupMotor']['group_motor_id']) ) {
+                                        $resultUangKeamananGroupMotor = $this->saveUangKeamananGroupMotor($data);
+                                        $saveUangKeamananGroupMotor = !empty($resultUangKeamananGroupMotor['validates'])?$resultUangKeamananGroupMotor['validates']:false;
+                                    } else {
+                                        $saveUangKeamananGroupMotor = true;
+                                    }
                                     
-                                    if( $saveGroupMotor && $this->UangJalan->save($data) ){
+                                    if( $saveGroupMotor && $saveCommissionGroupMotor && $saveAsdpGroupMotor && $saveUangKawalGroupMotor && $saveUangKeamananGroupMotor && $this->UangJalan->save($data) ){
                                         if( !empty($data['UangJalan']['uang_jalan_per_unit']) ) {
                                             $this->saveGroupMotor($data, $this->UangJalan->id);
+                                        }
+
+                                        if( !empty($data['UangJalan']['commission_per_unit']) ) {
+                                            $this->saveCommissionGroupMotor($data, $this->UangJalan->id);
+                                        }
+
+                                        if( !empty($data['UangJalan']['asdp_per_unit']) ) {
+                                            $this->saveAsdpGroupMotor($data, $this->UangJalan->id);
+                                        }
+
+                                        if( !empty($data['UangJalan']['uang_kawal_per_unit']) ) {
+                                            $this->saveUangKawalGroupMotor($data, $this->UangJalan->id);
+                                        }
+
+                                        if( !empty($data['UangJalan']['uang_keamanan_per_unit']) ) {
+                                            $this->saveUangKeamananGroupMotor($data, $this->UangJalan->id);
                                         }
 
                                         $this->Log->logActivity( __('Sukses upload Uang jalan by Import Excel'), $this->user_data, $this->RequestHandler, $this->params, 1 );

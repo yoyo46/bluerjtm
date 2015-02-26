@@ -8,6 +8,12 @@ class UangJalanTipeMotor extends AppModel {
                 'message' => 'Tipe motor harap dipilih'
             ),
         ),
+        'group_motor_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Group motor harap dipilih'
+            ),
+        ),
         'uang_jalan_1' => array(
             'numeric' => array(
                 'allowEmpty'=> true,
