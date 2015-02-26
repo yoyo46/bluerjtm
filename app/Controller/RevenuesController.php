@@ -1732,6 +1732,7 @@ class RevenuesController extends AppController {
             $options = $this->TruckCustomer->getData('paginate', array(
                 'conditions' => $conditions,
                 'order' => array(
+                    'CustomerNoType.order_sort' => 'ASC', 
                     'Truck.nopol' => 'ASC', 
                 ),
                 'contain' => array(
@@ -2072,12 +2073,41 @@ class RevenuesController extends AppController {
                 }
             }
 
+            $this->Truck->bindModel(array(
+                'hasOne' => array(
+                    'TruckCustomerWithOrder' => array(
+                        'className' => 'TruckCustomerWithOrder',
+                        'foreignKey' => 'truck_id',
+                        'conditions' => array(
+                            'TruckCustomerWithOrder.primary'=> 1,
+                        ),
+                        'order' => array(
+                            'TruckCustomerWithOrder.primary' => 'DESC'
+                        ),
+                    ),
+                    'CustomerNoType'=>array(
+                        'foreignKey'=> false,
+                        'type'=>'INNER',
+                        'conditions'=>array(
+                            'CustomerNoType.id = TruckCustomerWithOrder.customer_id',
+                            'CustomerNoType.status'=> 1,
+                        ),
+                    ),
+                )
+            ));
+
             $this->paginate = $this->Truck->getData('paginate', array(
                 'conditions' => array(
                     'Truck.status' => 1
                 ),
-                'fields' => array(
-                    'Truck.id', 'Truck.nopol'
+                'contain' => array(
+                    'TruckCustomerWithOrder',
+                    'CustomerNoType',
+                ),
+                'order' => array(
+                    'CustomerNoType.order_sort' => 'ASC',
+                    'CustomerNoType.order' => 'ASC',
+                    'Truck.nopol' => 'ASC',
                 ),
                 'limit' => 20,
             ));

@@ -186,7 +186,9 @@ class SettingsController extends AppController {
     function customers(){
         if( in_array('view_customers', $this->allowModule) ) {
             $this->loadModel('Customer');
-            $options = array();
+            $options = array(
+                'paramType' => 'querystring',
+            );
 
             if(!empty($this->params['named'])){
                 $refine = $this->params['named'];

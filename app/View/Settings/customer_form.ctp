@@ -115,7 +115,21 @@
 				)), array(
 					'class' => 'form-group'
 				));
+
 		?>
+		<div class="form-group">
+			<div class="row">
+				<?php 
+						echo $this->Html->tag('div', $this->Form->input('order',array(
+							'label'=> __('Order'), 
+							'class'=>'form-control',
+							'required' => false,
+						)), array(
+							'class' => 'col-sm-3'
+						));
+				?>
+			</div>
+		</div>
     </div>
     <div class="box-footer text-center action">
     	<?php

@@ -48,6 +48,9 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Customer.created', __('Dibuat'), array(
                             'escape' => false
                         )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Customer.order', __('Order'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', __('Action'));
                 ?>
             </tr>
@@ -69,6 +72,7 @@
                     ?>
                 </td>
                 <td><?php echo $this->Common->customDate($value['Customer']['created']);?></td>
+                <td><?php echo $value['Customer']['order'];?></td>
                 <td class="action">
                     <?php 
                             if( in_array('update_customers', $allowModule) ) {

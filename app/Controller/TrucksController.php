@@ -95,7 +95,8 @@ class TrucksController extends AppController {
                 ));
                 $leasing = $this->LeasingDetail->getData('first', array(
                     'conditions' => array(
-                        'LeasingDetail.truck_id' => $id
+                        'LeasingDetail.truck_id' => $id,
+                        'Leasing.status' => 1,
                     ),
                     'contain' => array(
                         'Leasing' => array(

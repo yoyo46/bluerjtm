@@ -74,6 +74,7 @@ class Customer extends AppModel {
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->virtualFields['customer_name'] = sprintf('CONCAT(%s.name, \' ( \', CustomerType.name, \' )\')', $this->alias);
+        $this->virtualFields['order_sort'] = sprintf('CASE WHEN %s.order IS NULL THEN 1 ELSE 0 END', $this->alias);
     }
 
 	function getData( $find, $options = false, $is_merge = true ){
@@ -82,7 +83,9 @@ class Customer extends AppModel {
                 'Customer.status' => 1,
             ),
             'order'=> array(
-                'Customer.name' => 'ASC'
+                'Customer.order_sort' => 'ASC',
+                'Customer.order' => 'ASC',
+                'Customer.name' => 'ASC',
             ),
             'contain' => array(
                 'CustomerType',
@@ -90,6 +93,7 @@ class Customer extends AppModel {
                 'Bank',
             ),
             'fields' => array(),
+            'group' => array(),
         );
 
         if( !empty($options) && $is_merge ){
@@ -104,6 +108,9 @@ class Customer extends AppModel {
             }
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
