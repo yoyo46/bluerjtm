@@ -2062,6 +2062,9 @@ class RevenuesController extends AppController {
                 'CalendarEvent.status'=> 1,
                 'DATE_FORMAT(CalendarEvent.from_date, \'%Y-%m\')' => $currentMonth,
             );
+            $conditionTrucks = array(
+                'Truck.status' => 1
+            );
 
             if( !empty($this->params['named']) ) {
                 $refine = $this->params['named'];
@@ -2069,7 +2072,8 @@ class RevenuesController extends AppController {
                 if( !empty($refine['monitoring_customer_id']) ) {
                     $refine['monitoring_customer_id'] = urldecode($refine['monitoring_customer_id']);
                     $customerId = explode(',', $refine['monitoring_customer_id']);
-                    $conditions['Ttuj.customer_id'] = $customerId;
+                    // $conditions['Ttuj.customer_id'] = $customerId;
+                    $conditionTrucks['TruckCustomerWithOrder.customer_id'] = $customerId;
                 }
             }
 
@@ -2097,9 +2101,7 @@ class RevenuesController extends AppController {
             ));
 
             $this->paginate = $this->Truck->getData('paginate', array(
-                'conditions' => array(
-                    'Truck.status' => 1
-                ),
+                'conditions' => $conditionTrucks,
                 'contain' => array(
                     'TruckCustomerWithOrder',
                     'CustomerNoType',
