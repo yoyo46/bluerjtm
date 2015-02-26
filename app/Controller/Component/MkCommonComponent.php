@@ -255,8 +255,8 @@ class MkCommonComponent extends Component {
         return $data;
     }
 
-    function toSlug($string) {
-        return strtolower(Inflector::slug($string, '-'));
+    function toSlug($string, $separator = '-') {
+        return strtolower(Inflector::slug($string, $separator));
     }
 
     function deletePathPhoto( $pathfolder = false, $filename = false, $dimensions = false, $deleteUploadFile = true, $project_path = false ) {

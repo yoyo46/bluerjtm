@@ -433,7 +433,8 @@
                         $ttujMenu = array(
                             'ttuj', 'truk_tiba', 'bongkaran',
                             'balik', 'pool', 'uang_jalan',
-                            'uang_kuli_muat', 'uang_kuli_bongkar'
+                            'uang_kuli_muat', 'uang_kuli_bongkar',
+                            'uang_jalan_import'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $ttujMenu) ) {
@@ -456,6 +457,16 @@
                                     'escape' => false
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan' )?'active':'',
+                                ));
+                            }
+                            if( in_array('insert_uang_jalan', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Uang Jalan', array(
+                                    'controller' => 'settings',
+                                    'action' => 'uang_jalan_import',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan_import' )?'active':'',
                                 ));
                             }
 

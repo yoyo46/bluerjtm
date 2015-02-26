@@ -10,6 +10,11 @@ class GroupMotor extends AppModel {
 		)
 	);
 
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['lower_name'] = sprintf('LOWER(%s.name)', $this->alias);
+    }
+
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(
@@ -19,6 +24,7 @@ class GroupMotor extends AppModel {
                 'GroupMotor.name' => 'ASC'
             ),
             'contain' => array(),
+            'fields' => array(),
         );
 
         if(!empty($options)){
@@ -30,6 +36,9 @@ class GroupMotor extends AppModel {
             }
             if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
+            }
+            if(!empty($options['fields'])){
+                $default_options['fields'] = $options['fields'];
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];

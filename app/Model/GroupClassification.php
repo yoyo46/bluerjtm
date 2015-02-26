@@ -10,6 +10,11 @@ class GroupClassification extends AppModel {
         ),
 	);
 
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['lower_name'] = sprintf('LOWER(%s.name)', $this->alias);
+    }
+
 	function getData( $find, $options = false, $is_merge = true ){
         $default_options = array(
             'conditions'=> array(
