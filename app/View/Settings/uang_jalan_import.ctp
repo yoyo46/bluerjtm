@@ -14,7 +14,18 @@
 ?>
 <div class="box box-primary">
     <div class="box-header">
-        <h3 class="box-title"><?php echo __('Upload Uang Jalan (Excel)');?></h3>
+        <h3 class="box-title">
+        	<?php
+        			printf(__('Upload Uang Jalan By Excel ( %s )'), $this->Html->link($this->Html->tag('small', __('Download Template')), array(
+						'controller' => 'settings', 
+						'action' => 'uang_jalan_import',
+						'download'
+					), array(
+						'class' => 'download-template',
+						'escape' => false,
+					)))
+			?>
+    	</h3>
     </div>
     <div class="box-body">
     	<?php 

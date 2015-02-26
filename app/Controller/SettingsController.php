@@ -4183,243 +4183,253 @@ class SettingsController extends AppController {
         return $_FILES;
     }
 
-    public function uang_jalan_import() {
-        $this->loadModel('City');
-        $this->loadModel('GroupClassification');
-        $this->loadModel('GroupMotor');
-        $this->loadModel('UangJalan');
-        App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+    public function uang_jalan_import( $download = false ) {
+        if(!empty($download)){
+            $link_url = FULL_BASE_URL . '/files/uang_jalan.xls';
+            header("Content-type: application/vnd.ms-excel");
+            header("Content-Disposition: attachment; filename=uang_jalan.xls");
+            header("Pragma: no-cache");
+            header("Expires: 0");
+            readfile($link_url);
+            exit;
+        } else {
+            $this->loadModel('City');
+            $this->loadModel('GroupClassification');
+            $this->loadModel('GroupMotor');
+            $this->loadModel('UangJalan');
+            App::import('Vendor', 'excelreader'.DS.'excel_reader2');
 
-        $this->set('active_menu', 'uang_jalan_import');
-        $this->set('sub_module_title', __('Import Uang Jalan'));
+            $this->set('active_menu', 'uang_jalan_import');
+            $this->set('sub_module_title', __('Import Uang Jalan'));
 
-        if(!empty($this->request->data)) { 
-            $Zipped = $this->request->data['Import']['importdata'];
+            if(!empty($this->request->data)) { 
+                $Zipped = $this->request->data['Import']['importdata'];
 
-            if($Zipped["name"]) {
-                $filename = $Zipped["name"];
-                $source = $Zipped["tmp_name"];
-                $type = $Zipped["type"];
-                $name = explode(".", $filename);
-                $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
+                if($Zipped["name"]) {
+                    $filename = $Zipped["name"];
+                    $source = $Zipped["tmp_name"];
+                    $type = $Zipped["type"];
+                    $name = explode(".", $filename);
+                    $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
 
-                if(!empty($accepted_types)) {
-                    foreach($accepted_types as $mime_type) {
-                        if($mime_type == $type) {
-                            $okay = true;
-                            break;
+                    if(!empty($accepted_types)) {
+                        foreach($accepted_types as $mime_type) {
+                            if($mime_type == $type) {
+                                $okay = true;
+                                break;
+                            }
                         }
                     }
+
+                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+
+                    if(!$continue) {
+                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file Zip.'), 'error');
+                        $this->redirect(array('action'=>'uang_jalan_import'));
+                    } else {
+                        $path = APP.'webroot'.DS.'files'.DS;
+                        $filenoext = basename ($filename, '.xls');
+                        $filenoext = basename ($filenoext, '.XLS');
+                        $fileunique = uniqid() . '_' . $filenoext;
+
+                        $targetdir = $path . $fileunique . $filename;
+                         
+                        ini_set('memory_limit', '96M');
+                        ini_set('post_max_size', '64M');
+                        ini_set('upload_max_filesize', '64M');
+
+                        if(!move_uploaded_file($source, $targetdir)) {
+                            $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                            $this->redirect(array('action'=>'uang_jalan_import'));
+                        }
+                    }
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                    $this->redirect(array('action'=>'uang_jalan_import'));
                 }
 
-                $continue = strtolower($name[1]) == 'xls' ? true : false;
+                $xls_files = glob( $targetdir );
 
-                if(!$continue) {
-                    $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file Zip.'), 'error');
+                if(empty($xls_files)) {
+                    $this->rmdir_recursive ( $targetdir);
+                    $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
                     $this->redirect(array('action'=>'uang_jalan_import'));
                 } else {
-                    $path = APP.'webroot'.DS.'files'.DS;
-                    $filenoext = basename ($filename, '.xls');
-                    $filenoext = basename ($filenoext, '.XLS');
-                    $fileunique = uniqid() . '_' . $filenoext;
-
-                    $targetdir = $path . $fileunique . $filename;
-                     
-                    ini_set('memory_limit', '96M');
-                    ini_set('post_max_size', '64M');
-                    ini_set('upload_max_filesize', '64M');
-
-                    if(!move_uploaded_file($source, $targetdir)) {
-                        $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
-                        $this->redirect(array('action'=>'uang_jalan_import'));
-                    }
-                }
-            } else {
-                $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
-                $this->redirect(array('action'=>'uang_jalan_import'));
-            }
-
-            $xls_files = glob( $targetdir );
-
-            if(empty($xls_files)) {
-                $this->rmdir_recursive ( $targetdir);
-                $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
-                $this->redirect(array('action'=>'uang_jalan_import'));
-            } else {
-                $uploadedXls = $this->addToFiles('xls', $xls_files[0]);
-                $uploaded_file = $uploadedXls['xls'];
-                $file = explode(".", $uploaded_file['name']);
-                $extension = array_pop($file);
-                
-                if($extension == 'xls') {
-                    $dataimport = new Spreadsheet_Excel_Reader();
-                    $dataimport->setUTFEncoder('iconv');
-                    $dataimport->setOutputEncoding('UTF-8');
-                    $dataimport->read($uploaded_file['tmp_name']);
+                    $uploadedXls = $this->addToFiles('xls', $xls_files[0]);
+                    $uploaded_file = $uploadedXls['xls'];
+                    $file = explode(".", $uploaded_file['name']);
+                    $extension = array_pop($file);
                     
-                    if(!empty($dataimport)) {
-                        $data = $dataimport;
+                    if($extension == 'xls') {
+                        $dataimport = new Spreadsheet_Excel_Reader();
+                        $dataimport->setUTFEncoder('iconv');
+                        $dataimport->setOutputEncoding('UTF-8');
+                        $dataimport->read($uploaded_file['tmp_name']);
+                        
+                        if(!empty($dataimport)) {
+                            $data = $dataimport;
 
-                        for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
-                            $datavar = array();
-                            $flag = true;
-                            $i = 1;
-
-                            while ($flag) {
-                                if( !empty($data->sheets[0]["cells"][1][$i]) ) {
-                                    $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
-                                    $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
-                                    $$variable = $thedata;
-                                    $datavar[] = $thedata;
-                                } else {
-                                    $flag = false;
-                                }
-                                $i++;
-                            }
-
-                            $no_desc = __('Masukkan kata-kata marketing mengenai properti ini, seperti: 18 menit dari Toll Bandara (atau) 18 menit dari Universitas Tarumanegara (atau) Limited 18 unites');
-
-                            if(array_filter($datavar)) {
-                                $fromCity = $this->City->getData('first', array(
-                                    'conditions' => array(
-                                        'City.name' => $dari,
-                                        'City.status' => 1,
-                                    ),
-                                ));
-                                $toCity = $this->City->getData('first', array(
-                                    'conditions' => array(
-                                        'City.name' => $tujuan,
-                                        'City.status' => 1,
-                                    ),
-                                ));
-                                $groupClassifications = $this->GroupClassification->getData('list', array(
-                                    'conditions' => array(
-                                        'GroupClassification.status' => 1,
-                                    ),
-                                    'fields' => array(
-                                        'GroupClassification.lower_name', 'GroupClassification.id'
-                                    ),
-                                ));
-                                $groupMotors = $this->GroupMotor->getData('list', array(
-                                    'conditions' => array(
-                                        'GroupMotor.status' => 1,
-                                    ),
-                                    'fields' => array(
-                                        'GroupMotor.lower_name', 'GroupMotor.id'
-                                    ),
-                                ));
-
-                                if( !empty($fromCity) ) {
-                                    $from_city_id = $fromCity['City']['id'];
-                                }
-                                if( !empty($toCity) ) {
-                                    $to_city_id = $toCity['City']['id'];
-                                }
-
-                                if( !empty($uang_jalan_per_unit) ) {
-                                    $uang_jalan_kedua = 0;
-                                }
-
-                                $requestData['ROW'.($x-1)] = array(
-                                    'UangJalan' => array(
-                                        'title' => !empty($nama)?$nama:false,
-                                        'group_classification_1_id' => !empty($groupClassifications[strtolower($klasifikasi_1)])?$groupClassifications[strtolower($klasifikasi_1)]:0,
-                                        'group_classification_2_id' => !empty($groupClassifications[strtolower($klasifikasi_2)])?$groupClassifications[strtolower($klasifikasi_2)]:0,
-                                        'group_classification_3_id' => !empty($groupClassifications[strtolower($klasifikasi_3)])?$groupClassifications[strtolower($klasifikasi_3)]:0,
-                                        'group_classification_4_id' => !empty($groupClassifications[strtolower($klasifikasi_4)])?$groupClassifications[strtolower($klasifikasi_4)]:0,
-                                        'from_city_id' => !empty($from_city_id)?$from_city_id:false,
-                                        'to_city_id' => !empty($to_city_id)?$to_city_id:'',
-                                        'distance' => !empty($jarak_tempuh)?$jarak_tempuh:false,
-                                        'capacity' => !empty($kapasitas)?$kapasitas:false,
-                                        'arrive_lead_time' => !empty($lead_time_sampai_tujuan)?$lead_time_sampai_tujuan:false,
-                                        'back_lead_time' => !empty($lead_time_ke_pool)?$lead_time_ke_pool:false,
-                                        'uang_jalan_1' => !empty($uang_jalan_pertama)?$uang_jalan_pertama:false, // Borongan
-                                        'uang_jalan_2' => !empty($uang_jalan_kedua)?$uang_jalan_kedua:0,
-                                        'uang_jalan_per_unit' => !empty($uang_jalan_per_unit)?$uang_jalan_per_unit:0,
-                                        'commission' => !empty($komisi)?$komisi:0,
-                                        'commission_per_unit' => !empty($komisi_per_unit)?$komisi_per_unit:0,
-                                        'commission_extra' => !empty($komisi_extra)?$komisi_extra:0,
-                                        'commission_extra_per_unit' => !empty($komisi_extra_per_unit)?$komisi_extra_per_unit:0,
-                                        'commission_min_qty' => !empty($min_kapasitas_komisi_extra)?$min_kapasitas_komisi_extra:0,
-                                        'asdp' => !empty($uang_penyebrangan)?$uang_penyebrangan:0,
-                                        'asdp_per_unit' => !empty($uang_penyebrangan_per_unit)?$uang_penyebrangan_per_unit:0,
-                                        'uang_kawal' => !empty($uang_kawal)?$uang_kawal:0,
-                                        'uang_kawal_per_unit' => !empty($uang_kawal_per_unit)?$uang_kawal_per_unit:0,
-                                        'uang_keamanan' => !empty($uang_keamanan)?$uang_keamanan:0,
-                                        'uang_keamanan_per_unit' => !empty($uang_keamanan_per_unit)?$uang_keamanan_per_unit:0,
-                                        'uang_jalan_extra' => !empty($uang_jalan_extra)?$uang_jalan_extra:0,
-                                        'uang_jalan_extra_per_unit' => !empty($uang_jalan_extra_per_unit)?$uang_jalan_extra_per_unit:0,
-                                        'min_capacity' => !empty($min_kapasitas_ujalan_extra)?$min_kapasitas_ujalan_extra:0,
-                                    ),
-                                );
-                                
-                                $i = 1;
-                                $idx = 0;
+                            for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
+                                $datavar = array();
                                 $flag = true;
+                                $i = 1;
 
                                 while ($flag) {
-                                    $varGroup = sprintf('group_motor_uang_jalan_%s', $i);
-
-                                    if( !empty($$varGroup) ) {
-                                        $varUangJalan = sprintf('biaya_uang_jalan_per_group_%s', $i);
-                                        $group_motor_id = !empty($groupMotors[strtolower($$varGroup)])?$groupMotors[strtolower($$varGroup)]:'';
-                                        $uang_jalan_1 = !empty($$varUangJalan)?$$varUangJalan:'';
-                                        $requestData['ROW'.($x-1)]['UangJalanTipeMotor']['group_motor_id'][$i] = $group_motor_id;
-                                        $requestData['ROW'.($x-1)]['UangJalanTipeMotor']['uang_jalan_1'][$i] = $uang_jalan_1;
-                                        $idx++;
+                                    if( !empty($data->sheets[0]["cells"][1][$i]) ) {
+                                        $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
+                                        $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
+                                        $$variable = $thedata;
+                                        $datavar[] = $thedata;
                                     } else {
                                         $flag = false;
                                     }
                                     $i++;
                                 }
-                            }
-                        }
 
-                        if(!empty($requestData)) {
-                            $row_submitted = 1;
-                            $successfull_row = 0;
-                            $failed_row = 0;
-                            $error_message = '';
+                                $no_desc = __('Masukkan kata-kata marketing mengenai properti ini, seperti: 18 menit dari Toll Bandara (atau) 18 menit dari Universitas Tarumanegara (atau) Limited 18 unites');
 
-                            foreach($requestData as $request){
-                                $saveGroupMotor = false;
-                                $data = $request;
+                                if(array_filter($datavar)) {
+                                    $fromCity = $this->City->getData('first', array(
+                                        'conditions' => array(
+                                            'City.name' => $dari,
+                                            'City.status' => 1,
+                                        ),
+                                    ));
+                                    $toCity = $this->City->getData('first', array(
+                                        'conditions' => array(
+                                            'City.name' => $tujuan,
+                                            'City.status' => 1,
+                                        ),
+                                    ));
+                                    $groupClassifications = $this->GroupClassification->getData('list', array(
+                                        'conditions' => array(
+                                            'GroupClassification.status' => 1,
+                                        ),
+                                        'fields' => array(
+                                            'GroupClassification.lower_name', 'GroupClassification.id'
+                                        ),
+                                    ));
+                                    $groupMotors = $this->GroupMotor->getData('list', array(
+                                        'conditions' => array(
+                                            'GroupMotor.status' => 1,
+                                        ),
+                                        'fields' => array(
+                                            'GroupMotor.lower_name', 'GroupMotor.id'
+                                        ),
+                                    ));
 
-                                if( !empty($data['UangJalanTipeMotor']['group_motor_id']) ) {
-                                    $resultGroupMotor = $this->saveGroupMotor($data);
-                                    $saveGroupMotor = !empty($resultGroupMotor['validates'])?$resultGroupMotor['validates']:false;
-                                } else {
-                                    $saveGroupMotor = true;
-                                }
-                                
-                                if( $saveGroupMotor && $this->UangJalan->save($data) ){
-                                    if( !empty($data['UangJalan']['uang_jalan_per_unit']) ) {
-                                        $this->saveGroupMotor($data, $this->UangJalan->id);
+                                    if( !empty($fromCity) ) {
+                                        $from_city_id = $fromCity['City']['id'];
+                                    }
+                                    if( !empty($toCity) ) {
+                                        $to_city_id = $toCity['City']['id'];
                                     }
 
-                                    $this->Log->logActivity( __('Sukses upload Uang jalan by Import Excel'), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                                    $successfull_row++;
-                                } else {
-                                    $failed_row++;
-                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Listing.'), $row_submitted) . '<br>';
-                                }
+                                    if( !empty($uang_jalan_per_unit) ) {
+                                        $uang_jalan_kedua = 0;
+                                    }
 
-                                $row_submitted++;
+                                    $requestData['ROW'.($x-1)] = array(
+                                        'UangJalan' => array(
+                                            'title' => !empty($nama)?$nama:false,
+                                            'group_classification_1_id' => !empty($groupClassifications[strtolower($klasifikasi_1)])?$groupClassifications[strtolower($klasifikasi_1)]:0,
+                                            'group_classification_2_id' => !empty($groupClassifications[strtolower($klasifikasi_2)])?$groupClassifications[strtolower($klasifikasi_2)]:0,
+                                            'group_classification_3_id' => !empty($groupClassifications[strtolower($klasifikasi_3)])?$groupClassifications[strtolower($klasifikasi_3)]:0,
+                                            'group_classification_4_id' => !empty($groupClassifications[strtolower($klasifikasi_4)])?$groupClassifications[strtolower($klasifikasi_4)]:0,
+                                            'from_city_id' => !empty($from_city_id)?$from_city_id:false,
+                                            'to_city_id' => !empty($to_city_id)?$to_city_id:'',
+                                            'distance' => !empty($jarak_tempuh)?$jarak_tempuh:false,
+                                            'capacity' => !empty($kapasitas)?$kapasitas:false,
+                                            'arrive_lead_time' => !empty($lead_time_sampai_tujuan)?$lead_time_sampai_tujuan:false,
+                                            'back_lead_time' => !empty($lead_time_ke_pool)?$lead_time_ke_pool:false,
+                                            'uang_jalan_1' => !empty($uang_jalan_pertama)?$uang_jalan_pertama:false, // Borongan
+                                            'uang_jalan_2' => !empty($uang_jalan_kedua)?$uang_jalan_kedua:0,
+                                            'uang_jalan_per_unit' => !empty($uang_jalan_per_unit)?$uang_jalan_per_unit:0,
+                                            'commission' => !empty($komisi)?$komisi:0,
+                                            'commission_per_unit' => !empty($komisi_per_unit)?$komisi_per_unit:0,
+                                            'commission_extra' => !empty($komisi_extra)?$komisi_extra:0,
+                                            'commission_extra_per_unit' => !empty($komisi_extra_per_unit)?$komisi_extra_per_unit:0,
+                                            'commission_min_qty' => !empty($min_kapasitas_komisi_extra)?$min_kapasitas_komisi_extra:0,
+                                            'asdp' => !empty($uang_penyebrangan)?$uang_penyebrangan:0,
+                                            'asdp_per_unit' => !empty($uang_penyebrangan_per_unit)?$uang_penyebrangan_per_unit:0,
+                                            'uang_kawal' => !empty($uang_kawal)?$uang_kawal:0,
+                                            'uang_kawal_per_unit' => !empty($uang_kawal_per_unit)?$uang_kawal_per_unit:0,
+                                            'uang_keamanan' => !empty($uang_keamanan)?$uang_keamanan:0,
+                                            'uang_keamanan_per_unit' => !empty($uang_keamanan_per_unit)?$uang_keamanan_per_unit:0,
+                                            'uang_jalan_extra' => !empty($uang_jalan_extra)?$uang_jalan_extra:0,
+                                            'uang_jalan_extra_per_unit' => !empty($uang_jalan_extra_per_unit)?$uang_jalan_extra_per_unit:0,
+                                            'min_capacity' => !empty($min_kapasitas_ujalan_extra)?$min_kapasitas_ujalan_extra:0,
+                                        ),
+                                    );
+                                    
+                                    $i = 1;
+                                    $idx = 0;
+                                    $flag = true;
+
+                                    while ($flag) {
+                                        $varGroup = sprintf('group_motor_uang_jalan_%s', $i);
+
+                                        if( !empty($$varGroup) ) {
+                                            $varUangJalan = sprintf('biaya_uang_jalan_per_group_%s', $i);
+                                            $group_motor_id = !empty($groupMotors[strtolower($$varGroup)])?$groupMotors[strtolower($$varGroup)]:'';
+                                            $uang_jalan_1 = !empty($$varUangJalan)?$$varUangJalan:'';
+                                            $requestData['ROW'.($x-1)]['UangJalanTipeMotor']['group_motor_id'][$i] = $group_motor_id;
+                                            $requestData['ROW'.($x-1)]['UangJalanTipeMotor']['uang_jalan_1'][$i] = $uang_jalan_1;
+                                            $idx++;
+                                        } else {
+                                            $flag = false;
+                                        }
+                                        $i++;
+                                    }
+                                }
+                            }
+
+                            if(!empty($requestData)) {
+                                $row_submitted = 1;
+                                $successfull_row = 0;
+                                $failed_row = 0;
+                                $error_message = '';
+
+                                foreach($requestData as $request){
+                                    $saveGroupMotor = false;
+                                    $data = $request;
+
+                                    if( !empty($data['UangJalanTipeMotor']['group_motor_id']) ) {
+                                        $resultGroupMotor = $this->saveGroupMotor($data);
+                                        $saveGroupMotor = !empty($resultGroupMotor['validates'])?$resultGroupMotor['validates']:false;
+                                    } else {
+                                        $saveGroupMotor = true;
+                                    }
+                                    
+                                    if( $saveGroupMotor && $this->UangJalan->save($data) ){
+                                        if( !empty($data['UangJalan']['uang_jalan_per_unit']) ) {
+                                            $this->saveGroupMotor($data, $this->UangJalan->id);
+                                        }
+
+                                        $this->Log->logActivity( __('Sukses upload Uang jalan by Import Excel'), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                                        $successfull_row++;
+                                    } else {
+                                        $failed_row++;
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Listing.'), $row_submitted) . '<br>';
+                                    }
+
+                                    $row_submitted++;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            if(!empty($successfull_row)) {
-                $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, count($requestData));
-                $this->MkCommon->setCustomFlash(__($message_import1), 'success');
+                if(!empty($successfull_row)) {
+                    $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, count($requestData));
+                    $this->MkCommon->setCustomFlash(__($message_import1), 'success');
+                }
+                
+                if(!empty($error_message)) {
+                    $this->MkCommon->setCustomFlash(__($error_message), 'error');
+                }
+                $this->redirect(array('action'=>'uang_jalan_import'));
             }
-            
-            if(!empty($error_message)) {
-                $this->MkCommon->setCustomFlash(__($error_message), 'error');
-            }
-            $this->redirect(array('action'=>'uang_jalan_import'));
         }
     }
 }
