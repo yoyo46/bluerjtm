@@ -1306,12 +1306,20 @@ function grandTotalLku(){
 function grandTotalLeasing(){
     var price_tipe_motor = $('.price-leasing-truck');
     var length = price_tipe_motor.length;
-
+    
     var total_price = 0;
     for (var i = 0; i < length; i++) {
         if(typeof price_tipe_motor[i] != 'undefined'){
-            var price = price_tipe_motor[i].value
-            total_price += parseInt(price.replace(',', ''));
+            var price = price_tipe_motor[i].value;
+            var arr_string = price.split(',');
+            var text_val = '';
+            for (var a = 0; a < arr_string.length; a++) {
+                text_val += arr_string[a].toString();
+            };
+            
+            price = text_val;
+            price = parseInt(price);
+            total_price += price;
         }
     };
 
