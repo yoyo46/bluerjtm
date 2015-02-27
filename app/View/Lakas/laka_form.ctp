@@ -337,7 +337,7 @@
 		<div class="box-footer text-center action">
 			<?php
 		    		echo $this->Html->link(__('Kembali'), array(
-						'action' => 'ttuj', 
+						'action' => 'index', 
 					), array(
 						'class'=> 'btn btn-default',
 					));
