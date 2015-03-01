@@ -9,7 +9,7 @@
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <?php 
-                if( in_array('insert_leasing_companies', $allowModule) ) {
+                if( in_array('insert_leasing', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php

@@ -30,12 +30,20 @@
 	        </div>
 	        <div class="form-group">
 	        	<?php 
-						echo $this->Form->input('invoice_id',array(
-							'label'=> __('Kode Invoice *'), 
-							'class'=>'form-control invoice-ajax',
+						// echo $this->Form->input('invoice_id',array(
+						// 	'label'=> __('Kode Invoice *'), 
+						// 	'class'=>'form-control invoice-ajax',
+						// 	'required' => false,
+						// 	'empty' => __('Pilih Kode Invoice'),
+						// 	'options' => $list_invoices
+						// ));
+
+						echo $this->Form->input('customer_id',array(
+							'label'=> __('Customer *'), 
+							'class'=>'form-control customer-ajax',
 							'required' => false,
-							'empty' => __('Pilih Kode Invoice'),
-							'options' => $list_invoices
+							'empty' => __('Pilih Customer'),
+							'options' => $list_customer
 						));
 				?>
 	        </div>
@@ -51,13 +59,13 @@
 						));
 				?>
 	        </div>
-	        <div id="invoice-info" class="<?php echo (!empty($this->request->data)) ? '' : 'hide';?>">
-	        	<?php
-	        		echo $this->element('blocks/revenues/invoice_payment_info');
-	        	?>
-	        </div>
 	    </div>
 	</div>
+	<div id="invoice-info" class="<?php echo (!empty($this->request->data) && !empty($invoices)) ? '' : 'hide';?>">
+    	<?php
+    		echo $this->element('blocks/revenues/info_invoice_payment_detail');
+    	?>
+    </div>
 	<div class="box-footer text-center action">
 			<?php
 		    		echo $this->Html->link(__('Kembali'), array(

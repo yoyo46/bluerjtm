@@ -596,6 +596,34 @@ class AjaxController extends AppController {
 		}
 	}
 
+	function getInvoicePaymentInfo($customer_id = false){
+		$this->loadModel('Revenue');
+		$revenues = $this->Revenue->getData('first', array(
+			'conditions' => array(
+				'Revenue.customer_id' => $customer_id,
+				'Revenue.transaction_status' => 'posting',
+				'Revenue.status' => 1,						
+			),
+			'order' => array(
+				'Revenue.date_revenue' => 'ASC'
+			),
+			'fields' => array(
+				'SUM(Revenue.total) total',
+				'MAX(Revenue.date_revenue) period_to',
+				'MIN(Revenue.date_revenue) period_from',
+			),
+			'group' => array(
+				'Revenue.customer_id'
+			),
+		));
+
+		if(!empty($revenues)){
+			$this->request->data['Invoice']['period_from'] = !empty($revenues[0]['period_from'])?$this->MkCommon->customDate($revenues[0]['period_from'], 'd/m/Y'):false;
+			$this->request->data['Invoice']['period_to'] = !empty($revenues[0]['period_to'])?$this->MkCommon->customDate($revenues[0]['period_to'], 'd/m/Y'):false;
+			$this->request->data['Invoice']['total'] = !empty($revenues[0]['total'])?$revenues[0]['total']:0;;
+		}
+	}
+
 	function previewInvoice($customer_id, $action = false){
 		$this->loadModel('Revenue');
 		$this->loadModel('TipeMotor');
@@ -1116,6 +1144,35 @@ class AjaxController extends AppController {
 		}
 
 		$this->set(compact('invoice_real', 'invoice'));
+	}
+
+	function getInfoInvoicePaymentDetail($id = false){
+		$this->loadModel('Invoice');
+
+		$invoices = $this->Invoice->getdata('all', array(
+			'conditions' => array(
+				'Invoice.customer_id' => $id,
+				'Invoice.complete_paid' => 0
+			)
+		));
+
+		if(!empty($invoices)){
+			foreach ($invoices as $key => $value) {
+				$invoice_has_paid = $this->Invoice->InvoicePaymentDetail->getData('first', array(
+					'conditions' => array(
+						'InvoicePaymentDetail.invoice_id' => $value['Invoice']['id'],
+						'InvoicePaymentDetail.status' => 1
+					),
+					'fields' => array(
+						'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid'
+					)
+				));
+
+				 $invoices[$key]['invoice_has_paid'] = $invoice_has_paid[0]['invoice_has_paid'];
+			}
+		}
+
+		$this->set(compact('invoices'));
 	}
 
 	function delete_laka_media($id = false){

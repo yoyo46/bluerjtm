@@ -50,8 +50,8 @@ class Invoice extends AppModel {
             'className' => 'InvoiceDetail',
             'foreignKey' => 'invoice_id',
         ),
-        'InvoicePayment' => array(
-            'className' => 'InvoicePayment',
+        'InvoicePaymentDetail' => array(
+            'className' => 'InvoicePaymentDetail',
             'foreignKey' => 'invoice_id',
         ),
     );

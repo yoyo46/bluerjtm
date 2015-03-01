@@ -1,54 +1,43 @@
 <?php
-class InvoicePayment extends AppModel {
-	var $name = 'InvoicePayment';
+class InvoicePaymentDetail extends AppModel {
+	var $name = 'InvoicePaymentDetail';
 	var $validate = array(
-        'nodoc' => array(
+        'invoice_payment_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'No. Dokumen harap diisi'
+                'message' => 'Invoice payment tidak di ketahui'
             ),
         ),
-        'customer_id' => array(
+        'invoice_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Kode Invoice harap dipilih'
+                'message' => 'Invoice tidak di ketahui'
             ),
         ),
-        'total_payment' => array(
+        'price_pay' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Total pembayaran harap diisi'
-            ),
-        ),
-        'date_payment' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tanggal pembayaran harap diisi'
+                'message' => 'Jumlah pembayaran harap diisi'
             ),
         ),
 	);
 
 	var $belongsTo = array(
-        'Customer' => array(
-            'className' => 'Customer',
-            'foreignKey' => 'customer_id',
+        'InvoicePayment' => array(
+            'className' => 'InvoicePayment',
+            'foreignKey' => 'invoice_payment_id',
+        ),
+        'Invoice' => array(
+            'className' => 'Invoice',
+            'foreignKey' => 'invoice_id',
         ),
 	);
 
-    var $hasMany = array(
-        'InvoicePaymentDetail' => array(
-            'className' => 'InvoicePaymentDetail',
-            'foreignKey' => 'invoice_payment_id',
-        ),
-    );
-
 	function getData( $find, $options = false, $is_merge = true ){
         $default_options = array(
-            'conditions'=> array(
-                'InvoicePayment.status' => 1,
-            ),
+            'conditions'=> array(),
             'order'=> array(
-                'InvoicePayment.id' => 'DESC'
+                'InvoicePaymentDetail.id' => 'DESC'
             ),
             'contain' => array(),
             'fields' => array(),
@@ -84,10 +73,10 @@ class InvoicePayment extends AppModel {
     }
 
     function getMerge($data, $id){
-        if(empty($data['InvoicePayment'])){
+        if(empty($data['InvoicePaymentDetail'])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
-                    'InvoicePayment.id' => $id
+                    'InvoicePaymentDetail.id' => $id
                 ),
             ));
 

@@ -878,10 +878,11 @@ var delete_custom_field = function( obj ) {
                 var action_type = self.attr('action_type');
                 var idx = length;
                 $('#'+action_type+(idx-1)).remove();
-            } else if( action_type == 'lku_first' || action_type == 'leasing_first' ){
+            } else if( action_type == 'lku_first' || action_type == 'leasing_first' || action_type == 'invoice_first' ){
                 self.parents('tr').remove();
                 grandTotalLku();
                 grandTotalLeasing();
+                getTotalInvoicePayment();
             } else if( action_type == 'lku_second'){
                 self.parents('tr').remove();
                 getTotalLkuPayment();
@@ -1835,6 +1836,34 @@ var leasing_action = function(){
         grandTotalLeasing()
     });
 }
+
+var invoice_price_payment = function(){
+    $('.invoice-price-payment').keyup(function(){
+        getTotalInvoicePayment();
+    });
+}
+function getTotalInvoicePayment(){
+    var invoice_price = $('.invoice-price-payment');
+    var length = invoice_price.length;
+    
+    var total_price = 0;
+    for (var i = 0; i < length; i++) {
+        if(typeof invoice_price[i] != 'undefined'){
+            var price = invoice_price[i].value;
+            var arr_string = price.split(',');
+            var text_val = '';
+            for (var a = 0; a < arr_string.length; a++) {
+                text_val += arr_string[a].toString();
+            };
+            
+            price = text_val;
+            price = parseInt(price);
+            total_price += price;
+        }
+    };
+
+    $('#grand-total-payment').text('IDR '+formatNumber(total_price));
+}
 $(function() {
     leasing_action();
 
@@ -2398,22 +2427,30 @@ $(function() {
         });
     });
 
-    $('.invoice-ajax').change(function(){
+    $('.customer-ajax').change(function(){
         var self = $(this);
         var val = self.val();
 
-        $.ajax({
-            url: '/ajax/getInfoInvoicePayment/'+val+'/',
-            type: 'POST',
-            success: function(response, status) {
-                $('#invoice-info').html(response);
-                $('#invoice-info').removeClass('hide');
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
-                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                return false;
-            }
-        });
+        if(val != ''){
+            $.ajax({
+                url: '/ajax/getInfoInvoicePaymentDetail/'+val+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    $('#invoice-info').html(response);
+                    $('#invoice-info').removeClass('hide');
+
+                    delete_custom_field();
+                    input_price();
+                    invoice_price_payment();
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        }else{
+            $('#invoice-info').html('');
+        }
     });
 
     timepicker();

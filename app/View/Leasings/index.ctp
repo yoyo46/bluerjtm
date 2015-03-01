@@ -11,7 +11,7 @@
         ?>
         <div class="box-tools">
             <?php
-                    if( in_array('view_leasing_companies', $allowModule) ) {
+                    if( in_array('view_leasing', $allowModule) ) {
                         echo $this->Html->link('<i class="fa fa-plus"></i> Perusahaan Leasing', array(
                             'controller' => 'leasings',
                             'action' => 'leasing_companies'

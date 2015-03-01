@@ -27,9 +27,7 @@
         <table class="table table-hover">
             <tr>
                 <?php
-                        echo $this->Html->tag('th', $this->Paginator->sort('Invoice.no_invoice', __('Kode Invoice'), array(
-                            'escape' => false
-                        )));
+                        echo $this->Html->tag('th', __('Customer'));
                         echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.nodoc', __('No. Dokumen'), array(
                             'escape' => false
                         )));
@@ -52,7 +50,7 @@
                             $id = $value['InvoicePayment']['id'];
             ?>
             <tr>
-                <td><?php echo $value['Invoice']['no_invoice'];?></td>
+                <td><?php echo $value['Customer']['name'];?></td>
                 <td><?php echo $value['InvoicePayment']['nodoc'];?></td>
                 <td align="right"><?php echo $this->Number->currency($value['InvoicePayment']['total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <td><?php echo $this->Common->customDate($value['InvoicePayment']['date_payment']);?></td>
@@ -71,13 +69,28 @@
                 </td>
                 <td class="action">
                     <?php 
-                            echo $this->Html->link('Hapus', array(
+                            echo $this->Html->link('Info', array(
                                 'controller' => 'revenues',
-                                'action' => 'invoice_payment_delete',
+                                'action' => 'detail_invoice_payment',
                                 $id
                             ), array(
-                                'class' => 'btn btn-primary btn-xs'
-                            ), __('Apakah Anda yakin ingin menghapus pembayaran invoice ini?'));
+                                'class' => 'btn btn-info btn-xs'
+                            ));
+                            echo $this->Html->link('Edit', array(
+                                'controller' => 'revenues',
+                                'action' => 'detail_invoice_payment',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-info btn-xs'
+                            ));
+                            
+                            // echo $this->Html->link('Hapus', array(
+                            //     'controller' => 'revenues',
+                            //     'action' => 'invoice_payment_delete',
+                            //     $id
+                            // ), array(
+                            //     'class' => 'btn btn-danger btn-xs'
+                            // ), __('Apakah Anda yakin ingin menghapus pembayaran invoice ini?'));
                     ?>
                 </td>
             </tr>
