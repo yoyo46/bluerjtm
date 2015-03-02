@@ -67,18 +67,18 @@
     	?>
     </div>
 	<div class="box-footer text-center action">
-			<?php
-		    		echo $this->Html->link(__('Kembali'), array(
-						'action' => 'invoice_payments', 
-					), array(
-						'class'=> 'btn btn-default',
-					));
-		    		echo $this->Form->button(__('Buat Pembayaran Invoice'), array(
-		    			'type' => 'submit',
-						'class'=> 'btn btn-success btn-lg',
-					));
-			?>
-		</div>
+		<?php
+	    		echo $this->Html->link(__('Kembali'), array(
+					'action' => 'invoice_payments', 
+				), array(
+					'class'=> 'btn btn-default',
+				));
+	    		echo $this->Form->button(__('Buat Pembayaran Invoice'), array(
+	    			'type' => 'submit',
+					'class'=> 'btn btn-success btn-lg',
+				));
+		?>
+	</div>
 </div>
 <?php
 		echo $this->Form->end();

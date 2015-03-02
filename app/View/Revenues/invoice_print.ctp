@@ -226,7 +226,7 @@ readfile($path.'/'.$filename);
 						$grandTotal += $total; 
 
 						$colom = $this->Html->tag('td', $no++);
-						$colom .= $this->Html->tag('td', $value['Ttuj']['nopol']);
+						$colom .= $this->Html->tag('td', !empty($value['Ttuj']['nopol'])?$value['Ttuj']['nopol']:false);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
 						$colom .= $this->Html->tag('td', $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y'));
 						$colom .= $this->Html->tag('td', $qty, array(

@@ -560,7 +560,8 @@
                         $activeMenu = false;
                         $dataMenu = array(
                             'index', 'tarif_angkutan', 'invoices',
-                            'invoice_reports', 'revenues', 'ar_period_reports'
+                            'invoice_reports', 'revenues', 'ar_period_reports',
+                            'invoice_payments'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {

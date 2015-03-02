@@ -50,7 +50,7 @@
                             $id = $value['InvoicePayment']['id'];
             ?>
             <tr>
-                <td><?php echo $value['Customer']['name'];?></td>
+                <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:false;?></td>
                 <td><?php echo $value['InvoicePayment']['nodoc'];?></td>
                 <td align="right"><?php echo $this->Number->currency($value['InvoicePayment']['total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <td><?php echo $this->Common->customDate($value['InvoicePayment']['date_payment']);?></td>
@@ -81,7 +81,7 @@
                                 'action' => 'detail_invoice_payment',
                                 $id
                             ), array(
-                                'class' => 'btn btn-info btn-xs'
+                                'class' => 'btn btn-primary btn-xs'
                             ));
                             
                             // echo $this->Html->link('Hapus', array(

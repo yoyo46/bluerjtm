@@ -3798,7 +3798,7 @@ class RevenuesController extends AppController {
             $this->loadModel('InvoicePayment');
             $this->loadModel('Customer');
             
-            $this->set('active_menu', 'revenues');
+            $this->set('active_menu', 'invoice_payments');
             $this->set('sub_module_title', __('Pembayaran Invoice'));
 
             $conditions = array();
@@ -3872,16 +3872,17 @@ class RevenuesController extends AppController {
             }
 
             $data['InvoicePayment']['date_payment'] = !empty($data['InvoicePayment']['date_payment']) ? $this->MkCommon->getDate($data['InvoicePayment']['date_payment']) : '';
-
             $total = 0;
             $validate_price_pay = true;
+
             if(!empty($data['InvoicePaymentDetail']['price_pay']) && !empty($data['InvoicePaymentDetail']['invoice_id'])){
                 foreach ($data['InvoicePaymentDetail']['price_pay'] as $key => $value) {
-                    if(empty($value) || empty($data['InvoicePaymentDetail']['price_pay'][$key])){
+                    $price = $this->MkCommon->convertPriceToString($value);
+
+                    if(empty($price) || empty($data['InvoicePaymentDetail']['price_pay'][$key])){
                         $validate_price_pay = false;
                         break;
                     }else{
-                        $price = str_replace(',', '', $value);
                         $data['InvoicePaymentDetail']['price_pay'][$key] = $price;
                         $total += $price;
                     }
@@ -3891,11 +3892,9 @@ class RevenuesController extends AppController {
             }
 
             $data['InvoicePayment']['total_payment'] = $total;
-
             $this->Invoice->InvoicePaymentDetail->InvoicePayment->set($data);
 
             if($this->Invoice->InvoicePaymentDetail->InvoicePayment->validates() && $validate_price_pay){
-
                 $this->Invoice->InvoicePaymentDetail->InvoicePayment->set($data);
 
                 if($this->Invoice->InvoicePaymentDetail->InvoicePayment->save()){
@@ -3907,45 +3906,48 @@ class RevenuesController extends AppController {
                         ));
                     }
 
-                    foreach ($data['InvoicePaymentDetail']['price_pay'] as $key => $value) {
-                        $invoice_id = $data['InvoicePaymentDetail']['invoice_id'][$key];
+                    if( !empty($data['InvoicePaymentDetail']['price_pay']) ) {
+                        foreach ($data['InvoicePaymentDetail']['price_pay'] as $key => $value) {
+                            $invoice_id = $data['InvoicePaymentDetail']['invoice_id'][$key];
 
-                        $this->Invoice->InvoicePaymentDetail->create();
-                        $this->Invoice->InvoicePaymentDetail->set(array(
-                            'price_pay' => trim($value),
-                            'invoice_id' => $invoice_id,
-                            'invoice_payment_id' => $invoice_payment_id
-                        ));
-                        $this->Invoice->InvoicePaymentDetail->save();
-
-                        $invoice_has_paid = $this->Invoice->InvoicePaymentDetail->getData('first', array(
-                            'conditions' => array(
-                                'InvoicePaymentDetail.invoice_id' => $invoice_id,
-                                'InvoicePaymentDetail.status' => 1
-                            ),
-                            'fields' => array(
-                                'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid'
-                            ),
-                            'contain' => array(
-                                'Invoice'
-                            )
-                        ));
-                        $invoice_paid = $invoice_has_paid[0]['invoice_has_paid'];
-
-                        if($invoice_paid > $invoice_has_paid['Invoice']['total']){
-                            $this->Invoice->id = $invoice_id;
-                            $this->Invoice->set(array(
-                                'paid' => 1,
-                                'complete_paid' => 1
+                            $this->Invoice->InvoicePaymentDetail->create();
+                            $this->Invoice->InvoicePaymentDetail->set(array(
+                                'price_pay' => trim($value),
+                                'invoice_id' => $invoice_id,
+                                'invoice_payment_id' => $invoice_payment_id
                             ));
-                            $this->Invoice->save();
-                        }else{
-                            $this->Invoice->id = $invoice_id;
-                            $this->Invoice->set(array(
-                                'paid' => 1,
-                                'complete_paid' => 0
+                            $this->Invoice->InvoicePaymentDetail->save();
+
+                            $invoice_has_paid = $this->Invoice->InvoicePaymentDetail->getData('first', array(
+                                'conditions' => array(
+                                    'InvoicePaymentDetail.invoice_id' => $invoice_id,
+                                    'InvoicePaymentDetail.status' => 1
+                                ),
+                                'fields' => array(
+                                    'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid'
+                                ),
+                                'contain' => array(
+                                    'Invoice'
+                                )
                             ));
-                            $this->Invoice->save();
+                            $invoice_paid = !empty($invoice_has_paid[0]['invoice_has_paid'])?$invoice_has_paid[0]['invoice_has_paid']:0;
+                            $invoice_total = !empty($invoice_has_paid['Invoice']['total'])?$invoice_has_paid['Invoice']['total']:0;
+
+                            if($invoice_paid > $invoice_total){
+                                $this->Invoice->id = $invoice_id;
+                                $this->Invoice->set(array(
+                                    'paid' => 1,
+                                    'complete_paid' => 1
+                                ));
+                                $this->Invoice->save();
+                            }else{
+                                $this->Invoice->id = $invoice_id;
+                                $this->Invoice->set(array(
+                                    'paid' => 1,
+                                    'complete_paid' => 0
+                                ));
+                                $this->Invoice->save();
+                            }
                         }
                     }
 
@@ -3961,7 +3963,8 @@ class RevenuesController extends AppController {
                 }
             }else{
                 $text = sprintf(__('Gagal %s Pembayaran Invoice'), $msg);
-                if($validate_price_pay){
+
+                if( !$validate_price_pay ){
                     $text .= ', harap isi semua field kosong.';
                 }
                 $this->MkCommon->setCustomFlash($text, 'error'); 
@@ -4147,11 +4150,11 @@ class RevenuesController extends AppController {
                     ),
                 )
             ));
-            
+
             if(!empty($invoice)){
                 $invoice = $this->InvoicePayment->Customer->getMerge($invoice, $invoice['InvoicePayment']['customer_id']);
                 $sub_module_title = 'Detail Pembayaran Invoice';
-// debug($invoice);die();
+                $this->set('active_menu', 'invoice_payments');
                 $this->set(compact('invoice', 'sub_module_title'));
             }else{
                 $this->MkCommon->setCustomFlash(__('Pembayaran invoice tidak ditemukan'), 'error');

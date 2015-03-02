@@ -6,12 +6,12 @@
         <table class="table table-hover">
         	<thead>
         		<tr>
-        			<th width="20%"><?php echo __('No.Invoice');?></th>
+        			<th><?php echo __('No.Invoice');?></th>
                     <th><?php echo __('Tgl Invoice');?></th>
                     <th class="text-center"><?php echo __('Periode');?></th>
-                    <th class="text-center"><?php echo __('Total Pembayaran <br>Invoice');?></th>
-                    <th class="text-center"><?php echo __('Telah Terbayar');?></th>
-                    <th class="text-center"><?php echo __('Bayar');?></th>
+                    <th class="text-center"><?php echo __('Total');?></th>
+                    <th class="text-center"><?php echo __('Telah Dibayar');?></th>
+                    <th class="text-center" width="15%"><?php echo __('Bayar');?></th>
                     <th class="text-center"><?php echo __('Action');?></th>
         		</tr>
         	</thead>
@@ -36,14 +36,12 @@
                     </td>
         			<td>
                         <?php
-                            echo $this->Common->customDate($invoice['invoice_date']);
+                                echo $this->Common->customDate($invoice['invoice_date']);
                         ?>
                     </td>
                     <td class="text-center">
                         <?php
-                            echo $this->Common->customDate($invoice['period_from']).'<br>';
-                            echo 'sampai<br>';
-                            echo $this->Common->customDate($invoice['period_to']);
+                                printf('%s s/d %s', $this->Common->customDate($invoice['period_from'], 'd/m/Y'), $this->Common->customDate($invoice['period_to'], 'd/m/Y'));
                         ?>
                     </td>
                     <td class="text-right">
