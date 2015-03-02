@@ -734,14 +734,14 @@
                         'view_branches', 'view_perlengkapan', 'view_coas',
                         'view_banks', 'view_cities', 'view_companies',
                         'view_vendors', 'view_jenis_sim', 'view_classifications',
-                        'view_calendar_colors', 'view_calendar_icons'
+                        'view_calendar_colors', 'view_calendar_icons', 'view_settings'
                     ), $allowModule ) ) {
                         $activeSetting = false;
                         $settingMenu = array(
                             'cities', 'vendors', 'companies',
                             'perlengkapan', 'coas', 'branches', 
                             'classifications', 'banks', 'calendar_colors',
-                            'calendar_icons'
+                            'calendar_icons', 'settings'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -887,6 +887,17 @@
                                     'class' => ( !empty($active_menu) && $active_menu == 'parts_motor' )?'active':'',
                                 ));
                             }
+
+                            // if( in_array('view_settings', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-wrench"></i> Pengaturan', array(
+                                    'controller' => 'settings',
+                                    'action' => 'index',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'settings' )?'active':'',
+                                ));
+                            // }
                     ?>
                 </ul>
             </li>

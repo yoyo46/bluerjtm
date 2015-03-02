@@ -165,6 +165,10 @@ table.monitoring td {
 .trigger-posting {
 	margin-bottom: 15px;
 }
+
+.setting-link {
+  padding: 15px;
+}
 /*
 **	END Revenue
 */

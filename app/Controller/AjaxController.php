@@ -624,7 +624,7 @@ class AjaxController extends AppController {
 		}
 	}
 
-	function previewInvoice($customer_id, $action = false){
+	function previewInvoice($customer_id = false, $action = false){
 		$this->loadModel('Revenue');
 		$this->loadModel('TipeMotor');
 		$this->loadModel('City');
@@ -646,76 +646,7 @@ class AjaxController extends AppController {
 		), false);
 
 		if(!empty($revenue_id)){
-			if($action == 'tarif'){
-				$revenue_detail = $this->Revenue->RevenueDetail->getData('all', array(
-					'conditions' => array(
-						'RevenueDetail.revenue_id' => $revenue_id,
-					),
-					'order' => array(
-						'RevenueDetail.price_unit' => 'DESC'
-					),
-					'contain' => array(
-						'Revenue' => array(
-							'Ttuj'
-						),
-						'GroupMotor'
-					),
-				));
-			}else{
-				$revenue_detail = $this->Revenue->RevenueDetail->getData('all', array(
-					'conditions' => array(
-						'RevenueDetail.revenue_id' => $revenue_id,
-					),
-					'order' => array(
-						'RevenueDetail.total_price_unit',
-						'RevenueDetail.id',
-					),
-					'contain' => array(
-						'Revenue' => array(
-							'Ttuj',
-						),
-						'GroupMotor'
-					),
-				));
-			}
-
-			if( !empty($revenue_detail) ) {
-				foreach ($revenue_detail as $key => $value) {
-					if(!empty($value['RevenueDetail'])){
-						$value = $this->TipeMotor->getMerge($value, $value['RevenueDetail']['group_motor_id']);
-						$value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
-						$value = $this->TarifAngkutan->getMerge($value, $value['RevenueDetail']['tarif_angkutan_id']);
-						$ttuj_tipe_motor = $this->Ttuj->TtujTipeMotor->getData('first', array(
-	                        'conditions' => array(
-	                            'TtujTipeMotor.id' => $value['RevenueDetail']['ttuj_tipe_motor_id']
-	                        ),
-	                        'contain' => array(
-	                            'Ttuj'
-	                        )
-	                    ));
-	                    
-	                    if(!empty($ttuj_tipe_motor['Ttuj'])){
-	                        $value = array_merge($value, $ttuj_tipe_motor);
-	                    }
-						
-						$revenue_detail[$key] = $value;
-					}
-				}
-			}
-
-			if($action == 'tarif'){
-				$result = array();
-				foreach ($revenue_detail as $key => $value) {
-					$result[$value['RevenueDetail']['price_unit']][] = $value;
-				}
-				$revenue_detail = $result;
-			}else{
-				$result = array();
-				foreach ($revenue_detail as $key => $value) {
-					$result[$value['RevenueDetail']['city_id']][] = $value;
-				}
-				$revenue_detail = $result;
-			}
+            $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($revenue_id, $action);
 		}
 
 		$this->layout = 'ajax';

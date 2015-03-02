@@ -4560,4 +4560,80 @@ class SettingsController extends AppController {
             }
         }
     }
+
+    function index(){
+        // if( in_array('insert_settings', $this->allowModule) ) {
+            $this->loadModel('Setting');
+            $this->set('sub_module_title', 'Pengaturan');
+            $data_local = $this->Setting->find('first');
+        
+            if(!empty($this->request->data)){
+                $data = $this->request->data;
+
+                if(!empty($data['Setting']['img_favicon']['name']) && is_array($data['Setting']['img_favicon'])){
+                    $temp_favicon = $data['Setting']['img_favicon'];
+                    $data['Setting']['favicon'] = $data['Setting']['img_favicon']['name'];
+                } else if( empty($data_local) ){
+                    $data['Setting']['favicon'] = '';
+                }
+
+                if(!empty($data['Setting']['img_logo']['name']) && is_array($data['Setting']['img_logo'])){
+                    $temp_logo = $data['Setting']['img_logo'];
+                    $data['Setting']['logo'] = $data['Setting']['img_logo']['name'];
+                } else if( empty($data_local) ){
+                    $data['Setting']['logo'] = '';
+                }
+
+                if( !empty($data_local) ){
+                    $this->Setting->id = $data_local['Setting']['id'];
+                }else{
+                    $this->Setting->create();
+                }
+                $this->Setting->set($data);
+
+                if($this->Setting->validates($data)){
+                    if(!empty($temp_favicon) && is_array($temp_favicon)){
+                        $uploaded = $this->RjImage->upload($temp_favicon, '/'.Configure::read('__Site.profile_photo_folder').'/', String::uuid());
+                        if(!empty($uploaded)) {
+                            if($uploaded['error']) {
+                                $this->MkCommon->setCustomFlash($uploaded['message'], 'error');
+                            } else {
+                                $data['Setting']['favicon'] = $uploaded['imageName'];
+                            }
+                        }
+                    }
+                    if(!empty($temp_logo) && is_array($temp_logo)){
+                        $uploaded = $this->RjImage->upload($temp_logo, '/'.Configure::read('__Site.profile_photo_folder').'/', String::uuid());
+                        if(!empty($uploaded)) {
+                            if($uploaded['error']) {
+                                $this->MkCommon->setCustomFlash($uploaded['message'], 'error');
+                            } else {
+                                $data['Setting']['logo'] = $uploaded['imageName'];
+                            }
+                        }
+                    }
+
+                    if($this->Setting->save($data)){
+                        $this->MkCommon->setCustomFlash(__('Sukses menyimpan data'), 'success');
+                        $this->Log->logActivity( __('Sukses menyimpan data'), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                        $this->redirect(array(
+                            'controller' => 'settings',
+                            'action' => 'index'
+                        ));
+                    }else{
+                        $this->MkCommon->setCustomFlash(__('Gagal menyimpan data'), 'error'); 
+                        $this->Log->logActivity( __('Gagal menyimpan data'), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    }
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal menyimpan data'), 'error');
+                }
+            }else if($data_local){
+                $this->request->data = $data_local;
+            }
+
+            $this->set('active_menu', 'settings');
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
 }

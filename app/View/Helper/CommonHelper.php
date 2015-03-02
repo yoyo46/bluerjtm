@@ -24,10 +24,10 @@ class CommonHelper extends AppHelper {
         if(!isset($options['save_path']) || !$options['save_path']) {
             $options['save_path'] = Configure::read('__Site.profile_photo_folder');         
         }
+        $defaultSize = 's';
 
         if( !empty($options['size']) ) {
             $dimensionList = Configure::read('__Site.dimension');
-            $defaultSize = 's';
         }
 
         $options['thumb'] = isset($options['thumb'])?$options['thumb']:true;
@@ -472,5 +472,67 @@ class CommonHelper extends AppHelper {
         }
         
         return $result;
+    }
+
+    function konversi($x){
+        $x = abs($x);
+        $angka = array ("","satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas");
+        $temp = "";
+
+        if($x < 12){
+            $temp = " ".$angka[$x];
+        }else if($x<20){
+            $temp = $this->konversi($x - 10)." belas";
+        }else if ($x<100){
+            $temp = $this->konversi($x/10)." puluh". $this->konversi($x%10);
+        }else if($x<200){
+            $temp = " seratus".$this->konversi($x-100);
+        }else if($x<1000){
+            $temp = $this->konversi($x/100)." ratus".$this->konversi($x%100);   
+        }else if($x<2000){
+            $temp = " seribu".$this->konversi($x-1000);
+        }else if($x<1000000){
+            $temp = $this->konversi($x/1000)." ribu".$this->konversi($x%1000);   
+        }else if($x<1000000000){
+            $temp = $this->konversi($x/1000000)." juta".$this->konversi($x%1000000);
+        }else if($x<1000000000000){
+            $temp = $this->konversi($x/1000000000)." milyar".$this->konversi($x%1000000000);
+        }
+
+        return $temp;
+    }
+  
+    function terbilang($x){
+        if($x<0){
+            $hasil = "minus ".trim($this->konversi(x));
+        }else{
+            $hasil = trim($this->konversi($x));
+            $hasil = ucwords(sprintf(__('%s Rupiah'), $hasil));
+        }
+
+        $hasil = $hasil;
+        return $hasil;  
+    }
+
+    function getDataSetting ( $value, $index, $options = false ) {
+        if( !empty($value['Setting'][$index]) ) {
+            if( $index == 'logo' ) {
+                return $this->photo_thumbnail(array(
+                    'save_path' => Configure::read('__Site.profile_photo_folder'), 
+                    'src' => $value['Setting'][$index], 
+                    'thumb'=>false,
+                    'fullPath'=>true,
+                ), $options);
+            } else {
+                return $value['Setting'][$index];
+            }
+        } else {
+            return sprintf(__('Klik %s untuk Pengaturan'), $this->Html->link(__('Disini'), array(
+                'controller' => "settings",
+                'action' => 'index',
+            ), array(
+                'target' => 'blank'
+            )));
+        }
     }
 }

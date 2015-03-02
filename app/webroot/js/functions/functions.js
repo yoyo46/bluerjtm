@@ -2362,11 +2362,18 @@ $(function() {
         var customer_id = $('.custom-find-invoice').val();
         var left = (screen.width/2)-(800/2);
         var top = (screen.height/2)-(460/2);
+        var url = '/ajax/previewInvoice/';
 
         if(typeof customer_id != 'undefined' && customer_id != ''){
+            url += customer_id+'/';
             window.open('/ajax/previewInvoice/'+customer_id+'/'+rel+'/', '1366621940374','width=800,height=460,toolbar=0,menubar=0,location=0,status=0,scrollbars=0,resizable=0,left='+left+',top='+top+'');
         }
 
+        if(typeof rel != 'undefined' && rel != ''){
+            url += rel+'/';
+        }
+
+        window.open(url, '1366621940374','width=800,height=460,toolbar=0,menubar=0,location=0,status=0,scrollbars=0,resizable=0,left='+left+',top='+top+'');
     });
 
     $('.btn-invoice').click(function(){

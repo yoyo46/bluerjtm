@@ -74,21 +74,28 @@
                 <td align="right"><?php echo $this->Number->currency($value['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <td class="action">
                     <?php 
-                            echo $this->Html->link('print', array(
+                            echo $this->Html->link(__('Print Detail'), array(
                                 'controller' => 'revenues',
                                 'action' => 'invoice_print',
                                 $id
                             ), array(
                                 'class' => 'btn btn-primary btn-xs'
                             ));
-                            echo $this->Html->link('<i class="fa fa-download"></i> download PDF', array(
+                            echo $this->Html->link(__('Print Per Tanggal'), array(
                                 'controller' => 'revenues',
                                 'action' => 'invoice_print',
                                 $id,
-                                'pdf'
+                                'print' => 'date',
                             ), array(
-                                'class' => 'btn btn-danger hidden-print btn-xs',
-                                'escape' => false
+                                'class' => 'btn btn-success btn-xs'
+                            ));
+                            echo $this->Html->link(__('Print Header'), array(
+                                'controller' => 'revenues',
+                                'action' => 'invoice_print',
+                                $id,
+                                'print' => 'header',
+                            ), array(
+                                'class' => 'btn btn-info btn-xs'
                             ));
 
                             // echo $this->Html->link(__('Hapus'), array(
