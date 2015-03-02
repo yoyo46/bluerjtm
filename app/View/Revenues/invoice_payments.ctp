@@ -31,12 +31,14 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.nodoc', __('No. Dokumen'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.total_payment', __('Biaya<br> yang bayarkan'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.total_payment', __('Total Dibayar'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.date_payment', __('Tanggal pembayaran'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.date_payment', __('Tgl pembayaran'), array(
                             'escape' => false
-                        )));
+                        )), array(
+                            'class' => 'text-center'
+                        ));
                         echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.status', __('Status'), array(
                             'escape' => false
                         )));
@@ -53,7 +55,7 @@
                 <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:false;?></td>
                 <td><?php echo $value['InvoicePayment']['nodoc'];?></td>
                 <td align="right"><?php echo $this->Number->currency($value['InvoicePayment']['total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
-                <td><?php echo $this->Common->customDate($value['InvoicePayment']['date_payment']);?></td>
+                <td class="text-center"><?php echo $this->Common->customDate($value['InvoicePayment']['date_payment']);?></td>
                 <td>
                     <?php 
                         if($value['InvoicePayment']['status']){

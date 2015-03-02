@@ -679,29 +679,30 @@ class AjaxController extends AppController {
 				));
 			}
 
-
-			foreach ($revenue_detail as $key => $value) {
-				if(!empty($value['RevenueDetail'])){
-					$value = $this->TipeMotor->getMerge($value, $value['RevenueDetail']['group_motor_id']);
-					$value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
-					$value = $this->TarifAngkutan->getMerge($value, $value['RevenueDetail']['tarif_angkutan_id']);
-					$ttuj_tipe_motor = $this->Ttuj->TtujTipeMotor->getData('first', array(
-                        'conditions' => array(
-                            'TtujTipeMotor.id' => $value['RevenueDetail']['ttuj_tipe_motor_id']
-                        ),
-                        'contain' => array(
-                            'Ttuj'
-                        )
-                    ));
-                    
-                    if(!empty($ttuj_tipe_motor['Ttuj'])){
-                        $value = array_merge($value, $ttuj_tipe_motor);
-                    }
-					
-					$revenue_detail[$key] = $value;
+			if( !empty($revenue_detail) ) {
+				foreach ($revenue_detail as $key => $value) {
+					if(!empty($value['RevenueDetail'])){
+						$value = $this->TipeMotor->getMerge($value, $value['RevenueDetail']['group_motor_id']);
+						$value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
+						$value = $this->TarifAngkutan->getMerge($value, $value['RevenueDetail']['tarif_angkutan_id']);
+						$ttuj_tipe_motor = $this->Ttuj->TtujTipeMotor->getData('first', array(
+	                        'conditions' => array(
+	                            'TtujTipeMotor.id' => $value['RevenueDetail']['ttuj_tipe_motor_id']
+	                        ),
+	                        'contain' => array(
+	                            'Ttuj'
+	                        )
+	                    ));
+	                    
+	                    if(!empty($ttuj_tipe_motor['Ttuj'])){
+	                        $value = array_merge($value, $ttuj_tipe_motor);
+	                    }
+						
+						$revenue_detail[$key] = $value;
+					}
 				}
 			}
-			// debug($revenue_detail);die();
+
 			if($action == 'tarif'){
 				$result = array();
 				foreach ($revenue_detail as $key => $value) {
@@ -711,11 +712,12 @@ class AjaxController extends AppController {
 			}else{
 				$result = array();
 				foreach ($revenue_detail as $key => $value) {
-					$result[$value['Revenue']['id']][] = $value;
+					$result[$value['RevenueDetail']['city_id']][] = $value;
 				}
 				$revenue_detail = $result;
 			}
 		}
+
 		$this->layout = 'ajax';
 		$layout_css = array(
 			'print'

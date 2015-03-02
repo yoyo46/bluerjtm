@@ -1,8 +1,8 @@
 <?php
-	if(!empty($revenue_detail)){
-		foreach ($revenue_detail as $key => $val_detail) {
+		if(!empty($revenue_detail)){
+			foreach ($revenue_detail as $key => $val_detail) {
 ?>
-<table border="1" width="100%">
+<table border="1" width="100%" style="margin-top: 20px;">
 		<thead class="header-invoice-print">
 			<tr>
 				<th colspan="8" class="text-center" style="text-transform:uppercase;">
@@ -28,64 +28,93 @@
 		</thead>
 		<tbody>
 			<?php
-				if(!empty($val_detail)){
-					$no=1;
-					$grandTotal = 0;
-					$grandTotalUnit = 0;
-					foreach ($val_detail as $key => $value) {
-						$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
-						$price = $value['RevenueDetail']['price_unit'];
-						$total = $qty * $price;
-						$grandTotal += $total; 
+					if(!empty($val_detail)){
+						$no=1;
+						$grandTotal = 0;
+						$grandTotalUnit = 0;
+						$rowSpan = 0;
+						$trData = '';
+						$totalFlag = true;
 
-						$colom = $this->Html->tag('td', $no++);
-						$colom .= $this->Html->tag('td', $value['Revenue']['Ttuj']['nopol']);
-						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
-						$colom .= $this->Html->tag('td', $value['Revenue']['date_revenue']);
-						$colom .= $this->Html->tag('td', $qty, array(
+						foreach ($val_detail as $key => $value) {
+							$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
+							$price = $value['RevenueDetail']['price_unit'];
+							$total = 0;
+
+							$colom = $this->Html->tag('td', $no++);
+							$colom .= $this->Html->tag('td', $value['Revenue']['Ttuj']['nopol']);
+							$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
+							$colom .= $this->Html->tag('td', $value['Revenue']['date_revenue']);
+							$colom .= $this->Html->tag('td', $qty, array(
+								'align' => 'center'
+							));
+							$colom .= $this->Html->tag('td', $this->Number->currency($price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+								'align' => 'right'
+							));
+
+							if(!empty($value['RevenueDetail']['payment_type']) && $value['RevenueDetail']['payment_type'] == 'per_truck'){
+								if( !empty($value['RevenueDetail']['total_price_unit']) ) {
+									$total = $value['RevenueDetail']['total_price_unit'];
+
+									$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+										'align' => 'right'
+									));
+								} else {
+									if( empty($rowSpan) ) {
+										$total = !empty($value['Revenue']['tarif_per_truck'])?$value['Revenue']['tarif_per_truck']:0;
+										$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+											'align' => 'right',
+											'data-rowspan' => 'data-value'
+										));
+									}
+
+									$rowSpan++;
+								}
+							}else{
+								$total = $price * $qty;
+
+								$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+									'align' => 'right'
+								));
+							}
+
+							$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_reference']);
+
+							$trData .= $this->Html->tag('tr', $colom);
+							$grandTotal += $total; 
+						}
+
+						if( !empty($rowSpan) ) {
+							$trData = str_replace(array( 'data-rowspan', 'data-value' ), array( 'rowspan', $rowSpan ), $trData);
+						}
+						echo $trData;
+
+						$colom = $this->Html->tag('td', __('Total '), array(
+							'colspan' => 4,
+							'align' => 'right'
+						));
+						$colom .= $this->Html->tag('td', $this->Number->format($grandTotalUnit), array(
 							'align' => 'center'
 						));
-						$colom .= $this->Html->tag('td', $this->Number->currency($price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+						$colom .= $this->Html->tag('td', '&nbsp;');
+						$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
 							'align' => 'right'
 						));
-						$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
-							'align' => 'right'
+						$colom .= $this->Html->tag('td', '&nbsp;');
+						echo $this->Html->tag('tr', $colom, array(
+							'class' => 'total-row'
 						));
-						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_reference']);
+					}else{
+						$colom = $this->Html->tag('td', __('Data tidak ditemukan.'), array(
+							'colspan' => 5
+						));
 
-						if(!empty($value['RevenueDetail']['payment_type']) && $value['RevenueDetail']['payment_type'] == 'per_truck'){
-							$total += $value['RevenueDetail']['price_unit'];
-						}else{
-							$total += $value['RevenueDetail']['price_unit'] * $value['RevenueDetail']['qty_unit'];
-						}
 						echo $this->Html->tag('tr', $colom);
 					}
-					$colom = $this->Html->tag('td', __('Total '), array(
-						'colspan' => 4,
-						'align' => 'right'
-					));
-					$colom .= $this->Html->tag('td', $this->Number->format($grandTotalUnit), array(
-						'align' => 'center'
-					));
-					$colom .= $this->Html->tag('td', '&nbsp;');
-					$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
-						'align' => 'right'
-					));
-					$colom .= $this->Html->tag('td', '&nbsp;');
-					echo $this->Html->tag('tr', $colom, array(
-						'class' => 'total-row'
-					));
-				}else{
-					$colom = $this->Html->tag('td', __('Data tidak ditemukan.'), array(
-						'colspan' => 5
-					));
-
-					echo $this->Html->tag('tr', $colom);
-				}
 			?>
 		</tbody>
 	</table>
 <?php
+			}
 		}
-	}
 ?>

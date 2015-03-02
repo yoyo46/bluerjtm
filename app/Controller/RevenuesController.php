@@ -3508,6 +3508,7 @@ class RevenuesController extends AppController {
 
         $module_title = __('Invoice');
         $this->set('sub_module_title', trim($module_title));
+        $this->set('active_menu', 'invoices');
         
         $invoice = $this->Invoice->getData('first', array(
             'conditions' => array(
