@@ -555,13 +555,14 @@
                     }
 
                     if( !empty($allowModule) && $this->Common->getModuleAllow( array(
-                        'view_tarif_angkutan', 'view_revenues', 'view_invoices'
+                        'view_tarif_angkutan', 'view_revenues', 'view_invoices',
+                        'view_list_kwitansi'
                     ), $allowModule ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
                             'index', 'tarif_angkutan', 'invoices',
                             'invoice_reports', 'revenues', 'ar_period_reports',
-                            'invoice_payments'
+                            'invoice_payments', 'list_kwitansi'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -641,6 +642,17 @@
                                     'class' => ( !empty($active_menu) && $active_menu == 'ar_period_reports' )?'active':'',
                                 ));
                             }
+
+                            // if( in_array('view_list_kwitansi', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> List Kwitansi', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'list_kwitansi',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'list_kwitansi' )?'active':'',
+                                ));
+                            // }
                     ?>
                 </ul>
             </li>

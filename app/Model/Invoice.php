@@ -142,5 +142,51 @@ class Invoice extends AppModel {
 
         return $invoice;
     }
+
+    function getMergePayment($data, $id){
+        if(empty($data['InvoicePaymentDetail'])){
+            $data_merge = $this->InvoicePaymentDetail->getData('first', array(
+                'conditions' => array(
+                    'InvoicePaymentDetail.invoice_id' => $id,
+                    'InvoicePayment.status' => 1,
+                ),
+                'contain' => array(
+                    'InvoicePayment'
+                ),
+                'fields' => array(
+                    'SUM(InvoicePayment.total_payment) total_payment'
+                ),
+                'group' => array(
+                    'InvoicePaymentDetail.invoice_id'
+                ),
+            ));
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+
+            $data_merge = $this->InvoicePaymentDetail->getData('list', array(
+                'conditions' => array(
+                    'InvoicePaymentDetail.invoice_id' => $id,
+                    'InvoicePayment.status' => 1,
+                ),
+                'contain' => array(
+                    'InvoicePayment'
+                ),
+                'fields' => array(
+                    'InvoicePayment.id', 'InvoicePayment.date_payment'
+                ),
+                'group' => array(
+                    'InvoicePayment.date_payment'
+                ),
+            ));
+
+            if(!empty($data_merge)){
+                $data['InvoicePaymentDate'] = $data_merge;
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

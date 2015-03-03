@@ -177,7 +177,6 @@ class RevenueDetail extends AppModel {
         if( in_array($data_action, array( 'invoice', 'date' )) ) {
             $conditions = array(
                 'RevenueDetail.invoice_id' => $id,
-                'Revenue.status' => 1,
             );
         } else {
             $conditions = array(

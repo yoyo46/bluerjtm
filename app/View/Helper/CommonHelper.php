@@ -344,6 +344,24 @@ class CommonHelper extends AppHelper {
 		return $result;
 	}
 
+    function combineDate( $fromDate, $toDate, $format = 'd' ) {
+        if( $this->customDate($fromDate, $format) == $this->customDate($toDate, $format) ) {
+            $result = $this->customDate($fromDate, $format);
+        } else {
+            if( $format == 'M Y' ) {
+                if( $this->customDate($fromDate, 'Y') == $this->customDate($toDate, 'Y') ) {
+                    $result = sprintf('%s - %s %s', $this->customDate($fromDate, 'M'), $this->customDate($toDate, 'M'), $this->customDate($fromDate, 'Y'));
+                } else {
+                    $result = sprintf('%s - %s', $this->customDate($fromDate, $format), $this->customDate($toDate, $format));
+                }
+            } else {
+                $result = sprintf('%s - %s', $this->customDate($fromDate, $format), $this->customDate($toDate, $format));
+            }
+        }
+
+        return $result;
+    }
+
 	/**
 	*
 	*	filterisasi content tag

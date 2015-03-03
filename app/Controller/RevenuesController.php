@@ -4127,4 +4127,64 @@ class RevenuesController extends AppController {
             $this->redirect($this->referer());
         }
     }
+
+    public function list_kwitansi( $data_action = false ) {
+        // if( in_array('view_list_kwitansi', $this->allowModule) ) {
+            $this->loadModel('Invoice');
+            $this->loadModel('Revenue');
+            $invoice_conditions = array(
+                'Invoice.status'=> 1,
+            );
+
+            if( !empty($this->params['named']) ){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['date'])){
+                    $dateStr = urldecode($refine['date']);
+                    $date = explode('-', $dateStr);
+
+                    if( !empty($date) ) {
+                        $date[0] = urldecode($date[0]);
+                        $date[1] = urldecode($date[1]);
+                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                        $dateFrom = $this->MkCommon->getDate($date[0]);
+                        $dateTo = $this->MkCommon->getDate($date[1]);
+                        $invoice_conditions['DATE_FORMAT(Invoice.period_from, \'%Y-%m-%d\') >='] = $dateFrom;
+                        $invoice_conditions['DATE_FORMAT(Invoice.period_to, \'%Y-%m-%d\') <='] = $dateTo;
+                    }
+                    $this->request->data['Invoice']['date'] = $dateStr;
+                }
+            }
+
+            $this->paginate = array(
+                'conditions' => $invoice_conditions,
+                'order' => array(
+                    'Invoice.no_invoice' => 'ASC',
+                ),
+                'limit' => 20,
+            );
+            $invoices = $this->paginate('Invoice');
+
+            if( !empty($invoices) ) {
+                foreach ($invoices as $key => $invoice) {
+                    $invoice = $this->Revenue->RevenueDetail->getSumUnit($invoice, $invoice['Invoice']['id']);
+                    $invoice = $this->Invoice->getMergePayment($invoice, $invoice['Invoice']['id'] );
+                    $invoices[$key] = $invoice;
+                }
+            }
+
+            $this->set('sub_module_title', __('List Kwitansi'));
+            $this->set('active_menu', 'list_kwitansi');
+
+            if($data_action == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($data_action == 'excel'){
+                $this->layout = 'ajax';
+            }
+
+            $this->set(compact(
+                'invoices', 'data_action'
+            ));
+        // }
+    }
 }

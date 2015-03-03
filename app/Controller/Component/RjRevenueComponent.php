@@ -51,6 +51,9 @@ class RjRevenueComponent extends Component {
 				if( !empty($refine['Invoice']['to_date']) ) {
 					$refine_conditions['Invoice']['to'] = urlencode($refine['Invoice']['to_date']);
 				}
+				if( !empty($refine['Invoice']['date']) ) {
+					$refine_conditions['Invoice']['date'] = urlencode($refine['Invoice']['date']);
+				}
 				if( !empty($refine['InvoicePayment']['date_from']) ) {
 					$refine_conditions['InvoicePayment']['from'] = urlencode($refine['InvoicePayment']['date_from']);
 				}
