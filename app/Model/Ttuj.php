@@ -72,6 +72,12 @@ class Ttuj extends AppModel {
                 'message' => 'Biaya Uang Jalan belum disetting'
             ),
         ),
+        'date_sj' => array(
+            'getSJ' => array(
+                'rule' => array('getSJ'),
+                'message' => 'Tgl SJ diterima harap dipilih'
+            ),
+        ),
 	);
 
     var $belongsTo = array(
@@ -167,6 +173,14 @@ class Ttuj extends AppModel {
 
     function getDriver () {
         if( empty($this->data['Ttuj']['driver_name']) && empty($this->data['Ttuj']['driver_penganti_id']) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function getSJ () {
+        if( !empty($this->data['Ttuj']['getting_sj']) && empty($this->data['Ttuj']['date_sj']) ) {
             return false;
         } else {
             return true;

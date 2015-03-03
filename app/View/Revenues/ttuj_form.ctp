@@ -220,6 +220,9 @@
 				    </div>
 				</div>
 			</div>
+			<?php 
+					if( !empty($data_local) ) {
+			?>
 			<div class="col-sm-6">
 				<div class="box box-primary">
 				    <div class="box-header">
@@ -230,7 +233,7 @@
 				        <div class="checkbox">
 			                <label>
 			                    <?php 
-									echo $this->Form->checkbox('Revenue.getting_sj',array(
+									echo $this->Form->checkbox('getting_sj',array(
 										'label'=> false, 
 										'required' => false,
 										'id' => 'sj-handle',
@@ -238,9 +241,9 @@
 								?>
 			                </label>
 			            </div>
-						<div class="form-group sj-date <?php echo (!empty($this->request->data['Revenue']['getting_sj'])) ? '' : 'hide'; ?>">
+						<div class="form-group sj-date <?php echo (!empty($this->request->data['Ttuj']['getting_sj'])) ? '' : 'hide'; ?>">
 							<?php 
-									echo $this->Form->input('Revenue.date_sj',array(
+									echo $this->Form->input('date_sj',array(
 										'label'=> __('Tgl SJ diterima'), 
 										'class'=>'form-control custom-date',
 										'type' => 'text'
@@ -250,6 +253,9 @@
 				    </div>
 				</div>
 			</div>
+			<?php 
+					}
+			?>
 			<div class="col-sm-6">
 				<div class="box box-primary">
 				    <div class="box-header">

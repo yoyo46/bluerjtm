@@ -110,47 +110,67 @@
                         if( $active_menu == 'ttuj' ) {
                             echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.ttuj_date', __('Tgl TTUJ'), array(
                                 'escape' => false
-                            )));
+                            )), array(
+                                'class' => 'text-center',
+                            ));
                             echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_berangkat', __('Tgl Berangkat'), array(
                                 'escape' => false
-                            )));
+                            )), array(
+                                'class' => 'text-center',
+                            ));
                         }
 
                         switch ($active_menu) {
                             case 'truk_tiba':
                                 echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_berangkat', __('Tgl Berangkat'), array(
                                     'escape' => false
-                                )));
+                                )), array(
+                                    'class' => 'text-center',
+                                ));
                                 echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_tiba', __('Tgl Tiba'), array(
                                     'escape' => false
-                                )));
+                                )), array(
+                                    'class' => 'text-center',
+                                ));
                                 break;
 
                             case 'bongkaran':
                                 echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_tiba', __('Tgl Tiba'), array(
                                     'escape' => false
-                                )));
+                                )), array(
+                                    'class' => 'text-center',
+                                ));
                                 echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_bongkaran', __('Tgl Bongkaran'), array(
                                     'escape' => false
-                                )));
+                                )), array(
+                                    'class' => 'text-center',
+                                ));
                                 break;
 
                             case 'balik':
                                 echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_bongkaran', __('Tgl Bongkaran'), array(
                                     'escape' => false
-                                )));
+                                )), array(
+                                    'class' => 'text-center',
+                                ));
                                 echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_balik', __('Tgl Balik'), array(
                                     'escape' => false
-                                )));
+                                )), array(
+                                    'class' => 'text-center',
+                                ));
                                 break;
 
                             case 'pool':
                                 echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_balik', __('Tgl Balik'), array(
                                     'escape' => false
-                                )));
+                                )), array(
+                                    'class' => 'text-center',
+                                ));
                                 echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_pool', __('Tgl Sampai Pool'), array(
                                     'escape' => false
-                                )));
+                                )), array(
+                                    'class' => 'text-center',
+                                ));
                                 break;
                         }
 
@@ -166,6 +186,11 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.to_city_name', __('Tujuan'), array(
                             'escape' => false
                         )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.getting_sj', __('Tgl Terima SJ'), array(
+                            'escape' => false
+                        )), array(
+                            'class' => 'text-center',
+                        ));
                         echo $this->Html->tag('th', __('Status'));
 
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.created', __('Dibuat'), array(
@@ -185,30 +210,50 @@
                 <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
                 <?php 
                         if( $active_menu == 'ttuj' ) {
-                            echo $this->Html->tag('td', date('d M Y', strtotime($value['Ttuj']['ttuj_date'])));
-                            echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_berangkat'])));
+                            echo $this->Html->tag('td', date('d M Y', strtotime($value['Ttuj']['ttuj_date'])), array(
+                                'class' => 'text-center',
+                            ));
+                            echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_berangkat'])), array(
+                                'class' => 'text-center',
+                            ));
                         }
 
 
                         switch ($active_menu) {
                             case 'truk_tiba':
-                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_berangkat'])));
-                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_tiba'])));
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_berangkat'])), array(
+                                    'class' => 'text-center',
+                                ));
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_tiba'])), array(
+                                    'class' => 'text-center',
+                                ));
                                 break;
 
                             case 'bongkaran':
-                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_tiba'])));
-                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_bongkaran'])));
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_tiba'])), array(
+                                    'class' => 'text-center',
+                                ));
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_bongkaran'])), array(
+                                    'class' => 'text-center',
+                                ));
                                 break;
 
                             case 'balik':
-                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_bongkaran'])));
-                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_balik'])));
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_bongkaran'])), array(
+                                    'class' => 'text-center',
+                                ));
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_balik'])), array(
+                                    'class' => 'text-center',
+                                ));
                                 break;
 
                             case 'pool':
-                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_balik'])));
-                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_pool'])));
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_balik'])), array(
+                                    'class' => 'text-center',
+                                ));
+                                echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_pool'])), array(
+                                    'class' => 'text-center',
+                                ));
                                 break;
                         }
                 ?>
@@ -216,6 +261,15 @@
                 <td><?php echo $value['Ttuj']['customer_name'];?></td>
                 <td><?php echo $value['Ttuj']['from_city_name'];?></td>
                 <td><?php echo $value['Ttuj']['to_city_name'];?></td>
+                <td class="text-center">
+                    <?php 
+                            if(!empty($value['Ttuj']['getting_sj'])){
+                                echo $this->Common->customDate($value['Ttuj']['date_sj'], 'd/m/Y');
+                            } else {
+                                echo '-';
+                            }
+                    ?>
+                </td>
                 <?php 
                         if(!empty($value['Ttuj']['is_pool'])){
                             echo $this->Html->tag('td', '<span class="label label-success">Sampai Pool</span>');
