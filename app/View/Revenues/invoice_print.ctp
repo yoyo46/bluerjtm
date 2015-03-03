@@ -71,7 +71,12 @@ if($action_print == 'pdf'){
 					$colom = $this->Html->tag('td', $no++);
 					$colom .= $this->Html->tag('td', $nopol);
 					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
-					$colom .= $this->Html->tag('td', $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y'));
+
+					$date_revenue = '-';
+					if(!empty($value['Revenue']['date_revenue'])){
+						$date_revenue = $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y');
+					}
+					$colom .= $this->Html->tag('td', $date_revenue);
 					$colom .= $this->Html->tag('td', $qty, array(
 						'align' => 'center'
 					));
