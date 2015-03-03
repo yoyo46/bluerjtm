@@ -356,8 +356,10 @@ class RevenuesController extends AppController {
             $data['Ttuj']['back_lead_time'] = !empty($uangJalan['UangJalan']['back_lead_time'])?$uangJalan['UangJalan']['back_lead_time']:0;
             $data['Ttuj']['tgljam_berangkat'] = '';
 
-            if( !empty($uangJalan['UangJalan']['date_sj']) ) {
+            if( !empty($data['Ttuj']['getting_sj']) ) {
                 $data['Ttuj']['date_sj'] = $this->MkCommon->getDate($data['Ttuj']['date_sj']);
+            } else {
+                $data['Ttuj']['date_sj'] = NULL;
             }
 
             if( !empty($data['Ttuj']['tgl_berangkat']) ) {
