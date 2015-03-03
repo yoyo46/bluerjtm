@@ -431,7 +431,7 @@ var add_custom_field = function(){
                     var contentOptionCities = $('#data-cities-options select').html();
 
                     additionalField = '<td> \
-                        <select name="data[TtujTipeMotor][city_id][]" class="form-control"> \
+                        <select name="data[TtujTipeMotor][city_id][]" class="form-control city-retail-id"> \
                         ' + contentOptionCities +
                         '</select> \
                     </td>';
@@ -457,6 +457,10 @@ var add_custom_field = function(){
                         <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="ttuj"><i class="fa fa-times"></i> Hapus</a> \
                     </td> \
                 </tr>');
+
+                if( data_custom == 'retail' ) {
+                    $('#ttujDetail tbody tr:last-child .city-retail-id').val( $('#getTruck').val() );
+                }
 
                 delete_custom_field( $('#ttujDetail tbody tr:last-child .delete-custom-field') );
                 qtyMuatanPress( $('#ttujDetail tbody tr:last-child .qty-muatan') );
@@ -2034,6 +2038,8 @@ $(function() {
         var from_city_id = $('.from_city #getKotaTujuan').val();
         var nopol = $('#truckID').val();
         var customer_id = $('#getKotaAsal').val();
+        var lenCity = $('.city-retail-id').length;
+        var cityRetail = $('.city-retail-id');
 
         if( self.val() != '' ) {
             // $.ajax({
@@ -2042,6 +2048,12 @@ $(function() {
             //     type: 'POST',
             //     success: function(response, status) {
             $('#truckID,#truckBrowse').attr('disabled', false);
+            
+            for (i = 0; i < lenCity; i++) {
+                if( cityRetail[i].value == '' ) {
+                    cityRetail[i].value = self.val();
+                }
+            };
             
             if( nopol != '' ) {
                 $.ajax({

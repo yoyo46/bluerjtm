@@ -304,7 +304,7 @@
 
 												echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.city_id.',array(
 													'label'=> false, 
-													'class'=>'form-control',
+													'class'=>'form-control city-retail-id',
 													'required' => false,
 													'empty' => __('Pilih Tujuan --'),
 													'options' => $cities,
@@ -347,54 +347,6 @@
 								</tr>
 								<?php
 											}
-										} else {
-								?>
-								<tr class="removed">
-									<?php 
-											if( $data_action == 'retail' ) {
-												echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.city_id.0',array(
-													'label'=> false, 
-													'class'=>'form-control',
-													'required' => false,
-													'empty' => __('Tujuan --'),
-													'options' => $cities,
-												)));
-											}
-
-											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.tipe_motor_id.0',array(
-												'label'=> false, 
-												'class'=>'form-control tipe_motor_id',
-												'required' => false,
-												'empty' => __('Pilih Tipe Motor --'),
-												'options' => $tipeMotors,
-												'rel' => 0,
-											)));
-
-											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.color_motor_id.0',array(
-												'label'=> false, 
-												'class'=>'form-control color_motor_id',
-												'required' => false,
-												'empty' => __('Pilih Warna Motor --'),
-												'options' => $colors,
-												'rel' => 0,
-											)));
-
-											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.qty.0',array(
-													'label'=> false, 
-													'class'=>'form-control qty-muatan',
-													'required' => false,
-													'type' => 'text',
-													'rel' => 0,
-												)));
-
-											echo $this->Html->tag('td', $this->Html->link('<i class="fa fa-times"></i> '.__('Hapus'), 'javascript:', array(
-												'class' => 'delete-custom-field btn btn-danger btn-xs',
-												'action_type' => 'ttuj',
-												'escape' => false
-											)));
-									?>
-								</tr>
-								<?php 
 										}
 								?>
 							</tbody>
