@@ -3825,12 +3825,12 @@ class RevenuesController extends AppController {
                 if(!empty($refine['from'])){
                     $from = urldecode(rawurldecode($refine['from']));
                     $this->request->data['InvoicePayment']['date_from'] = $from;
-                    $conditions['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') >= '] = $from;
+                    $conditions['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') >= '] = $this->MkCommon->getDate($from);
                 }
                 if(!empty($refine['to'])){
                     $to = urldecode(rawurldecode($refine['to']));
                     $this->request->data['InvoicePayment']['date_to'] = $to;
-                    $conditions['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') <= '] = $to;
+                    $conditions['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') <= '] = $this->MkCommon->getDate($to);
                 }
                 if(!empty($refine['nodoc'])){
                     $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));

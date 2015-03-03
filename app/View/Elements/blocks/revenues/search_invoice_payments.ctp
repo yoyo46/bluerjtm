@@ -70,7 +70,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'customers', 
+                                'action' => 'invoice_payments', 
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',
