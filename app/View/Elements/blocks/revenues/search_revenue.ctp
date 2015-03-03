@@ -29,6 +29,52 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php
+                        echo $this->Form->label('from_date', __('Tanggal'), array(
+                            'class' => 'control-label'
+                        ));
+                    ?>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <?php 
+                                    echo $this->Form->input('from_date',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'id' => 'fromdatepicker',
+                                        'required' => false,
+                                        'placeholder' => __('Dari')
+                                    ));
+                            ?>
+                        </div>
+                        <div class="col-xs-6">
+                            <?php 
+                                    echo $this->Form->input('to_date',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'id' => 'todatepicker',
+                                        'required' => false,
+                                        'placeholder' => __('Sampai')
+                                    ));
+                            ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('transaction_status',array(
+                                'label'=> __('Status Transaksi'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Status Transaksi'),
+                                'options' => array(
+                                    'posting' => 'Posting',
+                                    'unposting' => 'Unposting',
+                                    'invoiced' => 'Berhasil di Bayar',
+                                )
+                            ));
+                    ?>
+                </div>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
@@ -53,6 +99,27 @@
                                 'class'=>'form-control',
                                 'required' => false,
                                 'placeholder' => __('No. TTUJ')
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('customer_id',array(
+                                'label'=> __('Customer'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Customer'),
+                                'options' => $customers
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('RevenueDetail.no_reference',array(
+                                'label'=> __('No. Reference'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('No. Reference')
                             ));
                     ?>
                 </div>

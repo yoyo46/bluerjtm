@@ -2471,6 +2471,8 @@ class RevenuesController extends AppController {
             $this->set('active_menu', 'revenues');
             $this->set('sub_module_title', __('Revenue'));
 
+            $from_date = '';
+            $to_date = '';
             $conditions = array();
             if(!empty($this->params['named'])){
                 $refine = $this->params['named'];
@@ -2485,6 +2487,48 @@ class RevenuesController extends AppController {
                     $this->request->data['Ttuj']['no_ttuj'] = $no_ttuj;
                     $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
                 }
+                if(!empty($refine['customer'])){
+                    $customer = urldecode($refine['customer']);
+                    $this->request->data['Revenue']['customer_id'] = $customer;
+                    $conditions['Revenue.customer_id'] = $customer;
+                }
+                if(!empty($refine['no_ref'])){
+                    $no_ref = urldecode($refine['no_ref']);
+                    $this->request->data['RevenueDetail']['no_reference'] = $no_ref;
+                    $no_ref = $this->Revenue->RevenueDetail->getData('list', array(
+                        'conditions' => array(
+                            'RevenueDetail.no_reference LIKE' => '%'.$no_ref.'%'
+                        )
+                    ));
+                    
+                    if(!empty($no_ref)){
+                        $conditions['OR']['Revenue.id'] = $no_ref;
+                    }
+                }
+                if(!empty($refine['status'])){
+                    $status = urldecode($refine['status']);
+                    $this->request->data['Revenue']['transaction_status'] = $status;
+                    $conditions['Revenue.transaction_status'] = $status;
+                }
+                if(!empty($refine['from'])){
+                    $raw = strtotime(urldecode(rawurldecode($refine['from'])));
+                    $data = date('Y-m-d', $raw);
+                    $from_date = $data;
+                    $this->request->data['Revenue']['from_date'] = date('m/d/Y', $raw);
+                }
+                if(!empty($refine['to'])){
+                    $raw = strtotime(urldecode(rawurldecode($refine['to'])));
+                    $data = date('Y-m-d', $raw);
+                    $to_date = $data;
+                    $this->request->data['Revenue']['to_date'] = date('m/d/Y', $raw);
+                }
+            }
+
+            if(!empty($from_date)){
+                $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') >= '] = $from_date;
+            }
+            if(!empty($to_date)){
+                $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') <= '] = $to_date;
             }
 
             $this->paginate = $this->Revenue->getData('paginate', array(
@@ -2501,6 +2545,17 @@ class RevenuesController extends AppController {
                 }
             }
             $this->set('revenues', $revenues); 
+
+            $this->loadModel('Customer');
+            $customers = $this->Customer->getData('list', array(
+                'conditions' => array(
+                    'Customer.status' => 1
+                ),
+                'fields' => array(
+                    'Customer.id', 'Customer.customer_name'
+                ),
+            ));
+            $this->set('customers', $customers);
         } else {
             $this->redirect($this->referer());
         }
