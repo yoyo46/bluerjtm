@@ -70,6 +70,9 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Revenue.no_doc', __('No. Dokumen'), array(
                             'escape' => false
                         )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Revenue.date_revenue', __('Tanggal Revenue'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.no_ttuj', __('No. TTUJ'), array(
                             'escape' => false
                         )));
@@ -105,8 +108,9 @@
                 </td>
                 <td><?php echo str_pad($value['Revenue']['id'], 5, '0', STR_PAD_LEFT);?></td>
                 <td><?php echo $value['Revenue']['no_doc'];?></td>
+                <td><?php echo $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y');?></td>
                 <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
-                <td><?php echo $value['Customer']['name'];?></td>
+                <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';?></td>
                 <td>
                     <?php 
                         $class_status = 'label label-warning';
@@ -152,7 +156,7 @@
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '6'
+                            'colspan' => '9'
                         )));
                     }
             ?>

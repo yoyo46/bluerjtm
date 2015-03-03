@@ -2495,40 +2495,34 @@ class RevenuesController extends AppController {
                 if(!empty($refine['no_ref'])){
                     $no_ref = urldecode($refine['no_ref']);
                     $this->request->data['RevenueDetail']['no_reference'] = $no_ref;
-                    $no_ref = $this->Revenue->RevenueDetail->getData('list', array(
-                        'conditions' => array(
-                            'RevenueDetail.no_reference LIKE' => '%'.$no_ref.'%'
-                        )
-                    ));
-                    
-                    if(!empty($no_ref)){
-                        $conditions['OR']['Revenue.id'] = $no_ref;
+
+                    if( is_numeric($no_ref) ) {
+                        $no_ref = intval($no_ref);
                     }
+
+                    $conditions['Revenue.id LIKE'] = '%'.$no_ref.'%';
                 }
                 if(!empty($refine['status'])){
                     $status = urldecode($refine['status']);
                     $this->request->data['Revenue']['transaction_status'] = $status;
                     $conditions['Revenue.transaction_status'] = $status;
                 }
-                if(!empty($refine['from'])){
-                    $raw = strtotime(urldecode(rawurldecode($refine['from'])));
-                    $data = date('Y-m-d', $raw);
-                    $from_date = $data;
-                    $this->request->data['Revenue']['from_date'] = date('m/d/Y', $raw);
-                }
-                if(!empty($refine['to'])){
-                    $raw = strtotime(urldecode(rawurldecode($refine['to'])));
-                    $data = date('Y-m-d', $raw);
-                    $to_date = $data;
-                    $this->request->data['Revenue']['to_date'] = date('m/d/Y', $raw);
-                }
-            }
 
-            if(!empty($from_date)){
-                $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') >= '] = $from_date;
-            }
-            if(!empty($to_date)){
-                $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') <= '] = $to_date;
+                if(!empty($refine['date'])){
+                    $dateStr = urldecode($refine['date']);
+                    $date = explode('-', $dateStr);
+
+                    if( !empty($date) ) {
+                        $date[0] = urldecode($date[0]);
+                        $date[1] = urldecode($date[1]);
+                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                        $dateFrom = $this->MkCommon->getDate($date[0]);
+                        $dateTo = $this->MkCommon->getDate($date[1]);
+                        $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') >='] = $dateFrom;
+                        $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') <='] = $dateTo;
+                    }
+                    $this->request->data['Revenue']['date'] = $dateStr;
+                }
             }
 
             $this->paginate = $this->Revenue->getData('paginate', array(

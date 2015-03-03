@@ -54,6 +54,9 @@ class RjRevenueComponent extends Component {
 				if( !empty($refine['Revenue']['transaction_status']) ) {
 					$refine_conditions['Revenue']['status'] = urlencode($refine['Revenue']['transaction_status']);
 				}
+				if( !empty($refine['Revenue']['date']) ) {
+					$refine_conditions['Revenue']['date'] = urlencode($refine['Revenue']['date']);
+				}
 				if( !empty($refine['RevenueDetail']['no_reference']) ) {
 					$refine_conditions['RevenueDetail']['no_ref'] = urlencode($refine['RevenueDetail']['no_reference']);
 				}
