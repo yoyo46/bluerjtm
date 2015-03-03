@@ -115,8 +115,14 @@
                                                 }
                                                 
                                                 if( !empty($data['icon']) ) {
-                                                    $icon = $this->Html->image('/img/accident.png', array(
-                                                        'class' => 'ico-calendar'
+                                                    $icon = $this->Common->photo_thumbnail(array(
+                                                        'save_path' => Configure::read('__Site.truck_photo_folder'), 
+                                                        'src' => $data['icon'], 
+                                                        'thumb'=>true,
+                                                        'size' => 's',
+                                                        'thumb' => true,
+                                                    ), array(
+                                                        'class' => 'ico-calendar',
                                                     ));
                                                 } else {
                                                     $icon = '&nbsp;';
@@ -131,8 +137,14 @@
                                             }
 
                                             if( !empty($data['icon']) ) {
-                                                $icon = $this->Html->image($data['icon'], array(
-                                                    'class' => 'ico-calendar'
+                                                $icon = $this->Common->photo_thumbnail(array(
+                                                    'save_path' => Configure::read('__Site.truck_photo_folder'), 
+                                                    'src' => $data['icon'], 
+                                                    'thumb'=>true,
+                                                    'size' => 's',
+                                                    'thumb' => true,
+                                                ), array(
+                                                    'class' => 'ico-calendar',
                                                 ));
                                             } else {
                                                 $icon = $this->Html->tag('span', '&nbsp;', array(

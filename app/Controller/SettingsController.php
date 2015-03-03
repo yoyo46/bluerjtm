@@ -4584,6 +4584,48 @@ class SettingsController extends AppController {
                     $data['Setting']['logo'] = '';
                 }
 
+                if(!empty($data['Setting']['img_berangkat']['name']) && is_array($data['Setting']['img_berangkat'])){
+                    $temp_berangkat = $data['Setting']['img_berangkat'];
+                    $data['Setting']['icon_berangkat'] = $data['Setting']['img_berangkat']['name'];
+                } else if( empty($data_local) ){
+                    $data['Setting']['icon_berangkat'] = '';
+                }
+
+                if(!empty($data['Setting']['img_tiba']['name']) && is_array($data['Setting']['img_tiba'])){
+                    $temp_tiba = $data['Setting']['img_tiba'];
+                    $data['Setting']['icon_tiba'] = $data['Setting']['img_tiba']['name'];
+                } else if( empty($data_local) ){
+                    $data['Setting']['icon_tiba'] = '';
+                }
+
+                if(!empty($data['Setting']['img_bongkaran']['name']) && is_array($data['Setting']['img_bongkaran'])){
+                    $temp_bongkaran = $data['Setting']['img_bongkaran'];
+                    $data['Setting']['icon_bongkaran'] = $data['Setting']['img_bongkaran']['name'];
+                } else if( empty($data_local) ){
+                    $data['Setting']['icon_bongkaran'] = '';
+                }
+
+                if(!empty($data['Setting']['img_balik']['name']) && is_array($data['Setting']['img_balik'])){
+                    $temp_balik = $data['Setting']['img_balik'];
+                    $data['Setting']['icon_balik'] = $data['Setting']['img_balik']['name'];
+                } else if( empty($data_local) ){
+                    $data['Setting']['icon_balik'] = '';
+                }
+
+                if(!empty($data['Setting']['img_pool']['name']) && is_array($data['Setting']['img_pool'])){
+                    $temp_pool = $data['Setting']['img_pool'];
+                    $data['Setting']['icon_pool'] = $data['Setting']['img_pool']['name'];
+                } else if( empty($data_local) ){
+                    $data['Setting']['icon_pool'] = '';
+                }
+
+                if(!empty($data['Setting']['img_laka']['name']) && is_array($data['Setting']['img_laka'])){
+                    $temp_laka = $data['Setting']['img_laka'];
+                    $data['Setting']['icon_laka'] = $data['Setting']['img_laka']['name'];
+                } else if( empty($data_local) ){
+                    $data['Setting']['icon_laka'] = '';
+                }
+
                 if( !empty($data_local) ){
                     $this->Setting->id = $data_local['Setting']['id'];
                 }else{
@@ -4609,6 +4651,66 @@ class SettingsController extends AppController {
                                 $this->MkCommon->setCustomFlash($uploaded['message'], 'error');
                             } else {
                                 $data['Setting']['logo'] = $uploaded['imageName'];
+                            }
+                        }
+                    }
+                    if(!empty($temp_berangkat) && is_array($temp_berangkat)){
+                        $uploaded = $this->RjImage->upload($temp_berangkat, '/'.Configure::read('__Site.truck_photo_folder').'/', String::uuid());
+                        if(!empty($uploaded)) {
+                            if($uploaded['error']) {
+                                $this->MkCommon->setCustomFlash($uploaded['message'], 'error');
+                            } else {
+                                $data['Setting']['icon_berangkat'] = $uploaded['imageName'];
+                            }
+                        }
+                    }
+                    if(!empty($temp_tiba) && is_array($temp_tiba)){
+                        $uploaded = $this->RjImage->upload($temp_tiba, '/'.Configure::read('__Site.truck_photo_folder').'/', String::uuid());
+                        if(!empty($uploaded)) {
+                            if($uploaded['error']) {
+                                $this->MkCommon->setCustomFlash($uploaded['message'], 'error');
+                            } else {
+                                $data['Setting']['icon_tiba'] = $uploaded['imageName'];
+                            }
+                        }
+                    }
+                    if(!empty($temp_bongkaran) && is_array($temp_bongkaran)){
+                        $uploaded = $this->RjImage->upload($temp_bongkaran, '/'.Configure::read('__Site.truck_photo_folder').'/', String::uuid());
+                        if(!empty($uploaded)) {
+                            if($uploaded['error']) {
+                                $this->MkCommon->setCustomFlash($uploaded['message'], 'error');
+                            } else {
+                                $data['Setting']['icon_bongkaran'] = $uploaded['imageName'];
+                            }
+                        }
+                    }
+                    if(!empty($temp_balik) && is_array($temp_balik)){
+                        $uploaded = $this->RjImage->upload($temp_balik, '/'.Configure::read('__Site.truck_photo_folder').'/', String::uuid());
+                        if(!empty($uploaded)) {
+                            if($uploaded['error']) {
+                                $this->MkCommon->setCustomFlash($uploaded['message'], 'error');
+                            } else {
+                                $data['Setting']['icon_balik'] = $uploaded['imageName'];
+                            }
+                        }
+                    }
+                    if(!empty($temp_pool) && is_array($temp_pool)){
+                        $uploaded = $this->RjImage->upload($temp_pool, '/'.Configure::read('__Site.truck_photo_folder').'/', String::uuid());
+                        if(!empty($uploaded)) {
+                            if($uploaded['error']) {
+                                $this->MkCommon->setCustomFlash($uploaded['message'], 'error');
+                            } else {
+                                $data['Setting']['icon_pool'] = $uploaded['imageName'];
+                            }
+                        }
+                    }
+                    if(!empty($temp_laka) && is_array($temp_laka)){
+                        $uploaded = $this->RjImage->upload($temp_laka, '/'.Configure::read('__Site.truck_photo_folder').'/', String::uuid());
+                        if(!empty($uploaded)) {
+                            if($uploaded['error']) {
+                                $this->MkCommon->setCustomFlash($uploaded['message'], 'error');
+                            } else {
+                                $data['Setting']['icon_laka'] = $uploaded['imageName'];
                             }
                         }
                     }

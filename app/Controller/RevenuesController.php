@@ -2017,6 +2017,7 @@ class RevenuesController extends AppController {
             $this->loadModel('TtujTipeMotor');
             $this->loadModel('CalendarEvent');
             $this->loadModel('Laka');
+            $this->loadModel('Setting');
             $this->set('active_menu', 'monitoring_truck');
             $this->set('sub_module_title', __('Monitoring Truk'));
 
@@ -2065,6 +2066,7 @@ class RevenuesController extends AppController {
             $conditionTrucks = array(
                 'Truck.status' => 1
             );
+            $setting = $this->Setting->find('first');
 
             if( !empty($this->params['named']) ) {
                 $refine = $this->params['named'];
@@ -2272,7 +2274,7 @@ class RevenuesController extends AppController {
 
                     if( !empty($lakaDate) && $this->MkCommon->customDate($lakaDate, 'Y-m') == $currMonth && $this->MkCommon->customDate($lakaDate, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($lakaDate, 'd'), $inArr) ) {
                         $dataTtujCalendar['title'] = __('LAKA');
-                        $dataTtujCalendar['icon'] = '/img/accident.png';
+                        $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_laka'])?$setting['Setting']['icon_laka']:'';
                         $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                         $dataTtujCalendar['color'] = '#dd545f';
                         $dataTtuj[$nopol][$this->MkCommon->customDate($lakaDate, 'd')][] = $dataTtujCalendar;
@@ -2281,7 +2283,7 @@ class RevenuesController extends AppController {
                     }
                     if( !empty($tglPool) && $this->MkCommon->customDate($tglPool, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglPool, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglPool, 'd'), $inArr) ) {
                         $dataTtujCalendar['title'] = __('Sampai Pool');
-                        $dataTtujCalendar['icon'] = '/img/pool.png';
+                        $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_pool'])?$setting['Setting']['icon_pool']:'';
                         $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                         $dataTtujCalendar['color'] = '#00a65a';
                         $dataTtuj[$nopol][$this->MkCommon->customDate($tglPool, 'd')][] = $dataTtujCalendar;
@@ -2300,7 +2302,7 @@ class RevenuesController extends AppController {
                     }
                     if( !empty($tglBongkaran) && $this->MkCommon->customDate($tglBongkaran, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglBongkaran, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglBongkaran, 'd'), $inArr) ) {
                         $dataTtujCalendar['title'] = __('Bongkaran');
-                        $dataTtujCalendar['icon'] = '/img/bongkaran.png';
+                        $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_bongkaran'])?$setting['Setting']['icon_bongkaran']:'';
                         $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                         $dataTtujCalendar['color'] = '#d3e3d4';
                         $dataTtuj[$nopol][$this->MkCommon->customDate($tglBongkaran, 'd')][] = $dataTtujCalendar;
@@ -2309,7 +2311,7 @@ class RevenuesController extends AppController {
                     }
                     if( !empty($tglTiba) && $this->MkCommon->customDate($tglTiba, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglTiba, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglTiba, 'd'), $inArr) ) {
                         $dataTtujCalendar['title'] = __('Tiba');
-                        $dataTtujCalendar['icon'] = '/img/arrive.png';
+                        $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_tiba'])?$setting['Setting']['icon_tiba']:'';
                         $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                         $dataTtujCalendar['color'] = '#f39c12';
                         $dataTtuj[$nopol][$this->MkCommon->customDate($tglTiba, 'd')][] = $dataTtujCalendar;
@@ -2346,23 +2348,23 @@ class RevenuesController extends AppController {
 
                                 if( !empty($lakaDate) && $this->MkCommon->customDate($lakaDate, 'Y-m-d') <= $date ) {
                                     $dataTtujCalendar['color'] = '#dd545f';
-                                    $icon = '/img/accident.png';
+                                    $icon = !empty($setting['Setting']['icon_laka'])?$setting['Setting']['icon_laka']:'';
                                 } else if( !empty($tglPool) && $this->MkCommon->customDate($tglPool, 'Y-m-d') <= $date ) {
                                     $dataTtujCalendar['color'] = '#00a65a';
-                                    $icon = '/img/pool.png';
+                                    $icon = !empty($setting['Setting']['icon_pool'])?$setting['Setting']['icon_pool']:'';
                                     $dataRit[$nopol]['rit'][$currDay][] = $tglPool;
                                 } else if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m-d') <= $date ) {
                                     $dataTtujCalendar['color'] = '#3d9970';
-                                    $icon = '/img/on-the-way.gif';
+                                    $icon = !empty($setting['Setting']['icon_balik'])?$setting['Setting']['icon_balik']:'';
                                 } else if( !empty($tglBongkaran) && $this->MkCommon->customDate($tglBongkaran, 'Y-m-d') <= $date ) {
                                     $dataTtujCalendar['color'] = '#d3e3d4';
-                                    $icon = '/img/bongkaran.png';
+                                    $icon = !empty($setting['Setting']['icon_bongkaran'])?$setting['Setting']['icon_bongkaran']:'';
                                 } else if( !empty($tglTiba) && $this->MkCommon->customDate($tglTiba, 'Y-m-d') <= $date ) {
                                     $dataTtujCalendar['color'] = '#f39c12';
-                                    $icon = '/img/arrive.png';
+                                    $icon = !empty($setting['Setting']['icon_tiba'])?$setting['Setting']['icon_tiba']:'';
                                 } else {
                                     $dataTtujCalendar['color'] = '#4389fe';
-                                    $icon = '/img/truck.png';
+                                    $icon = !empty($setting['Setting']['icon_berangkat'])?$setting['Setting']['icon_berangkat']:'';
                                 }
 
                                 if( $differentTtuj ) {

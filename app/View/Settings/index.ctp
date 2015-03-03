@@ -129,6 +129,7 @@
 		    </div>
 		</div>
 	</div>
+	<div class="clear"></div>
 	<div class="col-sm-6">
 		<div class="box box-primary">
 		    <div class="box-header">
@@ -152,6 +153,165 @@
 								'class'=>'form-control',
 								'required' => false,
 								'placeholder' => __('Nama Billing')
+							));
+					?>
+		        </div>
+		    </div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="box box-primary">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Icon Monitoring'); ?></h3>
+		    </div>
+		    <div class="box-body">
+		    	<?php
+		    			if(!empty($this->request->data['Setting']['icon_berangkat']) && !is_array($this->request->data['Setting']['icon_berangkat'])){
+		    				$photo = $this->Common->photo_thumbnail(array(
+								'save_path' => Configure::read('__Site.truck_photo_folder'), 
+								'src' => $this->request->data['Setting']['icon_berangkat'], 
+								'thumb'=>true,
+								'size' => 's',
+								'thumb' => true,
+							));
+
+							echo $this->Html->tag('div', $photo, array(
+								'class' => 'form-group',
+							));
+		    			}
+		    	?>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('img_berangkat',array(
+								'type' => 'file',
+								'label'=> __('Icon Truk Berangkat'), 
+								'class'=>'form-control',
+								'required' => false,
+							));
+					?>
+		        </div>
+		    	<?php
+		    			if(!empty($this->request->data['Setting']['icon_tiba']) && !is_array($this->request->data['Setting']['icon_tiba'])){
+		    				$photo = $this->Common->photo_thumbnail(array(
+								'save_path' => Configure::read('__Site.truck_photo_folder'), 
+								'src' => $this->request->data['Setting']['icon_tiba'], 
+								'thumb'=>true,
+								'size' => 's',
+								'thumb' => true,
+							));
+
+							echo $this->Html->tag('div', $photo, array(
+								'class' => 'form-group',
+							));
+		    			}
+		    	?>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('img_tiba',array(
+								'type' => 'file',
+								'label'=> __('Icon Truk Tiba'), 
+								'class'=>'form-control',
+								'required' => false,
+							));
+					?>
+		        </div>
+		    	<?php
+		    			if(!empty($this->request->data['Setting']['icon_bongkaran']) && !is_array($this->request->data['Setting']['icon_bongkaran'])){
+		    				$photo = $this->Common->photo_thumbnail(array(
+								'save_path' => Configure::read('__Site.truck_photo_folder'), 
+								'src' => $this->request->data['Setting']['icon_bongkaran'], 
+								'thumb'=>true,
+								'size' => 's',
+								'thumb' => true,
+							));
+
+							echo $this->Html->tag('div', $photo, array(
+								'class' => 'form-group',
+							));
+		    			}
+		    	?>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('img_bongkaran',array(
+								'type' => 'file',
+								'label'=> __('Icon Truk Bongkaran'), 
+								'class'=>'form-control',
+								'required' => false,
+							));
+					?>
+		        </div>
+		    	<?php
+		    			if(!empty($this->request->data['Setting']['icon_balik']) && !is_array($this->request->data['Setting']['icon_balik'])){
+		    				$photo = $this->Common->photo_thumbnail(array(
+								'save_path' => Configure::read('__Site.truck_photo_folder'), 
+								'src' => $this->request->data['Setting']['icon_balik'], 
+								'thumb'=>true,
+								'size' => 's',
+								'thumb' => true,
+							));
+
+							echo $this->Html->tag('div', $photo, array(
+								'class' => 'form-group',
+							));
+		    			}
+		    	?>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('img_balik',array(
+								'type' => 'file',
+								'label'=> __('Icon Truk Balik'), 
+								'class'=>'form-control',
+								'required' => false,
+							));
+					?>
+		        </div>
+		    	<?php
+		    			if(!empty($this->request->data['Setting']['icon_pool']) && !is_array($this->request->data['Setting']['icon_pool'])){
+		    				$photo = $this->Common->photo_thumbnail(array(
+								'save_path' => Configure::read('__Site.truck_photo_folder'), 
+								'src' => $this->request->data['Setting']['icon_pool'], 
+								'thumb'=>true,
+								'size' => 's',
+								'thumb' => true,
+							));
+
+							echo $this->Html->tag('div', $photo, array(
+								'class' => 'form-group',
+							));
+		    			}
+		    	?>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('img_pool',array(
+								'type' => 'file',
+								'label'=> __('Icon Truk Pool'), 
+								'class'=>'form-control',
+								'required' => false,
+							));
+					?>
+		        </div>
+		    	<?php
+		    			if(!empty($this->request->data['Setting']['icon_laka']) && !is_array($this->request->data['Setting']['icon_laka'])){
+		    				$photo = $this->Common->photo_thumbnail(array(
+								'save_path' => Configure::read('__Site.truck_photo_folder'), 
+								'src' => $this->request->data['Setting']['icon_laka'], 
+								'thumb'=>true,
+								'size' => 's',
+								'thumb' => true,
+							));
+
+							echo $this->Html->tag('div', $photo, array(
+								'class' => 'form-group',
+							));
+		    			}
+		    	?>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('img_laka',array(
+								'type' => 'file',
+								'label'=> __('Icon Truk LAKA'), 
+								'class'=>'form-control',
+								'required' => false,
 							));
 					?>
 		        </div>
