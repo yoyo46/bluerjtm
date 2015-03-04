@@ -3957,12 +3957,15 @@ class RevenuesController extends AppController {
                             ));
                             $this->Invoice->InvoicePaymentDetail->save();
 
+                            $default_conditions_detail = array(
+                                'InvoicePaymentDetail.invoice_id' => $invoice_id,
+                                'InvoicePaymentDetail.status' => 1
+                            );
+
                             $invoice_has_paid = $this->Invoice->InvoicePaymentDetail->getData('first', array(
-                                'conditions' => array(
-                                    'InvoicePaymentDetail.invoice_id' => $invoice_id,
-                                    'InvoicePaymentDetail.status' => 1
-                                ),
+                                'conditions' => $default_conditions_detail,
                                 'fields' => array(
+                                    '*',
                                     'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid'
                                 ),
                                 'contain' => array(
@@ -3971,7 +3974,7 @@ class RevenuesController extends AppController {
                             ));
                             $invoice_paid = !empty($invoice_has_paid[0]['invoice_has_paid'])?$invoice_has_paid[0]['invoice_has_paid']:0;
                             $invoice_total = !empty($invoice_has_paid['Invoice']['total'])?$invoice_has_paid['Invoice']['total']:0;
-
+                            
                             if($invoice_paid > $invoice_total){
                                 $this->Invoice->id = $invoice_id;
                                 $this->Invoice->set(array(
@@ -4106,7 +4109,8 @@ class RevenuesController extends AppController {
                             if($total < $invoice_has_paid['Invoice']['total']){
                                 $this->Invoice->id = $value['invoice_id'];
                                 $this->Invoice->set(array(
-                                    'complete_paid' => 0
+                                    'complete_paid' => 0,
+                                    'paid' => 0,
                                 ));
                                 $this->Invoice->save();
                             }

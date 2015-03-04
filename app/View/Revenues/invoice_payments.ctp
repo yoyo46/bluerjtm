@@ -78,21 +78,21 @@
                             ), array(
                                 'class' => 'btn btn-info btn-xs'
                             ));
-                            echo $this->Html->link('Edit', array(
-                                'controller' => 'revenues',
-                                'action' => 'detail_invoice_payment',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-primary btn-xs'
-                            ));
-                            
-                            // echo $this->Html->link('Hapus', array(
+                            // echo $this->Html->link('Edit', array(
                             //     'controller' => 'revenues',
-                            //     'action' => 'invoice_payment_delete',
+                            //     'action' => 'detail_invoice_payment',
                             //     $id
                             // ), array(
-                            //     'class' => 'btn btn-danger btn-xs'
-                            // ), __('Apakah Anda yakin ingin menghapus pembayaran invoice ini?'));
+                            //     'class' => 'btn btn-primary btn-xs'
+                            // ));
+                            
+                            echo $this->Html->link('Hapus', array(
+                                'controller' => 'revenues',
+                                'action' => 'invoice_payment_delete',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-danger btn-xs'
+                            ), __('Apakah Anda yakin ingin menghapus pembayaran invoice ini?'));
                     ?>
                 </td>
             </tr>
