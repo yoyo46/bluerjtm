@@ -41,10 +41,10 @@
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('transaction_status',array(
-                                'label'=> __('Status Transaksi'),
+                                'label'=> __('Status Revenue'),
                                 'class'=>'form-control',
                                 'required' => false,
-                                'empty' => __('Pilih Status Transaksi'),
+                                'empty' => __('Pilih Status Revenue'),
                                 'options' => array(
                                     'posting' => 'Posting',
                                     'unposting' => 'Unposting',
