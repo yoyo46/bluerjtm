@@ -127,15 +127,21 @@ class Customer extends AppModel {
         return $result;
     }
 
-    function getMerge($data, $id){
+    function getMerge( $data, $id, $with_contain = false ){
         if(empty($data['Customer'])){
+            $contain = array(
+                'CustomerType',
+            );
+
+            if( $with_contain ) {
+                $contain[] = 'Bank';
+            }
+
             $data_merge = $this->find('first', array(
                 'conditions' => array(
                     'Customer.id' => $id
                 ),
-                'contain' => array(
-                    'CustomerType',
-                ),
+                'contain' => $contain,
             ));
 
             if(!empty($data_merge)){

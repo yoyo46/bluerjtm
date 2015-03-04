@@ -3597,7 +3597,7 @@ class RevenuesController extends AppController {
         ));
 
         if(!empty($invoice)){
-            $invoice = $this->Customer->getMerge($invoice, $invoice['Invoice']['customer_id']);
+            $invoice = $this->Customer->getMerge($invoice, $invoice['Invoice']['customer_id'], true);
 
             if( $data_print == 'header' ) {
                 $this->loadModel('Setting');

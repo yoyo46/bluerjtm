@@ -24,10 +24,15 @@ if($action_print == 'pdf'){
 	$totalUnit = sprintf(__(': JASA ANGKUT SEPEDA MOTOR<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $invoice['RevenueDetail']['qty_unit'], $this->Common->customDate($invoice['Invoice']['period_from'], 'd/m/Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd/m/Y'));
 	$dateLocation = sprintf('%s, %s', $this->Common->getDataSetting( $setting, 'pusat' ), date('d F Y'));
 	$billing_name = $this->Common->getDataSetting( $setting, 'billing_name' );
-	$note = sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Invoice']['due_invoice']);
+	// $note = sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Invoice']['due_invoice']);
+	$note = sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Customer']['term_of_payment']);
+	$bank_name = !empty($invoice['Bank']['name'])?$invoice['Bank']['name']:false;
+	$bank_branch = !empty($invoice['Bank']['branch'])?$invoice['Bank']['branch']:false;
+	$account_number = !empty($invoice['Bank']['account_number'])?$invoice['Bank']['account_number']:false;
+	$account_name = !empty($invoice['Bank']['account_name'])?$invoice['Bank']['account_name']:false;
 
-	if( !empty($setting['Setting']['bank_name']) ) {
-		$bank_name = $this->Html->tag('p', sprintf(__('Pembayaran mohon ditransfer ke:<br><br>&nbsp;<b>%s</b><br>%s<br>&nbsp;A/C <b>%s</b><br>&nbsp;A/N <b>%s</b>'), $setting['Setting']['bank_name'], $setting['Setting']['bank_branch'], $setting['Setting']['bank_account_number'], $setting['Setting']['bank_account_name']));
+	if( !empty($invoice['Bank']['name']) ) {
+		$bank_name = $this->Html->tag('p', sprintf(__('Pembayaran mohon ditransfer ke:<br><br>&nbsp;<b>%s</b><br>%s<br>&nbsp;A/C <b>%s</b><br>&nbsp;A/N <b>%s</b>'), $invoice['Bank']['name'], $bank_branch, $account_number, $account_name));
 	} else {
 		$bank_name = $this->Html->tag('p', sprintf(__('Klik %s untuk Pengaturan Bank'), $this->Html->link(__('Disini'), array(
 			'controller' => "settings",
@@ -227,8 +232,13 @@ readfile($path.'/'.$filename);
 							<tr valign="middle">
 								<td valign="middle" align="center">
 									<?php 
-											if( !empty($setting['Setting']['bank_name']) ) {
-												echo $this->Html->tag('p', sprintf(__('Pembayaran mohon ditransfer ke:<br><br>&nbsp;<b>%s</b><br>%s<br>&nbsp;A/C <b>%s</b><br>&nbsp;A/N <b>%s</b>'), $setting['Setting']['bank_name'], $setting['Setting']['bank_branch'], $setting['Setting']['bank_account_number'], $setting['Setting']['bank_account_name']), array(
+											$bank_name = !empty($invoice['Bank']['name'])?$invoice['Bank']['name']:false;
+											$bank_branch = !empty($invoice['Bank']['branch'])?$invoice['Bank']['branch']:false;
+											$account_number = !empty($invoice['Bank']['account_number'])?$invoice['Bank']['account_number']:false;
+											$account_name = !empty($invoice['Bank']['account_name'])?$invoice['Bank']['account_name']:false;
+											
+											if( !empty($bank_name) ) {
+												echo $this->Html->tag('p', sprintf(__('Pembayaran mohon ditransfer ke:<br><br>&nbsp;<b>%s</b><br>%s<br>&nbsp;A/C <b>%s</b><br>&nbsp;A/N <b>%s</b>'), $bank_name, $bank_branch, $account_number, $account_name), array(
 													'class' => 'setting-link'
 												));
 											} else {
@@ -260,7 +270,10 @@ readfile($path.'/'.$filename);
 		</tbody>
 	</table>
 	<?php 
-			echo $this->Html->tag('p', sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Invoice']['due_invoice']), array(
+			// echo $this->Html->tag('p', sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Invoice']['due_invoice']), array(
+			// 	'style' => 'font-style: italic;font-weight: bold;margin-top: 15px;text-align: center;'
+			// ));
+			echo $this->Html->tag('p', sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Customer']['term_of_payment']), array(
 				'style' => 'font-style: italic;font-weight: bold;margin-top: 15px;text-align: center;'
 			));
 	?>

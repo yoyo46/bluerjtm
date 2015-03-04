@@ -157,7 +157,8 @@
                         if(!empty($invoices)){
                             foreach ($invoices as $key => $invoice) {
                                 $totalUnit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
-                                $timeTOP = strtotime(sprintf('+%s day', $invoice['Invoice']['due_invoice']), strtotime($invoice['Invoice']['invoice_date']));
+                                $timeTOP = strtotime(sprintf('+%s day', $invoice['Customer']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']));
+                                // $timeTOP = strtotime(sprintf('+%s day', $invoice['Invoice']['due_invoice']), strtotime($invoice['Invoice']['invoice_date']));
                                 $dateTOP = date('d/m/Y', $timeTOP);
                                 $datePayment = array();
                                 $totalPaid = 0;
@@ -263,7 +264,8 @@
             if(!empty($invoices)){
                 foreach ($invoices as $key => $invoice) {
                     $totalUnit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
-                    $timeTOP = strtotime(sprintf('+%s day', $invoice['Invoice']['due_invoice']), strtotime($invoice['Invoice']['invoice_date']));
+                    $timeTOP = strtotime(sprintf('+%s day', $invoice['Customer']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']));
+                    // $timeTOP = strtotime(sprintf('+%s day', $invoice['Invoice']['due_invoice']), strtotime($invoice['Invoice']['invoice_date']));
                     $dateTOP = date('d/m/Y', $timeTOP);
                     $datePayment = array();
                     $totalPaid = 0;

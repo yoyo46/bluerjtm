@@ -151,7 +151,8 @@ if($action_print == 'pdf'){
     $no_invoice = $invoice['Invoice']['no_invoice'];
     $Customer = $invoice['Customer']['name'];
     $Periode = $invoice['Invoice']['period_from'].' sampai '.$invoice['Invoice']['period_to'];
-    $masa_berlaku = $invoice['Invoice']['due_invoice'];
+    $masa_berlaku = $invoice['Customer']['term_of_payment'];
+    // $masa_berlaku = $invoice['Invoice']['due_invoice'];
 
     $title_tipe_invoice = '';
     if($action == 'tarif'){
@@ -255,7 +256,8 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 		</tr>
 		<tr>
 			<th><?php echo __('Term Of Payment');?></th>
-			<td><?php printf(__('%s Hari'), $invoice['Invoice']['due_invoice']);?></td>
+			<td><?php printf(__('%s Hari'), $invoice['Customer']['term_of_payment']);?></td>
+			<!-- <td><?php // printf(__('%s Hari'), $invoice['Invoice']['due_invoice']);?></td> -->
 		</tr>
 	</table>
 	<?php
