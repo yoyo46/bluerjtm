@@ -278,6 +278,14 @@
                         $totalPaid = $invoice[0]['total_payment'];
                     }
 
+                    if(!empty($invoice['Invoice']['complete_paid'])){
+                        $class_status = 'label label-success';
+                        $status = __('Paid');
+                    } else {
+                        $class_status = 'label label-primary';
+                        $status = __('Unpaid');
+                    }
+
                     $content = $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to']), array(
                         'style' => 'text-align: center;',
                     ));
@@ -298,6 +306,9 @@
                     ));
                     $content .= $this->Html->tag('td', $this->Number->currency($totalPaid, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
                         'style' => 'text-align: right;',
+                    ));
+                    $content .= $this->Html->tag('td', $status, array(
+                        'style' => 'text-align: center;',
                     ));
 
                     $each_loop_message .= $this->Html->tag('tr', $content);
@@ -321,6 +332,7 @@ $tbl = <<<EOD
                     <th style="text-align: center;">Tgl J.Tempo</th>
                     <th style="text-align: center;">Tgl Bayar</th>
                     <th style="text-align: center;">Total Transfer</th>
+                    <th style="text-align: center;">Status</th>
                 </tr>
             </thead>
             <tbody>          
