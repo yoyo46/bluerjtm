@@ -174,12 +174,16 @@
 			));
 
 			$posting = false;
+			$invoiced = false;
 
 			if( !empty($data_local['Revenue']['transaction_status']) && $data_local['Revenue']['transaction_status'] == 'posting' ) {
 				$posting = true;
 			}
+			if( !empty($data_local['Revenue']['transaction_status']) && $data_local['Revenue']['transaction_status'] == 'invoiced' ) {
+				$invoiced = true;
+			}
 
-			// if( !$posting ) {
+			if( !$invoiced ) {
 	    		echo $this->Form->button(__('Posting'), array(
 	    			'type' => 'submit',
 					'class'=> 'btn btn-success submit-form btn-lg',
@@ -191,7 +195,7 @@
 					'class'=> 'btn btn-primary submit-form',
 					'action_type' => 'unposting'
 				));
-			// }
+			}
 	?>
 </div>
 <?php

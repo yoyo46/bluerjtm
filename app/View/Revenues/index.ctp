@@ -126,17 +126,17 @@
                 <td><?php echo $this->Common->customDate($value['Revenue']['created']);?></td>
                 <td class="action">
                     <?php
+                            if( in_array('update_revenues', $allowModule) ) {
+                                echo $this->Html->link('Rubah', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'edit',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
+                            }
+                            
                             if($value['Revenue']['transaction_status'] != 'invoiced'){
-                                if( in_array('update_revenues', $allowModule) ) {
-                                    echo $this->Html->link('Rubah', array(
-                                        'controller' => 'revenues',
-                                        'action' => 'edit',
-                                        $id
-                                    ), array(
-                                        'class' => 'btn btn-primary btn-xs'
-                                    ));
-                                }
-
                                 if( in_array('delete_revenues', $allowModule) ) {
                                     echo $this->Html->link(__('Hapus'), array(
                                         'controller' => 'revenues',

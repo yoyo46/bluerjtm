@@ -238,9 +238,9 @@ class RevenueDetail extends AppModel {
             $result = array();
 
             foreach ($revenue_detail as $key => $value) {
-                if( $data_action == 'date' && !empty($value['Invoice']['invoice_date']) ) {
-                    $invoice_date = date('d/m/Y', strtotime($value['Invoice']['invoice_date']));
-                    $result[$invoice_date][] = $value;
+                if( $data_action == 'date' && !empty($value['Revenue']['date_revenue']) ) {
+                    $date_revenue = date('d/m/Y', strtotime($value['Revenue']['date_revenue']));
+                    $result[$date_revenue][] = $value;
                 } else {
                     $result[$value['RevenueDetail']['city_id']][] = $value;
                 }

@@ -11,8 +11,8 @@
 						if($action == 'tarif' && $data_print == 'invoice'){
 							printf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)) );
 						}else{
-			                if( $data_print == 'date' && !empty($val_detail[0]['Invoice']['invoice_date']) ) {
-								echo $this->Common->customDate($val_detail[0]['Invoice']['invoice_date'], 'd/m/Y');
+			                if( $data_print == 'date' && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
+								echo $this->Common->customDate($val_detail[0]['Revenue']['Revenue'], 'd/m/Y');
 			                } else {
 								echo $val_detail[0]['City']['name'];
 			                }

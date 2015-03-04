@@ -10,6 +10,7 @@
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
     		'autocomplete'=> 'off', 
+    		'novalidate' => true,
 		));
 ?>
 <div class="ttuj-form">
