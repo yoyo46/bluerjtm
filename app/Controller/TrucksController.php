@@ -3088,4 +3088,102 @@ class TrucksController extends AppController {
             $this->redirect($this->referer());
         }
     }
+
+    function licenses_report($data_action = false){
+        // if( in_array('view_truck_reports', $this->allowModule) ) {
+            $this->loadModel('Truck');
+            $this->loadModel('Customer');
+
+            $conditions = array();
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['nopol'])){
+                    $data = urldecode($refine['nopol']);
+                    $conditions['Truck.nopol LIKE'] = '%'.$data.'%';
+                    $this->request->data['Truck']['nopol'] = $data;
+                }
+                if(!empty($refine['license_stat'])){
+                    $data = urldecode($refine['license_stat']);
+                    $now_date = date('Y-m-d');
+                    if($data == 'expired'){
+                        $conditions['OR']['DATE_FORMAT(Truck.tgl_stnk, \'%Y-%m-%d\') <= '] = $now_date;
+                        $conditions['OR']['DATE_FORMAT(Truck.tgl_stnk_plat, \'%Y-%m-%d\') <= '] = $now_date;
+                        $conditions['OR']['DATE_FORMAT(Truck.tgl_kir, \'%Y-%m-%d\') <= '] = $now_date;
+                        $conditions['OR']['DATE_FORMAT(Truck.tgl_siup, \'%Y-%m-%d\') <= '] = $now_date;
+                    }else{
+                        $conditions['OR']['DATE_ADD(Truck.tgl_stnk, INTERVAL -30 DAY) >= '] = $now_date;
+                        $conditions['OR']['DATE_ADD(Truck.tgl_stnk_plat, INTERVAL -30 DAY) >= '] = $now_date;
+                        $conditions['OR']['DATE_ADD(Truck.tgl_kir, INTERVAL -30 DAY) >= '] = $now_date;
+                        $conditions['OR']['DATE_ADD(Truck.tgl_siup, INTERVAL -30 DAY) >= '] = $now_date;
+                    }
+                    $this->request->data['Truck']['status_expired'] = $data;
+                }
+                if(!empty($refine['alocation'])){
+                    $data = urldecode($refine['alocation']);
+                    $conditions['TruckCustomer.customer_id'] = $data;
+                    $this->request->data['TruckCustomer']['customer_id'] = $data;
+                }
+            }
+
+            $this->Truck->unBindModel(array(
+                'hasMany' => array(
+                    'TruckCustomer'
+                )
+            ));
+
+            $this->Truck->bindModel(array(
+                'hasOne' => array(
+                    'TruckCustomer' => array(
+                        'className' => 'TruckCustomer',
+                        'foreignKey' => 'truck_id',
+                        'conditions' => array(
+                            'TruckCustomer.primary' => 1
+                        )
+                    )
+                )
+            ), false);
+
+            $this->paginate = $this->Truck->getData('paginate', array(
+                'conditions' => $conditions,
+                'contain' => array(
+                    'TruckCustomer'
+                ),
+                'limit' => 10
+            ));
+
+            $trucks = $this->paginate('Truck');
+
+            if(!empty($trucks)){
+                foreach ($trucks as $key => $truck) {
+                    if(!empty($truck['TruckCustomer']['customer_id'])){
+                        $truck = $this->Customer->getMerge($truck, $truck['TruckCustomer']['customer_id']);
+
+                        $trucks[$key] = $truck;
+                    }
+                }
+            }
+
+            $this->loadModel('Customer');
+            $customers = $this->Customer->getData('list', array(
+                'conditions' => array(
+                    'Customer.status' => 1,
+                    // 'City.is_tujuan' => 1,
+                ),
+                'fields' => array(
+                    'Customer.id', 'Customer.name'
+                )
+            ));
+            $sub_module_title = __('Laporan Surat-surat Truk');
+            $this->set(compact('trucks', 'customers', 'sub_module_title', 'data_action'));
+
+            if($data_action == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($data_action == 'excel'){
+                $this->layout = 'ajax';
+            }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
 }
