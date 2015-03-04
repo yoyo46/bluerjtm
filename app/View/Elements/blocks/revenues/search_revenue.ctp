@@ -46,9 +46,10 @@
                                 'required' => false,
                                 'empty' => __('Pilih Status Revenue'),
                                 'options' => array(
-                                    'posting' => 'Posting',
                                     'unposting' => 'Unposting',
-                                    'invoiced' => 'Berhasil di Bayar',
+                                    'posting' => 'Posting',
+                                    'invoiced' => 'Invoiced',
+                                    'paid' => 'paid',
                                 )
                             ));
                     ?>

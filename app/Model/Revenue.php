@@ -47,6 +47,14 @@ class Revenue extends AppModel {
         ),
     );
 
+    var $hasOne = array(
+        'InvoiceDetail' => array(
+            'className' => 'InvoiceDetail',
+            'foreignKey' => 'revenue_id',
+            'dependent' => true,
+        ),
+    );
+
 	function getData($find, $options = false, $is_merge = true){
         $default_options = array(
             'conditions'=> array(

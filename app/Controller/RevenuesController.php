@@ -2512,8 +2512,14 @@ class RevenuesController extends AppController {
                 }
                 if(!empty($refine['status'])){
                     $status = urldecode($refine['status']);
-                    $this->request->data['Revenue']['transaction_status'] = $status;
-                    $conditions['Revenue.transaction_status'] = $status;
+
+                    if( $status == 'paid' ) {
+                        $this->request->data['Revenue']['transaction_status'] = $status;
+                        $conditions['Invoice.complete_paid'] = 1;
+                    } else {
+                        $this->request->data['Revenue']['transaction_status'] = $status;
+                        $conditions['Revenue.transaction_status'] = $status;
+                    }
                 }
 
                 if(!empty($refine['date'])){
@@ -2533,10 +2539,24 @@ class RevenuesController extends AppController {
                 }
             }
 
+            $this->Revenue->bindModel(array(
+                'hasOne' => array(
+                    'Invoice' => array(
+                        'className' => 'Invoice',
+                        'foreignKey' => false,
+                        'conditions' => array(
+                            'Invoice.id = InvoiceDetail.invoice_id',
+                        ),
+                    )
+                )
+            ));
+
             $this->paginate = $this->Revenue->getData('paginate', array(
                 'conditions' => $conditions,
                 'contain' => array(
-                    'Ttuj'
+                    'Ttuj',
+                    'InvoiceDetail',
+                    'Invoice'
                 )
             ));
             $revenues = $this->paginate('Revenue');
