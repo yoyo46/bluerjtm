@@ -4231,6 +4231,17 @@ class RevenuesController extends AppController {
                     }
                     $this->request->data['Invoice']['date'] = $dateStr;
                 }
+
+                if(!empty($refine['status'])){
+                    $status = urldecode($refine['status']);
+                    $this->request->data['Invoice']['transaction_status'] = $status;
+
+                    if( $status == 'paid' ) {
+                        $invoice_conditions['Invoice.complete_paid'] = 1;
+                    } else {
+                        $invoice_conditions['Invoice.complete_paid'] = 0;
+                    }
+                }
             }
 
             $this->paginate = array(

@@ -49,7 +49,7 @@
                                     'unposting' => 'Unposting',
                                     'posting' => 'Posting',
                                     'invoiced' => 'Invoiced',
-                                    'paid' => 'paid',
+                                    'paid' => 'Paid',
                                 )
                             ));
                     ?>

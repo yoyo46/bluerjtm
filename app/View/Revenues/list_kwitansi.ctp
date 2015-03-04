@@ -56,10 +56,26 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'ritase_report', 
+                                'action' => 'list_kwitansi', 
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',
+                            ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('transaction_status',array(
+                                'label'=> __('Status Invoice'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Status Invoice'),
+                                'options' => array(
+                                    'invoiced' => 'Unpaid',
+                                    'paid' => 'Paid',
+                                )
                             ));
                     ?>
                 </div>
@@ -129,6 +145,10 @@
                                 'style' => $tdStyle,
                                 'class' => 'text-center text-middle',
                             ));
+                            echo $this->Html->tag('th', __('Status'), array(
+                                'style' => $tdStyle,
+                                'class' => 'text-center text-middle',
+                            ));
                     ?>
                 </tr>
             </thead>
@@ -150,6 +170,14 @@
 
                                 if( !empty($invoice[0]['total_payment']) ) {
                                     $totalPaid = $invoice[0]['total_payment'];
+                                }
+
+                                if(!empty($invoice['Invoice']['complete_paid'])){
+                                    $class_status = 'label label-success';
+                                    $status = __('Paid');
+                                } else {
+                                    $class_status = 'label label-primary';
+                                    $status = __('Unpaid');
                                 }
                 ?>
                 <tr>
@@ -179,6 +207,9 @@
                                 'style' => $tdStyle,
                             ));
                             echo $this->Html->tag('td', $this->Number->currency($totalPaid, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                                'style' => 'text-align: right;',
+                            ));
+                            echo $this->Html->tag('td', $this->Html->tag('span', $status, array('class' => $class_status)), array(
                                 'style' => 'text-align: right;',
                             ));
                     ?>

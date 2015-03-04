@@ -86,7 +86,6 @@
                 <td align="right"><?php echo $this->Number->currency($value['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <td>
                     <?php 
-
                             if(!empty($value['Invoice']['complete_paid'])){
                                 $class_status = 'label label-success';
                                 $status = __('Paid');
@@ -95,7 +94,7 @@
                                 $status = __('Unpaid');
                             }
 
-                        echo $this->Html->tag('span', $status, array('class' => $class_status));
+                            echo $this->Html->tag('span', $status, array('class' => $class_status));
                     ?>
                 </td>
                 <td><?php echo $this->Time->timeAgoInWords($value['Invoice']['created']);?></td>
