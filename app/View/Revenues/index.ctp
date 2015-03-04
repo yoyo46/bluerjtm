@@ -76,6 +76,9 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.no_ttuj', __('No. TTUJ'), array(
                             'escape' => false
                         )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.nopol', __('Truk'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Customer.name', __('Customer'), array(
                             'escape' => false
                         )));
@@ -110,6 +113,7 @@
                 <td><?php echo $value['Revenue']['no_doc'];?></td>
                 <td><?php echo $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y');?></td>
                 <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
+                <td><?php echo !empty($value['Ttuj']['nopol'])?$value['Ttuj']['nopol']:'-';?></td>
                 <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';?></td>
                 <td>
                     <?php 
