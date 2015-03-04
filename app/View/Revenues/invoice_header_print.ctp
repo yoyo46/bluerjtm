@@ -33,15 +33,6 @@ if($action_print == 'pdf'){
 
 	if( !empty($invoice['Bank']['name']) ) {
 		$bank_name = $this->Html->tag('p', sprintf(__('Pembayaran mohon ditransfer ke:<br><br>&nbsp;<b>%s</b><br>%s<br>&nbsp;A/C <b>%s</b><br>&nbsp;A/N <b>%s</b>'), $invoice['Bank']['name'], $bank_branch, $account_number, $account_name));
-	} else {
-		$bank_name = $this->Html->tag('p', sprintf(__('Klik %s untuk Pengaturan Bank'), $this->Html->link(__('Disini'), array(
-			'controller' => "settings",
-			'action' => 'index',
-		), array(
-			'target' => 'blank'
-		))), array(
-			'class' => 'setting-link'
-		));
 	}
 
 $tbl = <<<EOD
@@ -239,15 +230,6 @@ readfile($path.'/'.$filename);
 											
 											if( !empty($bank_name) ) {
 												echo $this->Html->tag('p', sprintf(__('Pembayaran mohon ditransfer ke:<br><br>&nbsp;<b>%s</b><br>%s<br>&nbsp;A/C <b>%s</b><br>&nbsp;A/N <b>%s</b>'), $bank_name, $bank_branch, $account_number, $account_name), array(
-													'class' => 'setting-link'
-												));
-											} else {
-												echo $this->Html->tag('p', sprintf(__('Klik %s untuk Pengaturan Bank'), $this->Html->link(__('Disini'), array(
-													'controller' => "settings",
-													'action' => 'index',
-												), array(
-													'target' => 'blank'
-												))), array(
 													'class' => 'setting-link'
 												));
 											}
