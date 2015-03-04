@@ -6,13 +6,13 @@
 <table border="1" width="100%" style="margin-top: 20px;">
 	<thead class="header-invoice-print">
 		<tr>
-			<th colspan="8" class="text-center" style="text-transform:uppercase;">
+			<th colspan="9" class="text-center" style="text-transform:uppercase;">
 				<?php 
 						if($action == 'tarif' && $data_print == 'invoice'){
 							printf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)) );
 						}else{
 			                if( $data_print == 'date' && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
-								echo $this->Common->customDate($val_detail[0]['Revenue']['Revenue'], 'd/m/Y');
+								echo $this->Common->customDate($val_detail[0]['Revenue']['date_revenue'], 'd/m/Y');
 			                } else {
 								echo $val_detail[0]['City']['name'];
 			                }
@@ -23,7 +23,8 @@
 		<tr>
 			<th class="text-center"><?php echo __('No.');?></th>
 			<th class="text-center"><?php echo __('No. Truk');?></th>
-			<th class="text-center"><?php echo __('No.DO/Shipping List');?></th>
+			<th class="text-center"><?php echo __('No.DO');?></th>
+			<th class="text-center"><?php echo __('Shipping List');?></th>
 			<th class="text-center"><?php echo __('Tanggal');?></th>
 			<th class="text-center"><?php echo __('Total Unit');?></th>
 			<th class="text-center"><?php echo __('Harga');?></th>
@@ -50,6 +51,7 @@
 						$colom = $this->Html->tag('td', $no++);
 						$colom .= $this->Html->tag('td', $nopol);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
+						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_sj']);
 						$colom .= $this->Html->tag('td', $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y'));
 						$colom .= $this->Html->tag('td', $qty, array(
 							'align' => 'center'
@@ -84,7 +86,7 @@
 							));
 						}
 
-						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_reference']);
+						$colom .= $this->Html->tag('td', $this->Common->getNoRef($value['Revenue']['id']));
 						$trData .= $this->Html->tag('tr', $colom);
 						$grandTotal += $total;
 					}
@@ -95,7 +97,7 @@
 					echo $trData;
 
 					$colom = $this->Html->tag('td', __('Total '), array(
-						'colspan' => 4,
+						'colspan' => 5,
 						'align' => 'right'
 					));
 					$colom .= $this->Html->tag('td', $this->Number->format($grandTotalUnit), array(
