@@ -4069,7 +4069,7 @@ class RevenuesController extends AppController {
         ));
         
         $this->set(compact('list_customer', 'id', 'action'));
-        $this->set('active_menu', 'invoices');
+        $this->set('active_menu', 'invoice_payments');
         $this->render('invoice_payment_form');
     }
 
