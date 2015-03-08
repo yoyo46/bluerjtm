@@ -59,6 +59,10 @@
                             if( empty($tarifTruck) && $jenis_unit != 'per_truck' ) {
                                 $flagShowPrice = true;
                             }
+
+                            if( !empty($detail['RevenueDetail']['is_charge']) ) {
+                                $is_charge = true;
+                            }
                 ?>
                 <tr rel="<?php echo $key; ?>" class="list-revenue">
                     <td class="city-data">

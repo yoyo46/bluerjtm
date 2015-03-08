@@ -261,6 +261,8 @@ class SettingsController extends AppController {
     }
 
     function doCustomer($id = false, $data_local = false){
+        $this->loadModel('User');
+
         if(!empty($this->request->data)){
             $data = $this->request->data;
             if($id && $data_local){
@@ -304,11 +306,20 @@ class SettingsController extends AppController {
                 'Bank.id', 'Bank.bank_name'
             ),
         ));
+        $billings  = $this->User->getData('list', array(
+            'fields' => array(
+                'User.id', 'User.full_name'
+            ),
+            'conditions' => array(
+                'User.status' => 1,
+            ),
+        ));
 
         $this->set('active_menu', 'customers');
         $this->set('module_title', 'Data Master');
         $this->set(compact(
-            'customerTypes', 'customerGroups', 'banks'
+            'customerTypes', 'customerGroups', 'banks',
+            'billings'
         ));
         $this->render('customer_form');
     }

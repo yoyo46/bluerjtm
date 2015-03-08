@@ -115,7 +115,14 @@
 				)), array(
 					'class' => 'form-group'
 				));
-
+				echo $this->Html->tag('div', $this->Form->input('billing_id',array(
+					'label'=> __('Billing'), 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Billing')
+				)), array(
+					'class' => 'form-group'
+				));
 		?>
 		<div class="form-group">
 			<div class="row">

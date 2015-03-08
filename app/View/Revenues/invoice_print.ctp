@@ -37,15 +37,27 @@ if($action_print == 'pdf'){
                 }
 			}
 
+			if( !empty($data_print) && $data_print == 'date' ) {
+				$totalMerge = 10;
+				$totalMergeTotal = 6;
+				$colName = '<th class="text-center">Kota</th>';
+			} else {
+				$totalMerge = 9;
+				$totalMergeTotal = 5;
+				$colName = __('Kota');
+			}
+
 			$content .= '<table border="1" width="100%" style="padding: 5px; font-size: 25px;">
 				<thead class="header-invoice-print">
 					<tr>
-						<th colspan="8" class="text-center" style="text-transform:uppercase;">'.$cityName.'</th>
+						<th colspan="'.$totalMerge.'" class="text-center" style="text-transform:uppercase;">'.$cityName.'</th>
 					</tr>
 					<tr>
 						<th class="text-center">No.</th>
+						'.$colName.'
 						<th class="text-center">No. Truk</th>
-						<th class="text-center">No.DO/Shipping List</th>
+						<th class="text-center">No.DO</th>
+						<th class="text-center">No.SJ</th>
 						<th class="text-center">Tanggal</th>
 						<th class="text-center">Total Unit</th>
 						<th class="text-center">Harga</th>
@@ -67,12 +79,19 @@ if($action_print == 'pdf'){
 					$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
 					$price = $value['RevenueDetail']['price_unit'];
 					$total = 0;
+					$date_revenue = '-';
 
 					$colom = $this->Html->tag('td', $no++);
+
+					if( !empty($data_print) && $data_print == 'date' ) {
+						$city_name = !empty($value['City']['name'])?$value['City']['name']:false;
+						$colom .= $this->Html->tag('td', $value['City']['name']);
+					}
+
 					$colom .= $this->Html->tag('td', $nopol);
 					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
+					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_sj']);
 
-					$date_revenue = '-';
 					if(!empty($value['Revenue']['date_revenue'])){
 						$date_revenue = $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y');
 					}
@@ -120,7 +139,7 @@ if($action_print == 'pdf'){
 				}
 				$content .= $trData;
 				$colom = $this->Html->tag('td', __('Total '), array(
-					'colspan' => 4,
+					'colspan' => $totalMergeTotal,
 					'align' => 'right'
 				));
 				$colom .= $this->Html->tag('td', $this->Number->format($grandTotalUnit), array(
@@ -135,7 +154,7 @@ if($action_print == 'pdf'){
 				$content .=  $this->Html->tag('tr', $colom);
 			}else{
 				$colom = $this->Html->tag('td', __('Data tidak ditemukan.'), array(
-					'colspan' => 5
+					'colspan' => $totalMerge
 				));
 
 				$content .= $this->Html->tag('tr', $colom);
@@ -151,7 +170,7 @@ if($action_print == 'pdf'){
     $no_invoice = $invoice['Invoice']['no_invoice'];
     $Customer = $invoice['Customer']['name'];
     $Periode = $invoice['Invoice']['period_from'].' sampai '.$invoice['Invoice']['period_to'];
-    $masa_berlaku = $invoice['Customer']['term_of_payment'];
+    $masa_berlaku = $invoice['Invoice']['term_of_payment'];
     // $masa_berlaku = $invoice['Invoice']['due_invoice'];
 
     $title_tipe_invoice = '';
@@ -163,24 +182,6 @@ if($action_print == 'pdf'){
 
 $tbl = <<<EOD
 	<h2 class="grid_8" style="text-align: center;">Laporan $date_title</h2>
-	<table border="1" width="100%" style="padding: 5px; font-size: 25px;">
-		<tr>
-			<td>No. Invoice</td>
-			<td>$no_invoice</td>
-		</tr>
-		<tr>
-			<td>Customer</td>
-			<td>$Customer</td>
-		</tr>
-		<tr>
-			<td>Periode</td>
-			<td>$Periode</td>
-		</tr>
-		<tr>
-			<td>Masa Berlaku Invoice</td>
-			<td>$masa_berlaku</td>
-		</tr>
-	</table>
 	$content
 EOD;
 // echo $tbl;
@@ -237,6 +238,8 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 		}
 ?>
 <div class="invoice-print">
+	<?php
+	/*
 	<table border="1" width="100%">
 		<tr>
 			<th><?php echo __('No. Invoice');?></th>
@@ -260,7 +263,7 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 			<!-- <td><?php // printf(__('%s Hari'), $invoice['Invoice']['due_invoice']);?></td> -->
 		</tr>
 	</table>
-	<?php
+	*/
             echo $this->element('blocks/revenues/preview_invoice');
 	?>
 </div>

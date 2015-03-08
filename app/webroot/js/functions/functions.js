@@ -1024,7 +1024,7 @@ var duplicate_row = function(){
 
         parent.after(html);
 
-        $('tr[rel="'+uniqid+'"] .city-revenue-change').val('');
+        $('tr[rel="'+uniqid+'"] .city-revenue-change').val($('#mainToCityId').val());
         $('tr[rel="'+uniqid+'"] .revenue-qty').val('');
         $('tr[rel="'+uniqid+'"] .additional-charge').attr('checked', false);
         $('tr[rel="'+uniqid+'"] .total-revenue-perunit').html('');
@@ -1102,7 +1102,7 @@ var city_revenue_change = function( obj_city, obj_tipe_motor ){
         var self = $(this);
         var val = self.val();
         var parent = self.parents('tr');
-        var city_id = $('.city-revenue-change').val();
+        var city_id = parent.find('.city-revenue-change').val();
 
         changeDetailRevenue( parent, city_id, val );
 
@@ -1117,6 +1117,7 @@ function grandTotalRevenue(){
     var is_additional_charge = $('.additional-charge');
     var jenis_unit = $('.jenis_unit');
     var length = $('.tipe-motor-table tr.list-revenue').length;
+    var listRevenue = $('.tipe-motor-table tr.list-revenue');
     var total_temp = $('#total_retail_revenue').val();
     var revenue_tarif_type = $('.revenue_tarif_type').val();
     var total = 0;
@@ -1126,6 +1127,8 @@ function grandTotalRevenue(){
     var formatAdditionalCharge = 0;
 
     for (var i = 0; i < length; i++) {
+        var rel = listRevenue[i].getAttribute('rel');
+
         if( typeof price[i] != 'undefined' && price[i].value != '' ) {
             priceUnit = parseInt(price[i].value);
         } else {
@@ -1157,8 +1160,8 @@ function grandTotalRevenue(){
         if( revenue_tarif_type != 'per_truck' ){
 
             var totalPrice = priceUnit * qtyUnit;
-            $('.tipe-motor-table tr.list-revenue[rel="'+i+'"]').find('.total-revenue-perunit').html('IDR '+formatNumber(totalPrice));
-            $('.tipe-motor-table tr.list-revenue[rel="'+i+'"]').find('.total-price-perunit').val(totalPrice);
+            $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-revenue-perunit').html('IDR '+formatNumber(totalPrice));
+            $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-price-perunit').val(totalPrice);
         }
     };
 

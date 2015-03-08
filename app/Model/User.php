@@ -167,5 +167,21 @@ class User extends AppModel {
             return true;
         }
     }
+
+    function getMerge( $data, $id, $with_contain = false ){
+        if(empty($data['User'])){
+            $data_merge = $this->find('first', array(
+                'conditions' => array(
+                    'User.id' => $id
+                ),
+            ));
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

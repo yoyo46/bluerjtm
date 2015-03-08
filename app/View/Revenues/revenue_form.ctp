@@ -15,6 +15,11 @@
 		echo $this->Form->hidden('transaction_status', array(
 			'id' => 'transaction_status'
 		));
+
+		echo $this->Form->hidden('to_city_id', array(
+			'id' => 'mainToCityId',
+			'value' => !empty($this->request->data['Ttuj']['to_city_id'])?$this->request->data['Ttuj']['to_city_id']:false,
+		));
 ?>
 <div class="ttuj-form">
 	<div class="row">
@@ -183,7 +188,7 @@
 				$invoiced = true;
 			}
 
-			if( !$invoiced ) {
+			// if( !$invoiced ) {
 	    		echo $this->Form->button(__('Posting'), array(
 	    			'type' => 'submit',
 					'class'=> 'btn btn-success submit-form btn-lg',
@@ -195,7 +200,7 @@
 					'class'=> 'btn btn-primary submit-form',
 					'action_type' => 'unposting'
 				));
-			}
+			// }
 	?>
 </div>
 <?php

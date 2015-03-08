@@ -1,4 +1,5 @@
 <?php
+		$qty_unit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
 if($action_print == 'pdf'){
 	App::import('Vendor','xtcpdf');
     ob_end_clean();
@@ -20,12 +21,11 @@ if($action_print == 'pdf'){
 	$customer_name = sprintf(': %s', $invoice['Customer']['name']);
 	$total = sprintf(': %s', $this->Html->tag('strong', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0))));
 	$terbilang = sprintf(': %s', $this->Common->terbilang($invoice['Invoice']['total']));
-	$totalUnit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
-	$totalUnit = sprintf(__(': JASA ANGKUT SEPEDA MOTOR<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $invoice['RevenueDetail']['qty_unit'], $this->Common->customDate($invoice['Invoice']['period_from'], 'd/m/Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd/m/Y'));
+	$totalUnit = sprintf(__(': JASA ANGKUT SEPEDA MOTOR<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $qty_unit, $this->Common->customDate($invoice['Invoice']['period_from'], 'd/m/Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd/m/Y'));
 	$dateLocation = sprintf('%s, %s', $this->Common->getDataSetting( $setting, 'pusat' ), date('d F Y'));
-	$billing_name = $this->Common->getDataSetting( $setting, 'billing_name' );
+	$billing_name = !empty($invoice['User']['full_name'])?$invoice['User']['full_name']:false;
 	// $note = sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Invoice']['due_invoice']);
-	$note = sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Customer']['term_of_payment']);
+	$note = sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Invoice']['term_of_payment']);
 	$bank_name = !empty($invoice['Bank']['name'])?$invoice['Bank']['name']:false;
 	$bank_branch = !empty($invoice['Bank']['branch'])?$invoice['Bank']['branch']:false;
 	$account_number = !empty($invoice['Bank']['account_number'])?$invoice['Bank']['account_number']:false;
@@ -209,9 +209,8 @@ readfile($path.'/'.$filename);
 			</tr>
 			<tr valign="top">
 				<?php 
-						$totalUnit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
 						echo $this->Html->tag('td', __('Untuk pembayaran'));
-						echo $this->Html->tag('td', sprintf(__(': JASA ANGKUT SEPEDA MOTOR<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $invoice['RevenueDetail']['qty_unit'], $this->Common->customDate($invoice['Invoice']['period_from'], 'd/m/Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd/m/Y')), array(
+						echo $this->Html->tag('td', sprintf(__(': JASA ANGKUT SEPEDA MOTOR<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $qty_unit, $this->Common->customDate($invoice['Invoice']['period_from'], 'd/m/Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd/m/Y')), array(
 							'style' => 'padding-left: 5px;',
 						));
 				?>
@@ -241,8 +240,9 @@ readfile($path.'/'.$filename);
 				</td>
 				<td valign="top" align="right" style="padding-top: 50px;">
 					<?php 
+							$full_name = !empty($invoice['User']['full_name'])?$invoice['User']['full_name']:false;
 							echo $this->Html->tag('p', sprintf('%s, %s', $this->Common->getDataSetting( $setting, 'pusat' ), date('d F Y')));
-							echo $this->Html->tag('p', $this->Common->getDataSetting( $setting, 'billing_name' ), array(
+							echo $this->Html->tag('p', $full_name, array(
 								'style' => 'margin: 70px 0 0;border-bottom: 1px solid #000;display: inline-block;'
 							));
 							echo $this->Html->tag('p', __('Billing'));
@@ -255,7 +255,7 @@ readfile($path.'/'.$filename);
 			// echo $this->Html->tag('p', sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Invoice']['due_invoice']), array(
 			// 	'style' => 'font-style: italic;font-weight: bold;margin-top: 15px;text-align: center;'
 			// ));
-			echo $this->Html->tag('p', sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Customer']['term_of_payment']), array(
+			echo $this->Html->tag('p', sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Invoice']['term_of_payment']), array(
 				'style' => 'font-style: italic;font-weight: bold;margin-top: 15px;text-align: center;'
 			));
 	?>

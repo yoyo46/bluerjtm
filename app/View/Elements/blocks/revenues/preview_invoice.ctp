@@ -2,11 +2,19 @@
 		if(!empty($revenue_detail)){
 			foreach ($revenue_detail as $key => $val_detail) {
 				$data_print = !empty($data_print)?$data_print:'invoice';
+
+				if( !empty($data_print) && $data_print == 'date' ) {
+					$totalMerge = 10;
+					$totalMergeTotal = 6;
+				} else {
+					$totalMerge = 9;
+					$totalMergeTotal = 5;
+				}
 ?>
 <table border="1" width="100%" style="margin-top: 20px;">
 	<thead class="header-invoice-print">
 		<tr>
-			<th colspan="9" class="text-center" style="text-transform:uppercase;">
+			<th colspan="<?php echo $totalMerge; ?>" class="text-center" style="text-transform:uppercase;">
 				<?php 
 						if($action == 'tarif' && $data_print == 'invoice'){
 							printf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)) );
@@ -22,9 +30,16 @@
 		</tr>
 		<tr>
 			<th class="text-center"><?php echo __('No.');?></th>
+			<?php 
+					if( !empty($data_print) && $data_print == 'date' ) {
+						echo $this->Html->tag('th', __('Kota'), array(
+							'class' => 'text-center',
+						));
+					}
+			?>
 			<th class="text-center"><?php echo __('No. Truk');?></th>
 			<th class="text-center"><?php echo __('No.DO');?></th>
-			<th class="text-center"><?php echo __('Shipping List');?></th>
+			<th class="text-center"><?php echo __('No. SJ');?></th>
 			<th class="text-center"><?php echo __('Tanggal');?></th>
 			<th class="text-center"><?php echo __('Total Unit');?></th>
 			<th class="text-center"><?php echo __('Harga');?></th>
@@ -49,6 +64,12 @@
 						$total = 0;
 
 						$colom = $this->Html->tag('td', $no++);
+
+						if( !empty($data_print) && $data_print == 'date' ) {
+							$city_name = !empty($value['City']['name'])?$value['City']['name']:false;
+							$colom .= $this->Html->tag('td', $value['City']['name']);
+						}
+
 						$colom .= $this->Html->tag('td', $nopol);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_sj']);
@@ -97,7 +118,7 @@
 					echo $trData;
 
 					$colom = $this->Html->tag('td', __('Total '), array(
-						'colspan' => 5,
+						'colspan' => $totalMergeTotal,
 						'align' => 'right'
 					));
 					$colom .= $this->Html->tag('td', $this->Number->format($grandTotalUnit), array(
@@ -114,7 +135,7 @@
 					));
 				}else{
 					$colom = $this->Html->tag('td', __('Data tidak ditemukan.'), array(
-						'colspan' => 5
+						'colspan' => $totalMerge,
 					));
 
 					echo $this->Html->tag('tr', $colom);

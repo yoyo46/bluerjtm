@@ -54,18 +54,13 @@
                             ));
                     ?>
                 </div>
-                <div class="form-group action">
-                    <?php
-                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
-                                'div' => false, 
-                                'class'=> 'btn btn-success btn-sm',
-                                'type' => 'submit',
-                            ));
-                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'index', 
-                            ), array(
-                                'escape' => false, 
-                                'class'=> 'btn btn-default btn-sm',
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Ttuj.nopol',array(
+                                'label'=> __('No. Pol Truk'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('No. Pol Truk')
                             ));
                     ?>
                 </div>
@@ -99,6 +94,21 @@
                                 'class'=>'form-control',
                                 'required' => false,
                                 'placeholder' => __('No. Reference')
+                            ));
+                    ?>
+                </div>
+                <div class="form-group action">
+                    <?php
+                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
+                                'div' => false, 
+                                'class'=> 'btn btn-success btn-sm',
+                                'type' => 'submit',
+                            ));
+                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'action' => 'index', 
+                            ), array(
+                                'escape' => false, 
+                                'class'=> 'btn btn-default btn-sm',
                             ));
                     ?>
                 </div>
