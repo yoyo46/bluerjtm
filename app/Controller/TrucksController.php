@@ -3090,7 +3090,7 @@ class TrucksController extends AppController {
     }
 
     function licenses_report($data_action = false){
-        // if( in_array('view_truck_reports', $this->allowModule) ) {
+        // if( in_array('view_license_report', $this->allowModule) ) {
             $this->loadModel('Truck');
             $this->loadModel('Customer');
 

@@ -418,6 +418,17 @@
                                     'class' => ( !empty($active_menu) && $active_menu == 'point_perplant_report' )?'active':'',
                                 ));
                             }
+
+                            // if( in_array('view_license_report', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Surat-surat Truk', array(
+                                    'controller' => 'trucks',
+                                    'action' => 'licenses_report',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'view_license_report' )?'active':'',
+                                ));
+                            // }
                     ?>
                 </ul>
             </li>
