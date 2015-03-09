@@ -4330,4 +4330,26 @@ class RevenuesController extends AppController {
             ));
         // }
     }
+
+    function invoice_delete($id){
+        if(!empty($id)){
+            $this->loadModel('Invoice');
+
+            $invoice = $this->Invoice->getData('first', array(
+                'conditions' => array(
+                    'Invoice.status' => 1,
+                    'Invoice.id' => $id
+                )
+            ));
+            
+            if(!empty($invoice)){
+                
+            }else{
+                $this->MkCommon->setCustomFlash(__('Invoice tidak ditemukan'), 'error');
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Invoice tidak ditemukan'), 'error');
+        }
+        $this->redirect($this->referer());
+    }
 }

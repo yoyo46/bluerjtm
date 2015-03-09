@@ -39,7 +39,7 @@
                 <tr>
                     <?php
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.nopol', __('Nopol')));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.name', __('Alokasi')));
+                            echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.name', __('Alokasi')));
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_stnk', __('STNK 1TH')));
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_stnk_plat', __('STNK 5TH')));
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_kir', __('KIR')));
@@ -56,8 +56,8 @@
 
                             $content = $this->Html->tag('td', $truck['Truck']['nopol']);
                             $customer = '-';
-                            if(!empty($truck['Customer'])){
-                            	$customer = $truck['Customer']['name'];
+                            if(!empty($truck['TruckCustomer']['CustomerNoType']['name'])){
+                            	$customer = $truck['TruckCustomer']['CustomerNoType']['name'];
                             }
                             $content .= $this->Html->tag('td', $customer);
 
@@ -200,8 +200,8 @@
                 $content .= $this->Html->tag('td', $truck['Truck']['nopol']);
 
                 $customer = '-';
-                if(!empty($truck['Customer'])){
-                    $customer = $truck['Customer']['name'];
+                if(!empty($truck['CustomerNoType'])){
+                    $customer = $truck['CustomerNoType']['name'];
                 }
                 $content .= $this->Html->tag('td', $customer);
 

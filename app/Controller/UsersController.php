@@ -436,8 +436,19 @@ class UsersController extends AppController {
             )
         ));
         $this->set('active_menu', 'list_user');
+        
+        $this->loadModel('City');
+        $branch = $this->City->getData('list', array(
+            'conditions' => array(
+                'City.status' => 1,
+                'City.is_branch' => 1,
+            ),
+            'fields' => array(
+                'City.id', 'City.name'
+            )
+        ));
         $this->set(compact(
-            'branches', 'groups', 'id'
+            'branches', 'groups', 'id', 'branch'
         ));
         $this->render('user_form');
     }

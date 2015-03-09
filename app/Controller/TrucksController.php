@@ -3147,22 +3147,14 @@ class TrucksController extends AppController {
             $this->paginate = $this->Truck->getData('paginate', array(
                 'conditions' => $conditions,
                 'contain' => array(
-                    'TruckCustomer'
+                    'TruckCustomer' => array(
+                        'CustomerNoType'
+                    )
                 ),
                 'limit' => 10
             ));
 
             $trucks = $this->paginate('Truck');
-
-            if(!empty($trucks)){
-                foreach ($trucks as $key => $truck) {
-                    if(!empty($truck['TruckCustomer']['customer_id'])){
-                        $truck = $this->Customer->getMerge($truck, $truck['TruckCustomer']['customer_id']);
-
-                        $trucks[$key] = $truck;
-                    }
-                }
-            }
 
             $this->loadModel('Customer');
             $customers = $this->Customer->getData('list', array(
