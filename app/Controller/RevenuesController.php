@@ -3369,6 +3369,7 @@ class RevenuesController extends AppController {
     function doInvoice($action, $id = false, $data_local = false){
         $this->loadModel('Revenue');
         $this->loadModel('Customer');
+        $this->loadModel('Bank');
         $this->loadModel('User');
 
         if(!empty($this->request->data)){
@@ -3543,6 +3544,11 @@ class RevenuesController extends AppController {
             'Revenue.transaction_status' => 'posting',
             'Revenue.status' => 1,                      
         );
+        $banks = $this->Bank->getData('list', array(
+            'conditions' => array(
+                'Bank.status' => 1,
+            ),
+        ));
 
         if($action == 'tarif'){
             $conditionsRevenue['revenue_tarif_type'] = 'per_unit';
@@ -3574,7 +3580,10 @@ class RevenuesController extends AppController {
             }
         }
         
-        $this->set(compact('customers', 'id', 'action'));
+        $this->set(compact(
+            'customers', 'id', 'action',
+            'banks'
+        ));
         $this->set('active_menu', 'invoices');
         $this->render('invoice_form');
     }
@@ -3662,17 +3671,20 @@ class RevenuesController extends AppController {
                     $this->request->data['Invoice']['customer_id'] = $keyword;
                 }
 
-                if( !empty($refine['from']) || !empty($refine['to']) ){
-                    if(!empty($refine['from'])){
-                        $keyword = urldecode(rawurldecode($refine['from']));
-                        $invoice_conditions['DATE_FORMAT(Invoice.period_from, \'%Y-%m-%d\') >= '] = $keyword;
-                        $this->request->data['Invoice']['from_date'] = $keyword;
+                if(!empty($refine['date'])){
+                    $dateStr = urldecode($refine['date']);
+                    $date = explode('-', $dateStr);
+
+                    if( !empty($date) ) {
+                        $date[0] = urldecode($date[0]);
+                        $date[1] = urldecode($date[1]);
+                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                        $dateFrom = $this->MkCommon->getDate($date[0]);
+                        $dateTo = $this->MkCommon->getDate($date[1]);
+                        $invoice_conditions['DATE_FORMAT(Invoice.period_from, \'%Y-%m-%d\') >='] = $dateFrom;
+                        $invoice_conditions['DATE_FORMAT(Invoice.period_to, \'%Y-%m-%d\') <='] = $dateTo;
                     }
-                    if(!empty($refine['to'])){
-                        $keyword = urldecode(rawurldecode($refine['to']));
-                        $invoice_conditions['DATE_FORMAT(Invoice.period_to, \'%Y-%m-%d\') <= '] = $keyword;
-                        $this->request->data['Invoice']['to_date'] = $keyword;
-                    }
+                    $this->request->data['Invoice']['date'] = $dateStr;
                 }
             }
 
@@ -3876,7 +3888,9 @@ class RevenuesController extends AppController {
 
             $this->paginate = $this->InvoicePayment->getData('paginate', array(
                 'conditions' => $conditions,
-                'contain' => array()
+                'contain' => array(
+                    'Bank'
+                ),
             ));
             $invoices = $this->paginate('InvoicePayment');
 
@@ -3911,6 +3925,9 @@ class RevenuesController extends AppController {
     }
 
     function doInvoicePayment($id = false, $data_local = false){
+        $this->loadModel('Customer');
+        $this->loadModel('Bank');
+
         if(!empty($this->request->data)){
             $data = $this->request->data;
 
@@ -4026,18 +4043,26 @@ class RevenuesController extends AppController {
             }
         }else if(!empty($id) && !empty($data_local)){
              $this->request->data = $data_local;
-
              $this->request->data['InvoicePayment']['date_payment'] = !empty($this->request->data['InvoicePayment']['date_payment']) ? $this->MkCommon->getDate($this->request->data['InvoicePayment']['date_payment'], true) : '';
         }
 
         if(!empty($this->request->data['InvoicePayment']['customer_id'])){
             $customer_id = $this->request->data['InvoicePayment']['customer_id'];
+            $customer = $this->Customer->getData('first', array(
+                'conditions' => array(
+                    'Customer.id' => $customer_id
+                )
+            ));
             $invoices = $this->Invoice->getdata('all', array(
                 'conditions' => array(
                     'Invoice.customer_id' => $this->request->data['InvoicePayment']['customer_id'],
                     'Invoice.complete_paid' => 0
                 )
             ));
+
+            if( !empty($customer) ) {
+                $this->request->data['InvoicePayment']['bank_id'] = $customer['Customer']['bank_id'];
+            }
 
             if(!empty($invoices)){
                 foreach ($invoices as $key => $value) {
@@ -4080,8 +4105,16 @@ class RevenuesController extends AppController {
                 'Customer.id', 'Customer.name'
             )
         ));
+        $banks = $this->Bank->getData('list', array(
+            'conditions' => array(
+                'Bank.status' => 1,
+            ),
+        ));
         
-        $this->set(compact('list_customer', 'id', 'action'));
+        $this->set(compact(
+            'list_customer', 'id', 'action',
+            'banks'
+        ));
         $this->set('active_menu', 'invoice_payments');
         $this->render('invoice_payment_form');
     }
@@ -4204,6 +4237,7 @@ class RevenuesController extends AppController {
                     'InvoicePaymentDetail' => array(
                         'Invoice'
                     ),
+                    'Bank',
                 )
             ));
 

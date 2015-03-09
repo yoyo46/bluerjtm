@@ -117,6 +117,10 @@
             <thead>
                 <tr>
                     <?php 
+                            echo $this->Html->tag('th', __('No. Invoice'), array(
+                                'style' => $tdStyle,
+                                'class' => 'text-center text-middle',
+                            ));
                             echo $this->Html->tag('th', __('Periode Tanggal'), array(
                                 'style' => $tdStyle,
                                 'class' => 'text-center text-middle',
@@ -157,9 +161,7 @@
                         if(!empty($invoices)){
                             foreach ($invoices as $key => $invoice) {
                                 $totalUnit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
-                                $timeTOP = strtotime(sprintf('+%s day', $invoice['Customer']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']));
-                                // $timeTOP = strtotime(sprintf('+%s day', $invoice['Invoice']['due_invoice']), strtotime($invoice['Invoice']['invoice_date']));
-                                $dateTOP = date('d/m/Y', $timeTOP);
+                                $dateTOP = !empty($invoice['Invoice']['term_of_payment'])?date('d/m/Y', strtotime(sprintf('+%s day', $invoice['Invoice']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']))):'-';
                                 $datePayment = array();
                                 $totalPaid = 0;
 
@@ -183,6 +185,10 @@
                 ?>
                 <tr>
                     <?php 
+                            echo $this->Html->tag('td', $invoice['Invoice']['no_invoice'], array(
+                                'class' => 'text-left',
+                                'style' => $tdStyle,
+                            ));
                             echo $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to']), array(
                                 'class' => 'text-center',
                                 'style' => $tdStyle,
@@ -264,9 +270,7 @@
             if(!empty($invoices)){
                 foreach ($invoices as $key => $invoice) {
                     $totalUnit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
-                    $timeTOP = strtotime(sprintf('+%s day', $invoice['Customer']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']));
-                    // $timeTOP = strtotime(sprintf('+%s day', $invoice['Invoice']['due_invoice']), strtotime($invoice['Invoice']['invoice_date']));
-                    $dateTOP = date('d/m/Y', $timeTOP);
+                    $dateTOP = !empty($invoice['Invoice']['term_of_payment'])?date('d/m/Y', strtotime(sprintf('+%s day', $invoice['Invoice']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']))):'-';
                     $datePayment = array();
                     $totalPaid = 0;
 
@@ -288,7 +292,10 @@
                         $status = __('Unpaid');
                     }
 
-                    $content = $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to']), array(
+                    $content = $this->Html->tag('td', $invoice['Invoice']['no_invoice'], array(
+                        'style' => 'text-align: left;',
+                    ));
+                    $content .= $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to']), array(
                         'style' => 'text-align: center;',
                     ));
                     $content .= $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to'], 'M Y'), array(
@@ -327,6 +334,7 @@ $tbl = <<<EOD
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <thead>
                 <tr style="$table_tr_head">
+                    <th style="text-align: center;">No. Invoice</th>
                     <th style="text-align: center;">Periode Tanggal</th>
                     <th style="text-align: center;">Periode Bulan</th>
                     <th style="text-align: center;">Qty Unit</th>

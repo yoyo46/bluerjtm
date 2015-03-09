@@ -49,6 +49,16 @@
 	        </div>
 	        <div class="form-group">
 	        	<?php 
+						echo $this->Form->input('bank_id',array(
+							'label'=> __('Bank *'), 
+							'class'=>'form-control',
+							'required' => false,
+							'empty' => __('Pilih Bank'),
+						));
+				?>
+	        </div>
+	        <div class="form-group">
+	        	<?php 
 						echo $this->Form->input('date_payment',array(
 							'type' => 'text',
 							'label'=> __('Tanggal Pembayaran *'), 

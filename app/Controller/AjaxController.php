@@ -570,6 +570,13 @@ class AjaxController extends AppController {
 
 	function getInvoiceInfo($customer_id = false){
 		$this->loadModel('Revenue');
+		$this->loadModel('Bank');
+		$this->loadModel('Customer');
+		$customer = $this->Customer->getData('first', array(
+            'conditions' => array(
+                'Customer.id' => $customer_id
+            ),
+        ));
 		$revenues = $this->Revenue->getData('first', array(
 			'conditions' => array(
 				'Revenue.customer_id' => $customer_id,
@@ -588,12 +595,22 @@ class AjaxController extends AppController {
 				'Revenue.customer_id'
 			),
 		));
+        $banks = $this->Bank->getData('list', array(
+            'conditions' => array(
+                'Bank.status' => 1,
+            ),
+        ));
 
-		if(!empty($revenues)){
+		if(!empty($revenues) && !empty($customer)){
+			$this->request->data['Invoice']['bank_id'] = !empty($customer['Customer']['bank_id'])?$customer['Customer']['bank_id']:false;
 			$this->request->data['Invoice']['period_from'] = !empty($revenues[0]['period_from'])?$this->MkCommon->customDate($revenues[0]['period_from'], 'd/m/Y'):false;
 			$this->request->data['Invoice']['period_to'] = !empty($revenues[0]['period_to'])?$this->MkCommon->customDate($revenues[0]['period_to'], 'd/m/Y'):false;
 			$this->request->data['Invoice']['total'] = !empty($revenues[0]['total'])?$revenues[0]['total']:0;;
 		}
+
+		$this->set(compact(
+			'banks'
+		));
 	}
 
 	function getInvoicePaymentInfo($customer_id = false){

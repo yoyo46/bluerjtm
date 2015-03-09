@@ -34,35 +34,13 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <?php
-                        echo $this->Form->label('from_date', __('Tanggal Laporan'), array(
-                            'class' => 'control-label'
-                        ));
+                    <?php 
+                            echo $this->Form->input('date',array(
+                                'label'=> __('Tanggal Laporan'),
+                                'class'=>'form-control date-range',
+                                'required' => false,
+                            ));
                     ?>
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <?php 
-                                    echo $this->Form->input('from_date',array(
-                                        'label'=> false,
-                                        'class'=>'form-control',
-                                        'id' => 'fromdatepicker',
-                                        'required' => false,
-                                        'placeholder' => __('Dari')
-                                    ));
-                            ?>
-                        </div>
-                        <div class="col-xs-6">
-                            <?php 
-                                    echo $this->Form->input('to_date',array(
-                                        'label'=> false,
-                                        'class'=>'form-control',
-                                        'id' => 'todatepicker',
-                                        'required' => false,
-                                        'placeholder' => __('Sampai')
-                                    ));
-                            ?>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

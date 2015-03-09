@@ -1,5 +1,15 @@
 <div class="form-group">
 	<?php 
+			echo $this->Form->input('Invoice.bank_id',array(
+				'label'=> __('Bank *'), 
+				'class'=>'form-control',
+				'required' => false,
+				'empty' => __('Pilih Bank'),
+			));
+	?>
+</div>
+<div class="form-group">
+	<?php 
 			echo $this->Html->tag('label', __('Total'));
 	?>
 	<div class="row">

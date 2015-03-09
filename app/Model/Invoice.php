@@ -24,6 +24,12 @@ class Invoice extends AppModel {
                 'message' => 'Customer harap dipilih'
             ),
         ),
+        'bank_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Bank harap dipilih'
+            ),
+        ),
         'period_from' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

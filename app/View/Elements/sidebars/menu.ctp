@@ -622,7 +622,7 @@
                             // }
 
                             if( in_array('view_revenue_reports', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Revenue', array(
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Invoice Aging', array(
                                     'controller' => 'revenues',
                                     'action' => 'invoice_reports',
                                 ), array(

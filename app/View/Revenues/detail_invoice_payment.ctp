@@ -20,6 +20,10 @@
 				<td><?php echo !empty($invoice['Customer']['customer_name'])?$invoice['Customer']['customer_name']:false;?></td>
 			</tr>
 			<tr>
+				<th><?php echo __('Bank');?></th>
+				<td><?php echo !empty($invoice['Bank']['name'])?$invoice['Bank']['name']:false;?></td>
+			</tr>
+			<tr>
 				<th><?php echo __('Tanggal Pembayaran');?></th>
 				<td><?php echo $this->Common->customDate($invoice['InvoicePayment']['date_payment']);?></td>
 			</tr>
