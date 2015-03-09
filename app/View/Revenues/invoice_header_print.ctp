@@ -19,7 +19,7 @@ if($action_print == 'pdf'){
 	$company_name = sprintf('%s%s', $company_name, $this->Html->tag('div', __('KWITANSI')));
 	$no_invoice = sprintf(': %s', $this->Html->tag('strong', $invoice['Invoice']['no_invoice']));
 	$customer_name = sprintf(': %s', $invoice['Customer']['name']);
-	$total = sprintf(': %s', $this->Html->tag('strong', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0))));
+	$total = sprintf(': %s', $this->Html->tag('strong', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_second_code'), array('places' => 0))));
 	$terbilang = sprintf(': %s', $this->Common->terbilang($invoice['Invoice']['total']));
 	$totalUnit = sprintf(__(': JASA ANGKUT SEPEDA MOTOR<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $qty_unit, $this->Common->customDate($invoice['Invoice']['period_from'], 'd/m/Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd/m/Y'));
 	$dateLocation = sprintf('%s, %s', $this->Common->getDataSetting( $setting, 'pusat' ), date('d F Y'));
@@ -194,7 +194,7 @@ readfile($path.'/'.$filename);
 			<tr>
 				<?php 
 						echo $this->Html->tag('td', __('Uang sejumlah'));
-						echo $this->Html->tag('td', sprintf(': %s', $this->Html->tag('strong', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)))), array(
+						echo $this->Html->tag('td', sprintf(': %s', $this->Html->tag('strong', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_second_code'), array('places' => 0)))), array(
 							'style' => 'padding-left: 5px;',
 						));
 				?>

@@ -28,7 +28,7 @@ if($action_print == 'pdf'){
 			$data_print = !empty($data_print)?$data_print:'invoice';
 			
 			if($action == 'tarif' && $data_print == 'invoice'){
-				$cityName = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)) );
+				$cityName = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_second_code'), array('places' => 0)) );
 			}else{
                 if( $data_print == 'date' && !empty($val_detail[0]['Invoice']['invoice_date']) ) {
 					$cityName = $this->Common->customDate($val_detail[0]['Invoice']['invoice_date'], 'd/m/Y');
@@ -38,19 +38,19 @@ if($action_print == 'pdf'){
 			}
 
 			if( !empty($data_print) && $data_print == 'date' ) {
-				$totalMerge = 10;
-				$totalMergeTotal = 6;
+				$totalMerge = 11;
+				$totalMergeTotal = 7;
 				$colName = '<th class="text-center">Kota</th>';
 			} else {
-				$totalMerge = 9;
-				$totalMergeTotal = 5;
-				$colName = __('Kota');
+				$totalMerge = 10;
+				$totalMergeTotal = 6;
+				$colName = '';
 			}
 
 			$content .= '<table border="1" width="100%" style="padding: 5px; font-size: 25px;">
 				<thead class="header-invoice-print">
 					<tr>
-						<th colspan="'.$totalMerge.'" class="text-center" style="text-transform:uppercase;">'.$cityName.'</th>
+						<th colspan="'.$totalMerge.'" style="text-transform:uppercase;text-align: center;">'.$cityName.'</th>
 					</tr>
 					<tr>
 						<th class="text-center">No.</th>
@@ -101,7 +101,7 @@ if($action_print == 'pdf'){
 					$colom .= $this->Html->tag('td', $qty, array(
 						'align' => 'center'
 					));
-					$colom .= $this->Html->tag('td', $this->Number->currency($price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+					$colom .= $this->Html->tag('td', $this->Number->currency($price, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
 						'align' => 'right'
 					));
 
@@ -109,13 +109,13 @@ if($action_print == 'pdf'){
 						if( !empty($value['RevenueDetail']['total_price_unit']) ) {
 							$total = $value['RevenueDetail']['total_price_unit'];
 
-							$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+							$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
 								'align' => 'right'
 							));
 						} else {
 							if( empty($rowSpan) ) {
 								$total = !empty($value['Revenue']['tarif_per_truck'])?$value['Revenue']['tarif_per_truck']:0;
-								$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+								$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
 									'align' => 'right',
 									'data-rowspan' => 'data-value'
 								));
@@ -126,7 +126,7 @@ if($action_print == 'pdf'){
 					}else{
 						$total = $price * $qty;
 
-						$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+						$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
 							'align' => 'right'
 						));
 					}
@@ -147,9 +147,9 @@ if($action_print == 'pdf'){
 				$colom .= $this->Html->tag('td', $this->Number->format($grandTotalUnit), array(
 					'align' => 'center'
 				));
-				$colom .= $this->Html->tag('td', '&nbsp;');
-				$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
-					'align' => 'right'
+				$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+					'align' => 'right',
+					'colspan' => 2,
 				));
 				$colom .= $this->Html->tag('td', '&nbsp;');
 
@@ -177,7 +177,7 @@ if($action_print == 'pdf'){
 
     $title_tipe_invoice = '';
     if($action == 'tarif'){
-		$title_tipe_invoice = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0)) );
+		$title_tipe_invoice = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_second_code'), array('places' => 0)) );
 	}else{
 		$title_tipe_invoice = $val_detail[0]['City']['name'];
 	}

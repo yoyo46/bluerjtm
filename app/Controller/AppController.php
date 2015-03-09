@@ -51,6 +51,7 @@ class AppController extends Controller {
 		Configure::write('__Site.truck_photo_folder', 'trucks');
 
 		Configure::write('__Site.config_currency_code', 'IDR ');
+		Configure::write('__Site.config_currency_second_code', 'Rp ');
 		Configure::write('__Site.config_pagination', 20);
 		Configure::write('__Site.config_pagination_unlimited', 1000);
 		Configure::write('__Site.cache_view_path', '/images/view');
