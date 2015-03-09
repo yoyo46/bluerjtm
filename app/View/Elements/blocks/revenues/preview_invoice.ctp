@@ -22,7 +22,11 @@
 			                if( $data_print == 'date' && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
 								echo $this->Common->customDate($val_detail[0]['Revenue']['date_revenue'], 'd/m/Y');
 			                } else {
-								echo $val_detail[0]['City']['name'];
+			                	if( $val_detail[0]['Revenue']['revenue_tarif_type'] == 'per_truck' ) {
+									echo $val_detail[0]['Revenue']['no_doc'];
+			                	} else {
+									echo $val_detail[0]['City']['name'];
+								}
 			                }
 						}
 				?>

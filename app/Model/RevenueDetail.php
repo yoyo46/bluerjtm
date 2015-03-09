@@ -244,7 +244,11 @@ class RevenueDetail extends AppModel {
                     $date_revenue = date('d/m/Y', strtotime($value['Revenue']['date_revenue']));
                     $result[$date_revenue][] = $value;
                 } else {
-                    $result[$value['RevenueDetail']['city_id']][] = $value;
+                    if( $value['Revenue']['revenue_tarif_type'] == 'per_truck' ) {
+                        $result[$value['Revenue']['no_doc']][] = $value;
+                    } else {
+                        $result[$value['RevenueDetail']['city_id']][] = $value;
+                    }
                 }
             }
             $revenue_detail = $result;

@@ -188,7 +188,7 @@
 				$invoiced = true;
 			}
 
-			// if( !$invoiced ) {
+			if( !$invoiced ) {
 	    		echo $this->Form->button(__('Posting'), array(
 	    			'type' => 'submit',
 					'class'=> 'btn btn-success submit-form btn-lg',
@@ -200,7 +200,7 @@
 					'class'=> 'btn btn-primary submit-form',
 					'action_type' => 'unposting'
 				));
-			// }
+			}
 	?>
 </div>
 <?php
