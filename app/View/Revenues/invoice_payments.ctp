@@ -56,8 +56,8 @@
             ?>
             <tr>
                 <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:false;?></td>
-                <td><?php echo !empty($value['Bank']['name'])?$value['Bank']['name']:false;?></td>
                 <td><?php echo $value['InvoicePayment']['nodoc'];?></td>
+                <td><?php echo !empty($value['Bank']['name'])?$value['Bank']['name']:false;?></td>
                 <td align="right"><?php echo $this->Number->currency($value['InvoicePayment']['total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <td class="text-center"><?php echo $this->Common->customDate($value['InvoicePayment']['date_payment']);?></td>
                 <td>
