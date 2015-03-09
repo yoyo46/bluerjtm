@@ -264,7 +264,7 @@ class RevenueDetail extends AppModel {
                     'RevenueDetail.invoice_id' => $invoice_id,
                 ),
                 'group' => array(
-                    'RevenueDetail.revenue_id',
+                    'RevenueDetail.invoice_id',
                 ),
                 'fields' => array(
                     'SUM(RevenueDetail.qty_unit) AS qty_unit',
