@@ -1,6 +1,6 @@
 <div class="box box-primary">
     <div class="box-header">
-        <h3 class="box-title"><?php echo __('Detail Info LKU'); ?></h3>
+        <h3 class="box-title"><?php echo __('Detail Info Pembayaran Invoice'); ?></h3>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
