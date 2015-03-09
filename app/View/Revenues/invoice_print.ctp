@@ -58,6 +58,7 @@ if($action_print == 'pdf'){
 						<th class="text-center">No. Truk</th>
 						<th class="text-center">No.DO</th>
 						<th class="text-center">No.SJ</th>
+						<th class="text-center">Keterangan</th>
 						<th class="text-center">Tanggal</th>
 						<th class="text-center">Total Unit</th>
 						<th class="text-center">Harga</th>
@@ -91,6 +92,7 @@ if($action_print == 'pdf'){
 					$colom .= $this->Html->tag('td', $nopol);
 					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
 					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_sj']);
+					$colom .= $this->Html->tag('td', $value['RevenueDetail']['note']);
 
 					if(!empty($value['Revenue']['date_revenue'])){
 						$date_revenue = $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y');

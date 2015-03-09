@@ -6,14 +6,15 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th width="15%" class="text-top"><?php echo __('Tujuan');?></th>
-                    <th width="13%" class="text-top"><?php echo __('No. DO');?></th>
+                    <th width="12%" class="text-top"><?php echo __('Tujuan');?></th>
+                    <th width="12%" class="text-top"><?php echo __('No. DO');?></th>
                     <th width="12%" class="text-top"><?php echo __('No. SJ');?></th>
+                    <th width="12%" class="text-top"><?php echo __('Keterangan');?></th>
                     <th width="15%" class="text-top"><?php echo __('Group Motor');?></th>
-                    <th width="10%" class="text-top"><?php echo __('Jumlah Unit');?></th>
+                    <th width="7%" class="text-top"><?php echo __('Jumlah Unit');?></th>
                     <th width="5%" class="text-top text-center"><?php echo __('Charge');?></th>
                     <th width="15%" class="text-top text-center"><?php printf(__('Harga Unit'), Configure::read('__Site.config_currency_code'));?></th>
-                    <th width="20%" class="text-top text-center"><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
+                    <th width="15%" class="text-top text-center"><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
                 </tr>
             </thead>
             <tbody class="tipe-motor-table">
@@ -101,6 +102,17 @@
                                 'class' => 'form-control',
                                 'required' => false,
                                 'value' => (isset($detail['RevenueDetail']['no_sj']) && !empty($detail['RevenueDetail']['no_sj'])) ? $detail['RevenueDetail']['no_sj'] : ''
+                            ));
+                        ?>
+                    </td>
+                    <td class="note-data">
+                        <?php 
+                            echo $this->Form->input('RevenueDetail.note.', array(
+                                'type' => 'text',
+                                'label' => false,
+                                'class' => 'form-control',
+                                'required' => false,
+                                'value' => (isset($detail['RevenueDetail']['note']) && !empty($detail['RevenueDetail']['note'])) ? $detail['RevenueDetail']['note'] : ''
                             ));
                         ?>
                     </td>
@@ -246,7 +258,7 @@
                     }
                 ?>
                 <tr id="field-grand-total-revenue">
-                    <td align="right" colspan="7"><?php echo __('Total')?></td>
+                    <td align="right" colspan="8"><?php echo __('Total')?></td>
                     <td align="right" id="grand-total-revenue">
                         <?php 
                                 if( !empty($tarifTruck) ) {
@@ -270,7 +282,7 @@
                     </td>
                 </tr>
                 <tr id="field-additional-total-revenue" class="<?php echo ($flagTruck)?'':'hide'; ?>">
-                    <td align="right" colspan="7"><?php echo __('Additional Charge')?></td>
+                    <td align="right" colspan="8"><?php echo __('Additional Charge')?></td>
                     <td align="right" id="additional-total-revenue">
                         <?php 
                                 if( !empty($tarifTruck['addCharge']) ) {
@@ -283,7 +295,7 @@
                     </td>
                 </tr>
                 <tr class="additional-input-revenue" id="ppn-grand-total-revenue">
-                    <td align="right" colspan="7" class="relative">
+                    <td align="right" colspan="8" class="relative">
                         <?php 
                             echo $this->Form->input('Revenue.ppn', array(
                                 'type' => 'text',
@@ -304,7 +316,7 @@
                     <td>&nbsp;</td>
                 </tr>
                 <tr class="additional-input-revenue" id="pph-grand-total-revenue">
-                    <td align="right" colspan="7" class="relative">
+                    <td align="right" colspan="8" class="relative">
                         <?php 
                                 echo $this->Form->input('Revenue.pph', array(
                                     'type' => 'text',
@@ -325,7 +337,7 @@
                     <td>&nbsp;</td>
                 </tr>
                 <tr id="all-grand-total-revenue">
-                    <td align="right" colspan="7"><?php echo __('Total');?></td>
+                    <td align="right" colspan="8"><?php echo __('Total');?></td>
                     <td align="right" id="all-total-revenue">
                         <?php 
                                 if($pph > 0){

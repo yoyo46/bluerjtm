@@ -4,11 +4,11 @@
 				$data_print = !empty($data_print)?$data_print:'invoice';
 
 				if( !empty($data_print) && $data_print == 'date' ) {
+					$totalMerge = 11;
+					$totalMergeTotal = 7;
+				} else {
 					$totalMerge = 10;
 					$totalMergeTotal = 6;
-				} else {
-					$totalMerge = 9;
-					$totalMergeTotal = 5;
 				}
 ?>
 <table border="1" width="100%" style="margin-top: 20px;">
@@ -40,6 +40,7 @@
 			<th class="text-center"><?php echo __('No. Truk');?></th>
 			<th class="text-center"><?php echo __('No.DO');?></th>
 			<th class="text-center"><?php echo __('No. SJ');?></th>
+			<th class="text-center"><?php echo __('Keterangan');?></th>
 			<th class="text-center"><?php echo __('Tanggal');?></th>
 			<th class="text-center"><?php echo __('Total Unit');?></th>
 			<th class="text-center"><?php echo __('Harga');?></th>
@@ -73,6 +74,7 @@
 						$colom .= $this->Html->tag('td', $nopol);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_sj']);
+						$colom .= $this->Html->tag('td', $value['RevenueDetail']['note']);
 						$colom .= $this->Html->tag('td', $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y'));
 						$colom .= $this->Html->tag('td', $qty, array(
 							'align' => 'center'

@@ -2722,6 +2722,7 @@ class RevenuesController extends AppController {
                     $data_detail['RevenueDetail'] = array(
                         'no_do' => $value,
                         'no_sj' => $data['RevenueDetail']['no_sj'][$key],
+                        'note' => $data['RevenueDetail']['note'][$key],
                         'qty_unit' => !empty($data['RevenueDetail']['qty_unit'][$key])?$data['RevenueDetail']['qty_unit'][$key]:0,
                         'price_unit' => !empty($data['RevenueDetail']['price_unit'][$key])?$data['RevenueDetail']['price_unit'][$key]:0,
                         'total_price_unit' => !empty($data['RevenueDetail']['total_price_unit'][$key])?$data['RevenueDetail']['total_price_unit'][$key]:0,
@@ -2832,6 +2833,7 @@ class RevenuesController extends AppController {
                         $data_detail['RevenueDetail'] = array(
                             'no_do' => $value,
                             'no_sj' => $data['RevenueDetail']['no_sj'][$key],
+                            'note' => $data['RevenueDetail']['note'][$key],
                             'qty_unit' => !empty($data['RevenueDetail']['qty_unit'][$key])?$data['RevenueDetail']['qty_unit'][$key]:0,
                             'price_unit' => !empty($data['RevenueDetail']['price_unit'][$key])?$data['RevenueDetail']['price_unit'][$key]:0,
                             'total_price_unit' => !empty($data['RevenueDetail']['total_price_unit'][$key])?$data['RevenueDetail']['total_price_unit'][$key]:0,
@@ -2916,6 +2918,7 @@ class RevenuesController extends AppController {
                             'RevenueDetail' => array(
                                 'no_do' => $value['RevenueDetail']['no_do'],
                                 'no_sj' => $value['RevenueDetail']['no_sj'],
+                                'note' => $value['RevenueDetail']['note'],
                                 'to_city_name' => !empty($value['City']['name'])?$value['City']['name']:'',
                                 'price_unit' => array(
                                     'jenis_unit' => $value['RevenueDetail']['payment_type'],
@@ -2995,6 +2998,7 @@ class RevenuesController extends AppController {
                         'RevenueDetail' => array(
                             'no_do' => $this->request->data['RevenueDetail']['no_do'][$key],
                             'no_sj' => $this->request->data['RevenueDetail']['no_sj'][$key],
+                            'note' => $this->request->data['RevenueDetail']['note'][$key],
                             'to_city_name' => $to_city_name,
                             'price_unit' => $tarif,
                             'total_price_unit' => $this->request->data['RevenueDetail']['total_price_unit'][$key],
