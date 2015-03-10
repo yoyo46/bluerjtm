@@ -660,32 +660,30 @@
 						'class'=> 'btn btn-default',
 					));
 
-					if( !empty($data_local['Ttuj']['is_draft']) || empty($data_local) ) {
-			    		echo $this->Form->button(__('Commit'), array(
-							'class'=> 'btn btn-success submit-form btn-lg',
-							'type' => 'submit',
-							'action_type' => 'commit'
-						));
-			    		echo $this->Form->button(__('Draft'), array(
-							'class'=> 'btn btn-primary submit-form',
-							'type' => 'submit',
-							'action_type' => 'draft'
-						));
-			    		echo $this->Form->hidden('is_draft', array(
-							'value'=> 1,
-							'id' => 'is_draft'
-						));
-			    	} else if( in_array('update_ttuj_commit', $allowModule) ) {
-			    		echo $this->Form->button(__('Simpan'), array(
-							'class'=> 'btn btn-success submit-form btn-lg',
-							'type' => 'submit',
-							'action_type' => 'commit'
-						));
-			    	}
-		   //  		echo $this->Form->hidden('is_unit', array(
-					// 	'value'=> 1,
-					// 	'class' => 'is_unit'
-					// ));
+                    if( empty($data_local['Ttuj']['is_invoice']) ) {
+						if( !empty($data_local['Ttuj']['is_draft']) || empty($data_local) ) {
+				    		echo $this->Form->button(__('Commit'), array(
+								'class'=> 'btn btn-success submit-form btn-lg',
+								'type' => 'submit',
+								'action_type' => 'commit'
+							));
+				    		echo $this->Form->button(__('Draft'), array(
+								'class'=> 'btn btn-primary submit-form',
+								'type' => 'submit',
+								'action_type' => 'draft'
+							));
+				    		echo $this->Form->hidden('is_draft', array(
+								'value'=> 1,
+								'id' => 'is_draft'
+							));
+				    	} else if( in_array('update_ttuj_commit', $allowModule) ) {
+				    		echo $this->Form->button(__('Simpan'), array(
+								'class'=> 'btn btn-success submit-form btn-lg',
+								'type' => 'submit',
+								'action_type' => 'commit'
+							));
+				    	}
+				    }
 			?>
 		</div>
 	</div>

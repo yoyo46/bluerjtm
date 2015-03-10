@@ -272,7 +272,7 @@
                 </td>
                 <?php 
                         if( !empty($value['Ttuj']['is_invoice']) ) {
-                                echo $this->Html->tag('td', '<span class="label label-code">Invoiced</span>');
+                            echo $this->Html->tag('td', '<span class="label label-code">Invoiced</span>');
                         } else if(!empty($value['Ttuj']['is_pool'])){
                             echo $this->Html->tag('td', '<span class="label label-success">Sampai Pool</span>');
                         } else if(!empty($value['Ttuj']['is_balik'])){
@@ -324,14 +324,18 @@
                                 }
                             } else {
                                 if( empty($value['Ttuj']['is_invoice']) && in_array('update_ttuj', $allowModule) ) {
-                                    echo $this->Html->link('Rubah', array(
-                                        'controller' => 'revenues',
-                                        'action' => 'ttuj_edit',
-                                        $id
-                                    ), array(
-                                        'class' => 'btn btn-primary btn-xs'
-                                    ));
+                                    $labelEdit = __('Ubah');
+                                } else {
+                                    $labelEdit = __('Lihat');
                                 }
+
+                                echo $this->Html->link($labelEdit, array(
+                                    'controller' => 'revenues',
+                                    'action' => 'ttuj_edit',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
 
                                 if( in_array('delete_ttuj', $allowModule) ) {
                                     echo $this->Html->link(__('Hapus'), array(

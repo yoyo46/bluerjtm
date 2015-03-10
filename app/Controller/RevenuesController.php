@@ -111,6 +111,7 @@ class RevenuesController extends AppController {
     function ttuj_edit( $id ){
         if( in_array('update_ttuj', $this->allowModule) ) {
             $this->loadModel('Ttuj');
+            $this->loadModel('Revenue');
             $ttuj = $this->Ttuj->getData('first', array(
                 'conditions' => array(
                     'Ttuj.id' => $id
@@ -118,6 +119,7 @@ class RevenuesController extends AppController {
             ));
 
             if(!empty($ttuj)){
+                $ttuj = $this->Revenue->getPaid( $ttuj, $ttuj['Ttuj']['id'] );
                 $data_action = false;
 
                 if( !empty($ttuj['Ttuj']['is_retail']) ) {
