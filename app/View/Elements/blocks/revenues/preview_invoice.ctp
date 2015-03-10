@@ -83,7 +83,7 @@
 						$colom .= $this->Html->tag('td', $qty, array(
 							'align' => 'center'
 						));
-						$colom .= $this->Html->tag('td', $this->Number->currency($price, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+						$colom .= $this->Html->tag('td', $this->Number->currency($price, '', array('places' => 0)), array(
 							'align' => 'right'
 						));
 
@@ -91,13 +91,13 @@
 							if( !empty($value['RevenueDetail']['total_price_unit']) ) {
 								$total = $value['RevenueDetail']['total_price_unit'];
 
-								$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+								$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
 									'align' => 'right'
 								));
 							} else {
 								if( empty($rowSpan) ) {
 									$total = !empty($value['Revenue']['tarif_per_truck'])?$value['Revenue']['tarif_per_truck']:0;
-									$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+									$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
 										'align' => 'right',
 										'data-rowspan' => 'data-value'
 									));
@@ -108,7 +108,7 @@
 						}else{
 							$total = $price * $qty;
 
-							$colom .= $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+							$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
 								'align' => 'right'
 							));
 						}
