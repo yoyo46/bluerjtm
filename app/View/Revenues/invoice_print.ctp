@@ -92,7 +92,7 @@ if($action_print == 'pdf'){
 					$colom .= $this->Html->tag('td', $nopol);
 					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
 					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_sj']);
-					$colom .= $this->Html->tag('td', $value['RevenueDetail']['note']);
+					$colom .= $this->Html->tag('td', !empty($value['RevenueDetail']['note'])?$value['RevenueDetail']['note']:'');
 
 					if(!empty($value['Revenue']['date_revenue'])){
 						$date_revenue = $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y');
