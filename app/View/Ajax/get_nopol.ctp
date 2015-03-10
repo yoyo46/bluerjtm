@@ -18,6 +18,18 @@
 			echo $this->Html->tag('div', $driver_id, array(
 				'id' => 'driver_id',
 			));
+
+			if( !empty($sjOutstanding) ) {
+				echo $this->Html->tag('div', $this->Html->link(sprintf(__(' ( %s SJ belum kembali )'), $sjOutstanding), array(
+					'controller' => 'revenues',
+					'action' => 'surat_jalan_outstanding',
+					$driver_id,
+				), array(
+					'target' => '_blank',
+				)), array(
+					'id' => 'sj_outstanding',
+				));
+			}
 		}
 
 		echo $this->Html->tag('div', !empty($uangJalan['UangJalan']['uang_jalan_1'])?$uangJalan['UangJalan']['uang_jalan_1']:0, array(

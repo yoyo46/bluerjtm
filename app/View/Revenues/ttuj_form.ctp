@@ -148,7 +148,9 @@
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('driver_name',array(
-										'label'=> __('Supir'), 
+										'label'=> sprintf(__('Supir %s'), $this->Html->tag('small', '', array(
+											'class' => 'sj_outstanding'
+										))), 
 										'class'=>'form-control driver_name',
 										'required' => false,
 										'readonly' => true,
@@ -222,6 +224,7 @@
 				</div>
 			</div>
 			<?php 
+					/*
 					if( !empty($data_local) ) {
 			?>
 			<div class="col-sm-6">
@@ -244,7 +247,7 @@
 			            </div>
 			            <div class="sj-date <?php echo (!empty($this->request->data['Ttuj']['getting_sj'])) ? '' : 'hide'; ?>">
 							<div class="row">
-								<div class="col-sm-6">
+								<div class="col-sm-9">
 									<div class="form-group">
 										<?php 
 												echo $this->Form->input('date_sj',array(
@@ -255,7 +258,17 @@
 										?>
 									</div>
 								</div>
-								<div></div>
+								<div class="col-sm-3">
+									<div class="form-group">
+										<?php 
+												echo $this->Form->input('qty_sj',array(
+													'label'=> __('Qty SJ'), 
+													'class'=>'form-control',
+													'type' => 'text'
+												));
+										?>
+									</div>
+								</div>
 							</div>
 			            </div>
 				    </div>
@@ -263,6 +276,7 @@
 			</div>
 			<?php 
 					}
+		            */
 			?>
 			<div class="col-sm-6">
 				<div class="box box-primary">

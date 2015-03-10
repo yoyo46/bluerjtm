@@ -72,12 +72,12 @@ class Ttuj extends AppModel {
                 'message' => 'Biaya Uang Jalan belum disetting'
             ),
         ),
-        'date_sj' => array(
-            'getSJ' => array(
-                'rule' => array('getSJ'),
-                'message' => 'Tgl SJ diterima harap dipilih'
-            ),
-        ),
+        // 'date_sj' => array(
+        //     'getSJ' => array(
+        //         'rule' => array('getSJ'),
+        //         'message' => 'Tgl SJ diterima harap dipilih'
+        //     ),
+        // ),
 	);
 
     var $belongsTo = array(
@@ -114,6 +114,13 @@ class Ttuj extends AppModel {
                 'TtujPerlengkapan.status' => 1,
             ),
         ),
+        'SuratJalan' => array(
+            'className' => 'SuratJalan',
+            'foreignKey' => 'ttuj_id',
+            'conditions' => array(
+                'SuratJalan.status' => 1,
+            ),
+        ),
     );
 
 	function getData($find, $options = false, $is_merge = true){
@@ -129,7 +136,8 @@ class Ttuj extends AppModel {
                 'DriverPenganti',
                 'TtujTipeMotor' => array(
                     'City',
-                    'TipeMotor'
+                    'ColorMotor',
+                    'TipeMotor',
                 ),
                 'TtujPerlengkapan',
                 'UangJalan' => array(
@@ -179,12 +187,57 @@ class Ttuj extends AppModel {
         }
     }
 
-    function getSJ () {
-        if( !empty($this->data['Ttuj']['getting_sj']) && empty($this->data['Ttuj']['date_sj']) ) {
-            return false;
-        } else {
-            return true;
+    function getSumUnit($data, $ttuj_id){
+        if( empty($data['Qty']) ){
+            $data_merge = $this->TtujTipeMotor->find('first', array(
+                'conditions' => array(
+                    'TtujTipeMotor.status' => 1,
+                    'TtujTipeMotor.ttuj_id' => $ttuj_id,
+                ),
+                'group' => array(
+                    'TtujTipeMotor.ttuj_id',
+                ),
+                'fields' => array(
+                    'SUM(TtujTipeMotor.qty) AS qty',
+                ),
+            ));
+
+            if(!empty($data_merge[0])){
+                $data['Qty'] = $data_merge[0]['qty'];
+            }
+
+
+            $data_merge = $this->SuratJalan->find('first', array(
+                'conditions' => array(
+                    'SuratJalan.status' => 1,
+                    'SuratJalan.ttuj_id' => $ttuj_id,
+                ),
+                'group' => array(
+                    'SuratJalan.ttuj_id',
+                ),
+                'fields' => array(
+                    'SUM(SuratJalan.qty) AS qty',
+                ),
+            ));
+
+            if(!empty($data_merge[0])){
+                $data['QtySJ'] = $data_merge[0]['qty'];
+            }
         }
+
+        return $data;
+    }
+
+    function getSJOutstanding ( $driver_id ) {
+        $sjCount = $this->getData('count', array(
+            'conditions' => array(
+                'Ttuj.status' => 1,
+                'Ttuj.driver_id' => $driver_id,
+                'Ttuj.is_sj_completed' => 0,
+            ),
+        ));
+
+        return $sjCount;
     }
 }
 ?>

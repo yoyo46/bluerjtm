@@ -51,9 +51,11 @@ class AjaxController extends AppController {
 		$this->loadModel('UangKuli');
 		$this->loadModel('UangJalan');
 		$this->loadModel('Truck');
+		$this->loadModel('Ttuj');
 		$result = $this->Truck->getInfoTruck($truck_id);
 
 		if( !empty($result) ) {
+			$sjOutstanding = $this->Ttuj->getSJOutstanding( $result['Truck']['driver_id'] );
 			$uangJalan = $this->UangJalan->getNopol( $from_city_id, $to_city_id, $result['Truck']['capacity'] );
 			$uangKuli = $this->UangKuli->getUangKuli( $from_city_id, $to_city_id, $customer_id, $result['Truck']['capacity'] );
 			$uangKuliMuat = !empty($uangKuli['UangKuliMuat'])?$uangKuli['UangKuliMuat']:false;
@@ -62,7 +64,7 @@ class AjaxController extends AppController {
 
 		$this->set(compact(
 			'result', 'uangJalan', 'uangKuliMuat',
-			'uangKuliBongkar'
+			'uangKuliBongkar', 'sjOutstanding'
 		));
 		$this->render('get_nopol');
 	}

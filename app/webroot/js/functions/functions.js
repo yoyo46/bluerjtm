@@ -284,6 +284,10 @@ var getUangjalan = function ( response ) {
     $('.driver_id').val($(response).filter('#driver_id').html());
     var uang_jalan_1 = $(response).filter('#uang_jalan_1').html().replace(/,/gi, "");
 
+    if( $(response).filter('#sj_outstanding').html() != null ) {
+        $('.sj_outstanding').html($(response).filter('#sj_outstanding').html());
+    }
+
     var total_muatan = 0;
     var qtyLen = $('#ttujDetail tbody tr').length;
 

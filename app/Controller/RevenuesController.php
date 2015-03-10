@@ -818,7 +818,10 @@ class RevenuesController extends AppController {
             'conditions' => array(
                 // 'Truck.driver_id <>' => 0,
                 'Truck.status' => 1,
-                'Ttuj.id' => NULL,
+                'OR' => array(
+                    'Ttuj.id' => NULL,
+                    'Ttuj.is_pool' => 1,
+                ),
             ),
             'fields' => array(
                 'Truck.id', 'Truck.nopol'
@@ -4542,5 +4545,195 @@ class RevenuesController extends AppController {
         }else if($data_action == 'excel'){
             $this->layout = 'ajax';
         }
+    }
+
+    public function surat_jalan( $ttuj_id = false ) {
+        // if( in_array('view_ttuj', $this->allowModule) ) {
+            $this->loadModel('Ttuj');
+            $this->loadModel('SuratJalan');
+
+            $ttuj = $this->Ttuj->getData('first', array(
+                'conditions' => array(
+                    'Ttuj.id' => $ttuj_id
+                )
+            ));
+
+            if( !empty($ttuj) ) {
+                $ttuj = $this->Ttuj->getSumUnit( $ttuj, $ttuj_id );
+                $qtySJNow = !empty($ttuj['QtySJ'])?$ttuj['QtySJ']:0;
+                $qtyTipeMotor = !empty($ttuj['Qty'])?$ttuj['Qty']:0;
+                $flagAdd = false;
+                $this->set('active_menu', 'surat_jalan');
+                $this->set('sub_module_title', __('Surat Jalan'));
+
+                if( $qtySJNow < $qtyTipeMotor ) {
+                    $flagAdd = true;
+                }
+
+                $suratJalans = $this->SuratJalan->getData('all', array(
+                    'conditions' => array(
+                        'SuratJalan.status' => 1,
+                        'SuratJalan.ttuj_id' => $ttuj_id,
+                    ),
+                ));
+
+                $this->set('suratJalans', $suratJalans);
+                $this->set('ttuj_id', $ttuj_id);
+                $this->set('ttuj', $ttuj);
+                $this->set('flagAdd', $flagAdd);
+            } else {
+                $this->redirect($this->referer());
+            }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    function surat_jalan_add( $id = false ){
+        // if( in_array('insert_cities', $this->allowModule) ) {
+            $this->loadModel('Ttuj');
+            $ttuj = $this->Ttuj->getData('first', array(
+                'conditions' => array(
+                    'Ttuj.id' => $id
+                )
+            ));
+
+            if( !empty($ttuj) ) {
+                $ttuj = $this->Ttuj->getSumUnit( $ttuj, $id );
+                $this->set('sub_module_title', __('Terima Surat Jalan'));
+                $this->doSuratJalan($id, $ttuj);
+            } else {
+                $this->redirect($this->referer());
+            }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    function doSuratJalan( $ttuj_id = false, $ttuj = false ){
+        $qtySJNow = !empty($ttuj['QtySJ'])?$ttuj['QtySJ']:0;
+        $qtyTipeMotor = !empty($ttuj['Qty'])?$ttuj['Qty']:0;
+
+        if( $qtySJNow < $qtyTipeMotor ) {
+            if(!empty($this->request->data)){
+                $this->loadModel('SuratJalan');
+                $data = $this->request->data;
+                $qtySJDiterima = !empty($data['SuratJalan']['qty'])?$data['SuratJalan']['qty']:0;
+                $qtySJNow += $qtySJDiterima;
+                $data['SuratJalan']['tgl_surat_jalan'] = $this->MkCommon->getDate($data['SuratJalan']['tgl_surat_jalan']);
+                $data['SuratJalan']['ttuj_id'] = $ttuj_id;
+
+                $this->SuratJalan->create();
+                $this->SuratJalan->set($data);
+
+                if($this->SuratJalan->validates($data)){
+                    if($this->SuratJalan->save($data)){
+                        if( $qtySJNow >= $qtyTipeMotor ) {
+                            $this->Ttuj->set('is_sj_completed', 1);
+                            $this->Ttuj->id = $ttuj_id;
+                            $this->Ttuj->save();
+                        }
+
+                        $this->MkCommon->setCustomFlash(__('Sukses menyimpan penerimaan SJ'), 'success');
+                        $this->Log->logActivity( sprintf(__('Sukses menerima SJ #%s'), $this->SuratJalan->id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                        $this->redirect(array(
+                            'controller' => 'revenues',
+                            'action' => 'surat_jalan',
+                            $ttuj_id,
+                        ));
+                    }else{
+                        $this->MkCommon->setCustomFlash(__('Gagal menyimpan penerimaan SJ'), 'error'); 
+                        $this->Log->logActivity( __('Gagal menyimpan penerimaan SJ'), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    }
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal menyimpan penerimaan SJ'), 'error');
+                }
+            }
+
+            $this->set('active_menu', 'surat_jalan');
+            $this->set('ttuj_id', $ttuj_id);
+            $this->render('surat_jalan_add');
+        } else {
+            $this->MkCommon->setCustomFlash(__('SJ telah lengkap diterima'), 'error');
+            $this->redirect($this->referer());
+        }
+    }
+
+    function surat_jalan_delete( $id = false ){
+        // if( in_array('delete_cities', $this->allowModule) ) {
+            $this->loadModel('SuratJalan');
+            $this->loadModel('Ttuj');
+            $locale = $this->SuratJalan->getData('first', array(
+                'conditions' => array(
+                    'SuratJalan.id' => $id
+                )
+            ));
+
+            if( !empty($locale) && !empty($locale['Ttuj']['id']) ){
+                $this->SuratJalan->id = $id;
+                $this->SuratJalan->set('status', 0);
+
+                if($this->SuratJalan->save()){
+                    $this->Ttuj->id = $locale['Ttuj']['id'];
+                    $this->Ttuj->set('is_sj_completed', 0);
+                    $this->Ttuj->save();
+
+                    $this->MkCommon->setCustomFlash(__('Sukses membatalkan SJ.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses membatalkan SJ ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal membatalkan SJ.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal membatalkan SJ ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('SJ tidak ditemukan.'), 'error');
+            }
+
+            $this->redirect($this->referer());
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    public function surat_jalan_outstanding( $driver_id = false ) {
+        // if( in_array('delete_cities', $this->allowModule) ) {
+            $this->loadModel('Ttuj');
+            $this->loadModel('Revenue');
+            $this->loadModel('Driver');
+            $driver = $this->Driver->getData('first', array(
+                'conditions' => array(
+                    'Driver.id' => $driver_id,
+                )
+            ), false);
+
+            if( !empty($driver) ) {
+                $ttujs = $this->Ttuj->getData('all', array(
+                    'conditions' => array(
+                        'Ttuj.driver_id' => $driver_id,
+                        'Ttuj.is_sj_completed' => 0,
+                        'Ttuj.status' => 1,
+                    )
+                ), false);
+
+                if( !empty($ttujs) ) {
+                    foreach ($ttujs as $key => $ttuj) {
+                        $ttuj = $this->Revenue->getPaid( $ttuj, $ttuj['Ttuj']['id'] );
+                        $ttujs[$key] = $ttuj;
+                    }
+
+                    $this->set('sub_module_title', __('Surat Jalan Belum Kembali'));
+                    $this->set('active_menu', 'ttuj');
+                    $this->set('ttujs', $ttujs);
+                    $this->set('driver', $driver);
+                } else {
+                    $this->MkCommon->setCustomFlash(__('SJ tidak ditemukan.'), 'error');
+                    $this->redirect($this->referer());
+                }
+            } else {
+                $this->MkCommon->setCustomFlash(__('Supir tidak ditemukan.'), 'error');
+                $this->redirect($this->referer());
+            }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
     }
 }

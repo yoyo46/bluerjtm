@@ -13,6 +13,10 @@
 	width: auto;
 	right: 10px;
 }
+
+.ttuj-form small {
+	color: #808080;
+}
 /*
 **	END TTUJ
 */
