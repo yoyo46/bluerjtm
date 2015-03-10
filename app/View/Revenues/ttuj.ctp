@@ -271,7 +271,9 @@
                     ?>
                 </td>
                 <?php 
-                        if(!empty($value['Ttuj']['is_pool'])){
+                        if( !empty($value['Ttuj']['is_invoice']) ) {
+                                echo $this->Html->tag('td', '<span class="label label-code">Invoiced</span>');
+                        } else if(!empty($value['Ttuj']['is_pool'])){
                             echo $this->Html->tag('td', '<span class="label label-success">Sampai Pool</span>');
                         } else if(!empty($value['Ttuj']['is_balik'])){
                             echo $this->Html->tag('td', '<span class="label label-info">Balik</span>');
@@ -282,11 +284,7 @@
                         } else if(!empty($value['Ttuj']['is_draft'])){
                             echo $this->Html->tag('td', '<span class="label label-default">Draft</span>');
                         } else{
-                            if( !empty($value['Ttuj']['is_invoice']) ) {
-                                echo $this->Html->tag('td', '<span class="label label-primary">Invoiced</span>');
-                            } else {
-                                echo $this->Html->tag('td', '<span class="label label-primary">Commit</span>');
-                            }
+                            echo $this->Html->tag('td', '<span class="label label-primary">Commit</span>');
                         }
                 ?>
                 <td><?php echo $this->Common->customDate($value['Ttuj']['created']);?></td>

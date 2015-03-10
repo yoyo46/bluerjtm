@@ -3913,3 +3913,7 @@ thead th.headcol {
 .total-row{
   font-weight: bold;
 }
+
+.label-code {
+  background-color: #85144b;
+}

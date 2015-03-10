@@ -242,15 +242,22 @@
 								?>
 			                </label>
 			            </div>
-						<div class="form-group sj-date <?php echo (!empty($this->request->data['Ttuj']['getting_sj'])) ? '' : 'hide'; ?>">
-							<?php 
-									echo $this->Form->input('date_sj',array(
-										'label'=> __('Tgl SJ diterima'), 
-										'class'=>'form-control custom-date',
-										'type' => 'text'
-									));
-							?>
-						</div>
+			            <div class="sj-date <?php echo (!empty($this->request->data['Ttuj']['getting_sj'])) ? '' : 'hide'; ?>">
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<?php 
+												echo $this->Form->input('date_sj',array(
+													'label'=> __('Tgl SJ diterima'), 
+													'class'=>'form-control custom-date',
+													'type' => 'text'
+												));
+										?>
+									</div>
+								</div>
+								<div></div>
+							</div>
+			            </div>
 				    </div>
 				</div>
 			</div>

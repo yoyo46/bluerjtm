@@ -4197,11 +4197,7 @@ class SettingsController extends AppController {
     public function uang_jalan_import( $download = false ) {
         if(!empty($download)){
             $link_url = FULL_BASE_URL . '/files/uang_jalan.xls';
-            header("Content-type: application/vnd.ms-excel");
-            header("Content-Disposition: attachment; filename=uang_jalan.xls");
-            header("Pragma: no-cache");
-            header("Expires: 0");
-            readfile($link_url);
+            $this->redirect($link_url);
             exit;
         } else {
             $this->loadModel('City');
