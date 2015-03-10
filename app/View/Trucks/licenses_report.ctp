@@ -70,7 +70,7 @@
 	                            	$label_stnk_1th = $this->Html->tag('span', '<i class="fa fa-times" title="expired"></i> '.$this->Common->customDate($truck['Truck']['tgl_stnk']), array(
 	                            		'class' => 'label label-danger'
 	                            	));
-	                            }else if($raw_now_date >= $tgl_stnk_1th && $raw_now_date <= $tgl_stnk_1th_expired){
+	                            }else if($raw_now_date <= $tgl_stnk_1th_expired){
 	                            	$label_stnk_1th = $this->Html->tag('span', '<i class="fa fa-check" title="Aktif"></i> '.$this->Common->customDate($truck['Truck']['tgl_stnk']), array(
 		                            	'class' => 'label label-success'
 		                            ));
@@ -86,13 +86,13 @@
                             $label_stnk_5th = ' - ';
                             if(!empty($truck['Truck']['tgl_stnk_plat'])){
                                 $tgl_stnk_5th = strtotime($truck['Truck']['tgl_stnk_plat']);
-                                $tgl_stnk_5th_expired = strtotime('-1 month', $tgl_stnk_1th);
+                                $tgl_stnk_5th_expired = strtotime('-1 month', $tgl_stnk_5th);
 
                                 if($raw_now_date >= $tgl_stnk_5th){
                                     $label_stnk_5th = $this->Html->tag('span', '<i class="fa fa-times" title="expired"></i> '.$this->Common->customDate($truck['Truck']['tgl_stnk_plat']), array(
                                         'class' => 'label label-danger'
                                     ));
-                                }else if($raw_now_date >= $tgl_stnk_5th && $raw_now_date <= $tgl_stnk_5th_expired){
+                                }else if($raw_now_date <= $tgl_stnk_5th_expired){
                                     $label_stnk_5th = $this->Html->tag('span', '<i class="fa fa-check" title="Aktif"></i> '.$this->Common->customDate($truck['Truck']['tgl_stnk_plat']), array(
                                         'class' => 'label label-success'
                                     ));
@@ -107,13 +107,13 @@
                             $label_kir = ' - ';
                             if(!empty($truck['Truck']['tgl_kir'])){
                                 $tgl_kir = strtotime($truck['Truck']['tgl_kir']);
-                                $tgl_kir_expired = strtotime('-1 month', $tgl_stnk_1th);
+                                $tgl_kir_expired = strtotime('-1 month', $tgl_kir);
 
                                 if($raw_now_date >= $tgl_kir){
                                     $label_kir = $this->Html->tag('span', '<i class="fa fa-times" title="expired"></i> '.$this->Common->customDate($truck['Truck']['tgl_kir']), array(
                                         'class' => 'label label-danger'
                                     ));
-                                }else if($raw_now_date >= $tgl_kir && $raw_now_date <= $tgl_kir_expired){
+                                }else if($raw_now_date <= $tgl_kir_expired){
                                     $label_kir = $this->Html->tag('span', '<i class="fa fa-check" title="Aktif"></i> '.$this->Common->customDate($truck['Truck']['tgl_kir']), array(
                                         'class' => 'label label-success'
                                     ));
@@ -128,13 +128,13 @@
                             $label_siup = ' - ';
                             if(!empty($truck['Truck']['tgl_siup'])){
                                 $tgl_siup = strtotime($truck['Truck']['tgl_siup']);
-                                $tgl_siup_expired = strtotime('-1 month', $tgl_stnk_1th);
+                                $tgl_siup_expired = strtotime('-1 month', $tgl_siup);
 
                                 if($raw_now_date >= $tgl_siup){
                                     $label_siup = $this->Html->tag('span', '<i class="fa fa-times" title="expired"></i> '.$this->Common->customDate($truck['Truck']['tgl_siup']), array(
                                         'class' => 'label label-danger'
                                     ));
-                                }else if($raw_now_date >= $tgl_siup && $raw_now_date <= $tgl_siup_expired){
+                                }else if($raw_now_date <= $tgl_siup_expired){
                                     $label_siup = $this->Html->tag('span', '<i class="fa fa-check" title="Aktif"></i> '.$this->Common->customDate($truck['Truck']['tgl_siup']), array(
                                         'class' => 'label label-success'
                                     ));
@@ -214,7 +214,7 @@
                         $label_stnk_1th = $this->Html->tag('span', '<i class="fa fa-times" title="expired"></i> '.$this->Common->customDate($truck['Truck']['tgl_stnk']), array(
                             'class' => 'label label-danger'
                         ));
-                    }else if($raw_now_date >= $tgl_stnk_1th && $raw_now_date <= $tgl_stnk_1th_expired){
+                    }else if($raw_now_date <= $tgl_stnk_1th_expired){
                         $label_stnk_1th = $this->Html->tag('span', '<i class="fa fa-check" title="Aktif"></i> '.$this->Common->customDate($truck['Truck']['tgl_stnk']), array(
                             'class' => 'label label-success'
                         ));
@@ -230,13 +230,13 @@
                 $label_stnk_5th = ' - ';
                 if(!empty($truck['Truck']['tgl_stnk_plat'])){
                     $tgl_stnk_5th = strtotime($truck['Truck']['tgl_stnk_plat']);
-                    $tgl_stnk_5th_expired = strtotime('-1 month', $tgl_stnk_1th);
+                    $tgl_stnk_5th_expired = strtotime('-1 month', $tgl_stnk_5th);
 
                     if($raw_now_date >= $tgl_stnk_5th){
                         $label_stnk_5th = $this->Html->tag('span', '<i class="fa fa-times" title="expired"></i> '.$this->Common->customDate($truck['Truck']['tgl_stnk_plat']), array(
                             'class' => 'label label-danger'
                         ));
-                    }else if($raw_now_date >= $tgl_stnk_5th && $raw_now_date <= $tgl_stnk_5th_expired){
+                    }else if($raw_now_date <= $tgl_stnk_5th_expired){
                         $label_stnk_5th = $this->Html->tag('span', '<i class="fa fa-check" title="Aktif"></i> '.$this->Common->customDate($truck['Truck']['tgl_stnk_plat']), array(
                             'class' => 'label label-success'
                         ));
@@ -251,13 +251,13 @@
                 $label_kir = ' - ';
                 if(!empty($truck['Truck']['tgl_kir'])){
                     $tgl_kir = strtotime($truck['Truck']['tgl_kir']);
-                    $tgl_kir_expired = strtotime('-1 month', $tgl_stnk_1th);
+                    $tgl_kir_expired = strtotime('-1 month', $tgl_kir);
 
                     if($raw_now_date >= $tgl_kir){
                         $label_kir = $this->Html->tag('span', '<i class="fa fa-times" title="expired"></i> '.$this->Common->customDate($truck['Truck']['tgl_kir']), array(
                             'class' => 'label label-danger'
                         ));
-                    }else if($raw_now_date >= $tgl_kir && $raw_now_date <= $tgl_kir_expired){
+                    }else if($raw_now_date <= $tgl_kir_expired){
                         $label_kir = $this->Html->tag('span', '<i class="fa fa-check" title="Aktif"></i> '.$this->Common->customDate($truck['Truck']['tgl_kir']), array(
                             'class' => 'label label-success'
                         ));
@@ -272,13 +272,13 @@
                 $label_siup = ' - ';
                 if(!empty($truck['Truck']['tgl_siup'])){
                     $tgl_siup = strtotime($truck['Truck']['tgl_siup']);
-                    $tgl_siup_expired = strtotime('-1 month', $tgl_stnk_1th);
+                    $tgl_siup_expired = strtotime('-1 month', $tgl_siup);
 
                     if($raw_now_date >= $tgl_siup){
                         $label_siup = $this->Html->tag('span', '<i class="fa fa-times" title="expired"></i> '.$this->Common->customDate($truck['Truck']['tgl_siup']), array(
                             'class' => 'label label-danger'
                         ));
-                    }else if($raw_now_date >= $tgl_siup && $raw_now_date <= $tgl_siup_expired){
+                    }else if($raw_now_date <= $tgl_siup_expired){
                         $label_siup = $this->Html->tag('span', '<i class="fa fa-check" title="Aktif"></i> '.$this->Common->customDate($truck['Truck']['tgl_siup']), array(
                             'class' => 'label label-success'
                         ));
