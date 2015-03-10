@@ -149,35 +149,35 @@
                 <tr>
                     <?php 
                             echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Customer')), array(
+                                'style' => 'width: 150px;'.$tdStyle,
+                                'class' => 'text-center text-middle',
+                            ));
+                            echo $this->Html->tag('th', __('Bulan'), array(
                                 'style' => 'width: 100px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                             ));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Bulan')), array(
-                                'style' => 'width: 100px;'.$tdStyle,
+                            echo $this->Html->tag('th', __('Saldo Awal'), array(
+                                'style' => 'width: 150px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                             ));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Saldo Awal')), array(
-                                'style' => 'width: 100px;'.$tdStyle,
+                            echo $this->Html->tag('th', __('Tagihan'), array(
+                                'style' => 'width: 150px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                             ));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Tagihan')), array(
-                                'style' => 'width: 100px;'.$tdStyle,
+                            echo $this->Html->tag('th', __('Total'), array(
+                                'style' => 'width: 150px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                             ));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Total')), array(
-                                'style' => 'width: 100px;'.$tdStyle,
+                            echo $this->Html->tag('th', __('Collection'), array(
+                                'style' => 'width: 150px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                             ));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Collection')), array(
-                                'style' => 'width: 100px;'.$tdStyle,
+                            echo $this->Html->tag('th', __('Kw. Batal'), array(
+                                'style' => 'width: 150px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                             ));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Kw. Batal')), array(
-                                'style' => 'width: 100px;'.$tdStyle,
-                                'class' => 'text-center text-middle',
-                            ));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Saldo Akhir')), array(
-                                'style' => 'width: 100px;'.$tdStyle,
+                            echo $this->Html->tag('th', __('Saldo Akhir'), array(
+                                'style' => 'width: 150px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                             ));
                     ?>
@@ -186,10 +186,23 @@
             <tbody>
                 <?php
                         if(!empty($customers)){
+                            $grandtotalSaldoAwal = 0;
+                            $grandtotalTagihan = 0;
+                            $grandtotal = 0;
+                            $grandtotalColection = 0;
+                            $grandtotalKwBatal = 0;
+                            $grandtotalSaldoAkhir = 0;
+
                             foreach ($customers as $key => $value) {
                                 $id = $value['Customer']['id'];
                                 $customer_name = !empty($value['Customer']['code'])?$value['Customer']['code']:'-';
                                 $flag = false;
+                                $grandtotalSaldoAwalCust = 0;
+                                $grandtotalTagihanCust = 0;
+                                $grandtotalCust = 0;
+                                $grandtotalColectionCust = 0;
+                                $grandtotalKwBatalCust = 0;
+                                $grandtotalSaldoAkhirCust = 0;
                 ?>
                 <!-- <tr> -->
                     <?php 
@@ -204,29 +217,106 @@
                                     $monthPaidTotal = !empty($value['InvoicePayment'][$monthDt])?$value['InvoicePayment'][$monthDt]:0;
                                     $monthPaidVoidTotal = !empty($value['InvoicePaymentVoid'][$monthDt])?$value['InvoicePaymentVoid'][$monthDt]:0;
                                     $totalInvoice = $monthTotal+$beforeMonthTotal;
+                                    $totalSaldo = $totalInvoice-$monthPaidTotal-$monthPaidVoidTotal;
+
+                                    $grandtotalSaldoAwal += $beforeMonthTotal;
+                                    $grandtotalTagihan += $monthTotal;
+                                    $grandtotal += $totalInvoice;
+                                    $grandtotalColection += $monthPaidTotal;
+                                    $grandtotalKwBatal += $monthPaidVoidTotal;
+                                    $grandtotalSaldoAkhir += $totalSaldo;
+
+                                    $grandtotalSaldoAwalCust += $beforeMonthTotal;
+                                    $grandtotalTagihanCust += $monthTotal;
+                                    $grandtotalCust += $totalInvoice;
+                                    $grandtotalColectionCust += $monthPaidTotal;
+                                    $grandtotalKwBatalCust += $monthPaidVoidTotal;
+                                    $grandtotalSaldoAkhirCust += $totalSaldo;
 
                                     echo '<tr>';
                                     if( !$flag ) {
                                         echo $this->Html->tag('td', $customer_name, array(
-                                            'rowspan' => $totalCnt+1,
+                                            'rowspan' => $totalCnt+2,
+                                            'style' => 'vertical-align: middle;',
                                         ));
                                     }
 
                                     echo $this->Html->tag('td', $monthName);
-                                    echo $this->Html->tag('td', $beforeMonthTotal);
-                                    echo $this->Html->tag('td', $monthTotal);
-                                    echo $this->Html->tag('td', $totalInvoice);
-                                    echo $this->Html->tag('td', $monthPaidTotal);
-                                    echo $this->Html->tag('td', $monthPaidVoidTotal);
-                                    echo $this->Html->tag('td', $totalInvoice-$monthPaidTotal+$monthPaidVoidTotal);
+                                    echo $this->Html->tag('td', $this->Number->format($beforeMonthTotal, '', array('places' => 0)), array(
+                                        'style' => 'text-align: right;',
+                                    ));
+                                    echo $this->Html->tag('td', $this->Number->format($monthTotal, '', array('places' => 0)), array(
+                                        'style' => 'text-align: right;',
+                                    ));
+                                    echo $this->Html->tag('td', $this->Number->format($totalInvoice, '', array('places' => 0)), array(
+                                        'style' => 'text-align: right;',
+                                    ));
+                                    echo $this->Html->tag('td', $this->Number->format($monthPaidTotal, '', array('places' => 0)), array(
+                                        'style' => 'text-align: right;',
+                                    ));
+                                    echo $this->Html->tag('td', $this->Number->format($monthPaidVoidTotal, '', array('places' => 0)), array(
+                                        'style' => 'text-align: right;',
+                                    ));
+                                    echo $this->Html->tag('td', $this->Number->format($totalSaldo, '', array('places' => 0)), array(
+                                        'style' => 'text-align: right;',
+                                    ));
                                     echo '</tr>';
                                     $flag = true;
                                 }
+
+                                echo '<tr>';
+                                echo $this->Html->tag('td', __('Total'), array(
+                                    'style' => 'font-weight: bold;text-align: left;',
+                                ));
+                                echo $this->Html->tag('td', $this->Number->format($grandtotalSaldoAwalCust, '', array('places' => 0)), array(
+                                    'style' => 'font-weight: bold;text-align: right;',
+                                ));
+                                echo $this->Html->tag('td', $this->Number->format($grandtotalTagihanCust, '', array('places' => 0)), array(
+                                    'style' => 'font-weight: bold;text-align: right;',
+                                ));
+                                echo $this->Html->tag('td', $this->Number->format($grandtotalCust, '', array('places' => 0)), array(
+                                    'style' => 'font-weight: bold;text-align: right;',
+                                ));
+                                echo $this->Html->tag('td', $this->Number->format($grandtotalColectionCust, '', array('places' => 0)), array(
+                                    'style' => 'font-weight: bold;text-align: right;',
+                                ));
+                                echo $this->Html->tag('td', $this->Number->format($grandtotalKwBatalCust, '', array('places' => 0)), array(
+                                    'style' => 'font-weight: bold;text-align: right;',
+                                ));
+                                echo $this->Html->tag('td', $this->Number->format($grandtotalSaldoAkhirCust, '', array('places' => 0)), array(
+                                    'style' => 'font-weight: bold;text-align: right;',
+                                ));
+                                echo '</tr>';
                             }
                     ?>
                 <!-- </tr> -->
                 <?php
                             }
+
+                            echo '<tr>';
+                            echo $this->Html->tag('td', __('Grand Total:'), array(
+                                'style' => 'font-weight: bold;text-align: center;',
+                                'colspan' => 2,
+                            ));
+                            echo $this->Html->tag('td', $this->Number->format($grandtotalSaldoAwal, '', array('places' => 0)), array(
+                                'style' => 'font-weight: bold;text-align: right;',
+                            ));
+                            echo $this->Html->tag('td', $this->Number->format($grandtotalTagihan, '', array('places' => 0)), array(
+                                'style' => 'font-weight: bold;text-align: right;',
+                            ));
+                            echo $this->Html->tag('td', $this->Number->format($grandtotal, '', array('places' => 0)), array(
+                                'style' => 'font-weight: bold;text-align: right;',
+                            ));
+                            echo $this->Html->tag('td', $this->Number->format($grandtotalColection, '', array('places' => 0)), array(
+                                'style' => 'font-weight: bold;text-align: right;',
+                            ));
+                            echo $this->Html->tag('td', $this->Number->format($grandtotalKwBatal, '', array('places' => 0)), array(
+                                'style' => 'font-weight: bold;text-align: right;',
+                            ));
+                            echo $this->Html->tag('td', $this->Number->format($grandtotalSaldoAkhir, '', array('places' => 0)), array(
+                                'style' => 'font-weight: bold;text-align: right;',
+                            ));
+                            echo '</tr>';
                         }
                 ?>
             </tbody>

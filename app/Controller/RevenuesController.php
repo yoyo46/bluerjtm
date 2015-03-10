@@ -4416,6 +4416,7 @@ class RevenuesController extends AppController {
 
                 $invoicePayments = $this->InvoicePayment->getData('all', array(
                     'conditions' => array(
+                        'InvoicePayment.status' => 1,
                         'InvoicePayment.customer_id' => $customer['Customer']['id'],
                         'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') >=' => $fromDt,
                         'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $toDt,
@@ -4488,6 +4489,7 @@ class RevenuesController extends AppController {
 
                         $invoicePaymentsBefore = $this->InvoicePayment->getData('first', array(
                             'conditions' => array(
+                                'InvoicePayment.status' => 1,
                                 'InvoicePayment.customer_id' => $customer['Customer']['id'],
                                 'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $monthDt,
                             ),
