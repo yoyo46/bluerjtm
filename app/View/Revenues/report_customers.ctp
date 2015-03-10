@@ -352,62 +352,160 @@
             $table_tr_head = 'background-color: #3C8DBC; border-right: 1px solid #FFFFFF; color: #FFFFFF; font-weight: bold; padding: 0 10px; text-align: left;';
             $table_th = 'padding-top: 3px';
             $table = 'width:100%;font-size: 24px; border: 1px solid #CCC; border-collapse: collapse; padding: 0; margin: 0;';
-        
-            $no = 1;
+            $tdStyle = 'text-align: center;';
             $each_loop_message = '';
 
-            if(!empty($ttujs)){
-                foreach ($ttujs as $key => $value) {
+            $contentHeader = $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Customer')), array(
+                'style' => 'width: 150px;'.$tdStyle,
+            ));
+            $contentHeader .= $this->Html->tag('th', __('Bulan'), array(
+                'style' => 'width: 100px;'.$tdStyle,
+            ));
+            $contentHeader .= $this->Html->tag('th', __('Saldo Awal'), array(
+                'style' => 'width: 150px;'.$tdStyle,
+            ));
+            $contentHeader .= $this->Html->tag('th', __('Tagihan'), array(
+                'style' => 'width: 150px;'.$tdStyle,
+            ));
+            $contentHeader .= $this->Html->tag('th', __('Total'), array(
+                'style' => 'width: 150px;'.$tdStyle,
+            ));
+            $contentHeader .= $this->Html->tag('th', __('Collection'), array(
+                'style' => 'width: 150px;'.$tdStyle,
+            ));
+            $contentHeader .= $this->Html->tag('th', __('Kw. Batal'), array(
+                'style' => 'width: 150px;'.$tdStyle,
+            ));
+            $contentHeader .= $this->Html->tag('th', __('Saldo Akhir'), array(
+                'style' => 'width: 150px;'.$tdStyle,
+            ));
+
+            if(!empty($customers)){
+                $grandtotalSaldoAwal = 0;
+                $grandtotalTagihan = 0;
+                $grandtotal = 0;
+                $grandtotalColection = 0;
+                $grandtotalKwBatal = 0;
+                $grandtotalSaldoAkhir = 0;
+
+                foreach ($customers as $key => $value) {
                     $id = $value['Customer']['id'];
                     $customer_name = !empty($value['Customer']['code'])?$value['Customer']['code']:'-';
-                    $target_rit = !empty($value['Customer']['target_rit'])?$value['Customer']['target_rit']:'-';
-
-                    $content = $this->Html->tag('td', $no);
-                    $content .= $this->Html->tag('td', $customer_name);
-
+                    $flag = false;
+                    $grandtotalSaldoAwalCust = 0;
+                    $grandtotalTagihanCust = 0;
+                    $grandtotalCust = 0;
+                    $grandtotalColectionCust = 0;
+                    $grandtotalKwBatalCust = 0;
+                    $grandtotalSaldoAkhirCust = 0;
+                    
                     if( !empty($totalCnt) ) {
                         for ($i=0; $i <= $totalCnt; $i++) {
-                            $pencapaian = !empty($cntPencapaian[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$cntPencapaian[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
-                            $content .= $this->Html->tag('td', $target_rit, array(
-                                'style' => 'text-align: center;'
+                            $monthName = date('F', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
+                            $monthDt = date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
+                            $beforeMonthDt = date('Y-m', mktime(0, 0, 0, ($fromMonth+$i)-1, 1, $fromYear));
+                            $monthTotal = !empty($value['Invoice'][$monthDt])?$value['Invoice'][$monthDt]:0;
+                            $beforeMonthTotal = !empty($value['InvoiceBefore'][$beforeMonthDt])?$value['InvoiceBefore'][$beforeMonthDt]:0;
+                            $monthPaidTotal = !empty($value['InvoicePayment'][$monthDt])?$value['InvoicePayment'][$monthDt]:0;
+                            $monthPaidVoidTotal = !empty($value['InvoicePaymentVoid'][$monthDt])?$value['InvoicePaymentVoid'][$monthDt]:0;
+                            $totalInvoice = $monthTotal+$beforeMonthTotal;
+                            $totalSaldo = $totalInvoice-$monthPaidTotal-$monthPaidVoidTotal;
+
+                            $grandtotalSaldoAwal += $beforeMonthTotal;
+                            $grandtotalTagihan += $monthTotal;
+                            $grandtotal += $totalInvoice;
+                            $grandtotalColection += $monthPaidTotal;
+                            $grandtotalKwBatal += $monthPaidVoidTotal;
+                            $grandtotalSaldoAkhir += $totalSaldo;
+
+                            $grandtotalSaldoAwalCust += $beforeMonthTotal;
+                            $grandtotalTagihanCust += $monthTotal;
+                            $grandtotalCust += $totalInvoice;
+                            $grandtotalColectionCust += $monthPaidTotal;
+                            $grandtotalKwBatalCust += $monthPaidVoidTotal;
+                            $grandtotalSaldoAkhirCust += $totalSaldo;
+
+                            $each_loop_message .= '<tr>';
+                            if( !$flag ) {
+                                $each_loop_message .= $this->Html->tag('td', $customer_name, array(
+                                    'rowspan' => $totalCnt+2,
+                                    'style' => 'vertical-align: middle;',
+                                ));
+                            }
+
+                            $each_loop_message .= $this->Html->tag('td', $monthName);
+                            $each_loop_message .= $this->Html->tag('td', $this->Number->format($beforeMonthTotal, '', array('places' => 0)), array(
+                                'style' => 'text-align: right;',
                             ));
-                            $content .= $this->Html->tag('td', $pencapaian, array(
-                                'style' => 'text-align: center;'
+                            $each_loop_message .= $this->Html->tag('td', $this->Number->format($monthTotal, '', array('places' => 0)), array(
+                                'style' => 'text-align: right;',
                             ));
+                            $each_loop_message .= $this->Html->tag('td', $this->Number->format($totalInvoice, '', array('places' => 0)), array(
+                                'style' => 'text-align: right;',
+                            ));
+                            $each_loop_message .= $this->Html->tag('td', $this->Number->format($monthPaidTotal, '', array('places' => 0)), array(
+                                'style' => 'text-align: right;',
+                            ));
+                            $each_loop_message .= $this->Html->tag('td', $this->Number->format($monthPaidVoidTotal, '', array('places' => 0)), array(
+                                'style' => 'text-align: right;',
+                            ));
+                            $each_loop_message .= $this->Html->tag('td', $this->Number->format($totalSaldo, '', array('places' => 0)), array(
+                                'style' => 'text-align: right;',
+                            ));
+                            $each_loop_message .= '</tr>';
+                            $flag = true;
                         }
+
+                        $each_loop_message .= '<tr>';
+                        $each_loop_message .= $this->Html->tag('td', __('Total'), array(
+                            'style' => 'font-weight: bold;text-align: left;',
+                        ));
+                        $each_loop_message .= $this->Html->tag('td', $this->Number->format($grandtotalSaldoAwalCust, '', array('places' => 0)), array(
+                            'style' => 'font-weight: bold;text-align: right;',
+                        ));
+                        $each_loop_message .= $this->Html->tag('td', $this->Number->format($grandtotalTagihanCust, '', array('places' => 0)), array(
+                            'style' => 'font-weight: bold;text-align: right;',
+                        ));
+                        $each_loop_message .= $this->Html->tag('td', $this->Number->format($grandtotalCust, '', array('places' => 0)), array(
+                            'style' => 'font-weight: bold;text-align: right;',
+                        ));
+                        $each_loop_message .= $this->Html->tag('td', $this->Number->format($grandtotalColectionCust, '', array('places' => 0)), array(
+                            'style' => 'font-weight: bold;text-align: right;',
+                        ));
+                        $each_loop_message .= $this->Html->tag('td', $this->Number->format($grandtotalKwBatalCust, '', array('places' => 0)), array(
+                            'style' => 'font-weight: bold;text-align: right;',
+                        ));
+                        $each_loop_message .= $this->Html->tag('td', $this->Number->format($grandtotalSaldoAkhirCust, '', array('places' => 0)), array(
+                            'style' => 'font-weight: bold;text-align: right;',
+                        ));
+                        $each_loop_message .= '</tr>';
                     }
-
-                    $each_loop_message .= $this->Html->tag('tr', $content);
-                    $no++;
                 }
-            }
 
-            $topHeader = '';
-            $cityHeader = '';
-
-            if( !empty($totalCnt) ) {
-                for ($i=0; $i <= $totalCnt; $i++) {
-                    $formatDate = 'F';
-
-                    if( $fromYear != $toYear ) {
-                        $formatDate = 'F Y';
-                    }
-                    $topHeader .= $this->Html->tag('th', date($formatDate, mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear)), array(
-                        'colspan' => 2,
-                        'style' => 'text-align: center;'
-                    ));
-                }
-            }
-
-            if( !empty($totalCnt) ) {
-                for ($i=0; $i <= $totalCnt; $i++) {
-                    $cityHeader .= $this->Html->tag('th', __('TARGET UNIT'), array(
-                        'style' => 'text-align: center;'
-                    ));
-                    $cityHeader .= $this->Html->tag('th', __('PENCAPAIAN'), array(
-                        'style' => 'text-align: center;'
-                    ));
-                }
+                $each_loop_message .= '<tr>';
+                $each_loop_message .= $this->Html->tag('td', __('Grand Total:'), array(
+                    'style' => 'font-weight: bold;text-align: center;',
+                    'colspan' => 2,
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Number->format($grandtotalSaldoAwal, '', array('places' => 0)), array(
+                    'style' => 'font-weight: bold;text-align: right;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Number->format($grandtotalTagihan, '', array('places' => 0)), array(
+                    'style' => 'font-weight: bold;text-align: right;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Number->format($grandtotal, '', array('places' => 0)), array(
+                    'style' => 'font-weight: bold;text-align: right;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Number->format($grandtotalColection, '', array('places' => 0)), array(
+                    'style' => 'font-weight: bold;text-align: right;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Number->format($grandtotalKwBatal, '', array('places' => 0)), array(
+                    'style' => 'font-weight: bold;text-align: right;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Number->format($grandtotalSaldoAkhir, '', array('places' => 0)), array(
+                    'style' => 'font-weight: bold;text-align: right;',
+                ));
+                $each_loop_message .= '</tr>';
             }
 
             $date_title = $sub_module_title;
@@ -419,15 +517,10 @@ $tbl = <<<EOD
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <thead>
                 <tr style="$table_tr_head">
-                    <th rowspan="2">No. </th>
-                    <th rowspan="2">ALOKASI</th>
-                    $topHeader
-                </tr>
-                <tr style="$table_tr_head">
-                    $cityHeader
+                    $contentHeader
                 </tr>
             </thead>
-            <tbody>          
+            <tbody>
                 $each_loop_message
             </tbody>
         </table> 
