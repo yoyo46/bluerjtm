@@ -4354,4 +4354,191 @@ class RevenuesController extends AppController {
         }
         $this->redirect($this->referer());
     }
+
+    public function report_customers( $data_action = false ) {
+        $this->loadModel('Customer');
+        $this->loadModel('Invoice');
+        $this->loadModel('InvoicePayment');
+        $fromMonth = '01';
+        $fromYear = date('Y');
+        $toMonth = date('m');
+        $conditions = array(
+            'Customer.status' => 1,
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Ttuj']['customer'] = $customer;
+                $conditions['Customer.id '] = $customer;
+            }
+
+            if( !empty($refine['fromMonth']) ){
+                $fromMonth = urldecode($refine['fromMonth']);
+            }
+
+            if( !empty($refine['fromYear']) ){
+                $fromYear = urldecode($refine['fromYear']);
+            }
+
+            if( !empty($refine['toMonth']) ){
+                $toMonth = urldecode($refine['toMonth']);
+            }
+        }
+        $customers = $this->Customer->getData('all', array(
+            'conditions' => $conditions,
+        ));
+
+        $fromDt = sprintf('%s-%s-01', $fromYear, $fromMonth);
+        $fromDt = date('Y-m', strtotime($fromDt.' -1 day'));
+        $toDt = sprintf('%s-%s', $fromYear, $toMonth);
+        $totalCnt = $toMonth - $fromMonth;
+
+        if( !empty($customers) ) {
+            foreach ($customers as $key => $customer) {
+                $invoices = $this->Invoice->getData('all', array(
+                    'conditions' => array(
+                        'Invoice.status' => 1,
+                        'Invoice.customer_id' => $customer['Customer']['id'],
+                        'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') >=' => $fromDt,
+                        'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => $toDt,
+                    ),
+                    'fields' => array(
+                        'SUM(Invoice.total) total',
+                        'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') invoice_date'
+                    ),
+                    'group' => array(
+                        'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\')'
+                    ),
+                ));
+
+                $invoicePayments = $this->InvoicePayment->getData('all', array(
+                    'conditions' => array(
+                        'InvoicePayment.customer_id' => $customer['Customer']['id'],
+                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') >=' => $fromDt,
+                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $toDt,
+                    ),
+                    'fields' => array(
+                        'SUM(InvoicePayment.total_payment) total',
+                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') date_payment'
+                    ),
+                    'group' => array(
+                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\')'
+                    ),
+                ), false);
+                $invoicePaymentVoids = $this->InvoicePayment->getData('all', array(
+                    'conditions' => array(
+                        'InvoicePayment.status' => 0,
+                        'InvoicePayment.customer_id' => $customer['Customer']['id'],
+                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') >=' => $fromDt,
+                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $toDt,
+                    ),
+                    'fields' => array(
+                        'SUM(InvoicePayment.total_payment) total',
+                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') date_payment'
+                    ),
+                    'group' => array(
+                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\')'
+                    ),
+                ));
+
+                if( !empty($invoices) ) {
+                    foreach ($invoices as $key_invoice => $invoices) {
+                        if( !empty($invoices[0]['invoice_date']) ) {
+                            $dt = $invoices[0]['invoice_date'];
+                            $customer['Invoice'][$dt] = $invoices[0]['total'];
+                        }
+                    }
+                }
+
+                if( !empty($invoicePayments) ) {
+                    foreach ($invoicePayments as $key_invoice => $invoicePayment) {
+                        if( !empty($invoicePayment[0]['date_payment']) ) {
+                            $dt = $invoicePayment[0]['date_payment'];
+                            $customer['InvoicePayment'][$dt] = $invoicePayment[0]['total'];
+                        }
+                    }
+                }
+
+                if( !empty($invoicePaymentVoids) ) {
+                    foreach ($invoicePaymentVoids as $key_invoice => $invoicePayment) {
+                        if( !empty($invoicePayment[0]['date_payment']) ) {
+                            $dt = $invoicePayment[0]['date_payment'];
+                            $customer['InvoicePaymentVoid'][$dt] = $invoicePayment[0]['total'];
+                        }
+                    }
+                }
+
+                if( !empty($totalCnt) ) {
+                    for ($i=0; $i <= $totalCnt; $i++) {
+                        $monthDt = date('Y-m', mktime(0, 0, 0, ($fromMonth+$i)-1, 1, $fromYear));
+
+                        $invoicesBefore = $this->Invoice->getData('first', array(
+                            'conditions' => array(
+                                'Invoice.status' => 1,
+                                'Invoice.customer_id' => $customer['Customer']['id'],
+                                'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => $monthDt,
+                            ),
+                            'fields' => array(
+                                'SUM(Invoice.total) total',
+                            ),
+                        ));
+
+                        $invoicePaymentsBefore = $this->InvoicePayment->getData('first', array(
+                            'conditions' => array(
+                                'InvoicePayment.customer_id' => $customer['Customer']['id'],
+                                'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $monthDt,
+                            ),
+                            'fields' => array(
+                                'SUM(InvoicePayment.total_payment) total',
+                            ),
+                        ));
+                        $invoicePaymentVoidsBefore = $this->InvoicePayment->getData('first', array(
+                            'conditions' => array(
+                                'InvoicePayment.status' => 0,
+                                'InvoicePayment.customer_id' => $customer['Customer']['id'],
+                                'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $monthDt,
+                            ),
+                            'fields' => array(
+                                'SUM(InvoicePayment.total_payment) total',
+                            ),
+                        ));
+                        $totalInvoice = !empty($invoicesBefore[0]['total'])?$invoicesBefore[0]['total']:0;
+                        $totalInvoicePayment = !empty($invoicePaymentsBefore[0]['total'])?$invoicePaymentsBefore[0]['total']:0;
+                        $totalInvoicePaymentVoid = !empty($invoicePaymentVoidsBefore[0]['total'])?$invoicePaymentVoidsBefore[0]['total']:0;
+                        $saldoInvoice = $totalInvoice - $totalInvoicePayment - $totalInvoicePaymentVoid;
+
+                        if( !empty($saldoInvoice) ) {
+                            $customer['InvoiceBefore'][$monthDt] = $saldoInvoice;
+                        }
+                    }
+                }
+
+                $customers[$key] = $customer;
+            }
+        }
+
+        $customerList = $this->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name'
+            )
+        ));
+
+        $this->set('sub_module_title', __('Laporan Revenue Per Customer'));
+        $this->set('active_menu', 'report_customers');
+
+        $this->set(compact(
+            'customers', 'data_action', 'totalCnt',
+            'fromYear', 'fromMonth', 'toMonth',
+            'customerList'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
+    }
 }

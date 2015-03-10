@@ -664,6 +664,17 @@
                                     'class' => ( !empty($active_menu) && $active_menu == 'list_kwitansi' )?'active':'',
                                 ));
                             // }
+
+                            // if( in_array('view_list_kwitansi', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Revenue Per Customer', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'report_customers',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'report_customers' )?'active':'',
+                                ));
+                            // }
                     ?>
                 </ul>
             </li>
