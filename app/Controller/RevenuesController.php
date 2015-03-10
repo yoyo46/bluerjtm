@@ -3318,7 +3318,10 @@ class RevenuesController extends AppController {
 
             $this->paginate = $this->Invoice->getData('paginate', array(
                 'conditions' => $conditions,
-            ));
+                'order' => array(
+                    'Invoice.id' => 'DESC'
+                )
+            ), false);
             $invoices = $this->paginate('Invoice');
 
             if(!empty($invoices)){
@@ -3900,7 +3903,7 @@ class RevenuesController extends AppController {
                 'contain' => array(
                     'Bank'
                 ),
-            ));
+            ), false);
             $invoices = $this->paginate('InvoicePayment');
 
             if(!empty($invoices)){
@@ -4014,7 +4017,7 @@ class RevenuesController extends AppController {
                             $invoice_paid = !empty($invoice_has_paid[0]['invoice_has_paid'])?$invoice_has_paid[0]['invoice_has_paid']:0;
                             $invoice_total = !empty($invoice_has_paid['Invoice']['total'])?$invoice_has_paid['Invoice']['total']:0;
                             
-                            if($invoice_paid > $invoice_total){
+                            if($invoice_paid >= $invoice_total){
                                 $this->Invoice->id = $invoice_id;
                                 $this->Invoice->set(array(
                                     'paid' => 1,
@@ -4169,7 +4172,6 @@ class RevenuesController extends AppController {
                                 ));
                                 $this->Invoice->save();
                             }
-
                         }
                     }
 
@@ -4185,7 +4187,11 @@ class RevenuesController extends AppController {
                 }
 
                 $this->Invoice->InvoicePaymentDetail->InvoicePayment->id = $id;
-                $this->Invoice->InvoicePaymentDetail->InvoicePayment->set('status', 0);
+                $this->Invoice->InvoicePaymentDetail->InvoicePayment->set(array(
+                    'status' => 0,
+                    'is_canceled' => 1,
+                    'canceled_date' => date('d/m/Y')
+                ));
 
                 if($this->Invoice->InvoicePaymentDetail->InvoicePayment->save()){
                     $this->MkCommon->setCustomFlash(__('Berhasil menghapus invoice pembayaran'), 'success');
@@ -4337,6 +4343,11 @@ class RevenuesController extends AppController {
     }
 
     function invoice_delete($id){
+        $is_ajax = $this->RequestHandler->isAjax();
+        $msg = array(
+            'msg' => '',
+            'type' => 'error'
+        );
         if(!empty($id)){
             $this->loadModel('Invoice');
 
@@ -4344,18 +4355,115 @@ class RevenuesController extends AppController {
                 'conditions' => array(
                     'Invoice.status' => 1,
                     'Invoice.id' => $id
+                ),
+                'contain' => array(
+                    'InvoiceDetail'
                 )
             ));
             
             if(!empty($invoice)){
-                
+                if(!empty($this->request->data)){
+                    if(!empty($this->request->data['Invoice']['canceled_date'])){
+                        $this->request->data['Invoice']['canceled_date'] = $this->MkCommon->getDate($this->request->data['Invoice']['canceled_date']);
+                        $this->request->data['Invoice']['is_canceled'] = 1;
+                        $this->request->data['Invoice']['paid'] = 0;
+                        $this->request->data['Invoice']['complete_paid'] = 0;
+                        $this->request->data['Invoice']['status'] = 0;
+
+                        $this->Invoice->id = $id;
+                        $this->Invoice->set($this->request->data);
+
+                        if($this->Invoice->save()){
+                            if($invoice['Invoice']['type_invoice'] == 'region' && !empty($invoice['InvoiceDetail'])){
+                                $revenue_id = Set::extract('/InvoiceDetail/revenue_id', $invoice);
+                            }else{
+                                $revenue_id = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getData('list', array(
+                                    'conditions' => array(
+                                        'RevenueDetail.invoice_id' => $id
+                                    ),
+                                    'group' => array(
+                                        'RevenueDetail.revenue_id'
+                                    ),
+                                    'fields' => array(
+                                        'RevenueDetail.revenue_id'
+                                    )
+                                ));
+                            }
+
+                            if(!empty($revenue_id)){
+                                $this->Invoice->InvoiceDetail->Revenue->updateAll(
+                                    array(
+                                        'transaction_status' => "'posting'"
+                                    ),
+                                    array(
+                                        'Revenue.id' => $revenue_id
+                                    )
+                                );
+                            }
+
+                            $invoice_payment_id = $this->Invoice->InvoicePaymentDetail->getData('list', array(
+                                'conditions' => array(
+                                    'InvoicePaymentDetail.invoice_id' => $id
+                                ),
+                                'group' => array(
+                                    'InvoicePaymentDetail.invoice_payment_id'
+                                ),
+                                'fields' => array(
+                                    'InvoicePaymentDetail.invoice_payment_id'
+                                )
+                            ));
+
+                            if(!empty($invoice_payment_id)){
+                                $this->Invoice->InvoicePaymentDetail->updateAll(
+                                    array(
+                                        'InvoicePaymentDetail.status' => 0
+                                    ),
+                                    array(
+                                        'InvoicePaymentDetail.invoice_payment_id' => $invoice_payment_id
+                                    )
+                                );
+
+                                $this->Invoice->InvoicePaymentDetail->InvoicePayment->updateAll(
+                                    array(
+                                        'InvoicePayment.status' => 0,
+                                        'InvoicePayment.is_canceled' => 1,
+                                        'InvoicePayment.canceled_date' => "'".$this->request->data['Invoice']['canceled_date']."'"
+                                    ),
+                                    array(
+                                        'InvoicePayment.id' => $invoice_payment_id
+                                    )
+                                );
+                            }
+
+                            $msg = array(
+                                'msg' => __('Berhasil menghapus invoice.'),
+                                'type' => 'success'
+                            );
+                            $this->MkCommon->setCustomFlash( $msg['msg'], $msg['type']);  
+                        }
+                    }else{
+                        $msg = array(
+                            'msg' => __('Harap masukkan tanggal pembatalan invoice.'),
+                            'type' => 'error'
+                        );
+                    }
+                }
+
+                $this->set('invoice', $invoice);
             }else{
-                $this->MkCommon->setCustomFlash(__('Invoice tidak ditemukan'), 'error');
+                $msg = array(
+                    'msg' => __('Invoice tidak ditemukan'),
+                    'type' => 'error'
+                );
             }
         }else{
-            $this->MkCommon->setCustomFlash(__('Invoice tidak ditemukan'), 'error');
+            $msg = array(
+                'msg' => __('Invoice tidak ditemukan'),
+                'type' => 'error'
+            );
         }
-        $this->redirect($this->referer());
+
+        $this->set(compact('msg', 'is_ajax'));
     }
 
     public function report_customers( $data_action = false ) {

@@ -62,14 +62,23 @@
                 <td class="text-center"><?php echo $this->Common->customDate($value['InvoicePayment']['date_payment']);?></td>
                 <td>
                     <?php 
-                        if($value['InvoicePayment']['status']){
-                            echo $this->Html->tag('span', 'aktif', array(
-                                'class' => 'label label-success'
-                            ));
+                        if(empty($value['InvoicePayment']['is_canceled'])){
+                            if($value['InvoicePayment']['status']){
+                                echo $this->Html->tag('span', 'aktif', array(
+                                    'class' => 'label label-success'
+                                ));
+                            }else{
+                                echo $this->Html->tag('span', 'non-aktif', array(
+                                    'class' => 'label label-danger'
+                                ));
+                            }
                         }else{
-                            echo $this->Html->tag('span', 'non-aktif', array(
+                            echo $this->Html->tag('span', 'Invoice dibatalkan', array(
                                 'class' => 'label label-danger'
                             ));
+                            if(!empty($value['InvoicePayment']['canceled_date'])){
+                                echo '<br>'.$this->Common->customDate($value['InvoicePayment']['canceled_date'], 'd/m/Y');
+                            }
                         }
                     ?>
                 </td>

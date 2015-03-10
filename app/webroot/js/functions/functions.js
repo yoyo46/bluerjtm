@@ -1610,6 +1610,9 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                     ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
                     pickData();
                     daterangepicker( $('#myModal .modal-body .date-range') );
+                } else if(type_action == 'cancel_invoice'){
+                    submitForm();
+                    datepicker();
                 }
 
                 return false;
@@ -1691,7 +1694,7 @@ var formInput = function( obj ) {
                         var modal_title = $(result).find('.modal-title').html();
                         var modal_content = $(result).find('.modal-content').html();
 
-                        if( type_action == 'event' ) {
+                        if( type_action == 'event' || type_action == 'canceled-date' ) {
                             window.location.reload();
                         } else {
                             $('#myModal #myModalLabel').html(modal_title);
@@ -1703,9 +1706,12 @@ var formInput = function( obj ) {
                             closeModal();
                         }
                     } else {
+                        if(typeof output == 'undefined'){
+                            output = $(result).filter('#form-content').html();
+                        }
                         $('#form-content').html(output);
 
-                        if( type_action == 'event' ) {
+                        if( type_action == 'event' || type_action == 'canceled-date') {
                             pickIcon();
                             pickColor()
                             submitForm();

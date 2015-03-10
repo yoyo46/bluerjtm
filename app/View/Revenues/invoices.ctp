@@ -86,15 +86,23 @@
                 <td align="right"><?php echo $this->Number->currency($value['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <td>
                     <?php 
-                            if(!empty($value['Invoice']['complete_paid'])){
-                                $class_status = 'label label-success';
-                                $status = __('Paid');
-                            } else {
-                                $class_status = 'label label-primary';
-                                $status = __('Unpaid');
+                            if(!empty($value['Invoice']['is_canceled'])){
+                                $class_status = 'label label-danger';
+                                $status = __('Invoice Dibatalkan');
+                            }else{
+                                if(!empty($value['Invoice']['complete_paid'])){
+                                    $class_status = 'label label-success';
+                                    $status = __('Paid');
+                                } else {
+                                    $class_status = 'label label-primary';
+                                    $status = __('Unpaid');
+                                }
                             }
 
                             echo $this->Html->tag('span', $status, array('class' => $class_status));
+                            if(!empty($value['Invoice']['canceled_date'])){
+                                echo '<br>'.$this->Common->customDate($value['Invoice']['canceled_date'], 'd/m/Y');
+                            }
                     ?>
                 </td>
                 <td><?php echo $this->Time->timeAgoInWords($value['Invoice']['created']);?></td>
@@ -124,14 +132,17 @@
                                 'class' => 'btn btn-info btn-xs'
                             ));
 
-                            // echo $this->Html->link(__('Hapus'), array(
-                            //     'controller' => 'revenues',
-                            //     'action' => 'invoice_toggle',
-                            //     $id
-                            // ), array(
-                            //     'class' => 'btn btn-danger btn-xs',
-                            //     'title' => 'Hapus Data Invoice'
-                            // ), __('Anda yakin ingin menghapus data Invoice ini?'));
+                            if(empty($value['Invoice']['is_canceled'])){
+                                echo $this->Html->link(__('Hapus'), array(
+                                    'controller' => 'revenues',
+                                    'action' => 'invoice_delete',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs ajaxModal',
+                                    'data-action' => 'cancel_invoice',
+                                    'title' => 'Hapus Data Invoice'
+                                ));
+                            }
                     ?>
                 </td>
             </tr>
@@ -140,7 +151,7 @@
                     } else {
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '5'
+                            'colspan' => '8'
                         )));
                     }
             ?>
