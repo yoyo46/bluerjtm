@@ -25,6 +25,15 @@
 			'value' =>  (!empty($this->request->data['Invoice']['canceled_date'])) ? $this->Common->customDate($this->request->data['Invoice']['canceled_date']) : date('d/m/Y')
 		));
 
+		echo $this->Form->input('canceled_note', array(
+			'class' => 'form-control',
+			'label' => __('Keterangan (optional)'),
+			'div' => array(
+				'class' => 'form-group'
+			),
+			'type' => 'textarea'
+		));
+
 		echo $this->Form->button('Hapus Data', array(
 			'class' => 'btn btn-success btn-submit-form',
 			'data-action' => 'canceled-date'
