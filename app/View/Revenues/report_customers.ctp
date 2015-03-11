@@ -206,31 +206,31 @@
                 ?>
                 <!-- <tr> -->
                     <?php 
-
+                            $saldoAwal = 0;
                             if( !empty($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {
                                     $monthName = date('F', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
                                     $monthDt = date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
                                     $beforeMonthDt = date('Y-m', mktime(0, 0, 0, ($fromMonth+$i)-1, 1, $fromYear));
                                     $monthTotal = !empty($value['Invoice'][$monthDt])?$value['Invoice'][$monthDt]:0;
-                                    $beforeMonthTotal = !empty($value['InvoiceBefore'][$beforeMonthDt])?$value['InvoiceBefore'][$beforeMonthDt]:0;
+                                    $beforeMonthTotal = !empty($value['InvoiceBefore'][$beforeMonthDt])?$value['InvoiceBefore'][$beforeMonthDt]:$saldoAwal;
                                     $monthPaidTotal = !empty($value['InvoicePayment'][$monthDt])?$value['InvoicePayment'][$monthDt]:0;
-                                    $monthPaidVoidTotal = !empty($value['InvoicePaymentVoid'][$monthDt])?$value['InvoicePaymentVoid'][$monthDt]:0;
+                                    $monthVoidTotal = !empty($value['InvoiceVoid'][$monthDt])?$value['InvoiceVoid'][$monthDt]:0;
                                     $totalInvoice = $monthTotal+$beforeMonthTotal;
-                                    $totalSaldo = $totalInvoice-$monthPaidTotal-$monthPaidVoidTotal;
+                                    $totalSaldo = $totalInvoice-$monthPaidTotal-$monthVoidTotal;
 
                                     $grandtotalSaldoAwal += $beforeMonthTotal;
                                     $grandtotalTagihan += $monthTotal;
                                     $grandtotal += $totalInvoice;
                                     $grandtotalColection += $monthPaidTotal;
-                                    $grandtotalKwBatal += $monthPaidVoidTotal;
+                                    $grandtotalKwBatal += $monthVoidTotal;
                                     $grandtotalSaldoAkhir += $totalSaldo;
 
                                     $grandtotalSaldoAwalCust += $beforeMonthTotal;
                                     $grandtotalTagihanCust += $monthTotal;
                                     $grandtotalCust += $totalInvoice;
                                     $grandtotalColectionCust += $monthPaidTotal;
-                                    $grandtotalKwBatalCust += $monthPaidVoidTotal;
+                                    $grandtotalKwBatalCust += $monthVoidTotal;
                                     $grandtotalSaldoAkhirCust += $totalSaldo;
 
                                     echo '<tr>';
@@ -254,7 +254,7 @@
                                     echo $this->Html->tag('td', $this->Number->format($monthPaidTotal, '', array('places' => 0)), array(
                                         'style' => 'text-align: right;',
                                     ));
-                                    echo $this->Html->tag('td', $this->Number->format($monthPaidVoidTotal, '', array('places' => 0)), array(
+                                    echo $this->Html->tag('td', $this->Number->format($monthVoidTotal, '', array('places' => 0)), array(
                                         'style' => 'text-align: right;',
                                     ));
                                     echo $this->Html->tag('td', $this->Number->format($totalSaldo, '', array('places' => 0)), array(
@@ -262,6 +262,7 @@
                                     ));
                                     echo '</tr>';
                                     $flag = true;
+                                    $saldoAwal = $totalSaldo;
                                 }
 
                                 echo '<tr>';
@@ -407,22 +408,22 @@
                             $monthTotal = !empty($value['Invoice'][$monthDt])?$value['Invoice'][$monthDt]:0;
                             $beforeMonthTotal = !empty($value['InvoiceBefore'][$beforeMonthDt])?$value['InvoiceBefore'][$beforeMonthDt]:0;
                             $monthPaidTotal = !empty($value['InvoicePayment'][$monthDt])?$value['InvoicePayment'][$monthDt]:0;
-                            $monthPaidVoidTotal = !empty($value['InvoicePaymentVoid'][$monthDt])?$value['InvoicePaymentVoid'][$monthDt]:0;
+                            $monthVoidTotal = !empty($value['InvoiceVoid'][$monthDt])?$value['InvoiceVoid'][$monthDt]:0;
                             $totalInvoice = $monthTotal+$beforeMonthTotal;
-                            $totalSaldo = $totalInvoice-$monthPaidTotal-$monthPaidVoidTotal;
+                            $totalSaldo = $totalInvoice-$monthPaidTotal-$monthVoidTotal;
 
                             $grandtotalSaldoAwal += $beforeMonthTotal;
                             $grandtotalTagihan += $monthTotal;
                             $grandtotal += $totalInvoice;
                             $grandtotalColection += $monthPaidTotal;
-                            $grandtotalKwBatal += $monthPaidVoidTotal;
+                            $grandtotalKwBatal += $monthVoidTotal;
                             $grandtotalSaldoAkhir += $totalSaldo;
 
                             $grandtotalSaldoAwalCust += $beforeMonthTotal;
                             $grandtotalTagihanCust += $monthTotal;
                             $grandtotalCust += $totalInvoice;
                             $grandtotalColectionCust += $monthPaidTotal;
-                            $grandtotalKwBatalCust += $monthPaidVoidTotal;
+                            $grandtotalKwBatalCust += $monthVoidTotal;
                             $grandtotalSaldoAkhirCust += $totalSaldo;
 
                             $each_loop_message .= '<tr>';
@@ -446,7 +447,7 @@
                             $each_loop_message .= $this->Html->tag('td', $this->Number->format($monthPaidTotal, '', array('places' => 0)), array(
                                 'style' => 'text-align: right;',
                             ));
-                            $each_loop_message .= $this->Html->tag('td', $this->Number->format($monthPaidVoidTotal, '', array('places' => 0)), array(
+                            $each_loop_message .= $this->Html->tag('td', $this->Number->format($monthVoidTotal, '', array('places' => 0)), array(
                                 'style' => 'text-align: right;',
                             ));
                             $each_loop_message .= $this->Html->tag('td', $this->Number->format($totalSaldo, '', array('places' => 0)), array(

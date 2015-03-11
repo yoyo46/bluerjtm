@@ -3488,6 +3488,14 @@ class RevenuesController extends AppController {
                     if($this->Invoice->save()){
                         $invoice_id = $this->Invoice->id;
 
+                        if( !empty($customer['CustomerPattern']) ) {
+                            $last_number = str_replace($customer['CustomerPattern']['pattern'], '', $data['Invoice']['no_invoice']);
+                            $last_number = intval($last_number)+1;
+                            $this->Customer->CustomerPattern->set('last_number', $last_number);
+                            $this->Customer->CustomerPattern->id = $customer['CustomerPattern']['id'];
+                            $this->Customer->CustomerPattern->save();
+                        }
+
                         if($action == 'tarif'){
                             $revenue_id = $this->Revenue->getData('list', array(
                                 'conditions' => array(
@@ -3545,6 +3553,8 @@ class RevenuesController extends AppController {
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Invoice'), $msg), 'error'); 
                 $this->Log->logActivity( sprintf(__('Gagal %s Invoice'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+
+                $this->request->data['Invoice']['no_invoice'] = $this->MkCommon->getNoInvoice( $customer );
             }
         }else if(!empty($id) && !empty($data_local)){
              $this->request->data = $data_local;
@@ -4540,21 +4550,21 @@ class RevenuesController extends AppController {
                         'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\')'
                     ),
                 ), false);
-                $invoicePaymentVoids = $this->InvoicePayment->getData('all', array(
+                $invoiceVoids = $this->Invoice->getData('all', array(
                     'conditions' => array(
-                        'InvoicePayment.status' => 0,
-                        'InvoicePayment.customer_id' => $customer['Customer']['id'],
-                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') >=' => $fromDt,
-                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $toDt,
+                        'Invoice.is_canceled' => 1,
+                        'Invoice.customer_id' => $customer['Customer']['id'],
+                        'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') >=' => $fromDt,
+                        'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') <=' => $toDt,
                     ),
                     'fields' => array(
-                        'SUM(InvoicePayment.total_payment) total',
-                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') date_payment'
+                        'SUM(Invoice.total) total',
+                        'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') canceled_date'
                     ),
                     'group' => array(
-                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\')'
+                        'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\')'
                     ),
-                ));
+                ), false);
 
                 if( !empty($invoices) ) {
                     foreach ($invoices as $key_invoice => $invoices) {
@@ -4574,59 +4584,54 @@ class RevenuesController extends AppController {
                     }
                 }
 
-                if( !empty($invoicePaymentVoids) ) {
-                    foreach ($invoicePaymentVoids as $key_invoice => $invoicePayment) {
-                        if( !empty($invoicePayment[0]['date_payment']) ) {
-                            $dt = $invoicePayment[0]['date_payment'];
-                            $customer['InvoicePaymentVoid'][$dt] = $invoicePayment[0]['total'];
+                if( !empty($invoiceVoids) ) {
+                    foreach ($invoiceVoids as $key_invoice => $invoiceVoid) {
+                        if( !empty($invoiceVoid[0]['canceled_date']) ) {
+                            $dt = $invoiceVoid[0]['canceled_date'];
+                            $customer['InvoiceVoid'][$dt] = $invoiceVoid[0]['total'];
                         }
                     }
                 }
 
-                if( !empty($totalCnt) ) {
-                    for ($i=0; $i <= $totalCnt; $i++) {
-                        $monthDt = date('Y-m', mktime(0, 0, 0, ($fromMonth+$i)-1, 1, $fromYear));
+                $monthDt = date('Y-m', mktime(0, 0, 0, $fromMonth-1, 1, $fromYear));
+                $invoicesBefore = $this->Invoice->getData('first', array(
+                    'conditions' => array(
+                        'Invoice.status' => 1,
+                        'Invoice.customer_id' => $customer['Customer']['id'],
+                        'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => $monthDt,
+                    ),
+                    'fields' => array(
+                        'SUM(Invoice.total) total',
+                    ),
+                ));
 
-                        $invoicesBefore = $this->Invoice->getData('first', array(
-                            'conditions' => array(
-                                'Invoice.status' => 1,
-                                'Invoice.customer_id' => $customer['Customer']['id'],
-                                'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => $monthDt,
-                            ),
-                            'fields' => array(
-                                'SUM(Invoice.total) total',
-                            ),
-                        ));
+                $invoicePaymentsBefore = $this->InvoicePayment->getData('first', array(
+                    'conditions' => array(
+                        'InvoicePayment.status' => 1,
+                        'InvoicePayment.customer_id' => $customer['Customer']['id'],
+                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $monthDt,
+                    ),
+                    'fields' => array(
+                        'SUM(InvoicePayment.total_payment) total',
+                    ),
+                ));
+                $invoiceVoidBefore = $this->Invoice->getData('first', array(
+                    'conditions' => array(
+                        'Invoice.is_canceled' => 1,
+                        'Invoice.customer_id' => $customer['Customer']['id'],
+                        'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') <=' => $monthDt,
+                    ),
+                    'fields' => array(
+                        'SUM(Invoice.total) total',
+                    ),
+                ), false);
+                $totalInvoice = !empty($invoicesBefore[0]['total'])?$invoicesBefore[0]['total']:0;
+                $totalInvoicePayment = !empty($invoicePaymentsBefore[0]['total'])?$invoicePaymentsBefore[0]['total']:0;
+                $totalInvoicePaymentVoid = !empty($invoiceVoidBefore[0]['total'])?$invoiceVoidBefore[0]['total']:0;
+                $saldoInvoice = $totalInvoice - $totalInvoicePayment - $totalInvoicePaymentVoid;
 
-                        $invoicePaymentsBefore = $this->InvoicePayment->getData('first', array(
-                            'conditions' => array(
-                                'InvoicePayment.status' => 1,
-                                'InvoicePayment.customer_id' => $customer['Customer']['id'],
-                                'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $monthDt,
-                            ),
-                            'fields' => array(
-                                'SUM(InvoicePayment.total_payment) total',
-                            ),
-                        ));
-                        $invoicePaymentVoidsBefore = $this->InvoicePayment->getData('first', array(
-                            'conditions' => array(
-                                'InvoicePayment.status' => 0,
-                                'InvoicePayment.customer_id' => $customer['Customer']['id'],
-                                'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $monthDt,
-                            ),
-                            'fields' => array(
-                                'SUM(InvoicePayment.total_payment) total',
-                            ),
-                        ));
-                        $totalInvoice = !empty($invoicesBefore[0]['total'])?$invoicesBefore[0]['total']:0;
-                        $totalInvoicePayment = !empty($invoicePaymentsBefore[0]['total'])?$invoicePaymentsBefore[0]['total']:0;
-                        $totalInvoicePaymentVoid = !empty($invoicePaymentVoidsBefore[0]['total'])?$invoicePaymentVoidsBefore[0]['total']:0;
-                        $saldoInvoice = $totalInvoice - $totalInvoicePayment - $totalInvoicePaymentVoid;
-
-                        if( !empty($saldoInvoice) ) {
-                            $customer['InvoiceBefore'][$monthDt] = $saldoInvoice;
-                        }
-                    }
+                if( !empty($saldoInvoice) ) {
+                    $customer['InvoiceBefore'][$monthDt] = $saldoInvoice;
                 }
 
                 $customers[$key] = $customer;

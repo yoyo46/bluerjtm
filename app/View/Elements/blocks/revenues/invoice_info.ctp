@@ -59,3 +59,8 @@
 		</div>
 	</div>
 </div>
+<?php 
+		echo $this->Form->hidden('Invoice.pattern',array(
+			'id' => 'pattern-code',
+		));
+?>

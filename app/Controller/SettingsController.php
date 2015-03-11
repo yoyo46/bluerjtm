@@ -4745,4 +4745,73 @@ class SettingsController extends AppController {
         //     $this->redirect($this->referer());
         // }
     }
+
+    public function customer_pattern( $customer_id = false ) {
+        // if( in_array('update_calendar_colors', $this->allowModule) ) {
+            $this->loadModel('Customer');
+            $this->loadModel('CustomerPattern');
+
+            $customer = $this->Customer->getData('first', array(
+                'conditions' => array(
+                    'Customer.id' => $customer_id
+                )
+            ));
+
+            if( !empty($customer) ) {
+                $this->set('sub_module_title', __('Pattern Customer'));
+                $customerPattern = $this->CustomerPattern->getData('first', array(
+                    'conditions' => array(
+                        'CustomerPattern.customer_id' => $customer_id
+                    )
+                ));
+
+                $this->doCustomerPattern($customer, $customerPattern);
+            } else {
+                $this->MkCommon->setCustomFlash(__('Customer tidak ditemukan'), 'error');  
+                $this->redirect($this->referer());
+            }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    function doCustomerPattern($customer = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            $data['CustomerPattern']['customer_id'] = $customer['Customer']['id'];
+
+            if( !empty($data_local) ){
+                $this->CustomerPattern->id = $data_local['CustomerPattern']['id'];
+            }else{
+                $this->CustomerPattern->create();
+            }
+            
+            $this->CustomerPattern->set($data);
+
+            if($this->CustomerPattern->validates($data)){
+                if($this->CustomerPattern->save($data)){
+                    $this->MkCommon->setCustomFlash(__('Berhasil menyimpan kode pattern'), 'success');
+                    $this->Log->logActivity( sprintf(__('Berhasil menyimpan kode pattern #%s'), $this->CustomerPattern->id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'customer_pattern',
+                        $customer['Customer']['id'],
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal menyimpan kode pattern Customer #%s'), 'error');  
+                    $this->Log->logActivity( sprintf(__('Gagal menyimpan kode pattern Customer #%s'), $customer['Customer']['id']), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal menyimpan kode pattern Customer'), 'error');
+            }
+        } else if( !empty($data_local) ){
+            $this->request->data = $data_local;
+        }
+
+        $this->set('active_menu', 'customers');
+        $this->set('module_title', 'Data Master');
+        $this->set(compact(
+            'customer', 'data_local'
+        ));
+    }
 }

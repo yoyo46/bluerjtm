@@ -71,6 +71,13 @@ class Customer extends AppModel {
         )
 	);
 
+    var $hasOne = array(
+        'CustomerPattern' => array(
+            'className' => 'CustomerPattern',
+            'foreignKey' => 'customer_id',
+        ),
+    );
+
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->virtualFields['customer_name'] = sprintf('CONCAT(%s.name, \' ( \', CustomerType.name, \' )\')', $this->alias);
@@ -91,6 +98,7 @@ class Customer extends AppModel {
                 'CustomerType',
                 'CustomerGroup',
                 'Bank',
+                'CustomerPattern'
             ),
             'fields' => array(),
             'group' => array(),

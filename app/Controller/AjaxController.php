@@ -608,6 +608,10 @@ class AjaxController extends AppController {
 			$this->request->data['Invoice']['period_from'] = !empty($revenues[0]['period_from'])?$this->MkCommon->customDate($revenues[0]['period_from'], 'd/m/Y'):false;
 			$this->request->data['Invoice']['period_to'] = !empty($revenues[0]['period_to'])?$this->MkCommon->customDate($revenues[0]['period_to'], 'd/m/Y'):false;
 			$this->request->data['Invoice']['total'] = !empty($revenues[0]['total'])?$revenues[0]['total']:0;;
+
+			if( !empty($customer['CustomerPattern']) ) {
+                $this->request->data['Invoice']['pattern'] = $this->MkCommon->getNoInvoice( $customer );
+			}
 		}
 
 		$this->set(compact(

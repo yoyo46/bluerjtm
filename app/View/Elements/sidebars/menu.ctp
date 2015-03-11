@@ -573,7 +573,7 @@
                         $dataMenu = array(
                             'index', 'tarif_angkutan', 'invoices',
                             'invoice_reports', 'revenues', 'ar_period_reports',
-                            'invoice_payments', 'list_kwitansi'
+                            'invoice_payments', 'list_kwitansi', 'report_customers'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {

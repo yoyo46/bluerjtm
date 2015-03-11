@@ -75,6 +75,16 @@
                 <td><?php echo $value['Customer']['order'];?></td>
                 <td class="action">
                     <?php 
+                            // if( in_array('update_customers', $allowModule) ) {
+                                echo $this->Html->link(__('Atur Pattern'), array(
+                                    'controller' => 'settings',
+                                    'action' => 'customer_pattern',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-info btn-xs'
+                                ));
+                            // }
+
                             if( in_array('update_customers', $allowModule) ) {
                                 echo $this->Html->link('Edit', array(
                                     'controller' => 'settings',

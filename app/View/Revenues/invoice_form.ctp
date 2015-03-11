@@ -32,7 +32,8 @@
 							'class'=>'form-control',
 							'required' => false,
 							'placeholder' => __('No. Invoice'),
-							'readonly' => (!empty($id)) ? true : false
+							'readonly' => (!empty($id)) ? true : false,
+							'id' => 'no_invoice',
 						));
 				?>
 	        </div>
