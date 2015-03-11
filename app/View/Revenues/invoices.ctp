@@ -108,31 +108,32 @@
                 <td><?php echo $this->Time->timeAgoInWords($value['Invoice']['created']);?></td>
                 <td class="action">
                     <?php 
-                            echo $this->Html->link(__('Print Detail'), array(
-                                'controller' => 'revenues',
-                                'action' => 'invoice_print',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-primary btn-xs'
-                            ));
-                            echo $this->Html->link(__('Print Per Tanggal'), array(
-                                'controller' => 'revenues',
-                                'action' => 'invoice_print',
-                                $id,
-                                'print' => 'date',
-                            ), array(
-                                'class' => 'btn btn-success btn-xs'
-                            ));
-                            echo $this->Html->link(__('Print Header'), array(
-                                'controller' => 'revenues',
-                                'action' => 'invoice_print',
-                                $id,
-                                'print' => 'header',
-                            ), array(
-                                'class' => 'btn btn-info btn-xs'
-                            ));
-
                             if(empty($value['Invoice']['is_canceled'])){
+                                echo $this->Html->link(__('Print Detail'), array(
+                                    'controller' => 'revenues',
+                                    'action' => 'invoice_print',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
+                                echo $this->Html->link(__('Print Per Tanggal'), array(
+                                    'controller' => 'revenues',
+                                    'action' => 'invoice_print',
+                                    $id,
+                                    'print' => 'date',
+                                ), array(
+                                    'class' => 'btn btn-success btn-xs'
+                                ));
+                                echo $this->Html->link(__('Print Header'), array(
+                                    'controller' => 'revenues',
+                                    'action' => 'invoice_print',
+                                    $id,
+                                    'print' => 'header',
+                                ), array(
+                                    'class' => 'btn btn-info btn-xs'
+                                ));
+
+                            
                                 echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'revenues',
                                     'action' => 'invoice_delete',

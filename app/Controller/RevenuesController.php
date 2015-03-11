@@ -3653,7 +3653,7 @@ class RevenuesController extends AppController {
 
             $action = $invoice['Invoice']['type_invoice'];
             $this->set(compact(
-                'invoice', 'revenue_detail', 'action', 'action_print',
+                'invoice', 'revenue_detail', 'action',
                 'setting', 'data_print'
             ));
         }
@@ -3663,7 +3663,8 @@ class RevenuesController extends AppController {
         }else if($action_print == 'excel'){
             $this->layout = 'ajax';
         }
-
+        
+        $this->set('action_print', $action_print);
         switch ($data_print) {
             case 'header':
                 $this->render('invoice_header_print');

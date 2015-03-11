@@ -84,6 +84,7 @@
                 </td>
                 <td class="action">
                     <?php 
+                        if(empty($value['InvoicePayment']['is_canceled'])){
                             echo $this->Html->link('Info', array(
                                 'controller' => 'revenues',
                                 'action' => 'detail_invoice_payment',
@@ -106,6 +107,7 @@
                             ), array(
                                 'class' => 'btn btn-danger btn-xs'
                             ), __('Apakah Anda yakin ingin menghapus pembayaran invoice ini?'));
+                        }
                     ?>
                 </td>
             </tr>
