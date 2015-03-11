@@ -54,6 +54,7 @@
                                 'required' => false,
                                 'empty' => __('Pilih Status'),
                                 'options' => array(
+                                    'active' => __('Aktif'),
                                     'expired' => 'Expired',
                                     'expired_soon' => __('Akan Segera Expire')
                                 )

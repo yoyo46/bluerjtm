@@ -3111,11 +3111,37 @@ class TrucksController extends AppController {
                         $conditions['OR']['DATE_FORMAT(Truck.tgl_stnk_plat, \'%Y-%m-%d\') <= '] = $now_date;
                         $conditions['OR']['DATE_FORMAT(Truck.tgl_kir, \'%Y-%m-%d\') <= '] = $now_date;
                         $conditions['OR']['DATE_FORMAT(Truck.tgl_siup, \'%Y-%m-%d\') <= '] = $now_date;
-                    }else{
-                        $conditions['OR']['DATE_ADD(Truck.tgl_stnk, INTERVAL -30 DAY) >= '] = $now_date;
-                        $conditions['OR']['DATE_ADD(Truck.tgl_stnk_plat, INTERVAL -30 DAY) >= '] = $now_date;
-                        $conditions['OR']['DATE_ADD(Truck.tgl_kir, INTERVAL -30 DAY) >= '] = $now_date;
-                        $conditions['OR']['DATE_ADD(Truck.tgl_siup, INTERVAL -30 DAY) >= '] = $now_date;
+                    }else if($data == 'expired_soon'){
+                        // $conditions['OR']['DATE_ADD(Truck.tgl_stnk, INTERVAL -30 DAY) <= '] = $now_date;
+                        // $conditions['OR']['DATE_ADD(Truck.tgl_stnk_plat, INTERVAL -30 DAY) <= '] = $now_date;
+                        // $conditions['OR']['DATE_ADD(Truck.tgl_kir, INTERVAL -30 DAY) <= '] = $now_date;
+                        // $conditions['OR']['DATE_ADD(Truck.tgl_siup, INTERVAL -30 DAY) <= '] = $now_date;
+
+                        $conditions['OR'] = array(
+                            array(
+                                'DATE_ADD(Truck.tgl_stnk, INTERVAL -30 DAY) <=  NOW()',
+                                'DATE_FORMAT(Truck.tgl_stnk, \'%Y-%m-%d\') >= NOW()'
+                            ),
+                            array(
+                                'DATE_ADD(Truck.tgl_stnk_plat, INTERVAL -30 DAY) <= NOW()',
+                                'DATE_FORMAT(Truck.tgl_stnk_plat, \'%Y-%m-%d\') >= NOW()'
+                            ),
+                            array(
+                                'DATE_ADD(Truck.tgl_kir, INTERVAL -30 DAY) <= NOW()',
+                                'DATE_FORMAT(Truck.tgl_kir, \'%Y-%m-%d\') >= NOW()'
+                            ),
+                            array(
+                                'DATE_ADD(Truck.tgl_siup, INTERVAL -30 DAY) <= NOW()',
+                                'DATE_FORMAT(Truck.tgl_siup, \'%Y-%m-%d\') >= NOW()'
+                            ),
+                        );
+                    }else if($data == 'active'){
+                        $conditions['OR'] = array(
+                            array('DATE_FORMAT(Truck.tgl_stnk, \'%Y-%m-%d\') >= NOW()'),
+                            array('DATE_FORMAT(Truck.tgl_stnk_plat, \'%Y-%m-%d\') >= NOW()'),
+                            array('DATE_FORMAT(Truck.tgl_kir, \'%Y-%m-%d\') >= NOW()'),
+                            array('DATE_FORMAT(Truck.tgl_siup, \'%Y-%m-%d\') >= NOW()'),
+                        );
                     }
                     $this->request->data['Truck']['status_expired'] = $data;
                 }
@@ -3125,7 +3151,7 @@ class TrucksController extends AppController {
                     $this->request->data['TruckCustomer']['customer_id'] = $data;
                 }
             }
-
+// debug($conditions);die();
             $this->Truck->unBindModel(array(
                 'hasMany' => array(
                     'TruckCustomer'
