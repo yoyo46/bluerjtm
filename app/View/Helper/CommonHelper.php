@@ -409,7 +409,7 @@ class CommonHelper extends AppHelper {
 
                 if( !empty($coa['children']) ) {
                 	$child = $coa['children'];
-                	$dataTree .= $this->generateCoaTree($child);
+                	$dataTree .= $this->generateCoaTree($child, $allowModule);
                 }
 
 				$dataTree .= '</li>';
