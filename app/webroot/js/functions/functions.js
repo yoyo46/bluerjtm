@@ -1571,57 +1571,78 @@ var ajaxModal = function ( obj, prettyPhoto ) {
             }
         }
 
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: data,
-            success: function(response, status) {
-                if( vthis.attr('title') !== undefined && vthis.attr('title') != '' ) {
-                    $('h4#myModalLabel').html(vthis.attr('title'));
-                    $('h4#myModalLabel').show();
-                } else {
-                    $('h4#myModalLabel').hide();
+        var goAjax = true;
+        if( vthis.attr('data-action') !== undefined ) {
+            type_action = vthis.attr('data-action');
+
+            if(type_action == 'browse-invoice'){
+                if(typeof $('#customer-val').val() == 'undefined' || $('#customer-val').val() == ''){
+                    goAjax = false;
+                    alert('Mohon pilih customer terlebih dahulu');
+                }else{
+                    url += '/'+$('#customer-val').val()+'/not-list'
                 }
-
-                if( vthis.attr('data-action') !== undefined ) {
-                    type_action = vthis.attr('data-action');
-                }
-
-                $('#myModal .modal-body').html(response);
-
-                var backdrop_modal = true;                  
-                if( typeof custom_backdrop_modal != 'undefined' ){
-                    backdrop_modal = custom_backdrop_modal;
-                }
-
-                $('#myModal').modal({
-                    show: true,
-                    backdrop : backdrop_modal
-                });
-
-                if( type_action == 'event' ) {
-                    $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
-                    pickIcon();
-                    pickColor()
-                    submitForm();
-                    timepicker();
-                    datepicker();
-                } else if( type_action == 'browse-form' ) {
-                    ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
-                    pickData();
-                    daterangepicker( $('#myModal .modal-body .date-range') );
-                } else if(type_action == 'cancel_invoice'){
-                    submitForm();
-                    datepicker();
-                }
-
-                return false;
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
-                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                return false;
             }
-        });
+        }
+
+        if(goAjax == true){
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function(response, status) {
+                    if( vthis.attr('title') !== undefined && vthis.attr('title') != '' ) {
+                        $('h4#myModalLabel').html(vthis.attr('title'));
+                        $('h4#myModalLabel').show();
+                    } else {
+                        $('h4#myModalLabel').hide();
+                    }
+
+                    if( vthis.attr('data-action') !== undefined ) {
+                        type_action = vthis.attr('data-action');
+                    }
+
+                    $('#myModal .modal-body').html(response);
+
+                    var backdrop_modal = true;                  
+                    if( typeof custom_backdrop_modal != 'undefined' ){
+                        backdrop_modal = custom_backdrop_modal;
+                    }
+
+                    $('#myModal').modal({
+                        show: true,
+                        backdrop : backdrop_modal
+                    });
+
+                    if( type_action == 'event' ) {
+                        $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
+                        pickIcon();
+                        pickColor()
+                        submitForm();
+                        timepicker();
+                        datepicker();
+                    } else if( type_action == 'browse-form' ) {
+                        ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
+                        pickData();
+                        daterangepicker( $('#myModal .modal-body .date-range') );
+                    } else if( type_action == 'browse-invoice' ) {
+                        ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
+                        pickData();
+                        datepicker();
+                        check_all_checkbox();
+                    } else if(type_action == 'cancel_invoice'){
+                        submitForm();
+                        datepicker();
+                    }
+
+                    return false;
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        }
         
         return false;
     });
@@ -1882,6 +1903,36 @@ function getTotalInvoicePayment(){
 
     $('#grand-total-payment').text('IDR '+formatNumber(total_price));
 }
+var check_all_checkbox = function(){
+    $('.checkAll').click(function(){
+        $('.check-option').not(this).prop('checked', this.checked);
+    });
+
+    $('.child-search .check-option').click(function(){
+        var self = $(this);
+        var parent = self.parents('.child-search');
+        $('.invoice-info-detail').removeClass('hide');
+        var rel_id = parent.attr('rel');
+
+        if(self.is(':checked')){
+            if($('.child-'+rel_id).length <= 0){
+                var html_content = '<tr class="child child-'+rel_id+'" rel="'+rel_id+'">'+parent.html()+'</tr>';
+                $('#field-grand-total-ttuj').before(html_content);
+
+                $('.child-'+rel_id).find('.action-search').removeClass('hide');
+                $('.child-'+rel_id).find('.checkbox-detail').remove();
+
+                input_price($('.child-'+rel_id+' .input_price'));
+                delete_custom_field($('.child-'+rel_id+' .delete-custom-field'));
+
+                invoice_price_payment();
+            }
+        }else{
+            $('.child-'+rel_id).remove();
+        }
+    });
+}
+
 $(function() {
     leasing_action();
 
@@ -2364,6 +2415,7 @@ $(function() {
     ajaxModal();
     city_revenue_change();
     checkCharge( $('.additional-charge') );
+    check_all_checkbox();
 
     $('.custom-find-invoice').change(function(){
         var self = $(this);
@@ -2465,26 +2517,26 @@ $(function() {
         var self = $(this);
         var val = self.val();
 
-        if(val != ''){
-            $.ajax({
-                url: '/ajax/getInfoInvoicePaymentDetail/'+val+'/',
-                type: 'POST',
-                success: function(response, status) {
-                    $('#invoice-info').html(response);
-                    $('#invoice-info').removeClass('hide');
+        // if(val != ''){
+        //     $.ajax({
+        //         url: '/ajax/getInfoInvoicePaymentDetail/'+val+'/',
+        //         type: 'POST',
+        //         success: function(response, status) {
+        //             $('#invoice-info').html(response);
+        //             $('#invoice-info').removeClass('hide');
 
-                    delete_custom_field();
-                    input_price();
-                    invoice_price_payment();
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                    return false;
-                }
-            });
-        }else{
+        //             delete_custom_field();
+        //             input_price();
+        //             invoice_price_payment();
+        //         },
+        //         error: function(XMLHttpRequest, textStatus, errorThrown) {
+        //             alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+        //             return false;
+        //         }
+        //     });
+        // }else{
             $('#invoice-info').html('');
-        }
+        // }
     });
 
     timepicker();
@@ -2519,10 +2571,6 @@ $(function() {
             $('.biaya-per-unit').addClass('hide');
             $('.capacity_truck').addClass('hide');
         }
-    });
-
-    $('.checkAll').click(function(){
-        $('.check-option').not(this).prop('checked', this.checked);
     });
 
     $('.submit_butt').click(function(){

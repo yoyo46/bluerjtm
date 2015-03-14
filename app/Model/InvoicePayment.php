@@ -26,6 +26,12 @@ class InvoicePayment extends AppModel {
                 'message' => 'Tanggal pembayaran harap diisi'
             ),
         ),
+        'bank_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Bank harap diisi'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(
