@@ -1906,10 +1906,21 @@ function getTotalInvoicePayment(){
 var check_all_checkbox = function(){
     $('.checkAll').click(function(){
         $('.check-option').not(this).prop('checked', this.checked);
+
+        if($('.child-search .check-option').length > 0){
+            jQuery.each( $('.child-search .check-option'), function( i, val ) {
+                var self = $(this);
+                check_option(self)
+            });
+        }
     });
 
     $('.child-search .check-option').click(function(){
         var self = $(this);
+        check_option(self)
+    });
+
+    function check_option(self){
         var parent = self.parents('.child-search');
         $('.invoice-info-detail').removeClass('hide');
         var rel_id = parent.attr('rel');
@@ -1929,8 +1940,8 @@ var check_all_checkbox = function(){
             }
         }else{
             $('.child-'+rel_id).remove();
-        }
-    });
+        } 
+    }
 }
 
 $(function() {
