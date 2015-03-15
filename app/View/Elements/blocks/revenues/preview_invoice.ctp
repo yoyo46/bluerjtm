@@ -38,6 +38,7 @@
 					if( !empty($data_print) && $data_print == 'date' ) {
 						echo $this->Html->tag('th', __('Kota'), array(
 							'class' => 'text-center',
+							'width' => '15%'
 						));
 					}
 			?>

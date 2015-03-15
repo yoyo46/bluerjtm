@@ -4850,4 +4850,61 @@ class RevenuesController extends AppController {
         //     $this->redirect($this->referer());
         // }
     }
+
+    function report_invoice_payments(){
+        // if( in_array('view_invoice_payments', $this->allowModule) ) {
+            // $this->loadModel('Invoice');
+            // $this->loadModel('InvoicePayment');
+            // $this->loadModel('Customer');
+            
+            // $this->set('active_menu', 'invoice_payments');
+            // $this->set('sub_module_title', __('Pembayaran Invoice'));
+
+            // $conditions = array();
+            // if(!empty($this->params['named'])){
+            //     $refine = $this->params['named'];
+
+            //     if(!empty($refine['from'])){
+            //         $from = urldecode(rawurldecode($refine['from']));
+            //         $this->request->data['InvoicePayment']['date_from'] = $from;
+            //         $conditions['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') >= '] = $this->MkCommon->getDate($from);
+            //     }
+            //     if(!empty($refine['to'])){
+            //         $to = urldecode(rawurldecode($refine['to']));
+            //         $this->request->data['InvoicePayment']['date_to'] = $to;
+            //         $conditions['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') <= '] = $this->MkCommon->getDate($to);
+            //     }
+            //     if(!empty($refine['nodoc'])){
+            //         $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));
+            //         $this->request->data['InvoicePayment']['nodoc'] = $to;
+            //         $conditions['InvoicePayment.nodoc LIKE'] = '%'.$to.'%';
+            //     }
+            // }
+
+            // $this->paginate = $this->InvoicePayment->getData('paginate', array(
+            //     'conditions' => $conditions,
+            //     'contain' => array(
+            //         'Bank'
+            //     ),
+            // ), false);
+            // $invoices = $this->paginate('InvoicePayment');
+
+            // if(!empty($invoices)){
+            //     foreach ($invoices as $key => $value) {
+            //         $invoices[$key] = $this->InvoicePayment->Customer->getMerge($value, $value['InvoicePayment']['customer_id']);
+            //     }
+            // }
+            
+            // $this->set('invoices', $invoices); 
+
+            // $customers = $this->Invoice->Customer->getData('list', array(
+            //     'fields' => array(
+            //         'Customer.id', 'Customer.name'
+            //     )
+            // ));
+            // $this->set('customers', $customers);
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
 }
