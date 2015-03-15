@@ -60,6 +60,17 @@
                                     'class' => ( !empty($active_menu) && $active_menu == 'groups' )?'active':'',
                                 ));
                             }
+
+                            if( in_array('view_group_user', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Karyawan', array(
+                                    'controller' => 'users',
+                                    'action' => 'employes',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'employe_position' )?'active':'',
+                                ));
+                            }
                     ?>
                 </ul>
                 <?php
