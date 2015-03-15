@@ -31,6 +31,19 @@
 	        </div>
 	        <div class="form-group">
 	        	<?php 
+						echo $this->Form->input('type_lku',array(
+							'label'=> __('Tipe Modul *'), 
+							'class'=>'form-control',
+							'required' => false,
+							'options' => array(
+								'lku' => 'LKU',
+								'ksu' => 'KSU'
+							)
+						));
+				?>
+	        </div>
+	        <div class="form-group">
+	        	<?php 
     					$attrBrowse = array(
                             'class' => 'ajaxModal visible-xs',
                             'escape' => false,
