@@ -4482,6 +4482,15 @@ class RevenuesController extends AppController {
                         $this->Invoice->set($this->request->data);
 
                         if($this->Invoice->save()){
+                            $this->Invoice->InvoiceDetail->updateAll(
+                                array(
+                                    'InvoiceDetail.status' => 0
+                                ),
+                                array(
+                                    'InvoiceDetail.invoice_id' => $id,
+                                )
+                            );
+
                             if($invoice['Invoice']['type_invoice'] == 'region' && !empty($invoice['InvoiceDetail'])){
                                 $revenue_id = Set::extract('/InvoiceDetail/revenue_id', $invoice);
                             }else{
