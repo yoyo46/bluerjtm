@@ -271,9 +271,10 @@
                     ?>
                 </td>
                 <?php 
-                        if( !empty($value['Ttuj']['is_invoice']) ) {
-                            echo $this->Html->tag('td', '<span class="label label-code">Invoiced</span>');
-                        } else if(!empty($value['Ttuj']['is_pool'])){
+                        // if( !empty($value['Ttuj']['is_invoice']) ) {
+                        //     echo $this->Html->tag('td', '<span class="label label-code">Invoiced</span>');
+                        // } else
+                        if(!empty($value['Ttuj']['is_pool'])){
                             echo $this->Html->tag('td', '<span class="label label-success">Sampai Pool</span>');
                         } else if(!empty($value['Ttuj']['is_balik'])){
                             echo $this->Html->tag('td', '<span class="label label-info">Balik</span>');
@@ -333,11 +334,11 @@
                                     ), __('Apakah Anda yakin akan membatalkan data ini?'));
                                 }
                             } else {
-                                if( empty($value['Ttuj']['is_invoice']) && in_array('update_ttuj', $allowModule) ) {
+                                // if( empty($value['Ttuj']['is_invoice']) && in_array('update_ttuj', $allowModule) ) {
                                     $labelEdit = __('Ubah');
-                                } else {
-                                    $labelEdit = __('Lihat');
-                                }
+                                // } else {
+                                //     $labelEdit = __('Lihat');
+                                // }
 
                                 echo $this->Html->link($labelEdit, array(
                                     'controller' => 'revenues',

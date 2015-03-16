@@ -2544,24 +2544,24 @@ class RevenuesController extends AppController {
                 if(!empty($refine['status'])){
                     $status = urldecode($refine['status']);
 
-                    if( $status == 'paid' ) {
-                        $this->request->data['Revenue']['transaction_status'] = $status;
+                    // if( $status == 'paid' ) {
+                    //     $this->request->data['Revenue']['transaction_status'] = $status;
 
-                        $revenueList = $this->Revenue->getData('list', array(
-                            'conditions' => $conditions,
-                            'contain' => array(
-                                'Ttuj',
-                            ),
-                            'fields' => array(
-                                'Revenue.id', 'Revenue.id'
-                            ),
-                        ));
-                        $paidList = $this->Revenue->InvoiceDetail->getInvoicedRevenueList($revenueList);
-                        $conditions['Revenue.id'] = $paidList;
-                    } else {
+                    //     $revenueList = $this->Revenue->getData('list', array(
+                    //         'conditions' => $conditions,
+                    //         'contain' => array(
+                    //             'Ttuj',
+                    //         ),
+                    //         'fields' => array(
+                    //             'Revenue.id', 'Revenue.id'
+                    //         ),
+                    //     ));
+                    //     $paidList = $this->Revenue->InvoiceDetail->getInvoicedRevenueList($revenueList);
+                    //     $conditions['Revenue.id'] = $paidList;
+                    // } else {
                         $this->request->data['Revenue']['transaction_status'] = $status;
                         $conditions['Revenue.transaction_status'] = $status;
-                    }
+                    // }
                 }
             }
 
@@ -2575,7 +2575,7 @@ class RevenuesController extends AppController {
 
             if(!empty($revenues)){
                 foreach ($revenues as $key => $value) {
-                    $value = $this->Revenue->InvoiceDetail->getInvoicedRevenue($value, $value['Revenue']['id']);
+                    // $value = $this->Revenue->InvoiceDetail->getInvoicedRevenue($value, $value['Revenue']['id']);
                     $value = $this->Ttuj->Customer->getMerge($value, $value['Ttuj']['customer_id']);
                     $revenues[$key] = $this->Ttuj->Customer->getMerge($value, $value['Ttuj']['customer_id']);
                 }
