@@ -30,18 +30,6 @@
 	        </div>
 	        <div class="form-group">
 	        	<?php
-	        			$attrBrowse = array(
-                            'class' => 'ajaxModal visible-xs',
-                            'escape' => false,
-                            'title' => __('Invoice Customer'),
-                            'data-action' => 'browse-invoice',
-                            'data-change' => 'getTtujInfoRevenue',
-                            'url' => $this->Html->url( array(
-	                            'controller'=> 'ajax', 
-	                            'action' => 'getInfoInvoicePaymentDetail',
-	                        ))
-                        );
-
                     	echo $this->Form->label('customer_id', __('Customer *'));
 	        	?>
 	        	<div class="row">
@@ -57,12 +45,6 @@
 								));
 						?>
 	        		</div>
-	        		<div class="col-sm-2 hidden-xs">
-                        <?php 
-    							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', 'javascript:', $attrBrowse);
-                        ?>
-                    </div>
 	        	</div>
 	        </div>
 	        <div class="form-group">
@@ -86,6 +68,23 @@
 							'value' => (!empty($this->request->data['InvoicePayment']['date_payment'])) ? $this->request->data['InvoicePayment']['date_payment'] : date('d/m/Y')
 						));
 				?>
+	        </div>
+	        <div class="form-group">
+	        	<?php 
+	        			$attrBrowse = array(
+                            'class' => 'ajaxModal visible-xs',
+                            'escape' => false,
+                            'title' => __('Invoice Customer'),
+                            'data-action' => 'browse-invoice',
+                            'data-change' => 'getTtujInfoRevenue',
+                            'url' => $this->Html->url( array(
+	                            'controller'=> 'ajax', 
+	                            'action' => 'getInfoInvoicePaymentDetail',
+	                        ))
+                        );
+						$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+                        echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Ambil Tagihan'), 'javascript:', $attrBrowse);
+                ?>
 	        </div>
 	    </div>
 	</div>
