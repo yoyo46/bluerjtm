@@ -4,7 +4,17 @@
             'label' => false,
             'id' => 'main_jenis_unit',
             'required' => false,
-            'value' =>  !empty($mainTarif['jenis_unit']) ? $mainTarif['jenis_unit'] : 0
+            'value' =>  !empty($mainTarif['jenis_unit']) ? $mainTarif['jenis_unit'] : 'per_unit'
+        ));
+        echo $this->Form->hidden('RevenueDetail.tarif_angkutan_type.', array(
+            'id' => 'tarif_angkutan_type',
+            'required' => false,
+            'value' => !empty($detail['RevenueDetail']['price_unit']['tarif_angkutan_type'])?$detail['RevenueDetail']['price_unit']['tarif_angkutan_type']:'angkut',
+        ));
+        echo $this->Form->hidden('RevenueDetail.tarif_angkutan_id.', array(
+            'id' => 'tarif_angkutan_id',
+            'required' => false,
+            'value' => !empty($detail['RevenueDetail']['price_unit']['tarif_angkutan_id'])?$detail['RevenueDetail']['price_unit']['tarif_angkutan_id']:0,
         ));
 
         if(!empty($detail['RevenueDetail']['price_unit'])){
@@ -37,7 +47,7 @@
                 'label' => false,
                 'class' => 'jenis_unit',
                 'required' => false,
-                'value' =>  !empty($price['jenis_unit']) ? $price['jenis_unit'] : 0
+                'value' =>  !empty($price['jenis_unit']) ? $price['jenis_unit'] : 'per_unit'
             ));
     ?>
 </div>

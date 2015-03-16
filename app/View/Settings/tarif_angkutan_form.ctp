@@ -26,6 +26,20 @@
 								'class' => 'form-group'
 							)
 						));
+						echo $this->Form->input('type',array(
+							'label'=> __('Tipe Tarif *'), 
+							'class'=>'form-control',
+							'required' => false,
+							'div' => array(
+								'class' => 'form-group'
+							),
+							'empty' => __('Pilih Tipe Tarif'),
+							'options' => array(
+								'angkut' => __('Tarif Angkut'),
+								'kuli' => __('Tarif Kuli Muat'),
+								'asuransi' => __('Asuransi'),
+							),
+						));
 				?>
 		    	<div class="row">
 		    		<div class="col-sm-6">

@@ -27,6 +27,7 @@
         <table class="table table-hover">
             <tr>
                 <th>Nama</th>
+                <th>Tipe Tarif</th>
                 <th>Dari</th>
                 <th>Tujuan</th>
                 <th>Customer</th>
@@ -46,6 +47,21 @@
             ?>
             <tr>
                 <td><?php echo $value_data['name_tarif'];?></td>
+                <td>
+                    <?php
+                            switch ($value_data['type']) {
+                                case 'kuli':
+                                    echo __('Kuli Muat');
+                                    break;
+                                case 'asuransi':
+                                    echo __('Asuransi');
+                                    break;
+                                default:
+                                    echo __('Tarif Angkut');
+                                    break;
+                            };
+                    ?>
+                </td>
                 <td><?php echo $value_data['from_city_name'];?></td>
                 <td><?php echo $value_data['to_city_name'];?></td>
                 <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';?></td>

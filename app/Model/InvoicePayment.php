@@ -29,7 +29,7 @@ class InvoicePayment extends AppModel {
         'bank_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Bank harap diisi'
+                'message' => 'Bank harap dipilih'
             ),
         ),
 	);

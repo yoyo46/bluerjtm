@@ -42,6 +42,12 @@ class Invoice extends AppModel {
                 'message' => 'Periode akhir tidak boleh kosong'
             ),
         ),
+        'tarif_type' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Jenis tarif harap dipilih'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(

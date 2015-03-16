@@ -79,7 +79,14 @@
 
                                 echo $this->Form->hidden('RevenueDetail.tarif_angkutan_id.', array(
                                     'required' => false,
-                                    'value' => (!empty($price['tarif_angkutan_id'])) ? $price['tarif_angkutan_id'] : 0
+                                    'class' => 'tarif_angkutan_id',
+                                    'value' => (is_array($price) && !empty($price['tarif_angkutan_id'])) ? $price['tarif_angkutan_id'] : 0
+                                ));
+
+                                echo $this->Form->hidden('RevenueDetail.tarif_angkutan_type.', array(
+                                    'required' => false,
+                                    'class' => 'tarif_angkutan_type',
+                                    'value' => ( is_array($price) && !empty($price['tarif_angkutan_type'])) ? $price['tarif_angkutan_type'] : 'angkut'
                                 ));
                         ?>
                     </td>
@@ -150,7 +157,7 @@
                                     'label' => false,
                                     'class' => 'jenis_unit',
                                     'required' => false,
-                                    'value' =>  !empty($jenis_unit) ? $jenis_unit : 0
+                                    'value' =>  !empty($jenis_unit) ? $jenis_unit : 'per_unit'
                                 ));
                         ?>
                     </td>

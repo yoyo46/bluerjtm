@@ -201,7 +201,7 @@
                                 'class' => 'text-center',
                                 'style' => $tdStyle,
                             ));
-                            echo $this->Html->tag('td', __('Angkut'), array(
+                            echo $this->Html->tag('td', ucfirst($invoice['Invoice']['tarif_type']), array(
                                 'class' => 'text-center',
                                 'style' => $tdStyle,
                             ));

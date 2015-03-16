@@ -49,6 +49,9 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Invoice.no_invoice', __('No. Invoice'), array(
                             'escape' => false
                         )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Invoice.tarif_type', __('Jenis Tarif'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Invoice.invoice_date', __('Tgl Invoice'), array(
                             'escape' => false
                         )));
@@ -76,6 +79,7 @@
             ?>
             <tr>
                 <td><?php echo $value['Invoice']['no_invoice'];?></td>
+                <td><?php echo ucfirst($value['Invoice']['tarif_type']);?></td>
                 <td><?php echo $this->Common->customDate($value['Invoice']['invoice_date'], 'd/m/Y');?></td>
                 <td><?php echo $value['Customer']['name'];?></td>
                 <td>

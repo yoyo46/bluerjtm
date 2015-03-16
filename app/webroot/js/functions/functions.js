@@ -1058,6 +1058,9 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge 
         type: 'POST',
         success: function(response, status) {
             $('.revenue_tarif_type').html($(response).filter('#main_jenis_unit').html());
+            parent.find('td.city-data .tarif_angkutan_id').val($(response).filter('#tarif_angkutan_id').val());
+
+            parent.find('td.city-data .tarif_angkutan_type').val($(response).filter('#tarif_angkutan_type').val());
             parent.find('td.price-data').html($(response).filter('#price-data').html());
             parent.find('td.qty-tipe-motor-data .jenis_unit').val($(response).find('.jenis_unit').val());
             // parent.find('td.qty-tipe-motor-data').html($(response).filter('#qty-tipe-motor-data').html());
@@ -1163,7 +1166,6 @@ function grandTotalRevenue(){
         }
 
         if( revenue_tarif_type != 'per_truck' ){
-
             var totalPrice = priceUnit * qtyUnit;
             $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-revenue-perunit').html('IDR '+formatNumber(totalPrice));
             $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-price-perunit').val(totalPrice);
@@ -2428,12 +2430,17 @@ $(function() {
     checkCharge( $('.additional-charge') );
     check_all_checkbox();
 
-    $('.custom-find-invoice').change(function(){
-        var self = $(this);
-        var val = self.val();
+    $('.custom-find-invoice,#invoiceType').change(function(){
+        var customer_id = $('.custom-find-invoice').val();
+        var invoiceType = $('#invoiceType').val();
+        var url = '/ajax/getInvoiceInfo/'+customer_id+'/';
+
+        if( invoiceType != '' ) {
+            url += invoiceType+'/';
+        }
 
         $.ajax({
-            url: '/ajax/getInvoiceInfo/'+val+'/',
+            url: url,
             type: 'POST',
             success: function(response, status) {
                 $('#invoice-info').html(response);
@@ -2450,13 +2457,17 @@ $(function() {
         var self = $(this);
         var rel = self.attr('rel');
         var customer_id = $('.custom-find-invoice').val();
+        var invoiceType = $('#invoiceType').val();
         var left = (screen.width/2)-(800/2);
         var top = (screen.height/2)-(460/2);
         var url = '/ajax/previewInvoice/';
 
         if(typeof customer_id != 'undefined' && customer_id != ''){
             url += customer_id+'/';
-            window.open('/ajax/previewInvoice/'+customer_id+'/'+rel+'/', '1366621940374','width=800,height=460,toolbar=0,menubar=0,location=0,status=0,scrollbars=0,resizable=0,left='+left+',top='+top+'');
+        }
+
+        if( invoiceType != '' ) {
+            url += invoiceType+'/';
         }
 
         if(typeof rel != 'undefined' && rel != ''){

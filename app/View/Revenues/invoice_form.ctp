@@ -42,6 +42,22 @@
 	    	?>
 	        <div class="form-group">
 	        	<?php 
+						echo $this->Form->input('tarif_type',array(
+							'label'=> __('Jenis Invoice *'), 
+							'class'=>'form-control',
+							'required' => false,
+							'empty' => __('Pilih Jenis Invoice'),
+							'options' => array(
+								'angkut' => __('Tarif Angkut'),
+								'kuli' => __('Tarif Kuli Muat'),
+								'asuransi' => __('Tarif Asuransi'),
+							),
+							'id' => 'invoiceType'
+						));
+				?>
+	        </div>
+	        <div class="form-group">
+	        	<?php 
 						echo $this->Form->input('invoice_date',array(
 							'label'=> __('Tgl Invoice *'), 
 							'class'=>'form-control custom-date',

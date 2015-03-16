@@ -570,7 +570,7 @@ class AjaxController extends AppController {
 		));
 	}
 
-	function getInvoiceInfo($customer_id = false){
+	function getInvoiceInfo( $customer_id = false, $tarif_type = 'angkut' ){
 		$this->loadModel('Revenue');
 		$this->loadModel('Bank');
 		$this->loadModel('Customer');
@@ -583,6 +583,7 @@ class AjaxController extends AppController {
 			'conditions' => array(
 				'Revenue.customer_id' => $customer_id,
 				'Revenue.transaction_status' => 'posting',
+				'Revenue.type' => $tarif_type,						
 				'Revenue.status' => 1,						
 			),
 			'order' => array(
@@ -658,7 +659,8 @@ class AjaxController extends AppController {
 			'conditions' => array(
 				'Revenue.customer_id' => $customer_id,
 				'Revenue.transaction_status' => 'posting',
-				'Revenue.status' => 1,						
+				'Revenue.type' => $action,
+				'Revenue.status' => 1,
 			),
 			'order' => array(
 				'Revenue.date_revenue' => 'ASC'

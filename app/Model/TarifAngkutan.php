@@ -172,7 +172,8 @@ class TarifAngkutan extends AppModel {
                 return array(
                     'jenis_unit' => $result['TarifAngkutan']['jenis_unit'],
                     'tarif' => $result['TarifAngkutan']['tarif'],
-                    'tarif_angkutan_id' => $result['TarifAngkutan']['id']
+                    'tarif_angkutan_id' => $result['TarifAngkutan']['id'],
+                    'tarif_angkutan_type' => $result['TarifAngkutan']['type'],
                 );
             }
         }else{

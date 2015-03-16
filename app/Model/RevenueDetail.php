@@ -38,6 +38,12 @@ class RevenueDetail extends AppModel {
                 'message' => 'tarif angkutan tidak ditemukan'
             ),
         ),
+        'tarif_angkutan_type' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tipe tarif angkutan tidak ditemukan'
+            ),
+        ),
 	);
 
     var $belongsTo = array(
@@ -133,7 +139,7 @@ class RevenueDetail extends AppModel {
                     'RevenueDetail.price_unit', 'RevenueDetail.tarif_angkutan_id',
                     'RevenueDetail.total_price_unit', 'RevenueDetail.city_id',
                     'SUM(RevenueDetail.total_price_unit) AS total_price_unit',
-                    'RevenueDetail.note',
+                    'RevenueDetail.note', 'RevenueDetail.tarif_angkutan_type',
                 ),
             ));
 
@@ -160,7 +166,7 @@ class RevenueDetail extends AppModel {
         ));
     }
 
-    function getPreviewInvoice ( $id = false, $action = false, $data_action = false ) {
+    function getPreviewInvoice ( $id = false, $invoice_type = 'angkut', $action = false, $data_action = false ) {
         $this->TipeMotor = ClassRegistry::init('TipeMotor');
         $this->City = ClassRegistry::init('City');
         $this->TarifAngkutan = ClassRegistry::init('TarifAngkutan');
@@ -179,10 +185,12 @@ class RevenueDetail extends AppModel {
         if( in_array($data_action, array( 'invoice', 'date' )) ) {
             $conditions = array(
                 'RevenueDetail.invoice_id' => $id,
+                'Revenue.type' => $invoice_type,
             );
         } else {
             $conditions = array(
                 'RevenueDetail.revenue_id' => $id,
+                'Revenue.type' => $invoice_type,
                 'Revenue.status' => 1,
             );
         }
