@@ -583,11 +583,11 @@
 	                    <div id="desc-laka-complete" class="<?php echo !empty($this->request->data['Laka']['completed']) ? '' : 'hide';?>">
 				    		<div class="form-group">
 		                    	<?php 
-										echo $this->Form->input('complete_desc',array(
-											'label'=> __('Keterangan *'), 
-											'class'=>'form-control',
+										echo $this->Form->input('completed_date',array(
+											'label'=> __('Tgl Selesai *'), 
+											'class'=>'form-control custom-date',
 											'required' => false,
-											'type' => 'textarea'
+											'type' => 'text'
 										));
 
 										if ($this->Form->isFieldError('completed')) {
@@ -597,11 +597,11 @@
 	                    	</div>
 				    		<div class="form-group">
 		                    	<?php 
-										echo $this->Form->input('completed_date',array(
-											'label'=> __('Tgl Selesai *'), 
-											'class'=>'form-control custom-date',
+										echo $this->Form->input('complete_desc',array(
+											'label'=> __('Keterangan *'), 
+											'class'=>'form-control',
 											'required' => false,
-											'type' => 'text'
+											'type' => 'textarea'
 										));
 
 										if ($this->Form->isFieldError('completed')) {
