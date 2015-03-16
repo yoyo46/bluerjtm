@@ -304,7 +304,7 @@
                     $content .= $this->Html->tag('td', $totalUnit, array(
                         'style' => 'text-align: center;',
                     ));
-                    $content .= $this->Html->tag('td', __('Angkut'), array(
+                    $content .= $this->Html->tag('td', ucfirst($invoice['Invoice']['tarif_type']), array(
                         'style' => 'text-align: center;',
                     ));
                     $content .= $this->Html->tag('td', $dateTOP, array(
