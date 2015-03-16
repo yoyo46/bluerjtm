@@ -38,9 +38,9 @@
                     echo $this->Html->tag('th', $this->Paginator->sort('EmployePosition.name', __('Posisi'), array(
                         'escape' => false
                     )));
-                    echo $this->Html->tag('th', $this->Paginator->sort('EmployePosition.code', __('Kode'), array(
-                        'escape' => false
-                    )));
+                    // echo $this->Html->tag('th', $this->Paginator->sort('EmployePosition.code', __('Kode'), array(
+                    //     'escape' => false
+                    // )));
                     echo $this->Html->tag('th', $this->Paginator->sort('Employe.address', __('Alamat'), array(
                         'escape' => false
                     )));
@@ -64,7 +64,7 @@
                 <td><?php echo $i++;?></td>
                 <td><?php echo $value_data['name'];?></td>
                 <td><?php echo $value['EmployePosition']['name'];?></td>
-                <td><?php echo $value['EmployePosition']['code'];?></td>
+                <!-- <td><?php // echo $value['EmployePosition']['code'];?></td> -->
                 <td><?php echo $value_data['address'];?></td>
                 <td><?php echo $value_data['phone'];?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>

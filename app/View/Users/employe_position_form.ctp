@@ -21,18 +21,6 @@
     <div class="box-body">
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('name',__('Posisi Karyawan *')); 
-
-				echo $this->Form->input('name',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'placeholder' => __('Posisi Karyawan')
-				));
-			?>
-        </div>
-        <div class="form-group">
-        	<?php 
 				echo $this->Form->label('code',__('Kode Posisi *')); 
 
 				echo $this->Form->input('code',array(
@@ -40,6 +28,18 @@
 					'class'=>'form-control',
 					'required' => false,
 					'placeholder' => __('Kode Posisi')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('name',__('Posisi Karyawan *')); 
+
+				echo $this->Form->input('name',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Posisi Karyawan')
 				));
 			?>
         </div>
