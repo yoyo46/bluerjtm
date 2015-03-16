@@ -129,6 +129,8 @@ class AppController extends Controller {
 	    $this->user_id = false;
 	    $GroupId = false;
 	    $User = array();
+	    $allowModule = array();
+
 	    if($logged_in){
 			$this->user_id = $this->Auth->user('id');
 			$GroupId = $this->Auth->user('group_id');
@@ -149,8 +151,8 @@ class AppController extends Controller {
             		'ModuleAction.id', 'ModuleAction.action'
         		),
 	        ));
-        	$this->allowModule = $allowModule;
 		}
+		$this->allowModule = $allowModule;
 
 	    $this->set(compact(
 	    	'logged_in', 'GroupId', 'User',
