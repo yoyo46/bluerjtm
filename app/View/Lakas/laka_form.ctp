@@ -587,7 +587,8 @@
 											'label'=> __('Tgl Selesai *'), 
 											'class'=>'form-control custom-date',
 											'required' => false,
-											'type' => 'text'
+											'type' => 'text',
+											'value' => (!empty($this->request->data['Laka']['completed_date'])) ? $this->request->data['Laka']['completed_date'] : date('d/m/Y')
 										));
 
 										if ($this->Form->isFieldError('completed')) {

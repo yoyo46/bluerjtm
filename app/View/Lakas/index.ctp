@@ -31,11 +31,17 @@
         <table class="table table-hover">
             <tr>
                 <?php 
+                        echo $this->Html->tag('th', $this->Paginator->sort('Laka.driver_name', __('Supir'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Laka.no_doc', __('No LAKA'), array(
                             'escape' => false
                         )));
 
                         echo $this->Html->tag('th', $this->Paginator->sort('Laka.tgl_laka', __('Tgl LAKA'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Laka.lokasi_laka', __('Lokasi LAKA'), array(
                             'escape' => false
                         )));
 
@@ -57,11 +63,15 @@
                             $id = $value['Laka']['id'];
             ?>
             <tr>
+                <td><?php echo $value['Laka']['driver_name'];?></td>
                 <td><?php echo $value['Laka']['nopol'];?></td>
                 <?php echo $this->Html->tag('td', date('d M Y', strtotime($value['Laka']['tgl_laka'])));?>
+                <td><?php echo $value['Laka']['lokasi_laka'];?></td>
                 <?php 
-                        if(!empty($value['Laka']['status'])){
-                            echo $this->Html->tag('td', '<span class="label label-success">Aktif</span>');
+                        if(!empty($value['Laka']['completed'])){
+                            echo $this->Html->tag('td', '<span class="label label-success">Selesai</span>');
+                        } else if(!empty($value['Laka']['status'])){
+                            echo $this->Html->tag('td', '<span class="label label-primary">Aktif</span>');
                         } else{
                             echo $this->Html->tag('td', '<span class="label label-danger">Non-aktif</span>');
                         }

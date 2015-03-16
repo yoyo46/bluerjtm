@@ -130,8 +130,10 @@ class LakasController extends AppController {
             if( empty($data['Laka']['completed']) ) {
                 $data['Laka']['complete_desc'] = '';
                 $data['Laka']['completed_date'] = '';
+            } else {
+                $data['Laka']['completed_date'] = (!empty($data['Laka']['completed_date'])) ? $this->MkCommon->getDate($data['Laka']['completed_date']) : '';
             }
-            
+
             if(!empty($data['Laka']['ttuj_id'])){
                 $this->loadModel('Ttuj');
                 $ttuj = $this->Ttuj->find('first', array(
@@ -225,6 +227,10 @@ class LakasController extends AppController {
             $this->request->data['Laka']['completeness'] = !empty($this->request->data['Laka']['completeness']) ? unserialize($this->request->data['Laka']['completeness']) : '';
             $this->request->data['Laka']['completeness_insurance'] = !empty($this->request->data['Laka']['completeness_insurance']) ? unserialize($this->request->data['Laka']['completeness_insurance']) : '';
             $this->request->data['Laka']['tgl_laka'] = $this->MkCommon->customDate($this->request->data['Laka']['tgl_laka'], 'd/m/Y');
+
+            if( !empty($this->request->data['Laka']['completed']) ) {
+                $this->request->data['Laka']['completed_date'] = date('d/m/Y', strtotime($this->request->data['Laka']['completed_date']));
+            }
         }
 
         $this->loadModel('Ttuj');
