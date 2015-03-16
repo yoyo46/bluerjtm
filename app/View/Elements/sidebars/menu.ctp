@@ -227,7 +227,8 @@
                             'siup', 'siup_payments', 'achievement_report',
                             'monitoring_truck', 'capacity_report',
                             'point_perday_report', 'point_perplant_report',
-                            'retail_point_perplant_report', 'view_leasing'
+                            'retail_point_perplant_report', 'view_leasing',
+                            'licenses_report'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -437,7 +438,7 @@
                                 ), array(
                                     'escape' => false
                                 )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'view_license_report' )?'active':'',
+                                    'class' => ( !empty($active_menu) && $active_menu == 'licenses_report' )?'active':'',
                                 ));
                             // }
                     ?>

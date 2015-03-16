@@ -61,6 +61,16 @@
                 <td class="action">
                     <?php
                             // if( in_array('delete_revenues', $allowModule) ) {
+                                echo $this->Html->link(__('Ubah'), array(
+                                    'controller' => 'revenues',
+                                    'action' => 'surat_jalan_edit',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs',
+                                    'title' => 'disable status brand'
+                                ));
+                            // }
+                            // if( in_array('delete_revenues', $allowModule) ) {
                                 echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'revenues',
                                     'action' => 'surat_jalan_delete',

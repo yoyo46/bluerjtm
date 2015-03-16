@@ -3192,6 +3192,7 @@ class TrucksController extends AppController {
                     'Customer.id', 'Customer.name'
                 )
             ));
+            $this->set('active_menu', 'licenses_report');
             $sub_module_title = __('Laporan Surat-surat Truk');
             $this->set(compact('trucks', 'customers', 'sub_module_title', 'data_action'));
 

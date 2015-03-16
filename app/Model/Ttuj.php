@@ -187,7 +187,7 @@ class Ttuj extends AppModel {
         }
     }
 
-    function getSumUnit($data, $ttuj_id){
+    function getSumUnit($data, $ttuj_id, $surat_jalan_id = false){
         if( empty($data['Qty']) ){
             $data_merge = $this->TtujTipeMotor->find('first', array(
                 'conditions' => array(
@@ -211,6 +211,7 @@ class Ttuj extends AppModel {
                 'conditions' => array(
                     'SuratJalan.status' => 1,
                     'SuratJalan.ttuj_id' => $ttuj_id,
+                    'SuratJalan.id <>' => $surat_jalan_id,
                 ),
                 'group' => array(
                     'SuratJalan.ttuj_id',
