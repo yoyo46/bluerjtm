@@ -2558,6 +2558,7 @@ $(function() {
         //     });
         // }else{
             $('#invoice-info').html('');
+            $( '.ttuj-info-table .child' ).remove();
         // }
     });
 
