@@ -4405,6 +4405,18 @@ class RevenuesController extends AppController {
                     $this->request->data['Invoice']['date'] = $dateStr;
                 }
 
+                if(!empty($refine['customer'])){
+                    $customer = urldecode($refine['customer']);
+                    $this->request->data['Ttuj']['customer'] = $customer;
+                    $invoice_conditions['CustomerNoType.name LIKE'] = '%'.$customer.'%';
+                }
+
+                if(!empty($refine['no_invoice'])){
+                    $no_invoice = urldecode($refine['no_invoice']);
+                    $this->request->data['Invoice']['no_invoice'] = $no_invoice;
+                    $invoice_conditions['Invoice.no_invoice LIKE'] = '%'.$no_invoice.'%';
+                }
+
                 if(!empty($refine['status'])){
                     $status = urldecode($refine['status']);
                     $this->request->data['Invoice']['transaction_status'] = $status;
@@ -4423,7 +4435,10 @@ class RevenuesController extends AppController {
                     'Invoice.created' => 'DESC',
                     'Invoice.id' => 'DESC',
                 ),
-                'limit' => 20,
+                'contain' => array(
+                    'CustomerNoType'
+                ),
+                'limit' => 30,
             );
             $invoices = $this->paginate('Invoice');
 

@@ -41,6 +41,15 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
+                            echo $this->Form->input('Ttuj.customer',array(
+                                'label'=> __('Customer'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
                             echo $this->Form->input('date',array(
                                 'label'=> __('Periode Tanggal'),
                                 'class'=>'form-control date-range',
@@ -67,14 +76,23 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
+                            echo $this->Form->input('no_invoice',array(
+                                'label'=> __('No. Invoice'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
                             echo $this->Form->input('transaction_status',array(
                                 'label'=> __('Status Invoice'),
                                 'class'=>'form-control',
                                 'required' => false,
                                 'empty' => __('Pilih Status Invoice'),
                                 'options' => array(
-                                    'invoiced' => 'Unpaid',
-                                    'paid' => 'Paid',
+                                    'invoiced' => __('Belum Lunas'),
+                                    'paid' => __('Lunas'),
                                 )
                             ));
                     ?>
@@ -117,8 +135,20 @@
             <thead>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', __('No. Invoice'), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('Invoice.invoice_date', __('Tgl Kwitansi')), array(
                                 'style' => $tdStyle,
+                                'class' => 'text-center text-middle',
+                            ));
+                            echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.name', __('Customer')), array(
+                                'style' => $tdStyle,
+                                'class' => 'text-center text-middle',
+                            ));
+                            echo $this->Html->tag('th', $this->Common->getSorting('Invoice.no_invoice', __('No. Invoice')), array(
+                                'style' => $tdStyle,
+                                'class' => 'text-center text-middle',
+                            ));
+                            echo $this->Html->tag('th', $this->Common->getSorting('Invoice.total', __('Total Tagihan')), array(
+                                'style' => $tdStyle.'width: 120px;',
                                 'class' => 'text-center text-middle',
                             ));
                             echo $this->Html->tag('th', __('Periode Tanggal'), array(
@@ -133,7 +163,7 @@
                                 'style' => $tdStyle,
                                 'class' => 'text-center text-middle',
                             ));
-                            echo $this->Html->tag('th', __('Jenis'), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('Invoice.tarif_type', __('Jenis')), array(
                                 'style' => $tdStyle,
                                 'class' => 'text-center text-middle',
                             ));
@@ -149,7 +179,7 @@
                                 'style' => $tdStyle,
                                 'class' => 'text-center text-middle',
                             ));
-                            echo $this->Html->tag('th', __('Status'), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('Invoice.complete_paid', __('Status')), array(
                                 'style' => $tdStyle,
                                 'class' => 'text-center text-middle',
                             ));
@@ -185,9 +215,17 @@
                 ?>
                 <tr>
                     <?php 
+                            echo $this->Html->tag('td', $this->Common->customDate($invoice['Invoice']['invoice_date'], 'd/m/Y'), array(
+                                'class' => 'text-center',
+                                'style' => $tdStyle,
+                            ));
+                            echo $this->Html->tag('td', !empty($invoice['CustomerNoType']['name'])?$invoice['CustomerNoType']['name']:false);
                             echo $this->Html->tag('td', $invoice['Invoice']['no_invoice'], array(
                                 'class' => 'text-left',
                                 'style' => $tdStyle,
+                            ));
+                            echo $this->Html->tag('td', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                                'style' => 'text-align: right;',
                             ));
                             echo $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to']), array(
                                 'class' => 'text-center',

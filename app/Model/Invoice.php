@@ -55,6 +55,10 @@ class Invoice extends AppModel {
             'className' => 'Customer',
             'foreignKey' => 'customer_id',
         ),
+        'CustomerNoType' => array(
+            'className' => 'CustomerNoType',
+            'foreignKey' => 'customer_id',
+        ),
 	);
 
     var $hasMany = array(
