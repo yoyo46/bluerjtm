@@ -2443,8 +2443,17 @@ $(function() {
             url: url,
             type: 'POST',
             success: function(response, status) {
-                $('#invoice-info').html(response);
-                $('#no_invoice').val($(response).filter('#pattern-code').val());
+                var message = $(response).filter('#message').val();
+                var error = $(response).filter('#status').val();
+                
+                if( error == 1 ) {
+                    $('.custom-find-invoice,#invoiceType').val('');
+                    $('.custom-find-invoice,#invoiceType').trigger('change');
+                    alert(message);
+                } else {
+                    $('#invoice-info').html(response);
+                    $('#no_invoice').val($(response).filter('#pattern-code').val());
+                }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');

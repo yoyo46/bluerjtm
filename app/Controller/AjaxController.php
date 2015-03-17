@@ -603,20 +603,31 @@ class AjaxController extends AppController {
                 'Bank.status' => 1,
             ),
         ));
+        $msg = array(
+        	'error' => 0,
+        	'text' => '',
+    	);
 
 		if(!empty($revenues) && !empty($customer)){
+			$monthFrom = !empty($revenues[0]['period_from'])?$this->MkCommon->customDate($revenues[0]['period_from'], 'Y-m'):false;
+			$monthTo = !empty($revenues[0]['period_to'])?$this->MkCommon->customDate($revenues[0]['period_to'], 'Y-m'):false;
 			$this->request->data['Invoice']['bank_id'] = !empty($customer['Customer']['bank_id'])?$customer['Customer']['bank_id']:false;
 			$this->request->data['Invoice']['period_from'] = !empty($revenues[0]['period_from'])?$this->MkCommon->customDate($revenues[0]['period_from'], 'd/m/Y'):false;
 			$this->request->data['Invoice']['period_to'] = !empty($revenues[0]['period_to'])?$this->MkCommon->customDate($revenues[0]['period_to'], 'd/m/Y'):false;
 			$this->request->data['Invoice']['total'] = !empty($revenues[0]['total'])?$revenues[0]['total']:0;;
 
-			if( !empty($customer['CustomerPattern']) ) {
+			if( $monthFrom != $monthTo ) {
+		        $msg = array(
+		        	'error' => 1,
+		        	'text' => __('Revenue dengan periode bulan yang berbeda tidak bisa di bayarkan. Mohon cek kembali revenue Anda.'),
+		    	);
+			} else if( !empty($customer['CustomerPattern']) ) {
                 $this->request->data['Invoice']['pattern'] = $this->MkCommon->getNoInvoice( $customer );
 			}
 		}
 
 		$this->set(compact(
-			'banks'
+			'banks', 'msg'
 		));
 	}
 

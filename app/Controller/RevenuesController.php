@@ -2873,6 +2873,7 @@ class RevenuesController extends AppController {
                             }
                         }
                     }else{
+                        $flagSave[] = false;
                         $text = sprintf(__('Gagal %s Revenue'), $msg);
                         if(!$validate_detail){
                             $text .= ', mohon lengkapi field-field yang kosong';
@@ -4815,6 +4816,7 @@ class RevenuesController extends AppController {
                     ),
                 ));
 
+                $this->set('active_menu', 'ttuj');
                 $this->set('suratJalans', $suratJalans);
                 $this->set('ttuj_id', $ttuj_id);
                 $this->set('ttuj', $ttuj);
@@ -4918,7 +4920,7 @@ class RevenuesController extends AppController {
                 $this->request->data = $ttuj;
             }
 
-            $this->set('active_menu', 'surat_jalan');
+            $this->set('active_menu', 'ttuj');
             $this->set('ttuj_id', $ttuj_id);
             $this->render('surat_jalan_add');
         } else {
