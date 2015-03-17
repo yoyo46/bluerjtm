@@ -330,8 +330,17 @@
                         $status = __('Unpaid');
                     }
 
-                    $content = $this->Html->tag('td', $invoice['Invoice']['no_invoice'], array(
+                    $content = $this->Html->tag('td', $this->Common->customDate($invoice['Invoice']['invoice_date'], 'd/m/Y'), array(
+                        'style' => 'text-align: center;',
+                    ));
+                    $content .= $this->Html->tag('td', !empty($invoice['CustomerNoType']['name'])?$invoice['CustomerNoType']['name']:false, array(
                         'style' => 'text-align: left;',
+                    ));
+                    $content .= $this->Html->tag('td', $invoice['Invoice']['no_invoice'], array(
+                        'style' => 'text-align: left;',
+                    ));
+                    $content .= $this->Html->tag('td', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                        'style' => 'text-align: right;',
                     ));
                     $content .= $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to']), array(
                         'style' => 'text-align: center;',
@@ -372,7 +381,10 @@ $tbl = <<<EOD
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <thead>
                 <tr style="$table_tr_head">
+                    <th style="text-align: center;">Tgl Kwitansi</th>
+                    <th style="text-align: center;">Customer</th>
                     <th style="text-align: center;">No. Invoice</th>
+                    <th style="text-align: center;">Total Tagihan</th>
                     <th style="text-align: center;">Periode Tanggal</th>
                     <th style="text-align: center;">Periode Bulan</th>
                     <th style="text-align: center;">Qty Unit</th>

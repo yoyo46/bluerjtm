@@ -4257,14 +4257,16 @@ class RevenuesController extends AppController {
                     foreach ($invoice_payment['InvoicePaymentDetail'] as $key => $value) {
                         $invoice_has_paid = $this->Invoice->InvoicePaymentDetail->getData('first', array(
                             'conditions' => array(
-                                'InvoicePaymentDetail.invoice_id' => $value['invoice_id']
+                                'InvoicePaymentDetail.invoice_id' => $value['invoice_id'],
+                                'InvoicePayment.status' => 1,
                             ),
                             'fields' => array(
                                 '*',
                                 'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid'
                             ),
                             'contain' => array(
-                                'Invoice'
+                                'Invoice',
+                                'InvoicePayment'
                             )
                         ));
 
@@ -4282,15 +4284,11 @@ class RevenuesController extends AppController {
                         }
                     }
 
-                    $this->Invoice->InvoicePaymentDetail->updateAll(
-                        array(
-                            'InvoicePaymentDetail.status' => 0
-                        ),
-                        array(
-                            'InvoicePaymentDetail.invoice_payment_id' => $id
-                        )
-                    );
-
+                    $this->Invoice->InvoicePaymentDetail->updateAll(array(
+                        'InvoicePaymentDetail.status' => 0
+                    ), array(
+                        'InvoicePaymentDetail.invoice_payment_id' => $id
+                    ));
                 }
 
                 $this->Invoice->InvoicePaymentDetail->InvoicePayment->id = $id;

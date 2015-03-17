@@ -1110,7 +1110,8 @@ class AjaxController extends AppController {
 
 		$default_conditions = array(
 			'Invoice.customer_id' => $id,
-			'Invoice.complete_paid' => 0
+			'Invoice.complete_paid' => 0,
+			'Invoice.status' => 1,
 		);
 
 		if(!empty($this->request->data['Invoice']['date_from']) || !empty($this->request->data['Invoice']['date_to'])){
