@@ -8,17 +8,17 @@ class Revenue extends AppModel {
                 'message' => 'TTUJ harap dipilih'
             ),
         ),
-        'no_doc' => array(
-            'isUnique' => array(
-                'rule' => array('isUnique'),
-                'allowEmpty'=> true,
-                'message' => 'No Dokumen telah terdaftar',
-            ),
-            // 'notempty' => array(
-            //     'rule' => array('notempty'),
-            //     'message' => 'No Dokumen harap dipilih'
-            // ),
-        ),
+        // 'no_doc' => array(
+        //     'isUnique' => array(
+        //         'rule' => array('isUnique'),
+        //         'allowEmpty'=> true,
+        //         'message' => 'No Dokumen telah terdaftar',
+        //     ),
+        //     // 'notempty' => array(
+        //     //     'rule' => array('notempty'),
+        //     //     'message' => 'No Dokumen harap dipilih'
+        //     // ),
+        // ),
         'customer_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

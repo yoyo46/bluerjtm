@@ -2700,6 +2700,7 @@ class RevenuesController extends AppController {
             $tarif_angkutan_types = !empty($data['RevenueDetail']['tarif_angkutan_type'])?$data['RevenueDetail']['tarif_angkutan_type']:array();
             $dataRevenues = array();
             $flagSave = array();
+            $dataTtuj = array();
 
             if( !empty($tarif_angkutan_types) ) {
                 $tarif_angkutan_types = array_unique($tarif_angkutan_types);
@@ -2709,9 +2710,9 @@ class RevenuesController extends AppController {
                     $dataRevenue['Revenue']['type'] = $tarif_angkutan_type;
                     $dataRevenuDetail = array();
 
-                    if( !empty($i) ) {
-                        $dataRevenue['Revenue']['no_doc'] .= '/'.chr(64+$i);
-                    }
+                    // if( !empty($i) ) {
+                    //     $dataRevenue['Revenue']['no_doc'] .= '/'.chr(64+$i);
+                    // }
 
                     if( !empty($dataRevenue['RevenueDetail']['tarif_angkutan_type']) ) {
                         $idx = 0;
@@ -2864,10 +2865,12 @@ class RevenuesController extends AppController {
                     }
 
                     if( $this->Revenue->validates($dataRevenue) && $validate_detail && $validate_qty ){
-                        if( $qtyUse >= $qtyTtuj ) {
-                            $dataRevenue['Ttuj']['is_revenue'] = 1;
-                        } else {
-                            $dataRevenue['Ttuj']['is_revenue'] = 0;
+                        if( $dataRevenue['Revenue']['type'] == 'angkut' ) {
+                            if( $qtyUse >= $qtyTtuj ) {
+                                $dataTtuj['Ttuj']['is_revenue'] = 1;
+                            } else {
+                                $dataTtuj['Ttuj']['is_revenue'] = 0;
+                            }
                         }
                     }else{
                         $text = sprintf(__('Gagal %s Revenue'), $msg);
@@ -2944,15 +2947,17 @@ class RevenuesController extends AppController {
                             $this->Revenue->RevenueDetail->save();
                         }
 
-                        if( !empty($dataTtuj) ) {
-                            $this->Ttuj->id = $dataRevenue['Revenue']['ttuj_id'];
-                            $this->Ttuj->save($dataTtuj);
-                        }
+                        if( $dataRevenue['Revenue']['type'] == 'angkut' ) {
+                            if( !empty($dataTtuj) ) {
+                                $this->Ttuj->id = $dataRevenue['Revenue']['ttuj_id'];
+                                $this->Ttuj->save($dataTtuj);
+                            }
 
-                        if( !empty($data_local) && $data_local['Ttuj']['id'] <> $dataRevenue['Revenue']['ttuj_id'] ) {
-                            $this->Ttuj->set('is_revenue', 0);
-                            $this->Ttuj->id = $data_local['Ttuj']['id'];
-                            $this->Ttuj->save();
+                            if( !empty($data_local) && $data_local['Ttuj']['id'] <> $dataRevenue['Revenue']['ttuj_id'] ) {
+                                $this->Ttuj->set('is_revenue', 0);
+                                $this->Ttuj->id = $data_local['Ttuj']['id'];
+                                $this->Ttuj->save();
+                            }
                         }
                         $flagSave[] = true;
                     }else{
