@@ -622,10 +622,28 @@ class UsersController extends AppController {
                 $this->request->data['Employe']['name'] = $name;
                 $options['conditions']['Employe.name LIKE '] = '%'.$name.'%';
             }
+            if(!empty($refine['position'])){
+                $position = urldecode($refine['position']);
+                $this->request->data['Employe']['employe_position_id'] = $position;
+                $options['conditions']['Employe.employe_position_id'] = $position;
+            }
+            if(!empty($refine['phone'])){
+                $phone = urldecode($refine['phone']);
+                $this->request->data['Employe']['phone'] = $phone;
+                $options['conditions']['Employe.phone LIKE '] = '%'.$phone.'%';
+            }
         }
 
         $this->paginate = $this->Employe->getData('paginate', $options);
         $employes = $this->paginate('Employe');
+
+        $this->loadModel('EmployePosition');
+        $employe_positions = $this->EmployePosition->getData('list', array(
+            'fields' => array(
+                'EmployePosition.id', 'EmployePosition.name'
+            )
+        ));
+        $this->set('employe_positions', $employe_positions);
 
         $this->set('active_menu', 'employe');
         $this->set('sub_module_title', 'Karyawan');

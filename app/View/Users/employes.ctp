@@ -1,8 +1,6 @@
 <?php 
-        $this->Html->addCrumb(__('Karyawan'), array(
-            'action' => 'employes',
-        ));
-        $this->Html->addCrumb($sub_module_title);
+        $this->Html->addCrumb(__('Karyawan'));
+        echo $this->element('blocks/users/search_employe');
 ?>
 <div class="box">
     <div class="box-header">

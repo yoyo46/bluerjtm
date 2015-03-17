@@ -18,6 +18,15 @@ class RjUserComponent extends Component {
 				if( !empty($refine['Group']['name']) ) {
 					$refine_conditions['Group']['name'] = $refine['Group']['name'];
 				}
+				if( !empty($refine['Employe']['name']) ) {
+					$refine_conditions['Employe']['name'] = $refine['Employe']['name'];
+				}
+				if( !empty($refine['Employe']['employe_position_id']) ) {
+					$refine_conditions['Employe']['position'] = $refine['Employe']['employe_position_id'];
+				}
+				if( !empty($refine['Employe']['phone']) ) {
+					$refine_conditions['Employe']['phone'] = $refine['Employe']['phone'];
+				}
 			}
 				
 			return $refine_conditions;
@@ -35,6 +44,13 @@ class RjUserComponent extends Component {
 		}
 		if(!empty($refine['Group'])) {
 			foreach($refine['Group'] as $param => $value) {
+				if($value) {
+					$parameters[trim($param)] = rawurlencode($value);
+				}
+			}
+		}
+		if(!empty($refine['Employe'])) {
+			foreach($refine['Employe'] as $param => $value) {
 				if($value) {
 					$parameters[trim($param)] = rawurlencode($value);
 				}
