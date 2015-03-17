@@ -30,14 +30,13 @@
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('code_motor_id',__('Kode Motor *')); 
+				echo $this->Form->label('code_motor',__('Kode Motor *')); 
 
-				echo $this->Form->input('code_motor_id',array(
+				echo $this->Form->input('code_motor',array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'empty' => __('Pilih Kode Motor'),
-					'options' => $code_motors
+					'placeholder' => __('Kode Motor'),
 				));
 			?>
         </div>

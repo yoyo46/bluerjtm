@@ -1917,15 +1917,15 @@ class SettingsController extends AppController {
         ));
         $this->set('group_motors', $group_motors);
 
-        $code_motors = $this->CodeMotor->getData('list', array(
-            'conditions' => array(
-                'CodeMotor.status' => 1
-            ),
-            'fields' => array(
-                'CodeMotor.id', 'CodeMotor.name'
-            )
-        ));
-        $this->set('code_motors', $code_motors);
+        // $code_motors = $this->CodeMotor->getData('list', array(
+        //     'conditions' => array(
+        //         'CodeMotor.status' => 1
+        //     ),
+        //     'fields' => array(
+        //         'CodeMotor.id', 'CodeMotor.name'
+        //     )
+        // ));
+        // $this->set('code_motors', $code_motors);
 
 
         $this->set('active_menu', 'type_motor');

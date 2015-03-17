@@ -8,7 +8,7 @@ class TipeMotor extends AppModel {
                 'message' => 'Tipe motor harap diisi'
             ),
         ),
-        'code_motor_id' => array(
+        'code_motor' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Kode motor harap diisi'
