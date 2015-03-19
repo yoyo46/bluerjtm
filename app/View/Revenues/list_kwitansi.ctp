@@ -85,15 +85,12 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('transaction_status',array(
+                            echo $this->Form->input('status',array(
                                 'label'=> __('Status Invoice'),
                                 'class'=>'form-control',
                                 'required' => false,
                                 'empty' => __('Pilih Status Invoice'),
-                                'options' => array(
-                                    'invoiced' => __('Belum Lunas'),
-                                    'paid' => __('Lunas'),
-                                )
+                                'options' => $invStatus,
                             ));
                     ?>
                 </div>
@@ -194,6 +191,7 @@
                                 $dateTOP = !empty($invoice['Invoice']['term_of_payment'])?date('d/m/Y', strtotime(sprintf('+%s day', $invoice['Invoice']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']))):'-';
                                 $datePayment = array();
                                 $totalPaid = 0;
+                                $invoiceStatus = $this->Common->getInvoiceStatus( $invoice );
 
                                 if( !empty($invoice['InvoicePaymentDate']) ) {
                                     foreach ($invoice['InvoicePaymentDate'] as $key => $dtPaid) {
@@ -203,14 +201,6 @@
 
                                 if( !empty($invoice[0]['total_payment']) ) {
                                     $totalPaid = $invoice[0]['total_payment'];
-                                }
-
-                                if(!empty($invoice['Invoice']['complete_paid'])){
-                                    $class_status = 'label label-success';
-                                    $status = __('Paid');
-                                } else {
-                                    $class_status = 'label label-primary';
-                                    $status = __('Unpaid');
                                 }
                 ?>
                 <tr>
@@ -254,7 +244,7 @@
                             echo $this->Html->tag('td', $this->Number->currency($totalPaid, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
                                 'style' => 'text-align: right;',
                             ));
-                            echo $this->Html->tag('td', $this->Html->tag('span', $status, array('class' => $class_status)), array(
+                            echo $this->Html->tag('td', $this->Html->tag('span', $invoiceStatus['text'], array('class' => $invoiceStatus['class'])).$invoiceStatus['void_date'], array(
                                 'style' => 'text-align: right;',
                             ));
                     ?>
@@ -311,6 +301,7 @@
                     $dateTOP = !empty($invoice['Invoice']['term_of_payment'])?date('d/m/Y', strtotime(sprintf('+%s day', $invoice['Invoice']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']))):'-';
                     $datePayment = array();
                     $totalPaid = 0;
+                    $invoiceStatus = $this->Common->getInvoiceStatus( $invoice );
 
                     if( !empty($invoice['InvoicePaymentDate']) ) {
                         foreach ($invoice['InvoicePaymentDate'] as $key => $dtPaid) {
@@ -320,14 +311,6 @@
 
                     if( !empty($invoice[0]['total_payment']) ) {
                         $totalPaid = $invoice[0]['total_payment'];
-                    }
-
-                    if(!empty($invoice['Invoice']['complete_paid'])){
-                        $class_status = 'label label-success';
-                        $status = __('Paid');
-                    } else {
-                        $class_status = 'label label-primary';
-                        $status = __('Unpaid');
                     }
 
                     $content = $this->Html->tag('td', $this->Common->customDate($invoice['Invoice']['invoice_date'], 'd/m/Y'), array(
@@ -363,7 +346,7 @@
                     $content .= $this->Html->tag('td', $this->Number->currency($totalPaid, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
                         'style' => 'text-align: right;',
                     ));
-                    $content .= $this->Html->tag('td', $status, array(
+                    $content .= $this->Html->tag('td', $invoiceStatus['text'].$invoiceStatus['void_date'], array(
                         'style' => 'text-align: center;',
                     ));
 

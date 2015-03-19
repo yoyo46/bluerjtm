@@ -3409,6 +3409,31 @@ class RevenuesController extends AppController {
                     $this->request->data['Invoice']['customer_id'] = $customer;
                     $conditions['Invoice.customer_id LIKE '] = '%'.$customer.'%';
                 }
+                if(!empty($refine['status'])){
+                    $status = urldecode($refine['status']);
+                    $this->request->data['Invoice']['status'] = $status;
+
+                    switch ($status) {
+                        case 'paid':
+                            $conditions['Invoice.complete_paid '] = 1;
+                            break;
+
+                        case 'halfpaid':
+                            $conditions['Invoice.complete_paid '] = 0;
+                            $conditions['Invoice.paid '] = 1;
+                            break;
+
+                        case 'void':
+                            $conditions['Invoice.is_canceled '] = 1;
+                            break;
+                        
+                        default:
+                            $conditions['Invoice.complete_paid '] = 0;
+                            $conditions['Invoice.paid '] = 0;
+                            $conditions['Invoice.is_canceled '] = 0;
+                            break;
+                    }
+                }
             }
 
             $this->paginate = $this->Invoice->getData('paginate', array(
@@ -4386,9 +4411,7 @@ class RevenuesController extends AppController {
         // if( in_array('view_list_kwitansi', $this->allowModule) ) {
             $this->loadModel('Invoice');
             $this->loadModel('Revenue');
-            $invoice_conditions = array(
-                'Invoice.status'=> 1,
-            );
+            $invoice_conditions = array();
 
             if( !empty($this->params['named']) ){
                 $refine = $this->params['named'];
@@ -4423,12 +4446,27 @@ class RevenuesController extends AppController {
 
                 if(!empty($refine['status'])){
                     $status = urldecode($refine['status']);
-                    $this->request->data['Invoice']['transaction_status'] = $status;
+                    $this->request->data['Invoice']['status'] = $status;
 
-                    if( $status == 'paid' ) {
-                        $invoice_conditions['Invoice.complete_paid'] = 1;
-                    } else {
-                        $invoice_conditions['Invoice.complete_paid'] = 0;
+                    switch ($status) {
+                        case 'paid':
+                            $invoice_conditions['Invoice.complete_paid '] = 1;
+                            break;
+
+                        case 'halfpaid':
+                            $invoice_conditions['Invoice.complete_paid '] = 0;
+                            $invoice_conditions['Invoice.paid '] = 1;
+                            break;
+
+                        case 'void':
+                            $invoice_conditions['Invoice.is_canceled '] = 1;
+                            break;
+                        
+                        default:
+                            $invoice_conditions['Invoice.complete_paid '] = 0;
+                            $invoice_conditions['Invoice.paid '] = 0;
+                            $invoice_conditions['Invoice.is_canceled '] = 0;
+                            break;
                     }
                 }
             }

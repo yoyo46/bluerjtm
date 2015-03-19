@@ -73,7 +73,7 @@
                                 ));
                             }
                         }else{
-                            echo $this->Html->tag('span', 'Invoice dibatalkan', array(
+                            echo $this->Html->tag('span', __('Void'), array(
                                 'class' => 'label label-danger'
                             ));
                             if(!empty($value['InvoicePayment']['canceled_date'])){

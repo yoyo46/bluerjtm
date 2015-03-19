@@ -9,9 +9,9 @@
         <?php 
                 echo $this->Form->create('Invoice', array(
                     'url'=> $this->Html->url( array(
-                        'controller' => 'settings',
+                        'controller' => 'revenues',
                         'action' => 'search',
-                        'customers'
+                        'invoices'
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
@@ -26,6 +26,17 @@
                             'class'=>'form-control',
                             'required' => false,
                             'placeholder' => __('Kode Invoice')
+                        ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                        echo $this->Form->input('status',array(
+                            'label'=> __('Status'),
+                            'class'=>'form-control',
+                            'required' => false,
+                            'empty' => __('Pilih Status'),
+                            'options' => $invStatus,
                         ));
                     ?>
                 </div>
@@ -50,7 +61,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'customers', 
+                                'action' => 'invoices', 
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',

@@ -90,23 +90,10 @@
                 <td align="right"><?php echo $this->Number->currency($value['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <td>
                     <?php 
-                            if(!empty($value['Invoice']['is_canceled'])){
-                                $class_status = 'label label-danger';
-                                $status = __('Invoice Dibatalkan');
-                            }else{
-                                if(!empty($value['Invoice']['complete_paid'])){
-                                    $class_status = 'label label-success';
-                                    $status = __('Paid');
-                                } else {
-                                    $class_status = 'label label-primary';
-                                    $status = __('Unpaid');
-                                }
-                            }
+                            $invoiceStatus = $this->Common->getInvoiceStatus( $value );
 
-                            echo $this->Html->tag('span', $status, array('class' => $class_status));
-                            if(!empty($value['Invoice']['canceled_date'])){
-                                echo '<br>'.$this->Common->customDate($value['Invoice']['canceled_date'], 'd/m/Y');
-                            }
+                            echo $this->Html->tag('span', $invoiceStatus['text'], array('class' => $invoiceStatus['class']));
+                            echo $invoiceStatus['void_date'];
                     ?>
                 </td>
                 <td><?php echo $this->Time->timeAgoInWords($value['Invoice']['created']);?></td>
@@ -156,7 +143,7 @@
                     } else {
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '8'
+                            'colspan' => '9'
                         )));
                     }
             ?>

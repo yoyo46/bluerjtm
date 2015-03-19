@@ -557,4 +557,36 @@ class CommonHelper extends AppHelper {
     function getNoRef ( $id, $length = 5, $op = '0', $position = STR_PAD_LEFT ) {
         return str_pad($id, $length, $op, $position);
     }
+
+    function getInvoiceStatus ( $data ) {
+        $result = array(
+            'class' => 'label label-default',
+            'text' => __('Unpaid'),
+            'void_date' => '',
+        );
+
+        if(!empty($data['Invoice']['is_canceled'])){
+            $result = array(
+                'class' => 'label label-danger',
+                'text' => __('Void'),
+                'void_date' => '<br>'.$this->customDate($data['Invoice']['canceled_date'], 'd/m/Y'),
+            );
+        }else{
+            if( empty($data['Invoice']['complete_paid']) && !empty($data['Invoice']['paid']) ){
+                $result = array(
+                    'class' => 'label label-primary',
+                    'text' => __('Half Paid'),
+                    'void_date' => '',
+                );
+            } else if(!empty($data['Invoice']['complete_paid'])){
+                $result = array(
+                    'class' => 'label label-success',
+                    'text' => __('Paid'),
+                    'void_date' => '',
+                );
+            }
+        }
+
+        return $result;
+    }
 }

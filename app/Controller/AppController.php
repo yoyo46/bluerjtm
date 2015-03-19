@@ -124,6 +124,12 @@ class AppController extends Controller {
 	    	'11' => 'November',
 	    	'12' => 'Desember',
     	);
+	    $invStatus = array(
+            'paid' => __('Paid'),
+            'unpaid' => __('Unpaid'),
+            'halfpaid' => __('Half Paid'),
+            'void' => __('Void'),
+        );
 
 	    $logged_in = $this->MkCommon->loggedIn();
 	    $this->user_id = false;
@@ -156,7 +162,7 @@ class AppController extends Controller {
 
 	    $this->set(compact(
 	    	'logged_in', 'GroupId', 'User',
-	    	'monthArr', 'allowModule'
+	    	'monthArr', 'allowModule', 'invStatus'
     	));
 	}
 
