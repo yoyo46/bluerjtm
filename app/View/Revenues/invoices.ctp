@@ -124,16 +124,17 @@
                                     'class' => 'btn btn-info btn-xs'
                                 ));
 
-                            
-                                echo $this->Html->link(__('Hapus'), array(
-                                    'controller' => 'revenues',
-                                    'action' => 'invoice_delete',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs ajaxModal',
-                                    'data-action' => 'cancel_invoice',
-                                    'title' => 'Hapus Data Invoice'
-                                ));
+                                if( empty($value['Invoice']['complete_paid']) && empty($value['Invoice']['paid']) ){
+                                    echo $this->Html->link(__('Void'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'invoice_delete',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-danger btn-xs ajaxModal',
+                                        'data-action' => 'cancel_invoice',
+                                        'title' => __('Void Data Invoice')
+                                    ));
+                                }
                             }
                     ?>
                 </td>
