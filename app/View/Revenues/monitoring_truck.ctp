@@ -128,8 +128,14 @@
                                                     $icon = '&nbsp;';
                                                 }
                                                 if( !empty($data['iconPopup']) ) {
-                                                    $icon .= $this->Html->image($data['iconPopup'], array(
-                                                        'class' => 'icon-popup'
+                                                    $icon .= $this->Common->photo_thumbnail(array(
+                                                        'save_path' => Configure::read('__Site.truck_photo_folder'), 
+                                                        'src' => $data['iconPopup'], 
+                                                        'thumb'=>true,
+                                                        'size' => 's',
+                                                        'thumb' => true,
+                                                    ), array(
+                                                        'class' => 'icon-popup',
                                                     ));
                                                 }
                                             } else {
@@ -152,8 +158,14 @@
                                                 ));
                                             }
                                             if( !empty($data['iconPopup']) ) {
-                                                $icon .= $this->Html->image($data['iconPopup'], array(
-                                                    'class' => 'icon-popup'
+                                                $icon .= $this->Common->photo_thumbnail(array(
+                                                    'save_path' => Configure::read('__Site.truck_photo_folder'), 
+                                                    'src' => $data['icon'], 
+                                                    'thumb'=>true,
+                                                    'size' => 's',
+                                                    'thumb' => true,
+                                                ), array(
+                                                    'class' => 'icon-popup',
                                                 ));
                                             }
 
@@ -257,13 +269,13 @@
                                             )), array(
                                                 'class' => 'text-center staticModal',
                                                 'data-toggle' => 'modal',
-                                                'data-target' => '#myModal'.$i
+                                                'data-target' => '#myModal'.$this->Common->toSlug($nopol).$i
                                             )), array(
                                                 'class' => 'multiple', 
                                                 'style' => $style,
                                             ));
                 ?>
-                <div class="modal fade multiple-modal" id="myModal<?php echo $i; ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal fade multiple-modal" id="myModal<?php echo $this->Common->toSlug($nopol).$i; ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">

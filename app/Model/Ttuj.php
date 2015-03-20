@@ -99,21 +99,6 @@ class Ttuj extends AppModel {
         ),
     );
 
-    var $hasOne = array(
-        'Laka' => array(
-            'className' => 'Laka',
-            'foreignKey' => 'ttuj_id',
-            'conditions' => array(
-                'Laka.status' => 1,
-            ),
-            'order' => array(
-                'Laka.created' => 'DESC',
-                'Laka.id' => 'DESC',
-            ),
-            'limit' => 1,
-        ),
-    );
-
     var $hasMany = array(
         'TtujTipeMotor' => array(
             'className' => 'TtujTipeMotor',

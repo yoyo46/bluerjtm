@@ -2063,6 +2063,24 @@ class RevenuesController extends AppController {
             $leftDay = date('N', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , 0, date("Y", strtotime($currentMonth))));
             $lastDay = date('t', strtotime($currentMonth));
             $customerId = array();
+            $lakas = $this->Laka->getData('list', array(
+                'conditions' => array(
+                    'Laka.status'=> 1,
+                    'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\') <=' => $currentMonth,
+                    'OR' => array(
+                        'DATE_FORMAT(Laka.completed_date, \'%Y-%m\') >=' => $currentMonth,
+                        'Laka.completed_date' => NULL,
+                    ),
+                ),
+                'order' => array(
+                    'Laka.tgl_laka' => 'ASC', 
+                ),
+                'fields' => array(
+                    'Laka.id', 'Laka.ttuj_id'
+                ),
+            ));
+            $lakas = array_values($lakas);
+            $lakas = array_unique($lakas);
             $conditions = array(
                 'Ttuj.status'=> 1,
                 'Ttuj.is_draft'=> 0,
@@ -2072,13 +2090,7 @@ class RevenuesController extends AppController {
                     'DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m\')' => $currentMonth,
                     'DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m\')' => $currentMonth,
                     'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\')' => $currentMonth,
-                    array(
-                        'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\') <=' => $currentMonth,
-                        'OR' => array(
-                            'DATE_FORMAT(Laka.completed_date, \'%Y-%m\')' => $currentMonth,
-                            'Laka.completed' => 0,
-                        ),
-                    ),
+                    'Ttuj.id' => $lakas,
                 ),
             );
             $conditionEvents = array(
@@ -2148,9 +2160,6 @@ class RevenuesController extends AppController {
                 ),
                 'group' => array(
                     'Ttuj.customer_id'
-                ),
-                'contain' => array(
-                    'Laka'
                 ),
             ));
             $events = $this->CalendarEvent->getData('all', array(
