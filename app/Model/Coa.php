@@ -3,12 +3,12 @@ class Coa extends AppModel {
     public $actsAs = array('Tree');
 	var $name = 'Coa';
 	var $validate = array(
-        'code' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Kode COA harap diisi'
-            ),
-        ),
+        // 'code' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Kode COA harap diisi'
+        //     ),
+        // ),
 		'name' => array(
 			'notempty' => array(
 				'rule' => array('notempty'),

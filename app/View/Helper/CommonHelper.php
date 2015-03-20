@@ -373,19 +373,24 @@ class CommonHelper extends AppHelper {
 		return strip_tags($string);
 	}
 
-	function generateCoaTree ( $coas, $allowModule ) {
+	function generateCoaTree ( $coas, $allowModule, $level = false ) {
 		$dataTree = '<ul>';
         if( !empty($coas) ) {
             foreach ($coas as $key => $coa) {
 				$dataTree .= '<li class="parent_li">';
-				$dataTree .= $this->Html->tag('span', $coa['Coa']['code'], array(
-                    'title' => $coa['Coa']['code'],
+                $coa_title = '';
+                if(!empty($coa['Coa']['code'])){
+                    $coa_title = $coa['Coa']['code'].'-';
+                }
+                $coa_title .= $coa['Coa']['name'];
+				$dataTree .= $this->Html->tag('span', $coa_title, array(
+                    'title' => $coa_title,
                 ));
-                $dataTree .= $this->Html->link($coa['Coa']['name'], 'javascript:', array(
-                    'escape' => false,
-                ));
+                // $dataTree .= $this->Html->link($coa['Coa']['name'], 'javascript:', array(
+                //     'escape' => false,
+                // ));
 
-                if( in_array('insert_coas', $allowModule) ) {
+                if( in_array('insert_coas', $allowModule) && $level <= 2 ) {
                     $dataTree .= $this->Html->link('<i class="fa fa-plus-circle"></i>', array(
                         'controller' => 'settings',
                         'action' => 'coa_add',
@@ -393,6 +398,19 @@ class CommonHelper extends AppHelper {
                     ), array(
                         'escape' => false,
                         'class' => 'bg-green'
+                    ));
+                }
+
+                if( in_array('update_coas', $allowModule) ) {
+                    $dataTree .= $this->Html->link('<i class="fa fa-pencil-square-o"></i>', array(
+                        'controller' => 'settings',
+                        'action' => 'coa_edit',
+                        $coa['Coa']['id'],
+                        $coa['Coa']['parent_id'],
+                    ), array(
+                        'escape' => false,
+                        'class' => 'bg-primary',
+                        'title' => 'edit'
                     ));
                 }
 
@@ -409,7 +427,8 @@ class CommonHelper extends AppHelper {
 
                 if( !empty($coa['children']) ) {
                 	$child = $coa['children'];
-                	$dataTree .= $this->generateCoaTree($child, $allowModule);
+                    $level = $coa['Coa']['level'];
+                	$dataTree .= $this->generateCoaTree($child, $allowModule, $level);
                 }
 
 				$dataTree .= '</li>';

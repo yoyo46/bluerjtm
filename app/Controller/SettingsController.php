@@ -640,7 +640,8 @@ class SettingsController extends AppController {
             if( !empty($parent_id) ) {
                 $coa = $this->Coa->getData('first', array(
                     'conditions' => array(
-                        'Coa.status' => 1
+                        'Coa.status' => 1,
+                        'Coa.id' => $parent_id
                     ),
                 ));
 
@@ -656,6 +657,39 @@ class SettingsController extends AppController {
             }
 
             $this->doCoa( false, false, $parent_id, $coa );
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
+
+    public function coa_edit( $id = false, $parent_id = false ) {
+        if( in_array('update_coas', $this->allowModule) ) {
+            $this->loadModel('Coa');
+            $coa = false;
+
+            if( !empty($id) ) {
+                $coa_current = $this->Coa->getData('first', array(
+                    'conditions' => array(
+                        'Coa.id' => $id,
+                        'Coa.status' => 1,
+                    ),
+                ));
+
+                if( !empty($coa_current) ) {
+                    $coa = $this->Coa->getData('first', array(
+                        'conditions' => array(
+                            'Coa.id' => $parent_id,
+                            'Coa.status' => 1,
+                        ),
+                    ));
+                    $this->set('sub_module_title', 'Rubah COA');
+                    $this->set('coa', $coa);
+                   $this->doCoa( $id, $coa_current, $parent_id, $coa );
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Coa tidak ditemukan.'), 'error');
+                    $this->redirect($this->referer());
+                }
+            } 
         } else {
             $this->redirect($this->referer());
         }
@@ -679,6 +713,14 @@ class SettingsController extends AppController {
                 if( !empty($data['Coa']['code']) ) {
                     $data['Coa']['code'] = sprintf('%s%s', $coa['Coa']['code'], $data['Coa']['code']);
                 }
+
+                if(!empty($coa['Coa']['level']) && empty($id) && empty($data_local)){
+                    $data['Coa']['level'] = $coa['Coa']['level']+1;
+                }
+            }
+
+            if(!empty($data['Coa']['balance'])){
+                $data['Coa']['balance'] = str_replace(',', '', $data['Coa']['balance']);
             }
             
             $this->Coa->set($data);
@@ -701,6 +743,9 @@ class SettingsController extends AppController {
         }else{
             if($id && $data_local){
                 $this->request->data = $data_local;
+                if(!empty($coa)){
+                    $this->request->data['Coa']['code'] = substr($this->request->data['Coa']['code'], strlen($coa['Coa']['code']), strlen($this->request->data['Coa']['code']));
+                }
             }
         }
 
@@ -4813,5 +4858,39 @@ class SettingsController extends AppController {
         $this->set(compact(
             'customer', 'data_local'
         ));
+    }
+
+    function coa_toggle($id){
+        // if( in_array('delete_coa', $this->allowModule) ) {
+            $this->loadModel('Coa');
+            $locale = $this->Coa->getData('first', array(
+                'conditions' => array(
+                    'Coa.id' => $id
+                )
+            ));
+
+            if($locale){
+                $value = true;
+                if($locale['Coa']['status']){
+                    $value = false;
+                }
+
+                $this->Coa->id = $id;
+                $this->Coa->set('status', $value);
+                if($this->Coa->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status COA ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status COA ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('COA tidak ditemukan.'), 'error');
+            }
+
+            $this->redirect($this->referer());
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
     }
 }

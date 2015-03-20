@@ -32,7 +32,16 @@
 			<div class="input-group">
 				<?php
     					if( !empty($coa) ) {
-							echo $this->Html->tag('span', sprintf('%s -', $coa['Coa']['code']), array(
+    						$coa_title = '';
+			                if(!empty($coa['Coa']['code']) && $coa['Coa']['level'] >= 1){
+			                    $coa_title = $coa['Coa']['code'];
+			                }else{
+			                	if($coa['Coa']['level'] > 1){
+			                		$coa_title = $coa['Coa']['name'];
+			                	}
+			                }
+
+							echo $this->Html->tag('span', sprintf('%s -', $coa_title), array(
 								'class' => 'input-group-addon'
 							));
 						}
@@ -54,6 +63,51 @@
 				)), array(
 					'class' => 'form-group'
 				));
+
+				echo $this->Html->tag('div', $this->Form->input('name_en',array(
+					'label'=> __('Nama COA English'), 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Nama COA')
+				)), array(
+					'class' => 'form-group'
+				));
+
+				if(!empty($coa['Coa']['level']) && $coa['Coa']['level'] == 3){
+					echo $this->Html->tag('div', $this->Form->input('balance', array(
+						'label'=> __('Balance *'), 
+						'class'=>'form-control input_price',
+						'required' => false,
+						'placeholder' => __('Balance'),
+						'type' => 'text'
+					)), array(
+						'class' => 'form-group'
+					));
+
+					echo $this->Html->tag('div', $this->Form->input('type', array(
+						'label'=> __('Tipe COA'), 
+						'class'=>'form-control',
+						'required' => false,
+						'empty' => __('Pilih Tipe COA'),
+						'options' => array(
+							'debit' => __('Debit'),
+							'credit' => __('Credit'),
+						)
+					)), array(
+						'class' => 'form-group'
+					));
+		?>
+			    	<div class="form-group">
+			    		<div class="checkbox">
+			                <label>
+			                	<?php 
+			                		echo $this->Form->checkbox('is_cash_bank').' Termasuk Kas Bank?';
+			                	?>
+			                </label>
+			            </div>
+			    	</div>
+		<?php
+				}
 		?>
     </div>
 
