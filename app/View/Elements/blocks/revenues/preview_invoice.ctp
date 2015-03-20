@@ -4,11 +4,11 @@
 				$data_print = !empty($data_print)?$data_print:'invoice';
 
 				if( !empty($data_print) && $data_print == 'date' ) {
-					$totalMerge = 11;
-					$totalMergeTotal = 7;
-				} else {
 					$totalMerge = 10;
 					$totalMergeTotal = 6;
+				} else {
+					$totalMerge = 9;
+					$totalMergeTotal = 5;
 				}
 ?>
 <table border="1" width="100%" style="margin-top: 20px;">

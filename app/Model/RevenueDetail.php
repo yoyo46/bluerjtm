@@ -186,14 +186,16 @@ class RevenueDetail extends AppModel {
         if( in_array($data_action, array( 'invoice', 'date' )) ) {
             $conditions = array(
                 'RevenueDetail.invoice_id' => $id,
-                'Revenue.type' => $invoice_type,
             );
         } else {
             $conditions = array(
                 'RevenueDetail.revenue_id' => $id,
-                'Revenue.type' => $invoice_type,
                 'Revenue.status' => 1,
             );
+        }
+
+        if( !empty($invoice_type) ) {
+            $conditions['Revenue.type'] = $invoice_type;
         }
 
         if( $action == 'tarif' && $data_action == 'invoice' ){

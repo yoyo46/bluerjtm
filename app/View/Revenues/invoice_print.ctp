@@ -38,12 +38,12 @@ if($action_print == 'pdf'){
 			}
 
 			if( !empty($data_print) && $data_print == 'date' ) {
-				$totalMerge = 11;
-				$totalMergeTotal = 7;
-				$colName = '<th class="text-center">Kota</th>';
-			} else {
 				$totalMerge = 10;
 				$totalMergeTotal = 6;
+				$colName = '<th class="text-center">Kota</th>';
+			} else {
+				$totalMerge = 9;
+				$totalMergeTotal = 5;
 				$colName = '';
 			}
 
