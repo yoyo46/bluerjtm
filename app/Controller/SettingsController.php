@@ -718,6 +718,7 @@ class SettingsController extends AppController {
             if($id && $data_local){
                 $this->Coa->id = $id;
                 $msg = 'merubah';
+                $data['Coa']['level'] = $data_local['Coa']['level'];
             }else{
                 $this->Coa->create();
                 $msg = 'menambah';
@@ -727,7 +728,7 @@ class SettingsController extends AppController {
                 $data['Coa']['parent_id'] = $parent_id;
 
                 if( !empty($data['Coa']['code']) ) {
-                    $data['Coa']['code'] = sprintf('%s%s', $coa['Coa']['code'], $data['Coa']['code']);
+                    $data['Coa']['code'] = sprintf('%s-%s', $coa['Coa']['code'], $data['Coa']['code']);
                 }
 
                 if(!empty($coa['Coa']['level']) && empty($id) && empty($data_local)){
@@ -760,7 +761,7 @@ class SettingsController extends AppController {
             if($id && $data_local){
                 $this->request->data = $data_local;
                 if(!empty($coa)){
-                    $this->request->data['Coa']['code'] = substr($this->request->data['Coa']['code'], strlen($coa['Coa']['code']), strlen($this->request->data['Coa']['code']));
+                    $this->request->data['Coa']['code'] = str_replace(sprintf('%s-', $coa['Coa']['code']), '', $this->request->data['Coa']['code']);
                 }
             }
         }

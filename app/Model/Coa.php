@@ -9,12 +9,18 @@ class Coa extends AppModel {
         //         'message' => 'Kode COA harap diisi'
         //     ),
         // ),
-		'name' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-                'message' => 'Nama COA harap diisi'
+		'code' => array(
+			'validateCode' => array(
+				'rule' => array('validateCode'),
+                'message' => 'Kode COA harap diisi'
 			),
-		)
+		),
+        'name' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Nama COA harap diisi'
+            ),
+        )
 	);
 
     var $belongsTo = array(
@@ -86,6 +92,20 @@ class Coa extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
+    }
+
+    function validateCode () {
+        if( empty($this->data['Coa']['code']) ) {
+            if( !empty($this->data['Coa']['level']) && $this->data['Coa']['level'] == 4 ) {
+                return false;
+            } else if( !empty($this->data['Coa']['level']) && $this->data['Coa']['level'] == 3 ) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
     }
 }
 ?>

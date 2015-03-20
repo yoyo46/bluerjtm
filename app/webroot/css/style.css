@@ -3621,6 +3621,10 @@ fieldset[disabled] .btn-vk.active {
     margin-right: 5px;
 }
 
+.tree li.parent_li>span label {
+  margin-right: 15px;
+}
+
 .tree li.parent_li a {
   margin-right: 5px;
   padding-left: 3px;

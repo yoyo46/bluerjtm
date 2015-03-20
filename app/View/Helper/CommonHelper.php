@@ -380,7 +380,7 @@ class CommonHelper extends AppHelper {
 				$dataTree .= '<li class="parent_li">';
                 $coa_title = '';
                 if(!empty($coa['Coa']['code'])){
-                    $coa_title = $coa['Coa']['code'].'-';
+                    $coa_title = $this->Html->tag('label', $coa['Coa']['code']);
                 }
                 $coa_title .= $coa['Coa']['name'];
 				$dataTree .= $this->Html->tag('span', $coa_title, array(
@@ -422,7 +422,7 @@ class CommonHelper extends AppHelper {
                     ), array(
                         'escape' => false,
                         'class' => 'bg-red'
-                    ));
+                    ), __('Anda yakin ingin menghapus COA ini ?'));
                 }
 
                 if( !empty($coa['children']) ) {

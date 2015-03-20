@@ -21,30 +21,16 @@
     			if( !empty($coa) ) {
     				echo '<dl>';
     				echo $this->Html->tag('dt', __('Parent COA'));
-					echo $this->Html->tag('dd', sprintf('%s - %s', $coa['Coa']['code'], $coa['Coa']['name']));
+					echo $this->Html->tag('dd', sprintf('%s %s', $coa['Coa']['code'], $coa['Coa']['name']));
 					echo '</dl>';
 				}
 		?>
 		<div class="form-group">
 			<?php 
-					echo $this->Form->label('code', __('Kode COA *'));
+					echo $this->Form->label('code', __('Kode COA'));
 			?>
 			<div class="input-group">
 				<?php
-    					if( !empty($coa) ) {
-    						$coa_title = '';
-			                if(!empty($coa['Coa']['code']) && $coa['Coa']['level'] >= 1){
-			                    $coa_title = $coa['Coa']['code'];
-			                }else{
-			                	if($coa['Coa']['level'] > 1){
-			                		$coa_title = $coa['Coa']['name'];
-			                	}
-			                }
-
-							echo $this->Html->tag('span', sprintf('%s -', $coa_title), array(
-								'class' => 'input-group-addon'
-							));
-						}
 						echo $this->Form->input('code',array(
 							'label'=> false, 
 							'class'=>'form-control',
