@@ -280,13 +280,22 @@ class SettingsController extends AppController {
             }
                         
             $data['Customer']['bank_id'] = !empty($data['Customer']['bank_id'])?$data['Customer']['bank_id']:0;
+            $data['Customer']['billing_id'] = !empty($data['Customer']['billing_id'])?$data['Customer']['billing_id']:0;
             $this->Customer->set($data);
             $this->Customer->CustomerPattern->set($data);
 
             if($this->Customer->validates($data) && $this->Customer->CustomerPattern->validates($data)){
-                if( $this->Customer->save($data) && $this->Customer->CustomerPattern->save($data) ){
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Customer'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Customer'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                if( $this->Customer->save($data) ){
+                    $data['CustomerPattern']['customer_id'] = $this->Customer->id;
+
+                    if( $this->Customer->CustomerPattern->save($data) ) {
+                        $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Customer, Namun gagal menyimpan pattern'), $msg), 'success');
+                        $this->Log->logActivity( sprintf(__('Sukses %s Customer, Namun gagal menyimpan pattern #%s'), $msg, $this->Customer->id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    } else {
+                        $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Customer'), $msg), 'success');
+                        $this->Log->logActivity( sprintf(__('Sukses %s Customer'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    }
+
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'customers'
