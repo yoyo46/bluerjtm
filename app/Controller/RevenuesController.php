@@ -3775,7 +3775,8 @@ class RevenuesController extends AppController {
         
         $invoice = $this->Invoice->getData('first', array(
             'conditions' => array(
-                'Invoice.id' => $id
+                'Invoice.id' => $id,
+                'Invoice.status' => array( 0,1 ),
             ),
             'contain' => array(
                 'InvoiceDetail',
@@ -4456,7 +4457,7 @@ class RevenuesController extends AppController {
                 if(!empty($refine['customer'])){
                     $customer = urldecode($refine['customer']);
                     $this->request->data['Ttuj']['customer'] = $customer;
-                    $invoice_conditions['CustomerNoType.name LIKE'] = '%'.$customer.'%';
+                    $invoice_conditions['CustomerNoType.id'] = $customer;
                 }
 
                 if(!empty($refine['no_invoice'])){
@@ -4513,6 +4514,12 @@ class RevenuesController extends AppController {
                 }
             }
 
+            $customers = $this->Invoice->Customer->getData('list', array(
+                'fields' => array(
+                    'Customer.id', 'Customer.name'
+                )
+            ));
+            $this->set('customers', $customers);
             $this->set('sub_module_title', __('List Kwitansi'));
             $this->set('active_menu', 'list_kwitansi');
 

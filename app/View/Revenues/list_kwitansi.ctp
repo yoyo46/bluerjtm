@@ -45,6 +45,7 @@
                                 'label'=> __('Customer'),
                                 'class'=>'form-control',
                                 'required' => false,
+                                'empty' => __('Pilih Customer'),
                             ));
                     ?>
                 </div>
@@ -209,8 +210,14 @@
                                 'class' => 'text-center',
                                 'style' => $tdStyle,
                             ));
-                            echo $this->Html->tag('td', !empty($invoice['CustomerNoType']['name'])?$invoice['CustomerNoType']['name']:false);
-                            echo $this->Html->tag('td', $invoice['Invoice']['no_invoice'], array(
+                            echo $this->Html->tag('td', $this->Common->fullNameCustomer($invoice, 'CustomerNoType'));
+                            echo $this->Html->tag('td', $this->Html->link($invoice['Invoice']['no_invoice'], array(
+                                    'controller' => 'revenues',
+                                    'action' => 'invoice_print',
+                                    $invoice['Invoice']['id'],
+                                ), array(
+                                    'target' => '_blank'
+                                )), array(
                                 'class' => 'text-left',
                                 'style' => $tdStyle,
                             ));

@@ -608,4 +608,26 @@ class CommonHelper extends AppHelper {
 
         return $result;
     }
+
+    function fullNameCustomer ( $data, $modelName = 'Customer', $position = 'first' ) {
+        $resultCode = '';
+        $resultName = '';
+
+        if( !empty($data[$modelName]['code']) ) {
+            $resultCode = $data[$modelName]['code'];
+        }
+        if( !empty($data[$modelName]['name']) ) {
+            $resultName = $data[$modelName]['name'];
+        }
+
+        switch ($position) {
+            case 'last':
+                return sprintf('%s - %s', $resultName, $resultCode);
+                break;
+            
+            default:
+                return sprintf('%s - %s', $resultCode, $resultName);
+                break;
+        }
+    }
 }
