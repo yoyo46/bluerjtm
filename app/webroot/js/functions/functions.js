@@ -1018,7 +1018,6 @@ var duplicate_row = function(){
             '<td class="city-data">'+$(tag_element).filter('.city-data').html()+'</td>'+
             '<td class="no-do-data" align="center">'+$(tag_element).filter('.no-do-data').html()+'</td>'+
             '<td class="no-sj-data">'+$(tag_element).filter('.no-sj-data').html()+'</td>'+
-            '<td class="note-data">'+$(tag_element).filter('.note-data').html()+'</td>'+
             '<td class="tipe-motor-data">'+$(tag_element).filter('.tipe-motor-data').html()+'</td>'+
             '<td class="qty-tipe-motor-data" align="center">'+$(tag_element).filter('.qty-tipe-motor-data').html()+'</td>'+
             '<td class="additional-charge-data" align="center">'+$(tag_element).filter('.additional-charge-data').html()+'</td>'+
@@ -1029,7 +1028,7 @@ var duplicate_row = function(){
 
         parent.after(html);
 
-        $('tr[rel="'+uniqid+'"] .city-revenue-change').val($('#mainToCityId').val());
+        $('tr[rel="'+uniqid+'"] .city-revenue-change').val(parent.find('.city-revenue-change').val());
         $('tr[rel="'+uniqid+'"] .revenue-qty').val('');
         $('tr[rel="'+uniqid+'"] .additional-charge').attr('checked', false);
         $('tr[rel="'+uniqid+'"] .total-revenue-perunit').html('');
