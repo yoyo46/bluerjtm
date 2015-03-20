@@ -18,7 +18,7 @@
     <div class="box-body">
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('code_motor',__('Kode Motor *')); 
+				echo $this->Form->label('code_motor',__('Kode Motor')); 
 
 				echo $this->Form->input('code_motor',array(
 					'label'=> false, 
