@@ -211,6 +211,12 @@ $tcpdf->Output($path.'/'.$filename, 'F');
                 header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
                 $tdStyle = 'text-align: center;';
+            } else {
+        		$this->Html->addCrumb(__('Invoice'), array(
+        			'controller' => 'revenues',
+        			'action' => 'invoices'
+    			));
+        		$this->Html->addCrumb($sub_module_title);
             }
 
 			echo $this->Html->tag('span', 'RJTM Invoice', array('class' => 'header-invoice'));

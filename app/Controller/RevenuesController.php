@@ -3769,7 +3769,7 @@ class RevenuesController extends AppController {
             $data_print = 'invoice';
         }
 
-        $module_title = __('Invoice');
+        $module_title = __('Print Invoice');
         $this->set('sub_module_title', trim($module_title));
         $this->set('active_menu', 'invoices');
         
