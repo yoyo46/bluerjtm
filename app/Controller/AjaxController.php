@@ -665,14 +665,18 @@ class AjaxController extends AppController {
 		$this->loadModel('City');
 		$this->loadModel('TarifAngkutan');
 		$this->loadModel('Ttuj');
+		$conditions = array(
+			'Revenue.customer_id' => $customer_id,
+			'Revenue.transaction_status' => 'posting',
+			'Revenue.status' => 1,
+		);
+
+		if( !empty($action) ) {
+			$conditions['Revenue.type'] = $action;
+		}
 
 		$revenue_id = $this->Revenue->getData('list', array(
-			'conditions' => array(
-				'Revenue.customer_id' => $customer_id,
-				'Revenue.transaction_status' => 'posting',
-				'Revenue.type' => $action,
-				'Revenue.status' => 1,
-			),
+			'conditions' => $conditions,
 			'order' => array(
 				'Revenue.date_revenue' => 'ASC'
 			),
