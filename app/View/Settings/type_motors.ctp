@@ -20,6 +20,7 @@
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>
+                <th>Kode Motor</th>
                 <th>Tipe Motor</th>
                 <th>Group Motor</th>
                 <th>Dibuat</th>
@@ -33,6 +34,7 @@
                             $id = $value_data['id'];
             ?>
             <tr>
+                <td><?php echo $value_data['code_motor'];?></td>
                 <td><?php echo $value_data['name'];?></td>
                 <td><?php echo $value['GroupMotor']['name'];?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>

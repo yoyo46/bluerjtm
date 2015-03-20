@@ -193,16 +193,16 @@
                                 ));
                             }
 
-                            if( in_array('view_code_motors', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kode Motor', array(
-                                    'controller' => 'settings',
-                                    'action' => 'code_motors',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'code_motors' )?'active':'',
-                                ));
-                            }
+                            // if( in_array('view_code_motors', $allowModule) ) {
+                            //     echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kode Motor', array(
+                            //         'controller' => 'settings',
+                            //         'action' => 'code_motors',
+                            //     ), array(
+                            //         'escape' => false
+                            //     )), array(
+                            //         'class' => ( !empty($active_menu) && $active_menu == 'code_motors' )?'active':'',
+                            //     ));
+                            // }
                     ?>
                 </ul>
             </li>

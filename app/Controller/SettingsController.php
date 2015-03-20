@@ -1904,7 +1904,7 @@ class SettingsController extends AppController {
             }
         }
 
-        $this->loadModel('CodeMotor');
+        // $this->loadModel('CodeMotor');
         $this->loadModel('GroupMotor');
 
         $group_motors = $this->GroupMotor->getData('list', array(
