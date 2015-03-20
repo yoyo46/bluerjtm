@@ -61,7 +61,7 @@
 
 				if(!empty($coa['Coa']['level']) && $coa['Coa']['level'] == 3){
 					echo $this->Html->tag('div', $this->Form->input('balance', array(
-						'label'=> __('Balance *'), 
+						'label'=> __('Balance'), 
 						'class'=>'form-control input_price',
 						'required' => false,
 						'placeholder' => __('Balance'),
