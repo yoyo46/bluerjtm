@@ -6,10 +6,10 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th width="12%" class="text-top"><?php echo __('Tujuan');?></th>
-                    <th width="12%" class="text-top"><?php echo __('No. DO');?></th>
-                    <th width="12%" class="text-top"><?php echo __('No. SJ');?></th>
-                    <th width="12%" class="text-top"><?php echo __('Keterangan');?></th>
+                    <th width="15%" class="text-top"><?php echo __('Tujuan');?></th>
+                    <th width="13%" class="text-top"><?php echo __('No. DO');?></th>
+                    <th width="13%" class="text-top"><?php echo __('No. SJ');?></th>
+                    <!-- <th width="12%" class="text-top"><?php echo __('Keterangan');?></th> -->
                     <th width="15%" class="text-top"><?php echo __('Group Motor');?></th>
                     <th width="7%" class="text-top"><?php echo __('Jumlah Unit');?></th>
                     <th width="5%" class="text-top text-center"><?php echo __('Charge');?></th>
@@ -112,17 +112,17 @@
                             ));
                         ?>
                     </td>
-                    <td class="note-data">
+                    <!-- <td class="note-data">
                         <?php 
-                            echo $this->Form->input('RevenueDetail.note.', array(
-                                'type' => 'text',
-                                'label' => false,
-                                'class' => 'form-control',
-                                'required' => false,
-                                'value' => (isset($detail['RevenueDetail']['note']) && !empty($detail['RevenueDetail']['note'])) ? $detail['RevenueDetail']['note'] : ''
-                            ));
+                            // echo $this->Form->input('RevenueDetail.note.', array(
+                            //     'type' => 'text',
+                            //     'label' => false,
+                            //     'class' => 'form-control',
+                            //     'required' => false,
+                            //     'value' => (isset($detail['RevenueDetail']['note']) && !empty($detail['RevenueDetail']['note'])) ? $detail['RevenueDetail']['note'] : ''
+                            // ));
                         ?>
-                    </td>
+                    </td> -->
                     <td class="tipe-motor-data">
                         <?php 
                                 echo $this->Form->input('RevenueDetail.group_motor_id.', array(
