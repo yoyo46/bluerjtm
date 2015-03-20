@@ -85,12 +85,12 @@
                                     $style = '';
                                     $rit = '';
 
-                                    if( !empty($dataRit[$nopol]['rit'][$idx]) && count($dataRit[$nopol]['rit'][$idx]) > 1 ) {
-                                        $rit = count($dataRit[$nopol]['rit'][$idx]);
+                                    if( !empty($dataRit[$nopol]['rit'][$thisMonth][$idx]) && count($dataRit[$nopol]['rit'][$thisMonth][$idx]) > 1 ) {
+                                        $rit = count($dataRit[$nopol]['rit'][$thisMonth][$idx]);
                                     }
 
-                                    if( !empty($dataTtuj[$nopol][$idx]) ) {
-                                        foreach ($dataTtuj[$nopol][$idx] as $key => $data) {
+                                    if( !empty($dataTtuj[$nopol][$thisMonth][$idx]) ) {
+                                        foreach ($dataTtuj[$nopol][$thisMonth][$idx] as $key => $data) {
                                             $style = sprintf('background: %s;', $data['color']);
                                             $formTtuj = $this->Html->tag('p', sprintf(__('Berangkat: %s', $data['from_date'])));
 
@@ -174,8 +174,8 @@
                                         }
                                     }
 
-                                    if( !empty($dataEvent[$nopol][sprintf("%02s", $i)]) ) {
-                                        foreach ($dataEvent[$nopol][sprintf("%02s", $i)] as $key => $event) {
+                                    if( !empty($dataEvent[$nopol][$thisMonth][sprintf("%02s", $i)]) ) {
+                                        foreach ($dataEvent[$nopol][$thisMonth][sprintf("%02s", $i)] as $key => $event) {
                                             $title = $event['title'];
                                             $fromDateTime = $this->Html->tag('p', sprintf(__('Tanggal: %s', $event['from_date'])));
                                             $toDateTime = $this->Html->tag('p', sprintf(__('Sampai: %s', $event['to_date'])));

@@ -37,14 +37,15 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Laka.no_doc', __('No LAKA'), array(
                             'escape' => false
                         )));
-
-                        echo $this->Html->tag('th', $this->Paginator->sort('Laka.tgl_laka', __('Tgl LAKA'), array(
-                            'escape' => false
-                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Laka.lokasi_laka', __('Lokasi LAKA'), array(
                             'escape' => false
                         )));
-
+                        echo $this->Html->tag('th', $this->Paginator->sort('Laka.tgl_laka', __('Tgl LAKA'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Laka.completed_date', __('Tgl Selesai'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Laka.status', __('Status'), array(
                             'escape' => false
                         )));
@@ -65,8 +66,16 @@
             <tr>
                 <td><?php echo $value['Laka']['driver_name'];?></td>
                 <td><?php echo $value['Laka']['nopol'];?></td>
-                <?php echo $this->Html->tag('td', date('d M Y', strtotime($value['Laka']['tgl_laka'])));?>
-                <td><?php echo $value['Laka']['lokasi_laka'];?></td>
+                <?php
+                        echo $this->Html->tag('td', $value['Laka']['lokasi_laka']);
+                        echo $this->Html->tag('td', date('d M Y', strtotime($value['Laka']['tgl_laka'])));
+
+                        if( !empty($value['Laka']['completed']) ) {
+                            echo $this->Html->tag('td', date('d M Y', strtotime($value['Laka']['completed_date'])));
+                        } else {
+                            echo $this->Html->tag('td', '-');
+                        }
+                ?>
                 <?php 
                         if(!empty($value['Laka']['completed'])){
                             echo $this->Html->tag('td', '<span class="label label-success">Selesai</span>');

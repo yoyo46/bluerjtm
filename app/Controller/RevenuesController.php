@@ -2046,17 +2046,18 @@ class RevenuesController extends AppController {
                         $monthNumber = date_parse($monthArr[0]);
 
                         if( !empty($monthArr[0]) ) {
-                            $currentMonth = sprintf("%02s", $monthNumber['month']);
+                            $thisMonth = sprintf("%02s", $monthNumber['month']);
                         }
 
-                        if( !empty($monthArr[1]) && !empty($currentMonth) ) {
-                            $currentMonth = sprintf("%s-%s", $monthArr[1], $currentMonth);
+                        if( !empty($monthArr[1]) && !empty($thisMonth) ) {
+                            $currentMonth = sprintf("%s-%s", $monthArr[1], $thisMonth);
                         }
                     }
                 }
             }
 
             $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
+            $thisMonth = !empty($thisMonth)?$thisMonth:date('m');
             $prevMonth = date('Y-m', mktime(0, 0, 0, date("m", strtotime($currentMonth))-1 , 1, date("Y", strtotime($currentMonth))));
             $nextMonth = date('Y-m', mktime(0, 0, 0, date("m", strtotime($currentMonth))+1 , 1, date("Y", strtotime($currentMonth))));
             $leftDay = date('N', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , 0, date("Y", strtotime($currentMonth))));
@@ -2071,6 +2072,13 @@ class RevenuesController extends AppController {
                     'DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m\')' => $currentMonth,
                     'DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m\')' => $currentMonth,
                     'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\')' => $currentMonth,
+                    array(
+                        'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\') <=' => $currentMonth,
+                        'OR' => array(
+                            'DATE_FORMAT(Laka.completed_date, \'%Y-%m\')' => $currentMonth,
+                            'Laka.completed' => 0,
+                        ),
+                    ),
                 ),
             );
             $conditionEvents = array(
@@ -2140,6 +2148,9 @@ class RevenuesController extends AppController {
                 ),
                 'group' => array(
                     'Ttuj.customer_id'
+                ),
+                'contain' => array(
+                    'Laka'
                 ),
             ));
             $events = $this->CalendarEvent->getData('all', array(
@@ -2291,7 +2302,7 @@ class RevenuesController extends AppController {
                         $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_laka'])?$setting['Setting']['icon_laka']:'';
                         $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                         $dataTtujCalendar['color'] = '#dd545f';
-                        $dataTtuj[$nopol][$this->MkCommon->customDate($lakaDate, 'd')][] = $dataTtujCalendar;
+                        $dataTtuj[$nopol][$this->MkCommon->customDate($lakaDate, 'm')][$this->MkCommon->customDate($lakaDate, 'd')][] = $dataTtujCalendar;
                         $differentTtuj = true;
                         $inArr[] = $this->MkCommon->customDate($lakaDate, 'd');
                     }
@@ -2300,17 +2311,17 @@ class RevenuesController extends AppController {
                         $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_pool'])?$setting['Setting']['icon_pool']:'';
                         $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                         $dataTtujCalendar['color'] = '#00a65a';
-                        $dataTtuj[$nopol][$this->MkCommon->customDate($tglPool, 'd')][] = $dataTtujCalendar;
+                        $dataTtuj[$nopol][$this->MkCommon->customDate($tglPool, 'm')][$this->MkCommon->customDate($tglPool, 'd')][] = $dataTtujCalendar;
                         $differentTtuj = true;
                         $inArr[] = $this->MkCommon->customDate($tglPool, 'd');
-                        $dataRit[$nopol]['rit'][$this->MkCommon->customDate($tglPool, 'd')][] = $tglPool;
+                        $dataRit[$nopol]['rit'][$this->MkCommon->customDate($tglPool, 'm')][$this->MkCommon->customDate($tglPool, 'd')][] = $tglPool;
                     }
                     if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglBalik, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglBalik, 'd'), $inArr) ) {
                         $dataTtujCalendar['title'] = __('Balik');
                         $dataTtujCalendar['icon'] = '/img/on-the-way.gif';
                         $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                         $dataTtujCalendar['color'] = '#3d9970';
-                        $dataTtuj[$nopol][$this->MkCommon->customDate($tglBalik, 'd')][] = $dataTtujCalendar;
+                        $dataTtuj[$nopol][$this->MkCommon->customDate($tglBalik, 'm')][$this->MkCommon->customDate($tglBalik, 'd')][] = $dataTtujCalendar;
                         $differentTtuj = true;
                         $inArr[] = $this->MkCommon->customDate($tglBalik, 'd');
                     }
@@ -2319,7 +2330,7 @@ class RevenuesController extends AppController {
                         $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_bongkaran'])?$setting['Setting']['icon_bongkaran']:'';
                         $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                         $dataTtujCalendar['color'] = '#d3e3d4';
-                        $dataTtuj[$nopol][$this->MkCommon->customDate($tglBongkaran, 'd')][] = $dataTtujCalendar;
+                        $dataTtuj[$nopol][$this->MkCommon->customDate($tglBongkaran, 'm')][$this->MkCommon->customDate($tglBongkaran, 'd')][] = $dataTtujCalendar;
                         $differentTtuj = true;
                         $inArr[] = $this->MkCommon->customDate($tglBongkaran, 'd');
                     }
@@ -2328,7 +2339,7 @@ class RevenuesController extends AppController {
                         $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_tiba'])?$setting['Setting']['icon_tiba']:'';
                         $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                         $dataTtujCalendar['color'] = '#f39c12';
-                        $dataTtuj[$nopol][$this->MkCommon->customDate($tglTiba, 'd')][] = $dataTtujCalendar;
+                        $dataTtuj[$nopol][$this->MkCommon->customDate($tglTiba, 'm')][$this->MkCommon->customDate($tglTiba, 'd')][] = $dataTtujCalendar;
                         $differentTtuj = true;
                         $inArr[] = $this->MkCommon->customDate($tglTiba, 'd');
                     }
@@ -2336,8 +2347,9 @@ class RevenuesController extends AppController {
                     while (strtotime($date) <= strtotime($end_date)) {
                         $currMonth = date('Y-m', strtotime($date));
 
-                        if( $currMonth == $currentMonth ) {
+                        // if( $currMonth == $currentMonth ) {
                             $currDay = date('d', strtotime($date));
+                            $currMonthly = date('m', strtotime($date));
                             
                             // if( !empty($value['Laka']['id']) ) {
                             //     $dataTtuj[$nopol][$currDay][] = array(
@@ -2366,7 +2378,7 @@ class RevenuesController extends AppController {
                                 } else if( !empty($tglPool) && $this->MkCommon->customDate($tglPool, 'Y-m-d') <= $date ) {
                                     $dataTtujCalendar['color'] = '#00a65a';
                                     $icon = !empty($setting['Setting']['icon_pool'])?$setting['Setting']['icon_pool']:'';
-                                    $dataRit[$nopol]['rit'][$currDay][] = $tglPool;
+                                    $dataRit[$nopol]['rit'][$currMonthly][$currDay][] = $tglPool;
                                 } else if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m-d') <= $date ) {
                                     $dataTtujCalendar['color'] = '#3d9970';
                                     $icon = !empty($setting['Setting']['icon_balik'])?$setting['Setting']['icon_balik']:'';
@@ -2400,14 +2412,14 @@ class RevenuesController extends AppController {
                                 }
 
                                 $dataTtujCalendar['iconPopup'] = $popIcon;
-                                $dataTtuj[$nopol][$currDay][] = $dataTtujCalendar;
+                                $dataTtuj[$nopol][$currMonthly][$currDay][] = $dataTtujCalendar;
                             }
 
                             $date = date ("Y-m-d", strtotime("+1 day", strtotime($date)));
                             $i++;
-                        } else {
-                            break;
-                        }
+                        // } else {
+                        //     break;
+                        // }
                     }
                 }
             }
@@ -2421,7 +2433,7 @@ class RevenuesController extends AppController {
                     while (strtotime($date) <= strtotime($end_date)) {
                         if( date('Y-m', strtotime($date)) == $currentMonth ) {
                             $toDate = date('Y-m-d', strtotime($event['CalendarEvent']['to_date']));
-                            $dataEvent[$event['CalendarEvent']['nopol']][date('d', strtotime($date))][] = array(
+                            $dataEvent[$event['CalendarEvent']['nopol']][date('m', strtotime($date))][date('d', strtotime($date))][] = array(
                                 'id' => $event['CalendarEvent']['id'],
                                 'from_date' => $this->MkCommon->customDate($event['CalendarEvent']['from_date'], 'd/m/Y - H:i'),
                                 'to_date' => $this->MkCommon->customDate($event['CalendarEvent']['to_date'], 'd/m/Y - H:i'),
@@ -2467,7 +2479,7 @@ class RevenuesController extends AppController {
                 'data_action', 'lastDay', 'currentMonth',
                 'trucks', 'prevMonth', 'nextMonth',
                 'dataTtuj', 'dataEvent', 'customers',
-                'customerId', 'dataRit'
+                'customerId', 'dataRit', 'thisMonth'
             ));
 
             if($data_action == 'pdf'){
