@@ -20,6 +20,12 @@ class Coa extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Nama COA harap diisi'
             ),
+        ),
+        'type' => array(
+            'validateType' => array(
+                'rule' => array('validateType'),
+                'message' => 'Tipe COA harap diisi'
+            ),
         )
 	);
 
@@ -96,6 +102,20 @@ class Coa extends AppModel {
 
     function validateCode () {
         if( empty($this->data['Coa']['code']) ) {
+            if( !empty($this->data['Coa']['level']) && $this->data['Coa']['level'] == 4 ) {
+                return false;
+            } else if( !empty($this->data['Coa']['level']) && $this->data['Coa']['level'] == 3 ) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    function validateType () {
+        if( empty($this->data['Coa']['type']) ) {
             if( !empty($this->data['Coa']['level']) && $this->data['Coa']['level'] == 4 ) {
                 return false;
             } else if( !empty($this->data['Coa']['level']) && $this->data['Coa']['level'] == 3 ) {

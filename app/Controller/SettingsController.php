@@ -727,7 +727,7 @@ class SettingsController extends AppController {
             if( !empty($coa) ) {
                 $data['Coa']['parent_id'] = $parent_id;
 
-                if( !empty($data['Coa']['code']) ) {
+                if( !empty($coa['Coa']['code']) ) {
                     $data['Coa']['code'] = sprintf('%s-%s', $coa['Coa']['code'], $data['Coa']['code']);
                 }
 
@@ -736,8 +736,8 @@ class SettingsController extends AppController {
                 }
             }
 
-            if(!empty($data['Coa']['balance'])){
-                $data['Coa']['balance'] = str_replace(',', '', $data['Coa']['balance']);
+            if(isset($data['Coa']['balance'])){
+                $data['Coa']['balance'] = $this->MkCommon->convertPriceToString($data['Coa']['balance'], 0);
             }
             
             $this->Coa->set($data);

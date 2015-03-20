@@ -71,7 +71,7 @@
 					));
 
 					echo $this->Html->tag('div', $this->Form->input('type', array(
-						'label'=> __('Tipe COA'), 
+						'label'=> __('Tipe COA *'), 
 						'class'=>'form-control',
 						'required' => false,
 						'empty' => __('Pilih Tipe COA'),
