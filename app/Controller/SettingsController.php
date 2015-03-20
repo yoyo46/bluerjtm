@@ -272,12 +272,19 @@ class SettingsController extends AppController {
                 $this->Customer->create();
                 $msg = 'menambah';
             }
-            
+
+            if( !empty($data_local['CustomerPattern']) ){
+                $this->Customer->CustomerPattern->id = $data_local['CustomerPattern']['id'];
+            }else{
+                $this->Customer->CustomerPattern->create();
+            }
+                        
             $data['Customer']['bank_id'] = !empty($data['Customer']['bank_id'])?$data['Customer']['bank_id']:0;
             $this->Customer->set($data);
+            $this->Customer->CustomerPattern->set($data);
 
-            if($this->Customer->validates($data)){
-                if($this->Customer->save($data)){
+            if($this->Customer->validates($data) && $this->Customer->CustomerPattern->validates($data)){
+                if( $this->Customer->save($data) && $this->Customer->CustomerPattern->save($data) ){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Customer'), $msg), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses %s Customer'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                     $this->redirect(array(
