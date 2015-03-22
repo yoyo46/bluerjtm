@@ -4835,7 +4835,7 @@ class RevenuesController extends AppController {
             )
         ));
 
-        $this->set('sub_module_title', __('Laporan Revenue Per Customer'));
+        $this->set('sub_module_title', __('Laporan Piutang Per Customer'));
         $this->set('active_menu', 'report_customers');
 
         $this->set(compact(

@@ -678,7 +678,7 @@
                             // }
 
                             // if( in_array('view_list_kwitansi', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Revenue Per Customer', array(
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Piutang Per Customer', array(
                                     'controller' => 'revenues',
                                     'action' => 'report_customers',
                                 ), array(
