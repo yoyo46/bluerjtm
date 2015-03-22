@@ -34,7 +34,7 @@
         </div>
     </div>
     <div class="table-responsive">
-        <table class="table table-striped">
+        <table class="table table-bordered report" border="<?php echo $border; ?>">
             <thead>
                 <tr>
                     <?php
@@ -170,22 +170,30 @@
             </tbody>
         </table>
         <?php 
-                // if( $data_action != 'excel' ) {
-                //     if(empty($trucks)){
-                //         echo $this->Html->tag('p', __('Data belum tersedia.'), array(
-                //             'class' => 'alert alert-warning text-center',
-                //         ));
-                //     }
+                if( $data_action != 'excel' ) {
+                    if(empty($trucks)){
+                        echo $this->Html->tag('p', __('Data belum tersedia.'), array(
+                            'class' => 'alert alert-warning text-center',
+                        ));
+                    }
         ?>
     </div>
     <?php 
-            echo $this->Html->tag('div', $this->element('pagination'), array(
-                'class' => 'pagination-report'
+            }
+
+            echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $User['full_name'])), array(
+                'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'
             ));
+            
+            if( $data_action != 'excel' ) {
+                echo $this->Html->tag('div', $this->element('pagination'), array(
+                    'class' => 'pagination-report'
+                ));
     ?>
 </section>
 <?php
-	}else{
+            }
+	   }else{
         App::import('Vendor','xtcpdf');
         ob_end_clean();
         $tcpdf = new XTCPDF();
@@ -207,6 +215,9 @@
         
         $each_loop_message = '';
         $no = 1;
+        $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $User['full_name'])), array(
+            'style' => 'font-size: 24px;font-style: italic;margin-top: 10px;'
+        ));
 
         if(!empty($trucks)){
             foreach ($trucks as $truck):
@@ -337,6 +348,8 @@ $tbl = <<<EOD
                                                                         
             </tbody>
         </table> 
+        <br>
+        $print_label
       </div>
 EOD;
 

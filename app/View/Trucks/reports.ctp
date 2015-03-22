@@ -141,7 +141,7 @@
         <?php 
                 }
         ?>
-        <table class="table table-striped">
+        <table class="table table-bordered report" border="<?php echo $border; ?>">
             <thead>
                 <tr>
                     <?php
@@ -170,14 +170,21 @@
                         foreach ($trucks as $key => $truck) {
                             $content = $this->Html->tag('td', str_pad($truck['Truck']['id'], 4, '0', STR_PAD_LEFT), array(
                                 'class' => 'hide nomor_id',
+                                'style' => 'text-align: left;'
                             ));
-                            $content .= $this->Html->tag('td', $truck['Truck']['nopol']);
+                            $content .= $this->Html->tag('td', $truck['Truck']['nopol'], array(
+                                'style' => 'text-align: left;'
+                            ));
                             $content .= $this->Html->tag('td', $truck['TruckBrand']['name']);
                             $content .= $this->Html->tag('td', $truck['Truck']['atas_nama']);
                             $content .= $this->Html->tag('td', $truck['TruckCategory']['name']);
                             $content .= $this->Html->tag('td', $truck['Driver']['driver_name']);
-                            $content .= $this->Html->tag('td', $truck['Truck']['capacity']);
-                            $content .= $this->Html->tag('td', $truck['Truck']['tahun']);
+                            $content .= $this->Html->tag('td', $truck['Truck']['capacity'], array(
+                                'style' => 'text-align: center;'
+                            ));
+                            $content .= $this->Html->tag('td', $truck['Truck']['tahun'], array(
+                                'style' => 'text-align: center;'
+                            ));
                             $content .= $this->Html->tag('td', $truck['TruckFacility']['name'], array(
                                 'class' => 'hide truck_facility',
                             ));
@@ -201,9 +208,16 @@
         ?>
     </div>
     <?php 
-            echo $this->Html->tag('div', $this->element('pagination'), array(
-                'class' => 'pagination-report'
+            }
+
+            echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $User['full_name'])), array(
+                'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'
             ));
+            
+            if( $data_action != 'excel' ) {
+                echo $this->Html->tag('div', $this->element('pagination'), array(
+                    'class' => 'pagination-report'
+                ));
     ?>
 </section>
 <?php
@@ -239,7 +253,7 @@
                 $content .= $this->Html->tag('td', $truck['TruckBrand']['name']);
                 $content .= $this->Html->tag('td', $truck['Truck']['atas_nama']);
                 $content .= $this->Html->tag('td', $truck['TruckCategory']['name']);
-                $content .= $this->Html->tag('td', $truck['Driver']['driver_name']);
+                $content .= $this->Html->tag('td', !empty($truck['Driver']['driver_name'])?$truck['Driver']['driver_name']:'-');
                 $content .= $this->Html->tag('td', $truck['Truck']['capacity']);
                 $content .= $this->Html->tag('td', $truck['Truck']['tahun']);
 
@@ -254,30 +268,34 @@
 
 $date_title = sprintf('Tanggal %s sampai %s', $this->Common->customDate($from_date), $this->Common->customDate($to_date));
 $total_trucks = count($trucks);
+$print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $User['full_name'])), array(
+    'style' => 'font-size: 24px;font-style: italic;margin-top: 10px;'
+));
 $tbl = <<<EOD
 
       <div class="clearfix container_16" id="content">
-
         <h2 class="grid_8" style="text-align: center;">Laporan Truk</h2>
         <h3 style="text-align: center;">$date_title</h3><br>
         <h4>Total Truk : $total_trucks</h4>
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <tbody>
-            <tr style="$table_tr_head">
-                <th>No. </th>
-                <th>Nopol</th>
-                <th>Merek</th>
-                <th>Pemilik</th>
-                <th>Jenis</th>
-                <th>Supir</th>
-                <th>Kapasitas</th>
-                <th>Tahun</th>
-            </tr>
+                <tr style="$table_tr_head">
+                    <th>No. </th>
+                    <th>Nopol</th>
+                    <th>Merek</th>
+                    <th>Pemilik</th>
+                    <th>Jenis</th>
+                    <th>Supir</th>
+                    <th>Kapasitas</th>
+                    <th>Tahun</th>
+                </tr>
           
-            $each_loop_message
+                $each_loop_message
                                                                         
             </tbody>
         </table> 
+        <br>
+        $print_label
       </div>
 EOD;
 

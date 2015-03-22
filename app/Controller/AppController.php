@@ -140,7 +140,7 @@ class AppController extends Controller {
 	    if($logged_in){
 			$this->user_id = $this->Auth->user('id');
 			$GroupId = $this->Auth->user('group_id');
-			$this->user_data = $User = $this->Auth->user();
+			$User = $this->user_data = $User = $this->Auth->user();
 
 			$allowModule = $this->Module->ModuleAction->find('list', array(
 	            'conditions'=> array(

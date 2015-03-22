@@ -165,6 +165,10 @@
     </div>
     <?php 
             }
+
+            echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $User['full_name'])), array(
+                'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'
+            ));
     ?>
 </section>
 <?php
@@ -258,6 +262,9 @@
         $date_title = $sub_module_title;
         $totalCustomer = count($customers);
         $subHeader = '';
+        $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $User['full_name'])), array(
+            'style' => 'font-size: 24px;font-style: italic;margin-top: 10px;'
+        ));
 
         if( !empty($capacities) ) {
             $totalRit = 0;
@@ -290,6 +297,8 @@ $tbl = <<<EOD
                 $each_loop_message
             </tbody>
         </table> 
+        <br>
+        $print_label
       </div>
 EOD;
 

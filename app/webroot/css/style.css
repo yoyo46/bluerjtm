@@ -3921,3 +3921,9 @@ thead th.headcol {
 .label-code {
   background-color: #85144b;
 }
+
+.print-label {
+  font-size: 14px;
+  font-style: italic;
+  margin-top: 10px;
+}

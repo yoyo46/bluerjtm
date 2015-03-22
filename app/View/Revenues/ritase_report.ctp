@@ -344,6 +344,13 @@
         ?>
     </div><!-- /.box-body -->
     <?php 
+            }
+
+            echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $User['full_name'])), array(
+                'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'
+            ));
+            
+            if( $data_action != 'excel' ) {
                 echo $this->Html->tag('div', $this->element('pagination'), array(
                     'class' => 'pagination-report'
                 ));
@@ -425,6 +432,9 @@
             }
 
             $date_title = $sub_module_title;
+            $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $User['full_name'])), array(
+                'style' => 'font-size: 24px;font-style: italic;margin-top: 10px;'
+            ));
 $tbl = <<<EOD
 
       <div class="clearfix container_16" id="content">
@@ -450,6 +460,8 @@ $tbl = <<<EOD
                 $each_loop_message
             </tbody>
         </table> 
+        <br>
+        $print_label
       </div>
 EOD;
 // echo $tbl;
