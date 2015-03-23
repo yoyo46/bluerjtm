@@ -378,72 +378,72 @@
             $each_loop_message = '';
             $contentHeader = '<tr style="'.$table_tr_head.'">';
             $contentHeader .= $this->Html->tag('th', __('NO TTUJ'), array(
-                'style' => 'text-align: center;width: 150px;',
+                'style' => 'text-align: center;',
                 'rowspan' => 2,
             ));
             $contentHeader .= $this->Html->tag('th', __('TANGGAL'), array(
-                'style' => 'text-align: center;width: 100px;',
+                'style' => 'text-align: center;',
                 'rowspan' => 2,
             ));
             $contentHeader .= $this->Html->tag('th', __('TUJUAN'), array(
-                'style' => 'text-align: center;width: 120px;',
+                'style' => 'text-align: center;',
                 'rowspan' => 2,
             ));
             $contentHeader .= $this->Html->tag('th', __('NOPOL'), array(
-                'style' => 'text-align: center;width: 120px;',
+                'style' => 'text-align: center;',
                 'rowspan' => 2,
             ));
             $contentHeader .= $this->Html->tag('th', __('UNIT'), array(
-                'style' => 'text-align: center;width: 80px;',
+                'style' => 'text-align: center;',
                 'rowspan' => 2,
             ));
             $contentHeader .= $this->Html->tag('th', __('SURAT JALAN (unit)'), array(
-                'style' => 'text-align: center;width: 120px;',
+                'style' => 'text-align: center;',
                 'colspan' => 2,
                 'align' => 'center',
             ));
             $contentHeader .= $this->Html->tag('th', __('SELISIH'), array(
-                'style' => 'text-align: center;width: 100px;',
+                'style' => 'text-align: center;',
                 'colspan' => 3,
                 'align' => 'center',
             ));
             $contentHeader .= $this->Html->tag('th', __('TGL SJ KEMBALI'), array(
-                'style' => 'text-align: center;width: 100px;',
+                'style' => 'text-align: center;',
                 'rowspan' => 2,
             ));
             $contentHeader .= $this->Html->tag('th', __('TGL INVOICE'), array(
-                'style' => 'text-align: center;width: 100px;',
+                'style' => 'text-align: center;',
                 'rowspan' => 2,
             ));
             $contentHeader .= $this->Html->tag('th', __('LEAD TIME (DAY)'), array(
-                'style' => 'text-align: center;width: 100px;',
+                'style' => 'text-align: center;',
                 'colspan' => 3,
             ));
             $contentHeader .= '</tr><tr style="'.$table_tr_head.'">';
 
             $contentHeader .= $this->Html->tag('th', __('KEMBALI'), array(
-                'style' => 'text-align: center;width:100px;',
+                'style' => 'text-align: center;',
             ));
             $contentHeader .= $this->Html->tag('th', __('TERTAGIH'), array(
-                'style' => 'text-align: center;width:100px;',
+                'style' => 'text-align: center;',
             ));
             $contentHeader .= $this->Html->tag('th', __('SJ BELUM KEMBALI'), array(
-                'style' => 'text-align: center;width:120px;',
+                'style' => 'text-align: center;',
             ));
             $contentHeader .= $this->Html->tag('th', __('SJ KEMBALI BELUM TERTAGIH'), array(
-                'style' => 'text-align: center;width:120px;',
+                'style' => 'text-align: center;',
             ));
             $contentHeader .= $this->Html->tag('th', __('SJ BELUM TERTAGIH'), array(
-                'style' => 'text-align: center;width:120px;',
+                'style' => 'text-align: center;',
             ));
             $contentHeader .= $this->Html->tag('th', __('SJ KEMBALI'), array(
-                'style' => 'text-align: center;width:100px;',
+                'style' => 'text-align: center;',
             ));
             $contentHeader .= $this->Html->tag('th', __('SJ PROSES BILLING'), array(
-                'style' => 'text-align: center;width:120px;',
+                'style' => 'text-align: center;',
             ));
             $contentHeader .= $this->Html->tag('th', __('SJ TERTAGIH'), array(
-                'style' => 'text-align: center;width:100px;',
+                'style' => 'text-align: center;',
             ));
             $contentHeader .= '</tr>';
 
@@ -545,6 +545,7 @@ $tbl = <<<EOD
         <div style="text-align: right;display: block;">
             $period_text
         </div>
+        <br>
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table" border="1">
             <thead>
                 $contentHeader
