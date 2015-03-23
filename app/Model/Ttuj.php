@@ -187,7 +187,7 @@ class Ttuj extends AppModel {
         }
     }
 
-    function getSumUnit($data, $ttuj_id, $surat_jalan_id = false){
+    function getSumUnit($data, $ttuj_id, $surat_jalan_id = false, $data_action = false){
         if( empty($data['Qty']) ){
             $data_merge = $this->TtujTipeMotor->find('first', array(
                 'conditions' => array(
@@ -206,13 +206,13 @@ class Ttuj extends AppModel {
                 $data['Qty'] = $data_merge[0]['qty'];
             }
 
-
+            $conditions = array(
+                'SuratJalan.status' => 1,
+                'SuratJalan.ttuj_id' => $ttuj_id,
+                'SuratJalan.id <>' => $surat_jalan_id,
+            );
             $data_merge = $this->SuratJalan->find('first', array(
-                'conditions' => array(
-                    'SuratJalan.status' => 1,
-                    'SuratJalan.ttuj_id' => $ttuj_id,
-                    'SuratJalan.id <>' => $surat_jalan_id,
-                ),
+                'conditions' => $conditions,
                 'group' => array(
                     'SuratJalan.ttuj_id',
                 ),
@@ -223,6 +223,25 @@ class Ttuj extends AppModel {
 
             if(!empty($data_merge[0])){
                 $data['QtySJ'] = $data_merge[0]['qty'];
+            }
+
+            switch ($data_action) {
+                case 'tgl_surat_jalan':
+                    $data_merge = $this->SuratJalan->find('first', array(
+                        'conditions' => $conditions,
+                        'fields' => array(
+                            'SuratJalan.tgl_surat_jalan',
+                        ),
+                        'order' => array(
+                            'SuratJalan.tgl_surat_jalan' => 'DESC',
+                            'SuratJalan.id' => 'DESC',
+                        ),
+                    ));
+
+                    if(!empty($data_merge)){
+                        $data['SuratJalan']['tgl_surat_jalan'] = $data_merge['SuratJalan']['tgl_surat_jalan'];
+                    }
+                    break;
             }
         }
 

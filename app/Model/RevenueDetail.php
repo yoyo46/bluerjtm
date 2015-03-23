@@ -289,5 +289,33 @@ class RevenueDetail extends AppModel {
 
         return $data;
     }
+
+    function getToCity($data, $ttuj_id){
+        $revenueDetails = $this->find('list', array(
+            'conditions' => array(
+                'Revenue.ttuj_id' => $ttuj_id,
+                'Revenue.status' => 1,
+            ),
+            'order' => array(
+                'City.name' => 'ASC',
+            ),
+            'contain' => array(
+                'City',
+                'Revenue',
+            ),
+            'fields' => array(
+                'RevenueDetail.id', 'City.name',
+            ),
+            'group' => array(
+                'RevenueDetail.city_id'
+            ),
+        ));
+
+        if(!empty($revenueDetails)){
+            $data['city_name'] = implode(', ', $revenueDetails);
+        }
+
+        return $data;
+    }
 }
 ?>

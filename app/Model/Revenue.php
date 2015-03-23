@@ -164,20 +164,78 @@ class Revenue extends AppModel {
         );
     }
 
-    function getPaid ( $data, $ttuj_id ) {
-        $revenue = $this->getData('first', array(
-            'conditions' => array(
-                'Revenue.ttuj_id' => $ttuj_id,
-                'Revenue.status' => 1,
-                'Revenue.transaction_status' => 'invoiced',
-            ),
-        ));
+    function getPaid ( $data, $ttuj_id, $data_type = false ) {
+        $conditions = array(
+            'Revenue.ttuj_id' => $ttuj_id,
+            'Revenue.status' => 1,
+            'Revenue.transaction_status' => 'invoiced',
+        );
 
-        if( !empty($revenue) ) {
-            $data['Ttuj']['is_invoice'] = true;
+        if( in_array($data_type, array( 'unit', 'invoiced' )) ) {
+            $revenues = $this->getData('list', array(
+                'conditions' => $conditions,
+                'fields' => array(
+                    'Revenue.id', 'Revenue.id',
+                ),
+            ));
         }
 
-        return $data;
+        switch ($data_type) {
+            case 'unit':
+                if( !empty($revenues) ) {
+                    $revenueDetail = $this->RevenueDetail->getData('first', array(
+                        'conditions' => array(
+                            'RevenueDetail.revenue_id' => $revenues,
+                        ),
+                        'fields' => array(
+                            'SUM(qty_unit) total_unit',
+                        ),
+                    ));
+
+                    if( !empty($revenueDetail[0]['total_unit']) ) {
+                        $data['unitInvoiced'] = $revenueDetail[0]['total_unit'];
+                    }
+                }
+
+                return $data;
+                break;
+
+            case 'invoiced':
+                if( !empty($revenues) ) {
+                    $invoice = $this->InvoiceDetail->find('first', array(
+                        'conditions' => array(
+                            'InvoiceDetail.revenue_id' => $revenues,
+                            'InvoiceDetail.status' => 1,
+                        ),
+                        'contain' => array(
+                            'Invoice'
+                        ),
+                        'order' => array(
+                            'Invoice.invoice_date' => 'DESC',
+                            'Invoice.id' => 'DESC',
+                        ),
+                    ));
+
+                    if( !empty($invoice['Invoice']) ) {
+                        $data['Invoice'] = $invoice['Invoice'];
+                    }
+                }
+
+                return $data;
+                break;
+            
+            default:
+                $revenue = $this->getData('first', array(
+                    'conditions' => $conditions,
+                ));
+
+                if( !empty($revenue) ) {
+                    $data['Ttuj']['is_invoice'] = true;
+                }
+
+                return $data;
+                break;
+        }
     }
 }
 ?>

@@ -5130,7 +5130,7 @@ class RevenuesController extends AppController {
     }
 
     public function report_revenue_customers( $data_action = false ) {
-        if( in_array('view_achievement_report', $this->allowModule) ) {
+        // if( in_array('view_achievement_report', $this->allowModule) ) {
             $this->loadModel('Customer');
             $this->loadModel('Revenue');
             $fromMonth = date('m');
@@ -5244,8 +5244,112 @@ class RevenuesController extends AppController {
             }else if($data_action == 'excel'){
                 $this->layout = 'ajax';
             }
-        } else {
-            $this->redirect($this->referer());
-        }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    public function report_monitoring_sj_revenue( $data_action = false ) {
+        // if( in_array('view_achievement_report', $this->allowModule) ) {
+            $this->loadModel('Customer');
+            $this->loadModel('Revenue');
+            $this->loadModel('Ttuj');
+            $dateFrom = date('Y-m-01');
+            $dateTo = date('Y-m-t');
+            $options = array(
+                'conditions' => array(
+                    'Ttuj.is_revenue' => 1,
+                    'Ttuj.status' => 1,
+                    'Ttuj.is_draft' => 0,
+                    'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >=' => $dateFrom,
+                    'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >=' => $dateTo,
+                ),
+                'contain' => false,
+                'order'=> array(
+                    'Ttuj.created' => 'DESC',
+                    'Ttuj.id' => 'DESC',
+                ),
+            );
+            $this->request->data['Ttuj']['date'] = sprintf('%s - %s', date('d/m/Y',strtotime($dateFrom)), date('d/m/Y',strtotime($dateTo)));
+
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['customer'])){
+                    $customer = urldecode($refine['customer']);
+                    $this->request->data['Ttuj']['customer'] = $customer;
+                    $options['conditions']['Customer.id '] = $customer;
+                }
+
+                if(!empty($refine['date'])){
+                    $dateStr = urldecode($refine['date']);
+                    $date = explode('-', $dateStr);
+
+                    if( !empty($date) ) {
+                        $date[0] = urldecode($date[0]);
+                        $date[1] = urldecode($date[1]);
+                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                        $dateFrom = $this->MkCommon->getDate($date[0]);
+                        $dateTo = $this->MkCommon->getDate($date[1]);
+                        $options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $dateFrom;
+                        $options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $dateTo;
+                    }
+                    $this->request->data['Ttuj']['date'] = $dateStr;
+                }
+            }
+
+            if( !empty($data_action) ) {
+                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+            } else {
+                $options['limit'] = 20;
+            }
+
+            $this->paginate = $options;
+            $ttujs = $this->paginate('Ttuj');
+
+            if( !empty($ttujs) ) {
+                foreach ($ttujs as $key => $ttuj) {
+                    $ttuj = $this->Ttuj->getSumUnit($ttuj, $ttuj['Ttuj']['id'], false, 'tgl_surat_jalan');
+                    $ttuj = $this->Revenue->getPaid($ttuj, $ttuj['Ttuj']['id'], 'unit');
+                    $ttuj = $this->Revenue->getPaid($ttuj, $ttuj['Ttuj']['id'], 'invoiced');
+                    $ttuj = $this->Revenue->RevenueDetail->getToCity($ttuj, $ttuj['Ttuj']['id']);
+                    $ttujs[$key] = $ttuj;
+                }
+            }
+
+            $customerList = $this->Customer->getData('list', array(
+                'fields' => array(
+                    'Customer.id', 'Customer.customer_name'
+                )
+            ));
+
+            $this->set('sub_module_title', __('Laporan Monitoring Surat Jalan & Revenue'));
+            $this->set('active_menu', 'report_monitoring_sj_revenue');
+            $period_text = sprintf('Periode %s - %s', date('d M Y',strtotime($dateFrom)), date('d M Y',strtotime($dateTo)));
+            $this->set('period_text', $period_text);
+
+            $this->set(compact(
+                'ttujs', 'data_action', 'customerList'
+            ));
+
+            if($data_action == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($data_action == 'excel'){
+                $this->layout = 'ajax';
+            } else {
+                $layout_js = array(
+                    'freeze',
+                );
+                $layout_css = array(
+                    'freeze',
+                );
+
+                $this->set(compact(
+                    'layout_css', 'layout_js'
+                ));
+            }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
     }
 }
