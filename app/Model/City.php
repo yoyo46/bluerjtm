@@ -13,6 +13,12 @@ class City extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Provinsi harap diisi'
             ),
+        ),
+        'alias' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Nama Singkatan harap diisi'
+            ),
         )
 	);
 

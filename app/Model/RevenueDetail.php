@@ -69,7 +69,9 @@ class RevenueDetail extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(),
-            'contain' => array(),
+            'contain' => array(
+                'Revenue',
+            ),
             'fields' => array(),
         );
 
@@ -223,19 +225,6 @@ class RevenueDetail extends AppModel {
                     $value = $this->TipeMotor->getMerge($value, $value['RevenueDetail']['group_motor_id']);
                     $value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
                     $value = $this->TarifAngkutan->getMerge($value, $value['RevenueDetail']['tarif_angkutan_id']);
-                    $ttuj_tipe_motor = $this->Ttuj->TtujTipeMotor->getData('first', array(
-                        'conditions' => array(
-                            'TtujTipeMotor.id' => $value['RevenueDetail']['ttuj_tipe_motor_id']
-                        ),
-                        'contain' => array(
-                            'Ttuj'
-                        )
-                    ));
-                    
-                    if(!empty($ttuj_tipe_motor['Ttuj'])){
-                        $value = array_merge($value, $ttuj_tipe_motor);
-                    }
-                    
                     $revenue_detail[$key] = $value;
                 }
             }
@@ -268,22 +257,64 @@ class RevenueDetail extends AppModel {
         return $revenue_detail;
     }
 
-    function getSumUnit($data, $invoice_id){
+    function getSumUnit($data, $id, $data_action = 'invoice'){
         if( empty($data['RevenueDetail']) ){
-            $data_merge = $this->find('first', array(
-                'conditions' => array(
-                    'RevenueDetail.invoice_id' => $invoice_id,
-                ),
-                'group' => array(
-                    'RevenueDetail.invoice_id',
-                ),
+            $options = array(
                 'fields' => array(
                     'SUM(RevenueDetail.qty_unit) AS qty_unit',
                 ),
-            ));
+            );
 
-            if(!empty($data_merge[0])){
-                $data['RevenueDetail']['qty_unit'] = $data_merge[0]['qty_unit'];
+            switch ($data_action) {
+                case 'revenue':
+                    $options['conditions'] = array(
+                        'RevenueDetail.revenue_id' => $id,
+                    );
+                    $options['group'] = array(
+                        'RevenueDetail.revenue_id',
+                    );
+
+                    $data_merge = $this->find('first', $options);
+
+                    if(!empty($data_merge[0])){
+                        $data['qty_unit'] = $data_merge[0]['qty_unit'];
+                    }
+                    break;
+
+                case 'revenue_price':
+                    $options = array(
+                        'conditions' => array(
+                            'RevenueDetail.revenue_id' => $id,
+                        ),
+                        'group' => array(
+                            'RevenueDetail.revenue_id',
+                        ),
+                        'fields' => array(
+                            'SUM(RevenueDetail.price_unit) AS price_unit',
+                        ),
+                    );
+
+                    $data_merge = $this->find('first', $options);
+
+                    if(!empty($data_merge[0])){
+                        $data['price_unit'] = $data_merge[0]['price_unit'];
+                    }
+                    break;
+                
+                default:
+                    $options['conditions'] = array(
+                        'RevenueDetail.invoice_id' => $id,
+                    );
+                    $options['group'] = array(
+                        'RevenueDetail.invoice_id',
+                    );
+
+                    $data_merge = $this->find('first', $options);
+
+                    if(!empty($data_merge[0])){
+                        $data['RevenueDetail']['qty_unit'] = $data_merge[0]['qty_unit'];
+                    }
+                    break;
             }
         }
 

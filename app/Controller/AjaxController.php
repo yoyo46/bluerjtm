@@ -214,7 +214,7 @@ class AjaxController extends AppController {
 		$this->loadModel('City');
 		$this->loadModel('GroupMotor');
 		$this->loadModel('Revenue');
-		$this->loadModel('TtujTipeMotorUse');
+		// $this->loadModel('TtujTipeMotorUse');
 		$data_revenue_detail = array();
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
@@ -256,13 +256,23 @@ class AjaxController extends AppController {
 		                    'Revenue.status' => 1,
 		                ),
 		            ));
-		            $qtyUsed = $this->TtujTipeMotorUse->find('first', array(
+		            // $qtyUsed = $this->TtujTipeMotorUse->find('first', array(
+		            //     'conditions' => array(
+		            //         'TtujTipeMotorUse.revenue_id' => $revenue_id,
+		            //         'TtujTipeMotorUse.group_motor_id' => $value['TipeMotor']['group_motor_id'],
+		            //     ),
+		            //     'fields' => array(
+		            //         'SUM(TtujTipeMotorUse.qty) as count_qty'
+		            //     )
+		            // ));
+		            $qtyUsed = $this->Revenue->RevenueDetail->getData('first', array(
 		                'conditions' => array(
-		                    'TtujTipeMotorUse.revenue_id' => $revenue_id,
-		                    'TtujTipeMotorUse.ttuj_tipe_motor_id' => $value['TtujTipeMotor']['id'],
+		                    'RevenueDetail.revenue_id' => $revenue_id,
+		                    'RevenueDetail.group_motor_id' => $value['TipeMotor']['group_motor_id'],
+		                    'Revenue.status' => 1,
 		                ),
 		                'fields' => array(
-		                    'SUM(TtujTipeMotorUse.qty) as count_qty'
+		                    'SUM(RevenueDetail.qty_unit) as count_qty'
 		                )
 		            ));
 
@@ -296,21 +306,25 @@ class AjaxController extends AppController {
 						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
 					}
 
-					$data_revenue_detail[$key] = array(
-						'TtujTipeMotor' => array(
-							'qty' => $qtyTtuj,
-						),
-						'RevenueDetail' => array(
-							'to_city_name' => $to_city_name,
-							'price_unit' => $tarif,
-							'qty_unit' => $qtyTtuj - $qtyUsed,
-							'group_motor_id' => $group_motor_id,
-							'city_id' => $to_city_id,
-							'GroupMotor' => array(
-								'name' => $group_motor_name,
+					$qtyUnit = $qtyTtuj - $qtyUsed;
+
+					if( !empty($qtyUnit) ) {
+						$data_revenue_detail[$key] = array(
+							'TtujTipeMotor' => array(
+								'qty' => $qtyTtuj,
 							),
-						)
-					);
+							'RevenueDetail' => array(
+								'to_city_name' => $to_city_name,
+								'price_unit' => $tarif,
+								'qty_unit' => $qtyUnit,
+								'group_motor_id' => $group_motor_id,
+								'city_id' => $to_city_id,
+								'GroupMotor' => array(
+									'name' => $group_motor_name,
+								),
+							)
+						);
+					}
 				}
 			}
 		}

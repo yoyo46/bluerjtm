@@ -102,16 +102,36 @@ class Revenue extends AppModel {
         return $result;
     }
 
-    function getMerge($data, $id){
+    function getMerge ($data, $id, $data_type = 'first') {
         if(empty($data['Revenue'])){
-            $data_merge = $this->find('first', array(
-                'conditions' => array(
-                    'id' => $id
-                )
-            ));
+            switch ($data_type) {
+                case 'all':
+                    $data_merge = $this->getData('all', array(
+                        'conditions' => array(
+                            'Revenue.id' => $id,
+                            'Revenue.status' => 1,
+                        ),
+                        'contain' => array(
+                            'RevenueDetail',
+                        ),
+                    ));
 
-            if(!empty($data_merge)){
-                $data = array_merge($data, $data_merge);
+                    if(!empty($data_merge)){
+                        $data['Revenue'] = $data_merge;
+                    }
+                    break;
+                
+                default:
+                    $data_merge = $this->find('first', array(
+                        'conditions' => array(
+                            'Revenue.id' => $id
+                        )
+                    ));
+
+                    if(!empty($data_merge)){
+                        $data = array_merge($data, $data_merge);
+                    }
+                    break;
             }
         }
 
@@ -119,7 +139,7 @@ class Revenue extends AppModel {
     }
 
     function checkQtyUsed ( $ttuj_id = false, $id = false ) {
-        $this->TtujTipeMotorUse = ClassRegistry::init('TtujTipeMotorUse');
+        // $this->TtujTipeMotorUse = ClassRegistry::init('TtujTipeMotorUse');
         $this->Ttuj = ClassRegistry::init('Ttuj');
 
         $revenue_id = $this->find('list', array(
@@ -128,13 +148,23 @@ class Revenue extends AppModel {
                 'Revenue.status' => 1,
             ),
         ));
-        $qtyUsed = $this->TtujTipeMotorUse->find('first', array(
+        // $qtyUsed = $this->TtujTipeMotorUse->find('first', array(
+        //     'conditions' => array(
+        //         'TtujTipeMotorUse.revenue_id' => $revenue_id,
+        //         'TtujTipeMotorUse.revenue_id <>' => $id,
+        //     ),
+        //     'fields' => array(
+        //         'SUM(TtujTipeMotorUse.qty) as count_qty'
+        //     )
+        // ));
+        $qtyUsed = $this->RevenueDetail->getData('first', array(
             'conditions' => array(
-                'TtujTipeMotorUse.revenue_id' => $revenue_id,
-                'TtujTipeMotorUse.revenue_id <>' => $id,
+                'RevenueDetail.revenue_id' => $revenue_id,
+                'RevenueDetail.revenue_id <>' => $id,
+                'Revenue.status' => 1,
             ),
             'fields' => array(
-                'SUM(TtujTipeMotorUse.qty) as count_qty'
+                'SUM(RevenueDetail.qty_unit) as count_qty'
             )
         ));
         $qtyTtuj = $this->Ttuj->TtujTipeMotor->find('first', array(

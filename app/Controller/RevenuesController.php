@@ -2722,6 +2722,7 @@ class RevenuesController extends AppController {
             $dataRevenues = array();
             $flagSave = array();
             $dataTtuj = array();
+            $checkQty = true;
 
             if( !empty($tarif_angkutan_types) ) {
                 $tarif_angkutan_types = array_unique($tarif_angkutan_types);
@@ -2894,7 +2895,7 @@ class RevenuesController extends AppController {
                             }
                         }
                     }else{
-                        $flagSave[] = false;
+                        $checkQty = false;
                         $text = sprintf(__('Gagal %s Revenue'), $msg);
                         if(!$validate_detail){
                             $text .= ', mohon lengkapi field-field yang kosong';
@@ -2907,100 +2908,102 @@ class RevenuesController extends AppController {
                     }
                 }
 
-                foreach ($dataRevenues as $key => $dataRevenue) {
-                    if($id && $data_local){
-                        $this->Revenue->id = $id;
-                        $msg = 'merubah';
-                    }else{
-                        $this->loadModel('Revenue');
-                        $this->Revenue->create();
-                        $msg = 'membuat';
-                    }
-
-                    if($this->Revenue->save($dataRevenue)){
-                        $revenue_id = $this->Revenue->id;
-
-                        if( $dataRevenue['Revenue']['type'] == 'angkut' ) {
-                            $no_ref = $revenue_id;
-                        }
-
+                if( $checkQty ) {
+                    foreach ($dataRevenues as $key => $dataRevenue) {
                         if($id && $data_local){
-                            $this->Revenue->RevenueDetail->deleteAll(array(
-                                'revenue_id' => $revenue_id
-                            ));
-
-                            $this->TtujTipeMotorUse->deleteAll(array(
-                                'revenue_id' => $revenue_id
-                            ));
+                            $this->Revenue->id = $id;
+                            $msg = 'merubah';
+                        }else{
+                            $this->loadModel('Revenue');
+                            $this->Revenue->create();
+                            $msg = 'membuat';
                         }
 
-                        foreach ($array_ttuj_tipe_motor as $group_motor_id => $value) {
-                            $this->TtujTipeMotorUse->create();
-                            $this->TtujTipeMotorUse->set(array(
-                                'revenue_id' => $revenue_id,
-                                'group_motor_id' => $group_motor_id,
-                                'qty' => $value['qty']
-                            ));
-                            $this->TtujTipeMotorUse->save();
-                        }
+                        if($this->Revenue->save($dataRevenue)){
+                            $revenue_id = $this->Revenue->id;
 
-                        $getLastReference = intval($this->Revenue->RevenueDetail->getLastReference())+1;
-
-                        foreach ($dataRevenue['RevenueDetail']['no_do'] as $key => $value) {
-                            $this->Revenue->RevenueDetail->create();
-                            $data_detail['RevenueDetail'] = array(
-                                'no_do' => $value,
-                                'no_sj' => $dataRevenue['RevenueDetail']['no_sj'][$key],
-                                // 'note' => $dataRevenue['RevenueDetail']['note'][$key],
-                                'qty_unit' => !empty($dataRevenue['RevenueDetail']['qty_unit'][$key])?$dataRevenue['RevenueDetail']['qty_unit'][$key]:0,
-                                'price_unit' => !empty($dataRevenue['RevenueDetail']['price_unit'][$key])?$dataRevenue['RevenueDetail']['price_unit'][$key]:0,
-                                'total_price_unit' => !empty($dataRevenue['RevenueDetail']['total_price_unit'][$key])?$dataRevenue['RevenueDetail']['total_price_unit'][$key]:0,
-                                'revenue_id' => $revenue_id,
-                                'city_id' => $dataRevenue['RevenueDetail']['city_id'][$key],
-                                'group_motor_id' => $dataRevenue['RevenueDetail']['group_motor_id'][$key],
-                                'tarif_angkutan_id' => $dataRevenue['RevenueDetail']['tarif_angkutan_id'][$key],
-                                'tarif_angkutan_type' => $dataRevenue['RevenueDetail']['tarif_angkutan_type'][$key],
-                                'no_reference' => str_pad ( $getLastReference++ , 10, "0", STR_PAD_LEFT),
-                                'payment_type' => $dataRevenue['RevenueDetail']['payment_type'][$key],
-                                'is_charge' => !empty($dataRevenue['RevenueDetail']['is_charge'][$key])?$dataRevenue['RevenueDetail']['is_charge'][$key]:0,
-                            );
-
-                            $this->Revenue->RevenueDetail->set($data_detail);
-                            $this->Revenue->RevenueDetail->save();
-                        }
-
-                        if( $dataRevenue['Revenue']['type'] == 'angkut' ) {
-                            if( !empty($dataTtuj) ) {
-                                $this->Ttuj->id = $dataRevenue['Revenue']['ttuj_id'];
-                                $this->Ttuj->save($dataTtuj);
+                            if( $dataRevenue['Revenue']['type'] == 'angkut' ) {
+                                $no_ref = $revenue_id;
                             }
 
-                            if( !empty($data_local) && $data_local['Ttuj']['id'] <> $dataRevenue['Revenue']['ttuj_id'] ) {
-                                $this->Ttuj->set('is_revenue', 0);
-                                $this->Ttuj->id = $data_local['Ttuj']['id'];
-                                $this->Ttuj->save();
+                            if($id && $data_local){
+                                $this->Revenue->RevenueDetail->deleteAll(array(
+                                    'revenue_id' => $revenue_id
+                                ));
+
+                                $this->TtujTipeMotorUse->deleteAll(array(
+                                    'revenue_id' => $revenue_id
+                                ));
                             }
+
+                            foreach ($array_ttuj_tipe_motor as $group_motor_id => $value) {
+                                $this->TtujTipeMotorUse->create();
+                                $this->TtujTipeMotorUse->set(array(
+                                    'revenue_id' => $revenue_id,
+                                    'group_motor_id' => $group_motor_id,
+                                    'qty' => $value['qty']
+                                ));
+                                $this->TtujTipeMotorUse->save();
+                            }
+
+                            $getLastReference = intval($this->Revenue->RevenueDetail->getLastReference())+1;
+
+                            foreach ($dataRevenue['RevenueDetail']['no_do'] as $key => $value) {
+                                $this->Revenue->RevenueDetail->create();
+                                $data_detail['RevenueDetail'] = array(
+                                    'no_do' => $value,
+                                    'no_sj' => $dataRevenue['RevenueDetail']['no_sj'][$key],
+                                    // 'note' => $dataRevenue['RevenueDetail']['note'][$key],
+                                    'qty_unit' => !empty($dataRevenue['RevenueDetail']['qty_unit'][$key])?$dataRevenue['RevenueDetail']['qty_unit'][$key]:0,
+                                    'price_unit' => !empty($dataRevenue['RevenueDetail']['price_unit'][$key])?$dataRevenue['RevenueDetail']['price_unit'][$key]:0,
+                                    'total_price_unit' => !empty($dataRevenue['RevenueDetail']['total_price_unit'][$key])?$dataRevenue['RevenueDetail']['total_price_unit'][$key]:0,
+                                    'revenue_id' => $revenue_id,
+                                    'city_id' => $dataRevenue['RevenueDetail']['city_id'][$key],
+                                    'group_motor_id' => $dataRevenue['RevenueDetail']['group_motor_id'][$key],
+                                    'tarif_angkutan_id' => $dataRevenue['RevenueDetail']['tarif_angkutan_id'][$key],
+                                    'tarif_angkutan_type' => $dataRevenue['RevenueDetail']['tarif_angkutan_type'][$key],
+                                    'no_reference' => str_pad ( $getLastReference++ , 10, "0", STR_PAD_LEFT),
+                                    'payment_type' => $dataRevenue['RevenueDetail']['payment_type'][$key],
+                                    'is_charge' => !empty($dataRevenue['RevenueDetail']['is_charge'][$key])?$dataRevenue['RevenueDetail']['is_charge'][$key]:0,
+                                );
+
+                                $this->Revenue->RevenueDetail->set($data_detail);
+                                $this->Revenue->RevenueDetail->save();
+                            }
+
+                            if( $dataRevenue['Revenue']['type'] == 'angkut' ) {
+                                if( !empty($dataTtuj) ) {
+                                    $this->Ttuj->id = $dataRevenue['Revenue']['ttuj_id'];
+                                    $this->Ttuj->save($dataTtuj);
+                                }
+
+                                if( !empty($data_local) && $data_local['Ttuj']['id'] <> $dataRevenue['Revenue']['ttuj_id'] ) {
+                                    $this->Ttuj->set('is_revenue', 0);
+                                    $this->Ttuj->id = $data_local['Ttuj']['id'];
+                                    $this->Ttuj->save();
+                                }
+                            }
+                            $flagSave[] = true;
+                        }else{
+                            $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Revenue'), $msg), 'error'); 
+                            $this->Log->logActivity( sprintf(__('Gagal %s Revenue'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                         }
-                        $flagSave[] = true;
-                    }else{
-                        $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Revenue'), $msg), 'error'); 
-                        $this->Log->logActivity( sprintf(__('Gagal %s Revenue'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
-                    }
-                }
-
-                if( count($flagSave) == count($dataRevenues) ) {
-                    if( empty($id) ) {
-                        $msgAlert = sprintf(__('Sukses %s Revenue! No Ref: %s'), $msg, str_pad($no_ref, 5, '0', STR_PAD_LEFT));
-                    } else {
-                        $msgAlert = sprintf(__('Sukses %s Revenue!'), $msg);
                     }
 
-                    $this->MkCommon->setCustomFlash($msgAlert, 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Revenue'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                    $this->redirect(array(
-                        'controller' => 'revenues',
-                        'action' => 'index'
-                    ));
+                    if( count($flagSave) == count($dataRevenues) ) {
+                        if( empty($id) ) {
+                            $msgAlert = sprintf(__('Sukses %s Revenue! No Ref: %s'), $msg, str_pad($no_ref, 5, '0', STR_PAD_LEFT));
+                        } else {
+                            $msgAlert = sprintf(__('Sukses %s Revenue!'), $msg);
+                        }
+
+                        $this->MkCommon->setCustomFlash($msgAlert, 'success');
+                        $this->Log->logActivity( sprintf(__('Sukses %s Revenue'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                        $this->redirect(array(
+                            'controller' => 'revenues',
+                            'action' => 'index'
+                        ));
+                    }
                 }
             } else {
                 $this->MkCommon->setCustomFlash(__('Gagal menyimpan Revenue'), 'error');
@@ -5364,5 +5367,74 @@ class RevenuesController extends AppController {
         // } else {
         //     $this->redirect($this->referer());
         // }
+    }
+
+
+
+    function invoice_hso_print($id, $action_print = false){
+        $this->loadModel('Invoice');
+        $this->loadModel('Revenue');
+        $this->loadModel('GroupMotor');
+        $this->loadModel('City');
+        $this->loadModel('Customer');
+        $this->loadModel('Ttuj');
+        $this->loadModel('User');
+
+        $module_title = __('Print Invoice HSO');
+        $this->set('sub_module_title', trim($module_title));
+        $this->set('active_menu', 'invoices');
+
+        if( !empty($this->params['named']) ){
+            $data_print = $this->params['named']['print'];
+        } else {
+            $data_print = 'invoice';
+        }
+        
+        $invoice = $this->Invoice->getData('first', array(
+            'conditions' => array(
+                'Invoice.id' => $id,
+                'Invoice.status' => array( 0,1 ),
+            ),
+        ));
+
+        if(!empty($invoice)){
+            $invoice = $this->Customer->getMerge($invoice, $invoice['Invoice']['customer_id']);
+
+            switch ($data_print) {
+                case 'header':
+                    $invoice = $this->Invoice->InvoiceDetail->getMerge($invoice, $invoice['Invoice']['id']);
+
+                    if( !empty($invoice['InvoiceDetail']) ) {
+                        $revenue_id = Set::extract('/InvoiceDetail/revenue_id', $invoice['InvoiceDetail']);
+                        $invoice = $this->Revenue->getMerge($invoice, $revenue_id, 'all');
+                        $invoice = $this->Revenue->RevenueDetail->getSumUnit($invoice, $revenue_id, 'revenue');
+                        $invoice = $this->Revenue->RevenueDetail->getSumUnit($invoice, $revenue_id, 'revenue_price');
+                    }
+                    break;
+
+                default:
+                    $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($invoice['Invoice']['id'], $invoice['Invoice']['tarif_type'], $action_print, $data_print);
+                    break;
+            }
+
+            $this->set(compact(
+                'invoice', 'action_print', 'revenue_detail'
+            ));
+
+            if($action_print == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($action_print == 'excel'){
+                $this->layout = 'ajax';
+            }
+
+            switch ($data_print) {
+                case 'invoice':
+                    $this->render('invoice_hso_non_header_print');
+                    break;
+            }
+        } else {
+            $this->MkCommon->setCustomFlash(__('Invoice tidak ditemukan'), 'error');  
+            $this->redirect($this->referer());
+        }
     }
 }

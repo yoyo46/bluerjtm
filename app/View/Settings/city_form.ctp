@@ -18,6 +18,26 @@
     <div class="box-body">
         <div class="form-group">
         	<?php 
+					echo $this->Form->input('code',array(
+						'label'=> __('Kode'), 
+						'class'=>'form-control',
+						'required' => false,
+						'placeholder' => __('Kode Kota')
+					));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+					echo $this->Form->input('alias',array(
+						'label'=> __('Nama Singkatan *'), 
+						'class'=>'form-control',
+						'required' => false,
+						'placeholder' => __('Nama Singkatan')
+					));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
 					echo $this->Form->input('name',array(
 						'label'=> __('Nama Kota *'), 
 						'class'=>'form-control',

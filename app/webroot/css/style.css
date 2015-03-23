@@ -3845,9 +3845,17 @@ table th i {
 .header-invoice{
   font-size: 25px;
   font-weight: 700;
+  margin: 0;
 }
 .action-print a{
   margin-left: 15px;
+}
+
+h3.header-invoice{
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 20px;
 }
 
 .datepicker.dropdown-menu {
@@ -3926,4 +3934,8 @@ thead th.headcol {
   font-size: 14px;
   font-style: italic;
   margin-top: 10px;
+}
+
+.action-print {
+  margin-bottom: 15px;
 }

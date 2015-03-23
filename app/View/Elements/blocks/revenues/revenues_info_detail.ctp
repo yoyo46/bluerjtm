@@ -139,10 +139,8 @@
                         <?php
                                 $qty = '';
 
-                                if( (isset($detail['RevenueDetail']['qty_unit']) && !empty($detail['RevenueDetail']['qty_unit'])) ){
+                                if( isset($detail['RevenueDetail']['qty_unit']) ){
                                     $qty = $detail['RevenueDetail']['qty_unit'];
-                                }else if( !empty($detail['TtujTipeMotor']['qty']) ){
-                                    $qty = $detail['TtujTipeMotor']['qty'];
                                 }
 
                                 echo $this->Form->input('RevenueDetail.qty_unit.', array(

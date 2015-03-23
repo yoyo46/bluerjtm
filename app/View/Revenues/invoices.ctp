@@ -116,6 +116,23 @@
                                     ), array(
                                         'class' => 'btn btn-success btn-xs'
                                     ));
+                                
+                                    echo $this->Html->link(__('Print HSO'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'invoice_hso_print',
+                                        $id,
+                                        'print' => 'header',
+                                    ), array(
+                                        'class' => 'btn bg-navy btn-xs'
+                                    ));
+                                
+                                    echo $this->Html->link(__('Print HSO Non Header'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'invoice_hso_print',
+                                        $id,
+                                    ), array(
+                                        'class' => 'btn bg-olive btn-xs'
+                                    ));
                                 }
                                 
                                 echo $this->Html->link(__('Print Header'), array(

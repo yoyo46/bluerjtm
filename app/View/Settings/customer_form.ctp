@@ -152,7 +152,7 @@
 	<div class="col-sm-6">
 		<div class="box box-success">
 		    <div class="box-header">
-		        <h3 class="box-title"><?php echo __('Patter Customer'); ?></h3>
+		        <h3 class="box-title"><?php echo __('Pattern Customer'); ?></h3>
 		    </div>
 		    <div class="box-body">
 				<?php 

@@ -64,5 +64,20 @@ class InvoiceDetail extends AppModel {
 
         return $revenues;
     }
+
+    function getMerge( $data, $invoice_id ){
+        $invoiceDetails = $this->find('all', array(
+            'conditions' => array(
+                'InvoiceDetail.invoice_id' => $invoice_id,
+                'InvoiceDetail.status' => 1,
+            ),
+        ));
+
+        if( !empty($invoiceDetails) ) {
+            $data['InvoiceDetail'] = $invoiceDetails;
+        }
+
+        return $data;
+    }
 }
 ?>

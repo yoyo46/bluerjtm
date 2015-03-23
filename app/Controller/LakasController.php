@@ -234,7 +234,7 @@ class LakasController extends AppController {
         }
 
         $this->loadModel('Ttuj');
-        $ttujs = $this->Ttuj->getData('all', array(
+        $drivers = $this->Ttuj->getData('all', array(
             'fields' => array(
                 'Ttuj.id', 'Ttuj.driver_name', 'Ttuj.no_ttuj'
             ),
