@@ -133,6 +133,10 @@
             <thead>
                 <tr>
                     <?php 
+                            echo $this->Html->tag('th', __('No.'), array(
+                                'style' => $tdStyle,
+                                'class' => 'text-center text-middle',
+                            ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Invoice.invoice_date', __('Tgl Kwitansi')), array(
                                 'style' => $tdStyle,
                                 'class' => 'text-center text-middle',
@@ -187,6 +191,8 @@
             <tbody>
                 <?php
                         if(!empty($invoices)){
+                            $idx = $start;
+
                             foreach ($invoices as $key => $invoice) {
                                 $totalUnit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
                                 $dateTOP = !empty($invoice['Invoice']['term_of_payment'])?date('d/m/Y', strtotime(sprintf('+%s day', $invoice['Invoice']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']))):'-';
@@ -206,6 +212,7 @@
                 ?>
                 <tr>
                     <?php 
+                            echo $this->Html->tag('td', $idx);
                             echo $this->Html->tag('td', $this->Common->customDate($invoice['Invoice']['invoice_date'], 'd/m/Y'), array(
                                 'class' => 'text-center',
                                 'style' => $tdStyle,
@@ -257,6 +264,7 @@
                     ?>
                 </tr>
                 <?php
+                                $idx++;
                             }
                         }
                 ?>
@@ -327,7 +335,10 @@
                         $totalPaid = $invoice[0]['total_payment'];
                     }
 
-                    $content = $this->Html->tag('td', $this->Common->customDate($invoice['Invoice']['invoice_date'], 'd/m/Y'), array(
+                    $content = $this->Html->tag('td', $no, array(
+                        'style' => 'text-align: center;',
+                    ));
+                    $content .= $this->Html->tag('td', $this->Common->customDate($invoice['Invoice']['invoice_date'], 'd/m/Y'), array(
                         'style' => 'text-align: center;',
                     ));
                     $content .= $this->Html->tag('td', !empty($invoice['CustomerNoType']['name'])?$invoice['CustomerNoType']['name']:false, array(
@@ -381,6 +392,7 @@ $tbl = <<<EOD
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <thead>
                 <tr style="$table_tr_head">
+                    <th style="text-align: center;">No.</th>
                     <th style="text-align: center;">Tgl Kwitansi</th>
                     <th style="text-align: center;">Customer</th>
                     <th style="text-align: center;">No. Invoice</th>

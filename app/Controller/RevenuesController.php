@@ -4434,6 +4434,8 @@ class RevenuesController extends AppController {
             $this->loadModel('Invoice');
             $this->loadModel('Revenue');
             $invoice_conditions = array();
+            $start = 1;
+            $limit = 30;
 
             if( !empty($this->params['named']) ){
                 $refine = $this->params['named'];
@@ -4491,9 +4493,13 @@ class RevenuesController extends AppController {
                             break;
                     }
                 }
+
+                if(!empty($refine['page'])){
+                    $start = (($refine['page']-1)*5)+1;
+                }
             }
 
-            $this->paginate = array(
+            $options = array(
                 'conditions' => $invoice_conditions,
                 'order' => array(
                     'Invoice.created' => 'DESC',
@@ -4502,8 +4508,15 @@ class RevenuesController extends AppController {
                 'contain' => array(
                     'CustomerNoType'
                 ),
-                'limit' => 30,
             );
+
+            if( !empty($data_action) ) {
+                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+            } else {
+                $options['limit'] = $limit;
+            }
+
+            $this->paginate = $options;
             $invoices = $this->paginate('Invoice');
 
             if( !empty($invoices) ) {
@@ -4530,7 +4543,7 @@ class RevenuesController extends AppController {
             }
 
             $this->set(compact(
-                'invoices', 'data_action'
+                'invoices', 'data_action', 'start'
             ));
         // }
     }
