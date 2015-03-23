@@ -5128,4 +5128,124 @@ class RevenuesController extends AppController {
         //     $this->redirect($this->referer());
         // }
     }
+
+    public function report_revenue_customers( $data_action = false ) {
+        if( in_array('view_achievement_report', $this->allowModule) ) {
+            $this->loadModel('Customer');
+            $this->loadModel('Revenue');
+            $fromMonth = date('m');
+            $fromYear = date('Y');
+            $toMonth = 12;
+            $toYear = date('Y');
+            $conditions = array(
+                'Revenue.status'=> 1,
+            );
+            $conditionsCustomer = array(
+                'Customer.status'=> 1,
+            );
+
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['customer'])){
+                    $customer = urldecode($refine['customer']);
+                    $this->request->data['Ttuj']['customer'] = $customer;
+                    $conditionsCustomer['Customer.id'] = $customer;
+                }
+
+                if( !empty($refine['fromMonth']) && !empty($refine['fromYear']) ){
+                    $fromMonth = urldecode($refine['fromMonth']);
+                    $fromYear = urldecode($refine['fromYear']);
+                }
+
+                if( !empty($refine['toMonth']) && !empty($refine['toYear']) ){
+                    $toMonth = urldecode($refine['toMonth']);
+                    $toYear = urldecode($refine['toYear']);
+                }
+            }
+
+            $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') >='] = date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear));
+            $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') <='] = date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear));
+
+
+            $customerList = $this->Customer->getData('list', array(
+                'fields' => array(
+                    'Customer.id', 'Customer.customer_name'
+                )
+            ));
+
+            $options = $this->Customer->getData('paginate', array(
+                'conditions' => $conditionsCustomer,
+            ));
+
+            if( !empty($data_action) ) {
+                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+            } else {
+                $options['limit'] = 20;
+            }
+
+            $this->paginate = $options;
+            $customers = $this->paginate('Customer');
+
+            if( !empty($customers) ) {
+                foreach ($customers as $key => $customer) {
+                    $conditions['Revenue.customer_id'] = $customer['Customer']['id'];
+                    $revenues = $this->Revenue->getData('all', array(
+                        'conditions' => $conditions,
+                        'contain' => array(
+                            'CustomerNoType',
+                        ),
+                        'order' => array(
+                            'CustomerNoType.name' => 'ASC', 
+                        ),
+                        'group' => array(
+                            'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\')'
+                        ),
+                        'fields'=> array(
+                            'Revenue.customer_id', 
+                            'SUM(Revenue.total) as total',
+                            'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') as dt',
+                        ),
+                    ), false);
+                    if( !empty($revenues) ) {
+                        foreach ($revenues as $keyRevenue => $revenue) {
+                            $customer['Customer'][$revenue[0]['dt']]['total_revenue'] = !empty($revenue[0]['total'])?$revenue[0]['total']:0;
+                        }
+                    }
+                    $customers[$key] = $customer;
+                }
+            }
+
+            $module_title = __('Laporan Pendapatan Per Customer Per Bulan');
+            $period_text = sprintf('Periode %s %s - %s %s', date('F', mktime(0, 0, 0, $fromMonth, 10)), $fromYear, date('F', mktime(0, 0, 0, $toMonth, 10)), $toYear);
+            $this->set('sub_module_title', $module_title);
+            $this->set('period_text', $period_text);
+            $this->set('active_menu', 'report_customers');
+            $totalCnt = $toMonth - $fromMonth;
+            $totalYear = $toYear - $fromYear;
+            $this->request->data['Ttuj']['from']['month'] = $fromMonth;
+            $this->request->data['Ttuj']['from']['year'] = $fromYear;
+            $this->request->data['Ttuj']['to']['month'] = $toMonth;
+            $this->request->data['Ttuj']['to']['year'] = $toYear;
+
+            if( !empty($totalYear) && $totalYear > 0 ) {
+                $totalYear = 12 * $totalYear;
+                $totalCnt += $totalYear;
+            }
+
+            $this->set(compact(
+                'data_action', 'totalCnt',
+                'customerList', 'fromMonth', 'fromYear',
+                'toYear', 'toMonth', 'customers'
+            ));
+
+            if($data_action == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($data_action == 'excel'){
+                $this->layout = 'ajax';
+            }
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
 }

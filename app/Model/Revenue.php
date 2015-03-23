@@ -38,6 +38,10 @@ class Revenue extends AppModel {
             'className' => 'Ttuj',
             'foreignKey' => 'ttuj_id',
         ),
+        'CustomerNoType' => array(
+            'className' => 'CustomerNoType',
+            'foreignKey' => 'customer_id',
+        ),
     );
 
     var $hasMany = array(
