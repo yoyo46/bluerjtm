@@ -100,21 +100,24 @@
                 <td class="action">
                     <?php 
                             if(empty($value['Invoice']['is_canceled'])){
-                                echo $this->Html->link(__('Print Detail'), array(
-                                    'controller' => 'revenues',
-                                    'action' => 'invoice_print',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs'
-                                ));
-                                echo $this->Html->link(__('Print Per Tanggal'), array(
-                                    'controller' => 'revenues',
-                                    'action' => 'invoice_print',
-                                    $id,
-                                    'print' => 'date',
-                                ), array(
-                                    'class' => 'btn btn-success btn-xs'
-                                ));
+                                if( $value['Invoice']['tarif_type'] == 'angkut' ) {
+                                    echo $this->Html->link(__('Print Detail'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'invoice_print',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-primary btn-xs'
+                                    ));
+                                    echo $this->Html->link(__('Print Per Tanggal'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'invoice_print',
+                                        $id,
+                                        'print' => 'date',
+                                    ), array(
+                                        'class' => 'btn btn-success btn-xs'
+                                    ));
+                                }
+                                
                                 echo $this->Html->link(__('Print Header'), array(
                                     'controller' => 'revenues',
                                     'action' => 'invoice_print',

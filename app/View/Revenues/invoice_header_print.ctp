@@ -210,7 +210,22 @@ readfile($path.'/'.$filename);
 			<tr valign="top">
 				<?php 
 						echo $this->Html->tag('td', __('Untuk pembayaran'));
-						echo $this->Html->tag('td', sprintf(__(': JASA ANGKUT SEPEDA MOTOR<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $qty_unit, $this->Common->customDate($invoice['Invoice']['period_from'], 'd/m/Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd/m/Y')), array(
+
+                        switch ($invoice['Invoice']['tarif_type']) {
+                        	case 'kuli':
+                        		$ket = __('BIAYA KULI MUAT SEPEDA MOTOR');
+                        		break;
+
+                        	case 'asuransi':
+                        		$ket = __('BIAYA ASURANSI SEPEDA MOTOR');
+                        		break;
+                        	
+                        	default:
+                        		$ket = __('JASA ANGKUT SEPEDA MOTOR');
+                        		break;
+                        }
+
+						echo $this->Html->tag('td', sprintf(__(': %s<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $ket, $qty_unit, $this->Common->customDate($invoice['Invoice']['period_from'], 'd/m/Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd/m/Y')), array(
 							'style' => 'padding-left: 5px;',
 						));
 				?>
