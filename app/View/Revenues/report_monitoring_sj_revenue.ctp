@@ -278,8 +278,16 @@
                 ?>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('td', $ttuj['Ttuj']['no_ttuj']);
-                            echo $this->Html->tag('td', $this->Common->customDate($ttuj['Ttuj']['ttuj_date'], 'd/m/Y'));
+                            echo $this->Html->tag('td', $this->Html->link($ttuj['Ttuj']['no_ttuj'], array(
+                                'controller' => 'revenues',
+                                'action' => 'ttuj_edit',
+                                $ttuj['Ttuj']['id']
+                            ), array(
+                                'target' => '_blank',
+                            )));
+                            echo $this->Html->tag('td', $this->Common->customDate($ttuj['Ttuj']['ttuj_date'], 'd/m/Y'), array(
+                                'style' => 'text-align: center;'
+                            ));
                             echo $this->Html->tag('td', $city_name);
                             echo $this->Html->tag('td', $ttuj['Ttuj']['nopol']);
                             echo $this->Html->tag('td', $unit, array(
@@ -485,7 +493,11 @@
                     $leadSjInvoiced = floor($str/3600/24);
 
                     $each_loop_message .= '<tr>';
-                    $each_loop_message .= $this->Html->tag('td', $ttuj['Ttuj']['no_ttuj'], array(
+                    $each_loop_message .= $this->Html->tag('td', $this->Html->link($ttuj['Ttuj']['no_ttuj'], array(
+                        'controller' => 'revenues',
+                        'action' => 'ttuj_edit',
+                        $ttuj['Ttuj']['id']
+                    )), array(
                         'style' => 'text-align: left;',
                     ));
                     $each_loop_message .= $this->Html->tag('td', $this->Common->customDate($ttuj['Ttuj']['ttuj_date'], 'd/m/Y'), array(
