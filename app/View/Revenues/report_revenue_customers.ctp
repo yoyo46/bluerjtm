@@ -176,6 +176,10 @@
                                 'style' => 'width: 150px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                             ));
+                            echo $this->Html->tag('th', sprintf(__('AVG %s'), $avgYear), array(
+                                'style' => $tdStyle,
+                                'class' => 'text-center text-middle',
+                            ));
 
                             if( !empty($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {
@@ -201,6 +205,9 @@
                 <tr>
                     <?php 
                             echo $this->Html->tag('td', $customer['Customer']['name']);
+                            echo $this->Html->tag('td', $this->Number->format($customer['RevenueYear'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                                'style' => 'text-align: right;',
+                            ));
 
                             if( !empty($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {

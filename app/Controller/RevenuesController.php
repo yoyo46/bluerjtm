@@ -4723,9 +4723,26 @@ class RevenuesController extends AppController {
         $fromDt = date('Y-m', strtotime($fromDt.' -1 day'));
         $toDt = sprintf('%s-%s', $fromYear, $toMonth);
         $totalCnt = $toMonth - $fromMonth;
+        $avgYear = $fromYear - 1;
 
         if( !empty($customers) ) {
             foreach ($customers as $key => $customer) {
+                $conditionsYear = array(
+                    'DATE_FORMAT(Invoice.invoice_date, \'%Y\')' => $avgYear,
+                    'Invoice.customer_id' => $customer['Customer']['id'],
+                );
+                $invoiceYear = $this->Invoice->getData('first', array(
+                    'conditions' => $conditionsYear,
+                    'group' => array(
+                        'DATE_FORMAT(Invoice.invoice_date, \'%Y\')'
+                    ),
+                    'fields'=> array(
+                        'Invoice.customer_id', 
+                        'SUM(Invoice.total) as total',
+                    ),
+                ), false);
+                $customer['InvoiceYear'] = !empty($invoiceYear[0]['total'])?$invoiceYear[0]['total']/12:0;
+
                 $invoices = $this->Invoice->getData('all', array(
                     'conditions' => array(
                         // 'Invoice.status' => 1,
@@ -4862,7 +4879,7 @@ class RevenuesController extends AppController {
         $this->set(compact(
             'customers', 'data_action', 'totalCnt',
             'fromYear', 'fromMonth', 'toMonth',
-            'customerList'
+            'customerList', 'avgYear'
         ));
 
         if($data_action == 'pdf'){
@@ -5208,6 +5225,7 @@ class RevenuesController extends AppController {
 
             $this->paginate = $options;
             $customers = $this->paginate('Customer');
+            $avgYear = $fromYear - 1;
 
             if( !empty($customers) ) {
                 foreach ($customers as $key => $customer) {
@@ -5229,6 +5247,24 @@ class RevenuesController extends AppController {
                             'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') as dt',
                         ),
                     ), false);
+
+                    $conditionsYear = array(
+                        'DATE_FORMAT(Revenue.date_revenue, \'%Y\')' => $avgYear,
+                        'Revenue.customer_id' => $customer['Customer']['id'],
+                        'Revenue.status' => 1,
+                    );
+                    $revenueYear = $this->Revenue->getData('first', array(
+                        'conditions' => $conditionsYear,
+                        'group' => array(
+                            'DATE_FORMAT(Revenue.date_revenue, \'%Y\')'
+                        ),
+                        'fields'=> array(
+                            'Revenue.customer_id', 
+                            'SUM(Revenue.total) as total',
+                        ),
+                    ), false);
+                    $customer['RevenueYear'] = !empty($revenueYear[0]['total'])?$revenueYear[0]['total']/12:0;
+
                     if( !empty($revenues) ) {
                         foreach ($revenues as $keyRevenue => $revenue) {
                             $customer['Customer'][$revenue[0]['dt']]['total_revenue'] = !empty($revenue[0]['total'])?$revenue[0]['total']:0;
@@ -5242,7 +5278,7 @@ class RevenuesController extends AppController {
             $period_text = sprintf('Periode %s %s - %s %s', date('F', mktime(0, 0, 0, $fromMonth, 10)), $fromYear, date('F', mktime(0, 0, 0, $toMonth, 10)), $toYear);
             $this->set('sub_module_title', $module_title);
             $this->set('period_text', $period_text);
-            $this->set('active_menu', 'report_customers');
+            $this->set('active_menu', 'report_revenue_customers');
             $totalCnt = $toMonth - $fromMonth;
             $totalYear = $toYear - $fromYear;
             $this->request->data['Ttuj']['from']['month'] = $fromMonth;
@@ -5258,7 +5294,8 @@ class RevenuesController extends AppController {
             $this->set(compact(
                 'data_action', 'totalCnt',
                 'customerList', 'fromMonth', 'fromYear',
-                'toYear', 'toMonth', 'customers'
+                'toYear', 'toMonth', 'customers',
+                'avgYear'
             ));
 
             if($data_action == 'pdf'){

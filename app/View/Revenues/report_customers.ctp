@@ -152,6 +152,10 @@
                                 'style' => 'width: 150px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
                             ));
+                            echo $this->Html->tag('th', sprintf(__('AVG %s'), $avgYear), array(
+                                'style' => 'width: 100px;'.$tdStyle,
+                                'class' => 'text-center text-middle',
+                            ));
                             echo $this->Html->tag('th', __('Bulan'), array(
                                 'style' => 'width: 100px;'.$tdStyle,
                                 'class' => 'text-center text-middle',
@@ -238,6 +242,10 @@
                                         echo $this->Html->tag('td', $customer_name, array(
                                             'rowspan' => $totalCnt+2,
                                             'style' => 'vertical-align: middle;',
+                                        ));
+                                        echo $this->Html->tag('td', $this->Number->format($value['InvoiceYear'], '', array('places' => 0)), array(
+                                            'rowspan' => $totalCnt+2,
+                                            'style' => 'vertical-align: middle;text-align:right;',
                                         ));
                                     }
 
