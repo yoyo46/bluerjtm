@@ -178,7 +178,7 @@
                                 'class' => 'text-center text-middle',
                             ));
                             echo $this->Html->tag('th', __('Total Transfer'), array(
-                                'style' => $tdStyle,
+                                'style' => $tdStyle.'width:110px;',
                                 'class' => 'text-center text-middle',
                             ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Invoice.complete_paid', __('Status')), array(
@@ -192,6 +192,9 @@
                 <?php
                         if(!empty($invoices)){
                             $idx = $start;
+                            $totalTagihan = 0;
+                            $totalQty = 0;
+                            $totalTransfer = 0;
 
                             foreach ($invoices as $key => $invoice) {
                                 $totalUnit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
@@ -199,6 +202,8 @@
                                 $datePayment = array();
                                 $totalPaid = 0;
                                 $invoiceStatus = $this->Common->getInvoiceStatus( $invoice );
+                                $totalTagihan += $invoice['Invoice']['total'];
+                                $totalQty += $totalUnit;
 
                                 if( !empty($invoice['InvoicePaymentDate']) ) {
                                     foreach ($invoice['InvoicePaymentDate'] as $key => $dtPaid) {
@@ -209,6 +214,8 @@
                                 if( !empty($invoice[0]['total_payment']) ) {
                                     $totalPaid = $invoice[0]['total_payment'];
                                 }
+
+                                $totalTransfer += $totalPaid;
                 ?>
                 <tr>
                     <?php 
@@ -266,6 +273,39 @@
                 <?php
                                 $idx++;
                             }
+
+                            echo $this->Html->tag('td', '', array(
+                                'class' => 'text-center text-middle',
+                                'colspan' => 4,
+                            ));
+
+                            echo $this->Html->tag('td', $this->Number->currency($totalTagihan, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                                'style' => 'text-align: right;',
+                            ));
+
+                            echo $this->Html->tag('td', '', array(
+                                'class' => 'text-center text-middle',
+                                'colspan' => 2,
+                            ));
+
+                            echo $this->Html->tag('td', $totalQty, array(
+                                'style' => $tdStyle,
+                                'class' => 'text-center text-middle',
+                            ));
+
+                            echo $this->Html->tag('td', '', array(
+                                'class' => 'text-center text-middle',
+                                'colspan' => 3,
+                            ));
+
+                            echo $this->Html->tag('td', $this->Number->currency($totalTransfer, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                                'style' => 'text-align: right;',
+                            ));
+
+                            echo $this->Html->tag('td', '', array(
+                                'style' => $tdStyle,
+                                'class' => 'text-center text-middle',
+                            ));
                         }
                 ?>
             </tbody>
