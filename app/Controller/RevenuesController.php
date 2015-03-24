@@ -5278,7 +5278,7 @@ class RevenuesController extends AppController {
                     'Ttuj.status' => 1,
                     'Ttuj.is_draft' => 0,
                     'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >=' => $dateFrom,
-                    'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >=' => $dateTo,
+                    'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <=' => $dateTo,
                 ),
                 'contain' => false,
                 'order'=> array(
