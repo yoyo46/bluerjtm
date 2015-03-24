@@ -5294,7 +5294,7 @@ class RevenuesController extends AppController {
                 if(!empty($refine['customer'])){
                     $customer = urldecode($refine['customer']);
                     $this->request->data['Ttuj']['customer'] = $customer;
-                    $options['conditions']['Customer.id '] = $customer;
+                    $options['conditions']['Ttuj.customer_id '] = $customer;
                 }
 
                 if(!empty($refine['date'])){
