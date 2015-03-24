@@ -4728,7 +4728,7 @@ class RevenuesController extends AppController {
             foreach ($customers as $key => $customer) {
                 $invoices = $this->Invoice->getData('all', array(
                     'conditions' => array(
-                        'Invoice.status' => 1,
+                        // 'Invoice.status' => 1,
                         'Invoice.customer_id' => $customer['Customer']['id'],
                         'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') >=' => $fromDt,
                         'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => $toDt,
@@ -4740,21 +4740,26 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\')'
                     ),
-                ));
+                ), false);
 
-                $invoicePayments = $this->InvoicePayment->getData('all', array(
+                $invoicePayments = $this->InvoicePayment->InvoicePaymentDetail->getData('all', array(
                     'conditions' => array(
+                        'Invoice.status' => 1,
                         'InvoicePayment.status' => 1,
                         'InvoicePayment.customer_id' => $customer['Customer']['id'],
                         'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') >=' => $fromDt,
                         'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $toDt,
                     ),
                     'fields' => array(
-                        'SUM(InvoicePayment.total_payment) total',
+                        'SUM(InvoicePaymentDetail.price_pay) total',
                         'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') date_payment'
                     ),
                     'group' => array(
                         'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\')'
+                    ),
+                    'contain' => array(
+                        'Invoice',
+                        'InvoicePayment',
                     ),
                 ), false);
                 $invoiceVoids = $this->Invoice->getData('all', array(

@@ -130,6 +130,8 @@ class RevenueDetail extends AppModel {
                     'RevenueDetail.id' => 'ASC',
                 ),
                 'group' => array(
+                    'RevenueDetail.no_do',
+                    'RevenueDetail.no_sj',
                     'RevenueDetail.group_motor_id',
                     'RevenueDetail.city_id',
                 ),

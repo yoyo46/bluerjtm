@@ -263,7 +263,7 @@
                     }
                 ?>
                 <tr id="field-grand-total-revenue">
-                    <td align="right" colspan="8"><?php echo __('Total')?></td>
+                    <td align="right" colspan="7"><?php echo __('Total')?></td>
                     <td align="right" id="grand-total-revenue">
                         <?php 
                                 if( !empty($tarifTruck) ) {
@@ -287,7 +287,7 @@
                     </td>
                 </tr>
                 <tr id="field-additional-total-revenue" class="<?php echo ($flagTruck)?'':'hide'; ?>">
-                    <td align="right" colspan="8"><?php echo __('Additional Charge')?></td>
+                    <td align="right" colspan="7"><?php echo __('Additional Charge')?></td>
                     <td align="right" id="additional-total-revenue">
                         <?php 
                                 if( !empty($tarifTruck['addCharge']) ) {
@@ -300,7 +300,7 @@
                     </td>
                 </tr>
                 <tr class="additional-input-revenue" id="ppn-grand-total-revenue">
-                    <td align="right" colspan="8" class="relative">
+                    <td align="right" colspan="7" class="relative">
                         <?php 
                             echo $this->Form->input('Revenue.ppn', array(
                                 'type' => 'text',
@@ -321,7 +321,7 @@
                     <td>&nbsp;</td>
                 </tr>
                 <tr class="additional-input-revenue" id="pph-grand-total-revenue">
-                    <td align="right" colspan="8" class="relative">
+                    <td align="right" colspan="7" class="relative">
                         <?php 
                                 echo $this->Form->input('Revenue.pph', array(
                                     'type' => 'text',
@@ -342,7 +342,7 @@
                     <td>&nbsp;</td>
                 </tr>
                 <tr id="all-grand-total-revenue">
-                    <td align="right" colspan="8"><?php echo __('Total');?></td>
+                    <td align="right" colspan="7"><?php echo __('Total');?></td>
                     <td align="right" id="all-total-revenue">
                         <?php 
                                 if($pph > 0){
