@@ -29,7 +29,7 @@
 						'class'=>'form-control custom-date',
 						'required' => false,
 						'type' => 'text',
-						'value' => (!empty($this->request->data['SuratJalanDetail']['tgl_surat_jalan'])) ? $this->request->data['SuratJalanDetail']['tgl_surat_jalan'] : date('d/m/Y')
+						'value' => (!empty($this->request->data['SuratJalan']['tgl_surat_jalan'])) ? $this->request->data['SuratJalan']['tgl_surat_jalan'] : date('d/m/Y')
 					));
 			?>
         </div>

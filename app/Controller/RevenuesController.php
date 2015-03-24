@@ -4999,6 +4999,7 @@ class RevenuesController extends AppController {
                 }
             } else if( !empty($ttuj['SuratJalan']) ) {
                 $this->request->data = $ttuj;
+                $this->request->data['SuratJalan']['tgl_surat_jalan'] = $this->MkCommon->getDate($this->request->data['SuratJalan']['tgl_surat_jalan'], true);
             }
 
             $this->set('active_menu', 'ttuj');
