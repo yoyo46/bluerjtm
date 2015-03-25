@@ -4730,6 +4730,7 @@ class RevenuesController extends AppController {
                 $conditionsYear = array(
                     'DATE_FORMAT(Invoice.invoice_date, \'%Y\')' => $avgYear,
                     'Invoice.customer_id' => $customer['Customer']['id'],
+                    'Invoice.status' => 1,
                 );
                 $invoiceYear = $this->Invoice->getData('first', array(
                     'conditions' => $conditionsYear,
@@ -5357,14 +5358,13 @@ class RevenuesController extends AppController {
                 }
             }
 
-            if( !empty($data_action) ) {
-                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
-            } else {
-                $options['limit'] = 20;
-            }
+            // if( !empty($data_action) ) {
+            //     $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+            // } else {
+            //     $options['limit'] = 20;
+            // }
 
-            $this->paginate = $options;
-            $ttujs = $this->paginate('Ttuj');
+            $ttujs = $this->Ttuj->find('all', $options);
 
             if( !empty($ttujs) ) {
                 foreach ($ttujs as $key => $ttuj) {
