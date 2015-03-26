@@ -14,10 +14,16 @@ class Laka extends AppModel {
                 'message' => 'Tgl LAKA harap dipilih'
             ),
         ),
-        'ttuj_id' => array(
+        // 'ttuj_id' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Nama supir harap dipilih'
+        //     ),
+        // ),
+        'truck_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Nama supir harap dipilih'
+                'message' => 'Truk harap dipilih'
             ),
         ),
         'lokasi_laka' => array(
@@ -26,13 +32,13 @@ class Laka extends AppModel {
                 'message' => 'Lokasi LAKA harap diisi'
             ),
         ),
-        'from_city_name' => array(
+        'from_city_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Kota dari harap dipilih'
             ),
         ),
-        'to_city_name' => array(
+        'to_city_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Kota ke harap dipilih'

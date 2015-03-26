@@ -35,26 +35,27 @@
 		        					$attrBrowse = array(
 	                                    'class' => 'ajaxModal visible-xs',
 	                                    'escape' => false,
-	                                    'title' => __('Data TTUJ'),
+	                                    'title' => __('Data Truk'),
 	                                    'data-action' => 'browse-form',
 	                                    'data-change' => 'laka-driver-change',
 	                                );
 		        					$urlBrowse = array(
 	                                    'controller'=> 'ajax', 
-	                                    'action' => 'getTtujs',
+	                                    // 'action' => 'getTtujs',
+	                                    'action' => 'getTrucks',
 	                                    'laka',
 	                                );
-			                    	echo $this->Form->label('ttuj_id', __('Nama Supir * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+			                    	echo $this->Form->label('truck_id', __('Nopol Truk * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 			                ?>
 			                <div class="row">
 			                    <div class="col-sm-10">
 						        	<?php 
-											echo $this->Form->input('ttuj_id',array(
+											echo $this->Form->input('truck_id',array(
 												'label'=> false, 
 												'class'=>'form-control',
 												'required' => false,
-												'empty' => __('Pilih Nama Supir'),
-												'options' => $ttujs,
+												'empty' => __('Pilih Nopol Truk'),
+												'options' => $trucks,
 												'id' => 'laka-driver-change'
 											));
 									?>
@@ -69,37 +70,78 @@
 				        </div>
 				        <div class="form-group">
 				        	<?php 
+									echo $this->Form->input('driver_name',array(
+										'label'=> __('Nama Supir *'), 
+										'class'=>'form-control',
+										'required' => false,
+										'placeholder' => __('Nama Supir'),
+										'readonly' => true,
+										'id' => 'laka-driver-name'
+									));
+							?>
+				        </div>
+				        <div class="form-group">
+				        	<?php 
 									echo $this->Form->input('no_sim',array(
 										'label'=> __('No SIM *'), 
+										'placeholder' => __('No SIM'),
 										'class'=>'form-control',
 										'required' => false,
 										'type' => 'text',
-										'id' => 'no_sim',
+										'id' => 'laka-no-sim',
 										'readonly' => true
 									));
 							?>
 				        </div>
 				        <div class="form-group">
 				        	<?php 
-									echo $this->Form->input('tgl_laka',array(
-										'label'=> __('Tgl LAKA *'), 
-										'class'=>'form-control custom-date',
+									echo $this->Form->input('change_driver_id',array(
+										'label'=> __('Nama Supir Pengganti'), 
+										'class'=>'form-control',
 										'required' => false,
-										'type' => 'text',
-										'value' => (!empty($this->request->data['Laka']['tgl_laka'])) ? $this->request->data['Laka']['tgl_laka'] : date('d/m/Y')
+										'empty' => __('Pilih Supir Pengganti'),
+										'options' => $driverPengantis,
+										'readonly' => false,
+										'id' => 'laka-driver-change-name'
 									));
 							?>
 				        </div>
-				        <div class="form-group" id="nopol-laka">
+				        <div class="form-group">
 				        	<?php 
-									echo $this->Form->input('nopol',array(
-										'label'=> __('Nopol Armada *'), 
-										'class'=>'form-control',
-										'required' => false,
-										'type' => 'text',
-										'readonly' => true
-									));
-							?>
+		        					$attrBrowse = array(
+	                                    'class' => 'ajaxModal visible-xs',
+	                                    'escape' => false,
+	                                    'title' => __('Data TTUJ'),
+	                                    'data-action' => 'browse-form',
+	                                    'data-change' => 'laka-ttuj-change',
+	                                );
+		        					$urlBrowse = array(
+	                                    'controller'=> 'ajax', 
+	                                    'action' => 'getTtujs',
+	                                    'laka',
+	                                );
+			                    	echo $this->Form->label('ttuj_id', __('No. TTUJ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+			                ?>
+				        	<div class="row">
+			                    <div class="col-sm-10">
+						        	<?php 
+											echo $this->Form->input('ttuj_id',array(
+												'label'=> false, 
+												'class'=>'form-control',
+												'required' => false,
+												'empty' => __('Pilih No TTUJ'),
+												'options' => $ttujs,
+												'id' => 'laka-ttuj-change'
+											));
+									?>
+			                    </div>
+		        				<div class="col-sm-2 hidden-xs">
+			                        <?php 
+		        							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+			                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+			                        ?>
+			                    </div>
+			                </div>
 				        </div>
 				        <div class="form-group">
 				        	<?php 
@@ -118,28 +160,52 @@
 							<div class="row" id="city-laka">
 								<div class="col-sm-6">
 									<?php 
-											echo $this->Form->input('from_city_name',array(
+											echo $this->Form->input('from_city_id',array(
 												'label'=> false, 
 												'class'=>'form-control',
 												'required' => false,
-												'placeholder' => __('Dari Kota'),
-												'readonly' => true,
+												'empty' => __('Dari Kota'),
+												// 'readonly' => true,
+												'options' => $fromCities
 											));
 									?>
 								</div>
 								<div class="col-sm-6">
 									<?php 
-											echo $this->Form->input('to_city_name',array(
+											echo $this->Form->input('to_city_id',array(
 												'label'=> false, 
 												'class'=>'form-control',
 												'required' => false,
-												'placeholder' => __('Ke Kota'),
-												'readonly' => true,
+												'empty' => __('Ke Kota'),
+												// 'readonly' => true,
+												'options' => $toCities
 											));
 									?>
 								</div>
 							</div>
 				        </div>
+				        <div class="form-group">
+				        	<?php 
+									echo $this->Form->input('tgl_laka',array(
+										'label'=> __('Tgl LAKA *'), 
+										'class'=>'form-control custom-date',
+										'required' => false,
+										'type' => 'text',
+										'value' => (!empty($this->request->data['Laka']['tgl_laka'])) ? $this->request->data['Laka']['tgl_laka'] : date('d/m/Y')
+									));
+							?>
+				        </div>
+				        <!-- <div class="form-group" id="nopol-laka">
+				        	<?php 
+									// echo $this->Form->input('nopol',array(
+									// 	'label'=> __('Nopol Armada *'), 
+									// 	'class'=>'form-control',
+									// 	'required' => false,
+									// 	'type' => 'text',
+									// 	'readonly' => true
+									// ));
+							?>
+				        </div> -->
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('status_muatan',array(

@@ -2321,13 +2321,28 @@ $(function() {
         var val = self.val();
 
         $.ajax({
+            url: '/ajax/getInfoDriver/'+val+'/',
+            type: 'POST',
+            success: function(response, status) {
+                $('#laka-driver-name').val($(response).filter('#data-driver-name').html());
+                $('#laka-no-sim').val($(response).filter('#data-no-sim').html());
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    });
+
+    $('#laka-ttuj-change').change(function(){
+        var self = $(this);
+        var val = self.val();
+
+        $.ajax({
             url: '/ajax/getInfoLaka/'+val+'/',
             type: 'POST',
             success: function(response, status) {
-                $('#nopol-laka').html($(response).filter('#nopol-laka').html());
                 $('#city-laka').html($(response).filter('#destination-laka').html());
-                $('#no_sim').val($(response).filter('#no_sim').val());
-                $('#truck_id').val($(response).filter('#truck_id').val());
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');

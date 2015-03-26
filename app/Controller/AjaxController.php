@@ -139,9 +139,14 @@ class AjaxController extends AppController {
 	function getInfoLaka($ttuj_id = false){
 		$this->loadModel('Ttuj');
 		$this->loadModel('Driver');
+		$this->loadModel('Truck');
+
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
-				'Ttuj.id' => $ttuj_id
+				'Ttuj.id' => $ttuj_id,
+				'Ttuj.is_pool <>' => 1,
+                'Ttuj.is_draft' => 0,
+                'Ttuj.status' => 1,
 			)
 		), false);
 
@@ -154,6 +159,12 @@ class AjaxController extends AppController {
 			$data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_id);
 		}
 
+		$this->loadModel('City');
+        $fromCities = $this->City->fromCities();
+        $toCities = $this->City->toCities();
+
+        $this->set(compact('fromCities', 'toCities'));
+		
 		$this->set(compact('data_ttuj'));
 	}
 
@@ -806,6 +817,9 @@ class AjaxController extends AppController {
         		$options['conditions']['Ttuj.id'] = NULL;
         		$options['contain'][] = 'Ttuj';
         		break;
+        	case 'laka':
+        		$data_change = 'laka-driver-change';
+        		break;
         }
 
         if(!empty($this->request->data)){
@@ -1088,7 +1102,7 @@ class AjaxController extends AppController {
 
             case 'laka':
                 $conditions['Ttuj.is_pool <>'] = 1;
-				$data_change = 'laka-driver-change';
+				$data_change = 'laka-ttuj-change';
                 break;
             
             default:
@@ -1206,6 +1220,28 @@ class AjaxController extends AppController {
 			$this->MkCommon->setCustomFlash($msg['msg'], $msg['type']);
 			$this->redirect($this->referer());
 		}
+	}
+
+	function getInfoDriver($id = false){
+		$this->loadModel('Truck');
+		$driver = $this->Truck->getData('first', array(
+			'conditions' => array(
+				'Truck.status' => 1,
+				'Truck.id' => $id
+			),
+			'contain' => array(
+				'Driver'
+			)
+		));
+
+		$driver_name = '';
+		$no_sim = '';
+		if(!empty($driver)){
+			$driver_name = $driver['Driver']['name'];
+			$no_sim = $driver['Driver']['no_sim'];
+		}
+
+		$this->set(compact('driver_name', 'no_sim'));
 	}
 }
 ?>
