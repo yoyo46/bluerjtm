@@ -141,5 +141,18 @@ class City extends AppModel {
             'conditions' => $default_conditions,
         ));
     }
+
+    function getCity( $id, $field = false ){
+        $city = $this->getData('first', array(
+            'conditions' => array(
+                'City.id' => $id,
+            ),
+        ), false);
+
+        if( !empty($city['City'][$field]) ) {
+            $city = $city['City'][$field];
+        }
+        return $city;
+    }
 }
 ?>

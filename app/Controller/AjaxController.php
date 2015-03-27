@@ -140,6 +140,7 @@ class AjaxController extends AppController {
 		$this->loadModel('Ttuj');
 		$this->loadModel('Driver');
 		$this->loadModel('Truck');
+		$this->loadModel('City');
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
@@ -157,14 +158,16 @@ class AjaxController extends AppController {
 			}
 			
 			$data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_id);
+
+            if( !empty($data_ttuj['Ttuj']['from_city_id']) ) {
+                $data_ttuj['Laka']['from_city_name'] = $this->City->getCity( $data_ttuj['Ttuj']['from_city_id'], 'name' );
+            }
+
+            if( !empty($data_ttuj['Ttuj']['to_city_id']) ) {
+                $data_ttuj['Laka']['to_city_name'] = $this->City->getCity( $data_ttuj['Ttuj']['to_city_id'], 'name' );
+            }
 		}
 
-		$this->loadModel('City');
-        $fromCities = $this->City->fromCities();
-        $toCities = $this->City->toCities();
-
-        $this->set(compact('fromCities', 'toCities'));
-		
 		$this->set(compact('data_ttuj'));
 	}
 

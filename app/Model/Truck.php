@@ -250,7 +250,9 @@ class Truck extends AppModel {
             'conditions'=> array(
                 'Truck.status' => 1,
             ),
-            'order'=> array(),
+            'order' => array(
+                'Truck.nopol' => 'ASC',
+            ),
             'contain' => array(),
             'fields' => array(),
         );

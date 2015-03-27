@@ -160,26 +160,24 @@
 							<div class="row" id="city-laka">
 								<div class="col-sm-6">
 									<?php 
-											echo $this->Form->input('from_city_id',array(
+											echo $this->Form->input('from_city_name', array(
 												'label'=> false, 
 												'class'=>'form-control',
 												'required' => false,
-												'empty' => __('Dari Kota'),
-												// 'readonly' => true,
-												'options' => $fromCities
+												'readonly' => true,
 											));
+											echo $this->Form->hidden('from_city_id');
 									?>
 								</div>
 								<div class="col-sm-6">
 									<?php 
-											echo $this->Form->input('to_city_id',array(
+											echo $this->Form->input('to_city_name', array(
 												'label'=> false, 
 												'class'=>'form-control',
 												'required' => false,
-												'empty' => __('Ke Kota'),
-												// 'readonly' => true,
-												'options' => $toCities
+												'readonly' => true,
 											));
+											echo $this->Form->hidden('to_city_id');
 									?>
 								</div>
 							</div>

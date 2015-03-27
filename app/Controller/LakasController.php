@@ -256,7 +256,9 @@ class LakasController extends AppController {
             }else{
                 $validationErrors = $this->Laka->validationErrors;
                 
-                if( !empty($validationErrors['description_laka']) || !empty($validationErrors['complete_desc']) || !empty($validationErrors['completed_date']) ) {
+                if( !empty($validationErrors['truck_id']) || !empty($validationErrors['lokasi_laka']) || !empty($validationErrors['status_muatan']) || !empty($validationErrors['driver_condition']) || !empty($validationErrors['truck_condition']) ) {
+                    $step = 'step1';
+                } else if( !empty($validationErrors['description_laka']) || !empty($validationErrors['complete_desc']) || !empty($validationErrors['completed_date']) ) {
                     $step = 'step2';
                 }
 
@@ -272,6 +274,14 @@ class LakasController extends AppController {
             if( !empty($this->request->data['Laka']['completed']) ) {
                 $this->request->data['Laka']['completed_date'] = date('d/m/Y', strtotime($this->request->data['Laka']['completed_date']));
             }
+
+            if( !empty($this->request->data['Laka']['from_city_id']) ) {
+                $this->request->data['Laka']['from_city_name'] = $this->City->getCity( $this->request->data['Laka']['from_city_id'], 'name' );
+            }
+
+            if( !empty($this->request->data['Laka']['to_city_id']) ) {
+                $this->request->data['Laka']['to_city_name'] = $this->City->getCity( $this->request->data['Laka']['to_city_id'], 'name' );
+            }
         }
 
         $this->loadModel('Truck');
@@ -284,13 +294,22 @@ class LakasController extends AppController {
             ),
             'contain' => array(
                 'Driver'
-            )
+            ),
+            'order' => array(
+                'Truck.nopol' => 'ASC',
+            ),
         ));
 
         $result = array();
         if(!empty($trucks)){
             foreach ($trucks as $key => $value) {
-                $result[$value['Truck']['id']] = sprintf('%s (%s)', $value['Truck']['nopol'], $value['Driver']['name']);
+                $truckName = $value['Truck']['nopol'];
+
+                if( !empty($value['Driver']['name']) ) {
+                    $truckName = sprintf('%s (%s)', $truckName, $value['Driver']['name']);
+                }
+
+                $result[$value['Truck']['id']] = $truckName;
             }
         }
         $trucks = $result;
@@ -330,12 +349,6 @@ class LakasController extends AppController {
         $this->set('active_menu', 'lakas');
         $this->set('trucks', $trucks);
         $this->set('id', $id);
-
-        $fromCities = $this->City->fromCities();
-        $toCities = $this->City->toCities();
-
-        $this->set(compact('fromCities', 'toCities'));
-
         $this->render('laka_form');
     }
 
