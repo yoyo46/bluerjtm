@@ -39,6 +39,9 @@ class RjRevenueComponent extends Component {
 				if( !empty($refine['Ttuj']['to']['year']) ) {
 					$refine_conditions['Ttuj']['toYear'] = urlencode($refine['Ttuj']['to']['year']);
 				}
+				if( !empty($refine['Ttuj']['status']) ) {
+					$refine_conditions['Ttuj']['status'] = urlencode($refine['Ttuj']['status']);
+				}
 				if( !empty($refine['Revenue']['no_doc']) ) {
 					$refine_conditions['Revenue']['no_doc'] = urlencode($refine['Revenue']['no_doc']);
 				}

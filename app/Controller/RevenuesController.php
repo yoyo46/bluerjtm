@@ -5366,6 +5366,9 @@ class RevenuesController extends AppController {
                     'Ttuj.created' => 'DESC',
                     'Ttuj.id' => 'DESC',
                 ),
+                'group' => array(
+                    'Ttuj.id'
+                ),
             );
             $this->request->data['Ttuj']['date'] = sprintf('%s - %s', date('d/m/Y',strtotime($dateFrom)), date('d/m/Y',strtotime($dateTo)));
 
@@ -5392,6 +5395,40 @@ class RevenuesController extends AppController {
                         $options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $dateTo;
                     }
                     $this->request->data['Ttuj']['date'] = $dateStr;
+                }
+
+                if(!empty($refine['status'])){
+                    $status = urldecode($refine['status']);
+                    $this->request->data['Ttuj']['status'] = $status;
+                    $options['contain'][] = 'SuratJalan';
+
+                    $this->Ttuj->bindModel(array(
+                        'hasOne' => array(
+                            'SuratJalan' => array(
+                                'className' => 'SuratJalan',
+                                'foreignKey' => 'ttuj_id',
+                                'conditions' => array(
+                                    'SuratJalan.status' => 1,
+                                ),
+                            )
+                        )
+                    ));
+
+                    switch ($status) {
+                        case 'pending':
+                            $options['conditions']['Ttuj.is_sj_completed'] = 0;
+                            $options['conditions']['SuratJalan.id'] = NULL;
+                            break;
+
+                        case 'hal_receipt':
+                            $options['conditions']['Ttuj.is_sj_completed'] = 0;
+                            $options['conditions']['SuratJalan.id <>'] = NULL;
+                            break;
+
+                        case 'receipt':
+                            $options['conditions']['Ttuj.is_sj_completed'] = 1;
+                            break;
+                    }
                 }
             }
 

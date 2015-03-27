@@ -54,6 +54,21 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('status',array(
+                                'label'=> __('Status Surat Jalan'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Status'),
+                                'options' => array(
+                                    'pending' => __('Belum Diterima'),
+                                    'hal_receipt' => __('Sebagian Diterima'),
+                                    'receipt' => __('Diterima'),
+                                ),
+                            ));
+                    ?>
+                </div>
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
@@ -240,6 +255,16 @@
             <tbody>
                 <?php
                         if(!empty($ttujs)){
+                            $totalUnit = 0;
+                            $totalUnitSj = 0;
+                            $totalUnitInvoiced = 0;
+                            $totalUnitSjNotRecipt = 0;
+                            $totalUnitJSUnInvoiced = 0;
+                            $totalUnitUnInvoiced = 0;
+                            $avgLeadSj = 0;
+                            $avgLeadSjBilling = 0;
+                            $avgLeadSjInvoiced = 0;
+
                             foreach ($ttujs as $key => $ttuj) {
                                 $city_name = !empty($ttuj['city_name'])?$ttuj['city_name']:'-';
                                 $unit = !empty($ttuj['Qty'])?$ttuj['Qty']:0;
@@ -275,6 +300,15 @@
 
                                 $str = strtotime($dtInvoice) - (strtotime($ttuj['Ttuj']['ttuj_date']));
                                 $leadSjInvoiced = floor($str/3600/24);
+                                $totalUnit += $unit;
+                                $totalUnitSj += $unitSj;
+                                $totalUnitInvoiced += $unitInvoiced;
+                                $totalUnitSjNotRecipt += $unitSjNotRecipt;
+                                $totalUnitJSUnInvoiced += $unitJSUnInvoiced;
+                                $totalUnitUnInvoiced += $unitUnInvoiced;
+                                $avgLeadSj += $leadSj;
+                                $avgLeadSjBilling += $leadSjBilling;
+                                $avgLeadSjInvoiced += $leadSjInvoiced;
                 ?>
                 <tr>
                     <?php 
@@ -338,6 +372,72 @@
                 </tr>
                 <?php
                             }
+                ?>
+                <tr>
+                    <?php 
+                            echo $this->Html->tag('td', '', array(
+                                'align' => 'center',
+                                'style' => 'text-align: center;',
+                            ));
+                            echo $this->Html->tag('td', '', array(
+                                'align' => 'center',
+                                'style' => 'text-align: center;',
+                            ));
+                            echo $this->Html->tag('td', '', array(
+                                'align' => 'center',
+                                'style' => 'text-align: center;',
+                            ));
+                            echo $this->Html->tag('td', __('Total'), array(
+                                'align' => 'center',
+                                'style' => 'text-align: center;',
+                            ));
+                            echo $this->Html->tag('td', $totalUnit, array(
+                                'align' => 'center',
+                                'style' => 'text-align: center;',
+                            ));
+                            echo $this->Html->tag('td', $totalUnitSj, array(
+                                'align' => 'center',
+                                'style' => 'text-align: center;',
+                            ));
+                            echo $this->Html->tag('td', $totalUnitInvoiced, array(
+                                'align' => 'center',
+                                'style' => 'text-align: center;',
+                            ));
+                            echo $this->Html->tag('td', $totalUnitSjNotRecipt, array(
+                                'align' => 'center',
+                                'style' => 'text-align: center;',
+                            ));
+                            echo $this->Html->tag('td', $totalUnitJSUnInvoiced, array(
+                                'align' => 'center',
+                                'style' => 'text-align: center;',
+                            ));
+                            echo $this->Html->tag('td', $totalUnitUnInvoiced, array(
+                                'align' => 'center',
+                                'style' => 'text-align: center;',
+                            ));
+                            echo $this->Html->tag('td', '', array(
+                                'align' => 'center',
+                                'style' => 'text-align: center;',
+                            ));
+                            echo $this->Html->tag('td', __('AVG'), array(
+                                'align' => 'right',
+                                'style' => 'text-align: right;',
+                            ));
+                            echo $this->Html->tag('td', round($avgLeadSj/count($ttujs), 2), array(
+                                'align' => 'center',
+                                'style' => 'text-align: center;',
+                            ));
+                            echo $this->Html->tag('td', round($avgLeadSjBilling/count($ttujs), 2), array(
+                                'align' => 'center',
+                                'style' => 'text-align: center;',
+                            ));
+                            echo $this->Html->tag('td', round($avgLeadSjInvoiced/count($ttujs), 2), array(
+                                'align' => 'center',
+                                'style' => 'text-align: center;',
+                            ));
+                    ?>
+                </tr>
+                <?php
                         }
                 ?>
             </tbody>
