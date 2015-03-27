@@ -647,7 +647,7 @@ class AjaxController extends AppController {
 			if( $monthFrom != $monthTo ) {
 		        $msg = array(
 		        	'error' => 1,
-		        	'text' => sprintf(__('Revenue dengan periode bulan yang berbeda tidak bisa di bayarkan %s s/d %s. Mohon cek kembali revenue Anda.'), $this->request->data['Invoice']['period_from'], $this->request->data['Invoice']['period_to']),
+		        	'text' => sprintf(__('Revenue dengan periode bulan yang berbeda tidak bisa dibuatkan invoice( %s s/d %s ). Mohon cek kembali revenue Anda.'), $this->request->data['Invoice']['period_from'], $this->request->data['Invoice']['period_to']),
 		    	);
 			} else if( !empty($customer['CustomerPattern']) ) {
                 $this->request->data['Invoice']['pattern'] = $this->MkCommon->getNoInvoice( $customer );
