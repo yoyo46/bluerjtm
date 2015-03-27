@@ -3147,14 +3147,18 @@ class RevenuesController extends AppController {
                 'Ttuj.id', 'Ttuj.no_ttuj'
             ),
             'conditions' => array(
-                'Ttuj.status' => 1,
-                'Ttuj.is_draft' => 0,
                 'OR' => array(
-                    'Ttuj.is_revenue' => 0,
-                    'Ttuj.id' => $ttuj_id,
+                    array(
+                        'Ttuj.is_revenue' => 0,
+                        'Ttuj.is_draft' => 0,
+                        'Ttuj.status' => 1,
+                    ),
+                    array(
+                        'Ttuj.id' => $ttuj_id,
+                    ),
                 ),
             ),
-        ));
+        ), false);
         $this->set('ttujs', $ttujs);
 
         $this->loadModel('Customer');
