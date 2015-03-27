@@ -4525,6 +4525,38 @@ class RevenuesController extends AppController {
 
             $this->paginate = $options;
             $invoices = $this->paginate('Invoice');
+            $invoiceUnpaidOption = array(
+                'Invoice.is_canceled' => 0,
+                'Invoice.complete_paid' => 0,
+                'Invoice.paid' => 0,
+                'Invoice.status' => 1,
+            );
+            $invoicePaidOption = array(
+                'Invoice.is_canceled' => 0,
+                'Invoice.complete_paid' => 1,
+                'Invoice.status' => 1,
+            );
+            $invoiceHalfPaidOption = array(
+                'Invoice.is_canceled' => 0,
+                'Invoice.complete_paid' => 0,
+                'Invoice.paid' => 1,
+                'Invoice.status' => 1,
+            );
+            $invoiceVoidOption = array(
+                'Invoice.is_canceled' => 1,
+            );
+            $dataStatus['InvoiceUnpaid'] = $this->Invoice->getData('count', array(
+                'conditions' => $invoiceUnpaidOption,
+            ));
+            $dataStatus['InvoicePaid'] = $this->Invoice->getData('count', array(
+                'conditions' => $invoicePaidOption,
+            ));
+            $dataStatus['InvoiceHalfPaid'] = $this->Invoice->getData('count', array(
+                'conditions' => $invoiceHalfPaidOption,
+            ));
+            $dataStatus['InvoiceVoid'] = $this->Invoice->getData('count', array(
+                'conditions' => $invoiceVoidOption,
+            ), false);
 
             if( !empty($invoices) ) {
                 foreach ($invoices as $key => $invoice) {
@@ -4550,7 +4582,8 @@ class RevenuesController extends AppController {
             }
 
             $this->set(compact(
-                'invoices', 'data_action', 'start'
+                'invoices', 'data_action', 'start',
+                'dataStatus'
             ));
         // }
     }

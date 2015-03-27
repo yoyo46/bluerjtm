@@ -128,6 +128,8 @@
     <div class="table-responsive">
         <?php 
                 }
+
+                echo $this->Common->getInvoiceStatusContent( $dataStatus );
         ?>
         <table class="table table-bordered report" style="<?php echo $addStyle; ?>" border="<?php echo $border; ?>">
             <thead>

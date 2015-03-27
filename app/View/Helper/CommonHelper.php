@@ -609,6 +609,25 @@ class CommonHelper extends AppHelper {
         return $result;
     }
 
+    function getInvoiceStatusContent ( $data ) {
+        $statusContent = $this->Html->tag('span', sprintf(__('Unpaid : %s'), $data['InvoiceUnpaid']), array(
+            'class' => 'label label-default',
+        ));
+        $statusContent .= $this->Html->tag('span', sprintf(__('Hafl Paid : %s'), $data['InvoiceHalfPaid']), array(
+            'class' => 'label label-primary',
+        ));
+        $statusContent .= $this->Html->tag('span', sprintf(__('Paid : %s'), $data['InvoicePaid']), array(
+            'class' => 'label label-success',
+        ));
+        $statusContent .= $this->Html->tag('span', sprintf(__('Void : %s'), $data['InvoiceVoid']), array(
+            'class' => 'label label-danger',
+        ));
+
+        return $this->Html->tag('div', $statusContent, array(
+            'class' => 'status-content'
+        ));
+    }
+
     function fullNameCustomer ( $data, $modelName = 'Customer', $position = 'first' ) {
         $resultCode = '';
         $resultName = '';

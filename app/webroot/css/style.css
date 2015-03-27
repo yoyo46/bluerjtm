@@ -3939,3 +3939,15 @@ thead th.headcol {
 .action-print {
   margin-bottom: 15px;
 }
+
+.status-content {
+  margin-bottom: 15px;
+}
+
+.status-content > span {
+  margin-right: 10px;
+}
+
+.status-content > span:last-child {
+  margin-right: 0;
+}
