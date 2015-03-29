@@ -95,6 +95,46 @@
 				        </div>
 				        <div class="form-group">
 				        	<?php 
+				        			$urlBrowse = $this->Html->url(array(
+	                                    'controller'=> 'ajax', 
+	                                    'action' => 'getTtujs',
+	                                    'laka',
+	                                ));
+		        					$attrBrowse = array(
+	                                    'class' => 'ajaxModal visible-xs',
+	                                    'escape' => false,
+	                                    'title' => __('Data TTUJ'),
+	                                    'data-action' => 'browse-form',
+	                                    'data-change' => 'laka-ttuj-change',
+	                                    'url' => $urlBrowse,
+	                                );
+
+			                    	echo $this->Form->label('ttuj_id', __('No. TTUJ').$this->Html->link('<i class="fa fa-plus-square"></i>', 'javascript:', $attrBrowse));
+			                ?>
+				        	<div class="row">
+			                    <div class="col-sm-10" id="ttuj-form">
+						        	<?php 
+											echo $this->Form->input('ttuj_id',array(
+												'label'=> false, 
+												'class'=>'form-control',
+												'required' => false,
+												'empty' => __('Pilih No TTUJ'),
+												'options' => $ttujs,
+												'id' => 'laka-ttuj-change',
+												'readonly' => (empty($this->request->data['Laka']['truck_id'])) ? true : false
+											));
+									?>
+			                    </div>
+		        				<div class="col-sm-2 hidden-xs" >
+			                        <?php 
+		        							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+			                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', 'javascript:', $attrBrowse);
+			                        ?>
+			                    </div>
+			                </div>
+				        </div>
+				        <div class="form-group">
+				        	<?php 
 									echo $this->Form->input('change_driver_id',array(
 										'label'=> __('Nama Supir Pengganti'), 
 										'class'=>'form-control',
@@ -105,43 +145,6 @@
 										'id' => 'laka-driver-change-name'
 									));
 							?>
-				        </div>
-				        <div class="form-group">
-				        	<?php 
-		        					$attrBrowse = array(
-	                                    'class' => 'ajaxModal visible-xs',
-	                                    'escape' => false,
-	                                    'title' => __('Data TTUJ'),
-	                                    'data-action' => 'browse-form',
-	                                    'data-change' => 'laka-ttuj-change',
-	                                );
-		        					$urlBrowse = array(
-	                                    'controller'=> 'ajax', 
-	                                    'action' => 'getTtujs',
-	                                    'laka',
-	                                );
-			                    	echo $this->Form->label('ttuj_id', __('No. TTUJ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
-			                ?>
-				        	<div class="row">
-			                    <div class="col-sm-10">
-						        	<?php 
-											echo $this->Form->input('ttuj_id',array(
-												'label'=> false, 
-												'class'=>'form-control',
-												'required' => false,
-												'empty' => __('Pilih No TTUJ'),
-												'options' => $ttujs,
-												'id' => 'laka-ttuj-change'
-											));
-									?>
-			                    </div>
-		        				<div class="col-sm-2 hidden-xs">
-			                        <?php 
-		        							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-			                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
-			                        ?>
-			                    </div>
-			                </div>
 				        </div>
 				        <div class="form-group">
 				        	<?php 
@@ -684,9 +687,6 @@
 		</div>
 		<div class="box-footer text-center action">
 			<?php
-					echo $this->Form->hidden('truck_id',array(
-						'id' => 'truck_id',
-					));
 		    		echo $this->Html->link(__('Kembali'), '#step1', array(
 						'class'=> 'btn btn-default',
 						'id' => 'backLaka'

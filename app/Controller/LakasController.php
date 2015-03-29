@@ -117,7 +117,7 @@ class LakasController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
-            
+            // debug($data);die();
             if($id && $data_local){
                 $this->Laka->id = $id;
                 $msg = 'merubah';
@@ -137,31 +137,6 @@ class LakasController extends AppController {
 
                 if(!empty($driver['Driver']['name'])){
                     $data['Laka']['change_driver_name'] = $driver['Driver']['name'];
-                }
-            }
-
-            if(!empty($data['Laka']['from_city_id'])){
-                $from_city = $this->City->getData('first', array(
-                    'conditions' => array(
-                        'City.id' => $data['Laka']['from_city_id'],
-                        'City.status' => 1
-                    )
-                ));
-
-                if(!empty($from_city)){
-                    $data['Laka']['from_city_name'] = $from_city['City']['name'];
-                }
-            }
-            if(!empty($data['Laka']['to_city_id'])){
-                $to_city = $this->City->getData('first', array(
-                    'conditions' => array(
-                        'City.id' => $data['Laka']['to_city_id'],
-                        'City.status' => 1
-                    )
-                ));
-
-                if(!empty($to_city)){
-                    $data['Laka']['to_city_name'] = $to_city['City']['name'];
                 }
             }
             
@@ -320,16 +295,24 @@ class LakasController extends AppController {
         $material = $this->LakaMaterial->find('list');
         $insurance = $this->LakaInsurance->find('list');
 
-        $ttujs = $this->Ttuj->getData('list', array(
-            'conditions' => array(
-                'Ttuj.is_pool <>' => 1,
-                'Ttuj.is_draft' => 0,
-                'Ttuj.status' => 1,
-            ),
-            'fields' => array(
-                'Ttuj.id', 'Ttuj.no_ttuj'
-            )
-        ), false);
+        $ttujs = array();
+        if(!empty($this->request->data['Laka']['truck_id'])){
+            $ttujs = $this->Ttuj->getData('list', array(
+                'conditions' => array(
+                    'Ttuj.is_pool <>' => 1,
+                    'Ttuj.is_draft' => 0,
+                    'Ttuj.status' => 1,
+                    'Ttuj.truck_id' => $this->request->data['Laka']['truck_id']
+                ),
+                'fields' => array(
+                    'Ttuj.id', 'Ttuj.no_ttuj'
+                ),
+                'order' => array(
+                    'Ttuj.created' => 'DESC',
+                    'Ttuj.id' => 'DESC'
+                ),
+            ), false);
+        }
 
         $driverPengantis = $this->Ttuj->Truck->Driver->getData('list', array(
             'conditions' => array(

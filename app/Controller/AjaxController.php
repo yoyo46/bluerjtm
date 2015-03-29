@@ -1105,6 +1105,7 @@ class AjaxController extends AppController {
 
             case 'laka':
                 $conditions['Ttuj.is_pool <>'] = 1;
+                $conditions['Ttuj.truck_id'] = $ttuj_id;
 				$data_change = 'laka-ttuj-change';
                 break;
             
@@ -1227,6 +1228,8 @@ class AjaxController extends AppController {
 
 	function getInfoDriver($id = false){
 		$this->loadModel('Truck');
+		$this->loadModel('Ttuj');
+
 		$driver = $this->Truck->getData('first', array(
 			'conditions' => array(
 				'Truck.status' => 1,
@@ -1244,7 +1247,19 @@ class AjaxController extends AppController {
 			$no_sim = $driver['Driver']['no_sim'];
 		}
 
-		$this->set(compact('driver_name', 'no_sim'));
+		$ttujs = $this->Ttuj->getData('list', array(
+            'conditions' => array(
+                'Ttuj.is_pool <>' => 1,
+                'Ttuj.is_draft' => 0,
+                'Ttuj.status' => 1,
+                'Ttuj.truck_id' => $id
+            ),
+            'fields' => array(
+                'Ttuj.id', 'Ttuj.no_ttuj'
+            )
+        ), false);
+
+		$this->set(compact('driver_name', 'no_sim', 'ttujs'));
 	}
 }
 ?>

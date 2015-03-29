@@ -799,6 +799,31 @@
             <?php 
                     }
 
+                    // if( !empty($allowModule) && $this->Common->getModuleAllow( array(
+                    //     'view_cash_bank'
+                    // ), $allowModule ) ) {
+                        $activeSetting = false;
+                        $settingMenu = array(
+                            'cash_bank'
+                        );
+
+                        if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
+                            $activeSetting = 'active';
+                        }
+            ?>
+            <li class="<?php echo $activeSetting; ?>">
+                <?php
+                    echo $this->Html->link('<i class="fa fa-book"></i><span>Kas Bank</span><i class="fa fa-angle-left pull-right"></i>', array(
+                        'controller' => 'cashbanks',
+                        'action' => 'index'
+                    ), array(
+                        'escape' => false
+                    ));
+                ?>
+            </li>
+            <?php
+                    // }
+
                     if( !empty($allowModule) && $this->Common->getModuleAllow( array(
                         'view_branches', 'view_perlengkapan', 'view_coas',
                         'view_banks', 'view_cities', 'view_companies',

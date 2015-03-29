@@ -1586,6 +1586,10 @@ var ajaxModal = function ( obj, prettyPhoto ) {
             }
         }
 
+        if(vthis.attr('data-change') == 'laka-ttuj-change' && $('#laka-driver-change').val() != 0){
+            url += '/'+$('#laka-driver-change').val();
+        }
+
         if(goAjax == true){
             $.ajax({
                 url: url,
@@ -1945,8 +1949,32 @@ var check_all_checkbox = function(){
     }
 }
 
+var laka_ttuj_change = function(){
+    $('#laka-ttuj-change').change(function(){
+        var self = $(this);
+        var val = self.val();
+
+        $.ajax({
+            url: '/ajax/getInfoLaka/'+val+'/',
+            type: 'POST',
+            success: function(response, status) {
+                $('#city-laka').html($(response).filter('#destination-laka').html());
+
+                if($(response).filter('#data-supir-pengganti').html() != ''){
+                    $('#laka-driver-change-name').val($(response).filter('#data-supir-pengganti').html());
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    });
+}
+
 $(function() {
     leasing_action();
+    laka_ttuj_change();
 
 	$('.aset-handling').click(function(){
 		if($('.aset-handling .aset-handling-form').is(':checked')) {
@@ -2326,23 +2354,10 @@ $(function() {
             success: function(response, status) {
                 $('#laka-driver-name').val($(response).filter('#data-driver-name').html());
                 $('#laka-no-sim').val($(response).filter('#data-no-sim').html());
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
-                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                return false;
-            }
-        });
-    });
+                $('#ttuj-form').html($(response).filter('#data-ttuj-form').html());
+                $('#laka-ttuj-change').attr('readonly', false);
 
-    $('#laka-ttuj-change').change(function(){
-        var self = $(this);
-        var val = self.val();
-
-        $.ajax({
-            url: '/ajax/getInfoLaka/'+val+'/',
-            type: 'POST',
-            success: function(response, status) {
-                $('#city-laka').html($(response).filter('#destination-laka').html());
+                laka_ttuj_change();
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');

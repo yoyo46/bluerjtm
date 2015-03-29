@@ -28,3 +28,8 @@
 		?>
 	</div>
 </div>
+<div id="data-supir-pengganti"><?php
+		if(!empty($data_ttuj['Ttuj']['driver_pengganti_id'])){
+			echo $data_ttuj['Ttuj']['driver_pengganti_id'];
+		}
+	?></div>

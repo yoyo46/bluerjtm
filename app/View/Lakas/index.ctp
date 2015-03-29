@@ -34,7 +34,9 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Laka.driver_name', __('Supir'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Laka.no_doc', __('No LAKA'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Laka.nopol', __('Nopol 
+
+                            '), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Laka.lokasi_laka', __('Lokasi LAKA'), array(
