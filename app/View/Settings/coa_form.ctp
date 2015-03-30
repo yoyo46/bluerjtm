@@ -50,6 +50,7 @@
 					'class' => 'form-group'
 				));
 
+				
 				echo $this->Html->tag('div', $this->Form->input('name_en',array(
 					'label'=> __('Nama COA English'), 
 					'class'=>'form-control',
@@ -59,17 +60,7 @@
 					'class' => 'form-group'
 				));
 
-				if(!empty($coa['Coa']['level']) && $coa['Coa']['level'] == 3){
-					echo $this->Html->tag('div', $this->Form->input('balance', array(
-						'label'=> __('Balance'), 
-						'class'=>'form-control input_price',
-						'required' => false,
-						'placeholder' => __('Balance'),
-						'type' => 'text'
-					)), array(
-						'class' => 'form-group'
-					));
-
+				if( empty($parent_id) ){
 					echo $this->Html->tag('div', $this->Form->input('type', array(
 						'label'=> __('Tipe COA *'), 
 						'class'=>'form-control',
@@ -79,6 +70,18 @@
 							'debit' => __('Debit'),
 							'credit' => __('Credit'),
 						)
+					)), array(
+						'class' => 'form-group'
+					));
+				}
+
+				if(!empty($coa['Coa']['level']) && $coa['Coa']['level'] == 3){
+					echo $this->Html->tag('div', $this->Form->input('balance', array(
+						'label'=> __('Balance'), 
+						'class'=>'form-control input_price',
+						'required' => false,
+						'placeholder' => __('Balance'),
+						'type' => 'text'
 					)), array(
 						'class' => 'form-group'
 					));

@@ -728,7 +728,11 @@ class SettingsController extends AppController {
                 $data['Coa']['parent_id'] = $parent_id;
 
                 if( !empty($coa['Coa']['code']) ) {
-                    $data['Coa']['code'] = sprintf('%s-%s', $coa['Coa']['code'], $data['Coa']['code']);
+                    $data['Coa']['with_parent_code'] = sprintf('%s-%s', $coa['Coa']['code'], $data['Coa']['code']);
+                }
+
+                if(!empty($coa['Coa']['type'])){
+                    $data['Coa']['type'] = $coa['Coa']['type'];
                 }
 
                 if(!empty($coa['Coa']['level']) && empty($id) && empty($data_local)){
@@ -768,6 +772,7 @@ class SettingsController extends AppController {
 
         $this->set('active_menu', 'coas');
         $this->set('module_title', 'Data Master');
+        $this->set('parent_id', $parent_id);
         $this->render('coa_form');
     }
 
