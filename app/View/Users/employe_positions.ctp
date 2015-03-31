@@ -22,21 +22,18 @@
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>
-                <th>No.</th>
                 <th>Posisi Karyawan</th>
                 <th>Kode</th>
                 <th>Dibuat</th>
                 <th>Action</th>
             </tr>
             <?php
-                    $i = 1;
                     if(!empty($employe_positions)){
                         foreach ($employe_positions as $key => $value) {
                             $value_data = $value['EmployePosition'];
                             $id = $value_data['id'];
             ?>
             <tr>
-                <td><?php echo $i++;?></td>
                 <td><?php echo $value_data['name'];?></td>
                 <td><?php echo $value_data['code'];?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>

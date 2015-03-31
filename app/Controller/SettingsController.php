@@ -1900,6 +1900,11 @@ class SettingsController extends AppController {
                 $this->request->data['TipeMotor']['name'] = $name;
                 $options['conditions']['TipeMotor.name LIKE '] = '%'.$name.'%';
             }
+            if(!empty($refine['code'])){
+                $code = urldecode($refine['code']);
+                $this->request->data['TipeMotor']['code'] = $code;
+                $options['conditions']['TipeMotor.code_motor LIKE '] = '%'.$code.'%';
+            }
         }
 
         $this->paginate = $this->TipeMotor->getData('paginate', $options);
@@ -2050,7 +2055,7 @@ class SettingsController extends AppController {
         $this->paginate = $this->ColorMotor->getData('paginate', $options);
         $colors = $this->paginate('ColorMotor');
 
-        $this->set('active_menu', 'type_motor');
+        $this->set('active_menu', 'colors');
         $this->set('sub_module_title', 'Warna Motor');
         $this->set('colors', $colors);
     }
@@ -2116,7 +2121,7 @@ class SettingsController extends AppController {
             }
         }
 
-        $this->set('active_menu', 'type_motor');
+        $this->set('active_menu', 'colors');
         $this->render('color_motor_form');
     }
 

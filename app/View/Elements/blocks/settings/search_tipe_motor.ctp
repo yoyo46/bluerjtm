@@ -17,15 +17,31 @@
                     'inputDefaults' => array('div' => false),
                 ));
         ?>
-        <div class="form-group">
-            <?php 
-                echo $this->Form->input('name',array(
-                    'label'=> __('Nama Tipe Motor'),
-                    'class'=>'form-control',
-                    'required' => false,
-                    'placeholder' => __('Nama Tipe Motor')
-                ));
-            ?>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                        echo $this->Form->input('code',array(
+                            'label'=> __('Kode'),
+                            'class'=>'form-control',
+                            'required' => false,
+                            'placeholder' => __('Kode Tipe Motor')
+                        ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                        echo $this->Form->input('name',array(
+                            'label'=> __('Nama'),
+                            'class'=>'form-control',
+                            'required' => false,
+                            'placeholder' => __('Nama Tipe Motor')
+                        ));
+                    ?>
+                </div>
+            </div>
         </div>
         <div class="form-group action">
             <?php

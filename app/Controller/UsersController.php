@@ -80,6 +80,15 @@ class UsersController extends AppController {
 	}
 
 	function dashboard(){
+        $this->loadModel('Ttuj');
+
+        $ttujSJ = $this->Ttuj->getData('count', array(
+            'conditions' => array(
+                'Ttuj.is_sj_completed' => 0,
+                'Ttuj.status' => 1,
+            ),
+        ), false);
+
 		$this->set('sub_module_title', 'dashboard');
 	}
 
@@ -506,7 +515,7 @@ class UsersController extends AppController {
         $this->paginate = $this->EmployePosition->getData('paginate', $options);
         $employe_positions = $this->paginate('EmployePosition');
 
-        $this->set('active_menu', 'employe_position');
+        $this->set('active_menu', 'employes');
         $this->set('sub_module_title', 'Posisi Karyawan');
         $this->set('employe_positions', $employe_positions);
     }
@@ -572,7 +581,7 @@ class UsersController extends AppController {
             }
         }
 
-        $this->set('active_menu', 'employe_position');
+        $this->set('active_menu', 'employes');
         $this->render('employe_position_form');
     }
 
@@ -608,10 +617,17 @@ class UsersController extends AppController {
 
     function employes(){
         $this->loadModel('Employe');
+        $start = 1;
+        $limit = 20;
         $options = array(
-            'conditions' => array(
-                'Employe.status' => 1
-            )
+            'contain' => array(
+                'EmployePosition'
+            ),
+            'order' => array(
+                'Employe.status' => 'DESC',
+                'Employe.name' => 'ASC',
+            ),
+            'limit' => $limit,
         );
 
         if(!empty($this->params['named'])){
@@ -632,9 +648,13 @@ class UsersController extends AppController {
                 $this->request->data['Employe']['phone'] = $phone;
                 $options['conditions']['Employe.phone LIKE '] = '%'.$phone.'%';
             }
+
+            if(!empty($refine['page'])){
+                $start = (($refine['page']-1)*$limit)+1;
+            }
         }
 
-        $this->paginate = $this->Employe->getData('paginate', $options);
+        $this->paginate = $this->Employe->getData('paginate', $options, false);
         $employes = $this->paginate('Employe');
 
         $this->loadModel('EmployePosition');
@@ -644,10 +664,10 @@ class UsersController extends AppController {
             )
         ));
         $this->set('employe_positions', $employe_positions);
-
-        $this->set('active_menu', 'employe');
+        $this->set('active_menu', 'employes');
         $this->set('sub_module_title', 'Karyawan');
         $this->set('employes', $employes);
+        $this->set('start', $start);
     }
 
     function employe_add(){
@@ -717,8 +737,7 @@ class UsersController extends AppController {
             )
         ));
         $this->set('employe_positions', $employe_positions);
-
-        $this->set('active_menu', 'employe');
+        $this->set('active_menu', 'employes');
         $this->render('employe_form');
     }
 

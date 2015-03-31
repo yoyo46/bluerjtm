@@ -71,5 +71,23 @@ class SuratJalan extends AppModel {
         }
         return $result;
     }
+
+    function getSJ ( $data, $ttuj_id, $list = 'first' ) {
+        $sj = $this->getData($list, array(
+            'conditions' => array(
+                'SuratJalan.ttuj_id' => $ttuj_id,
+            ),
+        ));
+
+        if( !empty($sj) ) {
+            if( $list == 'first' ) {
+                $data = array_merge($data, $sj);
+            } else {
+                $data['SuratJalan'] = $sj;
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

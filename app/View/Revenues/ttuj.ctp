@@ -186,9 +186,7 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.to_city_name', __('Tujuan'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.getting_sj', __('Tgl Terima SJ'), array(
-                            'escape' => false
-                        )), array(
+                        echo $this->Html->tag('th', __('Tgl Terima SJ'), array(
                             'class' => 'text-center',
                         ));
                         echo $this->Html->tag('th', __('Status'));
@@ -263,8 +261,8 @@
                 <td><?php echo $value['Ttuj']['to_city_name'];?></td>
                 <td class="text-center">
                     <?php 
-                            if(!empty($value['Ttuj']['getting_sj'])){
-                                echo $this->Common->customDate($value['Ttuj']['date_sj'], 'd/m/Y');
+                            if(!empty($value['SuratJalan']['tgl_surat_jalan'])){
+                                echo $this->Common->customDate($value['SuratJalan']['tgl_surat_jalan'], 'd/m/Y');
                             } else {
                                 echo '-';
                             }

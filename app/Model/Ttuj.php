@@ -259,5 +259,21 @@ class Ttuj extends AppModel {
 
         return $sjCount;
     }
+
+    function getTruckStatus ( $data, $truck_id ) {
+        $truckAway = $this->getData('first', array(
+            'conditions' => array(
+                'Ttuj.status' => 1,
+                'Ttuj.is_pool' => 0,
+                'Ttuj.truck_id' => $truck_id,
+            ),
+        ));
+
+        if( !empty($truckAway) ) {
+            $data = array_merge($data, $truckAway);
+        }
+
+        return $data;
+    }
 }
 ?>

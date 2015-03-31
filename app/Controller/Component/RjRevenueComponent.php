@@ -42,6 +42,36 @@ class RjRevenueComponent extends Component {
 				if( !empty($refine['Ttuj']['status']) ) {
 					$refine_conditions['Ttuj']['status'] = urlencode($refine['Ttuj']['status']);
 				}
+				if( !empty($refine['Ttuj']['is_draft']) ) {
+					$refine_conditions['Ttuj']['is_draft'] = urlencode($refine['Ttuj']['is_draft']);
+				}
+				if( !empty($refine['Ttuj']['is_commit']) ) {
+					$refine_conditions['Ttuj']['is_commit'] = urlencode($refine['Ttuj']['is_commit']);
+				}
+				if( !empty($refine['Ttuj']['is_arrive']) ) {
+					$refine_conditions['Ttuj']['is_arrive'] = urlencode($refine['Ttuj']['is_arrive']);
+				}
+				if( !empty($refine['Ttuj']['is_bongkaran']) ) {
+					$refine_conditions['Ttuj']['is_bongkaran'] = urlencode($refine['Ttuj']['is_bongkaran']);
+				}
+				if( !empty($refine['Ttuj']['is_balik']) ) {
+					$refine_conditions['Ttuj']['is_balik'] = urlencode($refine['Ttuj']['is_balik']);
+				}
+				if( !empty($refine['Ttuj']['is_pool']) ) {
+					$refine_conditions['Ttuj']['is_pool'] = urlencode($refine['Ttuj']['is_pool']);
+				}
+				if( !empty($refine['Ttuj']['is_sj_not_completed']) ) {
+					$refine_conditions['Ttuj']['is_sj_not_completed'] = urlencode($refine['Ttuj']['is_sj_not_completed']);
+				}
+				if( !empty($refine['Ttuj']['is_sj_completed']) ) {
+					$refine_conditions['Ttuj']['is_sj_completed'] = urlencode($refine['Ttuj']['is_sj_completed']);
+				}
+				if( !empty($refine['Ttuj']['is_revenue']) ) {
+					$refine_conditions['Ttuj']['is_revenue'] = urlencode($refine['Ttuj']['is_revenue']);
+				}
+				if( !empty($refine['Ttuj']['is_not_revenue']) ) {
+					$refine_conditions['Ttuj']['is_not_revenue'] = urlencode($refine['Ttuj']['is_not_revenue']);
+				}
 				if( !empty($refine['Revenue']['no_doc']) ) {
 					$refine_conditions['Revenue']['no_doc'] = urlencode($refine['Revenue']['no_doc']);
 				}

@@ -6,58 +6,73 @@
         <div class="col-lg-3 col-xs-6">
             <!-- small box -->
             <div class="small-box bg-aqua">
-                <div class="inner">
-                    <h3>
-                        150
-                    </h3>
-                    <p>
-                        New Orders
-                    </p>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-bag"></i>
-                </div>
-                <a href="#" class="small-box-footer">
-                    More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
+                <?php 
+                        $iconContent = $this->Html->tag('h3', sprintf('%s TTUJ', $ttujSJ));
+                        $iconContent .= $this->Html->tag('p', __('SJ belum kembali'));
+
+                        echo $this->Html->tag('div', $iconContent, array(
+                            'class' => 'inner'
+                        ));
+                        echo $this->Html->tag('div', '<i class="fa fa-file-o"></i>', array(
+                            'class' => 'icon'
+                        ));
+                        echo $this->Html->link(__('More info').' <i class="fa fa-arrow-circle-right"></i>', array(
+                            'controller' => 'revenues',
+                            'action' => 'ttuj',
+                            'is_sj_not_completed' => 1,
+                        ), array(
+                            'class' => 'small-box-footer',
+                            'escape' => false,
+                        ));
+                ?>
             </div>
         </div><!-- ./col -->
         <div class="col-lg-3 col-xs-6">
             <!-- small box -->
             <div class="small-box bg-green">
-                <div class="inner">
-                    <h3>
-                        53<sup style="font-size: 20px">%</sup>
-                    </h3>
-                    <p>
-                        Bounce Rate
-                    </p>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-stats-bars"></i>
-                </div>
-                <a href="#" class="small-box-footer">
-                    More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
+                <?php 
+                        $iconContent = $this->Html->tag('h3', sprintf('%s', $invoiceUnPaid));
+                        $iconContent .= $this->Html->tag('p', __('Invoice belum dibayar'));
+
+                        echo $this->Html->tag('div', $iconContent, array(
+                            'class' => 'inner'
+                        ));
+                        echo $this->Html->tag('div', '<i class="fa fa-tags"></i>', array(
+                            'class' => 'icon'
+                        ));
+                        echo $this->Html->link(__('More info').' <i class="fa fa-arrow-circle-right"></i>', array(
+                            'controller' => 'revenues',
+                            'action' => 'invoices',
+                            'status' => 'unpaid',
+                        ), array(
+                            'class' => 'small-box-footer',
+                            'escape' => false,
+                        ));
+                ?>
             </div>
         </div><!-- ./col -->
         <div class="col-lg-3 col-xs-6">
             <!-- small box -->
             <div class="small-box bg-yellow">
-                <div class="inner">
-                    <h3>
-                        44
-                    </h3>
-                    <p>
-                        User Registrations
-                    </p>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-person-add"></i>
-                </div>
-                <a href="#" class="small-box-footer">
-                    More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
+                <?php 
+                        $iconContent = $this->Html->tag('h3', sprintf('%s', $truckAvailable));
+                        $iconContent .= $this->Html->tag('p', __('Truck Available'));
+
+                        echo $this->Html->tag('div', $iconContent, array(
+                            'class' => 'inner'
+                        ));
+                        echo $this->Html->tag('div', '<i class="fa fa-truck"></i>', array(
+                            'class' => 'icon'
+                        ));
+                        echo $this->Html->link(__('More info').' <i class="fa fa-arrow-circle-right"></i>', array(
+                            'controller' => 'trucks',
+                            'action' => 'index',
+                            'status' => 'available',
+                        ), array(
+                            'class' => 'small-box-footer',
+                            'escape' => false,
+                        ));
+                ?>
             </div>
         </div><!-- ./col -->
         <div class="col-lg-3 col-xs-6">
@@ -85,8 +100,6 @@
     <div class="row">
         <!-- Left col -->
         <section class="col-lg-7 connectedSortable">                            
-
-
             <!-- Custom tabs (Charts with tabs)-->
             <div class="nav-tabs-custom">
                 <!-- Tabs within a box -->

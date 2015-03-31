@@ -39,15 +39,15 @@
                     ));
             ?>
         </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
         	<?php
-	        		echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah Bulan'), 'javascript:', array(
-						'class' => 'add-custom-field btn btn-success btn-xs',
-						'action_type' => 'target-unit',
-						'escape' => false,
-					));
+	    //     		echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah Bulan'), 'javascript:', array(
+					// 	'class' => 'add-custom-field btn btn-success btn-xs',
+					// 	'action_type' => 'target-unit',
+					// 	'escape' => false,
+					// ));
         	?>
-        </div>
+        </div> -->
         <div id="box-field-input">
             <div class="row">
             	<?php 

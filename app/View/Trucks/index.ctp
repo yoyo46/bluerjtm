@@ -89,10 +89,12 @@
                     <?php 
                             $status = '<span class="label label-success">AVAILABLE</span>';
 
-                            if( !empty($value['Laka']) ){
+                            if( !empty($value['Laka']['id']) ){
                                 $status = '<span class="label label-danger">LAKA</span>';
                             } else if( !empty($value['Truck']['sold']) ){
-                                $status = '<span class="label label-warning">TERJUAL</span>';
+                                $status = '<span class="label label-warning">SOLD</span>';
+                            } else if( !empty($value['Ttuj']['id']) ){
+                                $status = '<span class="label label-primary">Away</span>';
                             }
 
                             echo $status;
@@ -136,7 +138,7 @@
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '9'
+                            'colspan' => '10'
                         )));
                     }
             ?>

@@ -32,9 +32,13 @@ class TrucksController extends AppController {
 	public function index() {
         if( in_array('view_trucks', $this->allowModule) ) {
             $this->loadModel('Laka');
+            $this->loadModel('Ttuj');
     		$this->set('active_menu', 'trucks');
     		$this->set('sub_module_title', __('Data Truk'));
             $conditions = array();
+            $contain = array(
+                'Driver'
+            );
             
             if(!empty($this->params['named'])){
                 $refine = $this->params['named'];
@@ -49,13 +53,64 @@ class TrucksController extends AppController {
                     $conditions['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$data.'%';
                     $this->request->data['Driver']['name'] = $data;
                 }
+                if(!empty($refine['status'])){
+                    $data = urldecode($refine['status']);
+
+                    if( in_array($data, array( 'laka', 'away', 'available' )) ) {
+                        $this->Truck->bindModel(array(
+                            'hasOne' => array(
+                                'Laka' => array(
+                                    'className' => 'Laka',
+                                    'foreignKey' => 'truck_id',
+                                    'conditions' => array(
+                                        'Laka.status' => 1,
+                                        'Laka.completed' => 0,
+                                    ),
+                                ),
+                                'Ttuj' => array(
+                                    'className' => 'Ttuj',
+                                    'foreignKey' => 'truck_id',
+                                    'conditions' => array(
+                                        'Ttuj.status' => 1,
+                                        'Ttuj.is_pool' => 0,
+                                    ),
+                                ),
+                            )
+                        ));
+                        $contain[] = 'Laka';
+                        $contain[] = 'Ttuj';
+                    }
+
+                    switch ($data) {
+                        case 'sold':
+                            $conditions['Truck.sold'] = 1;
+                            break;
+
+                        case 'laka':
+                            $contain[] = 'Laka';
+                            $conditions['Truck.sold'] = 0;
+                            $conditions['Laka.id <>'] = NULL;
+                            break;
+
+                        case 'away':
+                            $conditions['Truck.sold'] = 0;
+                            $conditions['Laka.id'] = NULL;
+                            $conditions['Ttuj.id <>'] = NULL;
+                            break;
+                        
+                        case 'available':
+                            $conditions['Truck.sold'] = 0;
+                            $conditions['Laka.id'] = NULL;
+                            $conditions['Ttuj.id'] = NULL;
+                            break;
+                    }
+                    $this->request->data['Truck']['status'] = $data;
+                }
             }
 
             $this->paginate = $this->Truck->getData('paginate', array(
                 'conditions' => $conditions,
-                'contain' => array(
-                    'Driver'
-                ),
+                'contain' => $contain,
             ));
             $trucks = $this->paginate('Truck');
 
@@ -67,6 +122,7 @@ class TrucksController extends AppController {
                     $truck = $this->Truck->TruckBrand->getMerge($truck, $data['truck_brand_id']);
                     $truck = $this->Truck->Company->getMerge($truck, $data['company_id']);
                     $truck = $this->Laka->getMerge($data['id'], $truck);
+                    $truck = $this->Ttuj->getTruckStatus($truck, $data['id']);
 
                     $trucks[$key] = $truck;
                 }

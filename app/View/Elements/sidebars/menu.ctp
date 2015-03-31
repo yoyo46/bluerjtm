@@ -20,7 +20,7 @@
 
                     $activeMenu = false;
                     $dataMenu = array(
-                        'list_user', 'groups'
+                        'list_user', 'groups', 'employes'
                     );
 
                     if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -68,7 +68,7 @@
                                 ), array(
                                     'escape' => false
                                 )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'employe_position' )?'active':'',
+                                    'class' => ( !empty($active_menu) && $active_menu == 'employes' )?'active':'',
                                 ));
                             }
                     ?>
@@ -160,17 +160,6 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
-                            if( in_array('view_type_motors', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Tipe Motor', array(
-                                    'controller' => 'settings',
-                                    'action' => 'type_motors',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'type_motor' )?'active':'',
-                                ));
-                            }
-
                             if( in_array('view_colors', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Warna Motor', array(
                                     'controller' => 'settings',
@@ -190,6 +179,17 @@
                                     'escape' => false
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'group_motors' )?'active':'',
+                                ));
+                            }
+                            
+                            if( in_array('view_type_motors', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Tipe Motor', array(
+                                    'controller' => 'settings',
+                                    'action' => 'type_motors',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'type_motor' )?'active':'',
                                 ));
                             }
 
@@ -835,7 +835,7 @@
                             'cities', 'vendors', 'companies',
                             'perlengkapan', 'coas', 'branches', 
                             'classifications', 'banks', 'calendar_colors',
-                            'calendar_icons', 'settings'
+                            'calendar_icons', 'settings', 'jenis_sim'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {

@@ -83,6 +83,138 @@
                             ));
                     ?>
                 </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <?php 
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_draft', array(
+                                    'type' => 'checkbox',
+                                    'label'=> false,
+                                    'required' => false,
+                                    'value' => 1,
+                                    'div' => false,
+                                )).__('Draft')), array(
+                                    'class' => 'checkbox',
+                                ));
+                        ?>
+                    </div>
+                    <div class="col-sm-4">
+                        <?php 
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_commit', array(
+                                    'type' => 'checkbox',
+                                    'label'=> false,
+                                    'required' => false,
+                                    'value' => 1,
+                                    'div' => false,
+                                )).__('Commit')), array(
+                                    'class' => 'checkbox',
+                                ));
+                        ?>
+                    </div>
+                    <div class="col-sm-4">
+                        <?php 
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_arrive', array(
+                                    'type' => 'checkbox',
+                                    'label'=> false,
+                                    'required' => false,
+                                    'value' => 1,
+                                    'div' => false,
+                                )).__('Tiba ditujuan')), array(
+                                    'class' => 'checkbox',
+                                ));
+                        ?>
+                    </div>
+                    <div class="col-sm-4">
+                        <?php 
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_bongkaran', array(
+                                    'type' => 'checkbox',
+                                    'label'=> false,
+                                    'required' => false,
+                                    'value' => 1,
+                                    'div' => false,
+                                )).__('Bongkaran')), array(
+                                    'class' => 'checkbox',
+                                ));
+                        ?>
+                    </div>
+                    <div class="col-sm-4">
+                        <?php 
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_balik', array(
+                                    'type' => 'checkbox',
+                                    'label'=> false,
+                                    'required' => false,
+                                    'value' => 1,
+                                    'div' => false,
+                                )).__('Balik dari tujuan')), array(
+                                    'class' => 'checkbox',
+                                ));
+                        ?>
+                    </div>
+                    <div class="col-sm-4">
+                        <?php 
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_pool', array(
+                                    'type' => 'checkbox',
+                                    'label'=> false,
+                                    'required' => false,
+                                    'value' => 1,
+                                    'div' => false,
+                                )).__('Sampai pool')), array(
+                                    'class' => 'checkbox',
+                                ));
+                        ?>
+                    </div>
+                    <div class="col-sm-4">
+                        <?php 
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_sj_not_completed', array(
+                                    'type' => 'checkbox',
+                                    'label'=> false,
+                                    'required' => false,
+                                    'value' => 1,
+                                    'div' => false,
+                                )).__('SJ belum kembali')), array(
+                                    'class' => 'checkbox',
+                                ));
+                        ?>
+                    </div>
+                    <div class="col-sm-4">
+                        <?php 
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_sj_completed', array(
+                                    'type' => 'checkbox',
+                                    'label'=> false,
+                                    'required' => false,
+                                    'value' => 1,
+                                    'div' => false,
+                                )).__('SJ sudah kembali')), array(
+                                    'class' => 'checkbox',
+                                ));
+                        ?>
+                    </div>
+                    <div class="col-sm-4">
+                        <?php 
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_revenue', array(
+                                    'type' => 'checkbox',
+                                    'label'=> false,
+                                    'required' => false,
+                                    'value' => 1,
+                                    'div' => false,
+                                )).__('SJ dibuatkan revenue')), array(
+                                    'class' => 'checkbox',
+                                ));
+                        ?>
+                    </div>
+                    <div class="col-sm-6">
+                        <?php 
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_not_revenue', array(
+                                    'type' => 'checkbox',
+                                    'label'=> false,
+                                    'required' => false,
+                                    'value' => 1,
+                                    'div' => false,
+                                )).__('SJ belum dibuatkan revenue')), array(
+                                    'class' => 'checkbox',
+                                ));
+                        ?>
+                    </div>
+                </div>
             </div>
         </div>
         <?php 

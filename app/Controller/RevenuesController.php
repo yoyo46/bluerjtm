@@ -38,7 +38,7 @@ class RevenuesController extends AppController {
     public function ttuj() {
         if( in_array('view_ttuj', $this->allowModule) ) {
             $this->loadModel('Ttuj');
-            // $this->loadModel('Revenue');
+            $this->loadModel('SuratJalan');
             $this->set('active_menu', 'ttuj');
             $this->set('sub_module_title', __('TTUJ'));
             $this->set('label_tgl', __('Tanggal Berangkat'));
@@ -62,21 +62,65 @@ class RevenuesController extends AppController {
                     $this->request->data['Ttuj']['customer'] = $customer;
                     $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
                 }
-
-                if(!empty($refine['date'])){
-                    $dateStr = urldecode($refine['date']);
-                    $date = explode('-', $dateStr);
-
-                    if( !empty($date) ) {
-                        $date[0] = urldecode($date[0]);
-                        $date[1] = urldecode($date[1]);
-                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                        $dateFrom = $this->MkCommon->getDate($date[0]);
-                        $dateTo = $this->MkCommon->getDate($date[1]);
-                        $conditions['DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') >='] = $dateFrom;
-                        $conditions['DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') <='] = $dateTo;
-                    }
-                    $this->request->data['Ttuj']['date'] = $dateStr;
+                if(!empty($refine['is_draft'])){
+                    $is_draft = urldecode($refine['is_draft']);
+                    $conditions['Ttuj.is_draft'] = 1;
+                    $this->request->data['Ttuj']['is_draft'] = $is_draft;
+                }
+                if(!empty($refine['is_commit'])){
+                    $is_commit = urldecode($refine['is_commit']);
+                    $conditions['Ttuj.is_draft'] = 0;
+                    $conditions['Ttuj.is_arrive'] = 0;
+                    $conditions['Ttuj.is_bongkaran'] = 0;
+                    $conditions['Ttuj.is_balik'] = 0;
+                    $conditions['Ttuj.is_pool'] = 0;
+                    $this->request->data['Ttuj']['is_commit'] = $is_commit;
+                }
+                if(!empty($refine['is_arrive'])){
+                    $is_arrive = urldecode($refine['is_arrive']);
+                    $conditions['Ttuj.is_arrive'] = 1;
+                    $conditions['Ttuj.is_bongkaran'] = 0;
+                    $conditions['Ttuj.is_balik'] = 0;
+                    $conditions['Ttuj.is_pool'] = 0;
+                    $this->request->data['Ttuj']['is_arrive'] = $is_arrive;
+                }
+                if(!empty($refine['is_bongkaran'])){
+                    $is_bongkaran = urldecode($refine['is_bongkaran']);
+                    $conditions['Ttuj.is_bongkaran'] = 1;
+                    $conditions['Ttuj.is_balik'] = 0;
+                    $conditions['Ttuj.is_pool'] = 0;
+                    $this->request->data['Ttuj']['is_bongkaran'] = $is_bongkaran;
+                }
+                if(!empty($refine['is_balik'])){
+                    $is_balik = urldecode($refine['is_balik']);
+                    $conditions['Ttuj.is_balik'] = 1;
+                    $conditions['Ttuj.is_pool'] = 0;
+                    $this->request->data['Ttuj']['is_balik'] = $is_balik;
+                }
+                if(!empty($refine['is_pool'])){
+                    $is_pool = urldecode($refine['is_pool']);
+                    $conditions['Ttuj.is_pool'] = 1;
+                    $this->request->data['Ttuj']['is_pool'] = $is_pool;
+                }
+                if(!empty($refine['is_sj_not_completed'])){
+                    $is_sj_not_completed = urldecode($refine['is_sj_not_completed']);
+                    $conditions['Ttuj.is_sj_completed'] = 0;
+                    $this->request->data['Ttuj']['is_sj_not_completed'] = $is_sj_not_completed;
+                }
+                if(!empty($refine['is_sj_completed'])){
+                    $is_sj_completed = urldecode($refine['is_sj_completed']);
+                    $conditions['Ttuj.is_sj_completed'] = 1;
+                    $this->request->data['Ttuj']['is_sj_completed'] = $is_sj_completed;
+                }
+                if(!empty($refine['is_revenue'])){
+                    $is_revenue = urldecode($refine['is_revenue']);
+                    $conditions['Ttuj.is_revenue'] = 1;
+                    $this->request->data['Ttuj']['is_revenue'] = $is_revenue;
+                }
+                if(!empty($refine['is_not_revenue'])){
+                    $is_not_revenue = urldecode($refine['is_not_revenue']);
+                    $conditions['Ttuj.is_revenue'] = 0;
+                    $this->request->data['Ttuj']['is_not_revenue'] = $is_not_revenue;
                 }
             }
 
@@ -85,11 +129,11 @@ class RevenuesController extends AppController {
             ));
             $ttujs = $this->paginate('Ttuj');
 
-            // if( !empty($ttujs) ) {
-            //     foreach ($ttujs as $key => $ttuj) {
-            //         $ttujs[$key] = $this->Revenue->getPaid( $ttuj, $ttuj['Ttuj']['id'] );
-            //     }
-            // }
+            if( !empty($ttujs) ) {
+                foreach ($ttujs as $key => $ttuj) {
+                    $ttujs[$key] = $this->SuratJalan->getSJ( $ttuj, $ttuj['Ttuj']['id'] );
+                }
+            }
 
             $this->set('ttujs', $ttujs);
         } else {
@@ -819,12 +863,7 @@ class RevenuesController extends AppController {
 
         $trucks = $this->Truck->getData('list', array(
             'conditions' => array(
-                // 'Truck.driver_id <>' => 0,
-                'Truck.status' => 1,
-                'OR' => array(
-                    'Ttuj.id' => NULL,
-                    'Ttuj.is_pool' => 1,
-                ),
+                'Ttuj.id' => NULL,
             ),
             'fields' => array(
                 'Truck.id', 'Truck.nopol'
@@ -3456,9 +3495,9 @@ class RevenuesController extends AppController {
                             break;
                         
                         default:
-                            $conditions['Invoice.complete_paid '] = 0;
-                            $conditions['Invoice.paid '] = 0;
-                            $conditions['Invoice.is_canceled '] = 0;
+                            $conditions['Invoice.complete_paid'] = 0;
+                            $conditions['Invoice.paid'] = 0;
+                            $conditions['Invoice.is_canceled'] = 0;
                             break;
                     }
                 }
@@ -4502,7 +4541,7 @@ class RevenuesController extends AppController {
                 }
 
                 if(!empty($refine['page'])){
-                    $start = (($refine['page']-1)*5)+1;
+                    $start = (($refine['page']-1)*$limit)+1;
                 }
             }
 
@@ -5524,8 +5563,14 @@ class RevenuesController extends AppController {
                     if( !empty($invoice['InvoiceDetail']) ) {
                         $revenue_id = Set::extract('/InvoiceDetail/revenue_id', $invoice['InvoiceDetail']);
                         $invoice = $this->Revenue->getMerge($invoice, $revenue_id, 'all');
-                        $invoice = $this->Revenue->RevenueDetail->getSumUnit($invoice, $revenue_id, 'revenue');
-                        $invoice = $this->Revenue->RevenueDetail->getSumUnit($invoice, $revenue_id, 'revenue_price');
+
+                        // if( !empty($invoice['Revenue']) ) {
+                        //     foreach ($invoice['Revenue'] as $key => $revenue) {
+                        //         $revenue = $this->Revenue->RevenueDetail->getSumUnit($revenue, $revenue['Revenue']['id'], 'revenue');
+                        //         $revenue = $this->Revenue->RevenueDetail->getSumUnit($revenue, $revenue['Revenue']['id'], 'revenue_price');
+                        //         $invoice['Revenue'][$key] = $revenue;
+                        //     }
+                        // }
                     }
                     break;
 

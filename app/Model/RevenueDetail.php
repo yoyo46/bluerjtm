@@ -260,64 +260,62 @@ class RevenueDetail extends AppModel {
     }
 
     function getSumUnit($data, $id, $data_action = 'invoice'){
-        if( empty($data['RevenueDetail']) ){
-            $options = array(
-                'fields' => array(
-                    'SUM(RevenueDetail.qty_unit) AS qty_unit',
-                ),
-            );
+        $options = array(
+            'fields' => array(
+                'SUM(RevenueDetail.qty_unit) AS qty_unit',
+            ),
+        );
 
-            switch ($data_action) {
-                case 'revenue':
-                    $options['conditions'] = array(
+        switch ($data_action) {
+            case 'revenue':
+                $options['conditions'] = array(
+                    'RevenueDetail.revenue_id' => $id,
+                );
+                $options['group'] = array(
+                    'RevenueDetail.revenue_id',
+                );
+
+                $data_merge = $this->find('first', $options);
+
+                if(!empty($data_merge[0])){
+                    $data['qty_unit'] = $data_merge[0]['qty_unit'];
+                }
+                break;
+
+            case 'revenue_price':
+                $options = array(
+                    'conditions' => array(
                         'RevenueDetail.revenue_id' => $id,
-                    );
-                    $options['group'] = array(
+                    ),
+                    'group' => array(
                         'RevenueDetail.revenue_id',
-                    );
+                    ),
+                    'fields' => array(
+                        'SUM(RevenueDetail.price_unit) AS price_unit',
+                    ),
+                );
 
-                    $data_merge = $this->find('first', $options);
+                $data_merge = $this->find('first', $options);
 
-                    if(!empty($data_merge[0])){
-                        $data['qty_unit'] = $data_merge[0]['qty_unit'];
-                    }
-                    break;
+                if(!empty($data_merge[0])){
+                    $data['price_unit'] = $data_merge[0]['price_unit'];
+                }
+                break;
+            
+            default:
+                $options['conditions'] = array(
+                    'RevenueDetail.invoice_id' => $id,
+                );
+                $options['group'] = array(
+                    'RevenueDetail.invoice_id',
+                );
 
-                case 'revenue_price':
-                    $options = array(
-                        'conditions' => array(
-                            'RevenueDetail.revenue_id' => $id,
-                        ),
-                        'group' => array(
-                            'RevenueDetail.revenue_id',
-                        ),
-                        'fields' => array(
-                            'SUM(RevenueDetail.price_unit) AS price_unit',
-                        ),
-                    );
+                $data_merge = $this->find('first', $options);
 
-                    $data_merge = $this->find('first', $options);
-
-                    if(!empty($data_merge[0])){
-                        $data['price_unit'] = $data_merge[0]['price_unit'];
-                    }
-                    break;
-                
-                default:
-                    $options['conditions'] = array(
-                        'RevenueDetail.invoice_id' => $id,
-                    );
-                    $options['group'] = array(
-                        'RevenueDetail.invoice_id',
-                    );
-
-                    $data_merge = $this->find('first', $options);
-
-                    if(!empty($data_merge[0])){
-                        $data['RevenueDetail']['qty_unit'] = $data_merge[0]['qty_unit'];
-                    }
-                    break;
-            }
+                if(!empty($data_merge[0])){
+                    $data['RevenueDetail']['qty_unit'] = $data_merge[0]['qty_unit'];
+                }
+                break;
         }
 
         return $data;

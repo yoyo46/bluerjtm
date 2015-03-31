@@ -46,18 +46,18 @@
 					));
 			?>
         </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
 	        <div class="checkbox aset-handling">
                 <label>
                     <?php 
-							echo $this->Form->checkbox('is_branch',array(
-								'label'=> false, 
-								'required' => false,
-							)).__('Cabang ?');
+							// echo $this->Form->checkbox('is_branch',array(
+							// 	'label'=> false, 
+							// 	'required' => false,
+							// )).__('Cabang ?');
 					?>
                 </label>
             </div>
-        </div>
+        </div> -->
         <!-- <div class="form-group">
 	        <div class="checkbox aset-handling">
                 <label>

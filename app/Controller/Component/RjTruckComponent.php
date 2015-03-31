@@ -54,6 +54,9 @@ class RjTruckComponent extends Component {
 				if( !empty($refine['Truck']['status_expired']) ) {
 					$refine_conditions['Truck']['license_stat'] = $refine['Truck']['status_expired'];
 				}
+				if( !empty($refine['Truck']['status']) ) {
+					$refine_conditions['Truck']['status'] = $refine['Truck']['status'];
+				}
 			}
 				
 			return $refine_conditions;

@@ -56,6 +56,22 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('status',array(
+                                'label'=> __('Status'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Status'),
+                                'options' => array(
+                                    'available' => __('Available'),
+                                    'away' => __('Away'),
+                                    'laka' => __('LAKA'),
+                                    'sold' => __('Sold'),
+                                ),
+                            ));
+                    ?>
+                </div>
             </div>
         </div>
         <?php 

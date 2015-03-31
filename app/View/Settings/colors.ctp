@@ -22,20 +22,17 @@
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>
-                <th>No.</th>
                 <th>Warna Motor</th>
                 <th>Dibuat</th>
                 <th>Action</th>
             </tr>
             <?php
-                    $i = 1;
                     if(!empty($colors)){
                         foreach ($colors as $key => $value) {
                             $value_data = $value['ColorMotor'];
                             $id = $value_data['id'];
             ?>
             <tr>
-                <td><?php echo $i++;?></td>
                 <td><?php echo $value_data['name'];?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td class="action">
