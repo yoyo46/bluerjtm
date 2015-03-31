@@ -2964,6 +2964,17 @@ class TrucksController extends AppController {
                 $this->layout = 'pdf';
             }else if($data_action == 'excel'){
                 $this->layout = 'ajax';
+            } else {
+                $layout_js = array(
+                    'freeze',
+                );
+                $layout_css = array(
+                    'freeze',
+                );
+
+                $this->set(compact(
+                    'layout_css', 'layout_js'
+                ));
             }
         } else {
             $this->redirect($this->referer());

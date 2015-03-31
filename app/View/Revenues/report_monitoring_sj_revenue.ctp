@@ -6,7 +6,6 @@
             $border = 0;
             $addClass = 'easyui-datagrid';
             $headerRowspan = false;
-            $addStyle = '';
 
             if( $data_action == 'excel' ) {
                 header('Content-type: application/ms-excel');

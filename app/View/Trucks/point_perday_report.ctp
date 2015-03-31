@@ -3,14 +3,22 @@
             $this->Html->addCrumb($sub_module_title);
             $tdStyle = '';
             $border = 0;
+            $headerRowspan = false;
+            $addClass = 'easyui-datagrid';
 
             if( $data_action == 'excel' ) {
                 header('Content-type: application/ms-excel');
                 header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
                 $tdStyle = 'text-align: center;';
+                $addClass = '';
+                $headerRowspan = 2;
             } else {
                 echo $this->element('blocks/trucks/search_report_point_perday');
+            }
+
+            if( !empty($customers) ) {
+                $addStyle = 'width: 100%;height: 550px;';
             }
 ?>
 <section class="content invoice">
@@ -42,31 +50,44 @@
     <?php 
             }
     ?>
-        <table class="table table-bordered report" border="<?php echo $border; ?>">
-            <thead>
+        <table id="tt" class="table table-bordered <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true" border="<?php echo $border; ?>">
+            <thead frozen="true">
                 <tr>
                     <?php 
                             echo $this->Html->tag('th', $this->Common->getSorting('Customer.customer_name', __('ALOKASI')), array(
-                                'class' => 'text-middle text-center',
-                                'style' => $tdStyle,
+                                'style' => 'text-align: center;width: 120px;',
+                                'data-options' => 'field:\'customer_name\',width:120',
+                                'rowspan' => $headerRowspan,
                             ));
+
+                            if( $data_action != 'excel' ) {
+                    ?>
+                </tr>
+            </thead>
+            <thead>
+                <tr>
+                    <?php 
+                            }
 
                             for ($i=1; $i <= $lastDay; $i++) {
                                 echo $this->Html->tag('th', $i, array(
-                                    'class' => 'text-center',
-                                    'style' => 'width: 100px;',
+                                    'style' => 'text-align: center;width:100px',
+                                    'data-options' => 'field:\'pencapaian_'.$i.'\',width:100,sortable:true',
+                                    'align' => 'center',
                                     'title' => date('l', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth)))),
                                 ));
                             }
 
                             echo $this->Html->tag('th', __('Total'), array(
-                                'class' => 'text-middle text-center',
-                                'style' => $tdStyle,
+                                'style' => 'text-align: center;width:100px',
+                                'data-options' => 'field:\'pencapaian_'.$i.'\',width:100,sortable:true',
+                                'align' => 'center',
                             ));
 
                             echo $this->Html->tag('th', __('Target'), array(
-                                'class' => 'text-middle text-center',
-                                'style' => $tdStyle,
+                                'style' => 'text-align: center;width:100px',
+                                'data-options' => 'field:\'pencapaian_'.$i.'\',width:100,sortable:true',
+                                'align' => 'center',
                             ));
                     ?>
                 </tr>

@@ -27,39 +27,39 @@
                 $this->Html->addCrumb($sub_module_title);
                 echo $this->element('blocks/trucks/search_report_truck');
 
-                echo $this->Form->create('Truck', array(
-                    'url'=> $this->Html->url( array(
-                        'controller' => 'trucks',
-                        'action' => 'search',
-                        'reports'
-                    )), 
-                    'class' => 'form-inline text-right hidden-print',
-                    'inputDefaults' => array('div' => false),
-                ));
+                // echo $this->Form->create('Truck', array(
+                //     'url'=> $this->Html->url( array(
+                //         'controller' => 'trucks',
+                //         'action' => 'search',
+                //         'reports'
+                //     )), 
+                //     'class' => 'form-inline text-right hidden-print',
+                //     'inputDefaults' => array('div' => false),
+                // ));
 
-                $find_sort = array(
-                    '' => __('Urutkan Berdasarkan'),
-                    '1' => __('No. Pol A - Z'),
-                    '2' => __('No. Pol Z - A'),
-                    '3' => __('Nama Supir Z - A'),
-                    '4' => __('Nama Supir Z - A'),
-                );
+                // $find_sort = array(
+                //     '' => __('Urutkan Berdasarkan'),
+                //     '1' => __('No. Pol A - Z'),
+                //     '2' => __('No. Pol Z - A'),
+                //     '3' => __('Nama Supir Z - A'),
+                //     '4' => __('Nama Supir Z - A'),
+                // );
 
-                echo $this->Html->tag('div', $this->Form->input('Truck.sortby', array(
-                    'label'=> false,
-                    'options'=> $find_sort,
-                    'div' => false,
-                    'data-placeholder' => 'Order By',
-                    'autocomplete'=> false,
-                    'empty'=> false,
-                    'error' => false,
-                    'onChange' => 'submit()',
-                    'class' => 'form-control order-by-list'
-                )), array(
-                    'class' => 'form-group'
-                ));
+                // echo $this->Html->tag('div', $this->Form->input('Truck.sortby', array(
+                //     'label'=> false,
+                //     'options'=> $find_sort,
+                //     'div' => false,
+                //     'data-placeholder' => 'Order By',
+                //     'autocomplete'=> false,
+                //     'empty'=> false,
+                //     'error' => false,
+                //     'onChange' => 'submit()',
+                //     'class' => 'form-control order-by-list'
+                // )), array(
+                //     'class' => 'form-group'
+                // ));
 
-                echo $this->Form->end();
+                // echo $this->Form->end();
 ?>
 <section class="content invoice">
     <h2 class="page-header">

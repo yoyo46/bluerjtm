@@ -1,8 +1,11 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
-        $addStyle = 'min-width: 1500px;';
+        $addStyle = 'width: 100%;height: 550px;';
         $tdStyle = '';
         $border = 0;
+        $headerRowspan = false;
+        $addClass = 'easyui-datagrid';
+
         echo $this->element('blocks/trucks/search_report_monitoring_truck');
 ?>
 <section class="content invoice">
@@ -43,21 +46,28 @@
                 ));
         ?>
     </div>
-    <div class="table-responsive margin frame-frezee scroll-monitoring">
-        <table class="table table-bordered report monitoring" style="<?php echo $addStyle; ?>" border="<?php echo $border; ?>">
-            <thead>
+    <div class="table-responsive">
+        <table id="tt" class="table table-bordered <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true" border="<?php echo $border; ?>">
+            <thead frozen="true">
                 <tr>
                     <?php 
                             echo $this->Html->tag('th', __('Truk'), array(
-                                'class' => 'text-center headcol',
-                                'style' => 'width: 100px;',
+                                'style' => 'text-align: center;width: 100px;',
+                                'data-options' => 'field:\'nopol\',width:100,sortable:true',
                             ));
+                    ?>
+                </tr>
+            </thead>
+            <thead>
+                <tr>
+                    <?php
 
                             for ($i=1; $i <= $lastDay; $i++) {
                                 echo $this->Html->tag('th', $i, array(
-                                    'class' => 'text-center',
-                                    'style' => 'width: 100px;',
+                                    'style' => 'text-align: center;width: 100px;',
+                                    'data-options' => 'field:\'pancapaian_'.$i.'\',width:100,sortable:true',
                                     'title' => date('l', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth)))),
+                                    'align' => 'center',
                                 ));
                             }
                     ?>
@@ -70,7 +80,7 @@
                                 $nopol = $truck['Truck']['nopol'];
                                 echo '<tr>';
                                 echo $this->Html->tag('td', $nopol, array(
-                                    'class' => 'text-center headcol',
+                                    'class' => 'text-center',
                                     'style' => 'width: 100px;',
                                 ));
                                 $bg = '';

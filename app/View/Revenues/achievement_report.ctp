@@ -4,16 +4,20 @@
             $addStyle = '';
             $tdStyle = '';
             $border = 0;
+            $headerRowspan = false;
+            $addClass = 'easyui-datagrid';
 
             if( $data_action == 'excel' ) {
                 header('Content-type: application/ms-excel');
                 header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
                 $tdStyle = 'text-align: center;';
+                $addClass = '';
+                $headerRowspan = 2;
             }
 
             if( !empty($cities) ) {
-                $addStyle = 'min-width: 1000px;';
+                $addStyle = 'width: 100%;height: 550px;';
             }
 
             if( $data_action != 'excel' ) {
@@ -147,15 +151,24 @@
         <?php 
                 }
         ?>
-        <table class="table table-bordered report" style="<?php echo $addStyle; ?>" border="<?php echo $border; ?>">
-            <thead>
+        <table id="tt" class="table table-bordered <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true" border="<?php echo $border; ?>">
+            <thead frozen="true">
                 <tr>
                     <?php 
                             echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('ALOKASI')), array(
-                                'style' => 'width: 100px;'.$tdStyle,
-                                'class' => 'text-center text-middle',
-                                'rowspan' => 2,
+                                'style' => 'text-align: center;width: 150px;',
+                                'data-options' => 'field:\'customer_code\',width:150,sortable:true',
+                                'rowspan' => $headerRowspan,
                             ));
+
+                            if( $data_action != 'excel' ) {
+                    ?>
+                </tr>
+            </thead>
+            <thead>
+                <tr>
+            <?php 
+                    }
 
                             if( !empty($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {
@@ -164,10 +177,11 @@
                                     if( $fromYear != $toYear ) {
                                         $formatDate = 'F Y';
                                     }
+
                                     echo $this->Html->tag('th', date($formatDate, mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear)), array(
+                                        'style' => 'text-align: center;',
                                         'colspan' => 2,
-                                        'class' => 'text-center',
-                                        'style' => $tdStyle,
+                                        'align' => 'center',
                                     ));
                                 }
                             }
@@ -178,12 +192,14 @@
                             if( !empty($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {
                                     echo $this->Html->tag('th', __('TARGET UNIT'), array(
-                                        'class' => 'text-center',
-                                        'style' => 'width: 120px;'.$tdStyle,
+                                        'style' => 'text-align: center;',
+                                        'data-options' => 'field:\'target_unit_'.$i.'\',width:100',
+                                        'align' => 'center',
                                     ));
                                     echo $this->Html->tag('th', __('PENCAPAIAN'), array(
-                                        'class' => 'text-center',
-                                        'style' => 'width: 120px;'.$tdStyle,
+                                        'style' => 'text-align: center;',
+                                        'data-options' => 'field:\'pencapaian_'.$i.'\',width:100',
+                                        'align' => 'center',
                                     ));
                                 }
                             }

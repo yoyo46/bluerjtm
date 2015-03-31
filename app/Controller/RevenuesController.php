@@ -1716,7 +1716,7 @@ class RevenuesController extends AppController {
         }
     }
 
-    public function ritase_report( $data_type = 'depo', $data_action = false ) {
+    public function ritase_report( $data_type = 'depo' ) {
         if( $data_type == 'retail' ) {
             $module_name = 'view_ritase_retail_report';
         } else {
@@ -1735,6 +1735,7 @@ class RevenuesController extends AppController {
                 'Truck.status'=> 1,
                 'TruckCustomer.primary'=> 1,
             );
+            $data_action = false;
 
             if(!empty($this->params['named'])){
                 $refine = $this->params['named'];
@@ -1763,6 +1764,10 @@ class RevenuesController extends AppController {
                     }
                     $this->request->data['Ttuj']['date'] = $dateStr;
                 }
+
+                if(!empty($refine['data_action'])){
+                    $data_action = $refine['data_action'];
+                }
             }
 
             $conditionCustomers = array(
@@ -1790,7 +1795,7 @@ class RevenuesController extends AppController {
                 ),
                 'contain' => array(
                     'Truck',
-                    'CustomerNoType'
+                    'CustomerNoType',
                 ),
             ));
 
@@ -1908,6 +1913,17 @@ class RevenuesController extends AppController {
                 $this->layout = 'pdf';
             }else if($data_action == 'excel'){
                 $this->layout = 'ajax';
+            } else {
+                $layout_js = array(
+                    'freeze',
+                );
+                $layout_css = array(
+                    'freeze',
+                );
+
+                $this->set(compact(
+                    'layout_css', 'layout_js'
+                ));
             }
         } else {
             $this->redirect($this->referer());
@@ -2055,6 +2071,17 @@ class RevenuesController extends AppController {
                 $this->layout = 'pdf';
             }else if($data_action == 'excel'){
                 $this->layout = 'ajax';
+            } else {
+                $layout_js = array(
+                    'freeze',
+                );
+                $layout_css = array(
+                    'freeze',
+                );
+
+                $this->set(compact(
+                    'layout_css', 'layout_js'
+                ));
             }
         } else {
             $this->redirect($this->referer());
@@ -2534,6 +2561,17 @@ class RevenuesController extends AppController {
                 $this->layout = 'pdf';
             }else if($data_action == 'excel'){
                 $this->layout = 'ajax';
+            } else {
+                $layout_js = array(
+                    'freeze',
+                );
+                $layout_css = array(
+                    'freeze',
+                );
+
+                $this->set(compact(
+                    'layout_css', 'layout_js'
+                ));
             }
         } else {
             $this->redirect($this->referer());

@@ -4,16 +4,23 @@
             $addStyle = '';
             $tdStyle = '';
             $border = 0;
+            $headerRowspan = false;
+            $headerRowspanSub = false;
+            $addClass = '';
 
             if( $data_action == 'excel' ) {
                 header('Content-type: application/ms-excel');
                 header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
                 $tdStyle = 'text-align: center;';
+                $addClass = '';
+                $headerRowspan = 2;
             }
 
             if( !empty($cities) ) {
-                $addStyle = 'min-width: 1000px;';
+                $headerRowspanSub = 2;
+                $addStyle = 'width: 100%;height: 550px;';
+                $addClass = 'easyui-datagrid';
             }
 
             if( $data_action != 'excel' ) {
@@ -152,13 +159,13 @@
                     }
                     
                     $urlExcel = $this->passedArgs;
-                    $urlExcel[] = 'excel';
+                    $urlExcel['data_action'] = 'excel';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
                         'escape' => false,
                         'class' => 'btn btn-success pull-right'
                     ));
                     $urlPdf = $this->passedArgs;
-                    $urlPdf[] = 'pdf';
+                    $urlPdf['data_action'] = 'pdf';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
                         'escape' => false,
                         'class' => 'btn btn-primary pull-right'
@@ -170,79 +177,101 @@
         <?php 
                 }
         ?>
-        <table class="table table-bordered report" style="<?php echo $addStyle; ?>" border="<?php echo $border; ?>">
-            <thead>
+        <table id="tt" class="table table-bordered <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true" border="<?php echo $border; ?>">
+            <thead frozen="true">
                 <tr>
                     <?php 
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.nopol', __('NO. POL')), array(
-                                'class' => 'text-center text-middle',
-                                'rowspan' => 2,
-                                'style' => $tdStyle,
+                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
+                                'data-options' => 'field:\'nopol\',width:120',
+                                'rowspan' => $headerRowspan,
                             ));
                             echo $this->Html->tag('th', __('Supir'), array(
-                                'class' => 'text-center text-middle',
-                                'rowspan' => 2,
-                                'style' => $tdStyle,
+                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
+                                'data-options' => 'field:\'driver\',width:120',
+                                'rowspan' => $headerRowspan,
                             ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.capacity', __('Kapasitas')), array(
-                                'style' => 'width: 100px;'.$tdStyle,
-                                'class' => 'text-center text-middle',
-                                'rowspan' => 2,
+                                'style' => 'text-align: center;width: 100px;vertical-align: middle;',
+                                'data-options' => 'field:\'capacity\',width:100',
+                                'rowspan' => $headerRowspan,
+                                'align' => 'center',
                             ));
                             echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.name', __('Alokasi')), array(
-                                'style' => 'width: 100px;'.$tdStyle,
-                                'class' => 'text-center text-middle',
-                                'rowspan' => 2,
+                                'style' => 'text-align: center;width: 150px;vertical-align: middle;',
+                                'data-options' => 'field:\'alokasi\',width:100',
+                                'rowspan' => $headerRowspan,
                             ));
+                    ?>
+                    <?php 
+                            if( $data_action != 'excel' && !empty($cities) ) {
+                    ?>
+                </tr>
+            </thead>
+            <thead>
+                <tr>
+                    <?php 
+                            }
 
                             if( !empty($cities) ) {
                                 echo $this->Html->tag('th', __('Tujuan'), array(
+                                    'data-options' => 'field:\'tujuan\'',
+                                    'style' => 'text-align: center;vertical-align: middle;',
+                                    'class' => 'col-alokasi',
                                     'colspan' => count($cities),
-                                    'class' => 'text-center col-alokasi',
-                                    'style' => $tdStyle,
+                                    'align' => 'center',
                                 ));
                             }
 
                             echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.target_rit', __('Target RIT')), array(
-                                'style' => 'width: 120px;'.$tdStyle,
-                                'class' => 'text-center text-middle',
-                                'rowspan' => 2,
+                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
+                                'data-options' => 'field:\'date_receipt\',width:120',
+                                'rowspan' => $headerRowspanSub,
+                                'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('Total RIT'), array(
-                                'style' => 'width: 80px;'.$tdStyle,
-                                'class' => 'text-center text-middle',
-                                'rowspan' => 2,
+                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
+                                'data-options' => 'field:\'date_receipt\',width:80',
+                                'rowspan' => $headerRowspanSub,
+                                'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('Pencapaian<br>(%)'), array(
-                                'style' => 'width: 120px;'.$tdStyle,
-                                'class' => 'text-center text-middle',
-                                'rowspan' => 2,
+                                'data-options' => 'field:\'pencapaian\',width:120',
+                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
+                                'rowspan' => $headerRowspanSub,
+                                'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('OVER LT'), array(
-                                'style' => 'width: 80px;'.$tdStyle,
-                                'class' => 'text-center text-middle',
-                                'rowspan' => 2,
+                                'data-options' => 'field:\'over_lt\',width:80',
+                                'style' => 'text-align: center;width: 80px;vertical-align: middle;',
+                                'rowspan' => $headerRowspanSub,
+                                'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('Q LT<br>(%)'), array(
-                                'style' => 'width: 80px;'.$tdStyle,
-                                'class' => 'text-center text-middle',
-                                'rowspan' => 2,
+                                'data-options' => 'field:\'q_lt\',width:80',
+                                'style' => 'text-align: center;width: 80px;vertical-align: middle;',
+                                'rowspan' => $headerRowspanSub,
+                                'align' => 'center',
                             ));
                     ?>
                 </tr>
-                <tr>
-                    <?php 
-                            if( !empty($cities) ) {
-                                foreach ($cities as $key => $value) {
-                                    $slug = $this->Common->toSlug($value);
-                                    echo $this->Html->tag('th', $value, array(
-                                        'class' => 'text-center '.sprintf('%s-%s', $slug, $key),
-                                        'style' => 'width: 120px;'.$tdStyle,
-                                    ));
-                                }
+                <?php 
+                        if( !empty($cities) ) {
+                            echo '<tr>';
+
+                            foreach ($cities as $key => $value) {
+                                $slug = $this->Common->toSlug($value);
+                                echo $this->Html->tag('th', $value, array(
+                                    'data-options' => 'field:\''.$slug.'\',width:120',
+                                    'class' => sprintf('%s-%s', $slug, $key),
+                                    'style' => 'width: 120px;text-align:center:vertical-align:middle;',
+                                    'align' => 'center',
+                                ));
                             }
-                    ?>
-                </tr>
+
+                            echo '</tr>';
+                        }
+                ?>
             </thead>
             <tbody>
                 <?php
@@ -273,20 +302,12 @@
                                 'action' => 'detail_ritase',
                                 $id
                             ));
-                            echo $this->Html->tag('td', $this->Html->tag('div', $link_truck, array(
-                                'style' => 'width: 80px;',
-                            )));
-                            echo $this->Html->tag('td', $this->Html->tag('div', !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:false, array(
-                                'style' => 'width: 120px;',
-                            )));
-                            echo $this->Html->tag('td', $this->Html->tag('div', $value['Truck']['capacity'], array(
-                                'style' => 'width: 80px;'.$tdStyle,
-                            )), array(
-                                'class' => 'text-center',
+                            echo $this->Html->tag('td', $link_truck);
+                            echo $this->Html->tag('td', !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:false);
+                            echo $this->Html->tag('td', $value['Truck']['capacity'], array(
+                                'style' => 'text-align:center;',
                             ));
-                            echo $this->Html->tag('td', $this->Html->tag('div', !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-', array(
-                                'style' => 'width: 150px;',
-                            )), array(
+                            echo $this->Html->tag('td', !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-', array(
                                 'class' => 'text-center',
                             ));
 
