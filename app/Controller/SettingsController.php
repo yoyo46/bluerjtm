@@ -728,7 +728,11 @@ class SettingsController extends AppController {
                 $data['Coa']['parent_id'] = $parent_id;
 
                 if( !empty($coa['Coa']['code']) ) {
-                    $data['Coa']['with_parent_code'] = sprintf('%s-%s', $coa['Coa']['code'], $data['Coa']['code']);
+                    $coa_parent = $coa['Coa']['code'];
+                    if(!empty($coa['Coa']['with_parent_code'])){
+                        $coa_parent = $coa['Coa']['with_parent_code'];
+                    }
+                    $data['Coa']['with_parent_code'] = sprintf('%s-%s', $coa_parent, $data['Coa']['code']);
                 }
 
                 if(!empty($coa['Coa']['type'])){
