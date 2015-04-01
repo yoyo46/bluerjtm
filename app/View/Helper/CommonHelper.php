@@ -373,14 +373,20 @@ class CommonHelper extends AppHelper {
 		return strip_tags($string);
 	}
 
-	function generateCoaTree ( $coas, $allowModule, $level = false ) {
+	function generateCoaTree ( $coas, $allowModule, $level = false, $parent = false ) {
 		$dataTree = '<ul>';
         if( !empty($coas) ) {
             foreach ($coas as $key => $coa) {
 				$dataTree .= '<li class="parent_li">';
                 $coa_title = '';
                 if(!empty($coa['Coa']['code'])){
-                    $coa_title = $this->Html->tag('label', $coa['Coa']['code']);
+                    $codeCoa = $coa['Coa']['code'];
+
+                    if( !empty($parent['Coa']['code']) ) {
+                        $codeCoa = sprintf('%s-%s', $parent['Coa']['code'], $codeCoa);
+                    }
+
+                    $coa_title = $this->Html->tag('label', $codeCoa);
                 }
                 $coa_title .= $coa['Coa']['name'];
 				$dataTree .= $this->Html->tag('span', $coa_title, array(
@@ -426,9 +432,10 @@ class CommonHelper extends AppHelper {
                 }
 
                 if( !empty($coa['children']) ) {
+                    $parent['Coa'] = $coa['Coa'];
                 	$child = $coa['children'];
                     $level = $coa['Coa']['level'];
-                	$dataTree .= $this->generateCoaTree($child, $allowModule, $level);
+                	$dataTree .= $this->generateCoaTree($child, $allowModule, $level, $parent);
                 }
 
 				$dataTree .= '</li>';

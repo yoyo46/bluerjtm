@@ -29,15 +29,25 @@
 			<?php 
 					echo $this->Form->label('code', __('Kode COA'));
 			?>
-			<div class="input-group">
-				<?php
-						echo $this->Form->input('code',array(
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'placeholder' => __('Kode COA')
-						));
-				?>
+			<div class="row">
+				<div class="col-sm-4">
+					<div class="input-group">
+						<?php 
+								if( !empty($coa['Coa']['code']) ) {
+									echo $this->Html->tag('div', $coa['Coa']['code'], array(
+										'class' => 'input-group-addon',
+									));
+								}
+
+								echo $this->Form->input('code',array(
+									'label'=> false, 
+									'class'=>'form-control',
+									'required' => false,
+									'placeholder' => __('Kode COA')
+								));
+						?>
+		            </div>
+				</div>
 			</div>
 		</div>
 		<?php

@@ -768,9 +768,6 @@ class SettingsController extends AppController {
         }else{
             if($id && $data_local){
                 $this->request->data = $data_local;
-                if(!empty($coa)){
-                    $this->request->data['Coa']['code'] = str_replace(sprintf('%s-', $coa['Coa']['code']), '', $this->request->data['Coa']['code']);
-                }
             }
         }
 
