@@ -4215,8 +4215,18 @@ class RevenuesController extends AppController {
             }else{
                 $validate_price_pay = false;
             }
-
+            $temptotal = $total;
             $data['InvoicePayment']['total_payment'] = $total;
+
+            if(!empty($data['InvoicePayment']['pph'])){
+                $temptotal -= $total*($data['InvoicePayment']['pph']/100);
+            }
+            if(!empty($data['InvoicePayment']['ppn'])){
+                $temptotal += $total*($data['InvoicePayment']['ppn']/100);
+            }
+            
+            $total = $temptotal;
+            $data['InvoicePayment']['grand_total_payment'] = $total;
             $this->Invoice->InvoicePaymentDetail->InvoicePayment->set($data);
 
             if($this->Invoice->InvoicePaymentDetail->InvoicePayment->validates() && $validate_price_pay){

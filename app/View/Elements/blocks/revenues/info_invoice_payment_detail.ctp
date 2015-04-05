@@ -87,7 +87,7 @@
 <tr class="additional-input-invoice" id="ppn-grand-total-invoice">
     <td align="right" colspan="5" class="relative">
         <?php 
-            echo $this->Form->input('CashBank.ppn', array(
+            echo $this->Form->input('InvoicePayment.ppn', array(
                 'type' => 'text',
                 'label' => __('PPN'),
                 'class' => 'input_number invoice-ppn',
@@ -98,7 +98,7 @@
     </td>
     <td align="right" id="ppn-total-invoice">
         <?php 
-                $ppn = !empty($this->request->data['CashBank']['ppn'])?$this->request->data['CashBank']['ppn']:0;
+                $ppn = !empty($this->request->data['InvoicePayment']['ppn'])?$this->request->data['InvoicePayment']['ppn']:0;
                 $ppn = $this->Common->calcFloat($total, $ppn);
                 echo $this->Number->currency($ppn, Configure::read('__Site.config_currency_code'), array('places' => 0));
         ?>
@@ -108,7 +108,7 @@
 <tr class="additional-input-invoice" id="pph-grand-total-invoice">
     <td align="right" colspan="5" class="relative">
         <?php 
-                echo $this->Form->input('CashBank.pph', array(
+                echo $this->Form->input('InvoicePayment.pph', array(
                     'type' => 'text',
                     'label' => __('PPH'),
                     'class' => 'input_number invoice-pph',
@@ -119,7 +119,7 @@
     </td>
     <td align="right" id="pph-total-invoice">
         <?php 
-                $pph = !empty($this->request->data['CashBank']['pph'])?$this->request->data['CashBank']['pph']:0;
+                $pph = !empty($this->request->data['InvoicePayment']['pph'])?$this->request->data['InvoicePayment']['pph']:0;
                 $pph = $this->Common->calcFloat($total, $pph);
                 echo $this->Number->currency($pph, Configure::read('__Site.config_currency_code'), array('places' => 0));
         ?>
