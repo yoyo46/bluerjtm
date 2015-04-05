@@ -1261,5 +1261,134 @@ class AjaxController extends AppController {
 
 		$this->set(compact('driver_name', 'no_sim', 'ttujs'));
 	}
+
+	function getUserCashBank(){
+		$model = 'Customer';
+		if(!empty($this->request->data['UserCashBank']['model'])){
+			$model = $this->request->data['UserCashBank']['model'];
+		}
+		
+		$data_action = 'browse-form';
+		$title = __('User Kas Bank');
+		$data_change = 'receiver-id';
+
+		$default_conditions = array(
+			$model.'.status' => 1
+		);
+
+		if(!empty($this->request->data['UserCashBank']['name'])){
+			$default_conditions[$model.'.name LIKE'] = '%'.$this->request->data['UserCashBank']['name'].'%';
+		}
+
+		$list_result = array();
+		switch ($model) {
+			case 'Vendor':
+				$this->loadModel($model);
+
+				$list_result = $this->Vendor->getData('all', array(
+					'conditions' => $default_conditions
+				));
+				break;
+			case 'Employe':
+				$this->loadModel($model);
+
+				$list_result = $this->Employe->getData('all', array(
+					'conditions' => $default_conditions
+				));
+
+				break;
+			default:
+				$this->loadModel($model);
+
+				$list_result = $this->Customer->getData('all', array(
+					'conditions' => $default_conditions
+				));
+
+				break;
+		}
+		$this->request->data['UserCashBank']['model'] = $model;
+
+		$this->set(compact('list_result', 'model', 'data_action', 'title', 'data_change'));
+	}
+
+	function getInfoCoa(){
+		$this->loadModel('Coa');
+
+		$default_conditions = array(
+            'Coa.status' => 1
+        );
+
+        if(!empty($this->request->data['Coa']['name'])){
+			$default_conditions['Coa.name LIKE'] = '%'.$this->request->data['Coa']['name'].'%';
+		}
+		if(!empty($this->request->data['Coa']['code'])){
+			$default_conditions['Coa.code'] = $this->request->data['Coa']['code'];
+		}
+
+		$coas = $this->Coa->getData('threaded', array(
+            'conditions' => $default_conditions
+        ));
+        
+        $this->set('coas', $coas);
+
+        $data_action = 'browse-cash-banks';
+		$title = __('Detail Kas Bank');
+
+		$this->set(compact('data_action', 'title'));
+	}
+
+	function getUserEmploye($rel = false, $user_id = false){
+		$this->loadModel('User');
+
+		$default_conditions = array(
+            'User.status' => 1
+        );
+
+        if(!empty($this->request->data['User']['full_name'])){
+			$default_conditions['User.full_name LIKE'] = '%'.$this->request->data['User']['full_name'].'%';
+		}
+		if(!empty($this->request->data['User']['group_id'])){
+			$default_conditions['User.group_id'] = $this->request->data['User']['group_id'];
+		}
+
+		if(!empty($user_id)){
+			$default_conditions['User.id'] = $user_id;
+
+			$users = $this->User->getData('first', array(
+	            'conditions' => $default_conditions,
+	            'contain' => array(
+	            	'Group'
+	            )
+	        ));
+		}else{
+			$groups = $this->User->Group->find('list', array(
+				'conditions' => array(
+					'Group.status' => 1
+				),
+				'fields' => array(
+					'Group.id', 'Group.name'
+				)
+			));
+
+			$this->set('groups', $groups);
+
+			$this->paginate = $this->User->getData('paginate', array(
+	            'conditions' => $default_conditions,
+	            'contain' => array(
+	            	'Group'
+	            )
+	        ));
+
+	        $users = $this->paginate('User');
+		}
+        
+        $this->set('users', $users);
+
+        $data_action = 'browse-form';
+        $data_change = 'cash-bank-auth-user';
+		$title = __('Data Karyawan');
+
+		$this->set(compact('data_action', 'title', 'data_change', 'rel', 'user_id'));
+	}
 }
 ?>

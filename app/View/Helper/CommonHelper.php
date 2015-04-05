@@ -1,7 +1,7 @@
 <?php
 class CommonHelper extends AppHelper {
 	var $helpers = array(
-        'Html', 'Number', 'Paginator'
+        'Html', 'Number', 'Paginator', 'Form'
     );
 
     /**
@@ -655,5 +655,79 @@ class CommonHelper extends AppHelper {
                 return sprintf('%s - %s', $resultCode, $resultName);
                 break;
         }
+    }
+
+    function getRowCoa ( $coas, $parent = false ) {
+        $dataTree = '';
+        if( !empty($coas) ) {
+            foreach ($coas as $key => $coa) {
+                $id = $coa['Coa']['id'];
+
+                $coa_title = '';
+                $codeCoa = '-';
+                if(!empty($coa['Coa']['code'])){
+                    $codeCoa = $coa['Coa']['code'];
+
+                    if( !empty($parent['Coa']['code']) ) {
+                        $codeCoa = sprintf('%s-%s', $parent['Coa']['code'], $codeCoa);
+                    }
+                }
+                $coa_title = $coa['Coa']['name'];
+
+                $content  = $this->Html->tag('td', $this->Form->checkbox('CashBankDetail.coa_id.', array(
+                    'class' => 'check-option',
+                    'value' => $id
+                )), array(
+                    'class' => 'checkbox-detail'
+                ));
+                $content  .= $this->Html->tag('td', $codeCoa.$this->Form->input('CashBankDetail.coa_id.', array(
+                    'type' => 'hidden',
+                    'value' => $id
+                )));
+                $content .= $this->Html->tag('td', $coa_title);
+                
+                $debit_form = $this->Form->input('CashBankDetail.debit.', array(
+                    'type' => 'text',
+                    'class' => 'form-control input_price',
+                    'label' => false,
+                    'div' => false,
+                    'required' => false,
+                ));
+                $content .= $this->Html->tag('td', $debit_form, array(
+                    'class' => 'action-search hide'
+                ));
+
+                $credit_form = $this->Form->input('CashBankDetail.credit.', array(
+                    'type' => 'text',
+                    'class' => 'form-control input_price',
+                    'label' => false,
+                    'div' => false,
+                    'required' => false,
+                ));
+                $content .= $this->Html->tag('td', $credit_form, array(
+                    'class' => 'action-search hide'
+                ));
+
+                $content .= $this->Html->tag('td', $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
+                    'class' => 'delete-custom-field btn btn-danger btn-xs',
+                    'escape' => false,
+                    'action_type' => 'cashbank_first'
+                )), array(
+                    'class' => 'action-search hide'
+                ));
+                
+                $dataTree .= $this->Html->tag('tr', $content, array(
+                    'class' => 'child-search child-search-'.$id,
+                    'rel' => $id
+                ));
+
+                if( !empty($coa['children']) ) {
+                    $parent['Coa'] = $coa['Coa'];
+                    $child = $coa['children'];
+                    $dataTree .= $this->getRowCoa($child, $parent);
+                }
+            }
+        }
+        return $dataTree;
     }
 }

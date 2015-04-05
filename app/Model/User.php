@@ -125,7 +125,7 @@ class User extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'status' => 'DESC'
+                'User.status' => 'DESC'
             ),
             'contain' => array(),
             'fields' => array(),

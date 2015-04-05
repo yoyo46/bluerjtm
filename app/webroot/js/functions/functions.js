@@ -863,6 +863,34 @@ var add_custom_field = function(){
                 delete_custom_field( $('#table-leasing tbody.leasing-body tr.child-'+length+' .delete-custom-field') );
                 leasing_action();
             break;
+            case 'auth-cash-bank':
+                var count_cash_auth = $('.cash-auth-row').length;
+
+                if(count_cash_auth < 4){
+                    var count_next = count_cash_auth+1;
+                    var content = '<tr class="cash-auth-row" id="cash-auth-'+count_next+'" rel="'+count_next+'">'+
+                        '<td>'+
+                            '<div class="row">'+
+                                '<div class="col-sm-10">'+
+                                    $('#form-authorize').html()+
+                                '</div>'+
+                                '<div class="col-sm-2">'+
+                                    '<a href="/ajax/getUserEmploye/'+count_next+'" class="btn bg-maroon ajaxModal" title="Data Karyawan" data-action="browse-form" data-change="cash-bank-auth-user"><i class="fa fa-search"></i></a>'+
+                                '</div>'+
+                            '</div>'+
+                        '</td>'+
+                        '<td align="center" class="group_auth">-</td>'+
+                        '<td align="center">'+count_next+'</td>'+
+                    '</tr>';
+
+                    $('.cashbanks-auth-table').append(content);
+
+                    var obj_parent = '#cash-auth-'+count_next;
+                    set_auth_cash_bank( obj_parent+' .cash-bank-auth-user' );
+                    ajaxModal( $(obj_parent+' .ajaxModal') );
+                    pickData();
+                }
+            break;
         }
     });
 }
@@ -886,7 +914,7 @@ var delete_custom_field = function( obj ) {
                 var action_type = self.attr('action_type');
                 var idx = length;
                 $('#'+action_type+(idx-1)).remove();
-            } else if( action_type == 'lku_first' || action_type == 'leasing_first' || action_type == 'invoice_first' ){
+            } else if( action_type == 'lku_first' || action_type == 'leasing_first' || action_type == 'invoice_first' || action_type == 'cashbank_first' ){
                 self.parents('tr').remove();
                 grandTotalLku();
                 grandTotalLeasing();
@@ -967,6 +995,9 @@ var delete_custom_field = function( obj ) {
                 });
 
                 return false;
+            }else if( action_type == 'auth-cash-bank' ){
+                var length = $('.cash-auth-row').length;
+                $('#cash-auth-'+length).remove();
             }
         }
 
@@ -1521,8 +1552,19 @@ var pickData = function () {
         var vthis = $(this);
         var data_value = vthis.attr('data-value');
         var data_change = vthis.attr('data-change');
+
+        if(data_change == '.cash-bank-auth-user'){
+            data_change = vthis.attr('data-rel')+' '+data_change;
+        }
+
         $(data_change).val(data_value);
         $(data_change).trigger('change');
+        
+        if(data_change == '#receiver-id'){
+            $('#receiver-type').val(vthis.attr('data-type'));
+            $('#cash-bank-user').val(vthis.attr('data-text'));
+        }
+
         $('#myModal').modal('hide');
         return false;
     });
@@ -1634,6 +1676,9 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
                         pickData();
                         datepicker();
+                        check_all_checkbox();
+                    } else if( type_action == 'browse-cash-banks' ) {
+                        ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
                         check_all_checkbox();
                     } else if(type_action == 'cancel_invoice'){
                         submitForm();
@@ -1920,6 +1965,22 @@ var check_all_checkbox = function(){
         }
     });
 
+    $('.checkAll-coa').click(function(){
+        $('#box-info-coa .check-option').not(this).prop('checked', this.checked);
+
+        if($('.child-search .check-option').length > 0){
+            jQuery.each( $('.child-search .check-option'), function( i, val ) {
+                var self = $(this);
+                check_option_coa(self)
+            });
+        }
+    });
+
+    $('#box-info-coa .child-search .check-option').click(function(){
+        var self = $(this);
+        check_option_coa(self)
+    });
+    
     $('.child-search .check-option').click(function(){
         var self = $(this);
         check_option(self)
@@ -1942,6 +2003,27 @@ var check_all_checkbox = function(){
                 delete_custom_field($('.child-'+rel_id+' .delete-custom-field'));
 
                 invoice_price_payment();
+            }
+        }else{
+            $('.child-'+rel_id).remove();
+        } 
+    }
+
+    function check_option_coa(self){
+        var parent = self.parents('.child-search');
+        $('.cashbank-info-detail').removeClass('hide');
+        var rel_id = parent.attr('rel');
+
+        if(self.is(':checked')){
+            if($('.child-'+rel_id).length <= 0){
+                var html_content = '<tr class="child child-'+rel_id+'" rel="'+rel_id+'">'+parent.html()+'</tr>';
+                $('.cashbanks-info-table').append(html_content);
+
+                $('.child-'+rel_id).find('.action-search').removeClass('hide');
+                $('.child-'+rel_id).find('.checkbox-detail').remove();
+
+                input_price($('.child-'+rel_id+' .input_price'));
+                delete_custom_field($('.child-'+rel_id+' .delete-custom-field'));
             }
         }else{
             $('.child-'+rel_id).remove();
@@ -1972,9 +2054,39 @@ var laka_ttuj_change = function(){
     });
 }
 
+var set_auth_cash_bank = function(obj){
+    $(obj).change(function(){
+        var self = $(this);
+        var val = self.val();
+        var parent = self.parents('tr');
+        var rel = parent.attr('rel');
+        var content;
+        if(val != ''){
+            $.ajax({
+                url: '/ajax/getUserEmploye/'+rel+'/'+val+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    content = $(response).filter('#group_user').html();
+                    $('#cash-auth-'+rel).find('.group_auth').html(content);
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        }else{
+            $('#cash-auth-'+rel).find('.group_auth').html('-');
+        }
+
+        
+    });
+}
+
 $(function() {
     leasing_action();
     laka_ttuj_change();
+
+    set_auth_cash_bank($('.cash-bank-auth-user'));
 
 	$('.aset-handling').click(function(){
 		if($('.aset-handling .aset-handling-form').is(':checked')) {
@@ -2654,5 +2766,13 @@ $(function() {
 
     $( '.scroll-monitoring' ).scroll(function() {
         $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
+    });
+
+    $('.cash-bank-handle').change(function(){
+        if($(this).val() == 'in'){
+            $('.cash_bank_user_type').html('diterima dari');
+        }else{
+            $('.cash_bank_user_type').html('dibayar kepada');
+        }
     });
 });
