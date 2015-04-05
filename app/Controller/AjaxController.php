@@ -1192,7 +1192,9 @@ class AjaxController extends AppController {
 			}
 		}
 
-		$this->set(compact('invoices', 'id'));
+		$data_action = 'browse-invoice';
+		$title = __('Invoice Customer');
+		$this->set(compact('invoices', 'id', 'data_action', 'title'));
 	}
 
 	function delete_laka_media($id = false){

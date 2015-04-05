@@ -41,7 +41,9 @@
                 'div' => false, 
                 'class'=> 'btn btn-success btn-sm ajaxModal',
                 'data-parent' => true,
-                'title' => 'Invoice Customer'
+                'title' => 'Invoice Customer',
+                'data-action' => $data_action,
+                'title' => $title
             ));
     ?>
 </div>
@@ -109,8 +111,10 @@
                 </td>
                 <td class="text-right">
                     <?php
+                        $price_pay = 0;
                         if(!empty($value['invoice_has_paid'])){
                             echo $this->Number->currency($value['invoice_has_paid'], Configure::read('__Site.config_currency_code'), array('places' => 0)); 
+                            $price_pay = $value['invoice_has_paid'];
                         }else{
                             echo '-';
                         }
@@ -125,7 +129,7 @@
                             'div' => false,
                             'required' => false,
                             'class' => 'form-control input_price invoice-price-payment',
-                            'value' => (!empty($this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']])) ? $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']] : 0
+                            'value' => (!empty($this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']])) ? $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']] : $price_pay
                         ));
 
                         if(!empty($this->request->data['InvoicePaymentDetail']['price_pay'][$key])){

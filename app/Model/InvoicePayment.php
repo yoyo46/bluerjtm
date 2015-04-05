@@ -26,10 +26,10 @@ class InvoicePayment extends AppModel {
                 'message' => 'Tanggal pembayaran harap diisi'
             ),
         ),
-        'bank_id' => array(
+        'coa_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Bank harap dipilih'
+                'message' => 'Account harap dipilih'
             ),
         ),
 	);
@@ -39,9 +39,9 @@ class InvoicePayment extends AppModel {
             'className' => 'Customer',
             'foreignKey' => 'customer_id',
         ),
-        'Bank' => array(
-            'className' => 'Bank',
-            'foreignKey' => 'bank_id',
+        'Coa' => array(
+            'className' => 'Coa',
+            'foreignKey' => 'coa_id',
         ),
 	);
 

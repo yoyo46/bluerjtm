@@ -4141,7 +4141,7 @@ class RevenuesController extends AppController {
             $this->paginate = $this->InvoicePayment->getData('paginate', array(
                 'conditions' => $conditions,
                 'contain' => array(
-                    'Bank'
+                    'Coa'
                 ),
                 'order' => array(
                     'InvoicePayment.created' => 'DESC',
@@ -4182,7 +4182,7 @@ class RevenuesController extends AppController {
 
     function doInvoicePayment($id = false, $data_local = false){
         $this->loadModel('Customer');
-        $this->loadModel('Bank');
+        $this->loadModel('Coa');
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -4361,15 +4361,16 @@ class RevenuesController extends AppController {
                 'Customer.id', 'Customer.name'
             )
         ));
-        $banks = $this->Bank->getData('list', array(
+        $coas = $this->Coa->getData('list', array(
             'conditions' => array(
-                'Bank.status' => 1,
+                'Coa.status' => 1,
+                'Coa.is_cash_bank' => 1
             ),
         ));
-        
+
         $this->set(compact(
             'list_customer', 'id', 'action',
-            'banks'
+            'coas'
         ));
         $this->set('active_menu', 'invoice_payments');
         $this->render('invoice_payment_form');
@@ -4494,7 +4495,7 @@ class RevenuesController extends AppController {
                     'InvoicePaymentDetail' => array(
                         'Invoice'
                     ),
-                    'Bank',
+                    'Coa',
                 )
             ));
 

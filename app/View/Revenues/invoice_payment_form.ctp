@@ -49,11 +49,12 @@
 	        </div>
 	        <div class="form-group">
 	        	<?php 
-						echo $this->Form->input('bank_id',array(
-							'label'=> __('Bank *'), 
+						echo $this->Form->input('coa_id',array(
+							'label'=> __('Account *'), 
 							'class'=>'form-control',
 							'required' => false,
-							'empty' => __('Pilih Bank'),
+							'empty' => __('Pilih Kas Bank'),
+							'options' => $coas
 						));
 				?>
 	        </div>
@@ -66,6 +67,17 @@
 							'required' => false,
 							'placeholder' => __('Tanggal Pembayaran'),
 							'value' => (!empty($this->request->data['InvoicePayment']['date_payment'])) ? $this->request->data['InvoicePayment']['date_payment'] : date('d/m/Y')
+						));
+				?>
+	        </div>
+	        <div class="form-group">
+	        	<?php 
+						echo $this->Form->input('description',array(
+							'type' => 'textarea',
+							'label'=> __('Keterangan'), 
+							'class'=>'form-control',
+							'required' => false,
+							'placeholder' => __('Keterangan'),
 						));
 				?>
 	        </div>

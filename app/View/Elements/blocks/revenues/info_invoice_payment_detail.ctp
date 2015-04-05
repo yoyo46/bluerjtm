@@ -33,8 +33,11 @@
     </td>
     <td class="text-right">
         <?php
+            $price_pay = 0;
             if(!empty($value['invoice_has_paid'])){
                 echo $this->Number->currency($value['invoice_has_paid'], Configure::read('__Site.config_currency_code'), array('places' => 0)); 
+                $price_pay = $value['invoice_has_paid'];
+                die();
             }else{
                 echo '-';
             }
@@ -49,11 +52,12 @@
                 'div' => false,
                 'required' => false,
                 'class' => 'form-control input_price invoice-price-payment',
-                'value' => (!empty($this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']])) ? $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']] : 0
+                'value' => (!empty($this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']])) ? $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']] : $price_pay
             ));
 
             if(!empty($this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']])){
                 $total += str_replace(',', '', $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']]);
+                $grand_total += $total;
             }
         ?>
     </td>
@@ -75,6 +79,64 @@
     <td align="right" colspan="5"><?php echo __('Total')?></td>
     <td align="right" id="grand-total-payment">
         <?php 
+            echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
+        ?>
+    </td>
+    <td>&nbsp;</td>
+</tr>
+<tr class="additional-input-invoice" id="ppn-grand-total-invoice">
+    <td align="right" colspan="5" class="relative">
+        <?php 
+            echo $this->Form->input('CashBank.ppn', array(
+                'type' => 'text',
+                'label' => __('PPN'),
+                'class' => 'input_number invoice-ppn',
+                'required' => false,
+                'div' => false
+            )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
+        ?>
+    </td>
+    <td align="right" id="ppn-total-invoice">
+        <?php 
+                $ppn = !empty($this->request->data['CashBank']['ppn'])?$this->request->data['CashBank']['ppn']:0;
+                $ppn = $this->Common->calcFloat($total, $ppn);
+                echo $this->Number->currency($ppn, Configure::read('__Site.config_currency_code'), array('places' => 0));
+        ?>
+    </td>
+    <td>&nbsp;</td>
+</tr>
+<tr class="additional-input-invoice" id="pph-grand-total-invoice">
+    <td align="right" colspan="5" class="relative">
+        <?php 
+                echo $this->Form->input('CashBank.pph', array(
+                    'type' => 'text',
+                    'label' => __('PPH'),
+                    'class' => 'input_number invoice-pph',
+                    'required' => false,
+                    'div' => false
+                )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
+        ?>
+    </td>
+    <td align="right" id="pph-total-invoice">
+        <?php 
+                $pph = !empty($this->request->data['CashBank']['pph'])?$this->request->data['CashBank']['pph']:0;
+                $pph = $this->Common->calcFloat($total, $pph);
+                echo $this->Number->currency($pph, Configure::read('__Site.config_currency_code'), array('places' => 0));
+        ?>
+    </td>
+    <td>&nbsp;</td>
+</tr>
+<tr id="grand-total-invoice-payemnt">
+    <td align="right" colspan="5"><?php echo __('Grand Total')?></td>
+    <td align="right" id="all-total-invoice">
+        <?php 
+            if($pph > 0){
+                $total -= $pph;
+            }
+            if($ppn > 0){
+                $total += $ppn;
+            }
+
             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
         ?>
     </td>

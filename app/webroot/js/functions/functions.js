@@ -1675,7 +1675,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                     } else if( type_action == 'browse-invoice' ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
                         pickData();
-                        datepicker();
+                        datepicker($('#myModal .modal-body .custom-date'));
                         check_all_checkbox();
                     } else if( type_action == 'browse-cash-banks' ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
@@ -1934,7 +1934,7 @@ var invoice_price_payment = function(){
 function getTotalInvoicePayment(){
     var invoice_price = $('.invoice-price-payment');
     var length = invoice_price.length;
-    
+    var total = 0;
     var total_price = 0;
     for (var i = 0; i < length; i++) {
         if(typeof invoice_price[i] != 'undefined'){
@@ -1947,9 +1947,39 @@ function getTotalInvoicePayment(){
             
             price = text_val;
             price = parseInt(price);
-            total_price += price;
+            total = total_price += price;
         }
     };
+
+    var ppn = 0;
+    var pph = 0;
+    var revenue_ppn = $('.invoice-ppn').val();
+    var revenue_pph = $('.invoice-pph').val();
+
+    if( isNaN(total) ) {
+        total = 0;
+    }
+
+    if(typeof revenue_ppn != 'undefined' && revenue_ppn != ''){
+        ppn = total * (parseInt(revenue_ppn) / 100);
+    }
+
+    $('#ppn-total-invoice').html(formatNumber(ppn));
+
+    if(typeof revenue_pph != 'undefined' && revenue_pph != ''){
+        pph = total * (parseInt(revenue_pph) / 100);
+    }
+    
+    $('#pph-total-invoice').html(formatNumber(pph));
+    
+    if(pph > 0){
+        total -= pph;
+    }
+    if(ppn > 0){
+        total += ppn;
+    }
+
+    $('#all-total-invoice').html('IDR '+formatNumber(total));
 
     $('#grand-total-payment').text('IDR '+formatNumber(total_price));
 }
@@ -2774,5 +2804,9 @@ $(function() {
         }else{
             $('.cash_bank_user_type').html('dibayar kepada');
         }
+    });
+
+    $('.invoice-pph, .invoice-ppn').keyup(function(){
+        getTotalInvoicePayment();
     });
 });
