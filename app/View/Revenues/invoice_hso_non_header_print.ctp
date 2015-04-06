@@ -271,9 +271,11 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 						$no = 1;
 
 						foreach ($revenue_detail as $key => $revenue) {
-							$no_sj = !empty($revenue['RevenueDetail']['no_sj'])?$revenue['RevenueDetail']['no_sj']:'-';
-							$price_unit = !empty($revenue['RevenueDetail']['price_unit'])?$revenue['RevenueDetail']['price_unit']:0;
-							$qty_unit = !empty($revenue['RevenueDetail']['qty_unit'])?$revenue['RevenueDetail']['qty_unit']:0;
+							if( !empty($revenue) ) {
+								foreach ($revenue as $key => $valueDetail) {
+									$no_sj = !empty($valueDetail['RevenueDetail']['no_sj'])?$valueDetail['RevenueDetail']['no_sj']:'-';
+									$price_unit = !empty($valueDetail['RevenueDetail']['price_unit'])?$valueDetail['RevenueDetail']['price_unit']:0;
+									$qty_unit = !empty($valueDetail['RevenueDetail']['qty_unit'])?$valueDetail['RevenueDetail']['qty_unit']:0;
 			?>
 			<tr>
 				<?php 
@@ -299,7 +301,9 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 				?>
 			</tr>
 			<?php
-							$no++;
+									$no++;
+								}
+							}
 						}
 					}else{
 						$colom = $this->Html->tag('td', __('Data tidak ditemukan.'), array(

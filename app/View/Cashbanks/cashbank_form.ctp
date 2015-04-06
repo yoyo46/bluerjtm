@@ -59,7 +59,8 @@
 					'class'=>'form-control custom-date',
 					'required' => false,
 					'placeholder' => __('Tanggal Kas Bank'),
-					'type' => 'text'
+					'type' => 'text',
+					'value' => (!empty($this->request->data['CashBank']['tgl_cash_bank'])) ? $this->request->data['CashBank']['tgl_cash_bank'] : date('d/m/Y')
 				)), array(
 					'class' => 'form-group'
 				));
@@ -67,7 +68,7 @@
 		?>
 		<div class="form-group">
 			<?php
-				echo $this->Form->label('receiver', __('diterima dari'), array(
+				echo $this->Form->label('receiver', __('Diterima dari'), array(
 					'class' => 'cash_bank_user_type',
 				));
 			?>

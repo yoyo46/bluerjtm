@@ -2800,9 +2800,9 @@ $(function() {
 
     $('.cash-bank-handle').change(function(){
         if($(this).val() == 'in'){
-            $('.cash_bank_user_type').html('diterima dari');
+            $('.cash_bank_user_type').html('Diterima dari');
         }else{
-            $('.cash_bank_user_type').html('dibayar kepada');
+            $('.cash_bank_user_type').html('Dibayar kepada');
         }
     });
 
