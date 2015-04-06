@@ -464,9 +464,9 @@ class CommonHelper extends AppHelper {
     }
 
     
-    function toSlug($string) {
+    function toSlug($string, $separator = '-') {
         if( is_string($string) ) {
-            return strtolower(Inflector::slug($string, '-'));
+            return strtolower(Inflector::slug($string, $separator));
         } else {
             return $string;
         }

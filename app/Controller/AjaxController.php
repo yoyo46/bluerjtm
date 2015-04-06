@@ -649,9 +649,12 @@ class AjaxController extends AppController {
 		        	'error' => 1,
 		        	'text' => sprintf(__('Revenue dengan periode bulan yang berbeda tidak bisa dibuatkan invoice( %s s/d %s ). Mohon cek kembali revenue Anda.'), $this->request->data['Invoice']['period_from'], $this->request->data['Invoice']['period_to']),
 		    	);
-			} else if( !empty($customer['CustomerPattern']) ) {
-                $this->request->data['Invoice']['pattern'] = $this->MkCommon->getNoInvoice( $customer );
+	    	} else if( !empty($customer['CustomerGroup']['CustomerGroupPattern']) ) {
+                $this->request->data['Invoice']['pattern'] = $this->MkCommon->getNoInvoice( $customer['CustomerGroup'] );
 			}
+			// } else if( !empty($customer['CustomerPattern']) ) {
+   //              $this->request->data['Invoice']['pattern'] = $this->MkCommon->getNoInvoice( $customer );
+			// }
 		}
 
 		$this->set(compact(

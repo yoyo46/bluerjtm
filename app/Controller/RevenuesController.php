@@ -1280,6 +1280,7 @@ class RevenuesController extends AppController {
 
         switch ($action_type) {
             case 'bongkaran':
+                $this->set('sub_module_title', __('Tambah Bongkaran'));
                 if( !empty($id) ) {
                     $conditionsTtuj['OR'] = array(
                         array(
@@ -1566,7 +1567,7 @@ class RevenuesController extends AppController {
     public function bongkaran_add() {
         if( in_array('insert_bongkaran', $this->allowModule) ) {
             $this->loadModel('Ttuj');
-            $this->set('sub_module_title', __('Tambah Tiba'));
+            $this->set('sub_module_title', __('Bongkaran'));
             $this->set('active_menu', 'bongkaran');
             $this->doTTUJLanjutan( 'bongkaran' );
         } else {
@@ -3714,13 +3715,21 @@ class RevenuesController extends AppController {
                     if($this->Invoice->save()){
                         $invoice_id = $this->Invoice->id;
 
-                        if( !empty($customer['CustomerPattern']) ) {
-                            $last_number = str_replace($customer['CustomerPattern']['pattern'], '', $data['Invoice']['no_invoice']);
+                        if( !empty($customer['CustomerGroup']['CustomerGroupPattern']) ) {
+                            $last_number = str_replace($customer['CustomerGroup']['CustomerGroupPattern']['pattern'], '', $data['Invoice']['no_invoice']);
                             $last_number = intval($last_number)+1;
-                            $this->Customer->CustomerPattern->set('last_number', $last_number);
-                            $this->Customer->CustomerPattern->id = $customer['CustomerPattern']['id'];
-                            $this->Customer->CustomerPattern->save();
+                            $this->Customer->CustomerGroup->CustomerGroupPattern->set('last_number', $last_number);
+                            $this->Customer->CustomerGroup->CustomerGroupPattern->id = $customer['CustomerGroup']['CustomerGroupPattern']['id'];
+                            $this->Customer->CustomerGroup->CustomerGroupPattern->save();
                         }
+
+                        // if( !empty($customer['CustomerPattern']) ) {
+                        //     $last_number = str_replace($customer['CustomerPattern']['pattern'], '', $data['Invoice']['no_invoice']);
+                        //     $last_number = intval($last_number)+1;
+                        //     $this->Customer->CustomerPattern->set('last_number', $last_number);
+                        //     $this->Customer->CustomerPattern->id = $customer['CustomerPattern']['id'];
+                        //     $this->Customer->CustomerPattern->save();
+                        // }
 
                         if($action == 'tarif'){
                             $revenue_id = $this->Revenue->getData('list', array(
@@ -5428,6 +5437,17 @@ class RevenuesController extends AppController {
                 $this->layout = 'pdf';
             }else if($data_action == 'excel'){
                 $this->layout = 'ajax';
+            } else {
+                $layout_js = array(
+                    'freeze',
+                );
+                $layout_css = array(
+                    'freeze',
+                );
+
+                $this->set(compact(
+                    'layout_css', 'layout_js'
+                ));
             }
         // } else {
         //     $this->redirect($this->referer());

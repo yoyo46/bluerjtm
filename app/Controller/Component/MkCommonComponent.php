@@ -330,7 +330,8 @@ class MkCommonComponent extends Component {
     }
 
     function getNoInvoice ( $customer ) {
-        return sprintf('%s%s', str_pad($customer['CustomerPattern']['last_number'], $customer['CustomerPattern']['min_digit'], '0', STR_PAD_LEFT), $customer['CustomerPattern']['pattern']);
+        return sprintf('%s%s', str_pad($customer['CustomerGroupPattern']['last_number'], $customer['CustomerGroupPattern']['min_digit'], '0', STR_PAD_LEFT), $customer['CustomerGroupPattern']['pattern']);
+        // return sprintf('%s%s', str_pad($customer['CustomerPattern']['last_number'], $customer['CustomerPattern']['min_digit'], '0', STR_PAD_LEFT), $customer['CustomerPattern']['pattern']);
     }
 }
 ?>

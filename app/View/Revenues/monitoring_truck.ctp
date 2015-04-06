@@ -46,14 +46,14 @@
                 ));
         ?>
     </div>
-    <div class="table-responsive">
+    <div class="table-responsive monitoring">
         <table id="tt" class="table table-bordered <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true" border="<?php echo $border; ?>">
             <thead frozen="true">
                 <tr>
                     <?php 
                             echo $this->Html->tag('th', __('Truk'), array(
-                                'style' => 'text-align: center;width: 100px;',
-                                'data-options' => 'field:\'nopol\',width:100,sortable:true',
+                                'style' => 'text-align: center;width: 150px;',
+                                'data-options' => 'field:\'nopol\',width:150,sortable:true',
                             ));
                     ?>
                 </tr>

@@ -10,6 +10,13 @@ class CustomerGroup extends AppModel {
         ),
 	);
 
+    var $hasOne = array(
+        'CustomerGroupPattern' => array(
+            'className' => 'CustomerGroupPattern',
+            'foreignKey' => 'customer_group_id',
+        ),
+    );
+
 	function getData( $find, $options = false ){
         $default_options = array(
             'conditions'=> array(
@@ -18,7 +25,9 @@ class CustomerGroup extends AppModel {
             'order'=> array(
                 'CustomerGroup.name' => 'ASC'
             ),
-            'contain' => array(),
+            'contain' => array(
+                'CustomerGroupPattern'
+            ),
         );
 
         if(!empty($options)){

@@ -149,6 +149,8 @@
 		    </div>
 		</div>
 	</div>
+	<?php
+	/*
 	<div class="col-sm-6">
 		<div class="box box-success">
 		    <div class="box-header">
@@ -183,6 +185,7 @@
 		    </div>
 		</div>
 	</div>
+	*/ ?>
 </div>
 <div class="box-footer text-center action">
 	<?php

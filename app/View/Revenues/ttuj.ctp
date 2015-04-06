@@ -289,16 +289,6 @@
                 <td><?php echo $this->Common->customDate($value['Ttuj']['created']);?></td>
                 <td class="action">
                     <?php
-                            // if( in_array(sprintf('update_%s', $active_menu), $allowModule) ) {
-                                echo $this->Html->link(__('Surat Jalan'), array(
-                                    'controller' => 'revenues',
-                                    'action' => 'surat_jalan',
-                                    $id
-                                ), array(
-                                    'class' => 'btn bg-navy btn-xs'
-                                ));
-                            // }
-
                             if( in_array($active_menu, array( 'truk_tiba', 'bongkaran', 'balik', 'pool' )) ) {
                                 echo $this->Html->link('Info', array(
                                     'controller' => 'revenues',
@@ -336,6 +326,16 @@
                                     $labelEdit = __('Ubah');
                                 // } else {
                                 //     $labelEdit = __('Lihat');
+                                // }
+                                    
+                                // if( in_array(sprintf('update_%s', $active_menu), $allowModule) ) {
+                                    echo $this->Html->link(__('Surat Jalan'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'surat_jalan',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn bg-navy btn-xs'
+                                    ));
                                 // }
 
                                 echo $this->Html->link($labelEdit, array(

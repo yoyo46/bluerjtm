@@ -122,7 +122,7 @@ td.multiple a {
 	color: #FFFFFF;
 }
 
-table.monitoring td > div {
+.monitoring td > div {
 	font-size: 18px;
 	vertical-align: middle;
 	font-weight: bold;
@@ -137,22 +137,22 @@ ul.list-calendar {
 	list-style-type: none;
 }
 
-table.monitoring .icon-popup,
+.monitoring .icon-popup,
 .multiple-modal .list-calendar .ico-calendar {
 	display: none;
 }
 
 .multiple-modal .list-calendar .icon-popup,
-table.monitoring .ico-calendar {
+.monitoring .ico-calendar {
 	display: block;
 }
 
-table.monitoring .ico-calendar {
+.monitoring .ico-calendar {
 	height: 30px;
 	margin: 0 auto;
 }
 
-table.monitoring td {
+.monitoring td {
 	height: 47px;
 }
 
