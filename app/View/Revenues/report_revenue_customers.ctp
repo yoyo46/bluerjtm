@@ -175,16 +175,23 @@
                 <tr>
                     <?php 
                             echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Customer')), array(
-                                'style' => 'text-align: center;width: 150px;',
+                                'style' => 'text-align: center;width: 150px;vertical-align: middle;',
                                 'data-options' => 'field:\'code\',width:120',
                             ));
                     ?>
+            <?php 
+                    if( $data_action != 'excel' ) {
+            ?>
                 </tr>
             </thead>
             <thead>
+                <tr>
+            <?php 
+                    }
+            ?>
                     <?php
                             echo $this->Html->tag('th', sprintf(__('AVG %s'), $avgYear), array(
-                                'style' => 'text-align: center;width: 120px;',
+                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
                                 'data-options' => 'field:\'avg\',width:120',
                                 'align' => 'right',
                             ));
@@ -204,15 +211,14 @@
                                     $$nameSlug = 0;
 
                                     echo $this->Html->tag('th', $formatDate, array(
-                                        'style' => 'text-align: center;width: 120px;',
+                                        'style' => 'text-align: center;width: 120px;vertical-align: middle;',
                                         'data-options' => 'field:\''.$slugFormatMonth.'\',width:120',
                                         'align' => 'right',
                                     ));
                                 }
                             }
                             echo $this->Html->tag('th', $this->Html->tag('strong', __('Total')), array(
-                                'style' => 'text-align: center;width: 120px;',
-                                'style' => $tdStyle,
+                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
                                 'data-options' => 'field:\'totalleft\',width:120',
                                 'align' => 'right',
                             ));
@@ -235,7 +241,7 @@
                     <?php 
                             echo $this->Html->tag('td', $customer['Customer']['name']);
                             echo $this->Html->tag('td', $totalFormatAgv, array(
-                                'style' => 'text-align: right;',
+                                'style' => 'text-align: right;vertical-align: middle;',
                             ));
 
                             if( !empty($totalCnt) ) {
@@ -249,7 +255,7 @@
                                     $pencapaian = !empty($pencapaian)?$this->Number->format($pencapaian, Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
 
                                     echo $this->Html->tag('td', $pencapaian, array(
-                                        'style' => 'text-align: right;',
+                                        'style' => 'text-align: right;vertical-align: middle;',
                                         'align' => 'right',
                                     ));
                                 }
@@ -257,7 +263,7 @@
 
                             $totalLeft = !empty($totalLeft)?$this->Number->format($totalLeft, Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
                             echo $this->Html->tag('td', $this->Html->tag('strong', $totalLeft), array(
-                                'style' => 'text-align: right;',
+                                'style' => 'text-align: right;vertical-align: middle;',
                                 'align' => 'right',
                             ));
                     ?>
@@ -271,10 +277,10 @@
                             $totalLeft = 0;
                             $totalLeft += $totalBottomYear;
                             echo $this->Html->tag('td', $this->Html->tag('strong', __('Total')), array(
-                                'style' => 'text-align: right;',
+                                'style' => 'text-align: right;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', $this->Html->tag('strong', !empty($totalBottomYear)?$this->Number->format($totalBottomYear, Configure::read('__Site.config_currency_code'), array('places' => 0)):0), array(
-                                'style' => 'text-align: right;',
+                                'style' => 'text-align: right;vertical-align: middle;',
                             ));
 
                             if( !empty($totalCnt) ) {
@@ -285,14 +291,14 @@
                                     $pencapaian = !empty($$nameSlug)?$this->Number->format($$nameSlug, Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
 
                                     echo $this->Html->tag('td', $this->Html->tag('strong', $pencapaian), array(
-                                        'style' => 'text-align: right;',
+                                        'style' => 'text-align: right;vertical-align: middle;',
                                     ));
                                 }
                             }
 
                             $totalLeft = !empty($totalLeft)?$this->Number->format($totalLeft, Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
                             echo $this->Html->tag('td', $this->Html->tag('strong', $totalLeft), array(
-                                'style' => 'text-align: right;',
+                                'style' => 'text-align: right;vertical-align: middle;',
                             ));
                     ?>
                 </tr>
@@ -341,11 +347,14 @@
             $table_tr_head = 'background-color: #3C8DBC; border-right: 1px solid #FFFFFF; color: #FFFFFF; font-weight: bold; padding: 0 10px; text-align: left;';
             $table_th = 'padding-top: 3px';
             $table = 'width:100%;font-size: 24px; border: 1px solid #CCC; border-collapse: collapse; padding: 0; margin: 0;';
-            $tdStyle = 'text-align: center;';
+            $tdStyle = 'text-align: center;vertical-align: middle;';
             $each_loop_message = '';
 
             $contentHeader = $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Customer')), array(
                 'style' => $tdStyle,
+            ));
+            $contentHeader .= $this->Html->tag('th', sprintf(__('AVG %s'), $avgYear), array(
+                'style' => 'text-align: center;vertical-align: middle;',
             ));
 
             if( !empty($totalCnt) ) {
@@ -355,28 +364,88 @@
                     if( $fromYear != $toYear ) {
                         $formatDate = 'F Y';
                     }
-                    $contentHeader .= $this->Html->tag('th', date($formatDate, mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear)), array(
+
+                    $formatDate = date($formatDate, mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
+                    $formatMonth = date('F Y', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
+                    $slugFormatMonth = $this->Common->toSlug($formatMonth , '_');
+                    $nameSlug = sprintf('totalBottom%s', $slugFormatMonth);
+                    $$nameSlug = 0;
+
+                    $contentHeader .= $this->Html->tag('th', $formatDate, array(
                         'style' => $tdStyle,
                     ));
                 }
             }
 
+            $contentHeader .= $this->Html->tag('th', $this->Html->tag('strong', __('Total')), array(
+                'style' => 'text-align: center;vertical-align: middle;',
+            ));
+
             if(!empty($customers)){
+                $totalBottomYear = 0;
+
                 foreach ($customers as $key => $customer) {
+                    $totalBottomYear += $customer['RevenueYear'];
+                    $totalLeft = 0;
+                    $totalAvgYear = !empty($customer['RevenueYear'])?$customer['RevenueYear']:0;
+                    $totalFormatAgv = !empty($totalAvgYear)?$this->Number->format($totalAvgYear, Configure::read('__Site.config_currency_code'), array('places' => 0)):0;
+                    $totalLeft += $totalFormatAgv;
                     $each_loop_message .= '<tr>';
                     $each_loop_message .= $this->Html->tag('td', $customer['Customer']['name']);
+                    $each_loop_message .= $this->Html->tag('td', $totalFormatAgv, array(
+                        'style' => 'text-align: right;vertical-align: middle;',
+                    ));
 
                     if( !empty($totalCnt) ) {
                         for ($i=0; $i <= $totalCnt; $i++) {
                             $currDate = date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
-                            $pencapaian = !empty($customer['Customer'][$currDate]['total_revenue'])?$this->Number->format($customer['Customer'][$currDate]['total_revenue'], Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
+                            $formatDate = date('F Y', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
+                            $nameSlug = sprintf('totalBottom%s', $this->Common->toSlug($formatDate, '_'));
+                            $pencapaian = !empty($customer['Customer'][$currDate]['total_revenue'])?$customer['Customer'][$currDate]['total_revenue']:'0';
+                            $$nameSlug += $pencapaian;
+                            $totalLeft += $pencapaian;
+                            $pencapaian = !empty($pencapaian)?$this->Number->format($pencapaian, Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
                             $each_loop_message .= $this->Html->tag('td', $pencapaian, array(
                                 'style' => 'text-align: right;',
                             ));
                         }
                     }
+
+                    $totalLeft = !empty($totalLeft)?$this->Number->format($totalLeft, Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
+                    $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', $totalLeft), array(
+                        'style' => 'text-align: right;vertical-align: middle;',
+                    ));
                     $each_loop_message .= '</tr>';
                 }
+
+                $each_loop_message .= '<tr>';
+                $totalLeft = 0;
+                $totalLeft += $totalBottomYear;
+                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', __('Total')), array(
+                    'style' => 'text-align: right;vertical-align: middle;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', !empty($totalBottomYear)?$this->Number->format($totalBottomYear, Configure::read('__Site.config_currency_code'), array('places' => 0)):0), array(
+                    'style' => 'text-align: right;vertical-align: middle;',
+                ));
+
+                if( !empty($totalCnt) ) {
+                    for ($i=0; $i <= $totalCnt; $i++) {
+                        $formatDate = date('F Y', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
+                        $nameSlug = sprintf('totalBottom%s', $this->Common->toSlug($formatDate, '_'));
+                        $totalLeft += $$nameSlug;
+                        $pencapaian = !empty($$nameSlug)?$this->Number->format($$nameSlug, Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
+
+                        $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', $pencapaian), array(
+                            'style' => 'text-align: right;vertical-align: middle;',
+                        ));
+                    }
+                }
+
+                $totalLeft = !empty($totalLeft)?$this->Number->format($totalLeft, Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
+                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', $totalLeft), array(
+                    'style' => 'text-align: right;vertical-align: middle;',
+                ));
+                $each_loop_message .= '</tr>';
             }
 
             $date_title = $sub_module_title;
