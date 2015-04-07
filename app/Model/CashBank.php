@@ -25,7 +25,13 @@ class CashBank extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'User penerima atau di bayar kepada harap dipilih'
             ),
-        )
+        ),
+        'coa_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Kas Bank harap dipilih'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(

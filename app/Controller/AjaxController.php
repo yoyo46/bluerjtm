@@ -1320,7 +1320,8 @@ class AjaxController extends AppController {
 		$this->loadModel('Coa');
 
 		$default_conditions = array(
-            'Coa.status' => 1
+            'Coa.status' => 1,
+            'Coa.level' => 4
         );
 
         if(!empty($this->request->data['Coa']['name'])){

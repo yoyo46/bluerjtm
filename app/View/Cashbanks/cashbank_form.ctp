@@ -27,8 +27,18 @@
 			?>
 		</div>
 		<?php
-				echo $this->Html->tag('div', $this->Form->input('receiving_cash_type',array(
+				echo $this->Html->tag('div', $this->Form->input('coa_id',array(
 					'label'=> __('Kas Bank *'), 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Kas Bank '),
+					'options' => $coas
+				)), array(
+					'class' => 'form-group'
+				));
+
+				echo $this->Html->tag('div', $this->Form->input('receiving_cash_type',array(
+					'label'=> __('Jenis Kas Bank *'), 
 					'class'=>'form-control cash-bank-handle',
 					'required' => false,
 					'options' => array(
