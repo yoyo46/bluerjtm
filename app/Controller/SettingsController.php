@@ -4937,4 +4937,208 @@ class SettingsController extends AppController {
         //     $this->redirect($this->referer());
         // }
     }
+
+    public function tarif_angkut_import( $download = false ) {
+        if(!empty($download)){
+            $link_url = FULL_BASE_URL . '/files/tarif_angkut.xls';
+            $this->redirect($link_url);
+            exit;
+        } else {
+            $this->loadModel('City');
+            $this->loadModel('GroupMotor');
+            $this->loadModel('TarifAngkutan');
+            $this->loadModel('Customer');
+            App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+
+            $this->set('active_menu', 'tarif_angkut_import');
+            $this->set('sub_module_title', __('Import Tarif Angkut'));
+
+            if(!empty($this->request->data)) { 
+                $Zipped = $this->request->data['Import']['importdata'];
+
+                if($Zipped["name"]) {
+                    $filename = $Zipped["name"];
+                    $source = $Zipped["tmp_name"];
+                    $type = $Zipped["type"];
+                    $name = explode(".", $filename);
+                    $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
+
+                    if(!empty($accepted_types)) {
+                        foreach($accepted_types as $mime_type) {
+                            if($mime_type == $type) {
+                                $okay = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+
+                    if(!$continue) {
+                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file Zip.'), 'error');
+                        $this->redirect(array('action'=>'tarif_angkut_import'));
+                    } else {
+                        $path = APP.'webroot'.DS.'files'.DS;
+                        $filenoext = basename ($filename, '.xls');
+                        $filenoext = basename ($filenoext, '.XLS');
+                        $fileunique = uniqid() . '_' . $filenoext;
+
+                        $targetdir = $path . $fileunique . $filename;
+                         
+                        ini_set('memory_limit', '96M');
+                        ini_set('post_max_size', '64M');
+                        ini_set('upload_max_filesize', '64M');
+
+                        if(!move_uploaded_file($source, $targetdir)) {
+                            $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                            $this->redirect(array('action'=>'tarif_angkut_import'));
+                        }
+                    }
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                    $this->redirect(array('action'=>'tarif_angkut_import'));
+                }
+
+                $xls_files = glob( $targetdir );
+
+                if(empty($xls_files)) {
+                    $this->rmdir_recursive ( $targetdir);
+                    $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                    $this->redirect(array('action'=>'tarif_angkut_import'));
+                } else {
+                    $uploadedXls = $this->addToFiles('xls', $xls_files[0]);
+                    $uploaded_file = $uploadedXls['xls'];
+                    $file = explode(".", $uploaded_file['name']);
+                    $extension = array_pop($file);
+                    
+                    if($extension == 'xls') {
+                        $dataimport = new Spreadsheet_Excel_Reader();
+                        $dataimport->setUTFEncoder('iconv');
+                        $dataimport->setOutputEncoding('UTF-8');
+                        $dataimport->read($uploaded_file['tmp_name']);
+                        
+                        if(!empty($dataimport)) {
+                            $data = $dataimport;
+
+                            for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
+                                $datavar = array();
+                                $flag = true;
+                                $i = 1;
+
+                                while ($flag) {
+                                    if( !empty($data->sheets[0]["cells"][1][$i]) ) {
+                                        $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
+                                        $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
+                                        $$variable = $thedata;
+                                        $datavar[] = $thedata;
+                                    } else {
+                                        $flag = false;
+                                    }
+                                    $i++;
+                                }
+
+                                $no_desc = __('Masukkan kata-kata marketing mengenai properti ini, seperti: 18 menit dari Toll Bandara (atau) 18 menit dari Universitas Tarumanegara (atau) Limited 18 unites');
+
+                                if(array_filter($datavar)) {
+                                    $fromCity = $this->City->getData('first', array(
+                                        'conditions' => array(
+                                            'City.name' => $dari,
+                                            'City.status' => 1,
+                                        ),
+                                    ));
+                                    $toCity = $this->City->getData('first', array(
+                                        'conditions' => array(
+                                            'City.name' => $tujuan,
+                                            'City.status' => 1,
+                                        ),
+                                    ));
+                                    $groupMotor = $this->GroupMotor->getData('first', array(
+                                        'conditions' => array(
+                                            'GroupMotor.name' => $group_motor,
+                                            'GroupMotor.status' => 1,
+                                        ),
+                                        'fields' => array(
+                                            'GroupMotor.lower_name', 'GroupMotor.id'
+                                        ),
+                                    ));
+                                    $customer = $this->Customer->getData('first', array(
+                                        'conditions' => array(
+                                            'Customer.status' => 1,
+                                            'Customer.code' => $kode_customer,
+                                        ),
+                                        'fields' => array(
+                                            'Customer.code', 'Customer.id'
+                                        ),
+                                    ));
+
+                                    if( !empty($fromCity) ) {
+                                        $from_city_id = $fromCity['City']['id'];
+                                        $from_city_name = $fromCity['City']['name'];
+                                    }
+                                    if( !empty($toCity) ) {
+                                        $to_city_id = $toCity['City']['id'];
+                                        $to_city_name = $toCity['City']['name'];
+                                    }
+                                    if( !empty($customer) ) {
+                                        $customer_id = $customer['Customer']['id'];
+                                    }
+                                    if( !empty($groupMotor) ) {
+                                        $group_motor_id = $groupMotor['GroupMotor']['id'];
+                                    }
+
+                                    $requestData['ROW'.($x-1)] = array(
+                                        'TarifAngkutan' => array(
+                                            'type' => !empty($tipe_tarif)?strtolower($tipe_tarif):'',
+                                            'name_tarif' => !empty($nama)?$nama:false,
+                                            'from_city_name' => !empty($from_city_name)?$from_city_name:false,
+                                            'to_city_name' => !empty($to_city_name)?$to_city_name:false,
+                                            'from_city_id' => !empty($from_city_id)?$from_city_id:false,
+                                            'to_city_id' => !empty($to_city_id)?$to_city_id:'',
+                                            'customer_id' => !empty($customer_id)?$customer_id:'',
+                                            'capacity' => !empty($kapasitas)?$kapasitas:false,
+                                            'jenis_unit' => !empty($jenis_tarif)?strtolower($jenis_tarif):false,
+                                            'tarif' => !empty($tarif_angkutan)?str_replace(array('.', ','), array('', ''), $tarif_angkutan):false,
+                                            'group_motor_id' => !empty($group_motor_id)?$group_motor_id:0,
+                                        ),
+                                    );
+                                }
+                            }
+
+                            if(!empty($requestData)) {
+                                $row_submitted = 1;
+                                $successfull_row = 0;
+                                $failed_row = 0;
+                                $error_message = '';
+
+                                foreach($requestData as $request){
+                                    $data = $request;
+                                    $this->TarifAngkutan->create();
+                                    
+                                    if( $this->TarifAngkutan->save($data) ){
+                                        $this->Log->logActivity( __('Sukses upload Tarif Angkut by Import Excel'), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                                        $successfull_row++;
+                                    } else {
+                                        $failed_row++;
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Listing.'), $row_submitted) . '<br>';
+                                    }
+
+                                    $row_submitted++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(!empty($successfull_row)) {
+                    $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, count($requestData));
+                    $this->MkCommon->setCustomFlash(__($message_import1), 'success');
+                }
+                
+                if(!empty($error_message)) {
+                    $this->MkCommon->setCustomFlash(__($error_message), 'error');
+                }
+                $this->redirect(array('action'=>'tarif_angkut_import'));
+            }
+        }
+    }
 }

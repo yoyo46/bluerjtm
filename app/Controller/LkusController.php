@@ -349,7 +349,7 @@ class LkusController extends AppController {
     function payments() {
         if( in_array('view_lku_payments', $this->allowModule) ) {
             $this->loadModel('LkuPayment');
-            $this->set('active_menu', 'Lkus');
+            $this->set('active_menu', 'lku_payments');
             $this->set('sub_module_title', __('Data Pembayaran LKU'));
             $conditions = array();
             
@@ -608,7 +608,7 @@ class LkusController extends AppController {
             }
         }
 
-        $this->set('active_menu', 'Lkus');
+        $this->set('active_menu', 'lku_payments');
         $this->set('id', $id);
         $this->set('ttujs', $ttujs);
         $this->render('lku_payment_form');

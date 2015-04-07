@@ -110,8 +110,9 @@
 				), array(
 					'class'=> 'btn btn-default',
 				));
-	    		echo $this->Form->submit(__('simpan'), array(
-					'class'=> 'btn btn-success'
+	    		echo $this->Form->button(__('simpan'), array(
+					'class'=> 'btn btn-success btn-lg',
+					'type' => 'submit',
 				));
 		?>
 	</div>

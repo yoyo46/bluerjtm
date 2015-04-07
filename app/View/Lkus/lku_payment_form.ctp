@@ -15,7 +15,7 @@
 <div class="ttuj-form">
 	<div id="step1">
 		<div class="row">
-			<div class="col-sm-6">
+			<div class="col-sm-12">
 				<div class="box box-primary">
 				    <div class="box-header">
 				        <h3 class="box-title"><?php echo __('Informasi Pembayaran LKU'); ?></h3>
@@ -72,8 +72,9 @@
 					), array(
 						'class'=> 'btn btn-default',
 					));
-		    		echo $this->Form->submit(__('simpan'), array(
-						'class'=> 'btn btn-success'
+		    		echo $this->Form->button(__('simpan'), array(
+						'class'=> 'btn btn-success btn-lg',
+						'type' => 'submit'
 					));
 			?>
 		</div>

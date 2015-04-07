@@ -586,7 +586,8 @@
                             'index', 'tarif_angkutan', 'invoices',
                             'invoice_reports', 'revenues', 'ar_period_reports',
                             'invoice_payments', 'list_kwitansi', 'report_customers',
-                            'report_revenue_customers', 'report_monitoring_sj_revenue'
+                            'report_revenue_customers', 'report_monitoring_sj_revenue',
+                            'tarif_angkut_import'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -609,6 +610,16 @@
                                     'escape' => false
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'tarif_angkutan' )?'active':'',
+                                ));
+                            }
+                            if( in_array('view_tarif_angkutan', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Tarif Angkut', array(
+                                    'controller' => 'settings',
+                                    'action' => 'tarif_angkut_import',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'tarif_angkut_import' )?'active':'',
                                 ));
                             }
 
