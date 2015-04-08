@@ -162,28 +162,9 @@ class CashbanksController extends AppController {
                 $coas_validate = false;
             }
 
-            $validate_auth = true;
-            if(!empty($data['CashBankAuth']['employe_id'])){
-                $arr_list_auth = array();
-                $user_collect = array();
-                foreach ($data['CashBankAuth']['employe_id'] as $key => $value) {
-                    if(!in_array($value, $user_collect) && !empty($value)){
-                        $arr_list_auth[] = array(
-                            'employe_id' => $value,
-                            'level' => $key+1
-                        );
-
-                        array_push($user_collect, $value);
-                    }
-                }
-                $data['CashBankAuth'] = $arr_list_auth;
-            }else{
-                $validate_auth = false;
-            }
-
             $this->CashBank->set($data);
 
-            if($this->CashBank->validates($data) && $coas_validate && $validate_auth){
+            if($this->CashBank->validates($data) && $coas_validate){
                 if($this->CashBank->save($data)){
 
                     $cash_bank_id = $this->CashBank->id;
@@ -203,15 +184,6 @@ class CashbanksController extends AppController {
                             $this->CashBank->CashBankDetail->create();
                             $this->CashBank->CashBankDetail->set($value);
                             $this->CashBank->CashBankDetail->save();
-                        }
-                    }
-
-                    if(!empty($data['CashBankAuth'])){
-                        foreach ($data['CashBankAuth'] as $key => $value) {
-                            $value['cash_bank_id'] = $cash_bank_id;
-                            $this->CashBank->CashBankAuth->create();
-                            $this->CashBank->CashBankAuth->set($value);
-                            $this->CashBank->CashBankAuth->save();
                         }
                     }
 
@@ -293,26 +265,6 @@ class CashbanksController extends AppController {
             $this->set('coa_data', $coa_data);
         }
 
-        if(!empty($data['CashBankAuth'])){
-            foreach ($data['CashBankAuth'] as $key => $value) {
-                $user_auth = $this->User->getData('first', array(
-                    'conditions' => array(
-                        'User.id' => $value['employe_id']
-                    ),
-                    'contain' => array(
-                        'Group'
-                    )
-                ));
-
-                if(!empty($user_auth['Group']['name'])){
-                    $data['CashBankAuth'][$key]['group'] = $user_auth['Group']['name'];
-                }
-            }
-
-            $auth_data['CashBankAuth'] = $data['CashBankAuth'];
-            $this->set('auth_data', $auth_data);
-        }
-
         $coas = $this->Coa->getData('list', array(
             'conditions' => array(
                 // 'Coa.level' => 4,
@@ -320,16 +272,7 @@ class CashbanksController extends AppController {
                 'Coa.status' => 1
             )
         ));
-
-        $employes = $this->User->getData('list', array(
-            'conditions' => array(
-                'User.status' => 1,
-            ),
-            'fields' => array(
-                'User.id', 'User.full_name'
-            )
-        ));
-        $this->set(compact('coas', 'employes'));
+        $this->set(compact('coas'));
 
         $this->set('active_menu', 'cash_banks');
         $this->set('module_title', 'Kas Bank');
@@ -374,6 +317,36 @@ class CashbanksController extends AppController {
         $coa = false;
 
         if( !empty($id) ) {
+            $this->loadModel('CashBankAuthMaster');
+            $cash_bank_auth_master = $this->CashBankAuthMaster->find('all', array(
+                'contain' => array(
+                    'User' => array(
+                        'Group'
+                    )
+                )
+            ));
+            if(!empty($cash_bank_auth_master)){
+                foreach ($cash_bank_auth_master as $key => $value) {
+                    $cash_bank_auth = $this->CashBank->CashBankAuth->getData('first', array(
+                        'conditions' => array(
+                            'CashBankAuth.cash_bank_auth_master_id' => $value['CashBankAuthMaster']['id']
+                        )
+                    ));
+
+                    if(!empty($cash_bank_auth)){
+                        $cash_bank_auth_master[$key] = array_merge($value, $cash_bank_auth);
+                    }
+                }
+            }
+            $this->set('cash_bank_auth_master', $cash_bank_auth_master);
+
+            $cash_bank_master_user = $this->CashBankAuthMaster->find('first', array(
+                'conditions' => array(
+                    'CashBankAuthMaster.employe_id' => $this->user_id
+                )
+            ));
+            $this->set('cash_bank_master_user', $cash_bank_master_user);
+
             $cashbank = $this->CashBank->getData('first', array(
                 'conditions' => array(
                     'CashBank.id' => $id,
@@ -384,32 +357,38 @@ class CashbanksController extends AppController {
                         'Coa'
                     ),
                     'CashBankAuth' => array(
-                        'User' => array(
-                            'Group'
+                        'conditions' => array(
+                            'CashBankAuth.cash_bank_auth_master_id' => !empty($value['CashBankAuthMaster']['id']) ? $value['CashBankAuthMaster']['id'] : ''
                         )
                     )
                 )
             ));
             
             if( !empty($cashbank) ) {
-                $cashbank_auth_id = Set::extract('/CashBankAuth/employe_id',$cashbank);
-                $auth = $this->CashBank->CashBankAuth->getData('first', array(
-                    'conditions' => array(
-                        'CashBankAuth.cash_bank_id' => $id,
-                        'CashBankAuth.employe_id' => $this->user_id
-                    )
-                ));
+                $cashbank_auth_id = Set::extract('/CashBankAuthMaster/employe_id', $cash_bank_auth_master);
 
-                if(!empty($this->request->data)){
-                    if(in_array($this->user_id, $cashbank_auth_id) && !empty($auth)){
+                if(!empty($this->request->data) && !empty($cash_bank_master_user)){
+                    if(in_array($this->user_id, $cashbank_auth_id)){
                         $data = $this->request->data;
-                        $data['CashBankAuth']['has_vote'] = 1;
 
-                        $this->CashBank->CashBankAuth->id = $auth['CashBankAuth']['id'];
+                        $data['CashBankAuth']['cash_bank_id'] = $id;
+
+                        $auth = $this->CashBank->CashBankAuth->getData('first', array(
+                            'conditions' => array(
+                                'CashBankAuth.cash_bank_auth_master_id' => $cash_bank_master_user['CashBankAuthMaster']['id']
+                            ),
+                        ));
+
+                        if(empty($auth)){
+                            $this->CashBank->CashBankAuth->create();
+                        }else{
+                            $this->CashBank->CashBankAuth->id = $auth['CashBankAuth']['id'];
+                        }
+
                         $this->CashBank->CashBankAuth->set($data);
 
                         if($this->CashBank->CashBankAuth->save()){
-                            if($auth['CashBankAuth']['level'] == 1){
+                            if($cash_bank_master_user['CashBankAuthMaster']['level'] == 1){
                                 $data_arr = array();
                                 switch ($data['CashBankAuth']['status_document']) {
                                     case 'approve':
@@ -466,7 +445,9 @@ class CashbanksController extends AppController {
 
                     $this->redirect($this->referer());
                 }else{
-                    $this->request->data = $auth;
+                    if(!empty($cashbank['CashBankAuth'][0])){
+                        $this->request->data['CashBankAuth'] = $cashbank['CashBankAuth'][0];
+                    }
                 }
 
                 if(!empty($cashbank['CashBank']['receiver_type'])){
@@ -504,12 +485,106 @@ class CashbanksController extends AppController {
                     }
                 }
                 // debug($cashbank);die();
-                $this->set('cashbank', $cashbank);
+                $this->set('cashbank', $cashbank);                
                 $this->set('cashbank_auth_id', $cashbank_auth_id);
             } else {
                 $this->MkCommon->setCustomFlash(__('Kas Bank tidak ditemukan.'), 'error');
                 $this->redirect($this->referer());
             }
         } 
+    }
+
+    function approval_setting(){
+        $this->loadModel('User');
+        $this->loadModel('CashBankAuthMaster');
+        $cash_bank_auth_master = $this->CashBankAuthMaster->find('all');
+
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+
+            $validate_auth = true;
+            $user_collect = array();
+            if(!empty($data['CashBankAuthMaster']['employe_id'])){
+                $arr_list_auth = array();
+                foreach ($data['CashBankAuthMaster']['employe_id'] as $key => $value) {
+                    if(!in_array($value, $user_collect) && !empty($value)){
+                        $id = !empty($data['CashBankAuthMaster']['id'][$key]) ? $data['CashBankAuthMaster']['id'][$key] : '';
+                        $arr_list_auth[] = array(
+                            'employe_id' => $value,
+                            'level' => $key+1,
+                            'id' => $id
+                        );
+
+                        array_push($user_collect, $value);
+                    }
+                }
+                $data['CashBankAuthMaster'] = $arr_list_auth;
+            }else{
+                $validate_auth = false;
+            }
+
+            if($validate_auth && !empty($user_collect)){
+                if(!empty($data['CashBankAuthMaster'])){
+                    foreach ($data['CashBankAuthMaster'] as $key => $value) {
+                        if(!empty($value['id'])){
+                            $this->CashBankAuthMaster->id = $value['id'];
+                        }else{
+                            $this->CashBankAuthMaster->create();
+                        }
+
+                        $this->CashBankAuthMaster->set($value);
+                        $this->CashBankAuthMaster->save();
+                    }
+
+                    $this->MkCommon->setCustomFlash('Sukses melakukan setting approval.', 'success');
+                    $this->redirect(array(
+                        'action' => 'approval_setting'
+                    ));
+                }
+            }else{
+                $this->MkCommon->setCustomFlash('Harap masukkan karyawan yang akan di jadikan approval Kas Bank.', 'error');
+            }
+        }else{
+            $data = array();
+            if(!empty($cash_bank_auth_master)){
+                foreach ($cash_bank_auth_master as $key => $value) {
+                    $data['CashBankAuthMaster'][] = $value['CashBankAuthMaster'];
+                }
+            }
+        }
+
+        if(!empty($data['CashBankAuthMaster'])){
+            $auth_data = array();
+            foreach ($data['CashBankAuthMaster'] as $key => $value) {
+                $group = $this->User->find('first', array(
+                    'conditions' => array(
+                        'User.id' => $value['employe_id']
+                    ),
+                    'contain' => array(
+                        'Group'
+                    )
+                ));
+
+                if(!empty($group['Group']['name'])){
+                    $group = $group['Group']['name'];
+                }
+                $auth_data['CashBankAuthMaster'][] = array_merge($value, array(
+                    'group' => $group
+                ));
+            }
+
+            $this->set('auth_data', $auth_data);
+        }
+
+        $employes = $this->User->getData('list', array(
+            'conditions' => array(
+                'User.status' => 1,
+            ),
+            'fields' => array(
+                'User.id', 'User.full_name'
+            )
+        ));
+
+        $this->set(compact('employes', 'cash_bank_auth_master'));
     }
 }

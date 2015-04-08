@@ -873,6 +873,7 @@ var add_custom_field = function(){
                             '<div class="row">'+
                                 '<div class="col-sm-10">'+
                                     $('#form-authorize').html()+
+                                    '<input type="hidden" name="data[CashBankAuthMaster][id][]" value="'+count_next+'" id="CashBankAuthMasterId">'+
                                 '</div>'+
                                 '<div class="col-sm-2">'+
                                     '<a href="/ajax/getUserEmploye/'+count_next+'" class="btn bg-maroon ajaxModal" title="Data Karyawan" data-action="browse-form" data-change="cash-bank-auth-user"><i class="fa fa-search"></i></a>'+

@@ -1,6 +1,6 @@
 <?php
-class CashBankAuth extends AppModel {
-	var $name = 'CashBankAuth';
+class CashBankAuthMaster extends AppModel {
+	var $name = 'CashBankAuthMaster';
 	var $validate = array(
         'coa_id' => array(
             'notempty' => array(
@@ -11,9 +11,13 @@ class CashBankAuth extends AppModel {
 	);
 
 	var $belongsTo = array(
-        'CashBankAuthMaster' => array(
-            'className' => 'CashBankAuthMaster',
+        'CashBankAuth' => array(
+            'className' => 'CashBankAuth',
             'foreignKey' => 'cash_bank_auth_master_id',
+        ),
+        'User' => array(
+            'className' => 'User',
+            'foreignKey' => 'employe_id',
         )
 	);
 

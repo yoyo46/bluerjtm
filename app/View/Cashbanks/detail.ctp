@@ -122,7 +122,7 @@
         </div>
     </div>
     <?php
-        if(!empty($cashbank['CashBankAuth'])){
+        if(!empty($cash_bank_auth_master)){
     ?>
     <div class="col-sm-12">
         <div class="box box-success">
@@ -146,14 +146,14 @@
                     </thead>
                     <tbody>
                         <?php
-                            foreach ($cashbank['CashBankAuth'] as $key => $value) {
+                            foreach ($cash_bank_auth_master as $key => $value) {
                         ?>
                         <tr>
                             <td><?php echo $value['User']['full_name']?></td>
                             <td><?php echo $value['User']['Group']['name']?></td>
-                            <td><?php echo $value['level']?></td>
-                            <td><?php echo !empty($value['status_document']) ? $value['status_document'] : '-';?></td>
-                            <td><?php echo !empty($value['description']) ? $value['description'] : '-';?></td>
+                            <td><?php echo $value['CashBankAuthMaster']['level']?></td>
+                            <td><?php echo !empty($value['CashBankAuth']['status_document']) ? $value['CashBankAuth']['status_document'] : '-';?></td>
+                            <td><?php echo !empty($value['CashBankAuth']['description']) ? $value['CashBankAuth']['description'] : '-';?></td>
                         </tr>
                         <?php
                             }
@@ -196,6 +196,11 @@
                             'reject' => 'Tidak Setuju',
                         ),
                         'class' => 'form-control'
+                    ));
+
+                    echo $this->Form->input('cash_bank_auth_master_id', array(
+                        'type' => 'hidden',
+                        'value' => $cash_bank_master_user['CashBankAuthMaster']['id']
                     ));
 
                     echo $this->Form->input('description', array(

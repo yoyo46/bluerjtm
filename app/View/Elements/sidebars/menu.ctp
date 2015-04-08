@@ -822,16 +822,35 @@
                             $activeSetting = 'active';
                         }
             ?>
-            <li class="<?php echo $activeSetting; ?>">
-                <?php
-                    echo $this->Html->link('<i class="fa fa-book"></i><span>Kas Bank</span><i class="fa fa-angle-left pull-right"></i>', array(
-                        'controller' => 'cashbanks',
-                        'action' => 'index'
-                    ), array(
-                        'escape' => false
-                    ));
-                ?>
-            </li>
+            <li class="treeview <?php echo $activeMenu; ?>">
+                <a href="#">
+                    <i class="fa fa-book"></i>
+                    <span>Kas Bank</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <?php
+                            echo $this->Html->link('<i class="fa fa-angle-double-right"></i> Kas Bank</span><i class="fa fa-angle-left pull-right"></i>', array(
+                                'controller' => 'cashbanks',
+                                'action' => 'index'
+                            ), array(
+                                'escape' => false
+                            ));
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                            echo $this->Html->link('<i class="fa fa-angle-double-right"></i> Approval Setting</span><i class="fa fa-angle-left pull-right"></i>', array(
+                                'controller' => 'cashbanks',
+                                'action' => 'approval_setting'
+                            ), array(
+                                'escape' => false
+                            ));
+                        ?>
+                    </li>
+                </ul>
+            <li>
             <?php
                     // }
 
