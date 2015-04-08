@@ -4212,18 +4212,45 @@ class RevenuesController extends AppController {
             if(!empty($data['InvoicePaymentDetail']['price_pay']) && !empty($data['InvoicePaymentDetail']['invoice_id'])){
                 foreach ($data['InvoicePaymentDetail']['price_pay'] as $key => $value) {
                     $price = $this->MkCommon->convertPriceToString($value);
+                    $_invoice_id = $data['InvoicePaymentDetail']['invoice_id'][$key];
 
                     if(empty($price) || empty($data['InvoicePaymentDetail']['price_pay'][$key])){
                         $validate_price_pay = false;
                         break;
                     }else{
-                        $data['InvoicePaymentDetail']['price_pay'][$key] = $price;
-                        $total += $price;
+                        $invoice_has_paid = $this->Invoice->InvoicePaymentDetail->getData('first', array(
+                            'conditions' => array(
+                                'InvoicePaymentDetail.invoice_id' => $_invoice_id
+                            ),
+                            'fields' => array(
+                                'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid'
+                            )
+                        ));
+
+                        $invoice_has_paid = (!empty($invoice_has_paid[0]['invoice_has_paid'])) ? $invoice_has_paid[0]['invoice_has_paid'] : 0;
+                        $total_paid = $invoice_has_paid + $price;
+
+                        $invoice_data = $this->Invoice->getData('first', array(
+                            'conditions' => array(
+                                'Invoice.id' => $_invoice_id
+                            )
+                        ));
+                        
+                        if(!empty($invoice_data)){
+                            if($total_paid > $invoice_data['Invoice']['total']){
+                                $validate_price_pay = false;
+                                break;
+                            }else{
+                                $data['InvoicePaymentDetail']['price_pay'][$key] = $price;
+                                $total += $price;
+                            }
+                        }
                     }
                 }
             }else{
                 $validate_price_pay = false;
             }
+            
             $temptotal = $total;
             $data['InvoicePayment']['total_payment'] = $total;
 
@@ -4312,7 +4339,7 @@ class RevenuesController extends AppController {
                 $text = sprintf(__('Gagal %s Pembayaran Invoice'), $msg);
 
                 if( !$validate_price_pay ){
-                    $text .= ', harap isi semua field kosong.';
+                    $text .= ', harap isi semua field kosong dan isi pembayaran invoice tidak boleh lebih besar dari total invoice.';
                 }
                 $this->MkCommon->setCustomFlash($text, 'error'); 
             }
@@ -4392,6 +4419,7 @@ class RevenuesController extends AppController {
             'coas'
         ));
         $this->set('active_menu', 'invoice_payments');
+        $this->layout = 'default';
         $this->render('invoice_payment_form');
     }
 

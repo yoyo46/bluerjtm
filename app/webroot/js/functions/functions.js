@@ -2116,6 +2116,7 @@ var set_auth_cash_bank = function(obj){
 $(function() {
     leasing_action();
     laka_ttuj_change();
+    invoice_price_payment();
 
     set_auth_cash_bank($('.cash-bank-auth-user'));
 

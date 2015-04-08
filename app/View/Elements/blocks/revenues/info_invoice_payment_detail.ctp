@@ -37,7 +37,6 @@
             if(!empty($value['invoice_has_paid'])){
                 echo $this->Number->currency($value['invoice_has_paid'], Configure::read('__Site.config_currency_code'), array('places' => 0)); 
                 $price_pay = $value['invoice_has_paid'];
-                die();
             }else{
                 echo '-';
             }
@@ -57,7 +56,6 @@
 
             if(!empty($this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']])){
                 $total += str_replace(',', '', $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']]);
-                $grand_total += $total;
             }
         ?>
     </td>
