@@ -5552,13 +5552,14 @@ class RevenuesController extends AppController {
                 }
             }
 
-            // if( !empty($data_action) ) {
-            //     $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
-            // } else {
-            //     $options['limit'] = 20;
-            // }
+            if( !empty($data_action) ) {
+                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+            } else {
+                $options['limit'] = 20;
+            }
 
-            $ttujs = $this->Ttuj->find('all', $options);
+            $ttujs = $this->paginate('Ttuj');
+            // $ttujs = $this->Ttuj->find('all', $options);
 
             if( !empty($ttujs) ) {
                 foreach ($ttujs as $key => $ttuj) {

@@ -138,31 +138,37 @@
             <thead frozen="true">
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', __('NO TTUJ'), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('Ttuj.no_ttuj', __('NO TTUJ')), array(
                                 'style' => 'text-align: center;width: 150px;',
-                                'data-options' => 'field:\'no_ttuj\',width:120,sortable:true',
+                                'data-options' => 'field:\'no_ttuj\',width:120',
                                 'rowspan' => $headerRowspan,
+                                'mainalign' => 'center',
+                                'align' => 'left',
                             ));
-                            echo $this->Html->tag('th', __('TANGGAL'), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('Ttuj.ttuj_date', __('TANGGAL')), array(
                                 'align' => 'center',
                                 'style' => 'text-align: center;width: 100px;',
-                                'data-options' => 'field:\'ttuj_date\',width:100,sortable:true',
+                                'data-options' => 'field:\'ttuj_date\',width:100',
                                 'rowspan' => $headerRowspan,
                             ));
-                            echo $this->Html->tag('th', __('TUJUAN'), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('Ttuj.to_city_name', __('TUJUAN')), array(
                                 'style' => 'text-align: center;width: 120px;',
-                                'data-options' => 'field:\'to_city_name\',width:120,sortable:true',
+                                'data-options' => 'field:\'to_city_name\',width:120',
                                 'rowspan' => $headerRowspan,
+                                'mainalign' => 'center',
+                                'align' => 'left',
                             ));
-                            echo $this->Html->tag('th', __('NOPOL'), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('Ttuj.nopol', __('NOPOL')), array(
                                 'style' => 'text-align: center;width: 120px;',
-                                'data-options' => 'field:\'nopol\',width:100,sortable:true',
+                                'data-options' => 'field:\'nopol\',width:100',
                                 'rowspan' => $headerRowspan,
+                                'mainalign' => 'center',
+                                'align' => 'left',
                             ));
                             echo $this->Html->tag('th', __('UNIT'), array(
                                 'align' => 'center',
                                 'style' => 'text-align: center;width: 80px;',
-                                'data-options' => 'field:\'unit\',width:80,sortable:true',
+                                'data-options' => 'field:\'unit\',width:80',
                                 'rowspan' => $headerRowspan,
                             ));
                     ?>
@@ -210,42 +216,42 @@
                     <?php 
                             echo $this->Html->tag('th', __('KEMBALI'), array(
                                 'style' => 'text-align: center;',
-                                'data-options' => 'field:\'sj_receipt\',width:80,sortable:true',
+                                'data-options' => 'field:\'sj_receipt\',width:80',
                                 'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('TERTAGIH'), array(
                                 'style' => 'text-align: center;',
-                                'data-options' => 'field:\'sj_invoice\',width:80,sortable:true',
+                                'data-options' => 'field:\'sj_invoice\',width:80',
                                 'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('SJ BELUM KEMBALI'), array(
                                 'style' => 'text-align: center;',
-                                'data-options' => 'field:\'sj_not_receipt\',width:120,sortable:true',
+                                'data-options' => 'field:\'sj_not_receipt\',width:120',
                                 'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('SJ KEMBALI BELUM TERTAGIH'), array(
                                 'style' => 'text-align: center;',
-                                'data-options' => 'field:\'sj_not_receipt_not_invoice\',width:120,sortable:true',
+                                'data-options' => 'field:\'sj_not_receipt_not_invoice\',width:120',
                                 'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('SJ BELUM TERTAGIH'), array(
                                 'style' => 'text-align: center;',
-                                'data-options' => 'field:\'sj_not_invoice\',width:120,sortable:true',
+                                'data-options' => 'field:\'sj_not_invoice\',width:120',
                                 'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('SJ KEMBALI'), array(
                                 'style' => 'text-align: center;',
-                                'data-options' => 'field:\'sj_lead_not_invoice\',width:100,sortable:true',
+                                'data-options' => 'field:\'sj_lead_not_invoice\',width:100',
                                 'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('SJ PROSES BILLING'), array(
                                 'style' => 'text-align: center;',
-                                'data-options' => 'field:\'sj_lead_process_billing\',width:100,sortable:true',
+                                'data-options' => 'field:\'sj_lead_process_billing\',width:100',
                                 'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('SJ TERTAGIH'), array(
                                 'style' => 'text-align: center;',
-                                'data-options' => 'field:\'sj_lead_invoice\',width:100,sortable:true',
+                                'data-options' => 'field:\'sj_lead_invoice\',width:100',
                                 'align' => 'center',
                             ));
                     ?>
@@ -386,31 +392,33 @@
                                 'align' => 'center',
                                 'style' => 'text-align: center;',
                             ));
-                            echo $this->Html->tag('td', __('Total'), array(
+                            echo $this->Html->tag('td', $this->Html->tag('strong', __('Total'), array(
+                                'style' => 'text-align: right;display: block;'
+                            )), array(
                                 'align' => 'center',
                                 'style' => 'text-align: center;',
                             ));
-                            echo $this->Html->tag('td', $totalUnit, array(
+                            echo $this->Html->tag('td', $this->Html->tag('strong', $totalUnit), array(
                                 'align' => 'center',
                                 'style' => 'text-align: center;',
                             ));
-                            echo $this->Html->tag('td', $totalUnitSj, array(
+                            echo $this->Html->tag('td', $this->Html->tag('strong', $totalUnitSj), array(
                                 'align' => 'center',
                                 'style' => 'text-align: center;',
                             ));
-                            echo $this->Html->tag('td', $totalUnitInvoiced, array(
+                            echo $this->Html->tag('td', $this->Html->tag('strong', $totalUnitInvoiced), array(
                                 'align' => 'center',
                                 'style' => 'text-align: center;',
                             ));
-                            echo $this->Html->tag('td', $totalUnitSjNotRecipt, array(
+                            echo $this->Html->tag('td', $this->Html->tag('strong', $totalUnitSjNotRecipt), array(
                                 'align' => 'center',
                                 'style' => 'text-align: center;',
                             ));
-                            echo $this->Html->tag('td', $totalUnitJSUnInvoiced, array(
+                            echo $this->Html->tag('td', $this->Html->tag('strong', $totalUnitJSUnInvoiced), array(
                                 'align' => 'center',
                                 'style' => 'text-align: center;',
                             ));
-                            echo $this->Html->tag('td', $totalUnitUnInvoiced, array(
+                            echo $this->Html->tag('td', $this->Html->tag('strong', $totalUnitUnInvoiced), array(
                                 'align' => 'center',
                                 'style' => 'text-align: center;',
                             ));
@@ -418,19 +426,19 @@
                                 'align' => 'center',
                                 'style' => 'text-align: center;',
                             ));
-                            echo $this->Html->tag('td', __('AVG'), array(
+                            echo $this->Html->tag('td', $this->Html->tag('strong', __('AVG')), array(
                                 'align' => 'right',
                                 'style' => 'text-align: right;',
                             ));
-                            echo $this->Html->tag('td', round($avgLeadSj/count($ttujs), 2), array(
+                            echo $this->Html->tag('td', $this->Html->tag('strong', round($avgLeadSj/count($ttujs), 2)), array(
                                 'align' => 'center',
                                 'style' => 'text-align: center;',
                             ));
-                            echo $this->Html->tag('td', round($avgLeadSjBilling/count($ttujs), 2), array(
+                            echo $this->Html->tag('td', $this->Html->tag('strong', round($avgLeadSjBilling/count($ttujs), 2)), array(
                                 'align' => 'center',
                                 'style' => 'text-align: center;',
                             ));
-                            echo $this->Html->tag('td', round($avgLeadSjInvoiced/count($ttujs), 2), array(
+                            echo $this->Html->tag('td', $this->Html->tag('strong', round($avgLeadSjInvoiced/count($ttujs), 2)), array(
                                 'align' => 'center',
                                 'style' => 'text-align: center;',
                             ));
