@@ -164,7 +164,7 @@ class Invoice extends AppModel {
             $data_merge = $this->InvoicePaymentDetail->getData('first', array(
                 'conditions' => array(
                     'InvoicePaymentDetail.invoice_id' => $id,
-                    'InvoicePayment.status' => 1,
+                    // 'InvoicePayment.status' => 1,
                 ),
                 'contain' => array(
                     'InvoicePayment'

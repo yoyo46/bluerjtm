@@ -10281,7 +10281,7 @@
                     var cols = [];
                     $(this).find("th").each(function() {
                         var th = $(this);
-                        var col = $.extend({}, $.parser.parseOptions(this, ["field", "align", "halign", "order", "width", {
+                        var col = $.extend({}, $.parser.parseOptions(this, ["field", "align", "halign", "order", "width", "mainalign", {
                             sortable: "boolean",
                             checkbox: "boolean",
                             resizable: "boolean",
@@ -10461,7 +10461,9 @@
                             td.attr("field", col.field);
                             var styling = '';
 
-                            if( col.align == 'center' ) {
+                            if( col.mainalign == 'center' ) {
+                                styling = 'text-align: center;';
+                            } else if( col.align == 'center' ) {
                                 styling = 'text-align: center;';
                             }
 
@@ -10484,7 +10486,13 @@
                             } else {
                                 col.auto = true;
                             }
-                            cell.css("text-align", (col.halign || col.align || ""));
+
+                            if( col.mainalign == 'center' ) {
+                                cell.css("text-align", "center");
+                            } else {
+                                cell.css("text-align", (col.halign || col.align || ""));
+                            }
+
                             col.cellClass = _5ce.cellClassPrefix + "-" + col.field.replace(/[\.|\s]/g, "-");
                             cell.addClass(col.cellClass).css("width", "");
                         } else {

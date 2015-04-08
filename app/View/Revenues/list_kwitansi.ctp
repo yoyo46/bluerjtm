@@ -1,19 +1,17 @@
 <?php 
         if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
             $this->Html->addCrumb($sub_module_title);
-            $addStyle = '';
+            $addStyle = 'width: 100%;height: 550px;';
             $tdStyle = '';
             $border = 0;
+            $headerRowspan = false;
+            $addClass = 'easyui-datagrid';
 
             if( $data_action == 'excel' ) {
                 header('Content-type: application/ms-excel');
                 header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
                 $tdStyle = 'text-align: center;';
-            }
-
-            if( !empty($cities) ) {
-                $addStyle = 'min-width: 1000px;';
             }
 
             if( $data_action != 'excel' ) {
@@ -131,61 +129,88 @@
 
                 echo $this->Common->getInvoiceStatusContent( $dataStatus );
         ?>
-        <table class="table table-bordered report" style="<?php echo $addStyle; ?>" border="<?php echo $border; ?>">
-            <thead>
+        <table id="tt" class="table table-bordered <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true" border="<?php echo $border; ?>">
+            <thead frozen="true">
                 <tr>
                     <?php 
                             echo $this->Html->tag('th', __('No.'), array(
-                                'style' => $tdStyle,
-                                'class' => 'text-center text-middle',
+                                'style' => 'text-align: center;width: 50px;vertical-align: middle;',
+                                'data-options' => 'field:\'no\',width:50',
+                                'align' => 'center',
                             ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Invoice.invoice_date', __('Tgl Kwitansi')), array(
-                                'style' => $tdStyle,
-                                'class' => 'text-center text-middle',
+                                'style' => 'text-align: center;width: 100px;vertical-align: middle;',
+                                'data-options' => 'field:\'invoice_date\',width:100',
+                                'align' => 'center',
                             ));
                             echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.name', __('Customer')), array(
-                                'style' => $tdStyle,
-                                'class' => 'text-center text-middle',
+                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
+                                'data-options' => 'field:\'customer\',width:120',
+                                'align' => 'left',
+                                'mainalign' => 'center',
                             ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Invoice.no_invoice', __('No. Invoice')), array(
-                                'style' => $tdStyle,
-                                'class' => 'text-center text-middle',
+                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
+                                'data-options' => 'field:\'no_invoice\',width:120',
+                                'align' => 'left',
+                                'mainalign' => 'center',
                             ));
+
+                            if( $data_action != 'excel' ) {
+                    ?>
+                </tr>
+            </thead>
+            <thead>
+                <tr>
+                    <?php 
+                            }
+
                             echo $this->Html->tag('th', $this->Common->getSorting('Invoice.total', __('Total Tagihan')), array(
-                                'style' => $tdStyle.'width: 120px;',
-                                'class' => 'text-center text-middle',
+                                'style' => 'text-align: center;width: 150px;vertical-align: middle;',
+                                'data-options' => 'field:\'total\',width:150,',
+                                'align' => 'right',
+                                'mainalign' => 'center',
                             ));
                             echo $this->Html->tag('th', __('Periode Tanggal'), array(
-                                'style' => $tdStyle,
-                                'class' => 'text-center text-middle',
+                                'style' => 'text-align: center;width: 100px;vertical-align: middle;',
+                                'data-options' => 'field:\'period\',width:100',
+                                'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('Periode Bulan'), array(
-                                'style' => $tdStyle,
-                                'class' => 'text-center text-middle',
+                                'style' => 'text-align: center;width: 100px;vertical-align: middle;',
+                                'data-options' => 'field:\'period_month\',width:100',
+                                'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('Qty Unit'), array(
-                                'style' => $tdStyle,
-                                'class' => 'text-center text-middle',
+                                'style' => 'text-align: center;width: 80px;vertical-align: middle;',
+                                'data-options' => 'field:\'qty\',width:80',
+                                'align' => 'center',
                             ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Invoice.tarif_type', __('Jenis')), array(
-                                'style' => $tdStyle,
-                                'class' => 'text-center text-middle',
+                                'style' => 'text-align: center;width: 100px;vertical-align: middle;',
+                                'data-options' => 'field:\'tarif_type\',width:100',
+                                'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('Tgl J.Tempo'), array(
-                                'style' => $tdStyle,
-                                'class' => 'text-center text-middle',
+                                'style' => 'text-align: center;width: 100px;vertical-align: middle;',
+                                'data-options' => 'field:\'expired_date\',width:100',
+                                'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('Tgl Bayar'), array(
-                                'style' => $tdStyle,
-                                'class' => 'text-center text-middle',
+                                'style' => 'text-align: center;width: 100px;vertical-align: middle;',
+                                'data-options' => 'field:\'paid_date\',width:100',
+                                'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('Total Transfer'), array(
-                                'style' => $tdStyle.'width:110px;',
-                                'class' => 'text-center text-middle',
+                                'style' => 'text-align: center;width: 150px;vertical-align: middle;',
+                                'data-options' => 'field:\'total_transfer\',width:150',
+                                'align' => 'right',
+                                'mainalign' => 'center',
                             ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Invoice.complete_paid', __('Status')), array(
-                                'style' => $tdStyle,
-                                'class' => 'text-center text-middle',
+                                'style' => 'text-align: center;width: 100px;vertical-align: middle;',
+                                'data-options' => 'field:\'status\',width:100',
+                                'align' => 'center',
                             ));
                     ?>
                 </tr>
@@ -197,6 +222,8 @@
                             $totalTagihan = 0;
                             $totalQty = 0;
                             $totalTransfer = 0;
+                            $totalVoidTransfer = 0;
+                            $totalVoid = 0;
 
                             foreach ($invoices as $key => $invoice) {
                                 $totalUnit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
@@ -218,15 +245,23 @@
                                 }
 
                                 $totalTransfer += $totalPaid;
+
+                                if( strtolower($invoiceStatus['text']) == 'void' ) {
+                                    $totalVoidTransfer += $totalPaid;
+                                    $totalVoid += $invoice['Invoice']['total'];
+                                }
                 ?>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('td', $idx);
-                            echo $this->Html->tag('td', $this->Common->customDate($invoice['Invoice']['invoice_date'], 'd/m/Y'), array(
-                                'class' => 'text-center',
-                                'style' => $tdStyle,
+                            echo $this->Html->tag('td', $idx, array(
+                                'style' => 'text-align: center;vertical-align: middle;',
                             ));
-                            echo $this->Html->tag('td', $this->Common->fullNameCustomer($invoice, 'CustomerNoType'));
+                            echo $this->Html->tag('td', $this->Common->customDate($invoice['Invoice']['invoice_date'], 'd/m/Y'), array(
+                                'style' => 'text-align: center;vertical-align: middle;',
+                            ));
+                            echo $this->Html->tag('td', $this->Common->fullNameCustomer($invoice, 'CustomerNoType'), array(
+                                'style' => 'text-align: left;vertical-align: middle;',
+                            ));
                             echo $this->Html->tag('td', $this->Html->link($invoice['Invoice']['no_invoice'], array(
                                     'controller' => 'revenues',
                                     'action' => 'invoice_print',
@@ -234,41 +269,36 @@
                                 ), array(
                                     'target' => '_blank'
                                 )), array(
-                                'class' => 'text-left',
-                                'style' => 'text-align: left;',
+                                'style' => 'text-align: left;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
-                                'style' => 'text-align: right;',
+                                'style' => 'text-align: right;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to']), array(
-                                'class' => 'text-center',
-                                'style' => $tdStyle,
+                                'style' => 'text-align: center;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to'], 'M Y'), array(
-                                'class' => 'text-center',
-                                'style' => $tdStyle,
+                                'style' => 'text-align: center;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', $totalUnit, array(
-                                'class' => 'text-center',
-                                'style' => $tdStyle,
+                                'style' => 'text-align: center;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', ucfirst($invoice['Invoice']['tarif_type']), array(
-                                'class' => 'text-center',
-                                'style' => $tdStyle,
+                                'style' => 'text-align: center;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', $dateTOP, array(
-                                'class' => 'text-center',
-                                'style' => $tdStyle,
+                                'style' => 'text-align: center;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', implode('<br>', $datePayment), array(
-                                'class' => 'text-center',
-                                'style' => $tdStyle,
+                                'style' => 'text-align: center;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', $this->Number->currency($totalPaid, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
-                                'style' => 'text-align: right;',
+                                'style' => 'text-align: right;vertical-align: middle;',
                             ));
-                            echo $this->Html->tag('td', $this->Html->tag('span', $invoiceStatus['text'], array('class' => $invoiceStatus['class'])).$invoiceStatus['void_date'], array(
-                                'style' => 'text-align: right;',
+                            echo $this->Html->tag('td', $this->Html->tag('span', $invoiceStatus['text'], array(
+                                'class' => $invoiceStatus['class']
+                            )).$invoiceStatus['void_date'], array(
+                                'style' => 'text-align: center;vertical-align: middle;',
                             ));
                     ?>
                 </tr>
@@ -276,38 +306,58 @@
                                 $idx++;
                             }
 
-                            echo $this->Html->tag('td', '', array(
-                                'class' => 'text-center text-middle',
-                                'colspan' => 4,
+                            $tdContent = $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', __('Total'), array(
+                                'style' => 'text-align: right;display: block'
+                            )), array(
+                                'style' => 'text-align: right;vertical-align: middle;',
                             ));
-
-                            echo $this->Html->tag('td', $this->Number->currency($totalTagihan, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
-                                'style' => 'text-align: right;',
+                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalTagihan, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                                'style' => 'text-align: right;vertical-align: middle;',
                             ));
-
-                            echo $this->Html->tag('td', '', array(
-                                'class' => 'text-center text-middle',
-                                'colspan' => 2,
+                            $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $totalQty), array(
+                                'style' => 'text-align: center;vertical-align: middle;',
                             ));
-
-                            echo $this->Html->tag('td', $totalQty, array(
+                            $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalTransfer, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                                'style' => 'text-align: right;vertical-align: middle;',
+                            ));
+                            $tdContent .= $this->Html->tag('td', '', array(
                                 'style' => $tdStyle,
                                 'class' => 'text-center text-middle',
                             ));
 
-                            echo $this->Html->tag('td', '', array(
-                                'class' => 'text-center text-middle',
-                                'colspan' => 3,
-                            ));
+                            echo $this->Html->tag('tr', $tdContent);
 
-                            echo $this->Html->tag('td', $this->Number->currency($totalTransfer, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
-                                'style' => 'text-align: right;',
+                            $tdContent = $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', __('Total Void'), array(
+                                'style' => 'text-align: right;display: block'
+                            )), array(
+                                'style' => 'text-align: right;vertical-align: middle;',
                             ));
+                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalVoid, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                                'style' => 'text-align: right;vertical-align: middle;',
+                            ));
+                            $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalVoidTransfer, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                                'style' => 'text-align: right;vertical-align: middle;',
+                            ));
+                            $tdContent .= $this->Html->tag('td', '');
 
-                            echo $this->Html->tag('td', '', array(
-                                'style' => $tdStyle,
-                                'class' => 'text-center text-middle',
-                            ));
+                            echo $this->Html->tag('tr', $tdContent);
                         }
                 ?>
             </tbody>
@@ -360,12 +410,20 @@
             $each_loop_message = '';
 
             if(!empty($invoices)){
+                $totalTagihan = 0;
+                $totalQty = 0;
+                $totalTransfer = 0;
+                $totalVoidTransfer = 0;
+                $totalVoid = 0;
+
                 foreach ($invoices as $key => $invoice) {
                     $totalUnit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
                     $dateTOP = !empty($invoice['Invoice']['term_of_payment'])?date('d/m/Y', strtotime(sprintf('+%s day', $invoice['Invoice']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']))):'-';
                     $datePayment = array();
                     $totalPaid = 0;
                     $invoiceStatus = $this->Common->getInvoiceStatus( $invoice );
+                    $totalTagihan += $invoice['Invoice']['total'];
+                    $totalQty += $totalUnit;
 
                     if( !empty($invoice['InvoicePaymentDate']) ) {
                         foreach ($invoice['InvoicePaymentDate'] as $key => $dtPaid) {
@@ -377,49 +435,94 @@
                         $totalPaid = $invoice[0]['total_payment'];
                     }
 
+                    $totalTransfer += $totalPaid;
+
+                    if( strtolower($invoiceStatus['text']) == 'void' ) {
+                        $totalVoidTransfer += $totalPaid;
+                        $totalVoid += $invoice['Invoice']['total'];
+                    }
+
                     $content = $this->Html->tag('td', $no, array(
-                        'style' => 'text-align: center;',
+                        'style' => 'text-align: center;vertical-align: middle;width: 5%;',
                     ));
                     $content .= $this->Html->tag('td', $this->Common->customDate($invoice['Invoice']['invoice_date'], 'd/m/Y'), array(
-                        'style' => 'text-align: center;',
+                        'style' => 'text-align: center;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', !empty($invoice['CustomerNoType']['name'])?$invoice['CustomerNoType']['name']:false, array(
-                        'style' => 'text-align: left;',
+                        'style' => 'text-align: left;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $invoice['Invoice']['no_invoice'], array(
-                        'style' => 'text-align: left;',
+                        'style' => 'text-align: left;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
-                        'style' => 'text-align: right;',
+                        'style' => 'text-align: right;width: 10%;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to']), array(
-                        'style' => 'text-align: center;',
+                        'style' => 'text-align: center;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to'], 'M Y'), array(
-                        'style' => 'text-align: center;',
+                        'style' => 'text-align: center;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $totalUnit, array(
-                        'style' => 'text-align: center;',
+                        'style' => 'text-align: center;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', ucfirst($invoice['Invoice']['tarif_type']), array(
-                        'style' => 'text-align: center;',
+                        'style' => 'text-align: center;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $dateTOP, array(
                         'style' => 'text-align: center;',
                     ));
                     $content .= $this->Html->tag('td', implode('<br>', $datePayment), array(
-                        'style' => 'text-align: center;',
+                        'style' => 'text-align: center;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $this->Number->currency($totalPaid, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
-                        'style' => 'text-align: right;',
+                        'style' => 'text-align: right;width: 10%;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $invoiceStatus['text'].$invoiceStatus['void_date'], array(
-                        'style' => 'text-align: center;',
+                        'style' => 'text-align: center;vertical-align: middle;',
                     ));
 
                     $each_loop_message .= $this->Html->tag('tr', $content);
                     $no++;
                 }
+
+                $tdContent = $this->Html->tag('td', $this->Html->tag('strong', __('Total'), array(
+                    'style' => 'text-align: right;display: block'
+                )), array(
+                    'style' => 'text-align: right;vertical-align: middle;',
+                    'colspan' => 4,
+                ));
+                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalTagihan, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                    'style' => 'text-align: right;vertical-align: middle;',
+                ));
+                $tdContent .= $this->Html->tag('td', '', array(
+                    'colspan' => 2,
+                ));
+                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $totalQty), array(
+                    'style' => 'text-align: center;vertical-align: middle;',
+                ));
+                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalTransfer, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                    'style' => 'text-align: right;vertical-align: middle;',
+                    'colspan' => 4,
+                ));
+                $tdContent .= $this->Html->tag('td', '');
+                $each_loop_message .= $this->Html->tag('tr', $tdContent);
+
+                $tdContent = $this->Html->tag('td', $this->Html->tag('strong', __('Total Void'), array(
+                    'style' => 'text-align: right;display: block'
+                )), array(
+                    'style' => 'text-align: right;vertical-align: middle;',
+                    'colspan' => 4,
+                ));
+                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalVoid, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                    'style' => 'text-align: right;vertical-align: middle;',
+                ));
+                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalVoidTransfer, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                    'style' => 'text-align: right;vertical-align: middle;',
+                    'colspan' => 7,
+                ));
+                $tdContent .= $this->Html->tag('td', '');
+                $each_loop_message .= $this->Html->tag('tr', $tdContent);
             }
 
             $date_title = $sub_module_title;
@@ -434,19 +537,19 @@ $tbl = <<<EOD
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <thead>
                 <tr style="$table_tr_head">
-                    <th style="text-align: center;">No.</th>
-                    <th style="text-align: center;">Tgl Kwitansi</th>
-                    <th style="text-align: center;">Customer</th>
-                    <th style="text-align: center;">No. Invoice</th>
-                    <th style="text-align: center;">Total Tagihan</th>
-                    <th style="text-align: center;">Periode Tanggal</th>
-                    <th style="text-align: center;">Periode Bulan</th>
-                    <th style="text-align: center;">Qty Unit</th>
-                    <th style="text-align: center;">Jenis</th>
-                    <th style="text-align: center;">Tgl J.Tempo</th>
-                    <th style="text-align: center;">Tgl Bayar</th>
-                    <th style="text-align: center;">Total Transfer</th>
-                    <th style="text-align: center;">Status</th>
+                    <th style="text-align: center;vertical-align: middle;width: 5%;">No.</th>
+                    <th style="text-align: center;vertical-align: middle;">Tgl Kwitansi</th>
+                    <th style="text-align: center;vertical-align: middle;">Customer</th>
+                    <th style="text-align: center;vertical-align: middle;">No. Invoice</th>
+                    <th style="text-align: center;vertical-align: middle;width: 10%;">Total Tagihan</th>
+                    <th style="text-align: center;vertical-align: middle;">Periode Tanggal</th>
+                    <th style="text-align: center;vertical-align: middle;">Periode Bulan</th>
+                    <th style="text-align: center;vertical-align: middle;">Qty Unit</th>
+                    <th style="text-align: center;vertical-align: middle;">Jenis</th>
+                    <th style="text-align: center;vertical-align: middle;">Tgl J.Tempo</th>
+                    <th style="text-align: center;vertical-align: middle;">Tgl Bayar</th>
+                    <th style="text-align: center;vertical-align: middle;width: 10%;">Total Transfer</th>
+                    <th style="text-align: center;vertical-align: middle;">Status</th>
                 </tr>
             </thead>
             <tbody>          

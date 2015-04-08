@@ -99,7 +99,7 @@
                 <td><?php echo $this->Time->timeAgoInWords($value['Invoice']['created']);?></td>
                 <td class="action">
                     <?php 
-                            if(empty($value['Invoice']['is_canceled'])){
+                            // if(empty($value['Invoice']['is_canceled'])){
                                 if( $value['Invoice']['tarif_type'] == 'angkut' ) {
                                     echo $this->Html->link(__('Print Detail'), array(
                                         'controller' => 'revenues',
@@ -117,22 +117,24 @@
                                         'class' => 'btn btn-success btn-xs'
                                     ));
                                 
-                                    echo $this->Html->link(__('Print HSO'), array(
-                                        'controller' => 'revenues',
-                                        'action' => 'invoice_hso_print',
-                                        $id,
-                                        'print' => 'header',
-                                    ), array(
-                                        'class' => 'btn bg-navy btn-xs'
-                                    ));
-                                
-                                    echo $this->Html->link(__('Print HSO Non Header'), array(
-                                        'controller' => 'revenues',
-                                        'action' => 'invoice_hso_print',
-                                        $id,
-                                    ), array(
-                                        'class' => 'btn bg-olive btn-xs'
-                                    ));
+                                    if( !empty($value['Invoice']['status']) ){
+                                        echo $this->Html->link(__('Print HSO'), array(
+                                            'controller' => 'revenues',
+                                            'action' => 'invoice_hso_print',
+                                            $id,
+                                            'print' => 'header',
+                                        ), array(
+                                            'class' => 'btn bg-navy btn-xs'
+                                        ));
+                                    
+                                        echo $this->Html->link(__('Print HSO Non Header'), array(
+                                            'controller' => 'revenues',
+                                            'action' => 'invoice_hso_print',
+                                            $id,
+                                        ), array(
+                                            'class' => 'btn bg-olive btn-xs'
+                                        ));
+                                    }
                                 }
                                 
                                 echo $this->Html->link(__('Print Header'), array(
@@ -144,7 +146,8 @@
                                     'class' => 'btn btn-info btn-xs'
                                 ));
 
-                                if( empty($value['Invoice']['complete_paid']) && empty($value['Invoice']['paid']) ){
+                                // if( empty($value['Invoice']['complete_paid']) && empty($value['Invoice']['paid']) ){
+                                if( !empty($value['Invoice']['status']) ){
                                     echo $this->Html->link(__('Void'), array(
                                         'controller' => 'revenues',
                                         'action' => 'invoice_delete',
@@ -155,7 +158,7 @@
                                         'title' => __('Void Data Invoice')
                                     ));
                                 }
-                            }
+                            // }
                     ?>
                 </td>
             </tr>

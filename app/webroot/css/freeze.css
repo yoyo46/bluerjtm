@@ -1292,6 +1292,11 @@
   margin: 0;
   padding: 0;
 }
+
+td > .datagrid-cell {
+  word-wrap: break-word;
+}
+
 .datagrid-cell,
 .datagrid-cell-group,
 .datagrid-header-rownumber,

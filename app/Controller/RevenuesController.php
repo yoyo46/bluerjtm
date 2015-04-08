@@ -4606,7 +4606,7 @@ class RevenuesController extends AppController {
             $options = array(
                 'conditions' => $invoice_conditions,
                 'order' => array(
-                    'Invoice.created' => 'DESC',
+                    'Invoice.modified' => 'DESC',
                     'Invoice.id' => 'DESC',
                 ),
                 'contain' => array(
@@ -4676,6 +4676,17 @@ class RevenuesController extends AppController {
                 $this->layout = 'pdf';
             }else if($data_action == 'excel'){
                 $this->layout = 'ajax';
+            } else {
+                $layout_js = array(
+                    'freeze',
+                );
+                $layout_css = array(
+                    'freeze',
+                );
+
+                $this->set(compact(
+                    'layout_css', 'layout_js'
+                ));
             }
 
             $this->set(compact(
@@ -4702,7 +4713,8 @@ class RevenuesController extends AppController {
             )
         ));
         
-        if( !empty($invoice) && empty($invoice['Invoice']['complete_paid']) && empty($invoice['Invoice']['paid']) ){
+        // if( !empty($invoice) && empty($invoice['Invoice']['complete_paid']) && empty($invoice['Invoice']['paid']) ){
+        if( !empty($invoice) ){
             if(!empty($this->request->data)){
                 if(!empty($this->request->data['Invoice']['canceled_date'])){
                     $this->request->data['Invoice']['canceled_date'] = $this->MkCommon->getDate($this->request->data['Invoice']['canceled_date']);
@@ -4801,17 +4813,17 @@ class RevenuesController extends AppController {
 
             $this->set('invoice', $invoice);
         }else{
-            if( !empty($invoice['Invoice']['complete_paid']) || !empty($invoice['Invoice']['paid']) ) {
-                $msg = array(
-                    'msg' => __('Invoice telah dibayar, tidak dapat dibatalkan'),
-                    'type' => 'error'
-                );
-            } else {
+            // if( !empty($invoice['Invoice']['complete_paid']) || !empty($invoice['Invoice']['paid']) ) {
+            //     $msg = array(
+            //         'msg' => __('Invoice telah dibayar, tidak dapat dibatalkan'),
+            //         'type' => 'error'
+            //     );
+            // } else {
                 $msg = array(
                     'msg' => __('Invoice tidak ditemukan'),
                     'type' => 'error'
                 );
-            }
+            // }
         }
 
         $this->set(compact('msg', 'is_ajax'));
