@@ -25,18 +25,42 @@
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
         <table class="table table-hover">
-            <tr>
-                <th>No Dokumen</th>
-                <th>Tgl Kas Bank</th>
-                <th>Tipe Kas</th>
-                <th>Action</th>
-            </tr>
+            <thead>
+                <tr>
+                    <th>No Dokumen</th>
+                    <th>Diterima/Dibayar kepada</th>
+                    <th>Tgl Kas Bank</th>
+                    <th style="text-align:center;">Tipe Kas</th>
+                    <th style="text-align:center;">Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
             <?php
                 if(!empty($cash_banks)){
                     foreach ($cash_banks as $key => $value) {
                         $content = $this->Html->tag('td', $value['CashBank']['nodoc']);
+                        $content .= $this->Html->tag('td', !empty($value['name_cash']) ? $value['name_cash'] : '-');
                         $content .= $this->Html->tag('td', $this->Common->customDate($value['CashBank']['tgl_cash_bank'], 'd/m/Y'));
-                        $content .= $this->Html->tag('td', $value['CashBank']['receiving_cash_type']);
+                        $content .= $this->Html->tag('td', 'Cash '.$value['CashBank']['receiving_cash_type'], array(
+                            'align' => 'center'
+                        ));
+
+                        $status = 'Pending';
+                        $class = 'info';
+                        if(!empty($value['CashBank']['completed'])){
+                            $status = 'Complete';
+                            $class = 'success';
+                        }else if(!empty($value['CashBank']['is_revised'])){
+                            $status = 'Revisi';
+                            $class = 'primary';
+                        }else if(!empty($value['CashBank']['is_rejected'])){
+                            $status = 'Ditolak';
+                            $class = 'danger';
+                        }
+
+                        $content .= $this->Html->tag('td', '<span class="label label-'.$class.'">'.$status.'</span>', array(
+                            'align' => 'center'
+                        ));
 
                         $link = '';
                         if($value['CashBank']['is_revised'] && !$value['CashBank']['completed']){

@@ -73,6 +73,46 @@ class CashbanksController extends AppController {
 
             $cash_banks = $this->paginate('CashBank');
 
+            if(!empty($cash_banks)){
+                $this->loadModel('Vendor');
+                $this->loadModel('Employe');
+                $this->loadModel('Customer');
+
+                foreach ($cash_banks as $key => $value) {
+                    $model = $value['CashBank']['receiver_type'];
+
+                    switch ($model) {
+                        case 'Vendor':
+                            $list_result = $this->Vendor->getData('first', array(
+                                'conditions' => array(
+                                    'Vendor.status' => 1
+                                )
+                            ));
+                            break;
+                        case 'Employe':
+                            $list_result = $this->Employe->getData('first', array(
+                                'conditions' => array(
+                                    'Employe.status' => 1
+                                )
+                            ));
+
+                            break;
+                        default:
+                            $list_result = $this->Customer->getData('first', array(
+                                'conditions' => array(
+                                    'Customer.status' => 1
+                                )
+                            ));
+
+                            break;
+                    }
+
+                    if(!empty($list_result)){
+                        $cash_banks[$key]['name_cash'] = $list_result[$model]['name'];
+                    }
+                }
+            }
+
             $this->set('cash_banks', $cash_banks);
 
             $this->set('active_menu', 'cash_bank');
