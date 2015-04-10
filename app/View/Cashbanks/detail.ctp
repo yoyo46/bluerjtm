@@ -128,7 +128,7 @@
         <div class="box box-success">
             <div class="box-header">
                 <?php 
-                        echo $this->Html->tag('h3', __('Informasi Otorisasi Kas Bank'), array(
+                        echo $this->Html->tag('h3', __('Approval Kas Bank'), array(
                             'class' => 'box-title',
                         ));
                 ?>
