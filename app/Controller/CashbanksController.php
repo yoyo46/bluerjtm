@@ -453,20 +453,10 @@ class CashbanksController extends AppController {
                                         break;
                                 }
                             }else{
-                                $first_lvl = $this->CashBank->CashBankAuth->getData('first', array(
-                                    'conditions' => array(
-                                        'CashBankAuth.cash_bank_id' => $id,
-                                        'CashBankAuth.level' => 1,
-                                        'CashBankAuth.has_vote' => 1
-                                    )
-                                ));
-
-                                if( empty($first_lvl) ){
-                                    if($data['CashBankAuth']['status_document'] == 'revise'){
-                                        $data_arr = array(
-                                            'is_revised' => 1,
-                                        );
-                                    }
+                                if($data['CashBankAuth']['status_document'] == 'revise'){
+                                    $data_arr = array(
+                                        'is_revised' => 1,
+                                    );
                                 }
                             }
 
