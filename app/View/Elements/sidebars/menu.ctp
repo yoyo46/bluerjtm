@@ -815,42 +815,40 @@
                     // ), $allowModule ) ) {
                         $activeSetting = false;
                         $settingMenu = array(
-                            'cash_bank'
+                            'cash_bank', 'approval_setting'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
                             $activeSetting = 'active';
                         }
             ?>
-            <li class="treeview <?php echo $activeMenu; ?>">
+            <li class="treeview <?php echo $activeSetting; ?>">
                 <a href="#">
                     <i class="fa fa-book"></i>
                     <span>Kas Bank</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    <li>
-                        <?php
-                            echo $this->Html->link('<i class="fa fa-angle-double-right"></i> Kas Bank</span><i class="fa fa-angle-left pull-right"></i>', array(
+                    <?php
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kas Bank</span>', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'index'
                             ), array(
                                 'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'cash_bank' )?'active':'',
                             ));
-                        ?>
-                    </li>
-                    <li>
-                        <?php
-                            echo $this->Html->link('<i class="fa fa-angle-double-right"></i> Approval Setting</span><i class="fa fa-angle-left pull-right"></i>', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Approval Setting</span>', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'approval_setting'
                             ), array(
                                 'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'approval_setting' )?'active':'',
                             ));
-                        ?>
-                    </li>
+                    ?>
                 </ul>
-            <li>
+            </li>
             <?php
                     // }
 

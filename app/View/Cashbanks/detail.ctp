@@ -52,8 +52,8 @@
                         <tr>
                             <th><?php echo __('Kode Acc');?></th>
                             <th><?php echo __('Nama Acc');?></th>
-                            <th><?php echo __('Debit');?></th>
-                            <th><?php echo __('Kredit');?></th>
+                            <th class="text-center"><?php echo __('Debit');?></th>
+                            <th class="text-center"><?php echo __('Kredit');?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -96,8 +96,8 @@
                             }
                         ?>
                         <tr>
-                            <td align="right" colspan="2">Total</td>
-                            <td align="right">
+                            <td align="right" colspan="2" style="font-weight: bold;">Total</td>
+                            <td align="right" style="font-weight: bold;">
                                 <?php
                                     $debit = 0;
                                     if(!empty($cashbank['CashBank']['debit_total'])){
@@ -106,7 +106,7 @@
                                     echo $this->Number->currency($debit, Configure::read('__Site.config_currency_code'), array('places' => 0));
                                 ?>
                             </td>
-                            <td align="right">
+                            <td align="right" style="font-weight: bold;">
                                 <?php
                                     $credit = 0;
                                     if(!empty($cashbank['CashBank']['credit_total'])){
@@ -139,8 +139,8 @@
                         <tr>
                             <th><?php echo __('Nama');?></th>
                             <th><?php echo __('Group');?></th>
-                            <th><?php echo __('level Otorisasi');?></th>
-                            <th><?php echo __('Status');?></th>
+                            <th width="10%" class="text-center"><?php echo __('level Otorisasi');?></th>
+                            <th class="text-center"><?php echo __('Status');?></th>
                             <th><?php echo __('Keterangan');?></th>
                         </tr>
                     </thead>
@@ -151,8 +151,8 @@
                         <tr>
                             <td><?php echo $value['User']['full_name']?></td>
                             <td><?php echo $value['User']['Group']['name']?></td>
-                            <td><?php echo $value['CashBankAuthMaster']['level']?></td>
-                            <td><?php echo !empty($value['CashBankAuth']['status_document']) ? $value['CashBankAuth']['status_document'] : '-';?></td>
+                            <td class="text-center"><?php echo $value['CashBankAuthMaster']['level']?></td>
+                            <td class="text-center"><?php echo !empty($value['CashBankAuth']['status_document']) ? ucfirst($value['CashBankAuth']['status_document']) : '-';?></td>
                             <td><?php echo !empty($value['CashBankAuth']['description']) ? $value['CashBankAuth']['description'] : '-';?></td>
                         </tr>
                         <?php
@@ -164,9 +164,9 @@
         </div>
     </div>
     <?php
-        }
+            }
 
-        if(in_array($User['id'], $cashbank_auth_id) && !$cashbank['CashBank']['completed']){
+            if(in_array($User['id'], $cashbank_auth_id) && !$cashbank['CashBank']['completed']){
     ?>
     <div class="col-sm-12">
         <div class="box box-success">
@@ -219,6 +219,13 @@
                                 'class'=> 'btn btn-success',
                                 'type' => 'submit',
                             ));
+                            echo $this->Html->tag('div', $this->Html->link(__('Kembali'), array(
+                                'action' => 'index', 
+                            ), array(
+                                'class'=> 'btn btn-default',
+                            )), array(
+                                'class'=> 'box-footer text-center action',
+                            ));
                     ?>
                 </div>
                 <?php
@@ -229,6 +236,18 @@
         </div>
     </div>
     <?php
-        }
+                $statusApproval = true;
+            }
     ?>
 </div>
+<?php 
+        if( empty($statusApproval) ){
+            echo $this->Html->tag('div', $this->Html->link(__('Kembali'), array(
+                'action' => 'index', 
+            ), array(
+                'class'=> 'btn btn-default',
+            )), array(
+                'class'=> 'box-footer text-center action',
+            ));
+        }
+?>

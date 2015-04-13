@@ -114,7 +114,6 @@ class CashbanksController extends AppController {
             }
 
             $this->set('cash_banks', $cash_banks);
-
             $this->set('active_menu', 'cash_bank');
         // } else {
         //     $this->redirect($this->referer());
@@ -314,7 +313,7 @@ class CashbanksController extends AppController {
         ));
         $this->set(compact('coas'));
 
-        $this->set('active_menu', 'cash_banks');
+        $this->set('active_menu', 'cash_bank');
         $this->set('module_title', 'Kas Bank');
         $this->render('cashbank_form');
     }
@@ -625,6 +624,7 @@ class CashbanksController extends AppController {
             )
         ));
 
+        $this->set('active_menu', 'approval_setting');
         $this->set(compact('employes', 'cash_bank_auth_master'));
     }
 }
