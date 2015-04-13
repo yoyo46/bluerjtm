@@ -364,6 +364,7 @@ class CashbanksController extends AppController {
                     )
                 )
             ));
+
             if(!empty($cash_bank_auth_master)){
                 foreach ($cash_bank_auth_master as $key => $value) {
                     $cash_bank_auth = $this->CashBank->CashBankAuth->getData('first', array(
@@ -513,7 +514,19 @@ class CashbanksController extends AppController {
                         $cashbank['CashBank']['receiver'] = $list_result[$model]['name'];
                     }
                 }
+
+                $cashBankAuth = $this->CashBankAuthMaster->CashBankAuth->find('all', array(
+                    'conditions' => array(
+                        'CashBankAuth.cash_bank_id' => $id,
+                        'CashBankAuthMaster.employe_id' => $this->user_id,
+                    ),
+                    'contain' => array(
+                        'CashBankAuthMaster'
+                    ),
+                ));
+                
                 // debug($cashbank);die();
+                $this->set('cashBankAuth', $cashBankAuth);                
                 $this->set('cashbank', $cashbank);                
                 $this->set('cashbank_auth_id', $cashbank_auth_id);
             } else {

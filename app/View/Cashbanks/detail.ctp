@@ -166,7 +166,7 @@
     <?php
             }
 
-            if(in_array($User['id'], $cashbank_auth_id) && !$cashbank['CashBank']['completed']){
+            if( in_array($User['id'], $cashbank_auth_id) && !$cashbank['CashBank']['completed'] && empty($cashBankAuth) ){
     ?>
     <div class="col-sm-12">
         <div class="box box-success">
@@ -219,12 +219,10 @@
                                 'class'=> 'btn btn-success',
                                 'type' => 'submit',
                             ));
-                            echo $this->Html->tag('div', $this->Html->link(__('Kembali'), array(
+                            echo $this->Html->link(__('Kembali'), array(
                                 'action' => 'index', 
                             ), array(
                                 'class'=> 'btn btn-default',
-                            )), array(
-                                'class'=> 'box-footer text-center action',
                             ));
                     ?>
                 </div>
