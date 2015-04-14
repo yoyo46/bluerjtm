@@ -20,13 +20,17 @@
 					'style' => 'text-align:center;'.(($data_print_type == 'pdf')?'':'width: 120px;'),
 					'rowspan' => 2,
 				));
-				echo $this->Html->tag('th', __('Date'), array(
-					'style' => 'text-align:center;'.(($data_print_type == 'pdf')?'':'width: 100px;'),
-					'rowspan' => 2,
-				));
 				echo $this->Html->tag('th', __('Shipping list'), array(
 					'style' => 'text-align:center;',
 					'colspan' => 3,
+				));
+				echo $this->Html->tag('th', __('Unit'), array(
+					'style' => 'text-align:center;'.(($data_print_type == 'pdf')?'':'width: 80px;'),
+					'rowspan' => 2,
+				));
+				echo $this->Html->tag('th', __('Rate'), array(
+					'style' => 'text-align:center;'.(($data_print_type == 'pdf')?'':'width: 110px;'),
+					'rowspan' => 2,
 				));
 				echo $this->Html->tag('th', __('Amount'), array(
 					'style' => 'text-align:center;'.(($data_print_type == 'pdf')?'':'width: 120px;'),
@@ -46,8 +50,8 @@
 				echo $this->Html->tag('th', __('Unit'), array(
 					'style' => 'text-align:center;'.(($data_print_type == 'pdf')?'':'width: 80px;'),
 				));
-				echo $this->Html->tag('th', __('Tarif'), array(
-					'style' => 'text-align:center;'.(($data_print_type == 'pdf')?'':'width: 110px;'),
+				echo $this->Html->tag('th', __('Date'), array(
+					'style' => 'text-align:center;'.(($data_print_type == 'pdf')?'':'width: 100px;'),
 				));
 		?>
 	</tr>
@@ -57,19 +61,27 @@
 			if(!empty($invoice['Revenue'])){
 				$no = 1;
 				$grandTotalUnit = 0;
+				$grandTotalMainUnit = 0;
 				$grandTotalTarif = 0;
+				$tempRate = 0;
 
 				foreach ($invoice['Revenue'] as $key => $revenue) {
-					$totalUnit = 0;
-					$totalTarif = 0;
+					$showRate = false;
+					$totalUnit = !empty($revenue['qty_unit'])?$revenue['qty_unit']:0;
+					$grandTotalMainUnit += $totalUnit;
 
 					if( !empty($revenue['RevenueDetail'][0]) ) {
 						$revenueDetail = $revenue['RevenueDetail'][0];
-						$totalUnit += $revenueDetail['qty_unit'];
+						$price_unit = $revenueDetail['price_unit'];
 						$grandTotalUnit += $revenueDetail['qty_unit'];
-						$amount = $revenueDetail['qty_unit'] * $revenueDetail['price_unit'];
-						$totalTarif += $amount;
+						$amount = $revenueDetail['qty_unit'] * $price_unit;
 						$grandTotalTarif += $amount;
+
+						if( $tempRate != $price_unit ) {
+							$tempRate = $price_unit;
+							$showRate = true;
+						}
+
 						unset($revenue['RevenueDetail'][0]);
 					} else {
 						$revenueDetail = false;
@@ -79,45 +91,44 @@
 						'no' => $no,
 						'revenue' => $revenue,
 						'revenueDetail' => $revenueDetail,
+						'totalUnit' => $totalUnit,
+						'showRate' => $showRate,
 					));
 
 					if( !empty($revenue['RevenueDetail']) ) {
 						foreach ($revenue['RevenueDetail'] as $key => $revenueDetail) {
-							$totalUnit += $revenueDetail['qty_unit'];
+							$showRate = false;
+							$price_unit = $revenueDetail['price_unit'];
 							$grandTotalUnit += $revenueDetail['qty_unit'];
-							$amount = $revenueDetail['qty_unit'] * $revenueDetail['price_unit'];
-							$totalTarif += $amount;
+							$amount = $revenueDetail['qty_unit'] * $price_unit;
 							$grandTotalTarif += $amount;
+
+							if( $tempRate != $price_unit ) {
+								$tempRate = $price_unit;
+								$showRate = true;
+							}
+
 							echo $this->element('blocks/revenues/invoice_hso', array(
 								'revenue' => $revenue,
 								'revenueDetail' => $revenueDetail,
+								'showRate' => $showRate,
 							));
 						}
 					}
 
-					$colom = $this->Html->tag('td', $this->Html->tag('strong', __('Jumlah')), array(
-						'colspan' => 6,
-						'style' => 'text-align: right;',
-					));
-					$colom .= $this->Html->tag('td', $this->Html->tag('strong', $totalUnit), array(
-						'style' => 'text-align: center;',
-					));
-					$colom .= $this->Html->tag('td', '');
-					$colom .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->format($totalTarif, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
-						'style' => 'text-align: right;',
-					));
-					$colom .= $this->Html->tag('td', '');
-
-					echo $this->Html->tag('tr', $colom);
-
+					$tempRate = 0;
 					$no++;
 				}
 
-				$colom = $this->Html->tag('td', __('Grandtotal'), array(
-					'colspan' => 6,
+				$colom = $this->Html->tag('td', __('JUMLAH'), array(
+					'colspan' => 5,
 					'style' => 'text-align: right;',
 				));
 				$colom .= $this->Html->tag('td', $grandTotalUnit, array(
+					'style' => 'text-align: center;',
+				));
+				$colom .= $this->Html->tag('td', '');
+				$colom .= $this->Html->tag('td', $grandTotalMainUnit, array(
 					'style' => 'text-align: center;',
 				));
 				$colom .= $this->Html->tag('td', '');

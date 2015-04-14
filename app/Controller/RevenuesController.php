@@ -5347,9 +5347,9 @@ class RevenuesController extends AppController {
         // if( in_array('view_achievement_report', $this->allowModule) ) {
             $this->loadModel('Customer');
             $this->loadModel('Revenue');
-            $fromMonth = date('m');
+            $fromMonth = '01';
             $fromYear = date('Y');
-            $toMonth = 12;
+            $toMonth = date('m');
             $toYear = date('Y');
             $conditions = array(
                 'Revenue.status'=> 1,
@@ -5674,13 +5674,13 @@ class RevenuesController extends AppController {
                         $revenue_id = Set::extract('/InvoiceDetail/revenue_id', $invoice['InvoiceDetail']);
                         $invoice = $this->Revenue->getMerge($invoice, $revenue_id, 'all');
 
-                        // if( !empty($invoice['Revenue']) ) {
-                        //     foreach ($invoice['Revenue'] as $key => $revenue) {
-                        //         $revenue = $this->Revenue->RevenueDetail->getSumUnit($revenue, $revenue['Revenue']['id'], 'revenue');
-                        //         $revenue = $this->Revenue->RevenueDetail->getSumUnit($revenue, $revenue['Revenue']['id'], 'revenue_price');
-                        //         $invoice['Revenue'][$key] = $revenue;
-                        //     }
-                        // }
+                        if( !empty($invoice['Revenue']) ) {
+                            foreach ($invoice['Revenue'] as $key => $revenue) {
+                                $revenue = $this->Revenue->RevenueDetail->getSumUnit($revenue, $revenue['Revenue']['id'], 'revenue');
+                                $revenue = $this->Revenue->RevenueDetail->getSumUnit($revenue, $revenue['Revenue']['id'], 'revenue_price');
+                                $invoice['Revenue'][$key] = $revenue;
+                            }
+                        }
                     }
                     break;
 
@@ -5708,5 +5708,142 @@ class RevenuesController extends AppController {
             $this->MkCommon->setCustomFlash(__('Invoice tidak ditemukan'), 'error');  
             $this->redirect($this->referer());
         }
+    }
+
+    public function report_revenue_monthly( $data_action = false ) {
+        // if( in_array('view_achievement_report', $this->allowModule) ) {
+            $this->loadModel('Customer');
+            $this->loadModel('Invoice');
+            $this->loadModel('InvoicePayment');
+            $fromMonth = date('m');
+            $toMonth = 12;
+            $year = date('Y');
+            $conditionsCustomer = array(
+                'Customer.status'=> 1,
+            );
+
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['customer'])){
+                    $customer = urldecode($refine['customer']);
+                    $this->request->data['Ttuj']['customer'] = $customer;
+                    $conditionsCustomer['Customer.id'] = $customer;
+                }
+
+                if( !empty($refine['fromMonth']) && !empty($refine['fromYear']) ){
+                    $fromMonth = urldecode($refine['fromMonth']);
+                    $fromYear = urldecode($refine['fromYear']);
+                }
+
+                if( !empty($refine['toMonth']) && !empty($refine['toYear']) ){
+                    $toMonth = urldecode($refine['toMonth']);
+                    $toYear = urldecode($refine['toYear']);
+                }
+            }
+
+            $conditionsInvoice = array(
+                'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $year)),
+                'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $year)),
+            );
+            $conditionsInvoicePayment = array(
+                'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $year)),
+                'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $year)),
+            );
+            $customerList = $this->Customer->getData('list', array(
+                'fields' => array(
+                    'Customer.id', 'Customer.customer_name'
+                )
+            ));
+
+            $options = $this->Customer->getData('paginate', array(
+                'conditions' => $conditionsCustomer,
+            ));
+
+            if( !empty($data_action) ) {
+                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+            } else {
+                $options['limit'] = 20;
+            }
+
+            $this->paginate = $options;
+            $customers = $this->paginate('Customer');
+
+            if( !empty($customers) ) {
+                foreach ($customers as $key => $customer) {
+                    $conditionsInvoice['Invoice.customer_id'] = $customer['Customer']['id'];
+                    $customer['InvoiceTotal'] = $this->Invoice->getData('first', array(
+                        'conditions' => $conditionsInvoice,
+                        'fields'=> array(
+                            'Invoice.customer_id', 
+                            'SUM(Invoice.total) as total',
+                        ),
+                        'group' => array(
+                            'Invoice.customer_id'
+                        ),
+                    ), false);
+
+                    $conditionsInvoice['Invoice.is_canceled'] = 0;
+                    $conditionsInvoice['Invoice.status'] = 0;
+                    $customer['InvoiceVoidTotal'] = $this->Invoice->getData('first', array(
+                        'conditions' => $conditionsInvoice,
+                        'fields'=> array(
+                            'Invoice.customer_id', 
+                            'SUM(Invoice.total) as total',
+                        ),
+                        'group' => array(
+                            'Invoice.customer_id'
+                        ),
+                    ), false);
+
+                    $conditionsInvoicePayment['InvoicePayment.customer_id'] = $customer['Customer']['id'];
+                    $customer['InvoicePaymentTotal'] = $this->InvoicePayment->getData('first', array(
+                        'conditions' => $conditionsInvoicePayment,
+                        'fields'=> array(
+                            'InvoicePayment.customer_id', 
+                            'SUM(InvoicePayment.grand_total_payment) as total',
+                        ),
+                        'group' => array(
+                            'InvoicePayment.customer_id'
+                        ),
+                    ), false);
+
+                    $customers[$key] = $customer;
+                }
+            }
+
+            $module_title = __('Laporan Piutang Per Bulan');
+            $period_text = sprintf('Periode %s %s - %s %s', date('F', mktime(0, 0, 0, $fromMonth, 10)), $year, date('F', mktime(0, 0, 0, $toMonth, 10)), $year);
+            $this->set('sub_module_title', $module_title);
+            $this->set('period_text', $period_text);
+            $this->set('active_menu', 'report_revenue_monthly');
+            $this->request->data['Ttuj']['from']['month'] = $fromMonth;
+            $this->request->data['Ttuj']['to']['month'] = $toMonth;
+            $this->request->data['Ttuj']['year'] = $year;
+
+            $this->set(compact(
+                'data_action', 'customerList', 'fromMonth', 
+                'year', 'toMonth', 'customers'
+            ));
+
+            if($data_action == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($data_action == 'excel'){
+                $this->layout = 'ajax';
+            } else {
+                $layout_js = array(
+                    'freeze',
+                );
+                $layout_css = array(
+                    'freeze',
+                );
+
+                $this->set(compact(
+                    'layout_css', 'layout_js'
+                ));
+            }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
     }
 }

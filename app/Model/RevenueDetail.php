@@ -291,14 +291,14 @@ class RevenueDetail extends AppModel {
                         'RevenueDetail.revenue_id',
                     ),
                     'fields' => array(
-                        'SUM(RevenueDetail.price_unit) AS price_unit',
+                        'SUM(RevenueDetail.price_unit*RevenueDetail.qty_unit) AS total_price',
                     ),
                 );
 
                 $data_merge = $this->find('first', $options);
 
                 if(!empty($data_merge[0])){
-                    $data['price_unit'] = $data_merge[0]['price_unit'];
+                    $data['total_price'] = $data_merge[0]['total_price'];
                 }
                 break;
             
