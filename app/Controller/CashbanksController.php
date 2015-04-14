@@ -398,7 +398,7 @@ class CashbanksController extends AppController {
                     ),
                     'CashBankAuth' => array(
                         'conditions' => array(
-                            'CashBankAuth.cash_bank_auth_master_id' => !empty($value['CashBankAuthMaster']['id']) ? $value['CashBankAuthMaster']['id'] : ''
+                            'CashBankAuth.cash_bank_auth_master_id' => !empty($cash_bank_master_user['CashBankAuthMaster']['id']) ? $cash_bank_master_user['CashBankAuthMaster']['id'] : ''
                         )
                     )
                 )
@@ -454,10 +454,25 @@ class CashbanksController extends AppController {
                                         break;
                                 }
                             }else{
-                                if($data['CashBankAuth']['status_document'] == 'revise'){
-                                    $data_arr = array(
-                                        'is_revised' => 1,
-                                    );
+                                $cashBankmaster = $this->CashBank->CashBankAuth->getData('first', array(
+                                    'conditions' => array(
+                                        'CashBankAuth.cash_bank_id' => $id
+                                    ),
+                                    'contain' => array(
+                                        'CashBankAuthMaster' => array(
+                                            'conditions' => array(
+                                                'CashBankAuthMaster.level' => 4
+                                            )
+                                        )
+                                    )
+                                ));
+                                
+                                if(empty($cashBankmaster['CashBankAuthMaster']['id'])){
+                                    if($data['CashBankAuth']['status_document'] == 'revise'){
+                                        $data_arr = array(
+                                            'is_revised' => 1,
+                                        );
+                                    }
                                 }
                             }
 
