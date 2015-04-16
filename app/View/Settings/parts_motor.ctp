@@ -21,6 +21,9 @@
         <table class="table table-hover">
             <tr>
                 <th>Parts</th>
+                <th>Code</th>
+                <th>Biaya Klaim</th>
+                <th>Biaya Klaim<br>Per Unit</th>
                 <th>Dibuat</th>
                 <th>Action</th>
             </tr>
@@ -33,6 +36,25 @@
             ?>
             <tr>
                 <td><?php echo $value_data['name'];?></td>
+                <td><?php echo $value_data['code'];?></td>
+                <td>
+                    <?php 
+                        if(!empty($value_data['biaya_claim'])){
+                            echo $this->Number->currency($value_data['biaya_claim'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+                        }else{
+                            echo '-';
+                        }
+                    ?>
+                </td>
+                <td>
+                    <?php 
+                        if(!empty($value_data['biaya_claim_unit'])){
+                            echo $this->Number->currency($value_data['biaya_claim_unit'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+                        }else{
+                            echo '-';
+                        }
+                    ?>
+                </td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td class="action">
                     <?php 

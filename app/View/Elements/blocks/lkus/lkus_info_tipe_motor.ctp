@@ -1,6 +1,6 @@
 <div class="box box-primary">
     <div class="box-header">
-        <h3 class="box-title"><?php echo __('Detail LKU'); ?></h3>
+        <h3 class="box-title"><?php echo __('Detail LKU/KSU'); ?></h3>
     </div>
     <div class="box-body table-responsive">
         <div class="form-group">
@@ -16,7 +16,6 @@
             <thead>
                 <tr>
                     <th><?php echo __('Tipe Motor');?></th>
-                    <th><?php echo __('Warna');?></th>
                     <th><?php echo __('No. Rangka');?></th>
                     <th><?php echo __('Keterangan');?></th>
                     <th><?php echo __('Part Motor');?></th>
@@ -37,7 +36,7 @@
                         $price = (isset($this->request->data['LkuDetail'][$i]['price']) && !empty($this->request->data['LkuDetail'][$i]['price'])) ? $this->request->data['LkuDetail'][$i]['price'] : 0;
                         $qty = (isset($this->request->data['LkuDetail'][$i]['qty']) && !empty($this->request->data['LkuDetail'][$i]['qty'])) ? $this->request->data['LkuDetail'][$i]['qty'] : 0;
                 ?>
-                <tr>
+                <tr class="lku-detail lku-detail-<?php echo $i+1;?>" rel="<?php echo $i+1;?>">
                     <td>
                         <?php
                             echo $this->Form->input('LkuDetail.tipe_motor_id.', array(
@@ -48,15 +47,6 @@
                                 'required' => false,
                                 'value' => (isset($this->request->data['LkuDetail'][$i]['tipe_motor_id']) && !empty($this->request->data['LkuDetail'][$i]['tipe_motor_id'])) ? $this->request->data['LkuDetail'][$i]['tipe_motor_id'] : ''
                             ));
-                        ?>
-                    </td>
-                    <td class="lku-color-motor" align="center">
-                        <?php
-                                if( isset($this->request->data['LkuDetail'][$i]['ColorMotor']['name']) && !empty($this->request->data['LkuDetail'][$i]['ColorMotor']['name']) ){
-                                    echo $this->request->data['LkuDetail'][$i]['ColorMotor']['name'];
-                                }else{
-                                    echo '-';
-                                }
                         ?>
                     </td>
                     <td>
@@ -85,7 +75,7 @@
                         <?php 
                             echo $this->Form->input('LkuDetail.part_motor_id.', array(
                                 'label' => false,
-                                'class' => 'form-control',
+                                'class' => 'form-control part-motor-lku',
                                 'required' => false,
                                 'empty' => __('Pilih Part Motor'),
                                 'options' => $part_motors,
@@ -179,7 +169,6 @@
                         ));
                     ?>
                 </td>
-                <td class="lku-color-motor" align="center">-</td>
                 <td>
                     <?php 
                         echo $this->Form->input('LkuDetail.no_rangka.', array(
@@ -204,7 +193,7 @@
                     <?php 
                         echo $this->Form->input('LkuDetail.part_motor_id.', array(
                             'label' => false,
-                            'class' => 'form-control',
+                            'class' => 'form-control part-motor-lku',
                             'required' => false,
                             'empty' => __('Pilih Part Motor'),
                             'options' => $part_motors,

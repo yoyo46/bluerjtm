@@ -478,18 +478,23 @@ var add_custom_field = function(){
                 delete_custom_field( $('#advance-box-field-input .list-alocation:last-child .delete-custom-field') );
                 break;
             case 'lku_tipe_motor':
-                var content_clone = $('#first-row').html();
+                var content_clone = $('#first-row tr').html();
                 var length_option = $('#first-row .lku-choose-tipe-motor option').length-1;
                 var tipe_motor_table = $('.tipe-motor-table .lku-choose-tipe-motor').length;
 
-                if( length_option > tipe_motor_table ){
-                    $('.tipe-motor-table #field-grand-total-lku').before(content_clone);
+                var lku_detail_len = $('.lku-detail').length+1;
+
+                var html_tr = '<tr class="lku-detail lku-detail-'+lku_detail_len+'" rel="'+lku_detail_len+'">'+content_clone+'</tr>';
+
+                // if( length_option > tipe_motor_table ){
+                    $('.tipe-motor-table #field-grand-total-lku').before(html_tr);
                     
                     choose_item_info();
                     input_number();
                     price_tipe_motor();
-                    delete_custom_field();
-                }
+                    delete_custom_field($('.lku-detail-'+lku_detail_len+' .delete-custom-field'));
+                    part_motor_lku();
+                // }
                 break;
             case 'lku_ttuj':
                 var content_clone = $('#first-row').html();
@@ -1284,6 +1289,32 @@ function calcPPNPPH(){
     $('#all-total-revenue').html('IDR '+formatNumber(total));
 }
 
+var part_motor_lku = function(){
+    $('.part-motor-lku').change(function(){
+        var self = $(this);
+        var val = self.val();
+
+        if(val != ''){
+            $.ajax({
+                url: '/ajax/getPricePartMotor/'+val+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    self.parents('tr').find('.price-tipe-motor').val($(response).filter('#price').html());
+
+                    price_tipe_motor();
+
+                    self.parents('tr').find('.claim-number').trigger('change');
+                    grandTotalLku();
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        }
+    });
+}
+
 var price_tipe_motor = function(){
     $('.price-tipe-motor').keyup(function(){
         getTotalLKU( $(this) );
@@ -1381,10 +1412,10 @@ var choose_item_info = function(){
             url: '/ajax/getColorTipeMotor/'+self.val()+'/'+ttuj_id+'/',
             type: 'POST',
             success: function(response, status) {
-                self.parents('tr').find('td.lku-color-motor').html($(response).filter('#color-motor').html());
                 self.parents('tr').find('td.qty-tipe-motor').html($(response).filter('#form-qty').html());
 
                 price_tipe_motor();
+                part_motor_lku();
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
@@ -2117,6 +2148,7 @@ $(function() {
     leasing_action();
     laka_ttuj_change();
     invoice_price_payment();
+    part_motor_lku();
 
     set_auth_cash_bank($('.cash-bank-auth-user'));
 
@@ -2461,6 +2493,7 @@ $(function() {
                     input_number();
                     price_tipe_motor();
                     delete_custom_field();
+                    part_motor_lku();
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');

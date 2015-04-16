@@ -742,13 +742,13 @@
             <li class="treeview <?php echo $activeMenu; ?>">
                 <a href="#">
                     <i class="fa fa-dollar"></i>
-                    <span>LKU</span>
+                    <span>LKU/KSU</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
                     <?php 
                             if( in_array('view_lkus', $allowModule) ) {
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> LKU', array(
+                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> LKU/KSU', array(
                                     'controller' => 'lkus',
                                     'action' => 'index',
                                 ), array(
@@ -759,7 +759,7 @@
                              }
 
                             if( in_array('view_lku_payments', $allowModule) ) {
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LKU', array(
+                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LKU/KSU', array(
                                     'controller' => 'lkus',
                                     'action' => 'payments',
                                 ), array(
@@ -999,8 +999,8 @@
                                 ));
                             }
 
-                            if( in_array('view_parts_motor', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Icon Kalender', array(
+                            // if( in_array('view_parts_motor', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Sparepart Motor', array(
                                     'controller' => 'settings',
                                     'action' => 'parts_motor',
                                 ), array(
@@ -1008,7 +1008,7 @@
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'parts_motor' )?'active':'',
                                 ));
-                            }
+                            // }
 
                             // if( in_array('view_settings', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-wrench"></i> Pengaturan', array(

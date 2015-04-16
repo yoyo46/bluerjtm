@@ -1,5 +1,5 @@
 <?php
-		$this->Html->addCrumb(__('LKU'), array(
+		$this->Html->addCrumb(__('LKU/KSU'), array(
 			'controller' => 'lkus',
 			'action' => 'index'
 		));
@@ -15,7 +15,7 @@
 <div class="ttuj-form">
 	<div class="box box-primary">
 	    <div class="box-header">
-	        <h3 class="box-title"><?php echo __('Informasi LKU'); ?></h3>
+	        <h3 class="box-title"><?php echo __('Informasi LKU/KSU'); ?></h3>
 	    </div>
 	    <div class="box-body">
 	        <div class="form-group">

@@ -4134,6 +4134,10 @@ class SettingsController extends AppController {
                 $this->PartsMotor->create();
                 $msg = 'menambah';
             }
+
+            $data['PartsMotor']['biaya_claim'] = !empty($data['PartsMotor']['biaya_claim']) ? str_replace(',', '', $data['PartsMotor']['biaya_claim']) : 0;
+            $data['PartsMotor']['biaya_claim_unit'] = !empty($data['PartsMotor']['biaya_claim_unit']) ? str_replace(',', '', $data['PartsMotor']['biaya_claim_unit']) : 0;
+
             $this->PartsMotor->set($data);
 
             if($this->PartsMotor->validates($data)){

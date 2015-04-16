@@ -28,6 +28,44 @@
 				));
 			?>
         </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('code',__('Kode Part Motor *')); 
+
+				echo $this->Form->input('code',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Kode Part Motor')
+				));
+			?>
+        </div>
+         <div class="form-group">
+        	<?php 
+				echo $this->Form->label('biaya_claim',__('Biaya Klaim')); 
+
+				echo $this->Form->input('biaya_claim',array(
+					'type' => 'text',
+					'label'=> false, 
+					'class'=>'form-control input_price',
+					'required' => false,
+					'placeholder' => __('Biaya Klaim')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('biaya_claim_unit',__('Biaya Klaim per unit')); 
+
+				echo $this->Form->input('biaya_claim_unit',array(
+					'type' => 'text',
+					'label'=> false, 
+					'class'=>'form-control input_price',
+					'required' => false,
+					'placeholder' => __('Biaya Klaim per unit')
+				));
+			?>
+        </div>
     </div>
 
     <div class="box-footer text-center action">

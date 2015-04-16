@@ -90,9 +90,12 @@ class AjaxController extends AppController {
 					$tipe_motor = $this->TipeMotor->getData('first', array(
 						'conditions' => array(
 							'TipeMotor.id' => $value['tipe_motor_id']
+						),
+						'contain' => array(
+							'GroupMotor'
 						)
 					));
-					$tipe_motor_list[$tipe_motor['TipeMotor']['id']] = $tipe_motor['TipeMotor']['name'];
+					$tipe_motor_list[$tipe_motor['TipeMotor']['id']] = sprintf('%s (%s)', $tipe_motor['TipeMotor']['name'], $tipe_motor['GroupMotor']['name']);
 				}
 			}
 			$this->request->data = $data_ttuj;
@@ -1395,6 +1398,18 @@ class AjaxController extends AppController {
 		$title = __('Data Karyawan');
 
 		$this->set(compact('data_action', 'title', 'data_change', 'rel', 'user_id'));
+	}
+
+	function getPricePartMotor($id){
+		$this->loadModel('PartsMotor');
+
+		$part_motor = $this->PartsMotor->getData('first', array(
+			'conditions' => array(
+				'PartsMotor.id' => $id
+			)
+		));
+
+		$this->set('part_motor', $part_motor);
 	}
 }
 ?>

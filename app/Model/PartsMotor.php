@@ -5,7 +5,27 @@ class PartsMotor extends AppModel {
         'name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Part motor name harap diisi'
+                'message' => 'Nama part motor harap diisi'
+            ),
+        ),
+        'code' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Kode Part motor harap diisi'
+            ),
+        ),
+        'biaya_claim' => array(
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'allowEmpty' => true,
+                'message' => 'Biaya harus berupa angka'
+            ),
+        ),
+        'biaya_claim_unit' => array(
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'allowEmpty' => true,
+                'message' => 'Biaya per unit harus berupa angka'
             ),
         ),
 	);
