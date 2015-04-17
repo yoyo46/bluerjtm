@@ -13,7 +13,7 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Pembayaran LKU', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Pembayaran LKU/KSU', array(
                         'controller' => 'lkus',
                         'action' => 'payment_add'
                     ), array(

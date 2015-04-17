@@ -18,7 +18,7 @@
 			<div class="col-sm-12">
 				<div class="box box-primary">
 				    <div class="box-header">
-				        <h3 class="box-title"><?php echo __('Informasi Pembayaran LKU'); ?></h3>
+				        <h3 class="box-title"><?php echo __('Informasi Pembayaran LKU/KSU'); ?></h3>
 				    </div>
 				    <div class="box-body">
 				        <div class="form-group">
