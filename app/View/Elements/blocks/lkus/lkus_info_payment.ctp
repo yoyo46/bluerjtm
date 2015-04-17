@@ -33,7 +33,7 @@
                     $total = 0;
                     for ($i=0; $i < $count; $i++) { 
                 ?>
-        		<tr>
+        		<tr class="lku-detail lku-detail-<?php echo $i+1;?>" rel="<?php echo $i+1;?>">
                     <td>
                         <?php
                             echo $this->Form->input('LkuPaymentDetail.lku_id.', array(

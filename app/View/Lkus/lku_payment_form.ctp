@@ -34,6 +34,16 @@
 				        </div>
 				        <div class="form-group">
 				        	<?php 
+									echo $this->Form->input('type_lku',array(
+										'label'=> __('Tipe Modul *'), 
+										'class'=>'form-control type-lku',
+										'required' => false,
+										'options' => Configure::read('__Site.type_lku')
+									));
+							?>
+				        </div>
+				        <div class="form-group">
+				        	<?php 
 									echo $this->Form->input('customer_id',array(
 										'label'=> __('Customer *'), 
 										'class'=>'form-control',

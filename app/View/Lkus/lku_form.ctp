@@ -35,10 +35,7 @@
 							'label'=> __('Tipe Modul *'), 
 							'class'=>'form-control',
 							'required' => false,
-							'options' => array(
-								'lku' => 'LKU',
-								'ksu' => 'KSU'
-							)
+							'options' => Configure::read('__Site.type_lku')
 						));
 				?>
 	        </div>

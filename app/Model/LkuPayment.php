@@ -12,6 +12,12 @@ class LkuPayment extends AppModel {
                 'message' => 'No Dokumen telah terdaftar',
             ),
         ),
+        'type_lku' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tipe modul harap dipilih'
+            ),
+        ),
         'tgl_bayar' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

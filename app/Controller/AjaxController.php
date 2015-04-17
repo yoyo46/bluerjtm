@@ -174,7 +174,7 @@ class AjaxController extends AppController {
 		$this->set(compact('data_ttuj'));
 	}
 
-	function getTtujCustomerInfo($customer_id){
+	function getTtujCustomerInfo($customer_id, $type_lku){
 		$this->loadModel('Ttuj');
 		$this->loadModel('Lku');
 		$ttuj_id = $this->Ttuj->getData('list', array(
@@ -192,7 +192,8 @@ class AjaxController extends AppController {
 		if(!empty($ttuj_id)){
 			$lkus = $this->Lku->getData('all', array(
 				'conditions' => array(
-					'Lku.ttuj_id' => $ttuj_id
+					'Lku.ttuj_id' => $ttuj_id,
+					'Lku.type_lku' => $type_lku
 				),
 				'contain' => array(
 					'Ttuj'
@@ -211,11 +212,12 @@ class AjaxController extends AppController {
 		$this->set('lkus', $lkus);
 	}
 
-	function getTtujInfoLku($lku_id){
+	function getTtujInfoLku($lku_id, $type_lku){
 		$this->loadModel('Lku');
 		$lku = $this->Lku->getData('first', array(
 			'conditions' => array(
-				'Lku.id' => $lku_id
+				'Lku.id' => $lku_id,
+				'Lku.type_lku' => $type_lku
 			),
 			'contain' => array(
 				'Ttuj'

@@ -63,6 +63,7 @@ class AppController extends Controller {
 		Configure::write('__Site.max_image_width', 1000);
 		Configure::write('__Site.max_image_height', 667);
 		Configure::write('__Site.allowed_ext', array('jpg', 'jpeg', 'png', 'gif'));
+		Configure::write('__Site.type_lku', array('lku' => 'LKU', 'ksu' => 'KSU'));
 
 		$changePhoto = 'view';
 		Configure::write('__Site.thumbnail_display_view_path', sprintf(APP.'webroot'.DS.'images'.DS.'%s', $changePhoto));

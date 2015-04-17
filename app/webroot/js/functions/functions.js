@@ -501,12 +501,14 @@ var add_custom_field = function(){
                 var length_option = $('#first-row .lku-choose-ttuj option').length-1;
                 var tipe_motor_table = $('.ttuj-info-table .lku-choose-ttuj').length;
 
+                var html_tr = '<tr class="lku-detail lku-detail-'+lku_detail_len+'" rel="'+lku_detail_len+'">'+content_clone+'</tr>';
+
                 if( length_option > tipe_motor_table ){
-                    $('.ttuj-info-table #field-grand-total-ttuj').before(content_clone);
+                    $('.ttuj-info-table #field-grand-total-ttuj').before(html_tr);
                     choose_item_info();
                     input_number();
                     price_tipe_motor();
-                    delete_custom_field();
+                    delete_custom_field($('.lku-detail-'+lku_detail_len+' .delete-custom-field'));
                 }
             break;
             case 'target-unit':
@@ -1426,9 +1428,10 @@ var choose_item_info = function(){
 
     $('.lku-choose-ttuj').change(function(){
         var self = $(this);
+        var val_type_lku = $('.type-lku').val();
 
         $.ajax({
-            url: '/ajax/getTtujInfoLku/'+self.val()+'/',
+            url: '/ajax/getTtujInfoLku/'+self.val()+'/'+val_type_lku+'/',
             type: 'POST',
             success: function(response, status) {
                 self.parents('tr').find('td.data-nopol').html($(response).filter('#data-nopol').html());
@@ -2545,12 +2548,16 @@ $(function() {
 
     price_tipe_motor();
 
+    $('.type-lku').change(function(){
+        $('#getTtujCustomerInfo').trigger('change');
+    });
     $('#getTtujCustomerInfo').change(function(){
         var self = $(this);
         var val = self.val();
+        var val_type_lku = $('.type-lku').val();
 
         $.ajax({
-            url: '/ajax/getTtujCustomerInfo/'+val+'/',
+            url: '/ajax/getTtujCustomerInfo/'+val+'/'+val_type_lku+'/',
             type: 'POST',
             success: function(response, status) {
                 $('#detail-customer-info').html(response);

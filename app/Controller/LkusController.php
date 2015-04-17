@@ -369,6 +369,7 @@ class LkusController extends AppController {
             $payments = $this->paginate('LkuPayment');
 
             if( !empty($payments) ) {
+                $this->loadModel('Customer');
                 foreach ($payments as $key => $payment) {
                     $payment = $this->Customer->getMerge($payment, $payment['LkuPayment']['customer_id']);
                     $payments[$key] = $payment;
@@ -418,6 +419,8 @@ class LkusController extends AppController {
     }
 
     function DoLkuPayment($id = false, $data_local = false){
+        $this->loadModel('Lku');
+
         if(!empty($this->request->data)){
             $this->loadModel('LkuPayment');
             $data = $this->request->data;
@@ -479,7 +482,7 @@ class LkusController extends AppController {
                         $this->LkuPayment->LkuPaymentDetail->save();
                     }
 
-                    $this->Log->logActivity( sprintf(__('Sukses %s Pembayaran LKU/KSU ID #%s'), $lku_payment_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Pembayaran LKU/KSU ID #%s'), $msg, $lku_payment_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Pembayaran LKU/KSU'), $msg), 'success');
                     $this->redirect(array(
@@ -498,7 +501,6 @@ class LkusController extends AppController {
             $this->request->data = $data_local;
 
             if(!empty($this->request->data['LkuPaymentDetail'])){
-                $this->loadModel('Lku');
                 foreach ($this->request->data['LkuPaymentDetail'] as $key => $value) {
                     $lku = $this->Lku->getData('first', array(
                         'conditions' => array(
@@ -525,7 +527,7 @@ class LkusController extends AppController {
                 if( !empty($value) ){
                     $temp['LkuPaymentDetail'][$key] = array(
                         'lku_id' => $value,
-                        'total_klaim' => (!empty($data['LkuPaymentDetail']['total_klaim'][$key])) ? $data['LkuDetail']['total_klaim'][$key] : '',
+                        'total_klaim' => (!empty($data['LkuPaymentDetail']['total_klaim'][$key])) ? $data['LkuPaymentDetail']['total_klaim'][$key] : '',
                         'total_biaya_klaim' => (!empty($data['LkuPaymentDetail']['total_biaya_klaim'][$key])) ? $data['LkuPaymentDetail']['total_biaya_klaim'][$key] : '',
                     );
 
