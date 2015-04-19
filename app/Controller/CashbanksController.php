@@ -541,6 +541,7 @@ class CashbanksController extends AppController {
                 ));
                 
                 // debug($cashbank);die();
+                $this->set('active_menu', 'cash_bank');
                 $this->set('cashBankAuth', $cashBankAuth);                
                 $this->set('cashbank', $cashbank);                
                 $this->set('cashbank_auth_id', $cashbank_auth_id);

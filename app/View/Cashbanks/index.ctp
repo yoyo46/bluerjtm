@@ -6,7 +6,7 @@
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <?php 
-                // if( in_array('insert_cash_bank', $allowModule) ) {
+                if( in_array('insert_cash_bank', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -20,7 +20,7 @@
             ?>
         </div>
         <?php 
-                // }
+                }
         ?>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
@@ -63,6 +63,7 @@
                         ));
 
                         $link = '';
+                        
                         if($value['CashBank']['is_revised'] && !$value['CashBank']['completed']){
                             $link .= $this->Html->link('Rubah', array(
                                 'controller' => 'cashbanks',

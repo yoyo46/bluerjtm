@@ -212,19 +212,18 @@
                     if( !empty($allowModule) && $this->Common->getModuleAllow( array(
                             'view_drivers', 'view_trucks', 'view_directions',
                             'view_truck_reports', 'view_ritase_report', 
-                            'view_ritase_report_retail', 'view_stnk',
-                            'view_stnk_payments', 'view_kir', 'view_kir_payments',
-                            'view_siup', 'view_siup_payments', 'view_achievement_report',
+                            'view_ritase_report_retail',
+                            'view_siup', 'view_achievement_report',
                             'view_monitoring_truck', 'view_capacity_report',
                             'view_point_perday_report', 'view_point_perplant_report',
-                            'view_retail_point_perplant_report'
+                            'view_retail_point_perplant_report', 
+                            'view_stnk', 'view_kirs'
                         ), $allowModule ) ) {
                         $activeTruck = false;
                         $truckMenu = array(
                             'drivers', 'trucks', 'directions',
-                            'reports', 'ritase_report', 'ritase_report_retail', 'stnk',
-                            'stnk_payments', 'kir', 'kir_payments',
-                            'siup', 'siup_payments', 'achievement_report',
+                            'reports', 'ritase_report', 'ritase_report_retail', 'stnk', 'kir',
+                            'siup', 'achievement_report',
                             'monitoring_truck', 'capacity_report',
                             'point_perday_report', 'point_perplant_report',
                             'retail_point_perplant_report', 'view_leasing',
@@ -287,17 +286,6 @@
                                 ));
                             }
 
-                            if( in_array('view_kir_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KIR - Pembayaran', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'kir_payments',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'kir_payments' )?'active':'',
-                                ));
-                            }
-
                             if( in_array('view_stnk', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> STNK - Perpanjang', array(
                                     'controller' => 'trucks',
@@ -309,17 +297,6 @@
                                 ));
                             }
 
-                            if( in_array('view_stnk_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> STNK - Pembayaran', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'stnk_payments',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'stnk_payments' )?'active':'',
-                                ));
-                            }
-
                             if( in_array('view_siup', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> SIUP - Perpanjang', array(
                                     'controller' => 'trucks',
@@ -328,17 +305,6 @@
                                     'escape' => false
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'siup' )?'active':'',
-                                ));
-                            }
-
-                            if( in_array('view_siup_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> SIUP - Pembayaran', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'siup_payments',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'siup_payments' )?'active':'',
                                 ));
                             }
 
@@ -585,9 +551,9 @@
                         $dataMenu = array(
                             'index', 'tarif_angkutan', 'invoices',
                             'invoice_reports', 'revenues', 'ar_period_reports',
-                            'invoice_payments', 'list_kwitansi', 'report_customers',
+                            'list_kwitansi', 'report_customers',
                             'report_revenue_customers', 'report_monitoring_sj_revenue',
-                            'tarif_angkut_import'
+                            'tarif_angkut_import', 'report_revenue_monthly'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -644,17 +610,6 @@
                                     'class' => ( !empty($active_menu) && $active_menu == 'invoices' )?'active':'',
                                 ));
                             }
-
-                            // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Invoice', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'invoice_payments',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
-                                ));
-                            // }
 
                             if( in_array('view_revenue_reports', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Invoice Aging', array(
@@ -721,6 +676,17 @@
                                     'class' => ( !empty($active_menu) && $active_menu == 'report_monitoring_sj_revenue' )?'active':'',
                                 ));
                             // }
+
+                            // if( in_array('view_list_kwitansi', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Piutang Per Bulan', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'report_revenue_monthly',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'report_revenue_monthly' )?'active':'',
+                                ));
+                            // }
                     ?>
                 </ul>
             </li>
@@ -728,11 +694,11 @@
                     }
 
                     if( !empty($allowModule) && $this->Common->getModuleAllow( array(
-                        'view_lkus', 'view_lku_payments'
+                        'view_lkus'
                     ), $allowModule ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
-                            'lkus', 'lku_payments'
+                            'lkus'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -755,17 +721,6 @@
                                     'escape' => false
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'lkus' )?'active':'',
-                                ));
-                             }
-
-                            if( in_array('view_lku_payments', $allowModule) ) {
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LKU/KSU', array(
-                                    'controller' => 'lkus',
-                                    'action' => 'payments',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'lku_payments' )?'active':'',
                                 ));
                              }
                     ?>
@@ -811,11 +766,14 @@
                     }
 
                     // if( !empty($allowModule) && $this->Common->getModuleAllow( array(
-                    //     'view_cash_bank'
+                    //     'view_cash_bank', 'view_kir_payments', 'view_stnk_payments', 
+                    //     'view_siup_payments', 'view_lku_payments'
                     // ), $allowModule ) ) {
                         $activeSetting = false;
                         $settingMenu = array(
-                            'cash_bank', 'approval_setting'
+                            'cash_bank', 'approval_setting', 'kir_payments',
+                            'stnk_payments', 'siup_payments', 'invoice_payments', 
+                            'lku_payments', 
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -845,6 +803,136 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'approval_setting' )?'active':'',
+                            ));
+
+                            if( in_array('view_kir_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KIR - Pembayaran', array(
+                                    'controller' => 'trucks',
+                                    'action' => 'kir_payments',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'kir_payments' )?'active':'',
+                                ));
+                            }
+
+                            if( in_array('view_stnk_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> STNK - Pembayaran', array(
+                                    'controller' => 'trucks',
+                                    'action' => 'stnk_payments',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'stnk_payments' )?'active':'',
+                                ));
+                            }
+
+                            if( in_array('view_siup_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> SIUP - Pembayaran', array(
+                                    'controller' => 'trucks',
+                                    'action' => 'siup_payments',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'siup_payments' )?'active':'',
+                                ));
+                            }
+
+                            // if( in_array('view_invoice_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Invoice', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'invoice_payments',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
+                                ));
+                            // }
+
+                            if( in_array('view_lku_payments', $allowModule) ) {
+                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LKU/KSU', array(
+                                    'controller' => 'lkus',
+                                    'action' => 'payments',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'lku_payments' )?'active':'',
+                                ));
+                             }
+
+                            // if( in_array('view_invoice_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LAKA', '#', array(
+                                    'escape' => false
+                                )), array(
+                                    // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
+                                ));
+                            // }
+
+                            // if( in_array('view_invoice_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Asuransi', '#', array(
+                                    'escape' => false
+                                )), array(
+                                    // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
+                                ));
+                            // }
+
+                            // if( in_array('view_invoice_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Leasing', '#', array(
+                                    'escape' => false
+                                )), array(
+                                    // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
+                                ));
+                            // }
+                    ?>
+                </ul>
+            </li>
+            <?php 
+                    // }
+
+                    // if( !empty($allowModule) && $this->Common->getModuleAllow( array(
+                    //     'view_cash_bank'
+                    // ), $allowModule ) ) {
+                        $activeSetting = false;
+                        $settingMenu = array(
+                            'internal', 'product_categories', 'product_brands'
+                        );
+
+                        if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
+                            $activeSetting = 'active';
+                        }
+            ?>
+            <li class="treeview <?php echo $activeSetting; ?>">
+                <a href="#">
+                    <i class="fa fa-book"></i>
+                    <span>Gudang</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kategori Barang</span>', array(
+                                'controller' => 'products',
+                                'action' => 'categories'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'product_categories' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Merk Barang</span>', array(
+                                'controller' => 'products',
+                                'action' => 'brands'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'product_brands' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> SPK Internal</span>', array(
+                                'controller' => 'spk',
+                                'action' => 'internal'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'internal' )?'active':'',
                             ));
                     ?>
                 </ul>
