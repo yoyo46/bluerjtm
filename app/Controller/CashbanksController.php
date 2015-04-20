@@ -306,7 +306,7 @@ class CashbanksController extends AppController {
 
         $coas = $this->Coa->getData('list', array(
             'conditions' => array(
-                // 'Coa.level' => 4,
+                'Coa.level' => 4,
                 'Coa.is_cash_bank' => 1,
                 'Coa.status' => 1
             )

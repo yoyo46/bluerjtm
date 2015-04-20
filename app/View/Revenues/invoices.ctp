@@ -141,19 +141,25 @@
                                         $id,
                                         'print' => 'header',
                                     )));
-
-                                    // if( empty($value['Invoice']['complete_paid']) && empty($value['Invoice']['paid']) ){
-                                    if( !empty($value['Invoice']['status']) ){
-                                        echo $this->Html->tag('li', $this->Html->link(__('Void'), array(
-                                            'controller' => 'revenues',
-                                            'action' => 'invoice_delete',
-                                            $id
-                                        )));
-                                    }
                                 // }
                         ?>
                         </ul>
                     </div>
+                    <?php 
+                            if( empty($value['Invoice']['complete_paid']) && empty($value['Invoice']['paid']) ){
+                                if( !empty($value['Invoice']['status']) ){
+                                    echo $this->Html->link(__('Void'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'invoice_delete',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-danger btn-xs ajaxModal',
+                                        'data-action' => 'cancel_invoice',
+                                        'title' => __('Void Data Invoice')
+                                    ));
+                                }
+                            }
+                    ?>
                 </td>
             </tr>
             <?php
