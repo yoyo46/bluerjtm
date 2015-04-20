@@ -6,7 +6,7 @@
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <?php 
-                if( in_array('insert_cash_bank', $allowModule) ) {
+                // if( in_array('insert_cash_bank', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -20,7 +20,7 @@
             ?>
         </div>
         <?php 
-                }
+                // }
         ?>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
@@ -83,7 +83,7 @@
                             ), array(
                                 'escape' => false,
                                 'class' => 'btn btn-danger btn-xs'
-                            ));
+                            ), __('Anda yakin ingin menghapus data ini?'));
                         }
 
                         $link .= $this->Html->link('Info dan Approval', array(
@@ -102,7 +102,7 @@
                     }
                 }else{
                     $content = $this->Html->tag('td', __('Data tidak ditemukan.'), array(
-                        'colspan' => 5,
+                        'colspan' => 6,
                         'class' => 'alert alert-danger'
                     ));
                     echo $this->Html->tag('tr', $content);

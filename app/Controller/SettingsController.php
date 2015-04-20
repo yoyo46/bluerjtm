@@ -4442,21 +4442,21 @@ class SettingsController extends AppController {
                                             'capacity' => !empty($kapasitas)?$kapasitas:false,
                                             'arrive_lead_time' => !empty($lead_time_sampai_tujuan)?$lead_time_sampai_tujuan:false,
                                             'back_lead_time' => !empty($lead_time_ke_pool)?$lead_time_ke_pool:false,
-                                            'uang_jalan_1' => !empty($uang_jalan_pertama)?$uang_jalan_pertama:false, // Borongan
-                                            'uang_jalan_2' => !empty($uang_jalan_kedua)?$uang_jalan_kedua:0,
+                                            'uang_jalan_1' => !empty($uang_jalan_pertama)?str_replace(array('.', ',', '* '), array('', '', ''), $uang_jalan_pertama):false, // Borongan
+                                            'uang_jalan_2' => !empty($uang_jalan_kedua)?str_replace(array('.', ',', '* '), array('', '', ''), $uang_jalan_kedua):0,
                                             'uang_jalan_per_unit' => !empty($uang_jalan_per_unit)?$uang_jalan_per_unit:0,
-                                            'commission' => !empty($komisi)?$komisi:0,
+                                            'commission' => !empty($komisi)?str_replace(array('.', ',', '* '), array('', '', ''), $komisi):0,
                                             'commission_per_unit' => !empty($komisi_per_unit)?$komisi_per_unit:0,
-                                            'commission_extra' => !empty($komisi_extra)?$komisi_extra:0,
+                                            'commission_extra' => !empty($komisi_extra)?str_replace(array('.', ',', '* '), array('', '', ''), $komisi_extra):0,
                                             'commission_extra_per_unit' => !empty($komisi_extra_per_unit)?$komisi_extra_per_unit:0,
                                             'commission_min_qty' => !empty($min_kapasitas_komisi_extra)?$min_kapasitas_komisi_extra:0,
-                                            'asdp' => !empty($uang_penyebrangan)?$uang_penyebrangan:0,
+                                            'asdp' => !empty($uang_penyebrangan)?str_replace(array('.', ',', '* '), array('', '', ''), $uang_penyebrangan):0,
                                             'asdp_per_unit' => !empty($uang_penyebrangan_per_unit)?$uang_penyebrangan_per_unit:0,
-                                            'uang_kawal' => !empty($uang_kawal)?$uang_kawal:0,
+                                            'uang_kawal' => !empty($uang_kawal)?str_replace(array('.', ',', '* '), array('', '', ''), $uang_kawal):0,
                                             'uang_kawal_per_unit' => !empty($uang_kawal_per_unit)?$uang_kawal_per_unit:0,
-                                            'uang_keamanan' => !empty($uang_keamanan)?$uang_keamanan:0,
+                                            'uang_keamanan' => !empty($uang_keamanan)?str_replace(array('.', ',', '* '), array('', '', ''), $uang_keamanan):0,
                                             'uang_keamanan_per_unit' => !empty($uang_keamanan_per_unit)?$uang_keamanan_per_unit:0,
-                                            'uang_jalan_extra' => !empty($uang_jalan_extra)?$uang_jalan_extra:0,
+                                            'uang_jalan_extra' => !empty($uang_jalan_extra)?str_replace(array('.', ',', '* '), array('', '', ''), $uang_jalan_extra):0,
                                             'uang_jalan_extra_per_unit' => !empty($uang_jalan_extra_per_unit)?$uang_jalan_extra_per_unit:0,
                                             'min_capacity' => !empty($min_kapasitas_ujalan_extra)?$min_kapasitas_ujalan_extra:0,
                                         ),
@@ -4612,6 +4612,8 @@ class SettingsController extends AppController {
                                     } else {
                                         $saveUangKeamananGroupMotor = true;
                                     }
+
+                                    $this->UangJalan->create();
                                     
                                     if( $saveGroupMotor && $saveCommissionGroupMotor && $saveAsdpGroupMotor && $saveUangKawalGroupMotor && $saveUangKeamananGroupMotor && $this->UangJalan->save($data) ){
                                         if( !empty($data['UangJalan']['uang_jalan_per_unit']) ) {
@@ -4637,6 +4639,7 @@ class SettingsController extends AppController {
                                         $this->Log->logActivity( __('Sukses upload Uang jalan by Import Excel'), $this->user_data, $this->RequestHandler, $this->params, 1 );
                                         $successfull_row++;
                                     } else {
+                                        debug($this->UangJalan->validationErrors);die();
                                         $failed_row++;
                                         $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Listing.'), $row_submitted) . '<br>';
                                     }
@@ -5101,7 +5104,7 @@ class SettingsController extends AppController {
                                             'customer_id' => !empty($customer_id)?$customer_id:'',
                                             'capacity' => !empty($kapasitas)?$kapasitas:false,
                                             'jenis_unit' => !empty($jenis_tarif)?strtolower($jenis_tarif):false,
-                                            'tarif' => !empty($tarif_angkutan)?str_replace(array('.', ','), array('', ''), $tarif_angkutan):false,
+                                            'tarif' => !empty($tarif_angkutan)?str_replace(array('.', ',', '* '), array('', '', ''), $tarif_angkutan):false,
                                             'group_motor_id' => !empty($group_motor_id)?$group_motor_id:0,
                                         ),
                                     );
