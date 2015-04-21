@@ -4339,7 +4339,7 @@ class RevenuesController extends AppController {
                 $text = sprintf(__('Gagal %s Pembayaran Invoice'), $msg);
 
                 if( !$validate_price_pay ){
-                    $text .= ', harap isi semua field kosong dan isi pembayaran invoice tidak boleh lebih besar dari total invoice.';
+                    $text .= ', pembayaran invoice tidak boleh lebih besar dari total invoice, harap isi semua field.';
                 }
                 $this->MkCommon->setCustomFlash($text, 'error'); 
             }
