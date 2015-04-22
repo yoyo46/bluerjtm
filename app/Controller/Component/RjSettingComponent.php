@@ -96,6 +96,14 @@ class RjSettingComponent extends Component {
 				if( !empty($refine['UangKuli']['city']) ) {
 					$refine_conditions['UangKuli']['city'] = $refine['UangKuli']['city'];
 				}
+
+				if( !empty($refine['UangJalan']['name']) ) {
+					$refine_conditions['UangJalan']['name'] = $refine['UangJalan']['name'];
+				}
+
+				if( !empty($refine['UangJalan']['capacity']) ) {
+					$refine_conditions['UangJalan']['capacity'] = $refine['UangJalan']['capacity'];
+				}
 			}
 				
 			return $refine_conditions;
@@ -226,6 +234,14 @@ class RjSettingComponent extends Component {
 
 		if(isset($refine['UangKuli']) && !empty($refine['UangKuli'])) {
 			foreach($refine['UangKuli'] as $param => $value) {
+				if($value) {
+					$parameters[trim($param)] = rawurlencode($value);
+				}
+			}
+		}
+
+		if(isset($refine['UangJalan']) && !empty($refine['UangJalan'])) {
+			foreach($refine['UangJalan'] as $param => $value) {
 				if($value) {
 					$parameters[trim($param)] = rawurlencode($value);
 				}

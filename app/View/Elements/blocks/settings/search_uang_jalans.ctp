@@ -7,40 +7,54 @@
     </div>
     <div class="box-body">
         <?php 
-                echo $this->Form->create('Company', array(
+                echo $this->Form->create('UangJalan', array(
                     'url'=> $this->Html->url( array(
                         'controller' => 'settings',
                         'action' => 'search',
-                        'companies'
+                        'uang_jalan'
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
                 ));
         ?>
-        <div class="form-group">
-            <?php 
-                echo $this->Form->input('name',array(
-                    'label'=> __('Nama Company'),
-                    'class'=>'form-control',
-                    'required' => false,
-                    'placeholder' => __('Nama Company')
-                ));
-            ?>
-        </div>
-        <div class="form-group action">
-            <?php
-                    echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
-                        'div' => false, 
-                        'class'=> 'btn btn-success btn-sm',
-                        'type' => 'submit',
-                    ));
-                    echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                        'action' => 'companies', 
-                    ), array(
-                        'escape' => false, 
-                        'class'=> 'btn btn-default btn-sm',
-                    ));
-            ?>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                        echo $this->Form->input('name',array(
+                            'label'=> __('Nama Uang Jalan'),
+                            'class'=>'form-control',
+                            'required' => false,
+                        ));
+                    ?>
+                </div>
+                <div class="form-group action">
+                    <?php
+                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
+                                'div' => false, 
+                                'class'=> 'btn btn-success btn-sm',
+                                'type' => 'submit',
+                            ));
+                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'action' => 'uang_jalan', 
+                            ), array(
+                                'escape' => false, 
+                                'class'=> 'btn btn-default btn-sm',
+                            ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                        echo $this->Form->input('capacity',array(
+                            'label'=> __('Kapasitas'),
+                            'class'=>'form-control',
+                            'required' => false,
+                        ));
+                    ?>
+                </div>
+            </div>
         </div>
         <?php 
             echo $this->Form->end();

@@ -925,8 +925,13 @@ class SettingsController extends AppController {
 
                 if(!empty($refine['name'])){
                     $name = urldecode($refine['name']);
-                    $this->request->data['Company']['name'] = $name;
-                    $options['conditions']['Company.name LIKE '] = '%'.$name.'%';
+                    $this->request->data['UangJalan']['name'] = $name;
+                    $options['conditions']['UangJalan.title LIKE '] = '%'.$name.'%';
+                }
+                if(!empty($refine['capacity'])){
+                    $capacity = urldecode($refine['capacity']);
+                    $this->request->data['UangJalan']['capacity'] = $capacity;
+                    $options['conditions']['UangJalan.capacity LIKE'] = '%'.$capacity.'%';
                 }
             }
             $this->paginate = $this->UangJalan->getData('paginate', $options);
