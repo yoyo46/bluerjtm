@@ -20,13 +20,13 @@ class TarifAngkutan extends AppModel {
                 'message' => 'kota tujuan harap dipilih'
             ),
         ),
-        'capacity' => array(
-            'numeric' => array(
-                'allowEmpty'=> true,
-                'rule' => array('numeric'),
-                'message' => 'Kapasitas harus berupa angka',
-            ),
-        ),
+        // 'capacity' => array(
+        //     'numeric' => array(
+        //         'allowEmpty'=> true,
+        //         'rule' => array('numeric'),
+        //         'message' => 'Kapasitas harus berupa angka',
+        //     ),
+        // ),
         'jenis_unit' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

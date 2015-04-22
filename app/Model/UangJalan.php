@@ -41,10 +41,10 @@ class UangJalan extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Kapasitas harap diisi'
             ),
-            'numeric' => array(
-                'rule' => array('numeric'),
-                'message' => 'Kapasitas harus berupa angka',
-            ),
+            // 'numeric' => array(
+            //     'rule' => array('numeric'),
+            //     'message' => 'Kapasitas harus berupa angka',
+            // ),
         ),
         'arrive_lead_time' => array(
             'notempty' => array(

@@ -127,7 +127,7 @@
 
 						echo $this->Form->input('capacity',array(
 							'label'=> __('Kapasitas'), 
-							'class'=>'form-control input_number',
+							'class'=>'form-control',
 							'required' => false,
 							'placeholder' => __('Kapasitas'),
 							'div' => array(
