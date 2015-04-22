@@ -686,7 +686,29 @@ class CommonHelper extends AppHelper {
                 )));
                 $content .= $this->Html->tag('td', $coa_title);
                 
-                $debit_form = $this->Form->input('CashBankDetail.debit.', array(
+                // $debit_form = $this->Form->input('CashBankDetail.debit.', array(
+                //     'type' => 'text',
+                //     'class' => 'form-control input_price',
+                //     'label' => false,
+                //     'div' => false,
+                //     'required' => false,
+                // ));
+                // $content .= $this->Html->tag('td', $debit_form, array(
+                //     'class' => 'action-search hide'
+                // ));
+
+                // $credit_form = $this->Form->input('CashBankDetail.credit.', array(
+                //     'type' => 'text',
+                //     'class' => 'form-control input_price',
+                //     'label' => false,
+                //     'div' => false,
+                //     'required' => false,
+                // ));
+                // $content .= $this->Html->tag('td', $credit_form, array(
+                //     'class' => 'action-search hide'
+                // ));
+
+                $debit_form = $this->Form->input('CashBankDetail.total.', array(
                     'type' => 'text',
                     'class' => 'form-control input_price',
                     'label' => false,
@@ -694,17 +716,6 @@ class CommonHelper extends AppHelper {
                     'required' => false,
                 ));
                 $content .= $this->Html->tag('td', $debit_form, array(
-                    'class' => 'action-search hide'
-                ));
-
-                $credit_form = $this->Form->input('CashBankDetail.credit.', array(
-                    'type' => 'text',
-                    'class' => 'form-control input_price',
-                    'label' => false,
-                    'div' => false,
-                    'required' => false,
-                ));
-                $content .= $this->Html->tag('td', $credit_form, array(
                     'class' => 'action-search hide'
                 ));
 

@@ -156,8 +156,14 @@
 	        		<tr>
 	        			<th><?php echo __('Kode Acc');?></th>
 	                    <th><?php echo __('Nama Acc');?></th>
-	                    <th><?php echo __('Debit');?></th>
-	                    <th><?php echo __('Kredit');?></th>
+                    	<?php 
+                    		// echo $this->Html->tag('th', __('Debit'));
+                    		// echo $this->Html->tag('th', __('Kredit'));
+
+                    		echo $this->Html->tag('th', __('Total'), array(
+                    			'width' => '30%'
+                    		));
+                    	?>
 	        		</tr>
 	        	</thead>
 	        	<tbody class="cashbanks-info-table">

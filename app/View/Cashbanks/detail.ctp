@@ -52,8 +52,18 @@
                         <tr>
                             <th><?php echo __('Kode Acc');?></th>
                             <th><?php echo __('Nama Acc');?></th>
-                            <th class="text-center"><?php echo __('Debit');?></th>
-                            <th class="text-center"><?php echo __('Kredit');?></th>
+                            <?php 
+                                // echo $this->Html->tag('th', __('Debit'), array(
+                                //     'class' => 'text-center'
+                                // ));
+                                // echo $this->Html->tag('th', __('Kredit'), array(
+                                //     'class' => 'text-center'
+                                // ));
+
+                                echo $this->Html->tag('th', __('Total'), array(
+                                    'class' => 'text-center'
+                                ));
+                            ?>
                         </tr>
                     </thead>
                     <tbody>
@@ -80,16 +90,23 @@
                                     }
                                 ?>
                             </td>
-                            <td align="right">
-                                <?php
-                                    echo $this->Number->currency($value['debit'], Configure::read('__Site.config_currency_code'), array('places' => 0));
-                                ?>
-                            </td>
-                            <td align="right">
-                                <?php
-                                    echo $this->Number->currency($value['credit'], Configure::read('__Site.config_currency_code'), array('places' => 0));
-                                ?>
-                            </td>
+                            <?php
+                                    // $debit = $this->Number->currency($value['debit'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+
+                                    // echo $this->Html->tag('td', $debit, array(
+                                    //     'align' => 'right'
+                                    // ));
+
+                                    // $credit = $this->Number->currency($value['credit'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+                                    // echo $this->Html->tag('td', $debit, array(
+                                    //     'align' => 'right'
+                                    // ));
+
+                                    $total = $this->Number->currency($value['total'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+                                    echo $this->Html->tag('td', $total, array(
+                                        'align' => 'right'
+                                    ));
+                            ?>
                         </tr>
                         <?php
                                 }
@@ -99,20 +116,14 @@
                             <td align="right" colspan="2" style="font-weight: bold;">Total</td>
                             <td align="right" style="font-weight: bold;">
                                 <?php
-                                    $debit = 0;
+                                    $total = 0;
                                     if(!empty($cashbank['CashBank']['debit_total'])){
-                                        $debit = $cashbank['CashBank']['debit_total'];
+                                        $total = $cashbank['CashBank']['debit_total'];
+                                    }else{
+                                        $total = $cashbank['CashBank']['credit_total'];
                                     }
-                                    echo $this->Number->currency($debit, Configure::read('__Site.config_currency_code'), array('places' => 0));
-                                ?>
-                            </td>
-                            <td align="right" style="font-weight: bold;">
-                                <?php
-                                    $credit = 0;
-                                    if(!empty($cashbank['CashBank']['credit_total'])){
-                                        $credit = $cashbank['CashBank']['credit_total'];
-                                    }
-                                    echo $this->Number->currency($credit, Configure::read('__Site.config_currency_code'), array('places' => 0));
+
+                                    echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
                                 ?>
                             </td>
                         </tr>

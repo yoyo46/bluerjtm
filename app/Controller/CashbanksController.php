@@ -165,7 +165,7 @@ class CashbanksController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
-
+            
             if($id && $data_local){
                 $this->CashBank->id = $id;
                 $msg = 'merubah';
@@ -181,19 +181,29 @@ class CashbanksController extends AppController {
                 $arr_list = array();
                 $debit_total = 0;
                 $credit_total = 0;
+                $total_coa = 0;
                 foreach ($data['CashBankDetail']['coa_id'] as $key => $coa_id) {
-                    $debit = !empty($data['CashBankDetail']['debit'][$key]) ? str_replace(',', '', $data['CashBankDetail']['debit'][$key]) : 0;
-                    $credit = !empty($data['CashBankDetail']['credit'][$key]) ? str_replace(',', '', $data['CashBankDetail']['credit'][$key]) : 0;
+                    // $debit = !empty($data['CashBankDetail']['debit'][$key]) ? str_replace(',', '', $data['CashBankDetail']['debit'][$key]) : 0;
+                    // $credit = !empty($data['CashBankDetail']['credit'][$key]) ? str_replace(',', '', $data['CashBankDetail']['credit'][$key]) : 0;
 
-                    $debit_total += $debit;
-                    $credit_total += $credit;
+                    $total_coa_detail = (!empty($data['CashBankDetail']['total'][$key])) ? str_replace(',', '', $data['CashBankDetail']['total'][$key]) : 0;
+                    
+                    if($data['CashBank']['receiving_cash_type'] == 'out'){
+                        $debit_total += $total_coa_detail;
+                    }else{
+                        $credit_total += $total_coa_detail;
+                    }
 
                     $arr_list[] = array(
                         'coa_id' => $coa_id,
-                        'debit' => $debit,
-                        'credit' => $credit
+                        // 'debit' => $debit,
+                        // 'credit' => $credit
+                        'total' => $total_coa_detail
                     );
+
+                    $total_coa += $total_coa_detail;
                 }
+
                 $data['CashBankDetail'] = $arr_list;
                 $data['CashBank']['debit_total'] = $debit_total;
                 $data['CashBank']['credit_total'] = $credit_total;
