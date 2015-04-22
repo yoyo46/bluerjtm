@@ -27,6 +27,9 @@
         <table class="table table-hover">
             <tr>
                 <?php 
+                        echo $this->Html->tag('th', $this->Paginator->sort('Branch.id', __('ID'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Branch.name', __('Cabang'), array(
                             'escape' => false
                         )));
@@ -44,6 +47,7 @@
                             $created = $this->Common->safeTagPrint($value['Branch']['created']);
             ?>
             <tr>
+                <td><?php echo $id;?></td>
                 <td><?php echo $name;?></td>
                 <td><?php echo $this->Common->customDate($created);?></td>
                 <td class="action">

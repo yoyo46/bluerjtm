@@ -2519,7 +2519,11 @@ class SettingsController extends AppController {
     function branches(){
         if( in_array('view_branches', $this->allowModule) ) {
             $this->loadModel('Branch');
-            $options = array();
+            $options = array(
+                'order' => array(
+                    'Branch.id' => 'ASC',
+                ),
+            );
 
             if(!empty($this->params['named'])){
                 $refine = $this->params['named'];
@@ -4197,7 +4201,6 @@ class SettingsController extends AppController {
         $this->redirect($this->referer());
     }
 
-
     function getMimeType( $filename ) {
         $mime_types = array(
             'txt' => 'text/plain',
@@ -4639,7 +4642,6 @@ class SettingsController extends AppController {
                                         $this->Log->logActivity( __('Sukses upload Uang jalan by Import Excel'), $this->user_data, $this->RequestHandler, $this->params, 1 );
                                         $successfull_row++;
                                     } else {
-                                        debug($this->UangJalan->validationErrors);die();
                                         $failed_row++;
                                         $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Listing.'), $row_submitted) . '<br>';
                                     }

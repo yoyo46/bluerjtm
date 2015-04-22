@@ -26,6 +26,7 @@
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>
+                <th>id</th>
                 <th>Jenis SIM</th>
                 <th>Dibuat</th>
                 <th>Action</th>
@@ -38,6 +39,7 @@
                             $id = $value_data['id'];
             ?>
             <tr>
+                <td><?php echo $id;?></td>
                 <td><?php echo $value_data['name'];?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td class="action">

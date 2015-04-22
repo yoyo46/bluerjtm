@@ -56,12 +56,12 @@ class Truck extends AppModel {
                 'message' => 'Nomor Mesin telah terdaftar',
             ),
         ),
-        // 'driver_id' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'Supir truk harap diisi'
-        //     ),
-        // ),
+        'driver_id' => array(
+            'validateDriver' => array(
+                'rule' => array('validateDriver'),
+                'message' => 'Supir truk sudah terdaftar'
+            ),
+        ),
         'capacity' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -243,6 +243,29 @@ class Truck extends AppModel {
         }
 
         return $result;
+    }
+
+
+
+    function validateDriver(){
+        if( !empty($this->data['Truck']['driver_id']) ) {
+            $truck_id = !empty($this->data['Truck']['id'])?$this->data['Truck']['id']:false;
+            $find = $this->find('count', array(
+                'conditions' => array(
+                    'Truck.driver_id' => $this->data['Truck']['driver_id'],
+                    'Truck.id <>' => $truck_id,
+                    'Truck.status' => 1,
+                )
+            ));
+
+            if( !empty($find) ) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
     }
 
 	function getData( $find, $options = false, $is_merge = true ){

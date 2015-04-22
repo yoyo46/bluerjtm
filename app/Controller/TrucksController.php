@@ -3272,4 +3272,473 @@ class TrucksController extends AppController {
         //     $this->redirect($this->referer());
         // }
     }
+
+    function getMimeType( $filename ) {
+        $mime_types = array(
+            'txt' => 'text/plain',
+            'htm' => 'text/html',
+            'html' => 'text/html',
+            'php' => 'text/html',
+            'css' => 'text/css',
+            'js' => 'application/javascript',
+            'json' => 'application/json',
+            'xml' => 'application/xml',
+            'swf' => 'application/x-shockwave-flash',
+            'flv' => 'video/x-flv',
+
+            // images
+            'png' => 'image/png',
+            'jpe' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'jpg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'bmp' => 'image/bmp',
+            'ico' => 'image/vnd.microsoft.icon',
+            'tiff' => 'image/tiff',
+            'tif' => 'image/tiff',
+            'svg' => 'image/svg+xml',
+            'svgz' => 'image/svg+xml',
+
+            // archives
+            'zip' => 'application/zip',
+            'rar' => 'application/x-rar-compressed',
+            'exe' => 'application/x-msdownload',
+            'msi' => 'application/x-msdownload',
+            'cab' => 'application/vnd.ms-cab-compressed',
+
+            // audio/video
+            'mp3' => 'audio/mpeg',
+            'qt' => 'video/quicktime',
+            'mov' => 'video/quicktime',
+
+            // adobe
+            'pdf' => 'application/pdf',
+            'psd' => 'image/vnd.adobe.photoshop',
+            'ai' => 'application/postscript',
+            'eps' => 'application/postscript',
+            'ps' => 'application/postscript',
+
+            // ms office
+            'doc' => 'application/msword',
+            'rtf' => 'application/rtf',
+            'xls' => 'application/vnd.ms-excel',
+            'ppt' => 'application/vnd.ms-powerpoint',
+
+            // open office
+            'odt' => 'application/vnd.oasis.opendocument.text',
+            'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
+        );
+
+        $ext1 = explode('.',$filename);
+        $ext2 = strtolower(end($ext1));
+        $ext3 = end($ext1);
+        if (array_key_exists($ext2, $mime_types)) {
+            return $mime_types[$ext2];
+        }
+        elseif (function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_MIME);
+            $mimetype = finfo_file($finfo, $filename);
+            finfo_close($finfo);
+        }
+        else {
+            return 'application/octet-stream';
+        }
+    }
+
+    function addToFiles($key, $url) {
+        $tempName = tempnam('C:/tmps', 'php_files');
+        $originalName = basename(parse_url($url, PHP_URL_PATH));
+
+        $imgRawData = file_get_contents($url);
+        file_put_contents($tempName, $imgRawData);
+
+        $_FILES[$key] = array(
+            'name' => $originalName,
+            'type' => $this->getMimeType($originalName),
+            'tmp_name' => $tempName,
+            'error' => 0,
+            'size' => strlen($imgRawData),
+        );
+        return $_FILES;
+    }
+
+    function saveTruckCustomer ( $data = false, $truck_id = false ) {
+        $result = array(
+            'validates' => true,
+            'data' => false,
+        );
+
+        if( !empty($data['TruckCustomer']['customer_id']) ) {
+            foreach ($data['TruckCustomer']['customer_id'] as $key => $customer_id) {
+                $dataValidate['TruckCustomer']['customer_id'] = $customer_id;
+                $dataValidate['TruckCustomer']['primary'] = !empty($data['TruckCustomer']['primary'][$key])?$data['TruckCustomer']['primary'][$key]:false;
+                
+                $this->Truck->TruckCustomer->set($dataValidate);
+
+                if( !empty($truck_id) ) {
+                    $dataValidate['TruckCustomer']['truck_id'] = $truck_id;
+                    $this->Truck->TruckCustomer->create();
+                    $this->Truck->TruckCustomer->save($dataValidate);
+                } else {
+                    if(!$this->Truck->TruckCustomer->validates($dataValidate)){
+                        $result['validates'] = false;
+                    } else {
+                        $result['data'][$key] = $dataValidate;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    function saveTruckPerlengkapan ( $data = false, $truck_id = false ) {
+        $result = array(
+            'validates' => true,
+            'data' => false,
+        );
+
+        if( !empty($data['TruckPerlengkapan']['perlengkapan_id']) ) {
+            foreach ($data['TruckPerlengkapan']['perlengkapan_id'] as $key => $perlengkapan_id) {
+                $dataValidate['TruckPerlengkapan']['perlengkapan_id'] = $perlengkapan_id;
+                $dataValidate['TruckPerlengkapan']['qty'] = !empty($data['TruckPerlengkapan']['qty'][$key])?$data['TruckPerlengkapan']['qty'][$key]:false;
+
+                $this->Truck->TruckPerlengkapan->set($dataValidate);
+
+                if( !empty($truck_id) ) {
+                    $dataValidate['TruckPerlengkapan']['truck_id'] = $truck_id;
+                    $this->Truck->TruckPerlengkapan->create();
+                    $this->Truck->TruckPerlengkapan->save($dataValidate);
+                } else {
+                    if(!$this->Truck->TruckPerlengkapan->validates($dataValidate)){
+                        $result['validates'] = false;
+                    } else {
+                        $result['data'][$key] = $dataValidate;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    public function add_import( $download = false ) {
+        if(!empty($download)){
+            $link_url = FULL_BASE_URL . '/files/trucks.xls';
+            $this->redirect($link_url);
+            exit;
+        } else {
+            $this->loadModel('Driver');
+            $this->loadModel('Customer');
+            $this->loadModel('Perlengkapan');
+            App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+
+            $this->set('active_menu', 'truck_import');
+            $this->set('sub_module_title', __('Import Truk'));
+
+            if(!empty($this->request->data)) { 
+                $Zipped = $this->request->data['Import']['importdata'];
+
+                if($Zipped["name"]) {
+                    $filename = $Zipped["name"];
+                    $source = $Zipped["tmp_name"];
+                    $type = $Zipped["type"];
+                    $name = explode(".", $filename);
+                    $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
+
+                    if(!empty($accepted_types)) {
+                        foreach($accepted_types as $mime_type) {
+                            if($mime_type == $type) {
+                                $okay = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+
+                    if(!$continue) {
+                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file Zip.'), 'error');
+                        $this->redirect(array('action'=>'add_import'));
+                    } else {
+                        $path = APP.'webroot'.DS.'files'.DS;
+                        $filenoext = basename ($filename, '.xls');
+                        $filenoext = basename ($filenoext, '.XLS');
+                        $fileunique = uniqid() . '_' . $filenoext;
+
+                        $targetdir = $path . $fileunique . $filename;
+                         
+                        ini_set('memory_limit', '96M');
+                        ini_set('post_max_size', '64M');
+                        ini_set('upload_max_filesize', '64M');
+
+                        if(!move_uploaded_file($source, $targetdir)) {
+                            $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                            $this->redirect(array('action'=>'add_import'));
+                        }
+                    }
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                    $this->redirect(array('action'=>'add_import'));
+                }
+
+                $xls_files = glob( $targetdir );
+
+                if(empty($xls_files)) {
+                    $this->rmdir_recursive ( $targetdir);
+                    $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                    $this->redirect(array('action'=>'add_import'));
+                } else {
+                    $uploadedXls = $this->addToFiles('xls', $xls_files[0]);
+                    $uploaded_file = $uploadedXls['xls'];
+                    $file = explode(".", $uploaded_file['name']);
+                    $extension = array_pop($file);
+                    
+                    if($extension == 'xls') {
+                        $dataimport = new Spreadsheet_Excel_Reader();
+                        $dataimport->setUTFEncoder('iconv');
+                        $dataimport->setOutputEncoding('UTF-8');
+                        $dataimport->read($uploaded_file['tmp_name']);
+                        
+                        if(!empty($dataimport)) {
+                            $data = $dataimport;
+
+                            for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
+                                $datavar = array();
+                                $flag = true;
+                                $i = 1;
+
+                                while ($flag) {
+                                    if( !empty($data->sheets[0]["cells"][1][$i]) ) {
+                                        $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
+                                        $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
+                                        $$variable = $thedata;
+                                        $datavar[] = $thedata;
+                                    } else {
+                                        $flag = false;
+                                    }
+                                    $i++;
+                                }
+
+                                if(array_filter($datavar)) {
+                                    $truckBrand = $this->Truck->TruckBrand->getData('first', array(
+                                        'conditions' => array(
+                                            'TruckBrand.name' => $merek_truk,
+                                            'TruckBrand.status' => 1,
+                                        ),
+                                    ));
+                                    $truckCategory = $this->Truck->TruckCategory->getData('first', array(
+                                        'conditions' => array(
+                                            'TruckCategory.name' => $jenis_truk,
+                                            'TruckCategory.status' => 1,
+                                        ),
+                                    ));
+                                    $truckFacility = $this->Truck->TruckFacility->getData('first', array(
+                                        'conditions' => array(
+                                            'TruckFacility.name' => $fasilitas_truk,
+                                            'TruckFacility.status' => 1,
+                                        ),
+                                    ));
+                                    $company = $this->Truck->Company->getData('first', array(
+                                        'conditions' => array(
+                                            'Company.name' => $pemilik_truk,
+                                            'Company.status' => 1,
+                                        ),
+                                    ));
+                                    $driver = $this->Truck->Driver->getData('first', array(
+                                        'conditions' => array(
+                                            'Driver.no_id' => $no_id_supir,
+                                            'Driver.status' => 1,
+                                        ),
+                                    ));
+
+                                    if( !empty($truckBrand) ) {
+                                        $truck_brand_id = $truckBrand['TruckBrand']['id'];
+                                    }
+                                    if( !empty($truckCategory) ) {
+                                        $truck_category_id = $truckCategory['TruckCategory']['id'];
+                                    }
+                                    if( !empty($truckFacility) ) {
+                                        $truck_facility_id = $truckFacility['TruckFacility']['id'];
+                                    }
+                                    if( !empty($company) ) {
+                                        $company_id = $company['Company']['id'];
+                                    }
+                                    if( !empty($driver) ) {
+                                        $driver_id = $driver['Driver']['id'];
+                                    }
+
+                                    $requestData['ROW'.($x-1)] = array(
+                                        'Truck' => array(
+                                            'truck_brand_id' => !empty($truck_brand_id)?$truck_brand_id:false,
+                                            'emergency_call' => !empty($telepon_darurat)?$telepon_darurat:false,
+                                            'emergency_name' => !empty($nama_panggilan_darurat)?$nama_panggilan_darurat:false,
+                                            'company_id' => !empty($company_id)?$company_id:false,
+                                            'truck_category_id' => !empty($truck_category_id)?$truck_category_id:false,
+                                            'truck_facility_id' => !empty($truck_facility_id)?$truck_facility_id:false,
+                                            'driver_id' => !empty($driver_id)?$driver_id:false,
+                                            'nopol' => !empty($nopol)?$nopol:false,
+                                            'kir' => !empty($biaya_kir)?str_replace(array('.', ',', '* '), array('', '', ''), $biaya_kir):0,
+                                            'siup' => !empty($biaya_siup)?str_replace(array('.', ',', '* '), array('', '', ''), $biaya_siup):0,
+                                            'bpkb' => !empty($bpkb)?str_replace(array('.', ',', '* '), array('', '', ''), $bpkb):0,
+                                            'atas_nama' => !empty($atas_nama)?$atas_nama:false,
+                                            'no_stnk' => !empty($no_stnk)?$no_stnk:false,
+                                            'no_rangka' => !empty($no_rangka)?$no_rangka:false,
+                                            'bbnkb' => !empty($biaya_bbnkb)?str_replace(array('.', ',', '* '), array('', '', ''), $biaya_bbnkb):0,
+                                            'pkb' => !empty($biaya_pkb)?str_replace(array('.', ',', '* '), array('', '', ''), $biaya_pkb):0,
+                                            'swdkllj' => !empty($biaya_swdkllj)?str_replace(array('.', ',', '* '), array('', '', ''), $biaya_swdkllj):0,
+                                            'no_machine' => !empty($no_mesin)?$no_mesin:false,
+                                            'capacity' => !empty($kapasitas)?$kapasitas:false,
+                                            'tahun' => !empty($tahun)?$tahun:false,
+                                            'tahun_neraca' => !empty($tahun_neraca)?$tahun_neraca:false,
+                                            'tgl_bpkb' => !empty($tanggal_bpkb)?$tanggal_bpkb:false,
+                                            'is_asset' => !empty($ini_asset)?$ini_asset:0,
+                                            'is_gps' => !empty($dilengkapi_gps)?$dilengkapi_gps:0,
+                                            'description' => !empty($keterangan)?$keterangan:false,
+                                            'tgl_stnk' => !empty($tgl_perpanjang_stnk_1thn)?$tgl_perpanjang_stnk_1thn:false,
+                                            'tgl_stnk_plat' => !empty($tgl_perpanjang_stnk_5thn)?$tgl_perpanjang_stnk_5thn:false,
+                                            'tgl_siup' => !empty($tgl_perpanjang_siup)?$tgl_perpanjang_siup:false,
+                                            'tgl_kir' => !empty($tgl_perpanjang_kir)?$tgl_perpanjang_kir:false,
+                                        ),
+                                    );
+                                    
+                                    $i = 1;
+                                    $idx = 0;
+                                    $flag = true;
+
+                                    while ($flag) {
+                                        $varGroup = sprintf('alokasi_truk_%s', $i);
+
+                                        if( !empty($$varGroup) ) {
+                                            $customer_code = !empty($$varGroup)?$$varGroup:'';
+                                            $customer = $this->Customer->getData('first', array(
+                                                'conditions' => array(
+                                                    'Customer.code' => $customer_code,
+                                                    'Customer.status' => 1,
+                                                ),
+                                            ));
+
+                                            if( !empty($customer) ) {
+                                                $requestData['ROW'.($x-1)]['TruckCustomer']['customer_id'][$i] = $customer['Customer']['id'];
+                                            }
+
+                                            if( $i == 1 ) {
+                                                $requestData['ROW'.($x-1)]['TruckCustomer']['primary'][$i] = true;
+                                            }
+                                            $idx++;
+                                        } else {
+                                            $flag = false;
+                                        }
+                                        $i++;
+                                    }
+                                    
+                                    $i = 1;
+                                    $idx = 0;
+                                    $flag = true;
+
+                                    while ($flag) {
+                                        $varGroup = sprintf('perlengkapan_%s', $i);
+
+                                        if( !empty($$varGroup) ) {
+                                            $varJml = sprintf('jumlah_perlengkapan_%s', $i);
+                                            $varJml = !empty($$varJml)?$$varJml:false;
+                                            $perlengkapan = !empty($$varGroup)?$$varGroup:'';
+                                            $perlengkapan = $this->Perlengkapan->getData('first', array(
+                                                'conditions' => array(
+                                                    'Perlengkapan.name' => $perlengkapan,
+                                                    'Perlengkapan.status' => 1,
+                                                ),
+                                            ));
+                                            $perlengkapan_id = !empty($perlengkapan['Perlengkapan']['id'])?$perlengkapan['Perlengkapan']['id']:false;
+                                            $requestData['ROW'.($x-1)]['TruckPerlengkapan']['perlengkapan_id'][$i] = $perlengkapan_id;
+                                            $requestData['ROW'.($x-1)]['TruckPerlengkapan']['qty'][$i] = $varJml;
+                                            $idx++;
+                                        } else {
+                                            $flag = false;
+                                        }
+                                        $i++;
+                                    }
+                                }
+                            }
+
+                            if(!empty($requestData)) {
+                                $row_submitted = 1;
+                                $successfull_row = 0;
+                                $failed_row = 0;
+                                $error_message = '';
+
+                                foreach($requestData as $request){
+                                    $saveTruckCustomer = false;
+                                    $saveTruckPerlengkapan = false;
+                                    $data = $request;
+
+                                    if( !empty($data['TruckCustomer']['customer_id']) ) {
+                                        $resultTruckCustomer = $this->saveTruckCustomer($data);
+                                        $saveTruckCustomer = !empty($resultTruckCustomer['validates'])?$resultTruckCustomer['validates']:false;
+                                    } else {
+                                        $saveTruckCustomer = true;
+                                    }
+
+                                    if( !empty($data['TruckPerlengkapan']['perlengkapan_id']) ) {
+                                        $resultTruckPerlengkapan = $this->saveTruckPerlengkapan($data);
+                                        $saveTruckPerlengkapan = !empty($resultTruckPerlengkapan['validates'])?$resultTruckPerlengkapan['validates']:false;
+                                    } else {
+                                        $saveTruckPerlengkapan = true;
+                                    }
+
+                                    $this->Truck->create();
+                                    
+                                    if( $saveTruckCustomer && $saveTruckPerlengkapan && $this->Truck->save($data) ){
+                                        if( !empty($data['TruckCustomer']['customer_id']) ) {
+                                            $this->saveTruckCustomer($data, $this->Truck->id);
+                                        }
+                                        if( !empty($data['TruckPerlengkapan']['perlengkapan_id']) ) {
+                                            $this->saveTruckPerlengkapan($data, $this->Truck->id);
+                                        }
+
+                                        $this->Log->logActivity( __('Sukses upload Truk by Import Excel'), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                                        $successfull_row++;
+                                    } else {
+                                        $validationErrors = $this->Truck->validationErrors;
+                                        $textError = array();
+
+                                        if( !empty($validationErrors) ) {
+                                            foreach ($validationErrors as $key => $validationError) {
+                                                if( !empty($validationError) ) {
+                                                    foreach ($validationError as $key => $error) {
+                                                        $textError[] = $error;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if( !empty($textError) ) {
+                                            $textError = implode(', ', $textError);
+                                        } else {
+                                            $textError = '';
+                                        }
+
+                                        $failed_row++;
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Listing. %s'), $row_submitted, $textError) . '<br>';
+                                    }
+
+                                    $row_submitted++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(!empty($successfull_row)) {
+                    $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, count($requestData));
+                    $this->MkCommon->setCustomFlash(__($message_import1), 'success');
+                }
+                
+                if(!empty($error_message)) {
+                    $this->MkCommon->setCustomFlash(__($error_message), 'error');
+                }
+                $this->redirect(array('action'=>'add_import'));
+            }
+        }
+    }
 }

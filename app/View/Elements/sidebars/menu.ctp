@@ -227,7 +227,7 @@
                             'monitoring_truck', 'capacity_report',
                             'point_perday_report', 'point_perplant_report',
                             'retail_point_perplant_report', 'view_leasing',
-                            'licenses_report'
+                            'licenses_report', 'truck_import'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -261,6 +261,17 @@
                                     'escape' => false
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
+                                ));
+                            }
+
+                            if( in_array('insert_trucks', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Truk', array(
+                                    'controller' => 'trucks',
+                                    'action' => 'add_import',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'truck_import' )?'active':'',
                                 ));
                             }
 
