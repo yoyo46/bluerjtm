@@ -44,6 +44,12 @@ class RjSettingComponent extends Component {
 				if( !empty($refine['Company']['name']) ) {
 					$refine_conditions['Company']['name'] = $refine['Company']['name'];
 				}
+				if( !empty($refine['UangJalan']['from_city']) ) {
+					$refine_conditions['UangJalan']['from'] = $refine['UangJalan']['from_city'];
+				}
+				if( !empty($refine['UangJalan']['to_city']) ) {
+					$refine_conditions['UangJalan']['to'] = $refine['UangJalan']['to_city'];
+				}
 			
 				if( !empty($refine['TipeMotor']['name']) ) {
 					$refine_conditions['TipeMotor']['name'] = $refine['TipeMotor']['name'];

@@ -918,6 +918,8 @@ class SettingsController extends AppController {
     public function uang_jalan() {
         if( in_array('view_uang_jalan', $this->allowModule) ) {
             $this->loadModel('UangJalan');
+            $this->loadModel('City');
+
             $options = array();
 
             if(!empty($this->params['named'])){
@@ -933,6 +935,17 @@ class SettingsController extends AppController {
                     $this->request->data['UangJalan']['capacity'] = $capacity;
                     $options['conditions']['UangJalan.capacity LIKE'] = '%'.$capacity.'%';
                 }
+
+                if(!empty($refine['from'])){
+                    $name = urldecode($refine['from']);
+                    $this->request->data['UangJalan']['from_city'] = $name;
+                    $options['conditions']['UangJalan.from_city_id'] = '%'.$name.'%';
+                }
+                if(!empty($refine['to'])){
+                    $name = urldecode($refine['to']);
+                    $this->request->data['UangJalan']['to_city'] = $name;
+                    $options['conditions']['UangJalan.to_city_id'] = '%'.$name.'%';
+                }
             }
             $this->paginate = $this->UangJalan->getData('paginate', $options);
             $uangJalans = $this->paginate('UangJalan');
@@ -940,8 +953,29 @@ class SettingsController extends AppController {
             $this->set('active_menu', 'uang_jalan');
             $this->set('module_title', 'Data Master');
             $this->set('sub_module_title', 'Uang Jalan');
+
+            $fromCities = $this->City->getData('list', array(
+                'conditions' => array(
+                    'City.status' => 1,
+                    // 'City.is_asal' => 1
+                ),
+                'order' => array(
+                    'City.name' => 'ASC',
+                ),
+            ), false);
+            $toCities = $this->City->getData('list', array(
+                'conditions' => array(
+                    'City.status' => 1,
+                    // 'City.is_tujuan' => 1
+                ),
+                'order' => array(
+                    'City.name' => 'ASC',
+                ),
+            ), false);
+
+
             $this->set(compact(
-                'uangJalans'
+                'uangJalans', 'fromCities', 'toCities'
             ));
         } else {
             $this->redirect($this->referer());
