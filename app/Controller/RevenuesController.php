@@ -879,7 +879,7 @@ class RevenuesController extends AppController {
         $customers = $this->Ttuj->Customer->getData('list', array(
             'conditions' => $customerConditions,
             'fields' => array(
-                'Customer.id', 'Customer.customer_name'
+                'Customer.id', 'Customer.customer_name_code'
             )
         ));
         $driverPengantis = $this->Ttuj->Truck->Driver->getData('list', array(
@@ -2547,7 +2547,7 @@ class RevenuesController extends AppController {
                     $customer = $this->Customer->getMerge($customer, $customer['TruckCustomer']['customer_id']);
 
                     if( !empty($customer['Customer']) )
-                    $customers[$customer['Customer']['id']] = $customer['Customer']['customer_name'];
+                    $customers[$customer['Customer']['id']] = $customer['Customer']['customer_name_code'];
                 }
             }
 
@@ -2687,7 +2687,7 @@ class RevenuesController extends AppController {
                     'Customer.status' => 1
                 ),
                 'fields' => array(
-                    'Customer.id', 'Customer.customer_name'
+                    'Customer.id', 'Customer.customer_name_code'
                 ),
             ));
             $this->set('customers', $customers);
@@ -3245,7 +3245,7 @@ class RevenuesController extends AppController {
                 'Customer.status' => 1
             ),
             'fields' => array(
-                'Customer.id', 'Customer.customer_name'
+                'Customer.id', 'Customer.customer_name_code'
             ),
         ));
         $this->set('customers', $customers);
@@ -3561,7 +3561,13 @@ class RevenuesController extends AppController {
             $customers = $this->Customer->find('list', array(
                 'conditions' => array(
                     'Customer.status' => 1
-                )
+                ),
+                'fields' => array(
+                    'Customer.id', 'Customer.customer_name_code'
+                ),
+                'contain' => array(
+                    'CustomerType'
+                ),
             ));
             $this->set('customers', $customers);
         } else {
@@ -3834,7 +3840,7 @@ class RevenuesController extends AppController {
                 ));
 
                 if( !empty($revenueCustomer) ) {
-                    $customers[$revenue['Revenue']['customer_id']] = $revenueCustomer['Customer']['customer_name'];
+                    $customers[$revenue['Revenue']['customer_id']] = $revenueCustomer['Customer']['customer_name_code'];
                 }
             }
         }
@@ -4023,7 +4029,13 @@ class RevenuesController extends AppController {
                 ),
                 'order' => array(
                     'Customer.name' => 'ASC'
-                )
+                ),
+                'fields' => array(
+                    'Customer.id', 'Customer.customer_name_code'
+                ),
+                'contain' => array(
+                    'CustomerType'
+                ),
             ));
 
             if($data_action == 'pdf'){
@@ -4393,7 +4405,7 @@ class RevenuesController extends AppController {
         //     ),
         // ));
 
-        $list_customer = $this->Invoice->getData('list', array(
+        $customers = $this->Invoice->getData('list', array(
             'conditions' => array(
                 'Invoice.complete_paid' => 0
             ),
@@ -4404,8 +4416,17 @@ class RevenuesController extends AppController {
                 'Invoice.customer_id'
             ),
             'fields' => array(
-                'Customer.id', 'Customer.name'
+                'Invoice.id', 'Customer.id'
             )
+        ));
+        $list_customer = $this->Customer->getData('list', array(
+            'conditions' => array(
+                'Customer.status' => 1,
+                'Customer.id' => $customers,
+            ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
         ));
         $coas = $this->Coa->getData('list', array(
             'conditions' => array(

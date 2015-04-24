@@ -605,7 +605,7 @@ class LkusController extends AppController {
                 ));
 
                 if( !empty($dataCust) ) {
-                    $ttujs[$customer_id] = $dataCust['Customer']['customer_name'];
+                    $ttujs[$customer_id] = $dataCust['Customer']['customer_name_code'];
                 }
             }
         }

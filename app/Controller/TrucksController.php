@@ -424,24 +424,14 @@ class TrucksController extends AppController {
         ));
 
         $this->loadModel('Customer');
-        $customers = array();
-        $customerArr = $this->Customer->getData('all', array(
+        $customers = $this->Customer->getData('list', array(
             'conditions' => array(
                 'Customer.status' => 1
             ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            )
         ));
-
-        if( !empty($customerArr) ) {
-            foreach ($customerArr as $key => $value) {
-                $value = $this->Customer->CustomerType->getMergeCustomerType( $value );
-                $title = $value['Customer']['name'];
-
-                if( !empty($value['CustomerType']) ) {
-                    $title = sprintf('%s (%s)', $title, $value['CustomerType']['name']);
-                }
-                $customers[$value['Customer']['id']] = $title;
-            }
-        }
 
         $now_year = date('Y');
         $start_year = 1984;

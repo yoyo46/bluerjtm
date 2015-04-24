@@ -80,6 +80,8 @@ class Customer extends AppModel {
 
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
+        $this->virtualFields['customer_code'] = sprintf('CONCAT(%s.name, \' - \', %s.code)', $this->alias, $this->alias);
+        $this->virtualFields['customer_name_code'] = sprintf('CONCAT(%s.name, \' ( \', CustomerType.name, \' )\', \' - \', %s.code)', $this->alias, $this->alias);
         $this->virtualFields['customer_name'] = sprintf('CONCAT(%s.name, \' ( \', CustomerType.name, \' )\')', $this->alias);
         $this->virtualFields['order_sort'] = sprintf('CASE WHEN %s.order IS NULL THEN 1 ELSE 0 END', $this->alias);
     }
