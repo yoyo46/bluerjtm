@@ -430,7 +430,7 @@ class TrucksController extends AppController {
             ),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
-            )
+            ),
         ));
 
         $now_year = date('Y');
@@ -3242,12 +3242,11 @@ class TrucksController extends AppController {
             $this->loadModel('Customer');
             $customers = $this->Customer->getData('list', array(
                 'conditions' => array(
-                    'Customer.status' => 1,
-                    // 'City.is_tujuan' => 1,
+                    'Customer.status' => 1
                 ),
                 'fields' => array(
-                    'Customer.id', 'Customer.name'
-                )
+                    'Customer.id', 'Customer.customer_name_code'
+                ),
             ));
             $this->set('active_menu', 'licenses_report');
             $sub_module_title = __('Laporan Surat-surat Truk');

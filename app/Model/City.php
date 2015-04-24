@@ -7,6 +7,10 @@ class City extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'City name harap diisi'
             ),
+            'unique' => array(
+                'rule' => 'isUnique',
+                'message' => 'Kota sudah terdaftar, mohon masukkan kota lain.'
+            ),
         ),
         'region_id' => array(
             'notempty' => array(
