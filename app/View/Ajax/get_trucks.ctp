@@ -3,6 +3,8 @@
         'url'=> $this->Html->url( array(
             'controller' => 'ajax',
             'action' => 'getTrucks',
+            $action_type,
+            $action_id,
         )), 
         'role' => 'form',
         'inputDefaults' => array('div' => false),

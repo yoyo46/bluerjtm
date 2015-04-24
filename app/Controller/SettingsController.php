@@ -939,12 +939,12 @@ class SettingsController extends AppController {
                 if(!empty($refine['from'])){
                     $name = urldecode($refine['from']);
                     $this->request->data['UangJalan']['from_city'] = $name;
-                    $options['conditions']['UangJalan.from_city_id'] = '%'.$name.'%';
+                    $options['conditions']['UangJalan.from_city_id'] = $name;
                 }
                 if(!empty($refine['to'])){
                     $name = urldecode($refine['to']);
                     $this->request->data['UangJalan']['to_city'] = $name;
-                    $options['conditions']['UangJalan.to_city_id'] = '%'.$name.'%';
+                    $options['conditions']['UangJalan.to_city_id'] = $name;
                 }
             }
             $this->paginate = $this->UangJalan->getData('paginate', $options);

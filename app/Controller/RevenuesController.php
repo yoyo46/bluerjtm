@@ -237,7 +237,7 @@ class RevenuesController extends AppController {
                     $priceUnit = 0;
                     $jenis_unit = 'per_truck';
                     $tarif_angkutan_id = 0;
-                    $tarif_angkutan_type = '';
+                    $tarif_angkutan_type = 'angkut';
 
                     if( !empty($tarif['tarif']) ) {
                         $priceUnit = $tarif['tarif'];

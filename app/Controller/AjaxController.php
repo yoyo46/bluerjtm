@@ -695,7 +695,7 @@ class AjaxController extends AppController {
 		}
 	}
 
-	function previewInvoice($customer_id = false, $action = false){
+	function previewInvoice($customer_id = false, $invoice_type = false, $action = false){
 		$this->loadModel('Revenue');
 		$this->loadModel('TipeMotor');
 		$this->loadModel('City');
@@ -707,8 +707,8 @@ class AjaxController extends AppController {
 			'Revenue.status' => 1,
 		);
 
-		if( !empty($action) ) {
-			$conditions['Revenue.type'] = $action;
+		if( !empty($invoice_type) ) {
+			$conditions['Revenue.type'] = $invoice_type;
 		}
 
 		$revenue_id = $this->Revenue->getData('list', array(
@@ -722,7 +722,7 @@ class AjaxController extends AppController {
 		), false);
 
 		if(!empty($revenue_id)){
-            $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($revenue_id, $action);
+            $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($revenue_id, $invoice_type, $action);
 		}
 
 		$this->layout = 'ajax';
@@ -731,7 +731,8 @@ class AjaxController extends AppController {
 		);
 
 		$this->set(compact(
-			'revenue_detail', 'action', 'layout_css'
+			'revenue_detail', 'action', 'layout_css',
+			'invoice_type'
 		));
 	}
 
@@ -811,22 +812,19 @@ class AjaxController extends AppController {
 
         switch ($action_type) {
         	case 'ttuj':
-	        	$this->Truck->bindModel(array(
-		            'hasOne' => array(
-		                'Ttuj' => array(
-		                    'className' => 'Ttuj',
-		                    'foreignKey' => 'truck_id',
-		                    'conditions' => array(
-		                        'Ttuj.status' => 1,
-		                        'Ttuj.is_pool' => 0,
-		                        'Ttuj.id <>' => $action_id,
-		                    ),
-		                )
-		            )
-		        ));
+				$this->loadModel('Ttuj');
+        		$truck_id = $this->Ttuj->getData('list', array(
+                    'conditions' => array(
+                        'Ttuj.status' => 1,
+                        'Ttuj.is_pool' => 0,
+                        'Ttuj.id <>' => $action_id,
+                    ),
+                    'fields' => array(
+                    	'Ttuj.id', 'Ttuj.truck_id',
+                	),
+		        ), false);
 
-        		$options['conditions']['Ttuj.id'] = NULL;
-        		$options['contain'][] = 'Ttuj';
+                $options['conditions']['Truck.id NOT'] = $truck_id;
         		break;
         	case 'laka':
         		$data_change = 'laka-driver-change';
@@ -861,7 +859,7 @@ class AjaxController extends AppController {
 
         $this->set(compact(
         	'trucks', 'data_action', 'title',
-        	'data_change'
+        	'data_change', 'action_type', 'action_id'
     	));
 	}
 
