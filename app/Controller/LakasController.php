@@ -162,6 +162,15 @@ class LakasController extends AppController {
                     $data['Laka']['driver_name'] = $ttuj['Ttuj']['driver_name'];
                 }
             }
+
+            $ttuj_data = array();
+            if(!empty($data['Laka']['ttuj_id'])){
+                $ttuj_data = $this->Ttuj->getData('first', array(
+                    'conditions' => array(
+                        'Ttuj.id' => $data['Laka']['ttuj_id']
+                    )
+                ));
+            }
             
             $this->Laka->set($data);
 
@@ -210,6 +219,13 @@ class LakasController extends AppController {
                                 ));
                                 $this->Laka->LakaMedias->save();
                             }
+                        }
+
+                        /*kalo belum bongkaran, ttuj jadi ngga aktif*/
+                        if(!empty($ttuj_data) && $ttuj_data['Ttuj']['is_bongkaran'] == 0){
+                            $this->Ttuj->id = $ttuj_data['Ttuj']['id'];
+                            $this->Ttuj->set('status', 0);
+                            $this->Ttuj->save();
                         }
 
                         $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s LAKA'), $msg), 'success');
