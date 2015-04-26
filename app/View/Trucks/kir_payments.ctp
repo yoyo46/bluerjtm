@@ -39,7 +39,7 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Kir.to_date', __('Berlaku Hingga'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Kir.price', __('Biaya Perpanjang'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('KirPayment.total_pembayaran', __('Biaya Perpanjang'), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Kir.paid', __('Status'), array(
@@ -62,7 +62,7 @@
                 <td><?php echo $this->Common->customDate($value['Kir']['tgl_kir']);?></td>
                 <td><?php echo $this->Common->customDate($value['Kir']['to_date']);?></td>
                 <td>
-                    <?php echo $this->Number->currency($value['Kir']['price'], 'Rp. ', array('places' => 0));?>
+                    <?php echo $this->Number->currency($value['KirPayment']['total_pembayaran'], 'Rp. ', array('places' => 0));?>
                 </td>
                 <td>
                     <?php 

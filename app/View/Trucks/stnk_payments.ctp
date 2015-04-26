@@ -42,7 +42,7 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Stnk.plat_to_date', __('Perpanjang Plat Hingga'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Stnk.price', __('Biaya Perpanjang'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('StnkPayment.total_pembayaran', __('Biaya Perpanjang'), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Stnk.paid', __('Status'), array(
@@ -70,7 +70,7 @@
                     ?>
                 </td>
                 <td>
-                    <?php echo $this->Number->currency($value['Stnk']['price'], 'Rp. ', array('places' => 0));?>
+                    <?php echo $this->Number->currency($value['StnkPayment']['total_pembayaran'], 'Rp. ', array('places' => 0));?>
                 </td>
                 <td>
                     <?php 

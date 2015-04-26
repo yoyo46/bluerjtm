@@ -309,7 +309,7 @@
                             }
 
                             if( in_array('view_siup', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> SIUP - Perpanjang', array(
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Ijin Usaha - Perpanjang', array(
                                     'controller' => 'trucks',
                                     'action' => 'siup',
                                 ), array(
@@ -877,7 +877,7 @@
                             }
 
                             if( in_array('view_siup_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> SIUP - Pembayaran', array(
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Ijin Usaha - Pembayaran', array(
                                     'controller' => 'trucks',
                                     'action' => 'siup_payments',
                                 ), array(

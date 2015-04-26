@@ -25,6 +25,23 @@
                     <dd><?php echo $this->Number->currency($siup['Siup']['price_estimate'], Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></dd>
                     <dt><?php echo __('Biaya Perpanjang')?></dt>
                     <dd><?php echo $this->Number->currency($siup['Siup']['price'], Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></dd>
+                    <dt><?php echo __('Denda')?></dt>
+                    <dd>
+                        <?php 
+                            $denda = 0;
+                            if(!empty($siup['Siup']['denda'])){
+                                $denda = $siup['Siup']['denda'];
+                            }
+                            echo $this->Number->currency($denda, Configure::read('__Site.config_currency_code').' ', array('places' => 0));
+                        ?>
+                    </dd>
+                    <dt><?php echo __('Total Pembayaran')?></dt>
+                    <dd>
+                        <?php 
+                            $total = $siup['Siup']['price'] + $denda;
+                            echo $this->Number->currency($total, Configure::read('__Site.config_currency_code').' ', array('places' => 0));
+                        ?>
+                    </dd>
                 </dl>
             </div>
         </div>

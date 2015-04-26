@@ -39,7 +39,7 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Siup.to_date', __('Berlaku Hingga'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Siup.price', __('Biaya Perpanjang'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('SiupPayment.total_pembayaran', __('Biaya Perpanjang'), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Siup.paid', __('Status'), array(
@@ -62,7 +62,7 @@
                 <td><?php echo $this->Common->customDate($value['Siup']['tgl_siup']);?></td>
                 <td><?php echo $this->Common->customDate($value['Siup']['to_date']);?></td>
                 <td>
-                    <?php echo $this->Number->currency($value['Siup']['price'], 'Rp. ', array('places' => 0));?>
+                    <?php echo $this->Number->currency($value['SiupPayment']['total_pembayaran'], 'Rp. ', array('places' => 0));?>
                 </td>
                 <td>
                     <?php 

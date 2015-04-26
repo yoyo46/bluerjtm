@@ -129,6 +129,25 @@
                         ?>
                     </div>
                 </div>
+                <div class="form-group">
+                    <?php 
+                        echo $this->Form->label('denda', __('Denda')); 
+                    ?>
+                    <div class="input-group">
+                        <?php 
+                            echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+                                'class' => 'input-group-addon'
+                            ));
+                            echo $this->Form->input('denda', array(
+                                'type' => 'text',
+                                'class'=>'form-control input_price',
+                                'disabled' => true,
+                                'required' => false,
+                                'label'=> false, 
+                            ));
+                        ?>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
