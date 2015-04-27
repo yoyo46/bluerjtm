@@ -585,7 +585,7 @@ EOD;
 
         $path = $this->Common->pathDirTcpdf();
         $filename = 'Laporan_Truk_'.$date_title.'.pdf';
-        $tcpdf->Output($path.'/'.$filename, 'I'); 
+        $tcpdf->Output($path.'/'.$filename, 'F'); 
 
         header('Content-type: application/pdf');
         header('Content-Disposition: attachment; filename="'.$filename.'"');
