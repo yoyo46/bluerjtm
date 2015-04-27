@@ -27,7 +27,7 @@
                         'div' => false,
                         'class' => 'checkAll',
                     )).__('Pilih Semua')), array(
-                        'class' => 'checkbox col-sm-6',
+                        'class' => 'checkbox col-sm-3',
                     ));
 
                     if( !empty($customers) ) {
@@ -46,7 +46,7 @@
                                 'checked' => $checked,
                                 'class' => 'check-option',
                             )).$customer), array(
-                                'class' => 'checkbox col-sm-6',
+                                'class' => 'checkbox col-sm-3',
                             ));
                             $i++;
                         }

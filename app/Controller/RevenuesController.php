@@ -2519,27 +2519,19 @@ class RevenuesController extends AppController {
                 }
             }
             $customers = array();
-            $truckCustomers = $this->TruckCustomer->getData('all', array(
+            $customers = $this->TruckCustomer->getData('list', array(
                 'conditions' => array(
                     'Truck.status' => 1,
                     'TruckCustomer.primary' => 1,
                 ),
                 'fields' => array(
-                    'TruckCustomer.id', 'TruckCustomer.customer_id'
+                    'CustomerNoType.id', 'CustomerNoType.code'
                 ),
                 'contain' => array(
                     'Truck',
+                    'CustomerNoType',
                 ),
             ));
-
-            if( !empty($truckCustomers) ) {
-                foreach ($truckCustomers as $key => $customer) {
-                    $customer = $this->Customer->getMerge($customer, $customer['TruckCustomer']['customer_id']);
-
-                    if( !empty($customer['Customer']) )
-                    $customers[$customer['Customer']['id']] = $customer['Customer']['customer_name_code'];
-                }
-            }
 
             $this->set(compact(
                 'data_action', 'lastDay', 'currentMonth',
