@@ -116,11 +116,11 @@
                     </dd>
                     <dt><?php echo __('Biaya KIR')?></dt>
                     <dd><?php echo $this->Number->currency($truck['Truck']['kir'], Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></dd>
-                    <dt><?php echo __('SIUP')?></dt>
+                    <dt><?php echo __('Ijin Usaha')?></dt>
                     <dd>
                         <?php 
                                 echo $this->Common->customDate($truck['Truck']['tgl_siup'], 'd M Y', '-');
-                                echo $this->Html->link(__('&nbsp;&nbsp;Perpanjang SIUP ?'), array(
+                                echo $this->Html->link(__('&nbsp;&nbsp;Perpanjang Ijin Usaha ?'), array(
                                     'controller' => 'trucks',
                                     'action' => 'siup',
                                 ), array(
@@ -128,7 +128,7 @@
                                 ));
                         ?>
                     </dd>
-                    <dt><?php echo __('Biaya SIUP')?></dt>
+                    <dt><?php echo __('Biaya Ijin Usaha')?></dt>
                     <dd><?php echo $this->Number->currency($truck['Truck']['siup'], Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></dd>
                 </dl>
             </div>

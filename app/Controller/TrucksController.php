@@ -1380,7 +1380,7 @@ class TrucksController extends AppController {
             $siup = $this->paginate('Siup');
             
             $this->set('active_menu', 'siup');
-            $sub_module_title = __('SIUP');
+            $sub_module_title = __('Ijin Usaha');
             $this->set(compact('siup', 'sub_module_title'));
         } else {
             $this->redirect($this->referer());
@@ -1391,7 +1391,7 @@ class TrucksController extends AppController {
         if( in_array('insert_siup', $this->allowModule) ) {
             $this->loadModel('Siup');
             $this->set('active_menu', 'siup');
-            $this->set('sub_module_title', 'Tambah SIUP');
+            $this->set('sub_module_title', 'Tambah Ijin Usaha');
             $this->doSiup();
         } else {
             $this->redirect($this->referer());
@@ -1401,7 +1401,7 @@ class TrucksController extends AppController {
     function siup_edit($id){
         if( in_array('update_siup', $this->allowModule) ) {
             $this->loadModel('Siup');
-            $this->set('sub_module_title', 'Rubah SIUP Truk');
+            $this->set('sub_module_title', 'Rubah Ijin Usaha Truk');
             $siup = $this->Siup->getData('first', array(
                 'conditions' => array(
                     'Siup.id' => $id,
@@ -1412,7 +1412,7 @@ class TrucksController extends AppController {
                 $this->doSiup($id, $siup);
                 $this->set(compact('truck', 'siup'));
             }else{
-                $this->MkCommon->setCustomFlash(__('Siup Truk tidak ditemukan'), 'error');  
+                $this->MkCommon->setCustomFlash(__('Ijin Usaha Truk tidak ditemukan'), 'error');  
                 $this->redirect(array(
                     'controller' => 'trucks',
                     'action' => 'siup'
@@ -1477,18 +1477,18 @@ class TrucksController extends AppController {
 
             if( $this->Siup->validates($data) ){
                 if( $this->Siup->save($data) ){
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s SIUP Truk'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s SIUP Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Ijin Usaha Truk'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Ijin Usaha Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );      
                     $this->redirect(array(
                         'controller' => 'trucks',
                         'action' => 'siup'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s SIUP Truk'), $msg), 'error');  
-                    $this->Log->logActivity( sprintf(__('Gagal %s SIUP Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ijin Usaha Truk'), $msg), 'error');  
+                    $this->Log->logActivity( sprintf(__('Gagal %s Ijin Usaha Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );      
                 }
             }else{
-                $text = sprintf(__('Gagal %s SIUP Truk'), $msg);
+                $text = sprintf(__('Gagal %s Ijin Usaha Truk'), $msg);
                 $this->MkCommon->setCustomFlash($text, 'error');
             }
         } else if($id && $siup){
@@ -1548,7 +1548,7 @@ class TrucksController extends AppController {
             $siupPayments = $this->paginate('SiupPayment');
 
             $this->set('active_menu', 'siup_payments');
-            $sub_module_title = __('Pembayaran SIUP');
+            $sub_module_title = __('Pembayaran Ijin Usaha');
             $this->set(compact('siupPayments', 'sub_module_title'));
         } else {
             $this->redirect($this->referer());
@@ -1582,7 +1582,7 @@ class TrucksController extends AppController {
                 )
             ));
 
-            $sub_module_title = __('Pembayaran SIUP');
+            $sub_module_title = __('Pembayaran Ijin Usaha');
             $this->set(compact(
                 'siups', 'sub_module_title'
             ));
@@ -1603,9 +1603,9 @@ class TrucksController extends AppController {
 
             if( !empty($siup) ) {
                 $this->doSiupPayment($id, $siup);
-                $this->set('sub_module_title', __('Detail Pembayaran SIUP'));
+                $this->set('sub_module_title', __('Detail Pembayaran Ijin Usaha'));
             } else {
-                $this->MkCommon->setCustomFlash(__('Data Pembayaran SIUP tidak ditemukan'), 'error');
+                $this->MkCommon->setCustomFlash(__('Data Pembayaran Ijin Usaha tidak ditemukan'), 'error');
                 $this->redirect($this->referer());
             }
         } else {
@@ -1645,18 +1645,18 @@ class TrucksController extends AppController {
 
                 if( $this->SiupPayment->validates($data) && $this->Truck->validates($data) && $this->Siup->validates($data) ){
                     if( $this->SiupPayment->save($data) && $this->Truck->save($data) && $this->Siup->save($data) ){
-                        $this->MkCommon->setCustomFlash(sprintf(__('SIUP Truk %s telah dibayar'), $siup['Siup']['no_pol']), 'success');
-                        $this->Log->logActivity( sprintf(__('SIUP Truk %s telah dibayar'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                        $this->MkCommon->setCustomFlash(sprintf(__('Ijin Usaha Truk %s telah dibayar'), $siup['Siup']['no_pol']), 'success');
+                        $this->Log->logActivity( sprintf(__('Ijin Usaha Truk %s telah dibayar'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );      
                         $this->redirect(array(
                             'controller' => 'trucks',
                             'action' => 'siup_payments'
                         ));
                     } else {
-                        $this->MkCommon->setCustomFlash(sprintf(__('Gagal membayar SIUP Truk %s'), $siup['Siup']['no_pol']), 'error');  
-                        $this->Log->logActivity( sprintf(__('Gagal membayar SIUP Truk %s'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                        $this->MkCommon->setCustomFlash(sprintf(__('Gagal membayar Ijin Usaha Truk %s'), $siup['Siup']['no_pol']), 'error');  
+                        $this->Log->logActivity( sprintf(__('Gagal membayar Ijin Usaha Truk %s'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );
                     }
                 } else {
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal membayar SIUP Truk %s'), $siup['Siup']['no_pol']), 'error');  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal membayar Ijin Usaha Truk %s'), $siup['Siup']['no_pol']), 'error');  
                 }
             } else {
                 $this->MkCommon->setCustomFlash(__('Mohon pilih No. Pol Truk'), 'error');
@@ -1693,14 +1693,14 @@ class TrucksController extends AppController {
                 $this->Siup->set('status', 0);
 
                 if($this->Siup->save()){
-                    $this->MkCommon->setCustomFlash(sprintf(__('SIUP Truk %s telah berhasil dihapus'), $siup['Siup']['no_pol']), 'success');
-                    $this->Log->logActivity( sprintf(__('SIUP Truk %s telah berhasil dihapus'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->MkCommon->setCustomFlash(sprintf(__('Ijin Usaha Truk %s telah berhasil dihapus'), $siup['Siup']['no_pol']), 'success');
+                    $this->Log->logActivity( sprintf(__('Ijin Usaha Truk %s telah berhasil dihapus'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 } else {
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal menghapus SIUP Truk %s'), $siup['Siup']['no_pol']), 'error');  
-                    $this->Log->logActivity( sprintf(__('Gagal menghapus SIUP Truk %s'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal menghapus Ijin Usaha Truk %s'), $siup['Siup']['no_pol']), 'error');  
+                    $this->Log->logActivity( sprintf(__('Gagal menghapus Ijin Usaha Truk %s'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 }
             } else {
-                $this->MkCommon->setCustomFlash(__('Data SIUP tidak ditemukan'), 'error');
+                $this->MkCommon->setCustomFlash(__('Data Ijin Usaha tidak ditemukan'), 'error');
             }
 
             $this->redirect($this->referer());

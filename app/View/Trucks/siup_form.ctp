@@ -1,5 +1,5 @@
 <?php
-		$this->Html->addCrumb('SIUP Truk', array(
+		$this->Html->addCrumb('Ijin Usaha Truk', array(
 			'controller' => 'trucks',
 			'action' => 'siup'
 		));
@@ -15,7 +15,7 @@
 	<div class="col-sm-6">
 		<div class="box box-primary">
 		    <div class="box-header">
-		        <h3 class="box-title"><?php echo __('Informasi SIUP'); ?></h3>
+		        <h3 class="box-title"><?php echo __('Informasi Ijin Usaha'); ?></h3>
 		    </div>
 		    <div class="box-body">
 		        <div class="form-group">
@@ -59,7 +59,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('from_date', array(
-								'label'=> __('Tgl Berakhir SIUP'), 
+								'label'=> __('Tgl Berakhir Ijin Usaha'), 
 								'class'=>'form-control',
 								'type' => 'text',
 								'required' => false,
@@ -80,7 +80,7 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-							echo $this->Form->label('price_estimate', __('Biaya SIUP')); 
+							echo $this->Form->label('price_estimate', __('Biaya Ijin Usaha')); 
 					?>
 					<div class="input-group">
 						<?php 
@@ -92,7 +92,7 @@
 									'label'=> false, 
 									'class'=>'form-control input_price',
 									'required' => false,
-									'placeholder' => __('Biaya SIUP'),
+									'placeholder' => __('Biaya Ijin Usaha'),
 									'readonly' => true,
 								));
 						?>
@@ -104,7 +104,7 @@
 	<div class="col-sm-6">
 		<div class="box box-primary">
 		    <div class="box-header">
-		        <h3 class="box-title"><?php echo __('Biaya SIUP'); ?></h3>
+		        <h3 class="box-title"><?php echo __('Biaya Ijin Usaha'); ?></h3>
 		    </div>
 		    <div class="box-body">
 		        <div class="form-group">
@@ -132,7 +132,7 @@
 									'label'=> false, 
 									'class'=>'form-control input_price',
 									'required' => false,
-									'placeholder' => __('Biaya SIUP'),
+									'placeholder' => __('Biaya Ijin Usaha'),
 								));
 						?>
 					</div>

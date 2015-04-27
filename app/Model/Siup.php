@@ -17,13 +17,13 @@ class Siup extends AppModel {
         'tgl_siup' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Tanggal SIUP harap diisi'
+                'message' => 'Tanggal Ijin Usaha harap diisi'
             ),
         ),
         'price' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Biaya SIUP harap diisi'
+                'message' => 'Biaya Ijin Usaha harap diisi'
             ),
         ),
     );

@@ -725,13 +725,24 @@
                 <ul class="treeview-menu">
                     <?php 
                             if( in_array('view_lkus', $allowModule) ) {
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> LKU/KSU', array(
+                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> LKU', array(
                                     'controller' => 'lkus',
                                     'action' => 'index',
                                 ), array(
                                     'escape' => false
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'lkus' )?'active':'',
+                                ));
+                             }
+
+                             if( in_array('view_lkus', $allowModule) ) {
+                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KSU', array(
+                                    'controller' => 'lkus',
+                                    'action' => 'ksus',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'ksus' )?'active':'',
                                 ));
                              }
                     ?>

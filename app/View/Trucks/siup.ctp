@@ -13,7 +13,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Perpanjang SIUP', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Perpanjang Ijin Usaha', array(
                     'controller' => 'trucks',
                     'action' => 'siup_add'
                 ), array(
@@ -96,7 +96,7 @@
                                         $id
                                     ), array(
                                         'class' => 'btn btn-danger btn-xs'
-                                    ), __('Anda yakin ingin menghapus data Perpanjang SIUP ini?'));
+                                    ), __('Anda yakin ingin menghapus data Perpanjang Ijin Usaha ini?'));
                                 }
                             }
                     ?>

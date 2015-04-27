@@ -969,7 +969,7 @@ class AjaxController extends AppController {
 	function getSiups () {
 		$this->loadModel('Siup');
 		$this->loadModel('Truck');
-		$title = __('Data SIUP');
+		$title = __('Data Ijin Usaha');
 		$data_action = 'browse-form';
 		$data_change = 'truckID';
 		$conditions = array(

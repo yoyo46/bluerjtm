@@ -13,7 +13,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Bayar SIUP', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Bayar Ijin Usaha', array(
                     'controller' => 'trucks',
                     'action' => 'siup_payment_add'
                 ), array(

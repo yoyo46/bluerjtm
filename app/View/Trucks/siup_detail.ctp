@@ -1,5 +1,5 @@
 <?php
-        $this->Html->addCrumb('Pembayaran SIUP', array(
+        $this->Html->addCrumb('Pembayaran Ijin Usaha', array(
             'controller' => 'trucks',
             'action' => 'siup_payments'
         ));
@@ -9,7 +9,7 @@
     <div class="col-sm-6">
         <div class="box box-primary">
             <div class="box-header">
-                <h3 class="box-title"><?php echo __('Informasi SIUP')?></h3>
+                <h3 class="box-title"><?php echo __('Informasi Ijin Usaha')?></h3>
             </div>
             <div class="box-body">
                 <dl class="dl-horizontal">
@@ -17,7 +17,7 @@
                     <dd><?php echo $siup['Siup']['no_pol'];?></dd>
                     <dt><?php echo __('Tanggal Perpanjang')?></dt>
                     <dd><?php echo $this->Common->customDate($siup['Siup']['tgl_siup']);?></dd>
-                    <dt><?php echo __('Tgl Berakhir SIUP')?></dt>
+                    <dt><?php echo __('Tgl Berakhir Ijin Usaha')?></dt>
                     <dd><?php echo $this->Common->customDate($siup['Siup']['from_date']);?></dd>
                     <dt><?php echo __('Berlaku Sampai')?></dt>
                     <dd><?php echo $this->Common->customDate($siup['Siup']['to_date']);?></dd>

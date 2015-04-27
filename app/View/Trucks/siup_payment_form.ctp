@@ -1,5 +1,5 @@
 <?php
-        $this->Html->addCrumb('Pembayaran SIUP', array(
+        $this->Html->addCrumb('Pembayaran Ijin Usaha', array(
             'controller' => 'trucks',
             'action' => 'siup_payments'
         ));
@@ -15,7 +15,7 @@
     <div class="col-sm-6">
         <div class="box box-primary">
             <div class="box-header">
-                <h3 class="box-title"><?php echo __('Biaya KIR'); ?></h3>
+                <h3 class="box-title"><?php echo __('Biaya Ijin Usaha'); ?></h3>
             </div>
             <div class="box-body">
                 <div class="form-group">
@@ -23,7 +23,7 @@
                             $attrBrowse = array(
                                 'class' => 'ajaxModal visible-xs',
                                 'escape' => false,
-                                'title' => __('Data SIUP'),
+                                'title' => __('Data Ijin Usaha'),
                                 'data-action' => 'browse-form',
                                 'data-change' => 'truckID',
                             );
@@ -60,7 +60,7 @@
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('from_date', array(
-                                'label'=> __('Tgl Berakhir SIUP'), 
+                                'label'=> __('Tgl Berakhir Ijin Usaha'), 
                                 'class'=>'form-control',
                                 'type' => 'text',
                                 'required' => false,
@@ -81,7 +81,7 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->label('price_estimate', __('Estimasi Biaya SIUP')); 
+                            echo $this->Form->label('price_estimate', __('Estimasi Biaya Ijin Usaha')); 
                     ?>
                     <div class="input-group">
                         <?php 
@@ -93,7 +93,7 @@
                                     'label'=> false, 
                                     'class'=>'form-control input_price',
                                     'required' => false,
-                                    'placeholder' => __('Estimasi Biaya SIUP'),
+                                    'placeholder' => __('Estimasi Biaya Ijin Usaha'),
                                     'disabled' => true,
                                 ));
                         ?>
@@ -112,7 +112,7 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                        echo $this->Form->label('price', __('Biaya Perpanjang SIUP')); 
+                        echo $this->Form->label('price', __('Biaya Perpanjang Ijin Usaha')); 
                     ?>
                     <div class="input-group">
                         <?php 
@@ -190,7 +190,7 @@
             ));
             echo $this->Html->link(__('Tolak'), 'javascript:', array(
                 'class'=> 'btn btn-danger submit-link',
-                'alert' => __('Anda yakin ingin menolak pembayaran SIUP truk ini?'),
+                'alert' => __('Anda yakin ingin menolak pembayaran Ijin Usaha truk ini?'),
                 'action_type' => 'rejected',
             ));
             echo $this->Form->button(__('Bayar'), array(
