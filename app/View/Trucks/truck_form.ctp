@@ -269,7 +269,7 @@
 		        </div>
 		    	<div class="form-group">
 		        	<?php 
-						echo $this->Form->label('atas_nama',__('Atas Nama *')); 
+						echo $this->Form->label('atas_nama',__('Atas Nama')); 
 
 						echo $this->Form->input('atas_nama',array(
 							'label'=> false, 
@@ -281,7 +281,7 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('bpkb',__('BPKB *')); 
+						echo $this->Form->label('bpkb',__('BPKB')); 
 
 						echo $this->Form->input('bpkb',array(
 							'label'=> false, 
@@ -293,7 +293,7 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('tgl_bpkb',__('Tanggal BPKB *')); 
+						echo $this->Form->label('tgl_bpkb',__('Tanggal BPKB')); 
 
 						echo $this->Form->input('tgl_bpkb',array(
 							'type' => 'text',
@@ -306,7 +306,7 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('no_stnk',__('No STNK *')); 
+						echo $this->Form->label('no_stnk',__('No STNK')); 
 
 						echo $this->Form->input('no_stnk',array(
 							'label'=> false, 
@@ -319,7 +319,7 @@
 		        <div class="form-group">
 		        	<?php 
 						echo $this->Form->input('tgl_stnk',array(
-							'label'=> __('Tgl Perpanjang STNK 1Thn *'), 
+							'label'=> __('Tgl Perpanjang STNK 1Thn'), 
 							'class'=>'form-control custom-date',
 							'required' => false,
 							'placeholder' => __('Tgl Perpanjang STNK 1Thn'),
@@ -330,7 +330,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('tgl_stnk_plat',array(
-								'label'=> __('Tgl Perpanjang STNK 5Thn *'), 
+								'label'=> __('Tgl Perpanjang STNK 5Thn'), 
 								'class'=>'form-control custom-date',
 								'required' => false,
 								'placeholder' => __('Tgl Perpanjang STNK 5Thn'),
@@ -341,7 +341,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('bbnkb',array(
-								'label'=> __('Biaya BBNKB *'), 
+								'label'=> __('Biaya BBNKB'), 
 								'class'=>'form-control input_price',
 								'required' => false,
 								'placeholder' => __('Biaya BBNKB'),
@@ -352,7 +352,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('pkb',array(
-								'label'=> __('Biaya PKB *'), 
+								'label'=> __('Biaya PKB'), 
 								'class'=>'form-control input_price',
 								'required' => false,
 								'placeholder' => __('Biaya PKB'),
@@ -363,7 +363,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('swdkllj',array(
-								'label'=> __('Biaya SWDKLLJ *'), 
+								'label'=> __('Biaya SWDKLLJ'), 
 								'class'=>'form-control input_price',
 								'required' => false,
 								'placeholder' => __('Biaya SWDKLLJ'),
@@ -374,7 +374,7 @@
 		        <div class="form-group">
 		        	<?php 
 						echo $this->Form->input('tgl_siup',array(
-							'label'=> __('Tgl Perpanjang SIUP *'), 
+							'label'=> __('Tgl Perpanjang SIUP'), 
 							'class'=>'form-control custom-date',
 							'required' => false,
 							'placeholder' => __('Tgl Perpanjang SIUP'),
@@ -385,7 +385,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('siup',array(
-								'label'=> __('Biaya SIUP *'), 
+								'label'=> __('Biaya SIUP'), 
 								'class'=>'form-control input_price',
 								'required' => false,
 								'placeholder' => __('Biaya SIUP'),
@@ -396,7 +396,7 @@
 		        <div class="form-group">
 		        	<?php 
 						echo $this->Form->input('tgl_kir',array(
-							'label'=> __('Tgl Perpanjang KIR *'), 
+							'label'=> __('Tgl Perpanjang KIR'), 
 							'class'=>'form-control custom-date',
 							'required' => false,
 							'placeholder' => __('Tgl Perpanjang tgl_kir'),
@@ -407,7 +407,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('kir',array(
-								'label'=> __('Biaya KIR *'), 
+								'label'=> __('Biaya KIR'), 
 								'class'=>'form-control input_price',
 								'required' => false,
 								'placeholder' => __('Biaya KIR'),

@@ -80,92 +80,92 @@ class Truck extends AppModel {
                 'message' => 'Tahun Neraca truk harap diisi'
             ),
         ),
-        'atas_nama' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Atas Nama truk harap diisi'
-            ),
-        ),
-        'bpkb' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'BPKB truk harap diisi'
-            ),
-            'isUnique' => array(
-                'rule' => array('isUnique'),
-                'message' => 'BPKB telah terdaftar',
-            ),
-        ),
-        'tgl_bpkb' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tanggal BPKB truk harap diisi'
-            ),
-        ),
-        'no_stnk' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Nomor STNK truk harap diisi'
-            ),
-            'isUnique' => array(
-                'rule' => array('isUnique'),
-                'message' => 'Nomor STNK telah terdaftar',
-            ),
-        ),
-        'tgl_stnk' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tgl Perpanjang STNK 1thn truk harap diisi'
-            ),
-        ),
-        'tgl_stnk_plat' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tgl Perpanjang STNK 5thn truk harap diisi'
-            ),
-        ),
-        'bbnkb' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Biaya BBNKB truk harap diisi'
-            ),
-        ),
-        'pkb' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Biaya PKB truk harap diisi'
-            ),
-        ),
-        'swdkllj' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Biaya SWDKLLJ truk harap diisi'
-            ),
-        ),
-        'tgl_siup' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tgl Perpanjang SIUP truk harap diisi'
-            ),
-        ),
-        'siup' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Biaya SIUP truk harap diisi'
-            ),
-        ),
-        'tgl_kir' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tgl Perpanjang KIR truk harap diisi'
-            ),
-        ),
-        'kir' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Biaya KIR truk harap diisi'
-            ),
-        ),
+        // 'atas_nama' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Atas Nama truk harap diisi'
+        //     ),
+        // ),
+        // 'bpkb' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'BPKB truk harap diisi'
+        //     ),
+        //     'isUnique' => array(
+        //         'rule' => array('isUnique'),
+        //         'message' => 'BPKB telah terdaftar',
+        //     ),
+        // ),
+        // 'tgl_bpkb' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Tanggal BPKB truk harap diisi'
+        //     ),
+        // ),
+        // 'no_stnk' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Nomor STNK truk harap diisi'
+        //     ),
+        //     'isUnique' => array(
+        //         'rule' => array('isUnique'),
+        //         'message' => 'Nomor STNK telah terdaftar',
+        //     ),
+        // ),
+        // 'tgl_stnk' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Tgl Perpanjang STNK 1thn truk harap diisi'
+        //     ),
+        // ),
+        // 'tgl_stnk_plat' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Tgl Perpanjang STNK 5thn truk harap diisi'
+        //     ),
+        // ),
+        // 'bbnkb' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Biaya BBNKB truk harap diisi'
+        //     ),
+        // ),
+        // 'pkb' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Biaya PKB truk harap diisi'
+        //     ),
+        // ),
+        // 'swdkllj' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Biaya SWDKLLJ truk harap diisi'
+        //     ),
+        // ),
+        // 'tgl_siup' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Tgl Perpanjang SIUP truk harap diisi'
+        //     ),
+        // ),
+        // 'siup' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Biaya SIUP truk harap diisi'
+        //     ),
+        // ),
+        // 'tgl_kir' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Tgl Perpanjang KIR truk harap diisi'
+        //     ),
+        // ),
+        // 'kir' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Biaya KIR truk harap diisi'
+        //     ),
+        // ),
 	);
 
     var $hasOne = array(
