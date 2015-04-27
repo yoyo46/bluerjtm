@@ -153,6 +153,7 @@
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.atas_nama', __('Pemilik')));
                             echo $this->Html->tag('th', $this->Common->getSorting('TruckCategory.name', __('Jenis')));
                             echo $this->Html->tag('th', $this->Common->getSorting('Driver.driver_name', __('Supir')));
+                            echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.code', __('Alokasi')));
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.capacity', __('Kapasitas')));
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.tahun', __('Tahun')));
                             echo $this->Html->tag('th', $this->Common->getSorting('TruckFacility.name', __('Truk Fasilitas')), array(
@@ -179,6 +180,7 @@
                             $content .= $this->Html->tag('td', $truck['Truck']['atas_nama']);
                             $content .= $this->Html->tag('td', $truck['TruckCategory']['name']);
                             $content .= $this->Html->tag('td', $truck['Driver']['driver_name']);
+                            $content .= $this->Html->tag('td', $truck['CustomerNoType']['code']);
                             $content .= $this->Html->tag('td', $truck['Truck']['capacity'], array(
                                 'style' => 'text-align: center;'
                             ));

@@ -30,38 +30,37 @@
                     ?>
                 </div>
                 <div class="form-group">
-                    <?php
-                        echo $this->Form->label('from_date', __('Tanggal Masuk'), array(
-                            'class' => 'control-label'
-                        ));
+                    <?php 
+                            echo $this->Form->input('Truck.capacity',array(
+                                'label'=> __('Kapasitas'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Kapasitas')
+                            ));
                     ?>
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <?php 
-                                    echo $this->Form->input('from_date',array(
-                                        'label'=> false,
-                                        'class'=>'form-control',
-                                        'id' => 'fromdatepicker',
-                                        'required' => false,
-                                        'placeholder' => __('Dari')
-                                    ));
-                            ?>
-                        </div>
-                        <div class="col-xs-6">
-                            <?php 
-                                    echo $this->Form->input('to_date',array(
-                                        'label'=> false,
-                                        'class'=>'form-control',
-                                        'id' => 'todatepicker',
-                                        'required' => false,
-                                        'placeholder' => __('Sampai')
-                                    ));
-                            ?>
-                        </div>
-                    </div>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Truck.year',array(
+                                'label'=> __('Tahun Truk'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Tahun Truk')
+                            ));
+                    ?>
                 </div>
             </div>
             <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Truck.alokasi',array(
+                                'label'=> __('Alokasi Truk'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Alokasi Truk')
+                            ));
+                    ?>
+                </div>
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('Driver.name',array(
@@ -69,6 +68,16 @@
                                 'class'=>'form-control',
                                 'required' => false,
                                 'placeholder' => __('Nama Supir')
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Truck.category',array(
+                                'label'=> __('Jenis Truk'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Jenis Truk')
                             ));
                     ?>
                 </div>

@@ -2584,6 +2584,26 @@ class TrucksController extends AppController {
                     $defaul_condition['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$data.'%';
                     $this->request->data['Driver']['name'] = $data;
                 }
+                if(!empty($refine['capacity'])){
+                    $data = urldecode($refine['capacity']);
+                    $defaul_condition['Truck.capacity LIKE'] = '%'.$data.'%';
+                    $this->request->data['Truck']['capacity'] = $data;
+                }
+                if(!empty($refine['category'])){
+                    $data = urldecode($refine['category']);
+                    $defaul_condition['TruckCategory.name LIKE'] = '%'.$data.'%';
+                    $this->request->data['Truck']['category'] = $data;
+                }
+                if(!empty($refine['year'])){
+                    $data = urldecode($refine['year']);
+                    $defaul_condition['Truck.tahun LIKE'] = '%'.$data.'%';
+                    $this->request->data['Truck']['year'] = $data;
+                }
+                if(!empty($refine['alokasi'])){
+                    $data = urldecode($refine['alokasi']);
+                    $defaul_condition['CustomerNoType.code LIKE'] = '%'.$data.'%';
+                    $this->request->data['Truck']['alokasi'] = $data;
+                }
             }
 
             if(!empty($from_date)){
@@ -2593,13 +2613,40 @@ class TrucksController extends AppController {
                 $defaul_condition['DATE_FORMAT(Truck.created, \'%Y-%m-%d\') <= '] = $to_date;
             }
 
+            $this->Truck->unBindModel(array(
+                'hasMany' => array(
+                    'TruckCustomer'
+                )
+            ));
+
+            $this->Truck->bindModel(array(
+                'hasOne' => array(
+                    'TruckCustomer' => array(
+                        'className' => 'TruckCustomer',
+                        'foreignKey' => 'truck_id',
+                        'conditions' => array(
+                            'TruckCustomer.primary' => 1
+                        )
+                    ),
+                    'CustomerNoType' => array(
+                        'className' => 'CustomerNoType',
+                        'foreignKey' => false,
+                        'conditions' => array(
+                            'TruckCustomer.customer_id = CustomerNoType.id',
+                        )
+                    )
+                )
+            ), false);
+
             $options = $this->Truck->getData('paginate', array(
                 'conditions' => $defaul_condition,
                 'contain' => array(
                     'TruckBrand', 
                     'TruckCategory',
                     'TruckFacility',
-                    'Driver'
+                    'Driver',
+                    'TruckCustomer',
+                    'CustomerNoType',
                 )
             ));
 
