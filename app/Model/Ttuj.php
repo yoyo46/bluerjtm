@@ -97,6 +97,10 @@ class Ttuj extends AppModel {
             'className' => 'Customer',
             'foreignKey' => 'customer_id',
         ),
+        'ToCity' => array(
+            'className' => 'City',
+            'foreignKey' => 'to_city_id',
+        ),
     );
 
     var $hasMany = array(

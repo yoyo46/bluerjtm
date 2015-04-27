@@ -9424,7 +9424,7 @@
                 var s = day[0] + "," + day[1] + "," + day[2];
                 var _537 = new Date(day[0], parseInt(day[1]) - 1, day[2]);
                 var d = opts.formatter.call(_531, _537);
-                var css = opts.styler.call(_531, _537);
+                var css = opts.styler.call(_531, _537, j, opts.rel);
                 var _538 = "";
                 var _539 = "";
                 if (typeof css == "string") {
@@ -10294,7 +10294,8 @@
                             hidden: (th.attr("hidden") ? true : undefined),
                             formatter: (th.attr("formatter") ? eval(th.attr("formatter")) : undefined),
                             styler: (th.attr("styler") ? eval(th.attr("styler")) : undefined),
-                            sorter: (th.attr("sorter") ? eval(th.attr("sorter")) : undefined)
+                            sorter: (th.attr("sorter") ? eval(th.attr("sorter")) : undefined),
+                            rel: (th.attr("rel") ? eval(th.attr("rel")) : undefined)
                         });
                         if (col.width && String(col.width).indexOf("%") == -1) {
                             col.width = parseInt(col.width);
@@ -12497,7 +12498,7 @@
                 var col = $(_758).datagrid("getColumnOption", _75e);
                 if (col) {
                     var _75f = _75c[_75e];
-                    var css = col.styler ? (col.styler(_75f, _75c, _75b) || "") : "";
+                    var css = col.styler ? (col.styler(_75f, _75c, _75b, col.rel) || "") : "";
                     var _760 = "";
                     var _761 = "";
                     if (typeof css == "string") {
@@ -14129,7 +14130,7 @@
                 var _8ba = _8b7[i];
                 var col = $(_8b6).datagrid("getColumnOption", _8ba);
                 if (col) {
-                    var css = col.styler ? (col.styler(row[_8ba], row) || "") : "";
+                    var css = col.styler ? (col.styler(row[_8ba], row, i, col.rel) || "") : "";
                     var _8bb = "";
                     var _8bc = "";
                     if (typeof css == "string") {

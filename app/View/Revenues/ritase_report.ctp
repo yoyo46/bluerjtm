@@ -65,6 +65,16 @@
                         ?>
                     </div>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Ttuj.customer',array(
+                                'label'=> __('Alokasi'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Alokasi')
+                            ));
+                    ?>
+                </div>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
@@ -197,7 +207,7 @@
                                 'rowspan' => $headerRowspan,
                                 'align' => 'center',
                             ));
-                            echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.name', __('Alokasi')), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.code', __('Alokasi')), array(
                                 'style' => 'text-align: center;width: 150px;vertical-align: middle;',
                                 'data-options' => 'field:\'alokasi\',width:100',
                                 'rowspan' => $headerRowspan,
@@ -287,8 +297,8 @@
                                     $qLt = round(($overTime/$total)*100, 2);
                                 }
 
-                                if( !empty($value['Customer']['target_rit']) ) {
-                                    $target_rit = $value['Customer']['target_rit'];
+                                if( !empty($value['CustomerNoType']['target_rit']) ) {
+                                    $target_rit = $value['CustomerNoType']['target_rit'];
                                     $pencapaian = ( $total / $target_rit ) * 100;
                                 } else {
                                     $pencapaian = 0;
@@ -307,8 +317,8 @@
                             echo $this->Html->tag('td', $value['Truck']['capacity'], array(
                                 'style' => 'text-align:center;',
                             ));
-                            echo $this->Html->tag('td', !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-', array(
-                                'class' => 'text-center',
+                            echo $this->Html->tag('td', !empty($value['CustomerNoType']['code'])?$value['CustomerNoType']['code']:'-', array(
+                                'class' => 'text-left',
                             ));
 
                             if( !empty($cities) ) {
@@ -407,8 +417,8 @@
                     $cityArr = Set::extract('/City/Ttuj/to_city_id', $value);
                     $total = !empty($value['Total'])?$value['Total']:0;
 
-                    if( !empty($value['Customer']['target_rit']) ) {
-                        $target_rit = $value['Customer']['target_rit'];
+                    if( !empty($value['CustomerNoType']['target_rit']) ) {
+                        $target_rit = $value['CustomerNoType']['target_rit'];
                         $pencapaian = ( $total / $target_rit ) * 100;
                     } else {
                         $pencapaian = 0;
@@ -419,7 +429,7 @@
                     $content .= $this->Html->tag('td', $value['Truck']['nopol']);
                     $content .= $this->Html->tag('td', !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:false);
                     $content .= $this->Html->tag('td', $value['Truck']['capacity']);
-                    $content .= $this->Html->tag('td', !empty($value['Customer']['name'])?$value['Customer']['name']:'-');
+                    $content .= $this->Html->tag('td', !empty($value['CustomerNoType']['code'])?$value['CustomerNoType']['code']:'-');
                     $content .= $this->Html->tag('td', $total);
                     $content .= $this->Html->tag('td', $target_rit);
 

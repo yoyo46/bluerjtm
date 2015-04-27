@@ -127,6 +127,9 @@ class RjRevenueComponent extends Component {
 					$refine_conditions['Ttuj']['monitoring_customer_id'] = array_filter($refine['Ttuj']['monitoring_customer_id']);
 					$refine_conditions['Ttuj']['monitoring_customer_id'] = implode(',', $refine_conditions['Ttuj']['monitoring_customer_id']);
 				}
+				if( !empty($refine['Revenue']['customer']) ) {
+					$refine_conditions['Revenue']['customer'] = $refine['Revenue']['customer'];
+				}
 			}
 				
 			return $refine_conditions;

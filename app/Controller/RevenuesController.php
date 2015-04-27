@@ -1728,8 +1728,8 @@ class RevenuesController extends AppController {
             $this->loadModel('Truck');
             $this->loadModel('TruckCustomer');
             $this->loadModel('Ttuj');
-            $this->loadModel('UangJalan');
-            $this->loadModel('Customer');
+            $this->loadModel('Ttuj');
+            $this->loadModel('CustomerNoType');
             $dateFrom = date('Y-m-d', strtotime('-1 month'));
             $dateTo = date('Y-m-d');
             $conditions = array(
@@ -1753,6 +1753,12 @@ class RevenuesController extends AppController {
                     $conditions['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$driver_name.'%';
                 }
 
+                if(!empty($refine['customer'])){
+                    $customer = urldecode($refine['customer']);
+                    $this->request->data['Ttuj']['customer'] = $customer;
+                    $conditions['CustomerNoType.code LIKE '] = '%'.$customer.'%';
+                }
+
                 if(!empty($refine['date'])){
                     $dateStr = urldecode($refine['date']);
                     $date = explode('-', $dateStr);
@@ -1772,19 +1778,19 @@ class RevenuesController extends AppController {
             }
 
             $conditionCustomers = array(
-                'Customer.status' => 1,
+                'CustomerNoType.status' => 1,
             );
 
             if( $data_type == 'retail' ) {
-                $conditionCustomers['Customer.customer_type_id'] = 1;
+                $conditionCustomers['CustomerNoType.customer_type_id'] = 1;
             } else {
-                $conditionCustomers['Customer.customer_type_id'] = 2;
+                $conditionCustomers['CustomerNoType.customer_type_id'] = 2;
             }
 
-            $customer_id = $this->Customer->getData('list', array(
+            $customer_id = $this->CustomerNoType->find('list', array(
                 'conditions' => $conditionCustomers,
                 'fields' => array(
-                    'Customer.id', 'Customer.id'
+                    'CustomerNoType.id', 'CustomerNoType.id'
                 ),
             ));
             $conditions['TruckCustomer.customer_id'] = $customer_id;
@@ -1814,18 +1820,7 @@ class RevenuesController extends AppController {
                         'TruckCustomer.truck_id'=> $truck['Truck']['id'],
                     );
 
-                    $truckCustomer = $this->TruckCustomer->getData('first', array(
-                        'conditions' => $conditionCustomers,
-                        'order' => array(
-                            'TruckCustomer.id' => 'ASC',
-                        ),
-                    ));
                     $truck = $this->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
-
-                    if( !empty($truckCustomer) ) {
-                        $truckCustomer = $this->TruckCustomer->Customer->getMerge($truckCustomer, $truckCustomer['TruckCustomer']['customer_id']);
-                    }
-
                     $conditionsTtuj = array(
                         'Ttuj.is_pool'=> 1,
                         'Ttuj.status'=> 1,
@@ -1867,7 +1862,6 @@ class RevenuesController extends AppController {
                         $truck['City'] = $cities;
                     }
 
-                    $truck = array_merge($truck, $truckCustomer);
                     $trucks[$key] = $truck;
                 }
             }
@@ -1885,9 +1879,9 @@ class RevenuesController extends AppController {
                 $this->set('active_menu', 'ritase_report_retail');
             } else {
                 $this->set('active_menu', 'ritase_report');
-                $cities = $this->UangJalan->getData('list', array(
+                $cities = $this->Ttuj->getData('list', array(
                     'conditions' => array(
-                        'UangJalan.status' => 1,
+                        'Ttuj.status' => 1,
                         // 'City.is_tujuan' => 1,
                     ),
                     'fields' => array(
@@ -1936,7 +1930,7 @@ class RevenuesController extends AppController {
             $this->loadModel('CustomerTargetUnitDetail');
             $this->loadModel('Ttuj');
             $this->loadModel('TtujTipeMotor');
-            $this->loadModel('Customer');
+            $this->loadModel('CustomerNoType');
             $this->set('active_menu', 'achievement_report');
             $fromMonth = date('m');
             $fromYear = date('Y');
@@ -1947,14 +1941,19 @@ class RevenuesController extends AppController {
                 'Ttuj.status'=> 1,
                 'Ttuj.is_draft'=> 0,
             );
+            $options = array(
+                'conditions' => array(
+                    'CustomerNoType.status' => 1,
+                ),
+            );
 
             if(!empty($this->params['named'])){
                 $refine = $this->params['named'];
 
-                if(!empty($refine['name'])){
-                    $name = urldecode($refine['name']);
-                    $this->request->data['Ttuj']['customer_name'] = $name;
-                    $conditions['Ttuj.customer_name LIKE '] = '%'.$name.'%';
+                if(!empty($refine['customer'])){
+                    $customer = urldecode($refine['customer']);
+                    $this->request->data['Ttuj']['customer'] = $customer;
+                    $options['conditions']['CustomerNoType.code LIKE '] = '%'.$customer.'%';
                 }
 
                 if( !empty($refine['fromMonth']) && !empty($refine['fromYear']) ){
@@ -1985,12 +1984,6 @@ class RevenuesController extends AppController {
                 ),
             ));
 
-            $options = $this->Customer->getData('paginate', array(
-                'conditions' => array(
-                    'Customer.status' => 1,
-                ),
-            ));
-
             if( !empty($data_action) ) {
                 $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
             } else {
@@ -1998,13 +1991,13 @@ class RevenuesController extends AppController {
             }
 
             $this->paginate = $options;
-            $ttujs = $this->paginate('Customer');
+            $ttujs = $this->paginate('CustomerNoType');
             $cntPencapaian = array();
             $targetUnit = array();
 
             if( !empty($ttujs) ) {
                 foreach ($ttujs as $key => $ttuj) {
-                    $conditions['Ttuj.customer_id'] = $ttuj['Customer']['id'];
+                    $conditions['Ttuj.customer_id'] = $ttuj['CustomerNoType']['id'];
                     $ttujTipeMotor = $this->TtujTipeMotor->find('first', array(
                         'conditions' => $conditions,
                         'contain' => array(
@@ -2026,11 +2019,8 @@ class RevenuesController extends AppController {
 
                     if( !empty($ttujTipeMotor) ) {
                         if( !empty($ttujTipeMotor) ) {
-                            $ttujTipeMotor = $this->Customer->getMerge($ttujTipeMotor, $ttujTipeMotor['Ttuj']['customer_id']);
                             $cntPencapaian[$ttujTipeMotor['Ttuj']['customer_id']][$ttujTipeMotor[0]['dt']] = $ttujTipeMotor[0]['cnt'];
                         }
-
-                        $ttuj = array_merge($ttuj, $ttujTipeMotor);
                     }
 
                     $ttujs[$key] = $ttuj;
