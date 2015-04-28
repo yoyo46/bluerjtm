@@ -55,9 +55,8 @@
                 <tr>
                     <?php 
                             echo $this->Html->tag('th', $this->Common->getSorting('Customer.customer_name', __('ALOKASI')), array(
-                                'style' => 'text-align: center;width: 120px;',
+                                'style' => 'text-align: center;',
                                 'data-options' => 'field:\'customer_name\',width:120',
-                                'rowspan' => $headerRowspan,
                             ));
 
                             if( $data_action != 'excel' ) {
@@ -71,7 +70,7 @@
 
                             for ($i=1; $i <= $lastDay; $i++) {
                                 echo $this->Html->tag('th', $i, array(
-                                    'style' => 'text-align: center;width:100px',
+                                    'style' => 'text-align: center;',
                                     'data-options' => 'field:\'pencapaian_'.$i.'\',width:100,sortable:true',
                                     'align' => 'center',
                                     'title' => date('l', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth)))),
@@ -79,14 +78,14 @@
                             }
 
                             echo $this->Html->tag('th', __('Total'), array(
-                                'style' => 'text-align: center;width:100px',
-                                'data-options' => 'field:\'pencapaian_'.$i.'\',width:100,sortable:true',
+                                'style' => 'text-align: center;',
+                                'data-options' => 'field:\'total\',width:100,sortable:true',
                                 'align' => 'center',
                             ));
 
                             echo $this->Html->tag('th', __('Target'), array(
-                                'style' => 'text-align: center;width:100px',
-                                'data-options' => 'field:\'pencapaian_'.$i.'\',width:100,sortable:true',
+                                'style' => 'text-align: center;',
+                                'data-options' => 'field:\'target\',width:100,sortable:true',
                                 'align' => 'center',
                             ));
                     ?>
@@ -95,39 +94,35 @@
             <tbody>
                 <?php
                         if(!empty($customers)){
-                            $total = array();
-
                             foreach ($customers as $key => $customer) {
+                                $customer_id = $customer['Customer']['id'];
+                                $totalMuatan = 0;
                 ?>
                 <tr>
                     <?php
-                            $customer_id = $customer['Customer']['id'];
-                            $totalMuatan = 0;
-
-                            echo $this->Html->tag('td', $this->Html->tag('div', $customer['Customer']['code'], array(
-                                'style' => 'width: 80px;',
-                            )));
+                            echo $this->Html->tag('td', $customer['Customer']['code']);
 
                             for ($i=1; $i <= $lastDay; $i++) {
                                 $day = date('d', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth))));
                                 $muatan = !empty($dataTtuj[$customer_id][$day])?$dataTtuj[$customer_id][$day]:'-';
-                                $totalMuatan += $muatan;
+
+                                if( is_numeric($muatan) ) {
+                                    $totalMuatan += $muatan;
+                                }
 
                                 echo $this->Html->tag('td', $muatan, array(
                                     'class' => 'text-center',
-                                    'style' => 'width: 100px;text-align: center;',
+                                    'style' => 'text-align: center;',
                                 ));
                             }
 
-                            echo $this->Html->tag('td', $this->Html->tag('div', $totalMuatan, array(
-                                'style' => 'width: 60px;text-align: center;',
-                            )), array(
-                                'style' => $tdStyle,
+                            echo $this->Html->tag('td', $totalMuatan, array(
+                                'style' => 'text-align: center;',
                             ));
 
                             $target_rit = !empty($targetUnit[$customer['Customer']['id']][$currentMonth])?$targetUnit[$customer['Customer']['id']][$currentMonth]:'-';
                             echo $this->Html->tag('td', $target_rit, array(
-                                'style' => 'width: 60px;text-align: center;',
+                                'style' => 'text-align: center;',
                             ));
                     ?>
                 </tr>
