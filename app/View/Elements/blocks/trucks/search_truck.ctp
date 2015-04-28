@@ -29,6 +29,16 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Truck.capacity',array(
+                                'label'=> __('Kapasitas'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Kapasitas')
+                            ));
+                    ?>
+                </div>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
@@ -53,6 +63,16 @@
                                 'class'=>'form-control',
                                 'required' => false,
                                 'placeholder' => __('Nama Supir')
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Truck.category',array(
+                                'label'=> __('Jenis Truk'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Jenis Truk')
                             ));
                     ?>
                 </div>

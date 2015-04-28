@@ -106,6 +106,16 @@ class TrucksController extends AppController {
                     }
                     $this->request->data['Truck']['status'] = $data;
                 }
+                if(!empty($refine['capacity'])){
+                    $data = urldecode($refine['capacity']);
+                    $conditions['Truck.capacity LIKE'] = '%'.$data.'%';
+                    $this->request->data['Truck']['capacity'] = $data;
+                }
+                if(!empty($refine['category'])){
+                    $data = urldecode($refine['category']);
+                    $conditions['TruckCategory.name LIKE'] = '%'.$data.'%';
+                    $this->request->data['Truck']['category'] = $data;
+                }
             }
 
             $this->paginate = $this->Truck->getData('paginate', array(
@@ -2847,6 +2857,9 @@ class TrucksController extends AppController {
                 'fields' => array(
                     'Truck.id',
                     'Truck.capacity',
+                ),
+                'order' => array(
+                    'Truck.capacity*1' => 'ASC',
                 ),
             ), false);
             $truckArr = array();
