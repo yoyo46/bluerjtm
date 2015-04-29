@@ -99,7 +99,7 @@
 	</div>
 
     <!-- add new calendar event modal -->
-
+    <div id="ajaxLoading">Sedang diproses... Mohon tunggu...</div>
     <?php 
     		echo $this->Html->script(array(
 				'jquery.2.0.2.min',

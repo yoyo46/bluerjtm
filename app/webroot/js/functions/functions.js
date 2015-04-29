@@ -2851,4 +2851,10 @@ $(function() {
     $('.invoice-pph, .invoice-ppn').keyup(function(){
         getTotalInvoicePayment();
     });
+
+    $(document).ajaxStart(function() {
+        $("#ajaxLoading").slideDown(100);
+    }).ajaxStop(function() {
+        $("#ajaxLoading").slideUp(200);
+    });
 });

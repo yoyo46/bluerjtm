@@ -3952,3 +3952,18 @@ thead th.headcol {
 .status-content > span:last-child {
   margin-right: 0;
 }
+
+#ajaxLoading {
+  top: 0;
+  left: 45%;
+  display: none;
+  color: #fff;
+  background: #d70601;
+  font: 700 normal 14px "Droid Sans", arial, helvetica, sans-serif;
+  padding: 5px 30px;
+  border-radius: 0 0 10px 10px;
+  text-shadow: -1px -1px 1px #666;
+  position: fixed;
+  z-index: 99999;
+  margin-left: -65px;
+}
