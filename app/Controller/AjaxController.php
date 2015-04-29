@@ -1027,6 +1027,7 @@ class AjaxController extends AppController {
 		$conditions = array(
 		 	'Ttuj.status' => 1,
             'Ttuj.is_draft' => 0,
+            'Ttuj.is_laka' => 0,
         );
 
         if(!empty($this->request->data)){
@@ -1260,6 +1261,7 @@ class AjaxController extends AppController {
                 'Ttuj.is_pool <>' => 1,
                 'Ttuj.is_draft' => 0,
                 'Ttuj.status' => 1,
+                'Ttuj.is_laka' => 0,
                 'Ttuj.truck_id' => $id
             ),
             'fields' => array(

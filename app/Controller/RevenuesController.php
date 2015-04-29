@@ -1263,20 +1263,8 @@ class RevenuesController extends AppController {
         $conditionsTtuj = array(
             'Ttuj.status' => 1,
             'Ttuj.is_draft' => 0,
-            'Laka.id' => NULL,
+            'Ttuj.is_laka' => 0,
         );
-
-        $this->Ttuj->bindModel(array(
-            'hasOne' => array(
-                'Laka' => array(
-                    'className' => 'Laka',
-                    'foreignKey' => 'ttuj_id',
-                    'conditions' => array(
-                        'Laka.status' => 1,
-                    ),
-                )
-            )
-        ));
 
         switch ($action_type) {
             case 'bongkaran':
@@ -1357,9 +1345,6 @@ class RevenuesController extends AppController {
             'conditions' => $conditionsTtuj,
             'fields' => array(
                 'Ttuj.id', 'Ttuj.no_ttuj'
-            ),
-            'contain' => array(
-                'Laka'
             ),
         ));
         $perlengkapans = $this->Perlengkapan->getData('list', array(

@@ -224,7 +224,7 @@ class LakasController extends AppController {
                         /*kalo belum bongkaran, ttuj jadi ngga aktif*/
                         if(!empty($ttuj_data) && $ttuj_data['Ttuj']['is_bongkaran'] == 0){
                             $this->Ttuj->id = $ttuj_data['Ttuj']['id'];
-                            $this->Ttuj->set('status', 0);
+                            $this->Ttuj->set('is_laka', 1);
                             $this->Ttuj->save();
                         }
 
@@ -370,6 +370,13 @@ class LakasController extends AppController {
                 $this->Laka->set('status', 0);
 
                 if($this->Laka->save()){
+                    if( !empty($locale['Laka']['ttuj_id']) ){
+                        $this->loadModel('Ttuj');
+                        $this->Ttuj->id = $locale['Laka']['ttuj_id'];
+                        $this->Ttuj->set('is_laka', 0);
+                        $this->Ttuj->save();
+                    }
+
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 }else{
