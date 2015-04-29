@@ -4243,8 +4243,9 @@ class RevenuesController extends AppController {
             $total = $temptotal;
             $data['InvoicePayment']['grand_total_payment'] = $total;
             $this->Invoice->InvoicePaymentDetail->InvoicePayment->set($data);
+            $validateInv = $this->Invoice->InvoicePaymentDetail->InvoicePayment->validates();
 
-            if($this->Invoice->InvoicePaymentDetail->InvoicePayment->validates() && $validate_price_pay){
+            if($validateInv && $validate_price_pay){
                 $this->Invoice->InvoicePaymentDetail->InvoicePayment->set($data);
 
                 if($this->Invoice->InvoicePaymentDetail->InvoicePayment->save()){
@@ -4318,8 +4319,13 @@ class RevenuesController extends AppController {
                 $text = sprintf(__('Gagal %s Pembayaran Invoice'), $msg);
 
                 if( !$validate_price_pay ){
-                    $text .= ', pembayaran invoice tidak boleh lebih besar dari total invoice, harap isi semua field.';
+                    $text .= ', pembayaran tidak boleh lebih besar dari total invoice';
                 }
+
+                if( empty($validateInv) ) {
+                    $text .= ', harap isi semua field';
+                }
+
                 $this->MkCommon->setCustomFlash($text, 'error'); 
             }
         }else if(!empty($id) && !empty($data_local)){
