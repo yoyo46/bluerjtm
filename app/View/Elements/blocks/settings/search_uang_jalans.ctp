@@ -49,7 +49,6 @@
                             'label'=> __('Kota Asal'),
                             'class'=>'form-control',
                             'required' => false,
-                            'empty' => __('Pilih Kota Asal')
                         ));
                     ?>
                 </div>
@@ -59,7 +58,6 @@
                             'label'=> __('Kota Tujuan'),
                             'class'=>'form-control',
                             'required' => false,
-                            'empty' => __('Pilih Kota Tujuan')
                         ));
                     ?>
                 </div>

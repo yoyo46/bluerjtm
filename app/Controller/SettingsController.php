@@ -939,12 +939,12 @@ class SettingsController extends AppController {
                 if(!empty($refine['from'])){
                     $name = urldecode($refine['from']);
                     $this->request->data['UangJalan']['from_city'] = $name;
-                    $options['conditions']['UangJalan.from_city_id'] = $name;
+                    $options['conditions']['FromCity.name LIKE'] = '%'.$name.'%';
                 }
                 if(!empty($refine['to'])){
                     $name = urldecode($refine['to']);
                     $this->request->data['UangJalan']['to_city'] = $name;
-                    $options['conditions']['UangJalan.to_city_id'] = $name;
+                    $options['conditions']['ToCity.name LIKE'] = '%'.$name.'%';
                 }
             }
             $this->paginate = $this->UangJalan->getData('paginate', $options);
@@ -954,28 +954,9 @@ class SettingsController extends AppController {
             $this->set('module_title', 'Data Master');
             $this->set('sub_module_title', 'Uang Jalan');
 
-            $fromCities = $this->City->getData('list', array(
-                'conditions' => array(
-                    'City.status' => 1,
-                    // 'City.is_asal' => 1
-                ),
-                'order' => array(
-                    'City.name' => 'ASC',
-                ),
-            ), false);
-            $toCities = $this->City->getData('list', array(
-                'conditions' => array(
-                    'City.status' => 1,
-                    // 'City.is_tujuan' => 1
-                ),
-                'order' => array(
-                    'City.name' => 'ASC',
-                ),
-            ), false);
-
 
             $this->set(compact(
-                'uangJalans', 'fromCities', 'toCities'
+                'uangJalans'
             ));
         } else {
             $this->redirect($this->referer());
