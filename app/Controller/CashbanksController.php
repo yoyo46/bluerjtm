@@ -662,7 +662,26 @@ class CashbanksController extends AppController {
         $this->loadModel('Coa');
 
         if(!empty($this->request->data)){
+            $data = $this->request->data;
 
+            if(!empty($data['CashBankSetting']['id'])){
+                foreach ($data['CashBankSetting']['id'] as $key => $value) {
+                    $coa_credit_id = !empty($data['CashBankSetting']['coa_credit_id'][$key]) ? $data['CashBankSetting']['coa_credit_id'][$key] : 0;
+                    $coa_debit_id = !empty($data['CashBankSetting']['coa_debit_id'][$key]) ? $data['CashBankSetting']['coa_debit_id'][$key] : 0;
+
+                    $data_arr = array(
+                        'coa_credit_id' => $coa_credit_id,
+                        'coa_debit_id' => $coa_debit_id,
+                    );
+
+                    $this->CashBankSetting->id = $value;
+                    $this->CashBankSetting->set($data_arr);
+                    $this->CashBankSetting->save();
+                }
+            }
+
+            $this->MkCommon->setCustomFlash(__('Berhasil mengubah setting.'), 'success');
+            $this->redirect($this->here);
         }
 
         $cash_bank_settings = $this->CashBankSetting->find('all');
@@ -673,6 +692,7 @@ class CashbanksController extends AppController {
                 'Coa.status' => 1
             )
         ));
-        $this->set(compact('cash_bank_settings', 'coas'));
+        $sub_module_title = 'Setting COA';
+        $this->set(compact('cash_bank_settings', 'coas', 'sub_module_title'));
     }
 }
