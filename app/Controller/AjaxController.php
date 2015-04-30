@@ -114,6 +114,27 @@ class AjaxController extends AppController {
         $this->set(compact('part_motors'));
 	}
 
+	function getInfoTtujKsu($ttuj_id, $is_payment = false){
+		$this->loadModel('Ttuj');
+		$this->loadModel('Perlengkapan');
+
+		$data_ttuj = $this->Ttuj->getData('first', array(
+			'conditions' => array(
+				'Ttuj.id' => $ttuj_id
+			),
+			'contain' => array(
+				'UangJalan'
+			)
+		));
+		
+		if(!empty($data_ttuj)){
+			$this->request->data = $data_ttuj;
+		}
+
+		$perlengkapans = $this->Perlengkapan->getListPerlengkapan(2);
+        $this->set(compact('perlengkapans'));
+	}
+
 	function getColorTipeMotor($tipe_motor_id, $ttuj_id){
 		$this->loadModel('Ttuj');
 		$data_ttuj = $this->Ttuj->TtujTipeMotor->getData('first', array(
@@ -137,6 +158,18 @@ class AjaxController extends AppController {
 				$this->set(compact('data_ttuj'));
 			}
 		}
+	}
+
+	function getValuePerlengkapan($perlengkapan_id, $ttuj_id){
+		$this->loadModel('Ttuj');
+		$data_ttuj = $this->Ttuj->TtujPerlengkapan->getData('first', array(
+			'conditions' => array(
+				'TtujPerlengkapan.ttuj_id' => $ttuj_id,
+				'TtujPerlengkapan.perlengkapan_id' => $perlengkapan_id
+			)
+		));
+
+		$this->set(compact('data_ttuj'));
 	}
 
 	function getInfoLaka($ttuj_id = false){
@@ -174,7 +207,7 @@ class AjaxController extends AppController {
 		$this->set(compact('data_ttuj'));
 	}
 
-	function getTtujCustomerInfo($customer_id, $type_lku){
+	function getTtujCustomerInfo($customer_id){
 		$this->loadModel('Ttuj');
 		$this->loadModel('Lku');
 		$ttuj_id = $this->Ttuj->getData('list', array(
@@ -193,7 +226,7 @@ class AjaxController extends AppController {
 			$lkus = $this->Lku->getData('all', array(
 				'conditions' => array(
 					'Lku.ttuj_id' => $ttuj_id,
-					'Lku.type_lku' => $type_lku
+					// 'Lku.type_lku' => $type_lku
 				),
 				'contain' => array(
 					'Ttuj'
@@ -212,18 +245,71 @@ class AjaxController extends AppController {
 		$this->set('lkus', $lkus);
 	}
 
-	function getTtujInfoLku($lku_id, $type_lku){
+	function getTtujCustomerInfoKsu($customer_id){
+		$this->loadModel('Ttuj');
+		$this->loadModel('Ksu');
+		$ttuj_id = $this->Ttuj->getData('list', array(
+			'conditions' => array(
+				'Ttuj.customer_id' => $customer_id
+			),
+			'group' => array(
+				'Ttuj.customer_id'
+			),
+			'fields' => array(
+				'Ttuj.id'
+			)
+		));
+
+		if(!empty($ttuj_id)){
+			$ksus = $this->Ksu->getData('all', array(
+				'conditions' => array(
+					'Ksu.ttuj_id' => $ttuj_id,
+					'Ksu.kekurangan_atpm' => 0
+				),
+				'contain' => array(
+					'Ttuj'
+				)
+			));
+		}
+
+		$arr = array();
+		if(!empty($ksus)){
+			foreach ($ksus as $key => $value) {
+				$arr[$value['Ksu']['id']] = sprintf('%s (%s)', date('d F Y', strtotime($value['Ttuj']['ttuj_date'])), $value['Ttuj']['no_ttuj']);
+			}
+		}
+		$ksus = $arr;
+		
+		$this->set('ksus', $ksus);
+	}
+
+	function getTtujInfoLku($lku_id){
 		$this->loadModel('Lku');
 		$lku = $this->Lku->getData('first', array(
 			'conditions' => array(
 				'Lku.id' => $lku_id,
-				'Lku.type_lku' => $type_lku
+				// 'Lku.type_lku' => $type_lku
 			),
 			'contain' => array(
 				'Ttuj'
 			)
 		));
 		$this->set('lku', $lku);
+	}
+
+	function getTtujInfoKsu($ksu_id){
+		$this->loadModel('Ksu');
+		$Ksu = $this->Ksu->getData('first', array(
+			'conditions' => array(
+				'Ksu.id' => $ksu_id,
+				'Ksu.kekurangan_atpm' => 0
+			),
+			'contain' => array(
+				'Ttuj'
+			)
+		));
+		
+		$this->set('Ksu', $Ksu);
 	}
 
 	function getInfoTtujRevenue( $ttuj_id = false, $customer_id = false ){
@@ -1108,6 +1194,11 @@ class AjaxController extends AppController {
             case 'lku':
                 $conditions['Ttuj.is_pool'] = 1;
 				$data_change = 'getTtujInfo';
+                break;
+
+            case 'ksu':
+                $conditions['Ttuj.is_pool'] = 1;
+				$data_change = 'getTtujInfoKsu';
                 break;
 
             case 'laka':

@@ -13,9 +13,9 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Pembayaran LKU', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Pembayaran KSU', array(
                         'controller' => 'lkus',
-                        'action' => 'payment_add'
+                        'action' => 'ksu_payment_add'
                     ), array(
                         'escape' => false,
                         'class' => 'btn btn-app btn-success pull-right'
@@ -31,11 +31,11 @@
         <table class="table table-hover">
             <tr>
                 <?php 
-                        echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.no_doc', __('No Dokumen'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('KsuPayment.no_doc', __('No Dokumen'), array(
                             'escape' => false
                         )));
 
-                        echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.tgl_bayar', __('Tgl Pembayaran'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('KsuPayment.tgl_bayar', __('Tgl Pembayaran'), array(
                             'escape' => false
                         )));
 
@@ -43,11 +43,11 @@
                             'escape' => false
                         )));
 
-                        echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.paid', __('Status Pembayaran'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('KsuPayment.paid', __('Status Pembayaran'), array(
                             'escape' => false
                         )));
 
-                        echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.created', __('Dibuat'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('KsuPayment.created', __('Dibuat'), array(
                             'escape' => false
                         )));
 
@@ -59,26 +59,26 @@
             <?php
                     if(!empty($payments)){
                         foreach ($payments as $key => $value) {
-                            $id = $value['LkuPayment']['id'];
+                            $id = $value['KsuPayment']['id'];
             ?>
             <tr>
-                <td><?php echo $value['LkuPayment']['no_doc'];?></td>
-                <?php echo $this->Html->tag('td', date('d M Y', strtotime($value['LkuPayment']['tgl_bayar'])));?>
+                <td><?php echo $value['KsuPayment']['no_doc'];?></td>
+                <?php echo $this->Html->tag('td', date('d M Y', strtotime($value['KsuPayment']['tgl_bayar'])));?>
                 <td><?php echo $value['Customer']['name'];?></td>
                 <?php 
-                        if(!empty($value['LkuPayment']['paid'])){
+                        if(!empty($value['KsuPayment']['paid'])){
                             echo $this->Html->tag('td', '<span class="label label-success">Telah di bayar</span>');
                         } else{
                             echo $this->Html->tag('td', '<span class="label label-danger">Belum di bayar</span>');
                         }
                 ?>
-                <td><?php echo $this->Common->customDate($value['LkuPayment']['created']);?></td>
+                <td><?php echo $this->Common->customDate($value['KsuPayment']['created']);?></td>
                 <td class="action">
                     <?php
                             if( in_array('update_lku_payments', $allowModule) ) {
                                 echo $this->Html->link('Rubah', array(
                                     'controller' => 'lkus',
-                                    'action' => 'payment_edit',
+                                    'action' => 'ksu_payment_edit',
                                     $id
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs'

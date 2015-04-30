@@ -656,4 +656,23 @@ class CashbanksController extends AppController {
         $this->set('active_menu', 'approval_setting');
         $this->set(compact('employes', 'cash_bank_auth_master'));
     }
+
+    function settings(){
+        $this->loadModel('CashBankSetting');
+        $this->loadModel('Coa');
+
+        if(!empty($this->request->data)){
+
+        }
+
+        $cash_bank_settings = $this->CashBankSetting->find('all');
+        $coas = $this->Coa->getData('list', array(
+            'conditions' => array(
+                'Coa.level' => 4,
+                'Coa.is_cash_bank' => 1,
+                'Coa.status' => 1
+            )
+        ));
+        $this->set(compact('cash_bank_settings', 'coas'));
+    }
 }

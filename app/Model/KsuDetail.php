@@ -1,11 +1,11 @@
 <?php
-class LkuDetail extends AppModel {
-	var $name = 'LkuDetail';
+class KsuDetail extends AppModel {
+	var $name = 'KsuDetail';
 	var $validate = array(
-        'tipe_motor_id' => array(
+        'perlengkapan_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Tipe Motor harap diisi',
+                'message' => 'Perlengkapan harap diisi',
             ),
         ),
         // 'no_rangka' => array(
@@ -17,7 +17,7 @@ class LkuDetail extends AppModel {
         'qty' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Jumlah Motor harap diisi',
+                'message' => 'Jumlah perlengkapan harap diisi',
             ),
         ),
         'price' => array(
@@ -29,25 +29,18 @@ class LkuDetail extends AppModel {
 	);
 
     var $belongsTo = array(
-        'Lku' => array(
-            'className' => 'Lku',
-            'foreignKey' => 'lku_id',
+        'Ksu' => array(
+            'className' => 'Ksu',
+            'foreignKey' => 'ksu_id',
             'conditions' => array(
-                'LkuDetail.status' => 1,
+                'KsuDetail.status' => 1,
             ),
         ),
-        'TipeMotor' => array(
-            'className' => 'TipeMotor',
-            'foreignKey' => 'tipe_motor_id',
+        'Perlengkapan' => array(
+            'className' => 'Perlengkapan',
+            'foreignKey' => 'perlengkapan_id',
             'conditions' => array(
-                'TipeMotor.status' => 1,
-            ),
-        ),
-        'PartsMotor' => array(
-            'className' => 'PartsMotor',
-            'foreignKey' => 'part_motor_id',
-            'conditions' => array(
-                'PartsMotor.status' => 1,
+                'Perlengkapan.status' => 1,
             ),
         ),
     );
@@ -55,11 +48,11 @@ class LkuDetail extends AppModel {
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(
-                'LkuDetail.status' => 1,
+                'KsuDetail.status' => 1,
             ),
             'order'=> array(
-                'LkuDetail.created' => 'DESC',
-                'LkuDetail.id' => 'DESC',
+                'KsuDetail.created' => 'DESC',
+                'KsuDetail.id' => 'DESC',
             ),
             'fields' => array(),
         );

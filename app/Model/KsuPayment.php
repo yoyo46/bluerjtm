@@ -1,67 +1,67 @@
 <?php
-class LkuDetail extends AppModel {
-	var $name = 'LkuDetail';
+class KsuPayment extends AppModel {
+	var $name = 'KsuPayment';
 	var $validate = array(
-        'tipe_motor_id' => array(
+        'no_doc' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Tipe Motor harap diisi',
+                'message' => 'No Dokumen harap diisi'
+            ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'No Dokumen telah terdaftar',
             ),
         ),
-        // 'no_rangka' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'No. Rangka harap diisi',
-        //     ),
-        // ),
-        'qty' => array(
+        'type_lku' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Jumlah Motor harap diisi',
+                'message' => 'Tipe modul harap dipilih'
             ),
         ),
-        'price' => array(
+        'tgl_bayar' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Harga Klaim harap diisi',
+                'message' => 'Tgl bayar harap dipilih'
+            ),
+        ),
+        'customer_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Customer harap dipilih'
+            ),
+        ),
+        'grandtotal' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
             ),
         ),
 	);
 
     var $belongsTo = array(
-        'Lku' => array(
-            'className' => 'Lku',
-            'foreignKey' => 'lku_id',
-            'conditions' => array(
-                'LkuDetail.status' => 1,
-            ),
+        'Customer' => array(
+            'className' => 'Customer',
+            'foreignKey' => 'customer_id',
         ),
-        'TipeMotor' => array(
-            'className' => 'TipeMotor',
-            'foreignKey' => 'tipe_motor_id',
-            'conditions' => array(
-                'TipeMotor.status' => 1,
-            ),
-        ),
-        'PartsMotor' => array(
-            'className' => 'PartsMotor',
-            'foreignKey' => 'part_motor_id',
-            'conditions' => array(
-                'PartsMotor.status' => 1,
-            ),
-        ),
+    );
+
+    var $hasMany = array(
+        'KsuPaymentDetail' => array(
+            'className' => 'KsuPaymentDetail',
+            'foreignKey' => 'ksu_payment_id',
+        )
     );
 
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(
-                'LkuDetail.status' => 1,
+                'KsuPayment.status' => 1,
             ),
             'order'=> array(
-                'LkuDetail.created' => 'DESC',
-                'LkuDetail.id' => 'DESC',
+                'KsuPayment.created' => 'DESC',
+                'KsuPayment.id' => 'DESC',
             ),
             'fields' => array(),
+            'contain' => array()
         );
 
         if(!empty($options)){

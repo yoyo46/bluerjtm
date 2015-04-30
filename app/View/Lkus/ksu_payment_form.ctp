@@ -1,11 +1,11 @@
 <?php
-		$this->Html->addCrumb(__('Pembayaran LKU'), array(
+		$this->Html->addCrumb(__('Pembayaran KSU'), array(
 			'controller' => 'lkus',
 			'action' => 'payments'
 		));
 		$this->Html->addCrumb($sub_module_title);
 
-		echo $this->Form->create('LkuPayment', array(
+		echo $this->Form->create('KsuPayment', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
@@ -18,7 +18,7 @@
 			<div class="col-sm-12">
 				<div class="box box-primary">
 				    <div class="box-header">
-				        <h3 class="box-title"><?php echo __('Informasi Pembayaran LKU'); ?></h3>
+				        <h3 class="box-title"><?php echo __('Informasi Pembayaran KSU'); ?></h3>
 				    </div>
 				    <div class="box-body">
 				        <div class="form-group">
@@ -40,7 +40,7 @@
 										'required' => false,
 										'options' => $ttujs,
 										'empty' => __('Pilih Customer'),
-										'id' => 'getTtujCustomerInfo'
+										'id' => 'getTtujCustomerInfoKsu'
 									));
 							?>
 				        </div>
@@ -50,7 +50,7 @@
 										'label'=> __('Tanggal Bayar'), 
 										'class'=>'form-control custom-date',
 										'type' => 'text',
-										'value' => (!empty($this->request->data['LkuPayment']['tgl_bayar'])) ? $this->request->data['LkuPayment']['tgl_bayar'] : date('d/m/Y')
+										'value' => (!empty($this->request->data['KsuPayment']['tgl_bayar'])) ? $this->request->data['KsuPayment']['tgl_bayar'] : date('d/m/Y')
 									));
 							?>
 						</div>
@@ -59,8 +59,8 @@
 			</div>
 			<div class="col-sm-12" id="detail-customer-info">
 				<?php 
-					if(!empty($this->request->data['LkuPaymentDetail'])){
-						echo $this->element('blocks/lkus/lkus_info_payment');
+					if(!empty($this->request->data['KsuPaymentDetail'])){
+						echo $this->element('blocks/lkus/ksus_info_payment');
 					}
 				?>
 			</div>
@@ -68,7 +68,7 @@
 		<div class="box-footer text-center action">
 			<?php
 		    		echo $this->Html->link(__('Kembali'), array(
-						'action' => 'payments', 
+						'action' => 'ksu_payments', 
 					), array(
 						'class'=> 'btn btn-default',
 					));

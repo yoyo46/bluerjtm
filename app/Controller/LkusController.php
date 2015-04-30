@@ -29,7 +29,7 @@ class LkusController extends AppController {
         if( in_array('view_lkus', $this->allowModule) ) {
             $this->loadModel('Lku');
     		$this->set('active_menu', 'lkus');
-    		$this->set('sub_module_title', __('Data LKU/KSU'));
+    		$this->set('sub_module_title', __('Data LKU'));
             $conditions = array();
             
             if(!empty($this->params['named'])){
@@ -59,14 +59,14 @@ class LkusController extends AppController {
                 $Lku = $this->Lku->getLku($id);
 
                 if(!empty($Lku)){
-                    $sub_module_title = __('Detail LKU/KSU');
+                    $sub_module_title = __('Detail LKU');
                     $this->set(compact('Lku', 'sub_module_title'));
                 }else{
-                    $this->MkCommon->setCustomFlash(__('LKU/KSU tidak ditemukan.'), 'error');
+                    $this->MkCommon->setCustomFlash(__('LKU tidak ditemukan.'), 'error');
                     $this->redirect($this->referer());
                 }
             }else{
-                $this->MkCommon->setCustomFlash(__('LKU/KSU tidak ditemukan.'), 'error');
+                $this->MkCommon->setCustomFlash(__('LKU tidak ditemukan.'), 'error');
                 $this->redirect($this->referer());
             }
         } else {
@@ -76,7 +76,7 @@ class LkusController extends AppController {
 
     function add(){
         if( in_array('insert_lkus', $this->allowModule) ) {
-            $this->set('sub_module_title', __('Tambah LKU/KSU'));
+            $this->set('sub_module_title', __('Tambah LKU'));
             $this->DoLku();
         } else {
             $this->redirect($this->referer());
@@ -86,7 +86,7 @@ class LkusController extends AppController {
     function edit($id){
         if( in_array('update_lkus', $this->allowModule) ) {
             $this->loadModel('Lku');
-            $this->set('sub_module_title', 'Rubah LKU/KSU');
+            $this->set('sub_module_title', 'Rubah LKU');
             $Lku = $this->Lku->getData('first', array(
                 'conditions' => array(
                     'Lku.id' => $id
@@ -96,7 +96,7 @@ class LkusController extends AppController {
             if(!empty($Lku)){
                 $this->DoLku($id, $Lku);
             }else{
-                $this->MkCommon->setCustomFlash(__('LKU/KSU tidak ditemukan'), 'error');  
+                $this->MkCommon->setCustomFlash(__('LKU tidak ditemukan'), 'error');  
                 $this->redirect(array(
                     'controller' => 'Lkus',
                     'action' => 'index'
@@ -138,7 +138,7 @@ class LkusController extends AppController {
                             'no_rangka' => (!empty($data['LkuDetail']['no_rangka'][$key])) ? $data['LkuDetail']['no_rangka'][$key] : '',
                             'qty' => (!empty($data['LkuDetail']['qty'][$key])) ? $data['LkuDetail']['qty'][$key] : '',
                             'price' => (!empty($data['LkuDetail']['price'][$key])) ? $data['LkuDetail']['price'][$key] : '',
-                            'part_motor_id' => (!empty($data['LkuDetail']['part_motor_id'][$key])) ? $data['LkuDetail']['part_motor_id'][$key] : '',
+                            // 'part_motor_id' => (!empty($data['LkuDetail']['part_motor_id'][$key])) ? $data['LkuDetail']['part_motor_id'][$key] : '',
                             'note' => (!empty($data['LkuDetail']['note'][$key])) ? $data['LkuDetail']['note'][$key] : '',
                             'no_rangka' => (!empty($data['LkuDetail']['no_rangka'][$key])) ? $data['LkuDetail']['no_rangka'][$key] : '',
                         );
@@ -180,19 +180,19 @@ class LkusController extends AppController {
                         $this->Lku->LkuDetail->save();
                     }
 
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s LKU/KSU'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Berhasil %s LKU/KSU'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s LKU'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Berhasil %s LKU'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
 
                     $this->redirect(array(
                         'controller' => 'Lkus',
                         'action' => 'index',
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LKU/KSU'), $msg), 'error');
-                    $this->Log->logActivity( sprintf(__('Berhasil %s LKU/KSU #%s'), $msg, $lku_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LKU'), $msg), 'error');
+                    $this->Log->logActivity( sprintf(__('Berhasil %s LKU #%s'), $msg, $lku_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 }
             }else{
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LKU/KSU'), $msg), 'error');
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LKU'), $msg), 'error');
             }
         } else if($id && $data_local){
             $this->request->data = $data_local;
@@ -331,10 +331,10 @@ class LkusController extends AppController {
 
                 if($this->Lku->save()){
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status LKU/KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status LKU/KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 }
             }else{
                 $this->MkCommon->setCustomFlash(__('Lku tidak ditemukan.'), 'error');
@@ -350,7 +350,7 @@ class LkusController extends AppController {
         if( in_array('view_lku_payments', $this->allowModule) ) {
             $this->loadModel('LkuPayment');
             $this->set('active_menu', 'lku_payments');
-            $this->set('sub_module_title', __('Data Pembayaran LKU/KSU'));
+            $this->set('sub_module_title', __('Data Pembayaran LKU'));
             $conditions = array();
             
             if(!empty($this->params['named'])){
@@ -384,7 +384,7 @@ class LkusController extends AppController {
 
     function payment_add(){
         if( in_array('insert_lku_payments', $this->allowModule) ) {
-            $this->set('sub_module_title', __('Tambah Pembayaran LKU/KSU'));
+            $this->set('sub_module_title', __('Tambah Pembayaran LKU'));
             $this->DoLkuPayment();
         } else {
             $this->redirect($this->referer());
@@ -394,7 +394,7 @@ class LkusController extends AppController {
     function payment_edit($id){
         if( in_array('update_lku_payments', $this->allowModule) ) {
             $this->loadModel('LkuPayment');
-            $this->set('sub_module_title', 'Rubah Pembayaran LKU/KSU');
+            $this->set('sub_module_title', 'Rubah Pembayaran LKU');
             $Lku = $this->LkuPayment->getData('first', array(
                 'conditions' => array(
                     'LkuPayment.id' => $id
@@ -407,7 +407,7 @@ class LkusController extends AppController {
             if(!empty($Lku)){
                 $this->DoLkuPayment($id, $Lku);
             }else{
-                $this->MkCommon->setCustomFlash(__('ID Pembayaran LKU/KSU tidak ditemukan'), 'error');  
+                $this->MkCommon->setCustomFlash(__('ID Pembayaran LKU tidak ditemukan'), 'error');  
                 $this->redirect(array(
                     'controller' => 'Lkus',
                     'action' => 'payments'
@@ -482,20 +482,20 @@ class LkusController extends AppController {
                         $this->LkuPayment->LkuPaymentDetail->save();
                     }
 
-                    $this->Log->logActivity( sprintf(__('Sukses %s Pembayaran LKU/KSU ID #%s'), $msg, $lku_payment_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Pembayaran LKU ID #%s'), $msg, $lku_payment_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
 
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Pembayaran LKU/KSU'), $msg), 'success');
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Pembayaran LKU'), $msg), 'success');
                     $this->redirect(array(
                         'controller' => 'Lkus',
                         'action' => 'payments',
                     ));
 
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Pembayaran LKU/KSU'), $msg), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal %s Pembayaran LKU/KSU')), $this->user_data, $this->RequestHandler, $this->params, 1 );  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Pembayaran LKU'), $msg), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal %s Pembayaran LKU')), $this->user_data, $this->RequestHandler, $this->params, 1 );  
                 }
             }else{
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Pembayaran LKU/KSU'), $msg), 'error');
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Pembayaran LKU'), $msg), 'error');
             }
         } else if($id && $data_local){
             $this->request->data = $data_local;
@@ -541,7 +541,8 @@ class LkusController extends AppController {
                     ));
 
                     if(!empty($lku)){
-                        $temp['LkuPaymentDetail'][$key]['Ttuj'] = $lku;
+                        $temp['LkuPaymentDetail'][$key]['Ttuj'] = $lku['Ttuj'];
+                        $temp['LkuPaymentDetail'][$key]['Lku'] = $lku['Lku'];
                     }
                 }
             }
@@ -911,5 +912,585 @@ class LkusController extends AppController {
         } else {
             $this->redirect($this->referer());
         }
+    }
+
+    public function ksus() {
+        if( in_array('view_lkus', $this->allowModule) ) {
+            $this->loadModel('Ksu');
+            $this->set('active_menu', 'ksus');
+            $this->set('sub_module_title', __('Data KSU'));
+            $conditions = array();
+            
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['nodoc'])){
+                    $no_doc = urldecode($refine['nodoc']);
+                    $this->request->data['Ksu']['no_doc'] = $no_doc;
+                    $conditions['Ksu.no_doc LIKE '] = '%'.$no_doc.'%';
+                }
+            }
+
+            $this->paginate = $this->Ksu->getData('paginate', array(
+                'conditions' => $conditions
+            ));
+            $Ksus = $this->paginate('Ksu');
+
+            $this->set('Ksus', $Ksus);
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
+
+    function ksu_detail($id = false){
+        if( in_array('view_lkus', $this->allowModule) ) {
+            if(!empty($id)){
+                $Ksu = $this->Ksu->getKsu($id);
+
+                if(!empty($Ksu)){
+                    $sub_module_title = __('Detail KSU');
+                    $this->set(compact('Ksu', 'sub_module_title'));
+                }else{
+                    $this->MkCommon->setCustomFlash(__('KSU tidak ditemukan.'), 'error');
+                    $this->redirect($this->referer());
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('KSU tidak ditemukan.'), 'error');
+                $this->redirect($this->referer());
+            }
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
+
+    function ksu_add(){
+        if( in_array('insert_lkus', $this->allowModule) ) {
+            $this->set('sub_module_title', __('Tambah KSU'));
+            $this->DoKsu();
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
+
+    function ksu_edit($id){
+        if( in_array('update_lkus', $this->allowModule) ) {
+            $this->loadModel('Ksu');
+            $this->set('sub_module_title', 'Rubah KSU');
+            $Ksu = $this->Ksu->getData('first', array(
+                'conditions' => array(
+                    'Ksu.id' => $id
+                ),
+            ));
+
+            if(!empty($Ksu)){
+                $this->DoKsu($id, $Ksu);
+            }else{
+                $this->MkCommon->setCustomFlash(__('KSU tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'Ksus',
+                    'action' => 'ksus'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
+
+    function DoKsu($id = false, $data_local = false){
+        $this->loadModel('Ttuj');
+        $this->loadModel('Perlengkapan');
+
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            
+            if($id && $data_local){
+                $this->Ksu->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('Ksu');
+                $this->Ksu->create();
+                $msg = 'menambah';
+            }
+            
+            $data['Ksu']['tgl_ksu'] = (!empty($data['Ksu']['tgl_ksu'])) ? $this->MkCommon->getDate($data['Ksu']['tgl_ksu']) : '';
+            
+            $validate_ksu_detail = true;
+            $temp_detail = array();
+            $total_price = 0;
+            $total_klaim = 0;
+            if(!empty($data['KsuDetail']['perlengkapan_id'])){
+                foreach ($data['KsuDetail']['perlengkapan_id'] as $key => $value) {
+                    if( !empty($value) ){
+                        $data_detail['KsuDetail'] = array(
+                            'no_rangka' => (!empty($data['KsuDetail']['no_rangka'][$key])) ? $data['KsuDetail']['no_rangka'][$key] : '',
+                            'qty' => (!empty($data['KsuDetail']['qty'][$key])) ? $data['KsuDetail']['qty'][$key] : '',
+                            'price' => (!empty($data['KsuDetail']['price'][$key])) ? $data['KsuDetail']['price'][$key] : '',
+                            'perlengkapan_id' => (!empty($data['KsuDetail']['perlengkapan_id'][$key])) ? $data['KsuDetail']['perlengkapan_id'][$key] : '',
+                            'note' => (!empty($data['KsuDetail']['note'][$key])) ? $data['KsuDetail']['note'][$key] : '',
+                        );
+                        
+                        $temp_detail[] = $data_detail;
+                        $this->Ksu->KsuDetail->set($data_detail);
+                        if( !$this->Ksu->KsuDetail->validates() ){
+                            $validate_ksu_detail = false;
+                            break;
+                        }else{
+                            $total_price += $data_detail['KsuDetail']['qty'] * $data_detail['KsuDetail']['price'];
+                            $total_klaim += $data_detail['KsuDetail']['qty'];
+                        }
+                    }
+                }
+            }else{
+                $validate_ksu_detail = false;
+            }
+            
+            $data['Ksu']['total_price'] = $total_price;
+            $data['Ksu']['total_klaim'] = $total_klaim;
+            $this->Ksu->set($data);
+
+            if($this->Ksu->validates($data) && $validate_ksu_detail){
+                if($this->Ksu->save($data)){
+                    $ksu_id = $this->Ksu->id;
+
+                    if($id && $data_local){
+                        $this->Ksu->KsuDetail->deleteAll(array(
+                            'KsuDetail.ksu_id' => $ksu_id
+                        ));
+                    }
+
+                    foreach ($temp_detail as $key => $value) {
+                        $this->Ksu->KsuDetail->create();
+                        $value['KsuDetail']['ksu_id'] = $ksu_id;
+
+                        $this->Ksu->KsuDetail->set($value);
+                        $this->Ksu->KsuDetail->save();
+                    }
+
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s KSU'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Berhasil %s KSU'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+
+                    $this->redirect(array(
+                        'controller' => 'lkus',
+                        'action' => 'ksus',
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s KSU'), $msg), 'error');
+                    $this->Log->logActivity( sprintf(__('Berhasil %s KSU #%s'), $msg, $ksu_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s KSU'), $msg), 'error');
+            }
+        } else if($id && $data_local){
+            $this->request->data = $data_local;
+
+            if(!empty($this->request->data['KsuDetail'])){
+                foreach ($this->request->data['KsuDetail'] as $key => $value) {
+                    $perlengkapan = $this->Perlengkapan->getData('first', array(
+                        'conditions' => array(
+                            'Perlengkapan.id' => $value['perlengkapan_id']
+                        ),
+                    ));
+                    if(!empty($perlengkapan)){
+                        $Ttuj_perlengkapan = $this->Ttuj->TtujPerlengkapan->getData('first', array(
+                            'conditions' => array(
+                                'TtujPerlengkapan.ttuj_id' => $this->request->data['Ksu']['ttuj_id'],
+                                'TtujPerlengkapan.perlengkapan_id' => $value['perlengkapan_id']
+                            )
+                        ));
+                        $this->request->data['KsuDetail'][$key]['Perlengkapan'] = array_merge($perlengkapan['Perlengkapan'], $Ttuj_perlengkapan);
+                    }
+                }
+            }
+
+            $this->request->data['Ksu']['tgl_ksu'] = (!empty($this->request->data['Ksu']['tgl_ksu'])) ? $this->MkCommon->getDate($this->request->data['Ksu']['tgl_ksu'], true) : '';
+        }
+
+        if(!empty($this->request->data['KsuDetail']['perlengkapan_id'])){
+            $temp = array();
+            foreach ($this->request->data['KsuDetail']['perlengkapan_id'] as $key => $value) {
+                if( !empty($value) ){
+                    $temp['KsuDetail'][$key] = array(
+                        'perlengkapan_id' => $value,
+                        'no_rangka' => (!empty($data['KsuDetail']['no_rangka'][$key])) ? $data['KsuDetail']['no_rangka'][$key] : '',
+                        'qty' => (!empty($data['KsuDetail']['qty'][$key])) ? $data['KsuDetail']['qty'][$key] : '',
+                        'price' => (!empty($data['KsuDetail']['price'][$key])) ? $data['KsuDetail']['price'][$key] : '',
+                        'perlengkapan_id' => (!empty($data['KsuDetail']['perlengkapan_id'][$key])) ? $data['KsuDetail']['perlengkapan_id'][$key] : '',
+                        'note' => (!empty($data['KsuDetail']['note'][$key])) ? $data['KsuDetail']['note'][$key] : '',
+                    );
+
+                    $perlengkapan = $this->Perlengkapan->getData('first', array(
+                        'conditions' => array(
+                            'Perlengkapan.id' => $value,
+                            'Perlengkapan.jenis_perlengkapan_id' => 2
+                        ),
+                    ));
+                    if(!empty($perlengkapan)){
+                        $Ttuj_perlengkapan = $this->Ttuj->TtujPerlengkapan->getData('first', array(
+                            'conditions' => array(
+                                'TtujPerlengkapan.ttuj_id' => $this->request->data['Ksu']['ttuj_id'],
+                                'TtujPerlengkapan.perlengkapan_id' => $value
+                            )
+                        ));
+                        $temp['KsuDetail'][$key]['Perlengkapan'] = array_merge($perlengkapan['Perlengkapan'], $Ttuj_perlengkapan);
+                    }
+                }
+            }
+
+            unset($this->request->data['KsuDetail']);
+            $this->request->data['KsuDetail'] = $temp['KsuDetail'];
+        }
+
+        $ttujs = $this->Ttuj->getData('list', array(
+            'fields' => array(
+                'Ttuj.id', 'Ttuj.no_ttuj'
+            ),
+            'conditions' => array(
+                'Ttuj.is_pool' => 1,
+                'Ttuj.is_draft' => 0,
+                'Ttuj.status' => 1,
+            ),
+        ));
+
+        if(!empty($this->request->data['Ksu']['ttuj_id'])){
+            $data_ttuj = $this->Ttuj->getData('first', array(
+                'conditions' => array(
+                    'Ttuj.id' => $this->request->data['Ksu']['ttuj_id']
+                ),
+                'contain' => array(
+                    'UangJalan'
+                )
+            ));
+            
+            if(!empty($data_ttuj)){
+                if(!empty($data_ttuj['TtujPerlengkapan'])){
+                    $perlengkapan_list = array();
+                    foreach ($data_ttuj['TtujPerlengkapan'] as $key => $value) {
+                        $perlengkapan_data = $this->Perlengkapan->getData('first', array(
+                            'conditions' => array(
+                                'Perlengkapan.id' => $value['perlengkapan_id']
+                            )
+                        ));
+                        $perlengkapan_list[$perlengkapan_data['Perlengkapan']['id']] = $perlengkapan_data['Perlengkapan']['name'];
+                    }
+                    $this->set('perlengkapan_list', $perlengkapan_list);
+                }
+                $this->request->data = array_merge($this->request->data, $data_ttuj);
+            }
+            
+        }
+
+        $perlengkapans = $this->Perlengkapan->getListPerlengkapan(2);
+        $this->set(compact('perlengkapans'));
+
+        $this->set('active_menu', 'ksus');
+        $this->set('ttujs', $ttujs);
+        $this->set('id', $id);
+        $this->render('ksu_form');
+    }
+
+    function ksu_toggle($id){
+        if( in_array('delete_lkus', $this->allowModule) ) {
+            $this->loadModel('Ksu');
+            $locale = $this->Ksu->getData('first', array(
+                'conditions' => array(
+                    'Ksu.id' => $id
+                )
+            ));
+
+            if($locale){
+                $value = true;
+                if($locale['Ksu']['status']){
+                    $value = false;
+                }
+
+                $this->Ksu->id = $id;
+                $this->Ksu->set('status', 0);
+
+                if($this->Ksu->save()){
+                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('Ksu tidak ditemukan.'), 'error');
+            }
+        }
+
+        $this->redirect($this->referer());
+    }
+
+    function ksu_payments() {
+        if( in_array('view_lku_payments', $this->allowModule) ) {
+            $this->loadModel('KsuPayment');
+            $this->set('active_menu', 'ksu_payments');
+            $this->set('sub_module_title', __('Data Pembayaran KSU'));
+            $conditions = array();
+            
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['nodoc'])){
+                    $no_doc = urldecode($refine['nodoc']);
+                    $this->request->data['KsuPayment']['no_doc'] = $no_doc;
+                    $conditions['KsuPayment.no_doc LIKE '] = '%'.$no_doc.'%';
+                }
+            }
+
+            $this->paginate = $this->KsuPayment->getData('paginate', array(
+                'conditions' => $conditions,
+            ));
+            $payments = $this->paginate('KsuPayment');
+
+            if( !empty($payments) ) {
+                $this->loadModel('Customer');
+                foreach ($payments as $key => $payment) {
+                    $payment = $this->Customer->getMerge($payment, $payment['KsuPayment']['customer_id']);
+                    $payments[$key] = $payment;
+                }
+            }
+
+            $this->set('payments', $payments);
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
+
+    function ksu_payment_add(){
+        if( in_array('insert_lku_payments', $this->allowModule) ) {
+            $this->set('sub_module_title', __('Tambah Pembayaran KSU'));
+            $this->DoKsuPayment();
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
+
+    function ksu_payment_edit($id){
+        if( in_array('update_lku_payments', $this->allowModule) ) {
+            $this->loadModel('KsuPayment');
+            $this->set('sub_module_title', 'Rubah Pembayaran KSU');
+            $Ksu = $this->KsuPayment->getData('first', array(
+                'conditions' => array(
+                    'KsuPayment.id' => $id
+                ),
+                'contain' => array(
+                    'KsuPaymentDetail'
+                )
+            ));
+
+            if(!empty($Ksu)){
+                $this->DoKsuPayment($id, $Ksu);
+            }else{
+                $this->MkCommon->setCustomFlash(__('ID Pembayaran KSU tidak ditemukan'), 'error');  
+                $this->redirect(array(
+                    'controller' => 'Ksus',
+                    'action' => 'payments'
+                ));
+            }
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
+
+    function DoKsuPayment($id = false, $data_local = false){
+        $this->loadModel('Ksu');
+
+        if(!empty($this->request->data)){
+            $this->loadModel('KsuPayment');
+            $data = $this->request->data;
+
+            if($id && $data_local){
+                $this->KsuPayment->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->KsuPayment->create();
+                $msg = 'menambah';
+            }
+            
+            $data['KsuPayment']['tgl_bayar'] = (!empty($data['KsuPayment']['tgl_bayar'])) ? $this->MkCommon->getDate($data['KsuPayment']['tgl_bayar']) : '';
+            $total_price = 0;
+
+            $validate_ksu_detail = true;
+            if(!empty($data['KsuPaymentDetail']['ksu_id'])){
+                foreach ($data['KsuPaymentDetail']['ksu_id'] as $key => $value) {
+                    if(!empty($value)){
+                        $data_detail['KsuPaymentDetail'] = array(
+                            'ksu_id' => $value,
+                            'total_klaim' => (!empty($data['KsuPaymentDetail']['total_klaim'][$key])) ? $data['KsuPaymentDetail']['total_klaim'][$key] : '',
+                            'total_biaya_klaim' => (!empty($data['KsuPaymentDetail']['total_biaya_klaim'][$key])) ? $data['KsuPaymentDetail']['total_biaya_klaim'][$key] : ''
+                        );
+                        
+                        $temp_detail[] = $data_detail;
+                        $this->KsuPayment->KsuPaymentDetail->set($data_detail);
+                        if( !$this->KsuPayment->KsuPaymentDetail->validates() ){
+                            $validate_ksu_detail = false;
+                            break;
+                        }else{
+                            $total_price += $data_detail['KsuPaymentDetail']['total_biaya_klaim'];
+                        }
+                    }
+                }
+            }else{
+                $validate_ksu_detail = false;
+            }
+
+            $data['KsuPayment']['grandtotal'] = $total_price;
+
+            $this->KsuPayment->set($data);
+
+            if($this->KsuPayment->validates($data) && $validate_ksu_detail){
+                if($this->KsuPayment->save($data)){
+                    $ksu_payment_id = $this->KsuPayment->id;
+
+                    if($id && $data_local){
+                        $this->KsuPayment->KsuPaymentDetail->deleteAll(array(
+                            'KsuPaymentDetail.ksu_payment_id' => $ksu_payment_id
+                        ));
+                    }
+
+                    foreach ($temp_detail as $key => $value) {
+                        $this->KsuPayment->KsuPaymentDetail->create();
+                        $value['KsuPaymentDetail']['ksu_payment_id'] = $ksu_payment_id;
+
+                        $this->KsuPayment->KsuPaymentDetail->set($value);
+                        $this->KsuPayment->KsuPaymentDetail->save();
+                    }
+
+                    $this->Log->logActivity( sprintf(__('Sukses %s Pembayaran KSU ID #%s'), $msg, $ksu_payment_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Pembayaran KSU'), $msg), 'success');
+                    $this->redirect(array(
+                        'controller' => 'lkus',
+                        'action' => 'ksu_payments',
+                    ));
+
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Pembayaran KSU'), $msg), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal %s Pembayaran KSU')), $this->user_data, $this->RequestHandler, $this->params, 1 );  
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Pembayaran KSU'), $msg), 'error');
+            }
+        } else if($id && $data_local){
+            $this->request->data = $data_local;
+
+            if(!empty($this->request->data['KsuPaymentDetail'])){
+                foreach ($this->request->data['KsuPaymentDetail'] as $key => $value) {
+                    $ksu = $this->Ksu->getData('first', array(
+                        'conditions' => array(
+                            'Ksu.id' => $value['ksu_id'],
+                            'Ksu.kekurangan_atpm' => 0
+                        ),
+                        'contain' => array(
+                            'Ttuj'
+                        )
+                    ));
+
+                    if(!empty($ksu)){
+                        $this->request->data['KsuPaymentDetail'][$key]['Ttuj'] = $ksu['Ttuj'];
+                        $this->request->data['KsuPaymentDetail'][$key]['Ksu'] = $ksu['Ksu'];
+                    }
+                }
+            }
+
+            $this->request->data['KsuPayment']['tgl_bayar'] = (!empty($this->request->data['KsuPayment']['tgl_bayar'])) ? $this->MkCommon->getDate($this->request->data['KsuPayment']['tgl_bayar'], true) : '';
+        }
+
+        if(!empty($this->request->data['KsuPaymentDetail']['ksu_id'])){
+            $temp = array();
+            foreach ($this->request->data['KsuPaymentDetail']['ksu_id'] as $key => $value) {
+                if( !empty($value) ){
+                    $temp['KsuPaymentDetail'][$key] = array(
+                        'ksu_id' => $value,
+                        'total_klaim' => (!empty($data['KsuPaymentDetail']['total_klaim'][$key])) ? $data['KsuPaymentDetail']['total_klaim'][$key] : '',
+                        'total_biaya_klaim' => (!empty($data['KsuPaymentDetail']['total_biaya_klaim'][$key])) ? $data['KsuPaymentDetail']['total_biaya_klaim'][$key] : '',
+                    );
+
+                    $ksu = $this->Ksu->getData('first', array(
+                        'conditions' => array(
+                            'Ksu.id' => $value
+                        ),
+                        'contain' => array(
+                            'Ttuj'
+                        )
+                    ));
+
+                    if(!empty($ksu)){
+                        $temp['KsuPaymentDetail'][$key]['Ttuj'] = $ksu['Ttuj'];
+                        $temp['KsuPaymentDetail'][$key]['Ksu'] = $ksu['Ksu'];
+                    }
+                }
+            }
+
+            unset($this->request->data['KsuPaymentDetail']);
+            $this->request->data['KsuPaymentDetail'] = $temp['KsuPaymentDetail'];
+        }
+
+        $this->loadModel('Ttuj');
+        
+        if(!empty($this->request->data['KsuPayment']['customer_id'])){
+            $ttuj_id = $this->Ttuj->getData('list', array(
+                'conditions' => array(
+                    'Ttuj.customer_id' => $this->request->data['KsuPayment']['customer_id']
+                ),
+                'group' => array(
+                    'Ttuj.customer_id'
+                ),
+                'fields' => array(
+                    'Ttuj.id'
+                )
+            ));
+
+            if(!empty($ttuj_id)){
+                $ksus = $this->Ksu->getData('all', array(
+                    'conditions' => array(
+                        'Ksu.ttuj_id' => $ttuj_id,
+                        'Ksu.kekurangan_atpm' => 0
+                    ),
+                    'contain' => array(
+                        'Ttuj'
+                    )
+                ));
+            }
+
+            $arr = array();
+            if(!empty($ksus)){
+                foreach ($ksus as $key => $value) {
+                    $arr[$value['Ksu']['id']] = sprintf('%s (%s)', date('d F Y', strtotime($value['Ttuj']['ttuj_date'])), $value['Ttuj']['no_ttuj']);
+                }
+            }
+            $ksus = $arr;
+            $this->set('ksus', $ksus);
+        }
+
+        $customers = $this->Ttuj->getData('list', array(
+            'conditions' => array(
+                'Ttuj.is_revenue' => 0
+            ),
+            'fields' => array(
+                'Ttuj.customer_id', 'Ttuj.customer_name'
+            ),
+        ));
+        $ttujs = array();
+
+        if( !empty($customers) ) {
+            foreach ($customers as $customer_id => $value) {
+                $dataCust = $this->Ttuj->Customer->getData('first', array(
+                    'conditions' => array(
+                        'Customer.id' => $customer_id,
+                    ),
+                ));
+
+                if( !empty($dataCust) ) {
+                    $ttujs[$customer_id] = $dataCust['Customer']['customer_name_code'];
+                }
+            }
+        }
+
+        $this->set('active_menu', 'ksu_payments');
+        $this->set('id', $id);
+        $this->set('ttujs', $ttujs);
+        $this->render('ksu_payment_form');
     }
 }

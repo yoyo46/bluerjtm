@@ -839,9 +839,20 @@
                             // }
 
                             if( in_array('view_lku_payments', $allowModule) ) {
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LKU/KSU', array(
+                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LKU', array(
                                     'controller' => 'lkus',
                                     'action' => 'payments',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'lku_payments' )?'active':'',
+                                ));
+                             }
+
+                             if( in_array('view_lku_payments', $allowModule) ) {
+                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran KSU', array(
+                                    'controller' => 'lkus',
+                                    'action' => 'ksu_payments',
                                 ), array(
                                     'escape' => false
                                 )), array(

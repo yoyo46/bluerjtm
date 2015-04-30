@@ -496,6 +496,24 @@ var add_custom_field = function(){
                     part_motor_lku();
                 // }
                 break;
+            case 'ksu_perlengkapan':
+                var content_clone = $('#first-row tr').html();
+                var length_option = $('#first-row .ksu-choose-tipe-motor option').length-1;
+                var tipe_motor_table = $('.perlengkapan-table .ksu-choose-tipe-motor').length;
+
+                var ksu_detail_len = $('.ksu-detail').length+1;
+
+                var html_tr = '<tr class="ksu-detail ksu-detail-'+ksu_detail_len+'" rel="'+ksu_detail_len+'">'+content_clone+'</tr>';
+
+                // if( length_option > tipe_motor_table ){
+                    $('.perlengkapan-table #field-grand-total-ksu').before(html_tr);
+                    
+                    choose_item_info();
+                    input_number();
+                    price_perlengkapan();
+                    delete_custom_field($('.ksu-detail-'+ksu_detail_len+' .delete-custom-field'));
+                // }
+                break;
             case 'lku_ttuj':
                 var content_clone = $('#first-row').html();
                 var length_option = $('#first-row .lku-choose-ttuj option').length-1;
@@ -1322,7 +1340,7 @@ var price_tipe_motor = function(){
         getTotalLKU( $(this) );
     });
 
-    $('.claim-number').change(function(){
+    $('.claim-number').keyup(function(){
         getTotalLKU( $(this) );
     });
 
@@ -1339,8 +1357,44 @@ var price_tipe_motor = function(){
     });
 }
 
+var price_perlengkapan = function(){
+    $('.price-perlengkapan').keyup(function(){
+        getTotalKSU( $(this) );
+    });
+
+    $('.claim-number').keyup(function(){
+        getTotalKSU( $(this) );
+    });
+
+    $('.price-ksu').keyup(function(){
+        var self = $(this);
+        var val = self.val();
+        var max_price = self.attr('max_price');
+
+        if(val > parseInt(max_price)){
+            return false;
+        }else{
+            getTotalKsuPayment();
+        }
+    });
+}
+
 function getTotalLkuPayment(){
     var target = $('.price-lku');
+    var length = target.length;
+
+    var grand_total = 0;
+    for (var i = 0; i < length; i++) {
+        if(typeof target[i] != 'undefined' && target[i].value != 0){
+            grand_total += parseInt(target[i].value);
+        }
+    }
+
+    $('#grand-total-payment').text('IDR '+formatNumber(grand_total));
+}
+
+function getTotalKsuPayment(){
+    var target = $('.price-ksu');
     var length = target.length;
 
     var grand_total = 0;
@@ -1380,6 +1434,35 @@ function grandTotalLku(){
     };
 
     $('#grand-total-lku').text('IDR '+formatNumber(total_price));
+}
+
+function getTotalKSU(self){
+    var parent = self.parents('tr');
+    var qty = parent.find('td.qty-perlengkapan .claim-number').val();
+    var val = parent.find('td .price-perlengkapan').val();
+
+    if(typeof qty != 'undefined' && typeof val != 'undefined'){
+        total = parseInt(val)*qty;
+        parent.find('.total-price-claim').text('IDR '+formatNumber(total));
+    }else{
+        parent.find('.total-price-claim').text('IDR 0');
+    }
+    grandTotalKSU();
+}
+
+function grandTotalKSU(){
+    var claim_number = $('.claim-number');
+    var price_perlengkapan = $('.price-perlengkapan');
+    var length = claim_number.length;
+
+    var total_price = 0;
+    for (var i = 0; i < length; i++) {
+        if(typeof claim_number[i] != 'undefined' && typeof price_perlengkapan[i] != 'undefined'){
+            total_price += claim_number[i].value * price_perlengkapan[i].value;
+        }
+    };
+
+    $('#grand-total-ksu').text('IDR '+formatNumber(total_price));
 }
 
 function grandTotalLeasing(){
@@ -1426,12 +1509,32 @@ var choose_item_info = function(){
         });
     });
 
-    $('.lku-choose-ttuj').change(function(){
+    $('.ksu-choose-tipe-motor').change(function(){
         var self = $(this);
-        var val_type_lku = $('.type-lku').val();
+        var ttuj_id = $('#getTtujInfoKsu').val();
 
         $.ajax({
-            url: '/ajax/getTtujInfoLku/'+self.val()+'/'+val_type_lku+'/',
+            url: '/ajax/getValuePerlengkapan/'+self.val()+'/'+ttuj_id+'/',
+            type: 'POST',
+            success: function(response, status) {
+                self.parents('tr').find('td.qty-perlengkapan').html($(response).filter('#form-qty').html());
+
+                price_perlengkapan();
+                input_price(self.parents('tr').find('td.qty-perlengkapan .input_price'));
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    });
+
+    $('.lku-choose-ttuj').change(function(){
+        var self = $(this);
+        // var val_type_lku = $('.type-lku').val();
+
+        $.ajax({
+            url: '/ajax/getTtujInfoLku/'+self.val()+'/',
             type: 'POST',
             success: function(response, status) {
                 self.parents('tr').find('td.data-nopol').html($(response).filter('#data-nopol').html());
@@ -1441,6 +1544,28 @@ var choose_item_info = function(){
                 self.parents('tr').find('td.data-total-price-claim').html($(response).filter('#data-total-price-claim').html());
 
                 getTotalLkuPayment();
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    });
+
+    $('.ksu-choose-ttuj').change(function(){
+        var self = $(this);
+
+        $.ajax({
+            url: '/ajax/getTtujInfoKsu/'+self.val()+'/',
+            type: 'POST',
+            success: function(response, status) {
+                self.parents('tr').find('td.data-nopol').html($(response).filter('#data-nopol').html());
+                self.parents('tr').find('td.data-from-city').html($(response).filter('#data-from-city').html());
+                self.parents('tr').find('td.data-to-city').html($(response).filter('#data-to-city').html());
+                self.parents('tr').find('td.data-total-claim').html($(response).filter('#data-total-claim').html());
+                self.parents('tr').find('td.data-total-price-claim').html($(response).filter('#data-total-price-claim').html());
+
+                getTotalKsuPayment();
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
@@ -2515,6 +2640,39 @@ $(function() {
         }
     });
 
+    $('#getTtujInfoKsu').change(function() {
+        var self = $(this);
+
+        if( self.val() != '' ) {
+            $.ajax({
+                url: '/ajax/getInfoTtujKsu/'+self.val()+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    $('#ttuj-info').html($(response).filter('#form-ttuj-main').html());
+                    $('#detail-perlengkapan').html($(response).filter('#form-ttuj-detail').html());
+
+                    add_custom_field();
+                    input_number();
+                    delete_custom_field();
+                    choose_item_info();
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        } else {
+            $('#getKotaTujuan').val('').attr('readonly', true);
+            $('#getTruck').val('').attr('readonly', true);
+            $('#truckID').val('').attr('disabled', true);
+            $('#truckBrowse').attr('disabled', true);
+            $('.driver_name').val('');
+            $('.driver_id').val('');
+            $('.truck_capacity').val('');
+            $('#biaya-uang-jalan input').val('');
+        }
+    });
+
     $('#getTtujInfoRevenue').change(function() {
         var self = $(this);
 
@@ -2551,13 +2709,34 @@ $(function() {
     $('.type-lku').change(function(){
         $('#getTtujCustomerInfo').trigger('change');
     });
+
     $('#getTtujCustomerInfo').change(function(){
         var self = $(this);
         var val = self.val();
-        var val_type_lku = $('.type-lku').val();
+        // var val_type_lku = $('.type-lku').val();
 
         $.ajax({
-            url: '/ajax/getTtujCustomerInfo/'+val+'/'+val_type_lku+'/',
+            url: '/ajax/getTtujCustomerInfo/'+val+'/',
+            type: 'POST',
+            success: function(response, status) {
+                $('#detail-customer-info').html(response);
+                add_custom_field();
+                choose_item_info();
+                delete_custom_field();
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    });
+
+    $('#getTtujCustomerInfoKsu').change(function(){
+        var self = $(this);
+        var val = self.val();
+
+        $.ajax({
+            url: '/ajax/getTtujCustomerInfoKsu/'+val+'/',
             type: 'POST',
             success: function(response, status) {
                 $('#detail-customer-info').html(response);
@@ -2856,5 +3035,13 @@ $(function() {
         $("#ajaxLoading").slideDown(100);
     }).ajaxStop(function() {
         $("#ajaxLoading").slideUp(200);
+    });
+
+    $('.handle-atpm').click(function(){
+        if($(this).is(':checked')) {
+            $('#atpm-box').removeClass('hide');
+        }else{
+            $('#atpm-box').addClass('hide');
+        }
     });
 });

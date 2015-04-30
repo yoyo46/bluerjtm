@@ -1,53 +1,44 @@
 <?php
-class LkuDetail extends AppModel {
-	var $name = 'LkuDetail';
+class Ksu extends AppModel {
+	var $name = 'Ksu';
 	var $validate = array(
-        'tipe_motor_id' => array(
+        'no_doc' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Tipe Motor harap diisi',
+                'message' => 'No Dokumen harap diisi'
+            ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'No Dokumen telah terdaftar',
             ),
         ),
-        // 'no_rangka' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'No. Rangka harap diisi',
-        //     ),
-        // ),
-        'qty' => array(
+        'tgl_ksu' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Jumlah Motor harap diisi',
+                'message' => 'Tgl Ksu harap dipilih'
             ),
         ),
-        'price' => array(
+        'ttuj_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Harga Klaim harap diisi',
+                'message' => 'TTUJ harap dipilih'
             ),
         ),
 	);
 
     var $belongsTo = array(
-        'Lku' => array(
-            'className' => 'Lku',
-            'foreignKey' => 'lku_id',
+        'Ttuj' => array(
+            'className' => 'Ttuj',
+            'foreignKey' => 'ttuj_id',
+        )
+    );
+
+    var $hasMany = array(
+        'KsuDetail' => array(
+            'className' => 'KsuDetail',
+            'foreignKey' => 'ksu_id',
             'conditions' => array(
-                'LkuDetail.status' => 1,
-            ),
-        ),
-        'TipeMotor' => array(
-            'className' => 'TipeMotor',
-            'foreignKey' => 'tipe_motor_id',
-            'conditions' => array(
-                'TipeMotor.status' => 1,
-            ),
-        ),
-        'PartsMotor' => array(
-            'className' => 'PartsMotor',
-            'foreignKey' => 'part_motor_id',
-            'conditions' => array(
-                'PartsMotor.status' => 1,
+                'KsuDetail.status' => 1,
             ),
         ),
     );
@@ -55,11 +46,14 @@ class LkuDetail extends AppModel {
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(
-                'LkuDetail.status' => 1,
+                'Ksu.status' => 1,
             ),
             'order'=> array(
-                'LkuDetail.created' => 'DESC',
-                'LkuDetail.id' => 'DESC',
+                'Ksu.created' => 'DESC',
+                'Ksu.id' => 'DESC',
+            ),
+            'contain' => array(
+                'KsuDetail'
             ),
             'fields' => array(),
         );

@@ -1,13 +1,13 @@
 <div class="box box-primary">
     <div class="box-header">
-        <h3 class="box-title"><?php echo __('Detail LKU'); ?></h3>
+        <h3 class="box-title"><?php echo __('Detail KSU'); ?></h3>
     </div>
     <div class="box-body table-responsive">
         <div class="form-group">
             <?php
                     echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
                         'class' => 'add-custom-field btn btn-success btn-xs',
-                        'action_type' => 'lku_tipe_motor',
+                        'action_type' => 'ksu_perlengkapan',
                         'escape' => false
                     ));
             ?>
@@ -15,7 +15,7 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th><?php echo __('Tipe Motor');?></th>
+                    <th><?php echo __('Perlengkapan');?></th>
                     <th><?php echo __('No. Rangka');?></th>
                     <th><?php echo __('Keterangan');?></th>
                     <th><?php echo __('Jumlah Unit');?></th>
@@ -24,57 +24,57 @@
                     <th><?php echo __('Action');?></th>
                 </tr>
             </thead>
-            <tbody class="tipe-motor-table">
+            <tbody class="perlengkapan-table">
                 <?php
                     $count = 1;
-                    if(!empty($this->request->data['LkuDetail'])){
-                        $count = count($this->request->data['LkuDetail']);
+                    if(!empty($this->request->data['KsuDetail'])){
+                        $count = count($this->request->data['KsuDetail']);
                     }
                     $total = 0;
                     for ($i=0; $i < $count; $i++) { 
-                        $price = (isset($this->request->data['LkuDetail'][$i]['price']) && !empty($this->request->data['LkuDetail'][$i]['price'])) ? $this->request->data['LkuDetail'][$i]['price'] : 0;
-                        $qty = (isset($this->request->data['LkuDetail'][$i]['qty']) && !empty($this->request->data['LkuDetail'][$i]['qty'])) ? $this->request->data['LkuDetail'][$i]['qty'] : 0;
+                        $price = (isset($this->request->data['KsuDetail'][$i]['price']) && !empty($this->request->data['KsuDetail'][$i]['price'])) ? $this->request->data['KsuDetail'][$i]['price'] : 0;
+                        $qty = (isset($this->request->data['KsuDetail'][$i]['qty']) && !empty($this->request->data['KsuDetail'][$i]['qty'])) ? $this->request->data['KsuDetail'][$i]['qty'] : 0;
                 ?>
-                <tr class="lku-detail lku-detail-<?php echo $i+1;?>" rel="<?php echo $i+1;?>">
+                <tr class="ksu-detail ksu-detail-<?php echo $i+1;?>" rel="<?php echo $i+1;?>">
                     <td>
                         <?php
-                            echo $this->Form->input('LkuDetail.tipe_motor_id.', array(
-                                'options' => !empty($tipe_motor_list)?$tipe_motor_list:false,
+                            echo $this->Form->input('KsuDetail.perlengkapan_id.', array(
+                                'options' => !empty($perlengkapans)?$perlengkapans:false,
                                 'label' => false,
-                                'empty' => __('Pilih Tipe Motor'),
-                                'class' => 'lku-choose-tipe-motor form-control',
+                                'empty' => __('Pilih Perlengkapan'),
+                                'class' => 'ksu-choose-tipe-motor form-control',
                                 'required' => false,
-                                'value' => (isset($this->request->data['LkuDetail'][$i]['tipe_motor_id']) && !empty($this->request->data['LkuDetail'][$i]['tipe_motor_id'])) ? $this->request->data['LkuDetail'][$i]['tipe_motor_id'] : ''
+                                'value' => (isset($this->request->data['KsuDetail'][$i]['perlengkapan_id']) && !empty($this->request->data['KsuDetail'][$i]['perlengkapan_id'])) ? $this->request->data['KsuDetail'][$i]['perlengkapan_id'] : ''
                             ));
                         ?>
                     </td>
                     <td>
                         <?php 
-                            echo $this->Form->input('LkuDetail.no_rangka.', array(
+                            echo $this->Form->input('KsuDetail.no_rangka.', array(
                                 'type' => 'text',
                                 'label' => false,
                                 'class' => 'form-control',
                                 'required' => false,
-                                'value' => (isset($this->request->data['LkuDetail'][$i]['no_rangka']) && !empty($this->request->data['LkuDetail'][$i]['no_rangka'])) ? $this->request->data['LkuDetail'][$i]['no_rangka'] : ''
+                                'value' => (isset($this->request->data['KsuDetail'][$i]['no_rangka']) && !empty($this->request->data['KsuDetail'][$i]['no_rangka'])) ? $this->request->data['KsuDetail'][$i]['no_rangka'] : ''
                             ));
                         ?>
                     </td>
                     <td>
                         <?php 
-                            echo $this->Form->input('LkuDetail.note.', array(
+                            echo $this->Form->input('KsuDetail.note.', array(
                                 'type' => 'text',
                                 'label' => false,
                                 'class' => 'form-control',
                                 'required' => false,
-                                'value' => (isset($this->request->data['LkuDetail'][$i]['note']) && !empty($this->request->data['LkuDetail'][$i]['note'])) ? $this->request->data['LkuDetail'][$i]['note'] : ''
+                                'value' => (isset($this->request->data['KsuDetail'][$i]['note']) && !empty($this->request->data['KsuDetail'][$i]['note'])) ? $this->request->data['KsuDetail'][$i]['note'] : ''
                             ));
                         ?>
                     </td>
-                    <td class="qty-tipe-motor" align="center">
+                    <td class="qty-perlengkapan" align="center">
                         <?php
-                            if(!empty($qty) && !empty($this->request->data['LkuDetail'][$i]['TipeMotor']['TtujTipeMotor']['qty'])){
+                            if(!empty($qty) && !empty($this->request->data['KsuDetail'][$i]['Perlengkapan']['TtujPerlengkapan']['qty'])){
 
-                                echo $this->Form->input('LkuDetail.qty.', array(
+                                echo $this->Form->input('KsuDetail.qty.', array(
                                     'placeholder' => __('Jumlah Klaim'),
                                     'class' => 'claim-number form-control',
                                     'div' => false,
@@ -88,10 +88,10 @@
                     </td>
                     <td align="right">
                         <?php 
-                            echo $this->Form->input('LkuDetail.price.', array(
+                            echo $this->Form->input('KsuDetail.price.', array(
                                 'type' => 'text',
                                 'label' => false,
-                                'class' => 'form-control price-tipe-motor input_number',
+                                'class' => 'form-control price-perlengkapan input_number',
                                 'required' => false,
                                 'value' => $price
                             ));
@@ -121,9 +121,9 @@
                 <?php
                     }
                 ?>
-                <tr id="field-grand-total-lku">
+                <tr id="field-grand-total-ksu">
                     <td align="right" colspan="5"><?php echo __('Total Biaya Klaim')?></td>
-                    <td align="right" id="grand-total-lku">
+                    <td align="right" id="grand-total-ksu">
                         <?php 
                             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
                         ?>
@@ -141,18 +141,18 @@
             <tr>
                 <td>
                     <?php
-                        echo $this->Form->input('LkuDetail.tipe_motor_id.', array(
-                            'options' => $tipe_motor_list,
+                        echo $this->Form->input('KsuDetail.perlengkapan_id.', array(
+                            'options' => $perlengkapans,
                             'label' => false,
-                            'empty' => __('Pilih Tipe Motor'),
-                            'class' => 'lku-choose-tipe-motor form-control',
+                            'empty' => __('Pilih Perlengkapan'),
+                            'class' => 'ksu-choose-tipe-motor form-control',
                             'required' => false
                         ));
                     ?>
                 </td>
                 <td>
                     <?php 
-                        echo $this->Form->input('LkuDetail.no_rangka.', array(
+                        echo $this->Form->input('KsuDetail.no_rangka.', array(
                             'type' => 'text',
                             'label' => false,
                             'class' => 'form-control',
@@ -162,7 +162,7 @@
                 </td>
                 <td>
                     <?php 
-                        echo $this->Form->input('LkuDetail.note.', array(
+                        echo $this->Form->input('KsuDetail.note.', array(
                             'type' => 'text',
                             'label' => false,
                             'class' => 'form-control',
@@ -170,13 +170,13 @@
                         ));
                     ?>
                 </td>
-                <td class="qty-tipe-motor" align="center">-</td>
+                <td class="qty-perlengkapan" align="center">-</td>
                 <td align="right">
                     <?php 
-                        echo $this->Form->input('LkuDetail.price.', array(
+                        echo $this->Form->input('KsuDetail.price.', array(
                             'type' => 'text',
                             'label' => false,
-                            'class' => 'form-control price-tipe-motor input_number',
+                            'class' => 'form-control price-perlengkapan input_number',
                             'required' => false
                         ));
                     ?>

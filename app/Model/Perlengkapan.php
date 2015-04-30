@@ -52,5 +52,17 @@ class Perlengkapan extends AppModel {
         }
         return $result;
     }
+
+    function getListPerlengkapan($type_perlengkapan){
+        return $this->find('list', array(
+            'conditions' => array(
+                'Perlengkapan.status' => 1,
+                'Perlengkapan.jenis_perlengkapan_id' => $type_perlengkapan
+            ),
+            'fields' => array(
+                'Perlengkapan.id', 'Perlengkapan.name'
+            )
+        ));
+    }
 }
 ?>

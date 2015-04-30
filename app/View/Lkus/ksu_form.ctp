@@ -1,11 +1,11 @@
 <?php
-		$this->Html->addCrumb(__('LKU/KSU'), array(
+		$this->Html->addCrumb(__('KSU'), array(
 			'controller' => 'lkus',
-			'action' => 'index'
+			'action' => 'ksus'
 		));
 		$this->Html->addCrumb($sub_module_title);
 
-		echo $this->Form->create('Lku', array(
+		echo $this->Form->create('Ksu', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
@@ -15,7 +15,7 @@
 <div class="ttuj-form">
 	<div class="box box-primary">
 	    <div class="box-header">
-	        <h3 class="box-title"><?php echo __('Informasi LKU/KSU'); ?></h3>
+	        <h3 class="box-title"><?php echo __('Informasi KSU'); ?></h3>
 	    </div>
 	    <div class="box-body">
 	        <div class="form-group">
@@ -36,12 +36,12 @@
                             'escape' => false,
                             'title' => __('Data TTUJ'),
                             'data-action' => 'browse-form',
-                            'data-change' => 'getTtujInfo',
+                            'data-change' => 'getTtujInfoKsu',
                         );
     					$urlBrowse = array(
                             'controller'=> 'ajax', 
                             'action' => 'getTtujs',
-                            'lku',
+                            'ksu',
                         );
                     	echo $this->Form->label('ttuj_id', __('No. TTUJ * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
                 ?>
@@ -54,7 +54,7 @@
 									'required' => false,
 									'options' => $ttujs,
 									'empty' => __('Pilih TTUJ'),
-									'id' => 'getTtujInfo'
+									'id' => 'getTtujInfoKsu'
 								));
 						?>
                     </div>
@@ -68,32 +68,68 @@
 	        </div>
 	        <div id="ttuj-info">
 	        	<?php
-	        		echo $this->element('blocks/lkus/lkus_info');
+	        		echo $this->element('blocks/lkus/ksus_info');
 	        	?>
 	        </div>
 	        <div class="form-group">
 				<?php 
-						echo $this->Form->input('tgl_lku',array(
+						echo $this->Form->input('tgl_ksu',array(
 							'label'=> __('Tanggal Klaim'), 
 							'class'=>'form-control custom-date',
 							'type' => 'text',
-							'value' => (!empty($this->request->data['Lku']['tgl_lku'])) ? $this->request->data['Lku']['tgl_lku'] : date('d/m/Y')
+							'value' => (!empty($this->request->data['Ksu']['tgl_ksu'])) ? $this->request->data['Ksu']['tgl_ksu'] : date('d/m/Y')
 						));
 				?>
 			</div>
+			<div class="form-group list-report-monitoring">
+            <?php 
+                    echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('kekurangan_atpm',array(
+                        'type' => 'checkbox',
+                        'label'=> false,
+                        'required' => false,
+                        'div' => false,
+                        'class' => 'handle-atpm',
+                    )).__('Kekurangan ATPM atau Main Dealer?')), array(
+                        'class' => 'checkbox col-sm-6',
+                    ));
+            ?>
+            <div class="clear"></div>
+            <div id="atpm-box" class="<?php echo !empty($this->request->data['Ksu']['kekurangan_atpm']) ? '' : 'hide';?>">
+            	<div class="form-group">
+					<?php 
+							echo $this->Form->input('date_atpm',array(
+								'label'=> __('Tanggal ATPM'), 
+								'class'=>'form-control custom-date',
+								'type' => 'text',
+								'value' => (!empty($this->request->data['Ksu']['date_atpm'])) ? $this->request->data['Ksu']['date_atpm'] : date('d/m/Y')
+							));
+					?>
+				</div>
+				<div class="form-group">
+					<?php 
+							echo $this->Form->input('description_atpm',array(
+								'label'=> __('Keterangan'), 
+								'type' => 'textarea',
+								'class'=>'form-control',
+							));
+					?>
+				</div>
+            </div>
+            
+        </div>
 	    </div>
 	</div>
-	<div id="detail-tipe-motor">
+	<div id="detail-perlengkapan">
 		<?php 
-			if(!empty($this->request->data['LkuDetail'])){
-				echo $this->element('blocks/lkus/lkus_info_tipe_motor'); 
+			if(!empty($this->request->data['KsuDetail'])){
+				echo $this->element('blocks/lkus/ksus_info_tipe_motor'); 
 			}
 		?>
 	</div>
 	<div class="box-footer text-center action">
 		<?php
 	    		echo $this->Html->link(__('Kembali'), array(
-					'action' => 'index', 
+					'action' => 'ksus', 
 				), array(
 					'class'=> 'btn btn-default',
 				));

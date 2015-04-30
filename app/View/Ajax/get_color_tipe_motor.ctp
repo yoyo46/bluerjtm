@@ -6,14 +6,9 @@
 	</div>
 	<div id="form-qty">
 		<?php
-			$options = array();
-			for ($i=1; $i <= $data_ttuj['TtujTipeMotor']['qty']; $i++) { 
-				$options[$i] = $i;
-			}
-
 			echo $this->Form->input('LkuDetail.qty.', array(
-				'options' => $options,
-				'empty' => __('Pilih Jumlah Klaim'),
+				'value' => !empty($data_ttuj['TtujTipeMotor']['qty']) ? $data_ttuj['TtujTipeMotor']['qty'] : 0,
+				'placeholder' => __('Jumlah Klaim'),
 				'class' => 'claim-number form-control',
 				'div' => false,
 				'label' => false

@@ -1,6 +1,6 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
-        echo $this->element('blocks/lkus/search_index_payment');
+        echo $this->element('blocks/lkus/search_ksu');
 ?>
 <div class="box box-success">
     <div class="box-header">
@@ -9,13 +9,13 @@
                     'class' => 'box-title'
                 ));
 
-                if( in_array('insert_lku_payments', $allowModule) ) {
+                if( in_array('insert_lkus', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Pembayaran LKU', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah KSU', array(
                         'controller' => 'lkus',
-                        'action' => 'payment_add'
+                        'action' => 'ksu_add'
                     ), array(
                         'escape' => false,
                         'class' => 'btn btn-app btn-success pull-right'
@@ -31,58 +31,63 @@
         <table class="table table-hover">
             <tr>
                 <?php 
-                        echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.no_doc', __('No Dokumen'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ksu.no_doc', __('No Ksu'), array(
                             'escape' => false
                         )));
 
-                        echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.tgl_bayar', __('Tgl Pembayaran'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ksu.tgl_ksu', __('Tgl Ksu'), array(
                             'escape' => false
                         )));
 
-                        echo $this->Html->tag('th', $this->Paginator->sort('Customer.name', __('Nama Customer'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ksu.status', __('Status'), array(
                             'escape' => false
                         )));
 
-                        echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.paid', __('Status Pembayaran'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ksu.created', __('Dibuat'), array(
                             'escape' => false
                         )));
-
-                        echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.created', __('Dibuat'), array(
-                            'escape' => false
-                        )));
-
                         echo $this->Html->tag('th', __('Action'), array(
                             'escape' => false
                         ));
                 ?>
             </tr>
             <?php
-                    if(!empty($payments)){
-                        foreach ($payments as $key => $value) {
-                            $id = $value['LkuPayment']['id'];
+                    if(!empty($Ksus)){
+                        foreach ($Ksus as $key => $value) {
+                            $id = $value['Ksu']['id'];
             ?>
             <tr>
-                <td><?php echo $value['LkuPayment']['no_doc'];?></td>
-                <?php echo $this->Html->tag('td', date('d M Y', strtotime($value['LkuPayment']['tgl_bayar'])));?>
-                <td><?php echo $value['Customer']['name'];?></td>
+                <td><?php echo $value['Ksu']['no_doc'];?></td>
+                <?php echo $this->Html->tag('td', date('Y/m/d', strtotime($value['Ksu']['tgl_ksu'])));?>
                 <?php 
-                        if(!empty($value['LkuPayment']['paid'])){
-                            echo $this->Html->tag('td', '<span class="label label-success">Telah di bayar</span>');
+                        if(!empty($value['Ksu']['status'])){
+                            echo $this->Html->tag('td', '<span class="label label-success">Aktif</span>');
                         } else{
-                            echo $this->Html->tag('td', '<span class="label label-danger">Belum di bayar</span>');
+                            echo $this->Html->tag('td', '<span class="label label-danger">Non-aktif</span>');
                         }
                 ?>
-                <td><?php echo $this->Common->customDate($value['LkuPayment']['created']);?></td>
+                <td><?php echo $this->Common->customDate($value['Ksu']['created'], 'Y/m/d');?></td>
                 <td class="action">
                     <?php
-                            if( in_array('update_lku_payments', $allowModule) ) {
+                            if( in_array('update_lkus', $allowModule) ) {
                                 echo $this->Html->link('Rubah', array(
                                     'controller' => 'lkus',
-                                    'action' => 'payment_edit',
+                                    'action' => 'ksu_edit',
                                     $id
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
+                            }
+
+                            if( in_array('delete_lkus', $allowModule) ) {
+                                echo $this->Html->link(__('Hapus'), array(
+                                    'controller' => 'lkus',
+                                    'action' => 'ksu_toggle',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs',
+                                    'title' => 'disable status brand'
+                                ), __('Apakah Anda yakin akan menghapus data ini?'));
                             }
                     ?>
                 </td>
@@ -92,7 +97,7 @@
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '6'
+                            'colspan' => '5'
                         )));
                     }
             ?>
