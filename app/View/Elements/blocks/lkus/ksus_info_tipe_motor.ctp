@@ -33,6 +33,9 @@
                     $total = 0;
                     for ($i=0; $i < $count; $i++) { 
                         $price = (isset($this->request->data['KsuDetail'][$i]['price']) && !empty($this->request->data['KsuDetail'][$i]['price'])) ? $this->request->data['KsuDetail'][$i]['price'] : 0;
+                        if(!empty($this->request->data['Ksu']['kekurangan_atpm'])){
+                            $price = 0;
+                        }
                         $qty = (isset($this->request->data['KsuDetail'][$i]['qty']) && !empty($this->request->data['KsuDetail'][$i]['qty'])) ? $this->request->data['KsuDetail'][$i]['qty'] : 0;
                 ?>
                 <tr class="ksu-detail ksu-detail-<?php echo $i+1;?>" rel="<?php echo $i+1;?>">
@@ -91,7 +94,7 @@
                             echo $this->Form->input('KsuDetail.price.', array(
                                 'type' => 'text',
                                 'label' => false,
-                                'class' => 'form-control price-perlengkapan input_number',
+                                'class' => 'form-control price-perlengkapan input_number input_price',
                                 'required' => false,
                                 'value' => $price
                             ));
@@ -176,7 +179,7 @@
                         echo $this->Form->input('KsuDetail.price.', array(
                             'type' => 'text',
                             'label' => false,
-                            'class' => 'form-control price-perlengkapan input_number',
+                            'class' => 'form-control price-perlengkapan input_number input_price',
                             'required' => false
                         ));
                     ?>

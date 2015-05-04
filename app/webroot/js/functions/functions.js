@@ -510,6 +510,7 @@ var add_custom_field = function(){
                     
                     choose_item_info();
                     input_number();
+                    input_price($('.ksu-detail-'+ksu_detail_len+' .input_price'));
                     price_perlengkapan();
                     delete_custom_field($('.ksu-detail-'+ksu_detail_len+' .delete-custom-field'));
                 // }
@@ -1442,6 +1443,13 @@ function getTotalKSU(self){
     var val = parent.find('td .price-perlengkapan').val();
 
     if(typeof qty != 'undefined' && typeof val != 'undefined'){
+        var arr_string = val.split(',');
+        var text_val = '';
+        for (var a = 0; a < arr_string.length; a++) {
+            text_val += arr_string[a].toString();
+        };
+        
+        val = text_val;
         total = parseInt(val)*qty;
         parent.find('.total-price-claim').text('IDR '+formatNumber(total));
     }else{
@@ -1458,7 +1466,15 @@ function grandTotalKSU(){
     var total_price = 0;
     for (var i = 0; i < length; i++) {
         if(typeof claim_number[i] != 'undefined' && typeof price_perlengkapan[i] != 'undefined'){
-            total_price += claim_number[i].value * price_perlengkapan[i].value;
+            var val = price_perlengkapan[i].value;
+            var arr_string = val.split(',');
+            var text_val = '';
+            for (var a = 0; a < arr_string.length; a++) {
+                text_val += arr_string[a].toString();
+            };
+            
+            val = text_val;
+            total_price += claim_number[i].value * val;
         }
     };
 
@@ -2337,6 +2353,7 @@ $(function() {
     laka_ttuj_change();
     invoice_price_payment();
     part_motor_lku();
+    price_perlengkapan();
 
     set_auth_cash_bank($('.cash-bank-auth-user'));
 
@@ -2713,6 +2730,7 @@ $(function() {
 
                     add_custom_field();
                     input_number();
+                    input_price();
                     delete_custom_field();
                     choose_item_info();
                 },
@@ -3128,8 +3146,21 @@ $(function() {
     $('.handle-atpm').click(function(){
         if($(this).is(':checked')) {
             $('#atpm-box').removeClass('hide');
+            $('.price-perlengkapan').hide();
+            $('.total-price-claim').text('IDR 0');
+            $('#grand-total-ksu').text('IDR 0');
         }else{
             $('#atpm-box').addClass('hide');
+            $('.price-perlengkapan').show();
         }
     });
+
+    if($('#handle-atpm').length > 0){
+        if($(this).is(':checked')){
+            $('.price-perlengkapan').hide();
+        }else{
+            $('.price-perlengkapan').show();
+        }
+    }
+    
 });

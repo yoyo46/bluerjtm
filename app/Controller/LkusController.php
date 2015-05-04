@@ -1013,6 +1013,7 @@ class LkusController extends AppController {
             }
             
             $data['Ksu']['tgl_ksu'] = (!empty($data['Ksu']['tgl_ksu'])) ? $this->MkCommon->getDate($data['Ksu']['tgl_ksu']) : '';
+            $data['Ksu']['date_atpm'] = (!empty($data['Ksu']['date_atpm'])) ? $this->MkCommon->getDate($data['Ksu']['date_atpm']) : '';
             
             $validate_ksu_detail = true;
             $temp_detail = array();
@@ -1024,7 +1025,7 @@ class LkusController extends AppController {
                         $data_detail['KsuDetail'] = array(
                             'no_rangka' => (!empty($data['KsuDetail']['no_rangka'][$key])) ? $data['KsuDetail']['no_rangka'][$key] : '',
                             'qty' => (!empty($data['KsuDetail']['qty'][$key])) ? $data['KsuDetail']['qty'][$key] : '',
-                            'price' => (!empty($data['KsuDetail']['price'][$key])) ? $data['KsuDetail']['price'][$key] : '',
+                            'price' => (!empty($data['KsuDetail']['price'][$key])) ? str_replace(',', '', $data['KsuDetail']['price'][$key]) : '',
                             'perlengkapan_id' => (!empty($data['KsuDetail']['perlengkapan_id'][$key])) ? $data['KsuDetail']['perlengkapan_id'][$key] : '',
                             'note' => (!empty($data['KsuDetail']['note'][$key])) ? $data['KsuDetail']['note'][$key] : '',
                         );
@@ -1103,6 +1104,7 @@ class LkusController extends AppController {
             }
 
             $this->request->data['Ksu']['tgl_ksu'] = (!empty($this->request->data['Ksu']['tgl_ksu'])) ? $this->MkCommon->getDate($this->request->data['Ksu']['tgl_ksu'], true) : '';
+            $this->request->data['Ksu']['date_atpm'] = (!empty($this->request->data['Ksu']['date_atpm'])) ? $this->MkCommon->getDate($this->request->data['Ksu']['date_atpm'], true) : '';
         }
 
         if(!empty($this->request->data['KsuDetail']['perlengkapan_id'])){

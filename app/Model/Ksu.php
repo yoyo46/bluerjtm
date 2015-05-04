@@ -24,6 +24,12 @@ class Ksu extends AppModel {
                 'message' => 'TTUJ harap dipilih'
             ),
         ),
+        'date_atpm' => array(
+            'validateATPM' => array(
+                'rule' => array('validateATPM'),
+                'message' => 'Tanggal ATPM harap diisi'
+            )
+        )
 	);
 
     var $belongsTo = array(
@@ -42,6 +48,17 @@ class Ksu extends AppModel {
             ),
         ),
     );
+
+    function validateATPM($data){
+        $result = true;
+        if(!empty($this->data['Ksu']['kekurangan_atpm'])){
+            if(empty($data['date_atpm'])){
+                $result = false;
+            }
+        }
+
+        return $result;
+    }
 
 	function getData($find, $options = false){
         $default_options = array(

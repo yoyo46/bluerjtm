@@ -98,10 +98,11 @@
             	<div class="form-group">
 					<?php 
 							echo $this->Form->input('date_atpm',array(
-								'label'=> __('Tanggal ATPM'), 
+								'label'=> __('Tanggal ATPM *'), 
 								'class'=>'form-control custom-date',
 								'type' => 'text',
-								'value' => (!empty($this->request->data['Ksu']['date_atpm'])) ? $this->request->data['Ksu']['date_atpm'] : date('d/m/Y')
+								'value' => (!empty($this->request->data['Ksu']['date_atpm'])) ? $this->request->data['Ksu']['date_atpm'] : date('d/m/Y'),
+								'id' => 'atpm_handle'
 							));
 					?>
 				</div>
