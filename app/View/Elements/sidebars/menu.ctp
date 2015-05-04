@@ -795,7 +795,7 @@
                         $settingMenu = array(
                             'cash_bank', 'approval_setting', 'kir_payments',
                             'stnk_payments', 'siup_payments', 'invoice_payments', 
-                            'lku_payments', 
+                            'lku_payments', 'coa_setting',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -825,6 +825,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'approval_setting' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pengaturan COA</span>', array(
+                                'controller' => 'cashbanks',
+                                'action' => 'coa_setting'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'coa_setting' )?'active':'',
                             ));
 
                             // if( in_array('view_invoice_payments', $allowModule) ) {

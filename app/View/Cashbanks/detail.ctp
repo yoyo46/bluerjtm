@@ -3,6 +3,7 @@
             'action' => 'index'
         ));
         $this->Html->addCrumb($sub_module_title);
+        $receiving_cash_type = !empty($cashbank['CashBank']['receiving_cash_type'])?$cashbank['CashBank']['receiving_cash_type']:false;
 ?>
 <div class="row">
     <div class="col-sm-6">
@@ -18,15 +19,29 @@
                 <dl class="dl-horizontal">
                     <dt><?php echo __('No. Dokumen')?></dt>
                     <dd><?php echo $cashbank['CashBank']['nodoc'];?></dd>
+                    <?php 
+                            switch ($receiving_cash_type) {
+                                case 'ppn_in':
+                                    if( !empty($cashbank['Revenue']) ) {
+                                        echo $this->Html->tag('dt', __('No. Ref Revenue'));
+                                        echo $this->Html->tag('dd', str_pad($cashbank['Revenue']['id'], 5, '0', STR_PAD_LEFT));
+                                    }
+                                    break;
+                                
+                                default:
+                                    # code...
+                                    break;
+                            }
+                    ?>
                     <dt><?php echo __('Tipe Kas')?></dt>
-                    <dd><?php echo $cashbank['CashBank']['receiving_cash_type'];?></dd>
+                    <dd><?php echo strtoupper(str_replace('_', ' ', $receiving_cash_type));?></dd>
                     <dt>
                         <?php 
-                            $text = __('Diterima dari');
-                            if(!empty($cashbank['CashBank']['receiving_cash_type']) && $cashbank['CashBank']['receiving_cash_type'] == 'out'){
-                                $text = __('Dibayar kepada');
-                            }
-                            echo $text;
+                                $text = __('Diterima dari');
+                                if(!empty($receiving_cash_type) && $receiving_cash_type == 'out'){
+                                    $text = __('Dibayar kepada');
+                                }
+                                echo $text;
                         ?>
                     </dt>
                     <dd><?php echo $cashbank['CashBank']['receiver'];?></dd>

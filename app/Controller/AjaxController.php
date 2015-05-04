@@ -1504,5 +1504,169 @@ class AjaxController extends AppController {
 
 		$this->set('part_motor', $part_motor);
 	}
+
+	function get_cashbank_doc ( $action_type = false ) {
+		$this->loadModel('Revenue');
+		$result = $this->Revenue->getDocumentCashBank( $action_type );
+
+		if( !empty($result) ) {
+			$docs = $result['docs'];
+			$this->request->data['CashBank']['document_type'] = $result['docs_type'];
+		}
+
+		$this->set('docs', $docs);
+		$this->render('get_cashbank_doc');
+	}
+
+	public function getCashBankPpnRevenue() {
+        $this->loadModel('Customer');
+		$this->loadModel('Revenue');
+		$title = __('Data Revenue');
+		$data_action = 'browse-form';
+		$data_change = 'document-id';
+		$options = array(
+            'conditions' => array(
+	            'Revenue.paid_ppn' => 0,
+				'Revenue.transaction_status <>' => 'unposting',
+				'Revenue.status' => 1,
+	        ),
+            'limit' => 10,
+            'contain' => array(
+                'CustomerNoType'
+            ),
+			'order' => array(
+				'Revenue.id' => 'ASC'
+			),
+        );
+
+        if(!empty($this->request->data)){
+        	$refine = $this->request->data['Revenue'];
+
+            if(!empty($refine['no_doc'])){
+                $nodoc = urldecode($refine['no_doc']);
+                $options['conditions']['Revenue.no_doc LIKE '] = '%'.$nodoc.'%';
+            }
+            if(!empty($refine['no_ttuj'])){
+                $no_ttuj = urldecode($refine['no_ttuj']);
+                $options['conditions']['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
+            }
+            if(!empty($refine['customer_id'])){
+                $customer = urldecode($refine['customer_id']);
+                $options['conditions']['Revenue.customer_id'] = $customer;
+            }
+            if(!empty($refine['no_reference'])){
+                $no_ref = urldecode($refine['no_reference']);
+
+                if( is_numeric($no_ref) ) {
+                    $no_ref = intval($no_ref);
+                }
+
+                $options['conditions']['LPAD(Revenue.id, 5, 0) LIKE'] = '%'.$no_ref.'%';
+            }
+
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
+
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                    $options['conditions']['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') >='] = $dateFrom;
+                    $options['conditions']['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') <='] = $dateTo;
+                }
+            }
+
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $options['conditions']['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
+            }
+
+            if(!empty($refine['transaction_status'])){
+                $status = urldecode($refine['transaction_status']);
+
+                if( $status == 'paid' ) {
+                    $revenueList = $this->Revenue->getData('list', array(
+                        'conditions' => $options['conditions'],
+                        'contain' => array(
+                            'Ttuj',
+                        ),
+                        'fields' => array(
+                            'Revenue.id', 'Revenue.id'
+                        ),
+                    ));
+                    $paidList = $this->Revenue->InvoiceDetail->getInvoicedRevenueList($revenueList);
+                    $options['conditions']['Revenue.id'] = $paidList;
+                } else {
+                    $options['conditions']['Revenue.transaction_status'] = $status;
+                }
+            }
+        }
+
+		$this->paginate = $this->Revenue->getData('paginate', $options);
+        $revenues = $this->paginate('Revenue');
+
+        if(!empty($revenues)){
+            foreach ($revenues as $key => $value) {
+                $value = $this->Revenue->InvoiceDetail->getInvoicedRevenue($value, $value['Revenue']['id']);
+                $value = $this->Customer->getMerge($value, $value['Ttuj']['customer_id']);
+                $revenues[$key] = $this->Customer->getMerge($value, $value['Ttuj']['customer_id']);
+            }
+        }
+
+        $customers = $this->Customer->getData('list', array(
+            'conditions' => array(
+                'Customer.status' => 1
+            ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+
+        $this->set(compact(
+        	'revenues', 'data_action', 'title',
+        	'data_change', 'customers'
+    	));
+	}
+
+	function getCustomer () {
+		if( !empty($this->params['named']['revenue_id']) ) {
+			$this->loadModel('Revenue');
+	        $this->loadModel('CoaSetting');
+
+	        $this->CoaSetting->bindModel(array(
+				'belongsTo' => array(
+					'Coa' => array(
+						'foreignKey' => 'ppn_coa_credit_id',
+					),
+				)
+			), false);
+
+			$revenue_id = $this->params['named']['revenue_id'];
+			$customer = $this->Revenue->getData('first', array(
+				'conditions' => array(
+					'Revenue.id' => $revenue_id,
+				),
+				'contain' => array(
+					'CustomerNoType'
+				),
+			), false);
+	        $coaSetting = $this->CoaSetting->getData('first', array(
+	            'conditions' => array(
+	                'CoaSetting.status' => 1
+	            ),
+				'contain' => array(
+					'Coa'
+				),
+	        ));
+		}
+
+        $this->set(compact(
+        	'customer', 'coaSetting'
+    	));
+		$this->render('get_customer');
+	}
 }
 ?>

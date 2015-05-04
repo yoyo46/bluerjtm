@@ -42,12 +42,26 @@
 					'class'=>'form-control cash-bank-handle',
 					'required' => false,
 					'options' => array(
-						'in' => __('Cash IN'),
-						'out' => __('Cash OUT')
-					)
+						'out' => __('Cash - OUT'),
+						'in' => __('Cash - IN'),
+						'ppn_out' => __('PPN - OUT'),
+						'ppn_in' => __('PPN - IN'),
+						'prepayment_in' => __('Prepayment - IN'),
+						'prepayment_out' => __('Prepayment - Out'),
+					),
+					'empty' => __('Pilih Jenis Kas Bank'),
 				)), array(
 					'class' => 'form-group'
 				));
+		?>
+		<div id="form-content-document">
+			<?php 
+        			if( !empty($receiving_cash_type) && $receiving_cash_type == 'ppn_in' ) {
+						echo $this->element('blocks/cashbanks/pick_document');
+					}
+			?>
+		</div>
+		<?php
 
 				echo $this->Form->input('receiver_type',array(
 					'label'=> false, 

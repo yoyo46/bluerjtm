@@ -32,6 +32,12 @@ class CashBank extends AppModel {
                 'message' => 'Kas Bank harap dipilih'
             ),
         ),
+        'document_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Dokumen harap dipilih'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(

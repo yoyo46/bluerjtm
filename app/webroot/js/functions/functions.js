@@ -2272,6 +2272,66 @@ var set_auth_cash_bank = function(obj){
     });
 }
 
+var get_document_cashbank = function(){
+    $('#document-id').change(function(){
+        var self = $(this);
+        var val = self.val();
+
+        if(val != ''){
+            $.ajax({
+                url: '/ajax/getCustomer/revenue_id:'+val+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    var customer_id = $(response).filter('#customer-id').html();
+                    var customer_name = $(response).filter('#customer-name').html();
+                    var receiver_type = $(response).filter('#receiver-type').html();
+                    var coa_code = $(response).filter('#coa_code').html();
+                    var coa_id = $(response).filter('#coa_id').html();
+                    var coa_name = $(response).filter('#coa_name').html();
+                    var ppn = $(response).filter('#ppn').html();
+
+                    if( customer_id != '' && typeof customer_id != 'undefined' ) {
+                        $('#receiver-type').val(receiver_type);
+                        $('#receiver-id').val(customer_id);
+                        $('#cash-bank-user').val(customer_name);
+
+                        var html_content = '<tr class="child child-'+coa_id+'" rel="'+coa_id+'"> \
+                            <td>\
+                                '+coa_code+' \
+                                <input type="hidden" name="data[CashBankDetail][coa_id][]" value="'+coa_id+'" id="CashBankDetailCoaId"> \
+                            </td> \
+                            <td> \
+                                '+coa_name+' \
+                            </td> \
+                            <td class="action-search"> \
+                                <input name="data[CashBankDetail][total][]" class="form-control input_price" type="text" id="CashBankDetailTotal" value="'+ppn+'"> \
+                            </td> \
+                            <td class="action-search"> \
+                                <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="cashbank_first"><i class="fa fa-times"></i> Hapus</a> \
+                            </td> \
+                        </tr>';
+                        $('.cashbank-info-detail').removeClass('hide');
+                        $('.cashbanks-info-table').append(html_content);
+                        input_price( $('.cashbanks-info-table .child:last-child .input_price') );
+                    } else {
+                        $('#receiver-type').val('');
+                        $('#receiver-id').val('');
+                        $('#cash-bank-user').val('');
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        } else {
+            $('#receiver-type').val('');
+            $('#receiver-id').val('');
+            $('#cash-bank-user').val('');
+        }
+    });
+}
+
 $(function() {
     leasing_action();
     laka_ttuj_change();
@@ -3020,12 +3080,40 @@ $(function() {
     });
 
     $('.cash-bank-handle').change(function(){
-        if($(this).val() == 'in'){
+        var value = $(this).val();
+
+        if(value == 'in' || value == 'ppn_in' || value == 'prepayment_in'){
             $('.cash_bank_user_type').html('Diterima dari');
         }else{
             $('.cash_bank_user_type').html('Dibayar kepada');
         }
+
+        if( value == 'ppn_in' ) {
+            $.ajax({
+                url: '/ajax/get_cashbank_doc/'+value+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    var formContent = $(response).filter('#form-document').html();
+                    var status = $(response).filter('#status').text();
+
+                    if(status == 'success'){
+                        $('#form-content-document').html(formContent);
+                        ajaxModal( $('#form-content-document .ajaxModal') );
+                        get_document_cashbank();
+                    } else {
+                        $('#form-content-document').html('');
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        } else {
+            $('#form-content-document').html('');
+        }
     });
+    get_document_cashbank();
 
     $('.invoice-pph, .invoice-ppn').keyup(function(){
         getTotalInvoicePayment();

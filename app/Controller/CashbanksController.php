@@ -165,6 +165,10 @@ class CashbanksController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $data['CashBank']['tgl_cash_bank'] = $this->MkCommon->getDate($data['CashBank']['tgl_cash_bank']);
+            $document_id = !empty($data['CashBank']['document_id'])?$data['CashBank']['document_id']:false;
+            $document_type = !empty($data['CashBank']['document_type'])?$data['CashBank']['document_type']:false;
+            $coas_validate = true;
             
             if($id && $data_local){
                 $this->CashBank->id = $id;
@@ -174,14 +178,12 @@ class CashbanksController extends AppController {
                 $msg = 'menambah';
             }
 
-            $data['CashBank']['tgl_cash_bank'] = $this->MkCommon->getDate($data['CashBank']['tgl_cash_bank']);
-            
-            $coas_validate = true;
             if(!empty($data['CashBankDetail']['coa_id'])){
                 $arr_list = array();
                 $debit_total = 0;
                 $credit_total = 0;
                 $total_coa = 0;
+
                 foreach ($data['CashBankDetail']['coa_id'] as $key => $coa_id) {
                     // $debit = !empty($data['CashBankDetail']['debit'][$key]) ? str_replace(',', '', $data['CashBankDetail']['debit'][$key]) : 0;
                     // $credit = !empty($data['CashBankDetail']['credit'][$key]) ? str_replace(',', '', $data['CashBankDetail']['credit'][$key]) : 0;
@@ -215,8 +217,8 @@ class CashbanksController extends AppController {
 
             if($this->CashBank->validates($data) && $coas_validate){
                 if($this->CashBank->save($data)){
-
                     $cash_bank_id = $this->CashBank->id;
+
                     if($id && $data_local){
                         $this->CashBank->CashBankDetail->deleteAll(array(
                             'CashBankDetail.cash_bank_id' => $cash_bank_id
@@ -225,6 +227,17 @@ class CashbanksController extends AppController {
                         $this->CashBank->CashBankAuth->deleteAll(array(
                             'CashBankAuth.cash_bank_id' => $cash_bank_id
                         ));
+                    }
+
+                    if( !empty($document_id) ) {
+                        switch ($document_type) {
+                            case 'revenue':
+                                $this->loadModel('Revenue');
+                                $this->Revenue->id = $document_id;
+                                $this->Revenue->set('paid_ppn', 1);
+                                $this->Revenue->save();
+                                break;
+                        }
                     }
 
                     if(!empty($data['CashBankDetail'])){
@@ -314,6 +327,18 @@ class CashbanksController extends AppController {
             $this->set('coa_data', $coa_data);
         }
 
+        $receiving_cash_type = !empty($this->request->data['CashBank']['receiving_cash_type'])?$this->request->data['CashBank']['receiving_cash_type']:false;
+
+        if( $receiving_cash_type == 'ppn_in' ) {
+            $this->loadModel('Revenue');
+            $docs_result = $this->Revenue->getDocumentCashBank( $receiving_cash_type );
+
+            if( !empty($docs_result) ) {
+                $docs = $docs_result['docs'];
+                $this->request->data['CashBank']['document_type'] = $docs_result['docs_type'];
+            }
+        }
+
         $coas = $this->Coa->getData('list', array(
             'conditions' => array(
                 'Coa.level' => 4,
@@ -321,7 +346,10 @@ class CashbanksController extends AppController {
                 'Coa.status' => 1
             )
         ));
-        $this->set(compact('coas'));
+        $this->set(compact(
+            'coas', 'document_id', 'receiving_cash_type',
+            'docs'
+        ));
 
         $this->set('active_menu', 'cash_bank');
         $this->set('module_title', 'Kas Bank');
@@ -413,9 +441,11 @@ class CashbanksController extends AppController {
                     )
                 )
             ));
-            
+
             if( !empty($cashbank) ) {
                 $cashbank_auth_id = Set::extract('/CashBankAuthMaster/employe_id', $cash_bank_auth_master);
+                $document_type = !empty($cashbank['CashBank']['document_type'])?$cashbank['CashBank']['document_type']:false;
+                $document_id = !empty($cashbank['CashBank']['document_id'])?$cashbank['CashBank']['document_id']:false;
 
                 if(!empty($this->request->data) && !empty($cash_bank_master_user)){
                     if(in_array($this->user_id, $cashbank_auth_id)){
@@ -438,9 +468,11 @@ class CashbanksController extends AppController {
                         $this->CashBank->CashBankAuth->set($data);
 
                         if($this->CashBank->CashBankAuth->save()){
+                            $status_document = !empty($data['CashBankAuth']['status_document'])?$data['CashBankAuth']['status_document']:false;
+
                             if($cash_bank_master_user['CashBankAuthMaster']['level'] == 1){
                                 $data_arr = array();
-                                switch ($data['CashBankAuth']['status_document']) {
+                                switch ($status_document) {
                                     case 'approve':
                                         $data_arr = array(
                                             'completed' => 1,
@@ -478,7 +510,7 @@ class CashbanksController extends AppController {
                                 ));
                                 
                                 if(empty($cashBankmaster['CashBankAuthMaster']['id'])){
-                                    if($data['CashBankAuth']['status_document'] == 'revise'){
+                                    if($status_document == 'revise'){
                                         $data_arr = array(
                                             'is_revised' => 1,
                                         );
@@ -488,7 +520,18 @@ class CashbanksController extends AppController {
 
                             $this->CashBank->id = $id;
                             $this->CashBank->set($data_arr);
-                            $this->CashBank->save();
+                            if( $this->CashBank->save() ) {
+                                if( $status_document == 'reject' && !empty($document_id) ) {
+                                    switch ($document_type) {
+                                        case 'revenue':
+                                            $this->loadModel('Revenue');
+                                            $this->Revenue->id = $document_id;
+                                            $this->Revenue->set('paid_ppn', 0);
+                                            $this->Revenue->save();
+                                            break;
+                                    }
+                                }
+                            }
 
                             $this->MkCommon->setCustomFlash('Berhasil melakukan Approval Kas Bank.', 'success');
                         }else{
@@ -549,6 +592,18 @@ class CashbanksController extends AppController {
                         'CashBankAuthMaster'
                     ),
                 ));
+
+                switch ($document_type) {
+                    case 'revenue':
+                        $this->loadModel('Revenue');
+                        $revenue = $this->Revenue->getData('first', array(
+                            'conditions' => array(
+                                'Revenue.id' => $document_id,
+                            ),
+                        ), false);
+                        $cashbank = array_merge($cashbank, $revenue);
+                        break;
+                }
                 
                 // debug($cashbank);die();
                 $this->set('active_menu', 'cash_bank');
@@ -694,5 +749,56 @@ class CashbanksController extends AppController {
         ));
         $sub_module_title = 'Setting COA';
         $this->set(compact('cash_bank_settings', 'coas', 'sub_module_title'));
+    }
+
+    public function coa_setting() {
+        $this->loadModel('Coa');
+        $this->loadModel('CoaSetting');
+        $coaSetting = $this->CoaSetting->getData('first', array(
+            'conditions' => array(
+                'CoaSetting.status' => 1
+            ),
+        ));
+
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            
+            if( !empty($coaSetting['CoaSetting']['id']) ){
+                $this->CoaSetting->id = $coaSetting['CoaSetting']['id'];
+            }else{
+                $this->CoaSetting->create();
+            }
+
+            $this->CoaSetting->set($data);
+
+            if($this->CoaSetting->validates($data)){
+                if($this->CoaSetting->save($data)){
+                    $this->MkCommon->setCustomFlash(__('Sukses menyimpan pengaturan COA'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses menyimpan pengaturan COA #%s'), $this->CoaSetting->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->redirect(array(
+                        'controller' => 'cashbanks',
+                        'action' => 'coa_setting'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal menyimpan pengaturan COA'), 'error');
+                    $this->Log->logActivity( __('Gagal menyimpan pengaturan COA'), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal menyimpan pengaturan COA'), 'error');
+            }
+        } else if( !empty($coaSetting) ) {
+            $this->request->data = $coaSetting;
+        }
+
+        $coas = $this->Coa->getData('list', array(
+            'conditions' => array(
+                'Coa.level' => 4,
+                'Coa.status' => 1
+            ),
+            'fields' => array(
+                'Coa.id', 'Coa.coa_name'
+            ),
+        ));
+        $this->set(compact('coas'));
     }
 }

@@ -41,7 +41,7 @@
                         $content = $this->Html->tag('td', $value['CashBank']['nodoc']);
                         $content .= $this->Html->tag('td', !empty($value['name_cash']) ? $value['name_cash'] : '-');
                         $content .= $this->Html->tag('td', $this->Common->customDate($value['CashBank']['tgl_cash_bank'], 'd/m/Y'));
-                        $content .= $this->Html->tag('td', 'Cash '.$value['CashBank']['receiving_cash_type'], array(
+                        $content .= $this->Html->tag('td', strtoupper(str_replace('_', ' ', $value['CashBank']['receiving_cash_type'])), array(
                             'align' => 'center'
                         ));
 

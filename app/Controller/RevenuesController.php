@@ -2582,7 +2582,7 @@ class RevenuesController extends AppController {
                         $no_ref = intval($no_ref);
                     }
 
-                    $conditions['Revenue.id LIKE'] = '%'.$no_ref.'%';
+                    $conditions['LPAD(Revenue.id, 5, 0) LIKE'] = '%'.$no_ref.'%';
                 }
 
                 if(!empty($refine['date'])){
