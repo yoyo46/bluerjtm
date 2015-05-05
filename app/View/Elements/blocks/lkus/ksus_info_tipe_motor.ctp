@@ -75,28 +75,24 @@
                     </td>
                     <td class="qty-perlengkapan" align="center">
                         <?php
-                            if(!empty($qty) && !empty($this->request->data['KsuDetail'][$i]['Perlengkapan']['TtujPerlengkapan']['qty'])){
-
-                                echo $this->Form->input('KsuDetail.qty.', array(
-                                    'placeholder' => __('Jumlah Klaim'),
-                                    'class' => 'claim-number form-control',
-                                    'div' => false,
-                                    'label' => false,
-                                    'value' => $qty
-                                ));
-                            }else{
-                                echo '-';
-                            }
+                            echo $this->Form->input('KsuDetail.qty.', array(
+                                'placeholder' => __('Jumlah Klaim'),
+                                'class' => 'claim-number form-control',
+                                'div' => false,
+                                'label' => false,
+                                'value' => !empty($qty) ? $qty : 0
+                            ));
                         ?>
                     </td>
                     <td align="right">
                         <?php 
+                            $show = !empty($this->request->data['Ksu']['kekurangan_atpm']) ? 'hide' : 'show';
                             echo $this->Form->input('KsuDetail.price.', array(
                                 'type' => 'text',
                                 'label' => false,
-                                'class' => 'form-control price-perlengkapan input_number input_price',
+                                'class' => 'form-control price-perlengkapan input_number input_price '.$show,
                                 'required' => false,
-                                'value' => $price
+                                'value' => $price,
                             ));
                         ?>
                     </td>
@@ -173,7 +169,17 @@
                         ));
                     ?>
                 </td>
-                <td class="qty-perlengkapan" align="center">-</td>
+                <td class="qty-perlengkapan" align="center">
+                    <?php
+                        echo $this->Form->input('KsuDetail.qty.', array(
+                            'placeholder' => __('Jumlah Klaim'),
+                            'class' => 'claim-number form-control',
+                            'div' => false,
+                            'label' => false,
+                            'value' => 0
+                        ));
+                    ?>
+                </td>
                 <td align="right">
                     <?php 
                         echo $this->Form->input('KsuDetail.price.', array(

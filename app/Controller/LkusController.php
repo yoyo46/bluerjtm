@@ -1019,15 +1019,21 @@ class LkusController extends AppController {
             $temp_detail = array();
             $total_price = 0;
             $total_klaim = 0;
+            
             if(!empty($data['KsuDetail']['perlengkapan_id'])){
                 foreach ($data['KsuDetail']['perlengkapan_id'] as $key => $value) {
                     if( !empty($value) ){
-                        $data_detail['KsuDetail'] = array(
-                            'no_rangka' => (!empty($data['KsuDetail']['no_rangka'][$key])) ? $data['KsuDetail']['no_rangka'][$key] : '',
-                            'qty' => (!empty($data['KsuDetail']['qty'][$key])) ? $data['KsuDetail']['qty'][$key] : '',
-                            'price' => (!empty($data['KsuDetail']['price'][$key])) ? str_replace(',', '', $data['KsuDetail']['price'][$key]) : '',
-                            'perlengkapan_id' => (!empty($data['KsuDetail']['perlengkapan_id'][$key])) ? $data['KsuDetail']['perlengkapan_id'][$key] : '',
-                            'note' => (!empty($data['KsuDetail']['note'][$key])) ? $data['KsuDetail']['note'][$key] : '',
+                        $data_detail = array( 
+                            'KsuDetail' => array(
+                                'no_rangka' => (!empty($data['KsuDetail']['no_rangka'][$key])) ? $data['KsuDetail']['no_rangka'][$key] : '',
+                                'qty' => (!empty($data['KsuDetail']['qty'][$key])) ? $data['KsuDetail']['qty'][$key] : '',
+                                'price' => (!empty($data['KsuDetail']['price'][$key])) ? str_replace(',', '', trim($data['KsuDetail']['price'][$key])) : '',
+                                'perlengkapan_id' => (!empty($data['KsuDetail']['perlengkapan_id'][$key])) ? $data['KsuDetail']['perlengkapan_id'][$key] : '',
+                                'note' => (!empty($data['KsuDetail']['note'][$key])) ? $data['KsuDetail']['note'][$key] : '',
+                            ),
+                            'Ksu' => array(
+                                'kekurangan_atpm' => $data['Ksu']['kekurangan_atpm']
+                            )
                         );
                         
                         $temp_detail[] = $data_detail;
@@ -1038,6 +1044,8 @@ class LkusController extends AppController {
                         }else{
                             $total_price += $data_detail['KsuDetail']['qty'] * $data_detail['KsuDetail']['price'];
                             $total_klaim += $data_detail['KsuDetail']['qty'];
+
+                            unset($data_detail['Ksu']);
                         }
                     }
                 }
@@ -1468,7 +1476,7 @@ class LkusController extends AppController {
 
         $customers = $this->Ttuj->getData('list', array(
             'conditions' => array(
-                'Ttuj.is_revenue' => 0
+                'Ttuj.is_revenue' => 0,
             ),
             'fields' => array(
                 'Ttuj.customer_id', 'Ttuj.customer_name'

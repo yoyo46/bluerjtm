@@ -3146,16 +3146,19 @@ $(function() {
     $('.handle-atpm').click(function(){
         if($(this).is(':checked')) {
             $('#atpm-box').removeClass('hide');
-            $('.price-perlengkapan').hide();
+            $('.price-perlengkapan').removeClass('show');
+            $('.price-perlengkapan').addClass('hide');
             $('.total-price-claim').text('IDR 0');
             $('#grand-total-ksu').text('IDR 0');
         }else{
             $('#atpm-box').addClass('hide');
+            $('.price-perlengkapan').removeClass('hide');
+            $('.price-perlengkapan').addClass('show');
             $('.price-perlengkapan').show();
         }
     });
 
-    if($('#handle-atpm').length > 0){
+    if($('.handle-atpm').length > 0){
         if($(this).is(':checked')){
             $('.price-perlengkapan').hide();
         }else{

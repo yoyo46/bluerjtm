@@ -21,8 +21,8 @@ class KsuDetail extends AppModel {
             ),
         ),
         'price' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'validatePrice' => array(
+                'rule' => array('validatePrice'),
                 'message' => 'Harga Klaim harap diisi',
             ),
         ),
@@ -44,6 +44,17 @@ class KsuDetail extends AppModel {
             ),
         ),
     );
+
+    function validatePrice($data){
+        $result = true;
+        if(empty($this->data['Ksu']['kekurangan_atpm'])){
+            if(empty($data['price'])){
+                $result = false;
+            }
+        }
+
+        return $result;
+    }
 
 	function getData($find, $options = false){
         $default_options = array(
