@@ -5376,7 +5376,7 @@ class RevenuesController extends AppController {
 
             $customerList = $this->Customer->getData('list', array(
                 'fields' => array(
-                    'Customer.id', 'Customer.customer_name'
+                    'Customer.id', 'Customer.customer_name_code'
                 )
             ));
 
@@ -5593,7 +5593,7 @@ class RevenuesController extends AppController {
 
             $customerList = $this->Customer->getData('list', array(
                 'fields' => array(
-                    'Customer.id', 'Customer.customer_name'
+                    'Customer.id', 'Customer.customer_name_code'
                 )
             ));
 
