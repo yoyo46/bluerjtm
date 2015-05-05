@@ -4320,9 +4320,7 @@ class RevenuesController extends AppController {
 
                 if( !$validate_price_pay ){
                     $text .= ', pembayaran tidak boleh lebih besar dari total invoice';
-                }
-
-                if( empty($validateInv) ) {
+                } else if( empty($validateInv) ) {
                     $text .= ', harap isi semua field';
                 }
 
