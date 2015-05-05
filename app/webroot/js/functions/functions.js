@@ -2309,10 +2309,16 @@ var get_document_cashbank = function(){
     $('#document-id').change(function(){
         var self = $(this);
         var val = self.val();
+        var doc_type = $('.cash-bank-handle').val();
+        var url = '/ajax/getCustomer/revenue_id:'+val+'/';
+
+        if(doc_type == 'prepayment_in'){
+            url = '/ajax/getCustomer/prepayment_id:'+val+'/';
+        }
 
         if(val != ''){
             $.ajax({
-                url: '/ajax/getCustomer/revenue_id:'+val+'/',
+                url: url,
                 type: 'POST',
                 success: function(response, status) {
                     var customer_id = $(response).filter('#customer-id').html();
@@ -2322,30 +2328,38 @@ var get_document_cashbank = function(){
                     var coa_id = $(response).filter('#coa_id').html();
                     var coa_name = $(response).filter('#coa_name').html();
                     var ppn = $(response).filter('#ppn').html();
+                    var content_table = $(response).filter('#content-table').html();
 
                     if( customer_id != '' && typeof customer_id != 'undefined' ) {
                         $('#receiver-type').val(receiver_type);
                         $('#receiver-id').val(customer_id);
                         $('#cash-bank-user').val(customer_name);
-
-                        var html_content = '<tr class="child child-'+coa_id+'" rel="'+coa_id+'"> \
-                            <td>\
-                                '+coa_code+' \
-                                <input type="hidden" name="data[CashBankDetail][coa_id][]" value="'+coa_id+'" id="CashBankDetailCoaId"> \
-                            </td> \
-                            <td> \
-                                '+coa_name+' \
-                            </td> \
-                            <td class="action-search"> \
-                                <input name="data[CashBankDetail][total][]" class="form-control input_price" type="text" id="CashBankDetailTotal" value="'+ppn+'"> \
-                            </td> \
-                            <td class="action-search"> \
-                                <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="cashbank_first"><i class="fa fa-times"></i> Hapus</a> \
-                            </td> \
-                        </tr>';
                         $('.cashbank-info-detail').removeClass('hide');
-                        $('.cashbanks-info-table').append(html_content);
-                        input_price( $('.cashbanks-info-table .child:last-child .input_price') );
+
+                        if(doc_type == 'prepayment_in'){
+                            content_table = content_table.replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/opentd/gi, "td").replace(/closetd/gi, "/td").replace(/opentr/gi, "tr").replace(/closetr/gi, "/tr");
+                            $('.cashbanks-info-table').empty();
+                            $('.cashbanks-info-table').html(content_table);
+                            input_price( $('.cashbanks-info-table .child .input_price') );
+                        } else {
+                            var html_content = '<tr class="child child-'+coa_id+'" rel="'+coa_id+'"> \
+                                <td>\
+                                    '+coa_code+' \
+                                    <input type="hidden" name="data[CashBankDetail][coa_id][]" value="'+coa_id+'" id="CashBankDetailCoaId"> \
+                                </td> \
+                                <td> \
+                                    '+coa_name+' \
+                                </td> \
+                                <td class="action-search"> \
+                                    <input name="data[CashBankDetail][total][]" class="form-control input_price" type="text" id="CashBankDetailTotal" value="'+ppn+'"> \
+                                </td> \
+                                <td class="action-search"> \
+                                    <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="cashbank_first"><i class="fa fa-times"></i> Hapus</a> \
+                                </td> \
+                            </tr>';
+                            $('.cashbanks-info-table').append(html_content);
+                            input_price( $('.cashbanks-info-table .child:last-child .input_price') );
+                        }
                     } else {
                         $('#receiver-type').val('');
                         $('#receiver-id').val('');
@@ -3124,7 +3138,7 @@ $(function() {
             $('.cash_bank_user_type').html('Dibayar kepada');
         }
 
-        if( value == 'ppn_in' ) {
+        if( value == 'ppn_in' || value == 'prepayment_in' ) {
             $.ajax({
                 url: '/ajax/get_cashbank_doc/'+value+'/',
                 type: 'POST',

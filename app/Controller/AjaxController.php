@@ -1506,8 +1506,25 @@ class AjaxController extends AppController {
 	}
 
 	function get_cashbank_doc ( $action_type = false ) {
-		$this->loadModel('Revenue');
-		$result = $this->Revenue->getDocumentCashBank( $action_type );
+		switch ($action_type) {
+            case 'ppn_in':
+				$this->loadModel('Revenue');
+				$result = $this->Revenue->getDocumentCashBank();
+				$urlBrowseDocument = array(
+                    'controller'=> 'ajax', 
+                    'action' => 'getCashBankPpnRevenue',
+                );
+                break;
+            
+            case 'prepayment_in':
+				$this->loadModel('CashBank');
+				$result = $this->CashBank->getDocumentCashBank();
+				$urlBrowseDocument = array(
+                    'controller'=> 'ajax', 
+                    'action' => 'getCashBankPrepayment',
+                );
+                break;
+        }
 
 		if( !empty($result) ) {
 			$docs = $result['docs'];
@@ -1515,6 +1532,7 @@ class AjaxController extends AppController {
 		}
 
 		$this->set('docs', $docs);
+		$this->set('urlBrowseDocument', $urlBrowseDocument);
 		$this->render('get_cashbank_doc');
 	}
 
@@ -1631,10 +1649,177 @@ class AjaxController extends AppController {
     	));
 	}
 
+	public function getCashBankPrepayment() {
+        $this->loadModel('CashBank');
+		$title = __('Data Prepayment');
+		$data_action = 'browse-form';
+		$data_change = 'document-id';
+		$options = array(
+            'conditions' => array(
+	            'CashBank.status' => 1,
+                'CashBank.prepayment_status <>' => 'full_paid',
+                'CashBank.is_rejected' => 0,
+                'CashBank.receiving_cash_type' => 'prepayment_out',
+	        ),
+            'limit' => 10,
+			'order' => array(
+				'CashBank.id' => 'ASC'
+			),
+        );
+
+        if(!empty($this->request->data)){
+        	$refine = $this->request->data['CashBank'];
+
+        	if(!empty($refine['nodoc'])){
+                $nodoc = urldecode($refine['nodoc']);
+                $options['conditions']['CashBank.nodoc LIKE '] = '%'.$nodoc.'%';
+            }
+
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
+
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                    $options['conditions']['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') >='] = $dateFrom;
+                    $options['conditions']['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') <='] = $dateTo;
+                }
+            }
+        }
+
+		$this->paginate = $this->CashBank->getData('paginate', $options);
+        $cashBanks = $this->paginate('CashBank');
+
+        if(!empty($cashBanks)){
+            $this->loadModel('Vendor');
+            $this->loadModel('Employe');
+            $this->loadModel('Customer');
+
+            foreach ($cashBanks as $key => $value) {
+                $model = $value['CashBank']['receiver_type'];
+
+                switch ($model) {
+                    case 'Vendor':
+                        $list_result = $this->Vendor->getData('first', array(
+                            'conditions' => array(
+                                'Vendor.status' => 1
+                            )
+                        ));
+                        break;
+                    case 'Employe':
+                        $list_result = $this->Employe->getData('first', array(
+                            'conditions' => array(
+                                'Employe.status' => 1
+                            )
+                        ));
+
+                        break;
+                    default:
+                        $list_result = $this->Customer->getData('first', array(
+                            'conditions' => array(
+                                'Customer.status' => 1
+                            )
+                        ));
+
+                        break;
+                }
+
+                if(!empty($list_result)){
+                    $cashBanks[$key]['name_cash'] = $list_result[$model]['name'];
+                }
+            }
+        }
+
+        $this->set(compact(
+        	'cashBanks', 'data_action', 'title',
+        	'data_change'
+    	));
+	}
+
 	function getCustomer () {
-		if( !empty($this->params['named']['revenue_id']) ) {
+		$revenue_id = !empty($this->params['named']['revenue_id'])?$this->params['named']['revenue_id']:false;
+		$prepayment_id = !empty($this->params['named']['prepayment_id'])?$this->params['named']['prepayment_id']:false;
+
+		if( !empty($prepayment_id) ) {
+			$this->loadModel('CashBank');
+			$customer = $this->CashBank->getData('first', array(
+				'conditions' => array(
+					'CashBank.id' => $prepayment_id,
+				),
+				'contain' => array(
+					'CashBankDetail' => array(
+						'Coa'
+					),
+				),
+			), false);
+
+			if( !empty($customer) ) {
+				$model = $customer['CashBank']['receiver_type'];
+
+				if( !empty($customer['CashBankDetail']) ) {
+					foreach ($customer['CashBankDetail'] as $key => $cashBankDetail) {
+						$coa_id = !empty($cashBankDetail['coa_id'])?$cashBankDetail['coa_id']:false;
+						$totalDibayar = $this->CashBank->CashBankDetail->totalPrepaymentDibayarPerCoa($prepayment_id, $coa_id);
+						$totalTagihan = !empty($customer['CashBankDetail'][$key]['total'])?$customer['CashBankDetail'][$key]['total']:0;
+						$totalSisaTagihan = $totalTagihan - $totalDibayar;
+
+						if( $totalSisaTagihan <= 0 ) {
+							unset($customer['CashBankDetail'][$key]);
+						} else {
+							$customer['CashBankDetail'][$key]['total'] = $totalSisaTagihan;
+						}
+					}
+				}
+
+                switch ($model) {
+                    case 'Vendor':
+           		 		$this->loadModel('Vendor');
+                        $list_result = $this->Vendor->getData('first', array(
+                            'conditions' => array(
+                                'Vendor.status' => 1
+                            )
+                        ));
+                        break;
+                    case 'Employe':
+            			$this->loadModel('Employe');
+                        $list_result = $this->Employe->getData('first', array(
+                            'conditions' => array(
+                                'Employe.status' => 1
+                            )
+                        ));
+
+                        break;
+                    default:
+            			$this->loadModel('Customer');
+                        $list_result = $this->Customer->getData('first', array(
+                            'conditions' => array(
+                                'Customer.status' => 1
+                            )
+                        ));
+
+                        break;
+                }
+
+                if(!empty($list_result)){
+                	$customer['CustomerNoType'] = $list_result[$model];
+                }
+            }
+		} else {
+        	$this->loadModel('CoaSetting');
 			$this->loadModel('Revenue');
-	        $this->loadModel('CoaSetting');
+
+			$customer = $this->Revenue->getData('first', array(
+				'conditions' => array(
+					'Revenue.id' => $revenue_id,
+				),
+				'contain' => array(
+					'CustomerNoType'
+				),
+			), false);
 
 	        $this->CoaSetting->bindModel(array(
 				'belongsTo' => array(
@@ -1644,15 +1829,6 @@ class AjaxController extends AppController {
 				)
 			), false);
 
-			$revenue_id = $this->params['named']['revenue_id'];
-			$customer = $this->Revenue->getData('first', array(
-				'conditions' => array(
-					'Revenue.id' => $revenue_id,
-				),
-				'contain' => array(
-					'CustomerNoType'
-				),
-			), false);
 	        $coaSetting = $this->CoaSetting->getData('first', array(
 	            'conditions' => array(
 	                'CoaSetting.status' => 1
@@ -1664,7 +1840,8 @@ class AjaxController extends AppController {
 		}
 
         $this->set(compact(
-        	'customer', 'coaSetting'
+        	'customer', 'coaSetting', 'revenue_id',
+        	'prepayment_id'
     	));
 		$this->render('get_customer');
 	}

@@ -268,47 +268,39 @@ class Revenue extends AppModel {
         }
     }
 
-    function getDocumentCashBank ( $action_type ) {
+    function getDocumentCashBank () {
         $result = array(
             'docs' => array(),
             'docs_type' => false,
         );
 
-        switch ($action_type) {
-            case 'ppn_in':
-                $docTmps = $this->getData('all', array(
-                    'conditions' => array(
-                        'Revenue.paid_ppn' => 0,
-                        'Revenue.transaction_status <>' => 'unposting',
-                        'Revenue.status' => 1,
-                    ),
-                    'order' => array(
-                        'Revenue.id' => 'ASC'
-                    ),
-                    'contain' => array(
-                        'CustomerNoType',
-                    ),
-                ), false);
-                $docs = array();
-                
-                if( !empty($docTmps) ) {
-                    foreach ($docTmps as $key => $docTmp) {
-                        $revenue_id = $docTmp['Revenue']['id'];
-                        $revenue_name = sprintf('%s - %s', str_pad($docTmp['Revenue']['id'], 5, '0', STR_PAD_LEFT), $docTmp['CustomerNoType']['code']);
-                        $docs[$revenue_id] = $revenue_name;
-                    }
-                }
-
-                $result = array(
-                    'docs' => $docs,
-                    'docs_type' => 'revenue',
-                );
-                break;
-            
-            default:
-                # code...
-                break;
+        $docTmps = $this->getData('all', array(
+            'conditions' => array(
+                'Revenue.paid_ppn' => 0,
+                'Revenue.transaction_status <>' => 'unposting',
+                'Revenue.status' => 1,
+            ),
+            'order' => array(
+                'Revenue.id' => 'ASC'
+            ),
+            'contain' => array(
+                'CustomerNoType',
+            ),
+        ), false);
+        $docs = array();
+        
+        if( !empty($docTmps) ) {
+            foreach ($docTmps as $key => $docTmp) {
+                $revenue_id = $docTmp['Revenue']['id'];
+                $revenue_name = sprintf('%s - %s', str_pad($docTmp['Revenue']['id'], 5, '0', STR_PAD_LEFT), $docTmp['CustomerNoType']['code']);
+                $docs[$revenue_id] = $revenue_name;
+            }
         }
+
+        $result = array(
+            'docs' => $docs,
+            'docs_type' => 'revenue',
+        );
 
         return $result;
     }

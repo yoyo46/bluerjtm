@@ -169,6 +169,12 @@ class CashbanksController extends AppController {
             $document_id = !empty($data['CashBank']['document_id'])?$data['CashBank']['document_id']:false;
             $document_type = !empty($data['CashBank']['document_type'])?$data['CashBank']['document_type']:false;
             $coas_validate = true;
+            $totalTagihanCredit = 0;
+            $totalTagihanDebit = 0;
+            $debit_total = 0;
+            $credit_total = 0;
+            $total_coa = 0;
+            $prepayment_status = false;
             
             if($id && $data_local){
                 $this->CashBank->id = $id;
@@ -178,29 +184,48 @@ class CashbanksController extends AppController {
                 $msg = 'menambah';
             }
 
+            if( !empty($document_id) && $data['CashBank']['document_type'] == 'prepayment' ) {
+                $this->loadModel('CashBankDetail');
+            }
+
             if(!empty($data['CashBankDetail']['coa_id'])){
                 $arr_list = array();
-                $debit_total = 0;
-                $credit_total = 0;
-                $total_coa = 0;
 
                 foreach ($data['CashBankDetail']['coa_id'] as $key => $coa_id) {
                     // $debit = !empty($data['CashBankDetail']['debit'][$key]) ? str_replace(',', '', $data['CashBankDetail']['debit'][$key]) : 0;
                     // $credit = !empty($data['CashBankDetail']['credit'][$key]) ? str_replace(',', '', $data['CashBankDetail']['credit'][$key]) : 0;
-
                     $total_coa_detail = (!empty($data['CashBankDetail']['total'][$key])) ? str_replace(',', '', $data['CashBankDetail']['total'][$key]) : 0;
-                    
-                    if($data['CashBank']['receiving_cash_type'] == 'out'){
+                    $paid = false;
+
+                    if( strstr($data['CashBank']['receiving_cash_type'], 'out') ){
                         $debit_total += $total_coa_detail;
                     }else{
                         $credit_total += $total_coa_detail;
+                    }
+
+                    if( !empty($document_id) && $data['CashBank']['document_type'] == 'prepayment' ) {
+                        $cashBankDetail = $this->CashBankDetail->getData('first', array(
+                            'conditions' => array(
+                                'CashBankDetail.cash_bank_id' => $document_id,
+                                'CashBankDetail.coa_id' => $coa_id,
+                            ),
+                        ));
+                        $totalDibayar = $this->CashBank->CashBankDetail->totalPrepaymentDibayarPerCoa($document_id, $coa_id);
+                        $totalTagihanDetail = !empty($cashBankDetail['CashBankDetail']['total'])?$cashBankDetail['CashBankDetail']['total']-$totalDibayar:0;
+
+                        if( $totalTagihanDetail > $total_coa_detail ) {
+                            $paid = 'half_paid';
+                        } else if( $totalTagihanDetail <= $total_coa_detail ) {
+                            $paid = 'full_paid';
+                        }
                     }
 
                     $arr_list[] = array(
                         'coa_id' => $coa_id,
                         // 'debit' => $debit,
                         // 'credit' => $credit
-                        'total' => $total_coa_detail
+                        'total' => $total_coa_detail,
+                        'paid' => $paid,
                     );
 
                     $total_coa += $total_coa_detail;
@@ -213,11 +238,36 @@ class CashbanksController extends AppController {
                 $coas_validate = false;
             }
 
+            if( !empty($document_id) && $data['CashBank']['document_type'] == 'prepayment' ) {
+                $cashBankTagihan = $this->CashBank->getData('first', array(
+                    'conditions' => array(
+                        'CashBank.id' => $document_id,
+                    ),
+                ));
+                $totalCashBank = $debit_total + $credit_total;
+                $totalTagihanDebit = !empty($cashBankTagihan['CashBank']['debit_total'])?$cashBankTagihan['CashBank']['debit_total']:0;
+                $totalTagihanCredit = !empty($cashBankTagihan['CashBank']['credit_total'])?$cashBankTagihan['CashBank']['credit_total']:0;
+                $totalDibayar = $this->CashBank->totalPrepaymentDibayar($document_id);
+                $totalTagihanCashBank = ($totalTagihanDebit + $totalTagihanCredit) - $totalDibayar;
+
+                if( $totalTagihanCashBank > $totalCashBank ) {
+                    $prepayment_status = 'half_paid';
+                } else if( $totalTagihanCashBank <= $totalCashBank ) {
+                    $prepayment_status = 'full_paid';
+                }
+            }
+
             $this->CashBank->set($data);
 
             if($this->CashBank->validates($data) && $coas_validate){
                 if($this->CashBank->save($data)){
                     $cash_bank_id = $this->CashBank->id;
+
+                    if( !empty($prepayment_status) && !empty($document_id) ) {
+                        $this->CashBank->id = $document_id;
+                        $this->CashBank->set('prepayment_status', $prepayment_status);
+                        $this->CashBank->save();
+                    }
 
                     if($id && $data_local){
                         $this->CashBank->CashBankDetail->deleteAll(array(
@@ -245,7 +295,16 @@ class CashbanksController extends AppController {
                             $value['cash_bank_id'] = $cash_bank_id;
                             $this->CashBank->CashBankDetail->create();
                             $this->CashBank->CashBankDetail->set($value);
-                            $this->CashBank->CashBankDetail->save();
+                            if( $this->CashBank->CashBankDetail->save() ) {
+                                if( !empty($value['paid']) ) {
+                                    $this->CashBank->CashBankDetail->updateAll(array(
+                                        'CashBankDetail.prepayment_paid'=> "'".$value['paid']."'"
+                                    ), array(
+                                        'CashBankDetail.cash_bank_id'=> $document_id,
+                                        'CashBankDetail.coa_id'=> $value['coa_id'],
+                                    ));
+                                }
+                            }
                         }
                     }
 
@@ -332,6 +391,21 @@ class CashbanksController extends AppController {
         if( $receiving_cash_type == 'ppn_in' ) {
             $this->loadModel('Revenue');
             $docs_result = $this->Revenue->getDocumentCashBank( $receiving_cash_type );
+            $urlBrowseDocument = array(
+                'controller'=> 'ajax', 
+                'action' => 'getCashBankPpnRevenue',
+            );
+
+            if( !empty($docs_result) ) {
+                $docs = $docs_result['docs'];
+                $this->request->data['CashBank']['document_type'] = $docs_result['docs_type'];
+            }
+        } else if( $receiving_cash_type == 'prepayment_in' ) {
+            $docs_result = $this->CashBank->getDocumentCashBank();
+            $urlBrowseDocument = array(
+                'controller'=> 'ajax', 
+                'action' => 'getCashBankPrepayment',
+            );
 
             if( !empty($docs_result) ) {
                 $docs = $docs_result['docs'];
@@ -348,7 +422,7 @@ class CashbanksController extends AppController {
         ));
         $this->set(compact(
             'coas', 'document_id', 'receiving_cash_type',
-            'docs'
+            'docs', 'urlBrowseDocument'
         ));
 
         $this->set('active_menu', 'cash_bank');
@@ -364,7 +438,7 @@ class CashbanksController extends AppController {
                 )
             ));
 
-            if($locale){
+            if(!empty($locale)){
                 $value = true;
                 if($locale['CashBank']['status']){
                     $value = false;
@@ -373,6 +447,13 @@ class CashbanksController extends AppController {
                 $this->CashBank->id = $id;
                 $this->CashBank->set('status', $value);
                 if($this->CashBank->save()){
+                    if( !empty($locale['CashBank']['document_id']) && $locale['CashBank']['document_type'] == 'prepayment' ) {
+                        $document_id = $locale['CashBank']['document_id'];
+                        $this->CashBank->id = $document_id;
+                        $this->CashBank->set('prepayment_status', $this->CashBank->getStatusPrepayment($document_id));
+                        $this->CashBank->save();
+                    }
+
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses merubah status Kas Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                 }else{
@@ -528,6 +609,11 @@ class CashbanksController extends AppController {
                                             $this->Revenue->id = $document_id;
                                             $this->Revenue->set('paid_ppn', 0);
                                             $this->Revenue->save();
+                                            break;
+                                        case 'prepayment':
+                                            $this->CashBank->id = $document_id;
+                                            $this->CashBank->set('prepayment_status', $this->CashBank->getStatusPrepayment($document_id));
+                                            $this->CashBank->save();
                                             break;
                                     }
                                 }

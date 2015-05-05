@@ -1,3 +1,6 @@
+<?php 
+		$document_type = !empty($this->request->data['CashBank']['document_type'])?$this->request->data['CashBank']['document_type']:false;
+?>
 <div class="form-group">
 	<?php
 			echo $this->Form->label('CashBank.document_id', __('No Doc *'));
@@ -23,12 +26,8 @@
                         'data-action' => 'browse-form',
                         'data-change' => 'document-id',
                     );
-					$urlBrowse = array(
-                        'controller'=> 'ajax', 
-                        'action' => 'getCashBankPpnRevenue'
-                    );
 					$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                    echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+                    echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowseDocument, $attrBrowse);
             ?>
 		</div>
 	</div>

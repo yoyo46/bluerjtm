@@ -56,5 +56,26 @@ class CashBankDetail extends AppModel {
         }
         return $result;
     }
+
+    function totalPrepaymentDibayarPerCoa ( $prepayment_id, $coa_id ) {
+        $docPaid = $this->getData('first', array(
+            'conditions' => array(
+                'CashBank.document_id' => $prepayment_id,
+                'CashBankDetail.coa_id' => $coa_id,
+                'CashBank.status' => 1,
+                'CashBank.prepayment_status <>' => 'full_paid',
+                'CashBank.is_rejected' => 0,
+                'CashBank.receiving_cash_type' => 'prepayment_in',
+            ),
+            'contain' => array(
+                'CashBank',
+            ),
+            'fields' => array(
+                'SUM(CashBankDetail.total) AS total'
+            ),
+        ), false);
+
+        return !empty($docPaid[0]['total'])?$docPaid[0]['total']:0;
+    }
 }
 ?>

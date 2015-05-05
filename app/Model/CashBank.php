@@ -111,5 +111,66 @@ class CashBank extends AppModel {
 
         return $data;
     }
+
+    function getDocumentCashBank () {
+        $result = array(
+            'docs' => array(),
+            'docs_type' => false,
+        );
+
+        $docTmps = $this->getData('all', array(
+            'conditions' => array(
+                'CashBank.status' => 1,
+                'CashBank.prepayment_status <>' => 'full_paid',
+                'CashBank.is_rejected' => 0,
+                'CashBank.receiving_cash_type' => 'prepayment_out',
+            ),
+            'order' => array(
+                'CashBank.id' => 'ASC'
+            ),
+        ), false);
+        $docs = array();
+        
+        if( !empty($docTmps) ) {
+            foreach ($docTmps as $key => $docTmp) {
+                $id = $docTmp['CashBank']['id'];
+                $docs[$id] = $docTmp['CashBank']['nodoc'];
+            }
+        }
+
+        $result = array(
+            'docs' => $docs,
+            'docs_type' => 'prepayment',
+        );
+
+        return $result;
+    }
+
+    function totalPrepaymentDibayar ( $prepayment_id ) {
+        $docPaid = $this->getData('first', array(
+            'conditions' => array(
+                'CashBank.document_id' => $prepayment_id,
+                'CashBank.status' => 1,
+                'CashBank.prepayment_status <>' => 'full_paid',
+                'CashBank.is_rejected' => 0,
+                'CashBank.receiving_cash_type' => 'prepayment_in',
+            ),
+            'fields' => array(
+                'SUM(CashBank.debit_total+CashBank.credit_total) AS total'
+            ),
+        ), false);
+
+        return !empty($docPaid[0]['total'])?$docPaid[0]['total']:0;
+    }
+
+    function getStatusPrepayment ( $prepayment_id ) {
+        $totalDibayar = $this->totalPrepaymentDibayar($prepayment_id);
+
+        if( $totalDibayar > 0 ) {
+            return 'half_paid';
+        } else {
+            return 'none';
+        }
+    }
 }
 ?>

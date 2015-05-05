@@ -56,7 +56,7 @@
 		?>
 		<div id="form-content-document">
 			<?php 
-        			if( !empty($receiving_cash_type) && $receiving_cash_type == 'ppn_in' ) {
+        			if( !empty($receiving_cash_type) && ( $receiving_cash_type == 'ppn_in' || $receiving_cash_type == 'prepayment_in' ) ) {
 						echo $this->element('blocks/cashbanks/pick_document');
 					}
 			?>
