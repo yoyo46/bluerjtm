@@ -272,7 +272,9 @@
                         // if( !empty($value['Ttuj']['is_invoice']) ) {
                         //     echo $this->Html->tag('td', '<span class="label label-code">Invoiced</span>');
                         // } else
-                        if(!empty($value['Ttuj']['is_pool'])){
+                        if(!empty($value['Ttuj']['is_laka'])){
+                            echo $this->Html->tag('td', '<span class="label label-danger">LAKA</span>');
+                        } else if(!empty($value['Ttuj']['is_pool'])){
                             echo $this->Html->tag('td', '<span class="label label-success">Sampai Pool</span>');
                         } else if(!empty($value['Ttuj']['is_balik'])){
                             echo $this->Html->tag('td', '<span class="label label-info">Balik</span>');

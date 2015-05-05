@@ -2898,9 +2898,53 @@ class TrucksController extends AppController {
                 }
             }
 
+            $this->Truck->unBindModel(array(
+                'hasMany' => array(
+                    'TruckCustomer'
+                )
+            ));
+
+            $this->Truck->bindModel(array(
+                'hasOne' => array(
+                    'TruckCustomer' => array(
+                        'className' => 'TruckCustomer',
+                        'foreignKey' => 'truck_id',
+                        'conditions' => array(
+                            'TruckCustomer.primary' => 1
+                        )
+                    )
+                )
+            ), false);
+            $truckWithoutAlocations = $this->Truck->getData('all', array(
+                'conditions' => array(
+                    'Truck.status' => 1,
+                    'TruckCustomer.id' => NULL,
+                ),
+                'contain' => array(
+                    'TruckCustomer',
+                ),
+                'group' => array(
+                    'Truck.capacity',
+                ),
+                'fields' => array(
+                    'Truck.id',
+                    'Truck.capacity',
+                    'COUNT(Truck.id) AS cnt',
+                ),
+            ));
+            if( !empty($truckWithoutAlocations) ) {
+                foreach ($truckWithoutAlocations as $key => $truck) {
+                    if( !empty($truck[0]['cnt']) ) {
+                        $customer_id = 0;
+                        $capacity = $truck['Truck']['capacity'];
+                        $truckArr[$customer_id][$capacity] = $truck[0]['cnt'];
+                    }
+                }
+            }
+
             $this->set(compact(
                 'data_action', 'customers', 'capacities',
-                'truckArr'
+                'truckArr', 'truckWithoutAlocations'
             ));
 
             if($data_action == 'pdf'){

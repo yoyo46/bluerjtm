@@ -709,7 +709,7 @@
                     ), $allowModule ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
-                            'lkus'
+                            'lkus', 'ksus'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -795,7 +795,7 @@
                         $settingMenu = array(
                             'cash_bank', 'approval_setting', 'kir_payments',
                             'stnk_payments', 'siup_payments', 'invoice_payments', 
-                            'lku_payments', 'coa_setting',
+                            'lku_payments', 'coa_setting', 'ksu_payments'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
