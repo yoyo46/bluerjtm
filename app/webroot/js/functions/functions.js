@@ -491,6 +491,7 @@ var add_custom_field = function(){
                     
                     choose_item_info();
                     input_number();
+                    input_price($('.lku-detail-'+lku_detail_len+' .input_price'));
                     price_tipe_motor();
                     delete_custom_field($('.lku-detail-'+lku_detail_len+' .delete-custom-field'));
                     part_motor_lku();
@@ -1414,6 +1415,13 @@ function getTotalLKU(self){
     var val = parent.find('td .price-tipe-motor').val();
 
     if(typeof qty != 'undefined' && typeof val != 'undefined'){
+        var arr_string = val.split(',');
+        var text_val = '';
+        for (var a = 0; a < arr_string.length; a++) {
+            text_val += arr_string[a].toString();
+        };
+        
+        val = text_val;
         total = parseInt(val)*qty;
         parent.find('.total-price-claim').text('IDR '+formatNumber(total));
     }else{
@@ -1430,7 +1438,16 @@ function grandTotalLku(){
     var total_price = 0;
     for (var i = 0; i < length; i++) {
         if(typeof claim_number[i] != 'undefined' && typeof price_tipe_motor[i] != 'undefined'){
-            total_price += claim_number[i].value * price_tipe_motor[i].value;
+            var val = price_tipe_motor[i].value;
+            var arr_string = val.split(',');
+            var text_val = '';
+            for (var a = 0; a < arr_string.length; a++) {
+                text_val += arr_string[a].toString();
+            };
+            
+            val = text_val;
+
+            total_price += claim_number[i].value * val;
         }
     };
 
@@ -2353,6 +2370,7 @@ $(function() {
     laka_ttuj_change();
     invoice_price_payment();
     part_motor_lku();
+    price_tipe_motor();
     price_perlengkapan();
 
     set_auth_cash_bank($('.cash-bank-auth-user'));

@@ -91,7 +91,7 @@
                             echo $this->Form->input('LkuDetail.price.', array(
                                 'type' => 'text',
                                 'label' => false,
-                                'class' => 'form-control price-tipe-motor input_number',
+                                'class' => 'form-control price-tipe-motor input_number input_price',
                                 'required' => false,
                                 'value' => $price
                             ));
@@ -176,7 +176,7 @@
                         echo $this->Form->input('LkuDetail.price.', array(
                             'type' => 'text',
                             'label' => false,
-                            'class' => 'form-control price-tipe-motor input_number',
+                            'class' => 'form-control price-tipe-motor input_number input_price',
                             'required' => false
                         ));
                     ?>
