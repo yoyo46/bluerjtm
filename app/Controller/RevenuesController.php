@@ -2076,6 +2076,10 @@ class RevenuesController extends AppController {
             $this->loadModel('Setting');
             $this->set('active_menu', 'monitoring_truck');
             $this->set('sub_module_title', __('Monitoring Truk'));
+            $default_conditions = array();
+            $default_conditionsLaka = array();
+            $default_conditionsTruck = array();
+            $default_conditionsEvent = array();
 
             if( !empty($this->params['named']) ) {
                 $refine = $this->params['named'];
@@ -2096,6 +2100,14 @@ class RevenuesController extends AppController {
                         }
                     }
                 }
+
+                if( !empty($refine['nopol']) ) {
+                    $nopol = urldecode($refine['nopol']);
+                    $this->request->data['Ttuj']['nopol'] = $nopol;
+                    $default_conditionsLaka['Laka.nopol LIKE'] = $default_conditions['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
+                    $default_conditionsTruck['Truck.nopol LIKE'] = '%'.$nopol.'%';
+                    $default_conditionsEvent['CalendarEvent.nopol LIKE'] = '%'.$nopol.'%';
+                }
             }
 
             $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
@@ -2105,15 +2117,17 @@ class RevenuesController extends AppController {
             $leftDay = date('N', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , 0, date("Y", strtotime($currentMonth))));
             $lastDay = date('t', strtotime($currentMonth));
             $customerId = array();
-            $lakas = $this->Laka->getData('list', array(
-                'conditions' => array(
-                    'Laka.status'=> 1,
-                    'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\') <=' => $currentMonth,
-                    'OR' => array(
-                        'DATE_FORMAT(Laka.completed_date, \'%Y-%m\') >=' => $currentMonth,
-                        'Laka.completed_date' => NULL,
-                    ),
+            $conditionsLaka = array(
+                'Laka.status'=> 1,
+                'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\') <=' => $currentMonth,
+                'OR' => array(
+                    'DATE_FORMAT(Laka.completed_date, \'%Y-%m\') >=' => $currentMonth,
+                    'Laka.completed_date' => NULL,
                 ),
+            );
+            $conditionsLaka = array_merge($conditionsLaka, $default_conditionsLaka);
+            $lakas = $this->Laka->getData('list', array(
+                'conditions' => $conditionsLaka,
                 'order' => array(
                     'Laka.tgl_laka' => 'ASC', 
                 ),
@@ -2135,13 +2149,16 @@ class RevenuesController extends AppController {
                     'Ttuj.id' => $lakas,
                 ),
             );
+            $conditions = array_merge($conditions, $default_conditions);
             $conditionEvents = array(
                 'CalendarEvent.status'=> 1,
                 'DATE_FORMAT(CalendarEvent.from_date, \'%Y-%m\')' => $currentMonth,
             );
+            $conditionEvents = array_merge($conditionEvents, $default_conditionsEvent);
             $conditionTrucks = array(
                 'Truck.status' => 1
             );
+            $conditionTrucks = array_merge($conditionTrucks, $default_conditionsTruck);
             $setting = $this->Setting->find('first');
 
             if( !empty($this->params['named']) ) {

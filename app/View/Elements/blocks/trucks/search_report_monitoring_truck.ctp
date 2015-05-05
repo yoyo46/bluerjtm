@@ -18,8 +18,20 @@
                 ));
                 $i = 0;
         ?>
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->input('Ttuj.nopol',array(
+                        'label'=> __('Nopol'),
+                        'class'=>'form-control',
+                        'required' => false,
+                        'placeholder' => __('Nopol')
+                    ));
+            ?>
+        </div>
         <div class="form-group list-report-monitoring">
             <?php 
+                    echo $this->Form->label('monitoring_customer_id', __('Customer'));
+                    echo '<div class="clear"></div>';
                     echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.monitoring_customer_id.'.$i,array(
                         'type' => 'checkbox',
                         'label'=> false,
