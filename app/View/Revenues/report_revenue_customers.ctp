@@ -239,7 +239,7 @@
                 ?>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('td', $customer['Customer']['name']);
+                            echo $this->Html->tag('td', $customer['Customer']['customer_name_code']);
                             echo $this->Html->tag('td', $totalFormatAgv, array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
@@ -391,7 +391,7 @@
                     $totalFormatAgv = !empty($totalAvgYear)?$this->Number->format($totalAvgYear, Configure::read('__Site.config_currency_code'), array('places' => 0)):0;
                     $totalLeft += $totalFormatAgv;
                     $each_loop_message .= '<tr>';
-                    $each_loop_message .= $this->Html->tag('td', $customer['Customer']['name']);
+                    $each_loop_message .= $this->Html->tag('td', $customer['Customer']['customer_name_code']);
                     $each_loop_message .= $this->Html->tag('td', $totalFormatAgv, array(
                         'style' => 'text-align: right;vertical-align: middle;',
                     ));

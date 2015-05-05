@@ -61,7 +61,7 @@
                                 $current = $total_pituang - $current_rev1to15 - $current_rev16to30 - $current_rev30;
                 ?>
                 <tr>
-                    <td><?php echo $value['Customer']['name'];?></td>
+                    <td><?php echo $value['Customer']['customer_name_code'];?></td>
                     <td class="text-right"><?php echo $this->Number->currency($total_pituang, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                     <td class="text-right"><?php echo $this->Number->currency($current, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                     <td class="text-right"><?php echo $this->Number->currency($current_rev1to15, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
@@ -118,7 +118,7 @@
                     $current_rev30 = !empty($value['current_rev30'][0][0]['current_rev30'])?$value['current_rev30'][0][0]['current_rev30']:0;
                     $current = $total_pituang - $current_rev1to15 - $current_rev16to30 - $current_rev30;
 
-                    $content = $this->Html->tag('td', $value['Customer']['name'], array(
+                    $content = $this->Html->tag('td', $value['Customer']['customer_name_code'], array(
                         'style' => 'text-align: left; width: 120px;'
                     ));
                     $content .= $this->Html->tag('td', $this->Number->currency($total_pituang, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
