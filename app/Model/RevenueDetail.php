@@ -224,6 +224,9 @@ class RevenueDetail extends AppModel {
         if( !empty($revenue_detail) ) {
             foreach ($revenue_detail as $key => $value) {
                 if(!empty($value['RevenueDetail'])){
+                    $from_city_id = !empty($value['Revenue']['Ttuj']['from_city_id'])?$value['Revenue']['Ttuj']['from_city_id']:false;
+                    $fromCity = $this->City->getMerge($value, $from_city_id);
+                    $value['FromCity'] = !empty($fromCity['City'])?$fromCity['City']:false;
                     $value = $this->TipeMotor->getMerge($value, $value['RevenueDetail']['group_motor_id']);
                     $value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
                     $value = $this->TarifAngkutan->getMerge($value, $value['RevenueDetail']['tarif_angkutan_id']);

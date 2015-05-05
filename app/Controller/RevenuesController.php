@@ -5665,7 +5665,11 @@ class RevenuesController extends AppController {
         } else {
             $data_print = 'invoice';
         }
-        
+
+        if( $action_print == 'excel' && !empty($this->params['named']) ) {
+            $data_print = 'invoice';
+        }
+
         $invoice = $this->Invoice->getData('first', array(
             'conditions' => array(
                 'Invoice.id' => $id,
@@ -5709,10 +5713,8 @@ class RevenuesController extends AppController {
                 $this->layout = 'ajax';
             }
 
-            switch ($data_print) {
-                case 'invoice':
-                    $this->render('invoice_hso_non_header_print');
-                    break;
+            if( $data_print == 'invoice' || $action_print == 'excel' ) {
+                $this->render('invoice_hso_non_header_print');
             }
         } else {
             $this->MkCommon->setCustomFlash(__('Invoice tidak ditemukan'), 'error');  

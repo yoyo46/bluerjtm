@@ -12,7 +12,7 @@
 					'style' => 'text-align:center;'.(($data_print_type == 'pdf')?'':'width: 100px;'),
 					'rowspan' => 2,
 				));
-				echo $this->Html->tag('th', __('No. Dokumen'), array(
+				echo $this->Html->tag('th', __('No. SJ'), array(
 					'style' => 'text-align:center;'.(($data_print_type == 'pdf')?'':'width: 120px;'),
 					'rowspan' => 2,
 				));

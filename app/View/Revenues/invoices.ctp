@@ -127,11 +127,11 @@
                                                 'print' => 'header',
                                             )));
                                         
-                                            echo $this->Html->tag('li', $this->Html->link(__('Print HSO Non Header'), array(
-                                                'controller' => 'revenues',
-                                                'action' => 'invoice_hso_print',
-                                                $id,
-                                            )));
+                                            // echo $this->Html->tag('li', $this->Html->link(__('Print HSO Non Header'), array(
+                                            //     'controller' => 'revenues',
+                                            //     'action' => 'invoice_hso_print',
+                                            //     $id,
+                                            // )));
                                         }
                                     }
                                     

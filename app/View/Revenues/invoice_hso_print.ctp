@@ -139,6 +139,18 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 					));
     				$tdContent .= $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to'], 'M Y'));
     				echo $this->Html->tag('tr', $tdContent);
+
+    				$tujuan = Set::extract('/Revenue/Ttuj/to_city_name', $invoice);
+
+    				if( !empty($tujuan) ) {
+	    				$tujuan = array_unique($tujuan);
+	    				$tujuan = implode(', ', $tujuan);
+	    				$tdContent = $this->Html->tag('th', __('Tujuan'), array(
+	    					'style' => 'width: 100px;text-align: left;'
+						));
+	    				$tdContent .= $this->Html->tag('td', $tujuan);
+	    				echo $this->Html->tag('tr', $tdContent);
+	    			}
     		?>
 	    </tbody>
 	</table>

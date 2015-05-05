@@ -1,4 +1,15 @@
 <?php
+
+		if( !empty($data_print) && $data_print == 'date' ) {
+			$totalMerge = 10;
+			$totalMergeTotal = 6;
+			$colName = '<th class="text-center">Kota</th>';
+		} else {
+			$totalMerge = 9;
+			$totalMergeTotal = 5;
+			$colName = '';
+		}
+
 if($action_print == 'pdf'){
 	App::import('Vendor','xtcpdf');
     ob_end_clean();
@@ -35,16 +46,6 @@ if($action_print == 'pdf'){
                 } else {
 					$cityName = $val_detail[0]['City']['name'];
                 }
-			}
-
-			if( !empty($data_print) && $data_print == 'date' ) {
-				$totalMerge = 10;
-				$totalMergeTotal = 6;
-				$colName = '<th class="text-center">Kota</th>';
-			} else {
-				$totalMerge = 9;
-				$totalMergeTotal = 5;
-				$colName = '';
 			}
 
 			$content .= '<table border="1" width="100%" style="padding: 5px; font-size: 25px;">
@@ -217,11 +218,11 @@ $tcpdf->Output($path.'/'.$filename, 'F');
         			'action' => 'invoices'
     			));
         		$this->Html->addCrumb($sub_module_title);
-            }
 
-			echo $this->Html->tag('h2', __('PERINCIAN PENGIRIMAN UNIT'), array(
-				'class' => 'page-header'
-			));
+				echo $this->Html->tag('h2', __('PERINCIAN PENGIRIMAN UNIT'), array(
+					'class' => 'page-header'
+				));
+            }
 
             if( empty($action_print) ) {
 ?>
@@ -276,11 +277,22 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 									$no_sj = !empty($valueDetail['RevenueDetail']['no_sj'])?$valueDetail['RevenueDetail']['no_sj']:'-';
 									$price_unit = !empty($valueDetail['RevenueDetail']['price_unit'])?$valueDetail['RevenueDetail']['price_unit']:0;
 									$qty_unit = !empty($valueDetail['RevenueDetail']['qty_unit'])?$valueDetail['RevenueDetail']['qty_unit']:0;
+									$year = !empty($valueDetail['Revenue']['date_revenue'])?$this->Common->customDate($valueDetail['Revenue']['date_revenue'], 'Y'):'-';
+									$month = !empty($valueDetail['Revenue']['date_revenue'])?strtoupper($this->Common->customDate($valueDetail['Revenue']['date_revenue'], 'M')):'-';
+									$fromCity = !empty($valueDetail['FromCity']['code'])?$valueDetail['FromCity']['code']:false;
+									$toCity = !empty($valueDetail['City']['code'])?$valueDetail['City']['code']:false;
+									$toCityName = !empty($valueDetail['City']['name'])?$valueDetail['City']['name']:false;
+									$initial = !empty($valueDetail['City']['initial'])?$valueDetail['City']['initial']:false;
+									$text = sprintf('%s - %s %s %s', $fromCity, $toCity, $month, $year);
+									$redaksional = sprintf('OKS ANGK SMH %s', $text);
+									$tujuan = sprintf('%s - %s', $fromCity, $toCityName);
 			?>
 			<tr>
 				<?php 
 						echo $this->Html->tag('td', '');
-						echo $this->Html->tag('td', '');
+						echo $this->Html->tag('td', $year, array(
+							'style' => 'text-align: center;'
+						));
 
 						if( !empty($price_unit) ) {
 							echo $this->Html->tag('td', $this->Number->format($price_unit, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
@@ -293,11 +305,15 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 						}
 
 						echo $this->Html->tag('td', $no_sj);
-						echo $this->Html->tag('td', '');
-						echo $this->Html->tag('td', '');
-						echo $this->Html->tag('td', $qty_unit);
-						echo $this->Html->tag('td', '');
-						echo $this->Html->tag('td', '');
+						echo $this->Html->tag('td', $redaksional);
+						echo $this->Html->tag('td', $initial, array(
+							'style' => 'text-align: center;'
+						));
+						echo $this->Html->tag('td', $qty_unit, array(
+							'style' => 'text-align: center;'
+						));
+						echo $this->Html->tag('td', $tujuan);
+						echo $this->Html->tag('td', $text);
 				?>
 			</tr>
 			<?php
