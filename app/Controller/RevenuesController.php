@@ -5578,6 +5578,7 @@ class RevenuesController extends AppController {
                 $options['limit'] = 20;
             }
 
+            $this->paginate = $options;
             $ttujs = $this->paginate('Ttuj');
             // $ttujs = $this->Ttuj->find('all', $options);
 
