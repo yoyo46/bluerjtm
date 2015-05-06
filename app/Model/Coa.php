@@ -14,6 +14,10 @@ class Coa extends AppModel {
 				'rule' => array('validateCode'),
                 'message' => 'Kode COA harap diisi'
 			),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'Kode COA telah terdaftar',
+            ),
 		),
         'name' => array(
             'notempty' => array(
@@ -58,7 +62,7 @@ class Coa extends AppModel {
 
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
-        $this->virtualFields['coa_name'] = sprintf('CASE WHEN %s.code = \'\' THEN %s.name ELSE CONCAT(%s.code, \' - \', %s.name) END', $this->alias, $this->alias, $this->alias, $this->alias);
+        $this->virtualFields['coa_name'] = sprintf('CASE WHEN %s.with_parent_code IS NULL THEN %s.name ELSE CONCAT(%s.with_parent_code, \' - \', %s.name) END', $this->alias, $this->alias, $this->alias, $this->alias);
     }
 
 	function getData($find, $options = false){

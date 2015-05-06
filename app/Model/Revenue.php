@@ -304,5 +304,11 @@ class Revenue extends AppModel {
 
         return $result;
     }
+
+    function changeStatusPPNPaid ( $revenue_id = false, $status = 0 ) {
+        $this->id = $revenue_id;
+        $this->set('paid_ppn', $status);
+        return $this->save();
+    }
 }
 ?>

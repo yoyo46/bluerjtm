@@ -283,9 +283,7 @@ class CashbanksController extends AppController {
                         switch ($document_type) {
                             case 'revenue':
                                 $this->loadModel('Revenue');
-                                $this->Revenue->id = $document_id;
-                                $this->Revenue->set('paid_ppn', 1);
-                                $this->Revenue->save();
+                                $this->Revenue->changeStatusPPNPaid( $document_id, 1 );
                                 break;
                         }
                     }
@@ -447,11 +445,21 @@ class CashbanksController extends AppController {
                 $this->CashBank->id = $id;
                 $this->CashBank->set('status', $value);
                 if($this->CashBank->save()){
-                    if( !empty($locale['CashBank']['document_id']) && $locale['CashBank']['document_type'] == 'prepayment' ) {
-                        $document_id = $locale['CashBank']['document_id'];
-                        $this->CashBank->id = $document_id;
-                        $this->CashBank->set('prepayment_status', $this->CashBank->getStatusPrepayment($document_id));
-                        $this->CashBank->save();
+                    $document_id = !empty($locale['CashBank']['document_id'])?$locale['CashBank']['document_id']:false;
+                    $document_type = !empty($locale['CashBank']['document_type'])?$locale['CashBank']['document_type']:false;
+
+                    if( !empty($document_id) ) {
+                        switch ($document_type) {
+                            case 'revenue':
+                                $this->loadModel('Revenue');
+                                $this->Revenue->changeStatusPPNPaid( $document_id, 0 );
+                                break;
+                            case 'prepayment':
+                                $this->CashBank->id = $document_id;
+                                $this->CashBank->set('prepayment_status', $this->CashBank->getStatusPrepayment($document_id));
+                                $this->CashBank->save();
+                                break;
+                        }
                     }
 
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
@@ -606,9 +614,7 @@ class CashbanksController extends AppController {
                                     switch ($document_type) {
                                         case 'revenue':
                                             $this->loadModel('Revenue');
-                                            $this->Revenue->id = $document_id;
-                                            $this->Revenue->set('paid_ppn', 0);
-                                            $this->Revenue->save();
+                                            $this->Revenue->changeStatusPPNPaid( $document_id, 0 );
                                             break;
                                         case 'prepayment':
                                             $this->CashBank->id = $document_id;
@@ -885,6 +891,7 @@ class CashbanksController extends AppController {
                 'Coa.id', 'Coa.coa_name'
             ),
         ));
+        $this->set('active_menu', 'coa_setting');
         $this->set(compact('coas'));
     }
 }
