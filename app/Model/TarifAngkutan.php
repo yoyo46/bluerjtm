@@ -60,7 +60,15 @@ class TarifAngkutan extends AppModel {
             'className' => 'GroupMotor',
             'foreignKey' => 'group_motor_id',
         ),
-	);
+        'FromCity' => array(
+            'className' => 'City',
+            'foreignKey' => 'from_city_id',
+        ),
+        'ToCity' => array(
+            'className' => 'City',
+            'foreignKey' => 'to_city_id',
+        ),
+    );
 
 	function getData( $find, $options = false, $is_merge = true ){
         $default_options = array(

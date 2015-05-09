@@ -5784,8 +5784,9 @@ class RevenuesController extends AppController {
             if( !empty($customers) ) {
                 foreach ($customers as $key => $customer) {
                     $conditionsInvoice['Invoice.customer_id'] = $customer['Customer']['id'];
+                    $conditionsInvoiceTotal = $conditionsInvoice;
                     $customer['InvoiceTotal'] = $this->Invoice->getData('first', array(
-                        'conditions' => $conditionsInvoice,
+                        'conditions' => $conditionsInvoiceTotal,
                         'fields'=> array(
                             'Invoice.customer_id', 
                             'SUM(Invoice.total) as total',
@@ -5795,10 +5796,10 @@ class RevenuesController extends AppController {
                         ),
                     ), false);
 
-                    $conditionsInvoice['Invoice.is_canceled'] = 0;
-                    $conditionsInvoice['Invoice.status'] = 0;
+                    $conditionsInvoiceVoid = $conditionsInvoice;
+                    $conditionsInvoiceVoid['Invoice.status'] = 0;
                     $customer['InvoiceVoidTotal'] = $this->Invoice->getData('first', array(
-                        'conditions' => $conditionsInvoice,
+                        'conditions' => $conditionsInvoiceVoid,
                         'fields'=> array(
                             'Invoice.customer_id', 
                             'SUM(Invoice.total) as total',

@@ -806,6 +806,24 @@ class AjaxController extends AppController {
 				'Revenue.id', 'Revenue.id',
 			),
 		), false);
+		$totalPPN = $this->Revenue->getData('first', array(
+			'conditions' => $conditions,
+			'group_id' => array(
+				'Revenue.customer_id'
+			),
+			'fields' => array(
+				'SUM(total_without_tax * (ppn / 100)) ppn',
+			),
+		), false);
+		$totalPPh = $this->Revenue->getData('first', array(
+			'conditions' => $conditions,
+			'group_id' => array(
+				'Revenue.customer_id'
+			),
+			'fields' => array(
+				'SUM(total_without_tax * (pph / 100)) pph',
+			),
+		), false);
 
 		if(!empty($revenue_id)){
             $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($revenue_id, $invoice_type, $action);
@@ -813,12 +831,12 @@ class AjaxController extends AppController {
 
 		$this->layout = 'ajax';
 		$layout_css = array(
-			'print'
+			'print',
 		);
 
 		$this->set(compact(
 			'revenue_detail', 'action', 'layout_css',
-			'invoice_type'
+			'invoice_type', 'totalPPN', 'totalPPh'
 		));
 	}
 

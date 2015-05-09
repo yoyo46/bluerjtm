@@ -42,6 +42,17 @@
 	    	?>
 	        <div class="form-group">
 	        	<?php 
+						echo $this->Form->input('customer_id',array(
+							'label'=> __('Customer *'), 
+							'class'=>'form-control custom-find-invoice',
+							'required' => false,
+							'empty' => __('Pilih Customer'),
+							'options' => $customers
+						));
+				?>
+	        </div>
+	        <div class="form-group">
+	        	<?php 
 						echo $this->Form->input('tarif_type',array(
 							'label'=> __('Jenis Invoice *'), 
 							'class'=>'form-control',
@@ -64,17 +75,6 @@
 							'required' => false,
 							'type' => 'text',
 							'value' => (!empty($this->request->data['Invoice']['invoice_date'])) ? $this->request->data['Invoice']['invoice_date'] : date('d/m/Y')
-						));
-				?>
-	        </div>
-	        <div class="form-group">
-	        	<?php 
-						echo $this->Form->input('customer_id',array(
-							'label'=> __('Customer *'), 
-							'class'=>'form-control custom-find-invoice',
-							'required' => false,
-							'empty' => __('Pilih Customer'),
-							'options' => $customers
 						));
 				?>
 	        </div>

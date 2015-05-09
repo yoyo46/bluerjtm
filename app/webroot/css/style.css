@@ -3967,3 +3967,7 @@ thead th.headcol {
   z-index: 99999;
   margin-left: -65px;
 }
+
+td.bold {
+  font-weight: bold;
+}

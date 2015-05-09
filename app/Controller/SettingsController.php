@@ -3215,7 +3215,12 @@ class SettingsController extends AppController {
         if( in_array('view_tarif_angkutan', $this->allowModule) ) {
             $this->loadModel('Customer');
             $this->loadModel('TarifAngkutan');
-            $options = array();
+            $options = array(
+                'contain' => array(
+                    'FromCity',
+                    'ToCity',
+                ),
+            );
 
             if(!empty($this->params['named'])){
                 $refine = $this->params['named'];
@@ -3237,6 +3242,22 @@ class SettingsController extends AppController {
                         ),
                     ));
                     $options['conditions']['TarifAngkutan.customer_id'] = $customers;
+                }
+                if(!empty($refine['capacity'])){
+                    $capacity = urldecode($refine['capacity']);
+                    $this->request->data['UangJalan']['capacity'] = $capacity;
+                    $options['conditions']['UangJalan.capacity LIKE'] = '%'.$capacity.'%';
+                }
+
+                if(!empty($refine['from'])){
+                    $name = urldecode($refine['from']);
+                    $this->request->data['UangJalan']['from_city'] = $name;
+                    $options['conditions']['FromCity.name LIKE'] = '%'.$name.'%';
+                }
+                if(!empty($refine['to'])){
+                    $name = urldecode($refine['to']);
+                    $this->request->data['UangJalan']['to_city'] = $name;
+                    $options['conditions']['ToCity.name LIKE'] = '%'.$name.'%';
                 }
             }
 

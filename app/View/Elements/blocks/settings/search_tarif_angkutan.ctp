@@ -29,6 +29,30 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('UangJalan.from_city',array(
+                                'label'=> __('Kota Asal'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group action">
+                    <?php
+                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
+                                'div' => false, 
+                                'class'=> 'btn btn-success btn-sm',
+                                'type' => 'submit',
+                            ));
+                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'action' => 'tarif_angkutan', 
+                            ), array(
+                                'escape' => false, 
+                                'class'=> 'btn btn-default btn-sm',
+                            ));
+                    ?>
+                </div>
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
@@ -41,22 +65,26 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('UangJalan.to_city',array(
+                                'label'=> __('Kota Tujuan'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('UangJalan.capacity',array(
+                                'label'=> __('Kapasitas'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Kapasitas')
+                            ));
+                    ?>
+                </div>
             </div>
-        </div>
-        <div class="form-group action">
-            <?php
-                    echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
-                        'div' => false, 
-                        'class'=> 'btn btn-success btn-sm',
-                        'type' => 'submit',
-                    ));
-                    echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                        'action' => 'tarif_angkutan', 
-                    ), array(
-                        'escape' => false, 
-                        'class'=> 'btn btn-default btn-sm',
-                    ));
-            ?>
         </div>
         <?php 
             echo $this->Form->end();
