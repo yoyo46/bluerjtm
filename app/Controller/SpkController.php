@@ -431,7 +431,7 @@ class SpkController extends AppController {
                         }
 
                         $this->MkCommon->setCustomFlash($msgAlert, 'success');
-                        $this->Log->logActivity( sprintf(__('Sukses %s Revenue'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                        $this->Log->logActivity( sprintf(__('Sukses %s Revenue #%s'), $msg, $no_ref), $this->user_data, $this->RequestHandler, $this->params );
                         $this->redirect(array(
                             'controller' => 'revenues',
                             'action' => 'index'

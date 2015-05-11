@@ -327,8 +327,7 @@ class TrucksController extends AppController {
                     $this->Truck->Leasing->save();
                     /*End Leasing*/
 
-                    $this->Log->logActivity( sprintf(__('Sukses %s truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
-
+                    $this->Log->logActivity( sprintf(__('Sukses %s truk #%s'), $msg, $truck_id), $this->user_data, $this->RequestHandler, $this->params );
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s truk'), $msg), 'success');
                     $this->redirect(array(
                         'controller' => 'trucks',
@@ -337,7 +336,7 @@ class TrucksController extends AppController {
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s truk'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s truk #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                 }
             }else{
                 $text_error = '';
@@ -480,7 +479,7 @@ class TrucksController extends AppController {
 
                 if($this->Truck->save()){
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Truk ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status Truk ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params );
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
                     $this->Log->logActivity( sprintf(__('Gagal merubah status Truk ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
@@ -574,14 +573,14 @@ class TrucksController extends AppController {
             if($this->TruckBrand->validates($data)){
                 if($this->TruckBrand->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Merek Truk'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Merek Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Merek Truk #%s'), $msg, $this->TruckBrand->id), $this->user_data, $this->RequestHandler, $this->params );
                     $this->redirect(array(
                         'controller' => 'trucks',
                         'action' => 'brands'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Merek Truk'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Merek Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Merek Truk #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Merek Truk'), $msg), 'error');
@@ -617,7 +616,7 @@ class TrucksController extends AppController {
                 $this->TruckBrand->set('status', $value);
                 if($this->TruckBrand->save()){
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status merek truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status merek truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
                     $this->Log->logActivity( sprintf(__('Gagal merubah status merek truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
@@ -710,14 +709,14 @@ class TrucksController extends AppController {
             if($this->TruckCategory->validates($data)){
                 if($this->TruckCategory->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Jenis Truk'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Jenis Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Jenis Truk #%s'), $msg, $this->TruckCategory->id), $this->user_data, $this->RequestHandler, $this->params );
                     $this->redirect(array(
                         'controller' => 'trucks',
                         'action' => 'categories'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Jenis Truk'), $msg), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal %s Jenis Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );  
+                    $this->Log->logActivity( sprintf(__('Gagal %s Jenis Truk #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Jenis Truk'), $msg), 'error');
@@ -753,7 +752,7 @@ class TrucksController extends AppController {
                 $this->TruckCategory->set('status', $value);
                 if($this->TruckCategory->save()){
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Jenis Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status Jenis Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );  
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
                     $this->Log->logActivity( sprintf(__('Gagal merubah status Jenis Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
@@ -902,14 +901,14 @@ class TrucksController extends AppController {
                     }
 
                     $this->MkCommon->setCustomFlash($text, 'success');
-                    $this->Log->logActivity( $text, $this->user_data, $this->RequestHandler, $this->params, 1 );  
+                    $this->Log->logActivity( $text, $this->user_data, $this->RequestHandler, $this->params );  
                     $this->redirect(array(
                         'controller' => 'trucks',
                         'action' => 'drivers'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Supir Truk'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Supir Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                    $this->Log->logActivity( sprintf(__('Gagal %s Supir Truk #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Supir Truk'), $msg), 'error');
@@ -998,7 +997,7 @@ class TrucksController extends AppController {
                 $this->Driver->set('status', $value);
                 if($this->Driver->save()){
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Supir Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status Supir Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );   
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
                     $this->Log->logActivity( sprintf(__('Gagal merubah status Supir Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
@@ -1124,14 +1123,14 @@ class TrucksController extends AppController {
             if( $this->Kir->validates($data) ){
                 if( $this->Kir->save($data) ){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s KIR Truk'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s KIR Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                    $this->Log->logActivity( sprintf(__('Sukses %s KIR Truk #%s'), $msg, $this->Kir->id), $this->user_data, $this->RequestHandler, $this->params );   
                     $this->redirect(array(
                         'controller' => 'trucks',
                         'action' => 'kir'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s KIR Truk'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s KIR Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );    
+                    $this->Log->logActivity( sprintf(__('Gagal %s KIR Truk #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );    
                 }
             }else{
                 $text = sprintf(__('Gagal %s KIR Truk'), $msg);
@@ -1304,14 +1303,14 @@ class TrucksController extends AppController {
                 if( $this->KirPayment->validates($data) && $this->Truck->validates($data) && $this->Kir->validates($data) ){
                     if( $this->KirPayment->save($data) && $this->Truck->save($data) && $this->Kir->save($data) ){
                         $this->MkCommon->setCustomFlash(sprintf(__('KIR Truk %s telah dibayar'), $kir['Kir']['no_pol']), 'success');
-                        $this->Log->logActivity( sprintf(__('KIR Truk %s telah dibayar'), $kir['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );    
+                        $this->Log->logActivity( sprintf(__('KIR Truk %s telah dibayar #%s'), $kir['Kir']['no_pol'], $this->KirPayment->id), $this->user_data, $this->RequestHandler, $this->params );
                         $this->redirect(array(
                             'controller' => 'trucks',
                             'action' => 'kir_payments'
                         ));
                     } else {
                         $this->MkCommon->setCustomFlash(sprintf(__('Gagal membayar KIR Truk %s'), $kir['Kir']['no_pol']), 'error'); 
-                        $this->Log->logActivity( sprintf(__('Gagal membayar KIR Truk %s'), $kir['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );     
+                        $this->Log->logActivity( sprintf(__('Gagal membayar KIR Truk %s'), $kir['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );
                     }
                 } else {
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal membayar KIR Truk %s'), $kir['Kir']['no_pol']), 'error');  
@@ -1352,7 +1351,7 @@ class TrucksController extends AppController {
 
                 if($this->Kir->save()){
                     $this->MkCommon->setCustomFlash(sprintf(__('KIR Truk %s telah berhasil dihapus'), $kir['Kir']['no_pol']), 'success');
-                    $this->Log->logActivity( sprintf(__('KIR Truk %s telah berhasil dihapus'), $kir['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );     
+                    $this->Log->logActivity( sprintf(__('KIR Truk %s telah berhasil dihapus'), $kir['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
                 } else {
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal menghapus KIR Truk %s'), $kir['Kir']['no_pol']), 'error'); 
                     $this->Log->logActivity( sprintf(__('Gagal menghapus KIR Truk %s'), $kir['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );      
@@ -1488,14 +1487,14 @@ class TrucksController extends AppController {
             if( $this->Siup->validates($data) ){
                 if( $this->Siup->save($data) ){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Ijin Usaha Truk'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Ijin Usaha Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                    $this->Log->logActivity( sprintf(__('Sukses %s Ijin Usaha Truk #%s'), $msg, $this->Siup->id), $this->user_data, $this->RequestHandler, $this->params );
                     $this->redirect(array(
                         'controller' => 'trucks',
                         'action' => 'siup'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ijin Usaha Truk'), $msg), 'error');  
-                    $this->Log->logActivity( sprintf(__('Gagal %s Ijin Usaha Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                    $this->Log->logActivity( sprintf(__('Gagal %s Ijin Usaha Truk #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 }
             }else{
                 $text = sprintf(__('Gagal %s Ijin Usaha Truk'), $msg);
@@ -1656,7 +1655,7 @@ class TrucksController extends AppController {
                 if( $this->SiupPayment->validates($data) && $this->Truck->validates($data) && $this->Siup->validates($data) ){
                     if( $this->SiupPayment->save($data) && $this->Truck->save($data) && $this->Siup->save($data) ){
                         $this->MkCommon->setCustomFlash(sprintf(__('Ijin Usaha Truk %s telah dibayar'), $siup['Siup']['no_pol']), 'success');
-                        $this->Log->logActivity( sprintf(__('Ijin Usaha Truk %s telah dibayar'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                        $this->Log->logActivity( sprintf(__('Ijin Usaha Truk %s telah dibayar #%s'), $siup['Siup']['no_pol'], $this->SiupPayment->id), $this->user_data, $this->RequestHandler, $this->params );
                         $this->redirect(array(
                             'controller' => 'trucks',
                             'action' => 'siup_payments'
@@ -1704,7 +1703,7 @@ class TrucksController extends AppController {
 
                 if($this->Siup->save()){
                     $this->MkCommon->setCustomFlash(sprintf(__('Ijin Usaha Truk %s telah berhasil dihapus'), $siup['Siup']['no_pol']), 'success');
-                    $this->Log->logActivity( sprintf(__('Ijin Usaha Truk %s telah berhasil dihapus'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Ijin Usaha Truk %s telah berhasil dihapus'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
                 } else {
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal menghapus Ijin Usaha Truk %s'), $siup['Siup']['no_pol']), 'error');  
                     $this->Log->logActivity( sprintf(__('Gagal menghapus Ijin Usaha Truk %s'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );
@@ -1836,7 +1835,7 @@ class TrucksController extends AppController {
                 if($this->TruckAlocation->save($data)){
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s alokasi Truk'), $msg), 'success');
-                    $this->Log->logActivity(sprintf(__('Sukses %s alokasi Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity(sprintf(__('Sukses %s alokasi Truk #%s'), $msg, $this->TruckAlocation->id), $this->user_data, $this->RequestHandler, $this->params );
                     $this->redirect(array(
                         'controller' => 'trucks',
                         'action' => 'alocations',
@@ -1844,7 +1843,7 @@ class TrucksController extends AppController {
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s alokasi Truk'), $msg), 'error');  
-                    $this->Log->logActivity(sprintf(__('Gagal %s alokasi Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity(sprintf(__('Gagal %s alokasi Truk #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 }
             }else{
                 $text = sprintf(__('Gagal %s alokasi Truk'), $msg);
@@ -1958,14 +1957,14 @@ class TrucksController extends AppController {
             if($this->Direction->validates($data) && $check){
                 if($this->Direction->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Rute Truk'), $msg), 'success');
-                    $this->Log->logActivity(sprintf(__('Sukses %s Rute Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity(sprintf(__('Sukses %s Rute Truk #%s'), $msg, $this->Direction->id), $this->user_data, $this->RequestHandler, $this->params );
                     $this->redirect(array(
                         'controller' => 'trucks',
                         'action' => 'directions'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Rute Truk'), $msg), 'error');  
-                    $this->Log->logActivity(sprintf(__('Gagal %s Rute Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity(sprintf(__('Gagal %s Rute Truk #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 }
             }else{
                 $text = sprintf(__('Gagal %s Rute Truk'), $msg);
@@ -2016,7 +2015,7 @@ class TrucksController extends AppController {
             $this->Direction->set('status', $value);
             if($this->Direction->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity(sprintf(__('Sukses merubah status  rute ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                $this->Log->logActivity(sprintf(__('Sukses merubah status  rute ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params );
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
                 $this->Log->logActivity(sprintf(__('Gagal merubah status  rute ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
@@ -2112,14 +2111,14 @@ class TrucksController extends AppController {
                         if( !empty($result_data) ) {
                             if($this->TruckPerlengkapan->saveMany($result_data)){
                                 $this->MkCommon->setCustomFlash(sprintf(__('kelengkapan truk berhasil %s'), $message), 'success'); 
-                                $this->Log->logActivity(sprintf(__('kelengkapan truk berhasil %s'), $message), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                                $this->Log->logActivity(sprintf(__('kelengkapan truk berhasil %s #%s'), $message, $this->TruckPerlengkapan->id), $this->user_data, $this->RequestHandler, $this->params );
                                 $this->redirect(array(
                                     'controller' => 'trucks',
                                     'action' => 'index'
                                 ));
                             } else {
                                 $this->MkCommon->setCustomFlash(sprintf(__('kelengkapan truk gagal %s'), $message), 'error');
-                                $this->Log->logActivity(sprintf(__('kelengkapan truk gagal %s'), $message), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                                $this->Log->logActivity(sprintf(__('kelengkapan truk gagal %s #%s'), $message, $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                             }
                         } else {
                             $this->MkCommon->setCustomFlash(__('Mohon lengkapi Perlengkapan Truk'), 'error'); 
@@ -2308,14 +2307,14 @@ class TrucksController extends AppController {
             if( $this->Stnk->validates($data) ){
                 if( $this->Stnk->save($data) ){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s STNK Truk'), $msg), 'success');
-                    $this->Log->logActivity(sprintf(__('Sukses %s STNK Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity(sprintf(__('Sukses %s STNK Truk #%s'), $msg, $this->Stnk->id), $this->user_data, $this->RequestHandler, $this->params ); 
                     $this->redirect(array(
                         'controller' => 'trucks',
                         'action' => 'stnk'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s STNK Truk'), $msg), 'error');
-                    $this->Log->logActivity(sprintf(__('Gagal %s STNK Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                    $this->Log->logActivity(sprintf(__('Gagal %s STNK Truk #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
                 }
             }else{
                 $text = sprintf(__('Gagal %s Stnk Truk'), $msg);
@@ -2384,10 +2383,10 @@ class TrucksController extends AppController {
 
                 if($this->Stnk->save()){
                     $this->MkCommon->setCustomFlash(sprintf(__('STNK Truk %s telah berhasil dihapus'), $stnk['Stnk']['no_pol']), 'success');
-                    $this->Log->logActivity(sprintf(__('STNK Truk %s telah berhasil dihapus'), $stnk['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                    $this->Log->logActivity(sprintf(__('STNK Truk %s telah berhasil dihapus #%s'), $stnk['Stnk']['no_pol'], $this->Stnk->id), $this->user_data, $this->RequestHandler, $this->params );   
                 } else {
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal menghapus STNK Truk %s'), $stnk['Stnk']['no_pol']), 'error');  
-                    $this->Log->logActivity(sprintf(__('Gagal menghapus STNK Truk %s'), $stnk['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                    $this->Log->logActivity(sprintf(__('Gagal menghapus STNK Truk %s #%s'), $stnk['Stnk']['no_pol'], $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
                 }
             } else {
                 $this->MkCommon->setCustomFlash(__('Data STNK tidak ditemukan'), 'error');
@@ -2527,14 +2526,14 @@ class TrucksController extends AppController {
                 if( $this->StnkPayment->validates($data) && $this->Truck->validates($data) && $this->Stnk->validates($data) ){
                     if( $this->StnkPayment->save($data) && $this->Truck->save($data) && $this->Stnk->save($data) ){
                         $this->MkCommon->setCustomFlash(sprintf(__('STNK Truk %s telah dibayar'), $stnk['Stnk']['no_pol']), 'success');
-                        $this->Log->logActivity(sprintf(__('STNK Truk %s telah dibayar'), $stnk['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                        $this->Log->logActivity(sprintf(__('STNK Truk %s telah dibayar #%s'), $stnk['Stnk']['no_pol'], $this->StnkPayment->id), $this->user_data, $this->RequestHandler, $this->params );   
                         $this->redirect(array(
                             'controller' => 'trucks',
                             'action' => 'stnk_payments'
                         ));
                     } else {
                         $this->MkCommon->setCustomFlash(sprintf(__('Gagal membayar STNK Truk %s'), $stnk['Stnk']['no_pol']), 'error'); 
-                        $this->Log->logActivity(sprintf(__('Gagal membayar STNK Truk %s'), $stnk['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );    
+                        $this->Log->logActivity(sprintf(__('Gagal membayar STNK Truk %s #%s'), $stnk['Stnk']['no_pol'], $id), $this->user_data, $this->RequestHandler, $this->params, 1 );    
                     }
                 } else {
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal membayar STNK Truk %s'), $stnk['Stnk']['no_pol']), 'error');  
@@ -2760,14 +2759,14 @@ class TrucksController extends AppController {
             if($this->TruckFacility->validates($data)){
                 if($this->TruckFacility->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Fasilitas Truk'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Fasilitas Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Fasilitas Truk #%s'), $msg, $this->TruckFacility->id), $this->user_data, $this->RequestHandler, $this->params );
                     $this->redirect(array(
                         'controller' => 'trucks',
                         'action' => 'facilities'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Fasilitas Truk'), $msg), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal %s Fasilitas Truk'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );  
+                    $this->Log->logActivity( sprintf(__('Gagal %s Fasilitas Truk #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Fasilitas Truk'), $msg), 'error');
@@ -2803,7 +2802,7 @@ class TrucksController extends AppController {
                 $this->TruckFacility->set('status', $value);
                 if($this->TruckFacility->save()){
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Fasilitas Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status Fasilitas Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );  
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
                     $this->Log->logActivity( sprintf(__('Gagal merubah status Fasilitas Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  

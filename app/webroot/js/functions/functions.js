@@ -1191,6 +1191,7 @@ function grandTotalRevenue(){
     var ppn = 0;
     var revenue_ppn = $('.revenue-ppn').val();
     var formatAdditionalCharge = 0;
+    var totalQty = 0;
 
     for (var i = 0; i < length; i++) {
         var rel = listRevenue[i].getAttribute('rel');
@@ -1206,6 +1207,8 @@ function grandTotalRevenue(){
         } else {
             qtyUnit = 0;
         }
+
+        totalQty += qtyUnit;
 
         if( revenue_tarif_type != 'per_truck' || is_additional_charge[i].checked == true ) {
             if( is_additional_charge[i].checked == true ) {
@@ -1229,6 +1232,8 @@ function grandTotalRevenue(){
             $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-price-perunit').val(totalPrice);
         }
     };
+
+    $('#qty-revenue').html(totalQty);
 
     if( revenue_tarif_type == 'per_truck' ) {
         total = parseInt(total_temp);

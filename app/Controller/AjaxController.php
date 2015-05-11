@@ -538,18 +538,13 @@ class AjaxController extends AppController {
 						'class' => 'success',
 						'text' => sprintf(__('Sukses %s Event'), $msg),
 					);
-                    $this->Log->logActivity( sprintf(__('Sukses %s Event'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                    // $this->redirect(array(
-                    //     'controller' => 'revenues',
-                    //     'action' => 'monitoring_truck'
-                    // ));
+                    $this->Log->logActivity( sprintf(__('Sukses %s Event #%s'), $msg, $this->CalendarEvent->id), $this->user_data, $this->RequestHandler, $this->params );
                 }else{
                 	$msg = array(
 						'class' => 'error',
 						'text' => sprintf(__('Gagal %s Event'), $msg),
 					);
-                    // $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Event'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Event'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Event #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                 }
             }else{
             	$msg = array(
@@ -633,7 +628,7 @@ class AjaxController extends AppController {
 
                 if($this->CalendarEvent->save()){
                     $this->MkCommon->setCustomFlash(__('Sukses menghapus event.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses menghapus event ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Sukses menghapus event ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal menghapus cevent.'), 'error');
                     $this->Log->logActivity( sprintf(__('Gagal menghapus cevent ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
@@ -1435,7 +1430,7 @@ class AjaxController extends AppController {
 
 		$default_conditions = array(
             'Coa.status' => 1,
-            // 'Coa.level' => 4
+            'Coa.level' => 4
         );
 
         if(!empty($this->request->data['Coa']['name'])){

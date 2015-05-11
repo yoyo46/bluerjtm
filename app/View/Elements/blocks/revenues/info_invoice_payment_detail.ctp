@@ -108,7 +108,7 @@
         <?php 
                 echo $this->Form->input('InvoicePayment.pph', array(
                     'type' => 'text',
-                    'label' => __('PPH'),
+                    'label' => __('PPh'),
                     'class' => 'input_number invoice-pph',
                     'required' => false,
                     'div' => false

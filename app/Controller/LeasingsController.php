@@ -217,14 +217,14 @@ class LeasingsController extends AppController {
                     }
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s leasing'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s leasing'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Sukses %s leasing #%s'), $msg, $leasing_id), $this->user_data, $this->RequestHandler, $this->params );
                     $this->redirect(array(
                         'controller' => 'leasings',
                         'action' => 'index'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s leasing'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s leasing'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s leasing #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                 }
             }else{
                 $text = sprintf(__('Gagal %s leasing'), $msg);
@@ -369,14 +369,14 @@ class LeasingsController extends AppController {
             if($this->LeasingCompany->validates($data)){
                 if($this->LeasingCompany->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Perusahaan Leasing'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Perusahaan Leasing'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Perusahaan Leasing #%s'), $msg, $this->LeasingCompany->id), $this->user_data, $this->RequestHandler, $this->params );
                     $this->redirect(array(
                         'controller' => 'leasings',
                         'action' => 'leasing_companies'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Perusahaan Leasing'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Perusahaan Leasing'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Perusahaan Leasing #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Perusahaan Leasing'), $msg), 'error');
@@ -412,7 +412,7 @@ class LeasingsController extends AppController {
                 $this->Leasing->set('status', $value);
                 if($this->Leasing->save()){
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
                     $this->Log->logActivity( sprintf(__('Gagal merubah status Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
@@ -444,7 +444,7 @@ class LeasingsController extends AppController {
                 $this->LeasingCompany->set('status', $value);
                 if($this->LeasingCompany->save()){
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Perusahaan Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status Perusahaan Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
                     $this->Log->logActivity( sprintf(__('Gagal merubah status Perusahaan Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 

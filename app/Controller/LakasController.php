@@ -193,6 +193,7 @@ class LakasController extends AppController {
 
                 if($this->Laka->save($data)){
                     $laka_id = $this->Laka->id;
+
                     if(empty($id) && empty($data_local)){
                         $data['LakaDetail']['laka_id'] = $laka_id;
                         $this->Laka->LakaDetail->create();
@@ -202,7 +203,6 @@ class LakasController extends AppController {
                                 'LakaDetail.laka_id' => $id
                             )
                         ));
-
                         $this->Laka->LakaDetail->id = $laka_detail['LakaDetail']['id'];
                     }
 
@@ -229,7 +229,7 @@ class LakasController extends AppController {
                         }
 
                         $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s LAKA'), $msg), 'success');
-                        $this->Log->logActivity( sprintf(__('Berhasil %s LAKA #%s'), $msg, $laka_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                        $this->Log->logActivity( sprintf(__('Berhasil %s LAKA #%s'), $msg, $laka_id), $this->user_data, $this->RequestHandler, $this->params );
                         
                         $this->redirect(array(
                             'controller' => 'Lakas',
@@ -238,11 +238,11 @@ class LakasController extends AppController {
                     } else {
                         $step = 'step2';
                         $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LAKA'), $msg), 'error');
-                        $this->Log->logActivity( sprintf(__('Gagal %s LAKA'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                        $this->Log->logActivity( sprintf(__('Gagal %s LAKA #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                     }
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LAKA'), $msg), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal %s LAKA'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Gagal %s LAKA #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 }
             }else{
                 $validationErrors = $this->Laka->validationErrors;
@@ -378,7 +378,7 @@ class LakasController extends AppController {
                     }
 
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params );
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
                     $this->Log->logActivity( sprintf(__('Gagal merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );

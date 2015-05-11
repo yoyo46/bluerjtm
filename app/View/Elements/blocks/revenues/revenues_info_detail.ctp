@@ -9,7 +9,6 @@
                     <th width="15%" class="text-top"><?php echo __('Tujuan');?></th>
                     <th width="13%" class="text-top"><?php echo __('No. DO');?></th>
                     <th width="13%" class="text-top"><?php echo __('No. SJ');?></th>
-                    <!-- <th width="12%" class="text-top"><?php echo __('Keterangan');?></th> -->
                     <th width="15%" class="text-top"><?php echo __('Group Motor');?></th>
                     <th width="7%" class="text-top"><?php echo __('Jumlah Unit');?></th>
                     <th width="5%" class="text-top text-center"><?php echo __('Charge');?></th>
@@ -19,10 +18,10 @@
             </thead>
             <tbody class="tipe-motor-table">
                 <?php
-                        // $total = !empty($this->request->data['Revenue']['total_without_tax'])?$this->request->data['Revenue']['total_without_tax']:0;
-                        $arr_duplicate = array();
                         $total = 0;
+                        $totalQty = 0;
                         $flagTruck = false;
+                        $arr_duplicate = array();
 
                         if( !empty($tarifTruck['jenis_unit']) ) {
                             $jenis_unit = $tarifTruck['jenis_unit'];
@@ -37,6 +36,9 @@
                         }
 
                         foreach ($data as $key => $detail) {
+                            $qty = !empty($detail['RevenueDetail']['qty_unit'])?$detail['RevenueDetail']['qty_unit']:0;
+                            $totalQty += $qty;
+
                             if( !empty($detail['RevenueDetail']['price_unit']) ){
                                 $price = $detail['RevenueDetail']['price_unit'];
                             } else if( empty($id) ) {
@@ -112,17 +114,6 @@
                             ));
                         ?>
                     </td>
-                    <!-- <td class="note-data">
-                        <?php 
-                            // echo $this->Form->input('RevenueDetail.note.', array(
-                            //     'type' => 'text',
-                            //     'label' => false,
-                            //     'class' => 'form-control',
-                            //     'required' => false,
-                            //     'value' => (isset($detail['RevenueDetail']['note']) && !empty($detail['RevenueDetail']['note'])) ? $detail['RevenueDetail']['note'] : ''
-                            // ));
-                        ?>
-                    </td> -->
                     <td class="tipe-motor-data">
                         <?php 
                                 echo $this->Form->input('RevenueDetail.group_motor_id.', array(
@@ -137,12 +128,6 @@
                     </td>
                     <td class="qty-tipe-motor-data" align="center">
                         <?php
-                                $qty = '';
-
-                                if( isset($detail['RevenueDetail']['qty_unit']) ){
-                                    $qty = $detail['RevenueDetail']['qty_unit'];
-                                }
-
                                 echo $this->Form->input('RevenueDetail.qty_unit.', array(
                                     'type' => 'text',
                                     'label' => false,
@@ -263,28 +248,39 @@
                     }
                 ?>
                 <tr id="field-grand-total-revenue">
-                    <td align="right" colspan="7"><?php echo __('Total')?></td>
-                    <td align="right" id="grand-total-revenue">
-                        <?php 
-                                if( !empty($tarifTruck) ) {
-                                    $total = $tarifTruck['tarif'];
-                                }
+                    <?php 
+                            echo $this->Html->tag('td', __('Total Muatan'), array(
+                                'align' => 'right',
+                                'colspan' => 4,
+                            ));
+                            echo $this->Html->tag('td', $totalQty, array(
+                                'align' => 'center',
+                                'id' => 'qty-revenue',
+                            ));
+                            echo $this->Html->tag('td', __('Total'), array(
+                                'align' => 'right',
+                                'colspan' => 2,
+                            ));
 
-                                echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
-                                echo $this->Form->hidden('Revenue.tarif_per_truck', array(
-                                    'class' => 'tarif_per_truck',
-                                    'value' => $total,
-                                ));
-                        ?>
-                    </td>
-                    <td>
-                        <?php
-                                echo $this->Form->hidden('total_temp', array(
-                                    'id' => 'total_retail_revenue',
-                                    'value' => $total
-                                ));
-                        ?>
-                    </td>
+                            if( !empty($tarifTruck) ) {
+                                $total = $tarifTruck['tarif'];
+                            }
+
+                            echo $this->Html->tag('td', $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                                'align' => 'right',
+                                'id' => 'grand-total-revenue',
+                            ));
+                            echo $this->Html->tag('td', '&nbsp;');
+
+                            echo $this->Form->hidden('total_temp', array(
+                                'id' => 'total_retail_revenue',
+                                'value' => $total
+                            ));
+                            echo $this->Form->hidden('Revenue.tarif_per_truck', array(
+                                'class' => 'tarif_per_truck',
+                                'value' => $total,
+                            ));
+                    ?>
                 </tr>
                 <tr id="field-additional-total-revenue" class="<?php echo ($flagTruck)?'':'hide'; ?>">
                     <td align="right" colspan="7"><?php echo __('Additional Charge')?></td>
@@ -325,7 +321,7 @@
                         <?php 
                                 echo $this->Form->input('Revenue.pph', array(
                                     'type' => 'text',
-                                    'label' => __('PPH'),
+                                    'label' => __('PPh'),
                                     'class' => 'input_number revenue-pph',
                                     'required' => false,
                                     'div' => false

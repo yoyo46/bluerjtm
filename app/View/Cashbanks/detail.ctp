@@ -216,12 +216,13 @@
                             'class' => 'form-group'
                         ),
                         'options' => array(
-                            'pending' => 'Pending',
+                            // 'pending' => 'Pending',
                             'approve' => 'Setujui',
                             'revise' => 'Direvisi',
                             'reject' => 'Tidak Setuju',
                         ),
-                        'class' => 'form-control'
+                        'class' => 'form-control',
+                        'empty' => __('Pilih Status Approval'),
                     ));
 
                     echo $this->Form->input('cash_bank_auth_master_id', array(

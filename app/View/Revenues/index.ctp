@@ -156,9 +156,9 @@
                                         'action' => 'revenue_toggle',
                                         $id
                                     ), array(
-                                        'class' => 'btn btn-danger btn-xs',
+                                        'class' => 'btn btn-danger btn-xs ajaxModal',
                                         'title' => 'disable status brand'
-                                    ), __('Apakah Anda yakin akan membatalkan data ini?'));
+                                    ));
                                 }
                             }
                     ?>
