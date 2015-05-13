@@ -686,10 +686,6 @@
 								'type' => 'submit',
 								'action_type' => 'draft'
 							));
-				    		echo $this->Form->hidden('is_draft', array(
-								'value'=> 1,
-								'id' => 'is_draft'
-							));
 				    	} else if( in_array('update_ttuj_commit', $allowModule) ) {
 				    		echo $this->Form->button(__('Simpan'), array(
 								'class'=> 'btn btn-success submit-form btn-lg',
@@ -697,6 +693,11 @@
 								'action_type' => 'commit'
 							));
 				    	}
+				    	
+			    		echo $this->Form->hidden('is_draft', array(
+							'value'=> 1,
+							'id' => 'is_draft'
+						));
 				    }
 			?>
 		</div>

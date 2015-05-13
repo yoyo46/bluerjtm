@@ -1,6 +1,6 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
-        echo $this->element('blocks/revenues/search_invoice_payments');
+        // echo $this->element('blocks/revenues/search_invoice_payments');
 ?>
 <div class="box">
     <div class="box-header">
@@ -10,9 +10,9 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Pembayaran Invoice', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Pembayaran Uang Jalan', array(
                     'controller' => 'revenues',
-                    'action' => 'invoice_payment_add'
+                    'action' => 'uang_jalan_payment_add'
                 ), array(
                     'escape' => false,
                     'class' => 'btn btn-app btn-success pull-right'
@@ -27,22 +27,21 @@
         <table class="table table-hover">
             <tr>
                 <?php
-                        echo $this->Html->tag('th', __('Customer'));
-                        echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.nodoc', __('No. Dokumen'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('UangJalanPayment.nodoc', __('No. Dokumen'), array(
                             'escape' => false
                         )));
-                        // echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.coa_id', __('COA'), array(
-                        //     'escape' => false
-                        // )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.total_payment', __('Total Dibayar'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.no_ttuj', __('No TTUJ'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.date_payment', __('Tgl pembayaran'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('UangJalanPayment.total_payment', __('Total Dibayar'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('UangJalanPayment.date_payment', __('Tgl pembayaran'), array(
                             'escape' => false
                         )), array(
                             'class' => 'text-center'
                         ));
-                        echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.status', __('Status'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('UangJalanPayment.status', __('Status'), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', __('Action'));
@@ -52,18 +51,17 @@
                     $i = 1;
                     if(!empty($invoices)){
                         foreach ($invoices as $key => $value) {
-                            $id = $value['InvoicePayment']['id'];
+                            $id = $value['UangJalanPayment']['id'];
             ?>
             <tr>
-                <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:false;?></td>
-                <td><?php echo $value['InvoicePayment']['nodoc'];?></td>
-                <!-- <td><?php // echo !empty($value['Coa']['name'])?$value['Coa']['name']:false;?></td> -->
-                <td align="right"><?php echo $this->Number->currency($value['InvoicePayment']['total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
-                <td class="text-center"><?php echo $this->Common->customDate($value['InvoicePayment']['date_payment']);?></td>
+                <td><?php echo $value['UangJalanPayment']['nodoc'];?></td>
+                <td><?php echo !empty($value['Ttuj']['no_ttuj'])?$value['Ttuj']['no_ttuj']:false;?></td>
+                <td align="right"><?php echo $this->Number->currency($value['UangJalanPayment']['total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
+                <td class="text-center"><?php echo $this->Common->customDate($value['UangJalanPayment']['date_payment']);?></td>
                 <td>
                     <?php 
-                        if(empty($value['InvoicePayment']['is_canceled'])){
-                            if($value['InvoicePayment']['status']){
+                        if(empty($value['UangJalanPayment']['is_canceled'])){
+                            if($value['UangJalanPayment']['status']){
                                 echo $this->Html->tag('span', 'aktif', array(
                                     'class' => 'label label-success'
                                 ));
@@ -76,15 +74,15 @@
                             echo $this->Html->tag('span', __('Void'), array(
                                 'class' => 'label label-danger'
                             ));
-                            if(!empty($value['InvoicePayment']['canceled_date'])){
-                                echo '<br>'.$this->Common->customDate($value['InvoicePayment']['canceled_date'], 'd/m/Y');
+                            if(!empty($value['UangJalanPayment']['canceled_date'])){
+                                echo '<br>'.$this->Common->customDate($value['UangJalanPayment']['canceled_date'], 'd/m/Y');
                             }
                         }
                     ?>
                 </td>
                 <td class="action">
                     <?php 
-                        if(empty($value['InvoicePayment']['is_canceled'])){
+                        if(empty($value['UangJalanPayment']['is_canceled'])){
                             echo $this->Html->link('Info', array(
                                 'controller' => 'revenues',
                                 'action' => 'detail_invoice_payment',
@@ -92,13 +90,6 @@
                             ), array(
                                 'class' => 'btn btn-info btn-xs'
                             ));
-                            // echo $this->Html->link('Edit', array(
-                            //     'controller' => 'revenues',
-                            //     'action' => 'detail_invoice_payment',
-                            //     $id
-                            // ), array(
-                            //     'class' => 'btn btn-primary btn-xs'
-                            // ));
                             
                             echo $this->Html->link('Void', array(
                                 'controller' => 'revenues',

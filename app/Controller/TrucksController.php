@@ -1302,6 +1302,16 @@ class TrucksController extends AppController {
 
                 if( $this->KirPayment->validates($data) && $this->Truck->validates($data) && $this->Kir->validates($data) ){
                     if( $this->KirPayment->save($data) && $this->Truck->save($data) && $this->Kir->save($data) ){
+                        $document_id = $this->KirPayment->id;
+                        
+                        if( !empty($data['KirPayment']['total_pembayaran']) ) {
+                            $this->loadModel('Journal');
+                            $total = $data['KirPayment']['total_pembayaran'];
+
+                            $this->Journal->setJournal( $document_id, 'kir_payment_coa_debit_id', $total, 0, 'kir' );
+                            $this->Journal->setJournal( $document_id, 'kir_payment_coa_credit_id', 0, $total, 'kir' );
+                        }
+
                         $this->MkCommon->setCustomFlash(sprintf(__('KIR Truk %s telah dibayar'), $kir['Kir']['no_pol']), 'success');
                         $this->Log->logActivity( sprintf(__('KIR Truk %s telah dibayar #%s'), $kir['Kir']['no_pol'], $this->KirPayment->id), $this->user_data, $this->RequestHandler, $this->params );
                         $this->redirect(array(
@@ -1654,6 +1664,16 @@ class TrucksController extends AppController {
 
                 if( $this->SiupPayment->validates($data) && $this->Truck->validates($data) && $this->Siup->validates($data) ){
                     if( $this->SiupPayment->save($data) && $this->Truck->save($data) && $this->Siup->save($data) ){
+                        $document_id = $this->SiupPayment->id;
+                        
+                        if( !empty($data['SiupPayment']['total_pembayaran']) ) {
+                            $this->loadModel('Journal');
+                            $total = $data['SiupPayment']['total_pembayaran'];
+
+                            $this->Journal->setJournal( $document_id, 'siup_payment_coa_debit_id', $total, 0, 'siup' );
+                            $this->Journal->setJournal( $document_id, 'siup_payment_coa_credit_id', 0, $total, 'siup' );
+                        }
+
                         $this->MkCommon->setCustomFlash(sprintf(__('Ijin Usaha Truk %s telah dibayar'), $siup['Siup']['no_pol']), 'success');
                         $this->Log->logActivity( sprintf(__('Ijin Usaha Truk %s telah dibayar #%s'), $siup['Siup']['no_pol'], $this->SiupPayment->id), $this->user_data, $this->RequestHandler, $this->params );
                         $this->redirect(array(
@@ -2525,6 +2545,16 @@ class TrucksController extends AppController {
 
                 if( $this->StnkPayment->validates($data) && $this->Truck->validates($data) && $this->Stnk->validates($data) ){
                     if( $this->StnkPayment->save($data) && $this->Truck->save($data) && $this->Stnk->save($data) ){
+                        $document_id = $this->StnkPayment->id;
+                        
+                        if( !empty($data['StnkPayment']['total_pembayaran']) ) {
+                            $this->loadModel('Journal');
+                            $total = $data['StnkPayment']['total_pembayaran'];
+
+                            $this->Journal->setJournal( $document_id, 'stnk_payment_coa_debit_id', $total, 0, 'stnk' );
+                            $this->Journal->setJournal( $document_id, 'stnk_payment_coa_credit_id', 0, $total, 'stnk' );
+                        }
+
                         $this->MkCommon->setCustomFlash(sprintf(__('STNK Truk %s telah dibayar'), $stnk['Stnk']['no_pol']), 'success');
                         $this->Log->logActivity(sprintf(__('STNK Truk %s telah dibayar #%s'), $stnk['Stnk']['no_pol'], $this->StnkPayment->id), $this->user_data, $this->RequestHandler, $this->params );   
                         $this->redirect(array(

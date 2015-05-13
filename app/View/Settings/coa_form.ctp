@@ -4,6 +4,11 @@
 			'action' => 'coas'
 		));
 		$this->Html->addCrumb($sub_module_title);
+		$coaCode = $coa['Coa']['code'];
+
+		if( !empty($coa['Coa']['with_parent_code']) ) {
+			$coaCode = $coa['Coa']['with_parent_code'];
+		}
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -21,7 +26,7 @@
     			if( !empty($coa) ) {
     				echo '<dl>';
     				echo $this->Html->tag('dt', __('Parent COA'));
-					echo $this->Html->tag('dd', sprintf('%s %s', $coa['Coa']['code'], $coa['Coa']['name']));
+					echo $this->Html->tag('dd', sprintf('%s %s', $coaCode, $coa['Coa']['name']));
 					echo '</dl>';
 				}
 		?>
@@ -33,8 +38,8 @@
 				<div class="col-sm-4">
 					<div class="input-group">
 						<?php 
-								if( !empty($coa['Coa']['code']) ) {
-									echo $this->Html->tag('div', $coa['Coa']['code'], array(
+								if( !empty($coa['Coa']['with_parent_code']) ) {
+									echo $this->Html->tag('div', $coa['Coa']['with_parent_code'], array(
 										'class' => 'input-group-addon',
 									));
 								}

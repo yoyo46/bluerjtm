@@ -30,7 +30,9 @@ class LkusController extends AppController {
             $this->loadModel('Lku');
     		$this->set('active_menu', 'lkus');
     		$this->set('sub_module_title', __('Data LKU'));
-            $conditions = array();
+            $conditions = array(
+                'Lku.status' => array( 0, 1 ),
+            );
             
             if(!empty($this->params['named'])){
                 $refine = $this->params['named'];
@@ -164,7 +166,14 @@ class LkusController extends AppController {
 
             if($this->Lku->validates($data) && $validate_lku_detail){
                 if($this->Lku->save($data)){
+                    $this->loadModel('Journal');
                     $lku_id = $this->Lku->id;
+                    $this->Journal->deleteJournal( $lku_id, 'lku' );
+
+                    if( !empty($total_price) ) {
+                        $this->Journal->setJournal( $lku_id, 'lku_coa_debit_id', $total_price, 0, 'lku' );
+                        $this->Journal->setJournal( $lku_id, 'lku_coa_credit_id', 0, $total_price, 'lku' );
+                    }
 
                     if($id && $data_local){
                         $this->Lku->LkuDetail->deleteAll(array(
@@ -330,6 +339,12 @@ class LkusController extends AppController {
                 $this->Lku->set('status', 0);
 
                 if($this->Lku->save()){
+                    if( !empty($locale['Lku']['total_price']) ) {
+                        $this->loadModel('Journal');
+                        $this->Journal->setJournal( $id, 'lku_void_coa_debit_id', $locale['Lku']['total_price'], 0, 'lku_void' );
+                        $this->Journal->setJournal( $id, 'lku_void_coa_credit_id', 0, $locale['Lku']['total_price'], 'lku_void' );
+                    }
+
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses merubah status LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
                 }else{
@@ -467,6 +482,12 @@ class LkusController extends AppController {
             if($this->LkuPayment->validates($data) && $validate_lku_detail){
                 if($this->LkuPayment->save($data)){
                     $lku_payment_id = $this->LkuPayment->id;
+
+                    if( !empty($total_price) ) {
+                        $this->loadModel('Journal');
+                        $this->Journal->setJournal( $lku_payment_id, 'lku_payment_coa_debit_id', $total_price, 0, 'lku_payment' );
+                        $this->Journal->setJournal( $lku_payment_id, 'lku_payment_coa_credit_id', 0, $total_price, 'lku_payment' );
+                    }
 
                     if($id && $data_local){
                         $this->LkuPayment->LkuPaymentDetail->deleteAll(array(
@@ -1351,6 +1372,12 @@ class LkusController extends AppController {
             if($this->KsuPayment->validates($data) && $validate_ksu_detail){
                 if($this->KsuPayment->save($data)){
                     $ksu_payment_id = $this->KsuPayment->id;
+                    
+                    if( !empty($total_price) ) {
+                        $this->loadModel('Journal');
+                        $this->Journal->setJournal( $ksu_payment_id, 'ksu_payment_coa_debit_id', $total_price, 0, 'ksu_payment' );
+                        $this->Journal->setJournal( $ksu_payment_id, 'ksu_payment_coa_credit_id', 0, $total_price, 'ksu_payment' );
+                    }
 
                     if($id && $data_local){
                         $this->KsuPayment->KsuPaymentDetail->deleteAll(array(

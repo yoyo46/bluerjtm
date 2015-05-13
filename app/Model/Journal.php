@@ -31,17 +31,58 @@ class Journal extends AppModel {
         )
     );
 
-    function setJournal ( $coa_id = false, $debit = 0, $credit = 0 ) {
-        $data['Journal'] = array(
-            'coa_id' => $coa_id,
-            'debit' => $debit,
-            'credit' => $credit,
-        );
-        $this->Journal->create();
-        $this->Journal->set($data);
+    function setJournal ( $document_id = false, $coa_name = false, $debit = 0, $credit = 0, $type = false ) {
+        $this->CoaSetting = ClassRegistry::init('CoaSetting');
+        $coaSetting = $this->CoaSetting->getData('first', array(
+            'conditions' => array(
+                'CoaSetting.status' => 1
+            ),
+        ));
 
-        if( $this->Journal->save($data) ) {
+        if( !empty($coaSetting['CoaSetting'][$coa_name]) ) {
+            $data['Journal'] = array(
+                'document_id' => $document_id,
+                'coa_id' => $coaSetting['CoaSetting'][$coa_name],
+                'debit' => $debit,
+                'credit' => $credit,
+                'type' => $type,
+            );
+            $this->create();
+            $this->set($data);
+
+            if( $this->save($data) ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
             return false;
+        }
+    }
+
+    function deleteJournal ( $document_id = false, $type = false ) {
+        $journal = $this->find('first', array(
+            'conditions' => array(
+                'Journal.document_id' => $document_id,
+                'Journal.type' => $type,
+                'Journal.status' => 1,
+            ),
+        ));
+
+        if( !empty($journal) ) {
+            if( $this->updateAll(
+                array(
+                    'Journal.status' => 0
+                ),
+                array(
+                    'Journal.document_id' => $journal['Journal']['document_id'],
+                    'Journal.type' => $type,
+                )
+            ) ) {
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }

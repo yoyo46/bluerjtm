@@ -836,6 +836,83 @@
                             ));
 
                             // if( in_array('view_invoice_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Jalan', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'uang_jalan_payments',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan_payments' )?'active':'',
+                                ));
+                            // }
+
+                            // if( in_array('view_invoice_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Komisi', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'commission_payments',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'commission_payments' )?'active':'',
+                                ));
+                            // }
+
+                            // if( in_array('view_invoice_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Kuli Muat', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'uang_kuli_muat_payments',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_kuli_muat_payments' )?'active':'',
+                                ));
+                            // }
+
+                            // if( in_array('view_invoice_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Kuli Bongkar', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'uang_kuli_bongkar_payments',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_kuli_bongkar_payments' )?'active':'',
+                                ));
+                            // }
+
+                            // if( in_array('view_invoice_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Penyebrangan', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'uang_penyebrangan_payments',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_penyebrangan_payments' )?'active':'',
+                                ));
+                            // }
+
+                            // if( in_array('view_invoice_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Kawal', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'uang_kawal_payments',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_kawal_payments' )?'active':'',
+                                ));
+                            // }
+
+                            // if( in_array('view_invoice_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Keamanan', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'uang_keamanan_payments',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_keamanan_payments' )?'active':'',
+                                ));
+                            // }
+
+                            // if( in_array('view_invoice_payments', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Invoice', array(
                                     'controller' => 'revenues',
                                     'action' => 'invoice_payments',
@@ -864,7 +941,7 @@
                                 ), array(
                                     'escape' => false
                                 )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'lku_payments' )?'active':'',
+                                    'class' => ( !empty($active_menu) && $active_menu == 'ksu_payments' )?'active':'',
                                 ));
                              }
 

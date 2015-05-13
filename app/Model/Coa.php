@@ -14,8 +14,8 @@ class Coa extends AppModel {
 				'rule' => array('validateCode'),
                 'message' => 'Kode COA harap diisi'
 			),
-            'isUnique' => array(
-                'rule' => array('isUnique'),
+            'validateCodeWithParent' => array(
+                'rule' => array('validateCodeWithParent'),
                 'message' => 'Kode COA telah terdaftar',
             ),
 		),
@@ -109,6 +109,27 @@ class Coa extends AppModel {
             if( !empty($this->data['Coa']['level']) && $this->data['Coa']['level'] == 4 ) {
                 return false;
             } else if( !empty($this->data['Coa']['level']) && $this->data['Coa']['level'] == 3 ) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    function validateCodeWithParent () {
+        if( !empty($this->data['Coa']['with_parent_code']) ) {
+            $coa_id = !empty($this->data['Coa']['id'])?$this->data['Coa']['id']:false;
+            $existCoa = $this->getData('first', array(
+                'conditions' => array(
+                    'Coa.with_parent_code' => $this->data['Coa']['with_parent_code'],
+                    'Coa.status' => 1,
+                    'Coa.id <>' => $coa_id,
+                ),
+            ));
+            
+            if( !empty($existCoa) ) {
                 return false;
             } else {
                 return true;

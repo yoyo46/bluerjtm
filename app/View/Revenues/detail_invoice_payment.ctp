@@ -19,10 +19,10 @@
 				<th><?php echo __('Customer');?></th>
 				<td><?php echo !empty($invoice['Customer']['customer_name'])?$invoice['Customer']['customer_name']:false;?></td>
 			</tr>
-			<tr>
-				<th><?php echo __('Account');?></th>
-				<td><?php echo !empty($invoice['Coa']['name'])?$invoice['Coa']['name']:false;?></td>
-			</tr>
+			<!-- <tr>
+				<th><?php // echo __('Account');?></th>
+				<td><?php // echo !empty($invoice['Coa']['name'])?$invoice['Coa']['name']:false;?></td>
+			</tr> -->
 			<tr>
 				<th><?php echo __('Tanggal Pembayaran');?></th>
 				<td><?php echo $this->Common->customDate($invoice['InvoicePayment']['date_payment']);?></td>

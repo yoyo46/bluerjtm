@@ -43,7 +43,9 @@ class RevenuesController extends AppController {
             $this->set('sub_module_title', __('TTUJ'));
             $this->set('label_tgl', __('Tanggal Berangkat'));
 
-            $conditions = array();
+            $conditions = array(
+                'Ttuj.status' => array( 0, 1 ),
+            );
             if(!empty($this->params['named'])){
                 $refine = $this->params['named'];
 
@@ -334,9 +336,11 @@ class RevenuesController extends AppController {
         $this->loadModel('RevenueDetail');
         $this->loadModel('UangKuli');
         $is_draft = isset($data_local['Ttuj']['is_draft'])?$data_local['Ttuj']['is_draft']:true;
+        $allowUpdate = false;
 
         if( !empty($this->request->data) && in_array('update_ttuj_commit', $this->allowModule) ) {
             $is_draft = true;
+            $allowUpdate = true;
         }
 
         if( !empty($this->request->data) && $is_draft ){
@@ -390,7 +394,7 @@ class RevenuesController extends AppController {
             $data['Ttuj']['ttuj_date'] = $this->MkCommon->getDate($data['Ttuj']['ttuj_date']);
             $data['Ttuj']['driver_penganti_id'] = !empty($data['Ttuj']['driver_penganti_id'])?$data['Ttuj']['driver_penganti_id']:0;
             $data['Ttuj']['commission'] = !empty($uangJalan['UangJalan']['commission'])?$uangJalan['UangJalan']['commission']:0;
-            $data['Ttuj']['commission_extra'] = !empty($uangJalan['UangJalan']['commission_extra'])?$uangJalan['UangJalan']['commission_extra']:0;
+            $data['Ttuj']['commission_extra'] = $this->MkCommon->convertPriceToString($data['Ttuj']['commission_extra'], 0);
             $data['Ttuj']['commission_per_unit'] = !empty($uangJalan['UangJalan']['commission_per_unit'])?$uangJalan['UangJalan']['commission_per_unit']:0;
             $data['Ttuj']['uang_jalan_1'] = $this->MkCommon->convertPriceToString($data['Ttuj']['uang_jalan_1']);
             $data['Ttuj']['uang_jalan_2'] = $this->MkCommon->convertPriceToString($data['Ttuj']['uang_jalan_2'], 0);
@@ -462,7 +466,71 @@ class RevenuesController extends AppController {
                             }
 
                             if($this->Ttuj->save($data)){
+                                $this->loadModel('Journal');
                                 $tarifDefault = false;
+                                $document_id = $this->Ttuj->id;
+
+                                $this->Journal->deleteJournal( $document_id, 'commission' );
+                                $this->Journal->deleteJournal( $document_id, 'uang_jalan' );
+                                $this->Journal->deleteJournal( $document_id, 'uang_kuli_muat' );
+                                $this->Journal->deleteJournal( $document_id, 'uang_kuli_bongkar' );
+                                $this->Journal->deleteJournal( $document_id, 'asdp' );
+                                $this->Journal->deleteJournal( $document_id, 'uang_kawal' );
+                                $this->Journal->deleteJournal( $document_id, 'uang_keamanan' );
+
+                                if ( !$is_draft || $allowUpdate ) {
+                                    if( !empty($data['Ttuj']['commission']) ) {
+                                        $commissionJournal = $data['Ttuj']['commission'];
+
+                                        if( !empty($data['Ttuj']['commission_extra']) ) {
+                                            $commissionJournal += $data['Ttuj']['commission_extra'];
+                                        }
+
+                                        $this->Journal->setJournal( $document_id, 'commission_coa_debit_id', $commissionJournal, 0, 'commission' );
+                                        $this->Journal->setJournal( $document_id, 'commission_coa_credit_id', 0, $commissionJournal, 'commission' );
+                                    }
+
+                                    if( !empty($data['Ttuj']['uang_jalan_1']) ) {
+                                        $uangJalanJournal = $data['Ttuj']['uang_jalan_1'];
+
+                                        if( !empty($data['Ttuj']['uang_jalan_2']) ) {
+                                            $uangJalanJournal += $data['Ttuj']['uang_jalan_2'];
+                                        }
+
+                                        if( !empty($data['Ttuj']['uang_jalan_extra']) ) {
+                                            $uangJalanJournal += $data['Ttuj']['uang_jalan_extra'];
+                                        }
+
+                                        $this->Journal->setJournal( $document_id, 'uang_jalan_coa_debit_id', $uangJalanJournal, 0, 'uang_jalan' );
+                                        $this->Journal->setJournal( $document_id, 'uang_jalan_coa_credit_id', 0, $uangJalanJournal, 'uang_jalan' );
+                                    }
+
+                                    if( !empty($data['Ttuj']['uang_kuli_muat']) ) {
+                                        $this->Journal->setJournal( $document_id, 'uang_kuli_muat_coa_debit_id', $data['Ttuj']['uang_kuli_muat'], 0, 'uang_kuli_muat' );
+                                        $this->Journal->setJournal( $document_id, 'uang_kuli_muat_coa_credit_id', 0, $data['Ttuj']['uang_kuli_muat'], 'uang_kuli_muat' );
+                                    }
+
+                                    if( !empty($data['Ttuj']['uang_kuli_bongkar']) ) {
+                                        $this->Journal->setJournal( $document_id, 'uang_kuli_bongkar_coa_debit_id', $data['Ttuj']['uang_kuli_bongkar'], 0, 'uang_kuli_bongkar' );
+                                        $this->Journal->setJournal( $document_id, 'uang_kuli_bongkar_coa_credit_id', 0, $data['Ttuj']['uang_kuli_bongkar'], 'uang_kuli_bongkar' );
+                                    }
+
+                                    if( !empty($data['Ttuj']['asdp']) ) {
+                                        $this->Journal->setJournal( $document_id, 'asdp_coa_debit_id', $data['Ttuj']['asdp'], 0, 'asdp' );
+                                        $this->Journal->setJournal( $document_id, 'asdp_coa_credit_id', 0, $data['Ttuj']['asdp'], 'asdp' );
+                                    }
+
+                                    if( !empty($data['Ttuj']['uang_kawal']) ) {
+                                        $this->Journal->setJournal( $document_id, 'uang_kawal_coa_debit_id', $data['Ttuj']['uang_kawal'], 0, 'uang_kawal' );
+                                        $this->Journal->setJournal( $document_id, 'uang_kawal_coa_credit_id', 0, $data['Ttuj']['uang_kawal'], 'uang_kawal' );
+                                    }
+
+                                    if( !empty($data['Ttuj']['uang_keamanan']) ) {
+                                        $this->Journal->setJournal( $document_id, 'uang_keamanan_coa_debit_id', $data['Ttuj']['uang_keamanan'], 0, 'uang_keamanan' );
+                                        $this->Journal->setJournal( $document_id, 'uang_keamanan_coa_credit_id', 0, $data['Ttuj']['uang_keamanan'], 'uang_keamanan' );
+                                    }
+                                }
+
                                 if( empty($data['Ttuj']['is_draft']) && empty($data_local['Ttuj']['is_revenue']) ) {
                                     $revenue = $this->Revenue->getData('first', array(
                                         'conditions' => array(
@@ -959,6 +1027,7 @@ class RevenuesController extends AppController {
                 }
 
                 $this->Ttuj->id = $id;
+                $deleteJournal = false;
 
                 switch ($action_type) {
                     case 'truk_tiba':
@@ -975,10 +1044,66 @@ class RevenuesController extends AppController {
                     
                     default:
                         $this->Ttuj->set('status', 0);
+                        $deleteJournal = true;
                         break;
                 }
 
                 if($this->Ttuj->save()){
+                    $this->loadModel('Journal');
+
+                    if( $deleteJournal && empty($locale['Ttuj']['is_draft']) ) {
+                        if( !empty($locale['Ttuj']['commission']) ) {
+                            $commissionJournal = $locale['Ttuj']['commission'];
+
+                            if( !empty($locale['Ttuj']['commission_extra']) ) {
+                                $commissionJournal += $locale['Ttuj']['commission_extra'];
+                            }
+
+                            $this->Journal->setJournal( $id, 'commission_void_coa_debit_id', $commissionJournal, 0, 'commission_void' );
+                            $this->Journal->setJournal( $id, 'commission_void_coa_credit_id', 0, $commissionJournal, 'commission_void' );
+                        }
+
+                        if( !empty($locale['Ttuj']['uang_jalan_1']) ) {
+                            $uangJalanJournal = $locale['Ttuj']['uang_jalan_1'];
+
+                            if( !empty($locale['Ttuj']['uang_jalan_2']) ) {
+                                $uangJalanJournal += $locale['Ttuj']['uang_jalan_2'];
+                            }
+
+                            if( !empty($locale['Ttuj']['uang_jalan_extra']) ) {
+                                $uangJalanJournal += $locale['Ttuj']['uang_jalan_extra'];
+                            }
+
+                            $this->Journal->setJournal( $id, 'uang_jalan_void_coa_debit_id', $uangJalanJournal, 0, 'uang_jalan_void' );
+                            $this->Journal->setJournal( $id, 'uang_jalan_void_coa_credit_id', 0, $uangJalanJournal, 'uang_jalan_void' );
+                        }
+
+                        if( !empty($locale['Ttuj']['uang_kuli_muat']) ) {
+                            $this->Journal->setJournal( $id, 'uang_kuli_muat_void_coa_debit_id', $locale['Ttuj']['uang_kuli_muat'], 0, 'uang_kuli_muat_void' );
+                            $this->Journal->setJournal( $id, 'uang_kuli_muat_void_coa_credit_id', 0, $locale['Ttuj']['uang_kuli_muat'], 'uang_kuli_muat_void' );
+                        }
+
+                        if( !empty($locale['Ttuj']['uang_kuli_bongkar']) ) {
+                            $this->Journal->setJournal( $id, 'uang_kuli_bongkar_void_coa_debit_id', $locale['Ttuj']['uang_kuli_bongkar'], 0, 'uang_kuli_bongkar_void' );
+                            $this->Journal->setJournal( $id, 'uang_kuli_bongkar_void_coa_credit_id', 0, $locale['Ttuj']['uang_kuli_bongkar'], 'uang_kuli_bongkar_void' );
+                        }
+
+                        if( !empty($locale['Ttuj']['asdp']) ) {
+                            $this->Journal->setJournal( $id, 'asdp_void_coa_debit_id', $locale['Ttuj']['asdp'], 0, 'asdp_void' );
+                            $this->Journal->setJournal( $id, 'asdp_void_coa_credit_id', 0, $locale['Ttuj']['asdp'], 'asdp_void' );
+                        }
+
+                        if( !empty($locale['Ttuj']['uang_kawal']) ) {
+                            $this->Journal->setJournal( $id, 'uang_kawal_void_coa_debit_id', $locale['Ttuj']['uang_kawal'], 0, 'uang_kawal_void' );
+                            $this->Journal->setJournal( $id, 'uang_kawal_void_coa_credit_id', 0, $locale['Ttuj']['uang_kawal'], 'uang_kawal_void' );
+                        }
+
+                        if( !empty($locale['Ttuj']['uang_keamanan']) ) {
+                            $this->Journal->setJournal( $id, 'uang_keamanan_void_coa_debit_id', $locale['Ttuj']['uang_keamanan'], 0, 'uang_keamanan_void' );
+                            $this->Journal->setJournal( $id, 'uang_keamanan_void_coa_credit_id', 0, $locale['Ttuj']['uang_keamanan'], 'uang_keamanan_void' );
+                        }
+                    }
+
                     $this->MkCommon->setCustomFlash(__('TTUJ berhasil dibatalkan.'), 'success');
                     $this->Log->logActivity( sprintf(__('TTUJ ID #%s berhasil dibatalkan.'), $id), $this->user_data, $this->RequestHandler, $this->params );
                 }else{
@@ -3630,6 +3755,7 @@ class RevenuesController extends AppController {
             $this->Invoice->set($data);
 
             if($this->Invoice->validates()){
+                $this->loadModel('Journal');
                 $revenues = $this->Revenue->getData('all', array(
                     'conditions' => array(
                         'Revenue.customer_id' => $customer_id,
@@ -3674,13 +3800,20 @@ class RevenuesController extends AppController {
                         if(!empty($result)){
                             foreach ($result as $key => $value) {
                                 $this->Invoice->create();
-                                $invoice_number = $this->Invoice->getNoInvoice();
+                                $invoice_number = $this->Invoice->getNoInvoice( $customer );
                                 $data['Invoice']['no_invoice'] = $invoice_number;
                                 $data['Invoice']['type_invoice'] = 'tarif';
                                 $data['Invoice']['due_invoice'] = $customer['Customer']['term_of_payment'];
                                 
                                 $this->Invoice->set($data);
                                 if($this->Invoice->save()){
+                                    $invoice_id = $this->Invoice->id;
+
+                                    if( !empty($data['Invoice']['total']) ) {
+                                        $this->Journal->setJournal( $invoice_id, 'invoice_coa_debit_id', $data['Invoice']['total'], 0, 'invoice' );
+                                        $this->Journal->setJournal( $invoice_id, 'invoice_coa_credit_id', 0, $data['Invoice']['total'], 'invoice' );
+                                    }
+
                                     foreach ($value as $key => $value_detail) {
                                         $this->Revenue->RevenueDetail->id = $value_detail['RevenueDetail']['id'];
                                         $this->Revenue->RevenueDetail->set('invoice_id', $this->Invoice->id);
@@ -3706,6 +3839,11 @@ class RevenuesController extends AppController {
 
                     if($this->Invoice->save()){
                         $invoice_id = $this->Invoice->id;
+
+                        if( !empty($data['Invoice']['total']) ) {
+                            $this->Journal->setJournal( $invoice_id, 'invoice_coa_debit_id', $data['Invoice']['total'], 0, 'invoice' );
+                            $this->Journal->setJournal( $invoice_id, 'invoice_coa_credit_id', 0, $data['Invoice']['total'], 'invoice' );
+                        }
 
                         if( !empty($customer['CustomerGroup']['CustomerGroupPattern']) ) {
                             $last_number = str_replace($customer['CustomerGroup']['CustomerGroupPattern']['pattern'], '', $data['Invoice']['no_invoice']);
@@ -4219,11 +4357,16 @@ class RevenuesController extends AppController {
                     }else{
                         $invoice_has_paid = $this->Invoice->InvoicePaymentDetail->getData('first', array(
                             'conditions' => array(
-                                'InvoicePaymentDetail.invoice_id' => $_invoice_id
+                                'InvoicePaymentDetail.invoice_id' => $_invoice_id,
+                                'InvoicePayment.status' => 1,
+                                'InvoicePayment.is_canceled' => 0,
                             ),
                             'fields' => array(
                                 'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid'
-                            )
+                            ),
+                            'contain' => array(
+                                'InvoicePayment'
+                            ),
                         ));
 
                         $invoice_has_paid = (!empty($invoice_has_paid[0]['invoice_has_paid'])) ? $invoice_has_paid[0]['invoice_has_paid'] : 0;
@@ -4269,7 +4412,14 @@ class RevenuesController extends AppController {
                 $this->Invoice->InvoicePaymentDetail->InvoicePayment->set($data);
 
                 if($this->Invoice->InvoicePaymentDetail->InvoicePayment->save()){
+                    $this->loadModel('Journal');
                     $invoice_payment_id = $this->Invoice->InvoicePaymentDetail->InvoicePayment->id;
+                    $this->Journal->deleteJournal( $invoice_payment_id, 'invoice_payment' );
+
+                    if( !empty($data['InvoicePayment']['grand_total_payment']) ) {
+                        $this->Journal->setJournal( $invoice_payment_id, 'pembayaran_invoice_coa_debit_id', $data['InvoicePayment']['grand_total_payment'], 0, 'invoice_payment' );
+                        $this->Journal->setJournal( $invoice_payment_id, 'pembayaran_invoice_coa_credit_id', 0, $data['InvoicePayment']['grand_total_payment'], 'invoice_payment' );
+                    }
 
                     if($id && $data_local){
                         $this->Invoice->InvoicePaymentDetail->deleteAll(array(
@@ -4495,7 +4645,12 @@ class RevenuesController extends AppController {
                     'canceled_date' => date('d/m/Y')
                 ));
 
-                if($this->Invoice->InvoicePaymentDetail->InvoicePayment->save()){
+                if($this->Invoice->InvoicePaymentDetail->InvoicePayment->save()){$this->loadModel('Journal');
+                    if( !empty($invoice_payment['InvoicePayment']['grand_total_payment']) ) {
+                        $this->Journal->setJournal( $id, 'pembayaran_invoice_void_coa_debit_id', $invoice_payment['InvoicePayment']['grand_total_payment'], 0, 'invoice_payment_void' );
+                        $this->Journal->setJournal( $id, 'pembayaran_invoice_void_coa_credit_id', 0, $invoice_payment['InvoicePayment']['grand_total_payment'], 'invoice_payment_void' );
+                    }
+
                     $this->MkCommon->setCustomFlash(__('Berhasil menghapus invoice pembayaran'), 'success');
                     $this->Log->logActivity( sprintf(__('Berhasil menghapus invoice pembayara ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
                 }else{
@@ -4767,6 +4922,13 @@ class RevenuesController extends AppController {
                     $this->Invoice->set($this->request->data);
 
                     if($this->Invoice->save()){
+                        $this->loadModel('Journal');
+
+                        if( !empty($invoice['Invoice']['total']) ) {
+                            $this->Journal->setJournal( $id, 'invoice_void_coa_debit_id', $invoice['Invoice']['total'], 0, 'invoice_void' );
+                            $this->Journal->setJournal( $id, 'invoice_void_coa_credit_id', 0, $invoice['Invoice']['total'], 'invoice_void' );
+                        }
+
                         $this->Invoice->InvoiceDetail->updateAll(
                             array(
                                 'InvoiceDetail.status' => 0
@@ -5861,6 +6023,356 @@ class RevenuesController extends AppController {
                     'layout_css', 'layout_js'
                 ));
             }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    function uang_jalan_payments(){
+        // if( in_array('view_invoice_payments', $this->allowModule) ) {
+            $this->loadModel('UangJalanPayment');
+            $this->loadModel('Ttuj');
+            
+            $this->set('active_menu', 'uang_jalan_payments');
+            $this->set('sub_module_title', __('Pembayaran Uang Jalan'));
+            $conditions = array();
+
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['from'])){
+                    $from = urldecode(rawurldecode($refine['from']));
+                    $this->request->data['UangJalanPayment']['date_from'] = $from;
+                    $conditions['DATE_FORMAT(UangJalanPayment.date_payment, \'%Y-%m-%d\') >= '] = $this->MkCommon->getDate($from);
+                }
+                if(!empty($refine['to'])){
+                    $to = urldecode(rawurldecode($refine['to']));
+                    $this->request->data['UangJalanPayment']['date_to'] = $to;
+                    $conditions['DATE_FORMAT(UangJalanPayment.date_payment, \'%Y-%m-%d\') <= '] = $this->MkCommon->getDate($to);
+                }
+                if(!empty($refine['nodoc'])){
+                    $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));
+                    $this->request->data['UangJalanPayment']['nodoc'] = $to;
+                    $conditions['UangJalanPayment.nodoc LIKE'] = '%'.$to.'%';
+                }
+            }
+
+            $this->paginate = $this->UangJalanPayment->getData('paginate', array(
+                'conditions' => $conditions,
+                'order' => array(
+                    'UangJalanPayment.created' => 'DESC',
+                    'UangJalanPayment.id' => 'DESC',
+                ),
+            ), false);
+            $uangJalanPayments = $this->paginate('UangJalanPayment');
+            $ttujs = $this->Ttuj->getData('list', array(
+                'fields' => array(
+                    'Ttuj.id', 'Ttuj.no_ttuj'
+                )
+            ));
+
+            $this->set('uangJalanPayments', $uangJalanPayments); 
+            $this->set('ttujs', $ttujs);
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    function commission_payments(){
+        // if( in_array('view_invoice_payments', $this->allowModule) ) {
+            $this->loadModel('UangJalanPayment');
+            $this->loadModel('Ttuj');
+            
+            $this->set('active_menu', 'uang_jalan_payments');
+            $this->set('sub_module_title', __('Pembayaran Uang Jalan'));
+            $conditions = array();
+
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['from'])){
+                    $from = urldecode(rawurldecode($refine['from']));
+                    $this->request->data['UangJalanPayment']['date_from'] = $from;
+                    $conditions['DATE_FORMAT(UangJalanPayment.date_payment, \'%Y-%m-%d\') >= '] = $this->MkCommon->getDate($from);
+                }
+                if(!empty($refine['to'])){
+                    $to = urldecode(rawurldecode($refine['to']));
+                    $this->request->data['UangJalanPayment']['date_to'] = $to;
+                    $conditions['DATE_FORMAT(UangJalanPayment.date_payment, \'%Y-%m-%d\') <= '] = $this->MkCommon->getDate($to);
+                }
+                if(!empty($refine['nodoc'])){
+                    $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));
+                    $this->request->data['UangJalanPayment']['nodoc'] = $to;
+                    $conditions['UangJalanPayment.nodoc LIKE'] = '%'.$to.'%';
+                }
+            }
+
+            $this->paginate = $this->UangJalanPayment->getData('paginate', array(
+                'conditions' => $conditions,
+                'order' => array(
+                    'UangJalanPayment.created' => 'DESC',
+                    'UangJalanPayment.id' => 'DESC',
+                ),
+            ), false);
+            $uangJalanPayments = $this->paginate('UangJalanPayment');
+            $ttujs = $this->Ttuj->getData('list', array(
+                'fields' => array(
+                    'Ttuj.id', 'Ttuj.no_ttuj'
+                )
+            ));
+
+            $this->set('uangJalanPayments', $uangJalanPayments); 
+            $this->set('ttujs', $ttujs);
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    function uang_kuli_muat_payments(){
+        // if( in_array('view_invoice_payments', $this->allowModule) ) {
+            $this->loadModel('UangJalanPayment');
+            $this->loadModel('Ttuj');
+            
+            $this->set('active_menu', 'uang_jalan_payments');
+            $this->set('sub_module_title', __('Pembayaran Uang Jalan'));
+            $conditions = array();
+
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['from'])){
+                    $from = urldecode(rawurldecode($refine['from']));
+                    $this->request->data['UangJalanPayment']['date_from'] = $from;
+                    $conditions['DATE_FORMAT(UangJalanPayment.date_payment, \'%Y-%m-%d\') >= '] = $this->MkCommon->getDate($from);
+                }
+                if(!empty($refine['to'])){
+                    $to = urldecode(rawurldecode($refine['to']));
+                    $this->request->data['UangJalanPayment']['date_to'] = $to;
+                    $conditions['DATE_FORMAT(UangJalanPayment.date_payment, \'%Y-%m-%d\') <= '] = $this->MkCommon->getDate($to);
+                }
+                if(!empty($refine['nodoc'])){
+                    $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));
+                    $this->request->data['UangJalanPayment']['nodoc'] = $to;
+                    $conditions['UangJalanPayment.nodoc LIKE'] = '%'.$to.'%';
+                }
+            }
+
+            $this->paginate = $this->UangJalanPayment->getData('paginate', array(
+                'conditions' => $conditions,
+                'order' => array(
+                    'UangJalanPayment.created' => 'DESC',
+                    'UangJalanPayment.id' => 'DESC',
+                ),
+            ), false);
+            $uangJalanPayments = $this->paginate('UangJalanPayment');
+            $ttujs = $this->Ttuj->getData('list', array(
+                'fields' => array(
+                    'Ttuj.id', 'Ttuj.no_ttuj'
+                )
+            ));
+
+            $this->set('uangJalanPayments', $uangJalanPayments); 
+            $this->set('ttujs', $ttujs);
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    function uang_kuli_bongkar_payments(){
+        // if( in_array('view_invoice_payments', $this->allowModule) ) {
+            $this->loadModel('UangJalanPayment');
+            $this->loadModel('Ttuj');
+            
+            $this->set('active_menu', 'uang_jalan_payments');
+            $this->set('sub_module_title', __('Pembayaran Uang Jalan'));
+            $conditions = array();
+
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['from'])){
+                    $from = urldecode(rawurldecode($refine['from']));
+                    $this->request->data['UangJalanPayment']['date_from'] = $from;
+                    $conditions['DATE_FORMAT(UangJalanPayment.date_payment, \'%Y-%m-%d\') >= '] = $this->MkCommon->getDate($from);
+                }
+                if(!empty($refine['to'])){
+                    $to = urldecode(rawurldecode($refine['to']));
+                    $this->request->data['UangJalanPayment']['date_to'] = $to;
+                    $conditions['DATE_FORMAT(UangJalanPayment.date_payment, \'%Y-%m-%d\') <= '] = $this->MkCommon->getDate($to);
+                }
+                if(!empty($refine['nodoc'])){
+                    $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));
+                    $this->request->data['UangJalanPayment']['nodoc'] = $to;
+                    $conditions['UangJalanPayment.nodoc LIKE'] = '%'.$to.'%';
+                }
+            }
+
+            $this->paginate = $this->UangJalanPayment->getData('paginate', array(
+                'conditions' => $conditions,
+                'order' => array(
+                    'UangJalanPayment.created' => 'DESC',
+                    'UangJalanPayment.id' => 'DESC',
+                ),
+            ), false);
+            $uangJalanPayments = $this->paginate('UangJalanPayment');
+            $ttujs = $this->Ttuj->getData('list', array(
+                'fields' => array(
+                    'Ttuj.id', 'Ttuj.no_ttuj'
+                )
+            ));
+
+            $this->set('uangJalanPayments', $uangJalanPayments); 
+            $this->set('ttujs', $ttujs);
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    function uang_penyebrangan_payments(){
+        // if( in_array('view_invoice_payments', $this->allowModule) ) {
+            $this->loadModel('UangJalanPayment');
+            $this->loadModel('Ttuj');
+            
+            $this->set('active_menu', 'uang_jalan_payments');
+            $this->set('sub_module_title', __('Pembayaran Uang Jalan'));
+            $conditions = array();
+
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['from'])){
+                    $from = urldecode(rawurldecode($refine['from']));
+                    $this->request->data['UangJalanPayment']['date_from'] = $from;
+                    $conditions['DATE_FORMAT(UangJalanPayment.date_payment, \'%Y-%m-%d\') >= '] = $this->MkCommon->getDate($from);
+                }
+                if(!empty($refine['to'])){
+                    $to = urldecode(rawurldecode($refine['to']));
+                    $this->request->data['UangJalanPayment']['date_to'] = $to;
+                    $conditions['DATE_FORMAT(UangJalanPayment.date_payment, \'%Y-%m-%d\') <= '] = $this->MkCommon->getDate($to);
+                }
+                if(!empty($refine['nodoc'])){
+                    $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));
+                    $this->request->data['UangJalanPayment']['nodoc'] = $to;
+                    $conditions['UangJalanPayment.nodoc LIKE'] = '%'.$to.'%';
+                }
+            }
+
+            $this->paginate = $this->UangJalanPayment->getData('paginate', array(
+                'conditions' => $conditions,
+                'order' => array(
+                    'UangJalanPayment.created' => 'DESC',
+                    'UangJalanPayment.id' => 'DESC',
+                ),
+            ), false);
+            $uangJalanPayments = $this->paginate('UangJalanPayment');
+            $ttujs = $this->Ttuj->getData('list', array(
+                'fields' => array(
+                    'Ttuj.id', 'Ttuj.no_ttuj'
+                )
+            ));
+
+            $this->set('uangJalanPayments', $uangJalanPayments); 
+            $this->set('ttujs', $ttujs);
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    function uang_kawal_payments(){
+        // if( in_array('view_invoice_payments', $this->allowModule) ) {
+            $this->loadModel('UangJalanPayment');
+            $this->loadModel('Ttuj');
+            
+            $this->set('active_menu', 'uang_jalan_payments');
+            $this->set('sub_module_title', __('Pembayaran Uang Jalan'));
+            $conditions = array();
+
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['from'])){
+                    $from = urldecode(rawurldecode($refine['from']));
+                    $this->request->data['UangJalanPayment']['date_from'] = $from;
+                    $conditions['DATE_FORMAT(UangJalanPayment.date_payment, \'%Y-%m-%d\') >= '] = $this->MkCommon->getDate($from);
+                }
+                if(!empty($refine['to'])){
+                    $to = urldecode(rawurldecode($refine['to']));
+                    $this->request->data['UangJalanPayment']['date_to'] = $to;
+                    $conditions['DATE_FORMAT(UangJalanPayment.date_payment, \'%Y-%m-%d\') <= '] = $this->MkCommon->getDate($to);
+                }
+                if(!empty($refine['nodoc'])){
+                    $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));
+                    $this->request->data['UangJalanPayment']['nodoc'] = $to;
+                    $conditions['UangJalanPayment.nodoc LIKE'] = '%'.$to.'%';
+                }
+            }
+
+            $this->paginate = $this->UangJalanPayment->getData('paginate', array(
+                'conditions' => $conditions,
+                'order' => array(
+                    'UangJalanPayment.created' => 'DESC',
+                    'UangJalanPayment.id' => 'DESC',
+                ),
+            ), false);
+            $uangJalanPayments = $this->paginate('UangJalanPayment');
+            $ttujs = $this->Ttuj->getData('list', array(
+                'fields' => array(
+                    'Ttuj.id', 'Ttuj.no_ttuj'
+                )
+            ));
+
+            $this->set('uangJalanPayments', $uangJalanPayments); 
+            $this->set('ttujs', $ttujs);
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
+
+    function uang_keamanan_payments(){
+        // if( in_array('view_invoice_payments', $this->allowModule) ) {
+            $this->loadModel('UangJalanPayment');
+            $this->loadModel('Ttuj');
+            
+            $this->set('active_menu', 'uang_jalan_payments');
+            $this->set('sub_module_title', __('Pembayaran Uang Jalan'));
+            $conditions = array();
+
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['from'])){
+                    $from = urldecode(rawurldecode($refine['from']));
+                    $this->request->data['UangJalanPayment']['date_from'] = $from;
+                    $conditions['DATE_FORMAT(UangJalanPayment.date_payment, \'%Y-%m-%d\') >= '] = $this->MkCommon->getDate($from);
+                }
+                if(!empty($refine['to'])){
+                    $to = urldecode(rawurldecode($refine['to']));
+                    $this->request->data['UangJalanPayment']['date_to'] = $to;
+                    $conditions['DATE_FORMAT(UangJalanPayment.date_payment, \'%Y-%m-%d\') <= '] = $this->MkCommon->getDate($to);
+                }
+                if(!empty($refine['nodoc'])){
+                    $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));
+                    $this->request->data['UangJalanPayment']['nodoc'] = $to;
+                    $conditions['UangJalanPayment.nodoc LIKE'] = '%'.$to.'%';
+                }
+            }
+
+            $this->paginate = $this->UangJalanPayment->getData('paginate', array(
+                'conditions' => $conditions,
+                'order' => array(
+                    'UangJalanPayment.created' => 'DESC',
+                    'UangJalanPayment.id' => 'DESC',
+                ),
+            ), false);
+            $uangJalanPayments = $this->paginate('UangJalanPayment');
+            $ttujs = $this->Ttuj->getData('list', array(
+                'fields' => array(
+                    'Ttuj.id', 'Ttuj.no_ttuj'
+                )
+            ));
+
+            $this->set('uangJalanPayments', $uangJalanPayments); 
+            $this->set('ttujs', $ttujs);
         // } else {
         //     $this->redirect($this->referer());
         // }

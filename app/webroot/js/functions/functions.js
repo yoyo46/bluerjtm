@@ -270,6 +270,12 @@ var calcUangJalan = function () {
         $('.wrapper_uang_jalan_extra').addClass('hide');
         $('.wrapper_min_capacity').addClass('hide');
     }
+
+    if( commission_extra != 0 ) {
+        $('.commission_extra').val( formatNumber( commission_extra, 0 ) );
+    } else {
+        $('.commission_extra').val(0);
+    }
 };
 
 var qtyMuatanPress = function ( obj ) {

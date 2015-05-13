@@ -272,7 +272,9 @@
                         // if( !empty($value['Ttuj']['is_invoice']) ) {
                         //     echo $this->Html->tag('td', '<span class="label label-code">Invoiced</span>');
                         // } else
-                        if(!empty($value['Ttuj']['is_laka'])){
+                        if(empty($value['Ttuj']['status'])){
+                            echo $this->Html->tag('td', '<span class="label label-danger">Void</span>');
+                        } else if(!empty($value['Ttuj']['is_laka'])){
                             echo $this->Html->tag('td', '<span class="label label-danger">LAKA</span>');
                         } else if(!empty($value['Ttuj']['is_pool'])){
                             echo $this->Html->tag('td', '<span class="label label-success">Sampai Pool</span>');
@@ -313,7 +315,7 @@
                                 }
 
                                 if( in_array(sprintf('delete_%s', $active_menu), $allowModule) ) {
-                                    echo $this->Html->link(__('Batalkan'), array(
+                                    echo $this->Html->link(__('Hapus'), array(
                                         'controller' => 'revenues',
                                         'action' => 'ttuj_toggle',
                                         $id,
@@ -321,7 +323,7 @@
                                     ), array(
                                         'class' => 'btn btn-danger btn-xs',
                                         'title' => 'disable status brand'
-                                    ), __('Apakah Anda yakin akan membatalkan data ini?'));
+                                    ), __('Apakah Anda yakin akan menghapus data ini?'));
                                 }
                             } else {
                                 // if( empty($value['Ttuj']['is_invoice']) && in_array('update_ttuj', $allowModule) ) {
@@ -349,7 +351,7 @@
                                 ));
 
                                 if( in_array('delete_ttuj', $allowModule) ) {
-                                    echo $this->Html->link(__('Hapus'), array(
+                                    echo $this->Html->link(__('Void'), array(
                                         'controller' => 'revenues',
                                         'action' => 'ttuj_toggle',
                                         $id

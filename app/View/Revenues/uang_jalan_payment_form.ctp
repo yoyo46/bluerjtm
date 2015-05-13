@@ -1,11 +1,11 @@
 <?php
-		$this->Html->addCrumb(__('Pembayaran Invoice'), array(
+		$this->Html->addCrumb(__('Pembayaran Uang Jalan'), array(
 			'controller' => 'revenues',
-			'action' => 'invoice_payments'
+			'action' => 'uang_jalan_payments'
 		));
 		$this->Html->addCrumb($sub_module_title);
 
-		echo $this->Form->create('InvoicePayment', array(
+		echo $this->Form->create('UangJalanPayment', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
@@ -15,7 +15,7 @@
 <div class="ttuj-form">
 	<div class="box box-primary">
 	    <div class="box-header">
-	        <h3 class="box-title"><?php echo __('Informasi Invoice'); ?></h3>
+	        <h3 class="box-title"><?php echo __('Informasi Uang Jalan'); ?></h3>
 	    </div>
 	    <div class="box-body">
 	        <div class="form-group">
@@ -30,34 +30,22 @@
 	        </div>
 	        <div class="form-group">
 	        	<?php
-                    	echo $this->Form->label('customer_id', __('Customer *'));
+                    	echo $this->Form->label('ttuj_id', __('No. TTUJ *'));
 	        	?>
 	        	<div class="row">
 	        		<div class="col-sm-10">
 	        			<?php 
-								echo $this->Form->input('customer_id',array(
+								echo $this->Form->input('ttuj_id',array(
 									'label'=> false, 
-									'class'=>'form-control customer-ajax',
+									'class'=>'form-control ttuj-ajax',
 									'required' => false,
-									'empty' => __('Pilih Customer'),
-									'options' => $list_customer,
-									'id' => 'customer-val'
+									'empty' => __('Pilih TTUJ'),
+									'id' => 'ttuj-val'
 								));
 						?>
 	        		</div>
 	        	</div>
 	        </div>
-	        <!-- <div class="form-group">
-	        	<?php 
-						// echo $this->Form->input('coa_id',array(
-						// 	'label'=> __('Account *'), 
-						// 	'class'=>'form-control',
-						// 	'required' => false,
-						// 	'empty' => __('Pilih Kas Bank'),
-						// 	'options' => $coas
-						// ));
-				?>
-	        </div> -->
 	        <div class="form-group">
 	        	<?php 
 						echo $this->Form->input('date_payment',array(
@@ -66,7 +54,7 @@
 							'class'=>'form-control custom-date',
 							'required' => false,
 							'placeholder' => __('Tanggal Pembayaran'),
-							'value' => (!empty($this->request->data['InvoicePayment']['date_payment'])) ? $this->request->data['InvoicePayment']['date_payment'] : date('d/m/Y')
+							'value' => (!empty($this->request->data['UangJalanPayment']['date_payment'])) ? $this->request->data['UangJalanPayment']['date_payment'] : date('d/m/Y')
 						));
 				?>
 	        </div>
@@ -86,8 +74,8 @@
 	        			$attrBrowse = array(
                             'class' => 'ajaxModal visible-xs',
                             'escape' => false,
-                            'title' => __('Invoice Customer'),
-                            'data-action' => 'browse-invoice',
+                            'title' => __('TTUJ'),
+                            'data-action' => 'browse-ttuj-invoice',
                             'data-change' => 'getTtujInfoRevenue',
                             'url' => $this->Html->url( array(
 	                            'controller'=> 'ajax', 
@@ -100,33 +88,6 @@
 	        </div>
 	    </div>
 	</div>
-	<div class="invoice-info-detail <?php echo (!empty($this->request->data) && !empty($invoices)) ? '' : 'hide';?>">
-		<div class="box box-primary">
-		    <div class="box-header">
-		        <h3 class="box-title"><?php echo __('Detail Info Pembayaran Invoice'); ?></h3>
-		    </div>
-		    <div class="box-body table-responsive">
-		        <table class="table table-hover">
-		        	<thead>
-		        		<tr>
-		        			<th><?php echo __('No.Invoice');?></th>
-		                    <th><?php echo __('Tgl Invoice');?></th>
-		                    <th class="text-center"><?php echo __('Periode');?></th>
-		                    <th class="text-center"><?php echo __('Total');?></th>
-		                    <th class="text-center"><?php echo __('Telah Dibayar');?></th>
-		                    <th class="text-center" width="15%"><?php echo __('Bayar');?></th>
-		                    <th class="text-center"><?php echo __('Action');?></th>
-		        		</tr>
-		        	</thead>
-		        	<tbody class="ttuj-info-table">
-		                <?php
-				    		echo $this->element('blocks/revenues/info_invoice_payment_detail');
-				    	?>
-		        	</tbody>
-		    	</table>
-		    </div>
-		</div>
-    </div>
 	<div class="box-footer text-center action">
 		<?php
 	    		echo $this->Html->link(__('Kembali'), array(

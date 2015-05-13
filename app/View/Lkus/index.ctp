@@ -80,14 +80,14 @@
                             }
 
                             if( in_array('delete_lkus', $allowModule) ) {
-                                echo $this->Html->link(__('Hapus'), array(
+                                echo $this->Html->link(__('Void'), array(
                                     'controller' => 'lkus',
                                     'action' => 'toggle',
                                     $id
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs',
                                     'title' => 'disable status brand'
-                                ), __('Apakah Anda yakin akan menghapus data ini?'));
+                                ), __('Apakah Anda yakin akan mengbatalkan data ini?'));
                             }
                     ?>
                 </td>

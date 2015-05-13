@@ -718,6 +718,7 @@ class SettingsController extends AppController {
                 $this->Coa->id = $id;
                 $msg = 'merubah';
                 $data['Coa']['level'] = $data_local['Coa']['level'];
+                $data['Coa']['id'] = $id;
             }else{
                 $this->Coa->create();
                 $msg = 'menambah';
