@@ -1128,6 +1128,7 @@ class AjaxController extends AppController {
             'Ttuj.is_draft' => 0,
             'Ttuj.is_laka' => 0,
         );
+        $orders = array();
 
         if(!empty($this->request->data)){
             if(!empty($this->request->data['Ttuj']['nottuj'])){
@@ -1219,6 +1220,16 @@ class AjaxController extends AppController {
                 $conditions['Ttuj.truck_id'] = $ttuj_id;
 				$data_change = 'laka-ttuj-change';
                 break;
+
+            case 'uang_jalan_payment':
+                $conditions['Ttuj.is_laka'] = array( 0, 1 );
+                $conditions['Ttuj.paid_uang_jalan'] = 0;
+				$data_change = 'ttujID';
+        		$orders = array(
+	                'Ttuj.created' => 'ASC',
+	                'Ttuj.id' => 'ASC',
+	            );
+                break;
             
             default:
                 $conditions['Ttuj.is_arrive'] = 0;
@@ -1227,6 +1238,7 @@ class AjaxController extends AppController {
 
         $this->paginate = $this->Ttuj->getData('paginate', array(
             'conditions' => $conditions,
+            'order' => $orders,
             'limit' => Configure::read('__Site.config_pagination'),
         ));
         $ttujs = $this->paginate('Ttuj');
@@ -1857,6 +1869,13 @@ class AjaxController extends AppController {
         	'prepayment_id'
     	));
 		$this->render('get_customer');
+	}
+
+	function getInfoTtujPayment( $ttuj_id, $action_type = 'uang_jalan'){
+		$this->loadModel('Ttuj');
+		$result = $this->Ttuj->getTtujPayment($ttuj_id, $action_type);
+		echo json_encode($result);
+		$this->render(false);
 	}
 }
 ?>

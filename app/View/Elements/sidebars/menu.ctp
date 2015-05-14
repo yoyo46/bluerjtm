@@ -795,7 +795,8 @@
                         $settingMenu = array(
                             'cash_bank', 'approval_setting', 'kir_payments',
                             'stnk_payments', 'siup_payments', 'invoice_payments', 
-                            'lku_payments', 'coa_setting', 'ksu_payments'
+                            'lku_payments', 'coa_setting', 'ksu_payments',
+                            'uang_jalan_payments'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {

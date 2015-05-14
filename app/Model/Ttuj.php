@@ -279,5 +279,54 @@ class Ttuj extends AppModel {
 
         return $data;
     }
+
+    function getTtujPayment ( $ttuj_id, $data_action ) {
+        $data_ttuj = $this->getData('first', array(
+            'conditions' => array(
+                'Ttuj.id' => $ttuj_id,
+            ),
+        ));
+        $total = 0;
+        $customer_name = false;
+        $from_name = false;
+        $to_name = false;
+
+        if( !empty($data_ttuj) ) {
+            $this->CustomerNoType = ClassRegistry::init('CustomerNoType');
+            $customer_id = !empty($data_ttuj['Ttuj']['customer_id'])?$data_ttuj['Ttuj']['customer_id']:false;
+            $data_ttuj = $this->Customer->getMerge($data_ttuj, $customer_id);
+            $customer_name = !empty($data_ttuj['Customer']['customer_name_code'])?$data_ttuj['Customer']['customer_name_code']:false;
+            $from_name = !empty($data_ttuj['Ttuj']['from_city_name'])?$data_ttuj['Ttuj']['from_city_name']:false;
+            $to_name = !empty($data_ttuj['Ttuj']['to_city_name'])?$data_ttuj['Ttuj']['to_city_name']:false;
+
+            switch ($data_action) {
+                case 'value':
+                    # code...
+                    break;
+                
+                default:
+                    $uang_jalan_1 = !empty($data_ttuj['Ttuj']['uang_jalan_1'])?$data_ttuj['Ttuj']['uang_jalan_1']:0;
+                    $uang_jalan_2 = !empty($data_ttuj['Ttuj']['uang_jalan_2'])?$data_ttuj['Ttuj']['uang_jalan_2']:0;
+                    $uang_jalan_extra = !empty($data_ttuj['Ttuj']['uang_jalan_extra'])?$data_ttuj['Ttuj']['uang_jalan_extra']:0;
+                    $total = $uang_jalan_1 + $uang_jalan_2 + $uang_jalan_extra;
+                    break;
+            }
+        }
+
+        return array(
+            'total' => $total,
+            'customer_name' => $customer_name,
+            'from_name' => $from_name,
+            'to_name' => $to_name,
+        );
+    }
+
+    function setTtuj ( $ttuj_id, $data ) {
+        $data['Ttuj'] = $data;
+        $this->set($data);
+        $this->id = $ttuj_id;
+
+        return $this->save();
+    }
 }
 ?>

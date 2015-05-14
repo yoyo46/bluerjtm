@@ -43,7 +43,9 @@ class UangJalanPayment extends AppModel {
             'order'=> array(
                 'UangJalanPayment.id' => 'DESC'
             ),
-            'contain' => array(),
+            'contain' => array(
+                'Ttuj'
+            ),
             'fields' => array(),
         );
 

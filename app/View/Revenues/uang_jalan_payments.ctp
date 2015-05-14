@@ -1,6 +1,6 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
-        // echo $this->element('blocks/revenues/search_invoice_payments');
+        echo $this->element('blocks/revenues/search_uang_jalan_payments');
 ?>
 <div class="box">
     <div class="box-header">
@@ -34,7 +34,8 @@
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', $this->Paginator->sort('UangJalanPayment.total_payment', __('Total Dibayar'), array(
-                            'escape' => false
+                            'escape' => false,
+                            'class' => 'text-center'
                         )));
                         echo $this->Html->tag('th', $this->Paginator->sort('UangJalanPayment.date_payment', __('Tgl pembayaran'), array(
                             'escape' => false
@@ -83,21 +84,23 @@
                 <td class="action">
                     <?php 
                         if(empty($value['UangJalanPayment']['is_canceled'])){
-                            echo $this->Html->link('Info', array(
+                            echo $this->Html->link('Detail', array(
                                 'controller' => 'revenues',
-                                'action' => 'detail_invoice_payment',
+                                'action' => 'detail_uang_jalan_payment',
                                 $id
                             ), array(
                                 'class' => 'btn btn-info btn-xs'
                             ));
                             
-                            echo $this->Html->link('Void', array(
+                            echo $this->Html->link(__('Void'), array(
                                 'controller' => 'revenues',
-                                'action' => 'invoice_payment_delete',
+                                'action' => 'uang_jalan_payment_delete',
                                 $id
                             ), array(
-                                'class' => 'btn btn-danger btn-xs'
-                            ), __('Apakah Anda yakin ingin mengbatalkan pembayaran invoice ini?'));
+                                'class' => 'btn btn-danger btn-xs ajaxModal',
+                                'data-action' => 'cancel_invoice',
+                                'title' => __('Void Pembayaran Uang Jalan')
+                            ));
                         }
                     ?>
                 </td>
