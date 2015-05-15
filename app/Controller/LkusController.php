@@ -272,7 +272,7 @@ class LkusController extends AppController {
             'conditions' => array(
                 'OR' => array(
                     array(
-                        'Ttuj.is_pool' => 1,
+                        'Ttuj.is_bongkaran' => 1,
                         'Ttuj.is_draft' => 0,
                         'Ttuj.status' => 1,
                     ),
@@ -1241,7 +1241,7 @@ class LkusController extends AppController {
             'conditions' => array(
                 'OR' => array(
                     array(
-                        'Ttuj.is_pool' => 1,
+                        'Ttuj.is_bongkaran' => 1,
                         'Ttuj.is_draft' => 0,
                         'Ttuj.status' => 1,
                     ),
