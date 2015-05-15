@@ -1188,8 +1188,8 @@ class TrucksController extends AppController {
             $this->loadModel('KirPayment');
             $conditions = array(
                 'OR' => array(
-                    'Kir.paid' => 1,
-                    'Kir.rejected' => 1,
+                    // 'Kir.paid' => 1,
+                    // 'Kir.rejected' => 1,
                 ),
             );
 
@@ -1205,7 +1205,11 @@ class TrucksController extends AppController {
             $this->paginate = $this->KirPayment->getData('paginate', array(
                 'conditions' => $conditions,
                 'limit' => Configure::read('__Site.config_pagination'),
-            ));
+                'contain' => array(
+                    'Kir'
+                )
+            ), false);
+
             $kirPayments = $this->paginate('KirPayment');
 
             $this->set('active_menu', 'kir_payments');
@@ -1368,6 +1372,46 @@ class TrucksController extends AppController {
                 }
             } else {
                 $this->MkCommon->setCustomFlash(__('Data KIR tidak ditemukan'), 'error');
+            }
+
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
+
+    public function kir_payment_delete( $id ) {
+        if( in_array('delete_kirs', $this->allowModule) ) {
+            $this->loadModel('KirPayment');
+            $this->loadModel('Kir');
+
+            $KirPayment = $this->KirPayment->getData('first', array(
+                'conditions' => array(
+                    'KirPayment.id' => $id,
+                ),
+                'contain' => array(
+                    'Kir'
+                )
+            ), false);
+
+            if( !empty($KirPayment) ) {
+                $this->KirPayment->id = $id;
+                $this->KirPayment->set('is_void', 1);
+                $this->KirPayment->set('status', 0);
+
+                if($this->KirPayment->save()){
+                    $this->Kir->id = $KirPayment['Kir']['id'];
+                    $this->Kir->set('paid', 0);
+                    $this->Kir->save();
+
+                    $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $KirPayment['Kir']['no_pol']), 'success');
+                    $this->Log->logActivity( sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $KirPayment['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
+                } else {
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran KIR Truk %s'), $KirPayment['Kir']['no_pol']), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran KIR Truk %s'), $KirPayment['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                }
+            } else {
+                $this->MkCommon->setCustomFlash(__('Data pembayaran KIR tidak ditemukan'), 'error');
             }
 
             $this->redirect($this->referer());
@@ -1546,8 +1590,8 @@ class TrucksController extends AppController {
             $this->loadModel('SiupPayment');
             $conditions = array(
                 'OR' => array(
-                    'Siup.paid' => 1,
-                    'Siup.rejected' => 1,
+                    // 'Siup.paid' => 1,
+                    // 'Siup.rejected' => 1,
                 ),
             );
 
@@ -1563,7 +1607,10 @@ class TrucksController extends AppController {
             $this->paginate = $this->SiupPayment->getData('paginate', array(
                 'conditions' => $conditions,
                 'limit' => Configure::read('__Site.config_pagination'),
-            ));
+                'contain' => array(
+                    'Siup'
+                )
+            ), false);
             $siupPayments = $this->paginate('SiupPayment');
 
             $this->set('active_menu', 'siup_payments');
@@ -1730,6 +1777,46 @@ class TrucksController extends AppController {
                 }
             } else {
                 $this->MkCommon->setCustomFlash(__('Data Ijin Usaha tidak ditemukan'), 'error');
+            }
+
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
+
+    public function siup_payment_delete( $id ) {
+        if( in_array('delete_siup', $this->allowModule) ) {
+            $this->loadModel('SiupPayment');
+            $this->loadModel('Siup');
+
+            $SiupPayment = $this->SiupPayment->getData('first', array(
+                'conditions' => array(
+                    'SiupPayment.id' => $id,
+                ),
+                'contain' => array(
+                    'Siup'
+                )
+            ), false);
+
+            if( !empty($SiupPayment) ) {
+                $this->SiupPayment->id = $id;
+                $this->SiupPayment->set('is_void', 1);
+                $this->SiupPayment->set('status', 0);
+
+                if($this->SiupPayment->save()){
+                    $this->Siup->id = $SiupPayment['Siup']['id'];
+                    $this->Siup->set('paid', 0);
+                    $this->Siup->save();
+
+                    $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $SiupPayment['Siup']['no_pol']), 'success');
+                    $this->Log->logActivity( sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $SiupPayment['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
+                } else {
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran Ijin usaha Truk %s'), $SiupPayment['Siup']['no_pol']), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran Ijin usaha Truk %s'), $SiupPayment['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                }
+            } else {
+                $this->MkCommon->setCustomFlash(__('Data pembayaran Ijin usaha tidak ditemukan'), 'error');
             }
 
             $this->redirect($this->referer());
@@ -2418,13 +2505,53 @@ class TrucksController extends AppController {
         }
     }
 
+    public function stnk_payment_delete( $id ) {
+        if( in_array('delete_stnk', $this->allowModule) ) {
+            $this->loadModel('StnkPayment');
+            $this->loadModel('Stnk');
+
+            $StnkPayment = $this->StnkPayment->getData('first', array(
+                'conditions' => array(
+                    'StnkPayment.id' => $id,
+                ),
+                'contain' => array(
+                    'Stnk'
+                )
+            ), false);
+
+            if( !empty($StnkPayment) ) {
+                $this->StnkPayment->id = $id;
+                $this->StnkPayment->set('is_void', 1);
+                $this->StnkPayment->set('status', 0);
+
+                if($this->StnkPayment->save()){
+                    $this->Stnk->id = $StnkPayment['Stnk']['id'];
+                    $this->Stnk->set('paid', 0);
+                    $this->Stnk->save();
+
+                    $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $StnkPayment['Stnk']['no_pol']), 'success');
+                    $this->Log->logActivity( sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $StnkPayment['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
+                } else {
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran STNK Truk %s'), $StnkPayment['Stnk']['no_pol']), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran STNK Truk %s'), $StnkPayment['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                }
+            } else {
+                $this->MkCommon->setCustomFlash(__('Data pembayaran STNK tidak ditemukan'), 'error');
+            }
+
+            $this->redirect($this->referer());
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
+
     function stnk_payments(){
         if( in_array('view_stnk_payments', $this->allowModule) ) {
             $this->loadModel('StnkPayment');
             $conditions = array(
                 'OR' => array(
-                    'Stnk.paid' => 1,
-                    'Stnk.rejected' => 1,
+                    // 'Stnk.paid' => 1,
+                    // 'Stnk.rejected' => 1,
                 ),
             );
 
@@ -2440,7 +2567,15 @@ class TrucksController extends AppController {
             $this->paginate = $this->StnkPayment->getData('paginate', array(
                 'conditions' => $conditions,
                 'limit' => Configure::read('__Site.config_pagination'),
-            ));
+                'contain' => array(
+                    'Stnk'
+                ),
+                'order'=> array(
+                    'StnkPayment.created' => 'DESC',
+                    'StnkPayment.id' => 'DESC',
+                ),
+            ), false);
+
             $stnkPayments = $this->paginate('StnkPayment');
 
             $this->set('active_menu', 'stnk_payments');

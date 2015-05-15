@@ -29,7 +29,7 @@ class StnkPayment extends AppModel {
 		)
 	);
 
-	function getData($find, $options = false){
+	function getData($find, $options = false, $is_merge = false){
         $default_options = array(
             'conditions'=> array(
                 'StnkPayment.status' => 1,
@@ -44,7 +44,7 @@ class StnkPayment extends AppModel {
             'fields' => array(),
         );
 
-        if(!empty($options)){
+        if(!empty($options) && $is_merge){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
@@ -60,6 +60,8 @@ class StnkPayment extends AppModel {
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
             }
+        }else{
+            $default_options = $options;
         }
 
         if( $find == 'paginate' ) {

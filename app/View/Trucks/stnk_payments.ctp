@@ -74,6 +74,7 @@
                 </td>
                 <td>
                     <?php 
+                        if(empty($value['StnkPayment']['is_void'])){
                             if( !empty($value['Stnk']['paid']) ) {
                                 echo '<span class="label label-success">Sudah Bayar</span>'; 
                             } else if( !empty($value['Stnk']['rejected']) ) {
@@ -81,11 +82,15 @@
                             } else {
                                 echo '<span class="label label-default">Belum Bayar</span>';  
                             }
+                        }else{
+                            echo '<span class="label label-danger">Void</span>'; 
+                        }
                     ?>
                 </td>
                 <td><?php echo $this->Time->niceShort($value['StnkPayment']['created']);?></td>
                 <td class="action">
                     <?php
+                        if(empty($value['StnkPayment']['is_void'])){
                             echo $this->Html->link(__('Detail'), array(
                                 'controller' => 'trucks',
                                 'action' => 'stnk_detail',
@@ -93,6 +98,17 @@
                             ), array(
                                 'class' => 'btn btn-primary btn-xs'
                             ));
+
+                            if( in_array('delete_stnk', $allowModule) ) {
+                                echo $this->Html->link(__('Void'), array(
+                                    'controller' => 'trucks',
+                                    'action' => 'stnk_payment_delete',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs'
+                                ), __('Anda yakin ingin membatalkan data pembayaran STNK ini?'));
+                            }
+                        }
                     ?>
                 </td>
             </tr>

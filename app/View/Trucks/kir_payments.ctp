@@ -66,6 +66,7 @@
                 </td>
                 <td>
                     <?php 
+                        if(empty($value['KirPayment']['is_void'])){
                             if( !empty($value['Kir']['paid']) ) {
                                 echo '<span class="label label-success">Sudah Bayar</span>'; 
                             } else if( !empty($value['Kir']['rejected']) ) {
@@ -73,11 +74,15 @@
                             } else {
                                 echo '<span class="label label-default">Belum Bayar</span>';  
                             }
+                        }else{
+                            echo '<span class="label label-danger">Void</span>'; 
+                        }
                     ?>
                 </td>
                 <td><?php echo $this->Time->niceShort($value['KirPayment']['created']);?></td>
                 <td class="action">
                     <?php
+                        if(empty($value['KirPayment']['is_void'])){
                             echo $this->Html->link(__('Detail'), array(
                                 'controller' => 'trucks',
                                 'action' => 'kir_detail',
@@ -85,6 +90,17 @@
                             ), array(
                                 'class' => 'btn btn-primary btn-xs'
                             ));
+
+                            if( in_array('delete_kirs', $allowModule) ) {
+                                echo $this->Html->link(__('Void'), array(
+                                    'controller' => 'trucks',
+                                    'action' => 'kir_payment_delete',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs'
+                                ), __('Anda yakin ingin membatalkan data pembayaran KIR ini?'));
+                            }
+                        }
                     ?>
                 </td>
             </tr>

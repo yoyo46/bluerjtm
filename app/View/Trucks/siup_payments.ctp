@@ -66,6 +66,7 @@
                 </td>
                 <td>
                     <?php 
+                        if(empty($value['SiupPayment']['is_void'])){
                             if( !empty($value['Siup']['paid']) ) {
                                 echo '<span class="label label-success">Sudah Bayar</span>'; 
                             } else if( !empty($value['Siup']['rejected']) ) {
@@ -73,11 +74,15 @@
                             } else {
                                 echo '<span class="label label-default">Belum Bayar</span>';  
                             }
+                        }else{
+                            echo '<span class="label label-danger">Void</span>'; 
+                        }
                     ?>
                 </td>
                 <td><?php echo $this->Time->niceShort($value['SiupPayment']['created']);?></td>
                 <td class="action">
                     <?php
+                        if(empty($value['SiupPayment']['is_void'])){
                             echo $this->Html->link(__('Detail'), array(
                                 'controller' => 'trucks',
                                 'action' => 'siup_detail',
@@ -85,6 +90,17 @@
                             ), array(
                                 'class' => 'btn btn-primary btn-xs'
                             ));
+
+                            if( in_array('delete_siup', $allowModule) ) {
+                                echo $this->Html->link(__('Void'), array(
+                                    'controller' => 'trucks',
+                                    'action' => 'siup_payment_delete',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs'
+                                ), __('Anda yakin ingin membatalkan data pembayaran Ijin Usaha ini?'));
+                            }
+                        }
                     ?>
                 </td>
             </tr>
