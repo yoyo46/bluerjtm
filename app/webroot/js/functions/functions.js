@@ -525,16 +525,31 @@ var add_custom_field = function(){
             case 'lku_ttuj':
                 var content_clone = $('#first-row').html();
                 var length_option = $('#first-row .lku-choose-ttuj option').length-1;
-                var tipe_motor_table = $('.ttuj-info-table .lku-choose-ttuj').length;
+                var tipe_motor_table = $('.ttuj-info-table .lku-choose-ttuj').length+1;
 
-                var html_tr = '<tr class="lku-detail lku-detail-'+lku_detail_len+'" rel="'+lku_detail_len+'">'+content_clone+'</tr>';
+                var html_tr = '<tr class="lku-detail lku-detail-'+tipe_motor_table+'" rel="'+tipe_motor_table+'">'+content_clone+'</tr>';
 
-                if( length_option > tipe_motor_table ){
+                if( length_option > tipe_motor_table-1 ){
                     $('.ttuj-info-table #field-grand-total-ttuj').before(html_tr);
                     choose_item_info();
                     input_number();
                     price_tipe_motor();
-                    delete_custom_field($('.lku-detail-'+lku_detail_len+' .delete-custom-field'));
+                    delete_custom_field($('.lku-detail-'+tipe_motor_table+' .delete-custom-field'));
+                }
+            break;
+            case 'ksu_ttuj':
+                var content_clone = $('#first-row').html();
+                var length_option = $('#first-row .ksu-choose-ttuj option').length-1;
+                var tipe_motor_table = $('.ttuj-info-table .ksu-choose-ttuj').length+1;
+
+                var html_tr = '<tr class="ksu-detail ksu-detail-'+tipe_motor_table+'" rel="'+tipe_motor_table+'">'+content_clone+'</tr>';
+
+                if( length_option > tipe_motor_table-1 ){
+                    $('.ttuj-info-table #field-grand-total-ttuj').before(html_tr);
+                    choose_item_info();
+                    input_number();
+                    price_tipe_motor();
+                    delete_custom_field($('.ksu-detail-'+tipe_motor_table+' .delete-custom-field'));
                 }
             break;
             case 'target-unit':
@@ -953,7 +968,7 @@ var delete_custom_field = function( obj ) {
                 grandTotalLku();
                 grandTotalLeasing();
                 getTotalInvoicePayment();
-            } else if( action_type == 'lku_second'){
+            } else if( action_type == 'lku_second' || action_type == 'ksu_second'){
                 self.parents('tr').remove();
                 getTotalLkuPayment();
             } else if( action_type == 'revenue_detail'){
@@ -1371,11 +1386,11 @@ var price_tipe_motor = function(){
 }
 
 var price_perlengkapan = function(){
-    $('.price-perlengkapan').keyup(function(){
+    $('.price-perlengkapan, .claim-number').keyup(function(){
         getTotalKSU( $(this) );
     });
 
-    $('.claim-number').keyup(function(){
+    $('.price-perlengkapan, .claim-number').blur(function(){
         getTotalKSU( $(this) );
     });
 
@@ -2757,6 +2772,7 @@ $(function() {
                     choose_item_info();
                     add_custom_field();
                     input_number();
+                    input_price();
                     price_tipe_motor();
                     delete_custom_field();
                     part_motor_lku();
@@ -2780,10 +2796,11 @@ $(function() {
 
     $('#getTtujInfoKsu').change(function() {
         var self = $(this);
+        var atpm = $('.handle-atpm').is(':checked');
 
         if( self.val() != '' ) {
             $.ajax({
-                url: '/ajax/getInfoTtujKsu/'+self.val()+'/',
+                url: '/ajax/getInfoTtujKsu/'+self.val()+'/'+atpm+'',
                 type: 'POST',
                 success: function(response, status) {
                     $('#ttuj-info').html($(response).filter('#form-ttuj-main').html());
@@ -3245,12 +3262,14 @@ $(function() {
             $('#atpm-box').removeClass('hide');
             $('.price-perlengkapan').removeClass('show');
             $('.price-perlengkapan').addClass('hide');
-            $('.total-price-claim').text('IDR 0');
+            $('.total-ksu').hide();
+            $('.total-price-claim').text('-');
             $('#grand-total-ksu').text('IDR 0');
         }else{
             $('#atpm-box').addClass('hide');
             $('.price-perlengkapan').removeClass('hide');
             $('.price-perlengkapan').addClass('show');
+            $('.total-ksu').show();
             $('.price-perlengkapan').show();
         }
     });

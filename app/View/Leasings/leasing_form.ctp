@@ -113,6 +113,17 @@
         </div>
         <div class="form-group">
         	<?php 
+					echo $this->Form->input('denda',array(
+						'type' => 'text',
+						'label'=> __('Denda'), 
+						'class'=>'form-control input_price',
+						'required' => false,
+						'placeholder' => __('Denda'),
+					));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
 					echo $this->Form->input('installment_rate',array(
 						'type' => 'text',
 						'label'=> __('Bunga *'), 

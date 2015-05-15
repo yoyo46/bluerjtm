@@ -32,18 +32,18 @@ class Laka extends AppModel {
                 'message' => 'Lokasi LAKA harap diisi'
             ),
         ),
-        'from_city_name' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Kota dari harap diisi'
-            ),
-        ),
-        'to_city_name' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Kota ke harap diisi'
-            ),
-        ),
+        // 'from_city_name' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Kota dari harap diisi'
+        //     ),
+        // ),
+        // 'to_city_name' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Kota ke harap diisi'
+        //     ),
+        // ),
         'status_muatan' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

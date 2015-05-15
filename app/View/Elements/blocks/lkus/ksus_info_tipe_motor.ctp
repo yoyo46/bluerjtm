@@ -98,13 +98,17 @@
                     </td>
                     <td class="total-price-claim" align="right">
                         <?php 
-                            $value_price = 0;
-                            if(!empty($price) && !empty($qty)){
-                                $value_price = $price * $qty;
-                                $total += $value_price;
-                            }
+                            if(empty($this->request->data['Ksu']['kekurangan_atpm'])){
+                                $value_price = 0;
+                                if(!empty($price) && !empty($qty)){
+                                    $value_price = $price * $qty;
+                                    $total += $value_price;
+                                }
 
-                            echo $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                                echo $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                            }else{
+                                echo '-';
+                            }
                         ?>
                     </td>
                     <td>
@@ -121,8 +125,8 @@
                     }
                 ?>
                 <tr id="field-grand-total-ksu">
-                    <td align="right" colspan="5"><?php echo __('Total Biaya Klaim')?></td>
-                    <td align="right" id="grand-total-ksu">
+                    <td align="right" colspan="5" class="total-ksu" style="display:<?php echo ($show == 'show') ? 'table-cell' : 'none';?>;"><?php echo __('Total Biaya Klaim')?></td>
+                    <td align="right" id="grand-total-ksu" class="total-ksu" style="display:<?php echo ($show == 'show') ? 'table-cell' : 'none';?>;">
                         <?php 
                             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
                         ?>

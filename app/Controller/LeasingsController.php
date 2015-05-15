@@ -160,9 +160,12 @@ class LeasingsController extends AppController {
             $data['Leasing']['date_first_installment'] = (!empty($data['Leasing']['date_first_installment'])) ? $this->MkCommon->getDate($data['Leasing']['date_first_installment']) : '';
             $data['Leasing']['date_last_installment'] = (!empty($data['Leasing']['date_last_installment'])) ? $this->MkCommon->getDate($data['Leasing']['date_last_installment']) : '';
 
-            $data['Leasing']['down_payment'] = !empty($data['Leasing']['down_payment']) ? str_replace(',', '', $data['Leasing']['down_payment']) : '';
-            $data['Leasing']['installment'] = !empty($data['Leasing']['installment']) ? str_replace(',', '', $data['Leasing']['installment']) : '';
+            $data['Leasing']['down_payment'] = !empty($data['Leasing']['down_payment']) ? str_replace(',', '', $data['Leasing']['down_payment']) : 0;
+            $data['Leasing']['installment'] = !empty($data['Leasing']['installment']) ? str_replace(',', '', $data['Leasing']['installment']) : 0;
             $data['Leasing']['installment_rate'] = !empty($data['Leasing']['installment_rate']) ? str_replace(',', '', $data['Leasing']['installment_rate']) : '';
+            $data['Leasing']['denda'] = !empty($data['Leasing']['denda']) ? str_replace(',', '', $data['Leasing']['denda']) : 0;
+
+            $data['Leasing']['total_biaya'] = $data['Leasing']['installment'] + $data['Leasing']['denda'];
 
             $validate_leasing_detail = true;
             $temp_detail = array();

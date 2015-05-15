@@ -66,23 +66,37 @@
                 <?php echo $this->Html->tag('td', date('d M Y', strtotime($value['KsuPayment']['tgl_bayar'])));?>
                 <td><?php echo $value['Customer']['name'];?></td>
                 <?php 
-                        if(!empty($value['KsuPayment']['paid'])){
-                            echo $this->Html->tag('td', '<span class="label label-success">Telah di bayar</span>');
-                        } else{
-                            echo $this->Html->tag('td', '<span class="label label-danger">Belum di bayar</span>');
+                        if(!empty($value['KsuPayment']['is_void'])){
+                            echo $this->Html->tag('td', '<span class="label label-danger">Void</span>');
+                        }else{
+                            if(!empty($value['KsuPayment']['paid'])){
+                                echo $this->Html->tag('td', '<span class="label label-success">Telah di bayar</span>');
+                            } else{
+                                echo $this->Html->tag('td', '<span class="label label-warning">Belum di bayar</span>');
+                            }
                         }
                 ?>
                 <td><?php echo $this->Common->customDate($value['KsuPayment']['created']);?></td>
                 <td class="action">
                     <?php
-                            if( in_array('update_lku_payments', $allowModule) ) {
-                                echo $this->Html->link('Rubah', array(
+                            // if( in_array('update_lku_payments', $allowModule) ) {
+                            //     echo $this->Html->link('Rubah', array(
+                            //         'controller' => 'lkus',
+                            //         'action' => 'ksu_payment_edit',
+                            //         $id
+                            //     ), array(
+                            //         'class' => 'btn btn-primary btn-xs'
+                            //     ));
+                            // }
+
+                            if(empty($value['KsuPayment']['is_void'])){
+                                echo $this->Html->link('void', array(
                                     'controller' => 'lkus',
-                                    'action' => 'ksu_payment_edit',
+                                    'action' => 'ksu_payment_delete',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-primary btn-xs'
-                                ));
+                                    'class' => 'btn btn-danger btn-xs'
+                                ), __('Apakah Anda yakin ingin pembayaran ini?'));
                             }
                     ?>
                 </td>

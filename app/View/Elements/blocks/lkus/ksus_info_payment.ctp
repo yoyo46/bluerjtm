@@ -7,7 +7,7 @@
             <?php
                     echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
                         'class' => 'add-custom-field btn btn-success btn-xs',
-                        'action_type' => 'lku_ttuj',
+                        'action_type' => 'ksu_ttuj',
                         'escape' => false
                     ));
             ?>
@@ -33,7 +33,7 @@
                     $total = 0;
                     for ($i=0; $i < $count; $i++) { 
                 ?>
-        		<tr class="lku-detail lku-detail-<?php echo $i+1;?>" rel="<?php echo $i+1;?>">
+        		<tr class="ksu-detail ksu-detail-<?php echo $i+1;?>" rel="<?php echo $i+1;?>">
                     <td>
                         <?php
                             echo $this->Form->input('KsuPaymentDetail.ksu_id.', array(
@@ -79,7 +79,7 @@
 
                                 echo $this->Form->hidden('KsuPaymentDetail.total_klaim.', array(
                                     'empty' => __('Pilih Jumlah Klaim'),
-                                    'class' => 'lku-claim-number form-control',
+                                    'class' => 'ksu-claim-number form-control',
                                     'div' => false,
                                     'label' => false,
                                     'value' => $this->request->data['KsuPaymentDetail'][$i]['Ksu']['total_klaim']
@@ -117,7 +117,7 @@
                             echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
                                 'class' => 'delete-custom-field btn btn-danger btn-xs',
                                 'escape' => false,
-                                'action_type' => 'lku_second'
+                                'action_type' => 'ksu_second'
                             ));
                         ?>
                     </td>
@@ -137,8 +137,7 @@
 
 <div class="hide">
     <table>
-        <tbody id="first-row">
-            <tr>
+        <tr id="first-row">
                 <td>
                     <?php
                         echo $this->Form->input('KsuPaymentDetail.ksu_id.', array(
@@ -153,18 +152,17 @@
                 <td class="data-nopol">-</td>
                 <td class="data-from-city">-</td>
                 <td class="data-to-city">-</td>
-                <td class="data-total-claim">-</td>
+                <td class="data-total-claim" align="right">-</td>
                 <td class="data-total-price-claim" align="right">-</td>
                 <td>
                     <?php
                         echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
                             'class' => 'delete-custom-field btn btn-danger btn-xs',
                             'escape' => false,
-                            'action_type' => 'lku_second'
+                            'action_type' => 'ksu_second'
                         ));
                     ?>
                 </td>
-            </tr>
-        </tbody>
+        </tr>
     </table>
 </div>

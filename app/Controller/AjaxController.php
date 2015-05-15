@@ -114,7 +114,7 @@ class AjaxController extends AppController {
         $this->set(compact('part_motors'));
 	}
 
-	function getInfoTtujKsu($ttuj_id, $is_payment = false){
+	function getInfoTtujKsu($ttuj_id, $atpm = false){
 		$this->loadModel('Ttuj');
 		$this->loadModel('Perlengkapan');
 
@@ -130,6 +130,8 @@ class AjaxController extends AppController {
 		if(!empty($data_ttuj)){
 			$this->request->data = $data_ttuj;
 		}
+
+		$this->request->data['Ksu']['kekurangan_atpm'] = (($atpm == 'true') ? true : false);
 
 		$perlengkapans = $this->Perlengkapan->getListPerlengkapan(2);
         $this->set(compact('perlengkapans'));
@@ -207,7 +209,7 @@ class AjaxController extends AppController {
 		$this->set(compact('data_ttuj'));
 	}
 
-	function getTtujCustomerInfo($customer_id){
+	function getTtujCustomerInfo($customer_id = false){
 		$this->loadModel('Ttuj');
 		$this->loadModel('Lku');
 		$ttuj_id = $this->Ttuj->getData('list', array(
@@ -245,7 +247,7 @@ class AjaxController extends AppController {
 		$this->set('lkus', $lkus);
 	}
 
-	function getTtujCustomerInfoKsu($customer_id){
+	function getTtujCustomerInfoKsu($customer_id = false){
 		$this->loadModel('Ttuj');
 		$this->loadModel('Ksu');
 		$ttuj_id = $this->Ttuj->getData('list', array(
@@ -264,7 +266,8 @@ class AjaxController extends AppController {
 			$ksus = $this->Ksu->getData('all', array(
 				'conditions' => array(
 					'Ksu.ttuj_id' => $ttuj_id,
-					'Ksu.kekurangan_atpm' => 0
+					'Ksu.kekurangan_atpm' => 0,
+					'Ksu.paid' => 0
 				),
 				'contain' => array(
 					'Ttuj'

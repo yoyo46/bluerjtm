@@ -1,6 +1,6 @@
 <div class="box box-primary">
     <div class="box-header">
-        <h3 class="box-title"><?php echo __('Detail Info LKU/KSU'); ?></h3>
+        <h3 class="box-title"><?php echo __('Detail Info LKU'); ?></h3>
     </div>
     <div class="box-body table-responsive">
         <div class="form-group">
@@ -137,34 +137,32 @@
 
 <div class="hide">
     <table>
-        <tbody id="first-row">
-            <tr>
-                <td>
-                    <?php
-                        echo $this->Form->input('LkuPaymentDetail.lku_id.', array(
-                            'options' => $lkus,
-                            'class' => 'form-control lku-choose-ttuj',
-                            'label' => false,
-                            'empty' => __('Pilih Tanggal TTUJ'),
-                            'required' => false,
-                        ));
-                    ?>
-                </td>
-                <td class="data-nopol">-</td>
-                <td class="data-from-city">-</td>
-                <td class="data-to-city">-</td>
-                <td class="data-total-claim">-</td>
-                <td class="data-total-price-claim" align="right">-</td>
-                <td>
-                    <?php
-                        echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
-                            'class' => 'delete-custom-field btn btn-danger btn-xs',
-                            'escape' => false,
-                            'action_type' => 'lku_second'
-                        ));
-                    ?>
-                </td>
-            </tr>
-        </tbody>
+        <tr id="first-row">
+            <td>
+                <?php
+                    echo $this->Form->input('LkuPaymentDetail.lku_id.', array(
+                        'options' => $lkus,
+                        'class' => 'form-control lku-choose-ttuj',
+                        'label' => false,
+                        'empty' => __('Pilih Tanggal TTUJ'),
+                        'required' => false,
+                    ));
+                ?>
+            </td>
+            <td class="data-nopol">-</td>
+            <td class="data-from-city">-</td>
+            <td class="data-to-city">-</td>
+            <td class="data-total-claim" align="right">-</td>
+            <td class="data-total-price-claim" align="right">-</td>
+            <td>
+                <?php
+                    echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
+                        'class' => 'delete-custom-field btn btn-danger btn-xs',
+                        'escape' => false,
+                        'action_type' => 'lku_second'
+                    ));
+                ?>
+            </td>
+        </tr>
     </table>
 </div>

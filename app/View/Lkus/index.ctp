@@ -43,6 +43,10 @@
                             'escape' => false
                         )));
 
+                        echo $this->Html->tag('th', $this->Paginator->sort('Lku.paid', __('Status Pembayaran'), array(
+                            'escape' => false
+                        )));
+
                         echo $this->Html->tag('th', $this->Paginator->sort('Lku.created', __('Dibuat'), array(
                             'escape' => false
                         )));
@@ -64,6 +68,12 @@
                             echo $this->Html->tag('td', '<span class="label label-success">Aktif</span>');
                         } else{
                             echo $this->Html->tag('td', '<span class="label label-danger">Non-aktif</span>');
+                        }
+
+                        if(!empty($value['Lku']['paid'])){
+                            echo $this->Html->tag('td', '<span class="label label-success">Sudah di bayar</span>');
+                        } else{
+                            echo $this->Html->tag('td', '<span class="label label-danger">Belum di bayar</span>');
                         }
                 ?>
                 <td><?php echo $this->Common->customDate($value['Lku']['created']);?></td>
