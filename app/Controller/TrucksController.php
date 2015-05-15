@@ -1263,6 +1263,9 @@ class TrucksController extends AppController {
             'conditions' => array(
                 'KirPayment.id' => $id,
             ),
+            'contain' => array(
+                'Kir'
+            )
         ));
 
         if( !empty($kir) ) {
@@ -1403,6 +1406,12 @@ class TrucksController extends AppController {
                     $this->Kir->id = $KirPayment['Kir']['id'];
                     $this->Kir->set('paid', 0);
                     $this->Kir->save();
+
+                    if(!empty($KirPayment['Kir']['from_date'])){
+                        $this->Truck->id = $KirPayment['Kir']['truck_id'];
+                        $this->Truck->set('tgl_kir', $KirPayment['Kir']['from_date']);
+                        $this->Truck->save();
+                    }
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $KirPayment['Kir']['no_pol']), 'success');
                     $this->Log->logActivity( sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $KirPayment['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
@@ -1665,6 +1674,9 @@ class TrucksController extends AppController {
                 'conditions' => array(
                     'SiupPayment.id' => $id,
                 ),
+                'contain' => array(
+                    'Siup'
+                )
             ));
 
             if( !empty($siup) ) {
@@ -1808,6 +1820,12 @@ class TrucksController extends AppController {
                     $this->Siup->id = $SiupPayment['Siup']['id'];
                     $this->Siup->set('paid', 0);
                     $this->Siup->save();
+
+                    if(!empty($SiupPayment['Siup']['from_date'])){
+                        $this->Truck->id = $SiupPayment['Siup']['truck_id'];
+                        $this->Truck->set('tgl_siup', $SiupPayment['Siup']['from_date']);
+                        $this->Truck->save();
+                    }
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $SiupPayment['Siup']['no_pol']), 'success');
                     $this->Log->logActivity( sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $SiupPayment['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
@@ -2529,6 +2547,18 @@ class TrucksController extends AppController {
                     $this->Stnk->set('paid', 0);
                     $this->Stnk->save();
 
+                    if(!empty($StnkPayment['Stnk']['from_date'])){
+                        $this->Truck->id = $StnkPayment['Stnk']['truck_id'];
+                        $this->Truck->set('tgl_stnk', $StnkPayment['Stnk']['from_date']);
+                        $this->Truck->save();
+                    }
+
+                    if(!empty($StnkPayment['Stnk']['plat_from_date']) && $StnkPayment['Stnk']['plat_from_date'] != '0000-00-00' && !empty($StnkPayment['Stnk']['is_change_plat'])){
+                        $this->Truck->id = $StnkPayment['Stnk']['truck_id'];
+                        $this->Truck->set('tgl_stnk_plat', $StnkPayment['Stnk']['plat_from_date']);
+                        $this->Truck->save();
+                    }
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $StnkPayment['Stnk']['no_pol']), 'success');
                     $this->Log->logActivity( sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $StnkPayment['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
                 } else {
@@ -2630,6 +2660,9 @@ class TrucksController extends AppController {
                 'conditions' => array(
                     'StnkPayment.id' => $id,
                 ),
+                'contain' => array(
+                    'Stnk'
+                )
             ));
 
             if( !empty($stnk) ) {
