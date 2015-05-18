@@ -31,7 +31,7 @@ class Journal extends AppModel {
         )
     );
 
-    function setJournal ( $document_id = false, $coa_name = false, $debit = 0, $credit = 0, $type = false ) {
+    function setJournal ( $document_id = false, $document_no = false, $coa_name = false, $debit = 0, $credit = 0, $type = false ) {
         $this->CoaSetting = ClassRegistry::init('CoaSetting');
         $coaSetting = $this->CoaSetting->getData('first', array(
             'conditions' => array(
@@ -42,6 +42,7 @@ class Journal extends AppModel {
         if( !empty($coaSetting['CoaSetting'][$coa_name]) ) {
             $data['Journal'] = array(
                 'document_id' => $document_id,
+                'document_no' => $document_no,
                 'coa_id' => $coaSetting['CoaSetting'][$coa_name],
                 'debit' => $debit,
                 'credit' => $credit,
@@ -86,6 +87,55 @@ class Journal extends AppModel {
         } else {
             return false;
         }
+    }
+
+    function getData( $find, $options = false, $is_merge = true ){
+        $default_options = array(
+            'conditions'=> array(
+                'Journal.status' => 1,
+            ),
+            'order'=> array(
+                'Journal.created' => 'DESC',
+                'Journal.document_id' => 'ASC',
+                'Journal.type' => 'ASC',
+                'Journal.id' => 'DESC',
+            ),
+            'fields' => array(),
+            'group' => array(),
+            'contain' => array(
+                'Coa'
+            ),
+        );
+
+        if( !empty($options) && $is_merge ){
+            if(!empty($options['conditions'])){
+                $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
+            }
+            if(!empty($options['order'])){
+                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+            }
+            if(!empty($options['contain'])){
+                $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
+            }
+            if(!empty($options['fields'])){
+                $default_options['fields'] = $options['fields'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
+            }
+            if(!empty($options['limit'])){
+                $default_options['limit'] = $options['limit'];
+            }
+        } else if( !empty($options) ) {
+            $default_options = $options;
+        }
+
+        if( $find == 'paginate' ) {
+            $result = $default_options;
+        } else {
+            $result = $this->find($find, $default_options);
+        }
+        return $result;
     }
 }
 ?>

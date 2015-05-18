@@ -917,4 +917,16 @@ class CashbanksController extends AppController {
         $this->set('active_menu', 'coa_setting');
         $this->set(compact('coas'));
     }
+
+    public function journal_report( $data_action = false ) {
+        $this->loadModel('Journal');
+        $this->set('sub_module_title', 'Laporan Jurnal');
+        $this->paginate = $this->Journal->getData('paginate');
+        $journals = $this->paginate('Journal');
+        $this->set('active_menu', 'journal_report');
+
+        $this->set(compact(
+            'journals', 'data_action'
+        ));
+    }
 }

@@ -570,7 +570,7 @@
 				</div>
 			</div>
         </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
@@ -631,7 +631,7 @@
 					?>
 				</div>
 			</div>
-        </div>
+        </div> -->
         <div class="form-group">
 			<div class="row">
 				<div class="col-sm-4">
@@ -694,7 +694,7 @@
 				</div>
 			</div>
         </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
@@ -755,7 +755,7 @@
 					?>
 				</div>
 			</div>
-        </div>
+        </div> -->
         <div class="form-group">
 			<div class="row">
 				<div class="col-sm-4">

@@ -166,14 +166,15 @@ class LkusController extends AppController {
 
             if($this->Lku->validates($data) && $validate_lku_detail){
                 if($this->Lku->save($data)){
-                    $this->loadModel('Journal');
+                    // $this->loadModel('Journal');
                     $lku_id = $this->Lku->id;
-                    $this->Journal->deleteJournal( $lku_id, 'lku' );
+                    // $this->Journal->deleteJournal( $lku_id, 'lku' );
 
-                    if( !empty($total_price) ) {
-                        $this->Journal->setJournal( $lku_id, 'lku_coa_debit_id', $total_price, 0, 'lku' );
-                        $this->Journal->setJournal( $lku_id, 'lku_coa_credit_id', 0, $total_price, 'lku' );
-                    }
+                    // if( !empty($total_price) ) {
+                    //     $document_no = !empty($data['Lku']['no_doc'])?$data['Lku']['no_doc']:false;
+                    //     $this->Journal->setJournal( $lku_id, $document_no, 'lku_coa_debit_id', $total_price, 0, 'lku' );
+                    //     $this->Journal->setJournal( $lku_id, $document_no, 'lku_coa_credit_id', 0, $total_price, 'lku' );
+                    // }
 
                     if($id && $data_local){
                         $this->Lku->LkuDetail->deleteAll(array(
@@ -346,11 +347,12 @@ class LkusController extends AppController {
                 $this->Lku->set('status', 0);
 
                 if($this->Lku->save()){
-                    if( !empty($locale['Lku']['total_price']) ) {
-                        $this->loadModel('Journal');
-                        $this->Journal->setJournal( $id, 'lku_void_coa_debit_id', $locale['Lku']['total_price'], 0, 'lku_void' );
-                        $this->Journal->setJournal( $id, 'lku_void_coa_credit_id', 0, $locale['Lku']['total_price'], 'lku_void' );
-                    }
+                    // if( !empty($locale['Lku']['total_price']) ) {
+                    //     $this->loadModel('Journal');
+                    //     $document_no = !empty($locale['Lku']['no_doc'])?$locale['Lku']['no_doc']:false;
+                    //     $this->Journal->setJournal( $id, $document_no, 'lku_void_coa_debit_id', $locale['Lku']['total_price'], 0, 'lku_void' );
+                    //     $this->Journal->setJournal( $id, $document_no, 'lku_void_coa_credit_id', 0, $locale['Lku']['total_price'], 'lku_void' );
+                    // }
 
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses merubah status LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
@@ -494,8 +496,9 @@ class LkusController extends AppController {
 
                     if( !empty($total_price) ) {
                         $this->loadModel('Journal');
-                        $this->Journal->setJournal( $lku_payment_id, 'lku_payment_coa_debit_id', $total_price, 0, 'lku_payment' );
-                        $this->Journal->setJournal( $lku_payment_id, 'lku_payment_coa_credit_id', 0, $total_price, 'lku_payment' );
+                        $document_no = !empty($data['LkuPayment']['no_doc'])?$data['LkuPayment']['no_doc']:false;
+                        $this->Journal->setJournal( $lku_payment_id, $document_no, 'lku_payment_coa_debit_id', $total_price, 0, 'lku_payment' );
+                        $this->Journal->setJournal( $lku_payment_id, $document_no, 'lku_payment_coa_credit_id', 0, $total_price, 'lku_payment' );
                     }
 
                     if($id && $data_local){
@@ -1141,7 +1144,15 @@ class LkusController extends AppController {
 
             if($this->Ksu->validates($data) && $validate_ksu_detail && $total_choosen > 0){
                 if($this->Ksu->save($data)){
+                    // $this->loadModel('Journal');
                     $ksu_id = $this->Ksu->id;
+                    // $this->Journal->deleteJournal( $ksu_id, 'ksu' );
+
+                    // if( !empty($total_price) ) {
+                    //     $document_no = !empty($data['Ksu']['no_doc'])?$data['Ksu']['no_doc']:false;
+                    //     $this->Journal->setJournal( $ksu_id, $document_no, 'ksu_coa_debit_id', $total_price, 0, 'ksu' );
+                    //     $this->Journal->setJournal( $ksu_id, $document_no, 'ksu_coa_credit_id', 0, $total_price, 'ksu' );
+                    // }
 
                     if($id && $data_local){
                         $this->Ksu->KsuDetail->deleteAll(array(
@@ -1308,6 +1319,13 @@ class LkusController extends AppController {
                 $this->Ksu->set('status', 0);
 
                 if($this->Ksu->save()){
+                    // if( !empty($locale['Ksu']['total_price']) ) {
+                    //     $this->loadModel('Journal');
+                    //     $document_no = !empty($locale['Ksu']['no_doc'])?$locale['Ksu']['no_doc']:false;
+                    //     $this->Journal->setJournal( $id, $document_no, 'ksu_void_coa_debit_id', $locale['Ksu']['total_price'], 0, 'ksu_void' );
+                    //     $this->Journal->setJournal( $id, $document_no, 'ksu_void_coa_credit_id', 0, $locale['Ksu']['total_price'], 'ksu_void' );
+                    // }
+
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses merubah status KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
                 }else{
@@ -1449,8 +1467,9 @@ class LkusController extends AppController {
                     
                     if( !empty($total_price) ) {
                         $this->loadModel('Journal');
-                        $this->Journal->setJournal( $ksu_payment_id, 'ksu_payment_coa_debit_id', $total_price, 0, 'ksu_payment' );
-                        $this->Journal->setJournal( $ksu_payment_id, 'ksu_payment_coa_credit_id', 0, $total_price, 'ksu_payment' );
+                        $document_no = !empty($data['KsuPayment']['no_doc'])?$data['KsuPayment']['no_doc']:false;
+                        $this->Journal->setJournal( $ksu_payment_id, $document_no, 'ksu_payment_coa_debit_id', $total_price, 0, 'ksu_payment' );
+                        $this->Journal->setJournal( $ksu_payment_id, $document_no, 'ksu_payment_coa_credit_id', 0, $total_price, 'ksu_payment' );
                     }
 
                     if($id && $data_local){

@@ -799,7 +799,7 @@
                             'uang_jalan_payments', 'commission_payments',
                             'uang_kuli_muat_payments', 'uang_kuli_bongkar_payments',
                             'asdp_payments', 'uang_kawal_payments',
-                            'uang_keamanan_payments'
+                            'uang_keamanan_payments', 'journal_report'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1010,6 +1010,17 @@
                                     'escape' => false
                                 )), array(
                                     // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
+                                ));
+                            // }
+
+                            // if( in_array('view_invoice_payments', $allowModule) ) {
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Jurnal', array(
+                                    'controller' => 'cashbanks',
+                                    'action' => 'journal_report',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'journal_report' )?'active':'',
                                 ));
                             // }
                     ?>

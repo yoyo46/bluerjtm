@@ -469,6 +469,7 @@ class RevenuesController extends AppController {
                                 $this->loadModel('Journal');
                                 $tarifDefault = false;
                                 $document_id = $this->Ttuj->id;
+                                $document_no = !empty($data['Ttuj']['no_ttuj'])?$data['Ttuj']['no_ttuj']:false;
 
                                 $this->Journal->deleteJournal( $document_id, 'commission' );
                                 $this->Journal->deleteJournal( $document_id, 'uang_jalan' );
@@ -486,8 +487,8 @@ class RevenuesController extends AppController {
                                             $commissionJournal += $data['Ttuj']['commission_extra'];
                                         }
 
-                                        $this->Journal->setJournal( $document_id, 'commission_coa_debit_id', $commissionJournal, 0, 'commission' );
-                                        $this->Journal->setJournal( $document_id, 'commission_coa_credit_id', 0, $commissionJournal, 'commission' );
+                                        $this->Journal->setJournal( $document_id, $document_no, 'commission_coa_debit_id', $commissionJournal, 0, 'commission' );
+                                        $this->Journal->setJournal( $document_id, $document_no, 'commission_coa_credit_id', 0, $commissionJournal, 'commission' );
                                     }
 
                                     if( !empty($data['Ttuj']['uang_jalan_1']) ) {
@@ -501,33 +502,33 @@ class RevenuesController extends AppController {
                                             $uangJalanJournal += $data['Ttuj']['uang_jalan_extra'];
                                         }
 
-                                        $this->Journal->setJournal( $document_id, 'uang_jalan_coa_debit_id', $uangJalanJournal, 0, 'uang_jalan' );
-                                        $this->Journal->setJournal( $document_id, 'uang_jalan_coa_credit_id', 0, $uangJalanJournal, 'uang_jalan' );
+                                        $this->Journal->setJournal( $document_id, $document_no, 'uang_jalan_coa_debit_id', $uangJalanJournal, 0, 'uang_jalan' );
+                                        $this->Journal->setJournal( $document_id, $document_no, 'uang_jalan_coa_credit_id', 0, $uangJalanJournal, 'uang_jalan' );
                                     }
 
                                     if( !empty($data['Ttuj']['uang_kuli_muat']) ) {
-                                        $this->Journal->setJournal( $document_id, 'uang_kuli_muat_coa_debit_id', $data['Ttuj']['uang_kuli_muat'], 0, 'uang_kuli_muat' );
-                                        $this->Journal->setJournal( $document_id, 'uang_kuli_muat_coa_credit_id', 0, $data['Ttuj']['uang_kuli_muat'], 'uang_kuli_muat' );
+                                        $this->Journal->setJournal( $document_id, $document_no, 'uang_kuli_muat_coa_debit_id', $data['Ttuj']['uang_kuli_muat'], 0, 'uang_kuli_muat' );
+                                        $this->Journal->setJournal( $document_id, $document_no, 'uang_kuli_muat_coa_credit_id', 0, $data['Ttuj']['uang_kuli_muat'], 'uang_kuli_muat' );
                                     }
 
                                     if( !empty($data['Ttuj']['uang_kuli_bongkar']) ) {
-                                        $this->Journal->setJournal( $document_id, 'uang_kuli_bongkar_coa_debit_id', $data['Ttuj']['uang_kuli_bongkar'], 0, 'uang_kuli_bongkar' );
-                                        $this->Journal->setJournal( $document_id, 'uang_kuli_bongkar_coa_credit_id', 0, $data['Ttuj']['uang_kuli_bongkar'], 'uang_kuli_bongkar' );
+                                        $this->Journal->setJournal( $document_id, $document_no, 'uang_kuli_bongkar_coa_debit_id', $data['Ttuj']['uang_kuli_bongkar'], 0, 'uang_kuli_bongkar' );
+                                        $this->Journal->setJournal( $document_id, $document_no, 'uang_kuli_bongkar_coa_credit_id', 0, $data['Ttuj']['uang_kuli_bongkar'], 'uang_kuli_bongkar' );
                                     }
 
                                     if( !empty($data['Ttuj']['asdp']) ) {
-                                        $this->Journal->setJournal( $document_id, 'asdp_coa_debit_id', $data['Ttuj']['asdp'], 0, 'asdp' );
-                                        $this->Journal->setJournal( $document_id, 'asdp_coa_credit_id', 0, $data['Ttuj']['asdp'], 'asdp' );
+                                        $this->Journal->setJournal( $document_id, $document_no, 'asdp_coa_debit_id', $data['Ttuj']['asdp'], 0, 'asdp' );
+                                        $this->Journal->setJournal( $document_id, $document_no, 'asdp_coa_credit_id', 0, $data['Ttuj']['asdp'], 'asdp' );
                                     }
 
                                     if( !empty($data['Ttuj']['uang_kawal']) ) {
-                                        $this->Journal->setJournal( $document_id, 'uang_kawal_coa_debit_id', $data['Ttuj']['uang_kawal'], 0, 'uang_kawal' );
-                                        $this->Journal->setJournal( $document_id, 'uang_kawal_coa_credit_id', 0, $data['Ttuj']['uang_kawal'], 'uang_kawal' );
+                                        $this->Journal->setJournal( $document_id, $document_no, 'uang_kawal_coa_debit_id', $data['Ttuj']['uang_kawal'], 0, 'uang_kawal' );
+                                        $this->Journal->setJournal( $document_id, $document_no, 'uang_kawal_coa_credit_id', 0, $data['Ttuj']['uang_kawal'], 'uang_kawal' );
                                     }
 
                                     if( !empty($data['Ttuj']['uang_keamanan']) ) {
-                                        $this->Journal->setJournal( $document_id, 'uang_keamanan_coa_debit_id', $data['Ttuj']['uang_keamanan'], 0, 'uang_keamanan' );
-                                        $this->Journal->setJournal( $document_id, 'uang_keamanan_coa_credit_id', 0, $data['Ttuj']['uang_keamanan'], 'uang_keamanan' );
+                                        $this->Journal->setJournal( $document_id, $document_no, 'uang_keamanan_coa_debit_id', $data['Ttuj']['uang_keamanan'], 0, 'uang_keamanan' );
+                                        $this->Journal->setJournal( $document_id, $document_no, 'uang_keamanan_coa_credit_id', 0, $data['Ttuj']['uang_keamanan'], 'uang_keamanan' );
                                     }
                                 }
 
@@ -1050,6 +1051,7 @@ class RevenuesController extends AppController {
 
                 if($this->Ttuj->save()){
                     $this->loadModel('Journal');
+                    $document_no = !empty($locale['Ttuj']['no_ttuj'])?$locale['Ttuj']['no_ttuj']:false;
 
                     if( $deleteJournal && empty($locale['Ttuj']['is_draft']) ) {
                         if( !empty($locale['Ttuj']['commission']) ) {
@@ -1059,8 +1061,8 @@ class RevenuesController extends AppController {
                                 $commissionJournal += $locale['Ttuj']['commission_extra'];
                             }
 
-                            $this->Journal->setJournal( $id, 'commission_void_coa_debit_id', $commissionJournal, 0, 'commission_void' );
-                            $this->Journal->setJournal( $id, 'commission_void_coa_credit_id', 0, $commissionJournal, 'commission_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'commission_void_coa_debit_id', $commissionJournal, 0, 'commission_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'commission_void_coa_credit_id', 0, $commissionJournal, 'commission_void' );
                         }
 
                         if( !empty($locale['Ttuj']['uang_jalan_1']) ) {
@@ -1074,33 +1076,33 @@ class RevenuesController extends AppController {
                                 $uangJalanJournal += $locale['Ttuj']['uang_jalan_extra'];
                             }
 
-                            $this->Journal->setJournal( $id, 'uang_jalan_void_coa_debit_id', $uangJalanJournal, 0, 'uang_jalan_void' );
-                            $this->Journal->setJournal( $id, 'uang_jalan_void_coa_credit_id', 0, $uangJalanJournal, 'uang_jalan_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_jalan_void_coa_debit_id', $uangJalanJournal, 0, 'uang_jalan_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_jalan_void_coa_credit_id', 0, $uangJalanJournal, 'uang_jalan_void' );
                         }
 
                         if( !empty($locale['Ttuj']['uang_kuli_muat']) ) {
-                            $this->Journal->setJournal( $id, 'uang_kuli_muat_void_coa_debit_id', $locale['Ttuj']['uang_kuli_muat'], 0, 'uang_kuli_muat_void' );
-                            $this->Journal->setJournal( $id, 'uang_kuli_muat_void_coa_credit_id', 0, $locale['Ttuj']['uang_kuli_muat'], 'uang_kuli_muat_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_muat_void_coa_debit_id', $locale['Ttuj']['uang_kuli_muat'], 0, 'uang_kuli_muat_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_muat_void_coa_credit_id', 0, $locale['Ttuj']['uang_kuli_muat'], 'uang_kuli_muat_void' );
                         }
 
                         if( !empty($locale['Ttuj']['uang_kuli_bongkar']) ) {
-                            $this->Journal->setJournal( $id, 'uang_kuli_bongkar_void_coa_debit_id', $locale['Ttuj']['uang_kuli_bongkar'], 0, 'uang_kuli_bongkar_void' );
-                            $this->Journal->setJournal( $id, 'uang_kuli_bongkar_void_coa_credit_id', 0, $locale['Ttuj']['uang_kuli_bongkar'], 'uang_kuli_bongkar_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_bongkar_void_coa_debit_id', $locale['Ttuj']['uang_kuli_bongkar'], 0, 'uang_kuli_bongkar_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_bongkar_void_coa_credit_id', 0, $locale['Ttuj']['uang_kuli_bongkar'], 'uang_kuli_bongkar_void' );
                         }
 
                         if( !empty($locale['Ttuj']['asdp']) ) {
-                            $this->Journal->setJournal( $id, 'asdp_void_coa_debit_id', $locale['Ttuj']['asdp'], 0, 'asdp_void' );
-                            $this->Journal->setJournal( $id, 'asdp_void_coa_credit_id', 0, $locale['Ttuj']['asdp'], 'asdp_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'asdp_void_coa_debit_id', $locale['Ttuj']['asdp'], 0, 'asdp_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'asdp_void_coa_credit_id', 0, $locale['Ttuj']['asdp'], 'asdp_void' );
                         }
 
                         if( !empty($locale['Ttuj']['uang_kawal']) ) {
-                            $this->Journal->setJournal( $id, 'uang_kawal_void_coa_debit_id', $locale['Ttuj']['uang_kawal'], 0, 'uang_kawal_void' );
-                            $this->Journal->setJournal( $id, 'uang_kawal_void_coa_credit_id', 0, $locale['Ttuj']['uang_kawal'], 'uang_kawal_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_kawal_void_coa_debit_id', $locale['Ttuj']['uang_kawal'], 0, 'uang_kawal_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_kawal_void_coa_credit_id', 0, $locale['Ttuj']['uang_kawal'], 'uang_kawal_void' );
                         }
 
                         if( !empty($locale['Ttuj']['uang_keamanan']) ) {
-                            $this->Journal->setJournal( $id, 'uang_keamanan_void_coa_debit_id', $locale['Ttuj']['uang_keamanan'], 0, 'uang_keamanan_void' );
-                            $this->Journal->setJournal( $id, 'uang_keamanan_void_coa_credit_id', 0, $locale['Ttuj']['uang_keamanan'], 'uang_keamanan_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_keamanan_void_coa_debit_id', $locale['Ttuj']['uang_keamanan'], 0, 'uang_keamanan_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_keamanan_void_coa_credit_id', 0, $locale['Ttuj']['uang_keamanan'], 'uang_keamanan_void' );
                         }
                     }
 
@@ -3810,8 +3812,8 @@ class RevenuesController extends AppController {
                                     $invoice_id = $this->Invoice->id;
 
                                     if( !empty($data['Invoice']['total']) ) {
-                                        $this->Journal->setJournal( $invoice_id, 'invoice_coa_debit_id', $data['Invoice']['total'], 0, 'invoice' );
-                                        $this->Journal->setJournal( $invoice_id, 'invoice_coa_credit_id', 0, $data['Invoice']['total'], 'invoice' );
+                                        $this->Journal->setJournal( $invoice_id, $invoice_number, 'invoice_coa_debit_id', $data['Invoice']['total'], 0, 'invoice' );
+                                        $this->Journal->setJournal( $invoice_id, $invoice_number, 'invoice_coa_credit_id', 0, $data['Invoice']['total'], 'invoice' );
                                     }
 
                                     foreach ($value as $key => $value_detail) {
@@ -3839,10 +3841,11 @@ class RevenuesController extends AppController {
 
                     if($this->Invoice->save()){
                         $invoice_id = $this->Invoice->id;
+                        $document_no = !empty($data['Invoice']['no_invoice'])?$data['Invoice']['no_invoice']:false;
 
                         if( !empty($data['Invoice']['total']) ) {
-                            $this->Journal->setJournal( $invoice_id, 'invoice_coa_debit_id', $data['Invoice']['total'], 0, 'invoice' );
-                            $this->Journal->setJournal( $invoice_id, 'invoice_coa_credit_id', 0, $data['Invoice']['total'], 'invoice' );
+                            $this->Journal->setJournal( $invoice_id, $document_no, 'invoice_coa_debit_id', $data['Invoice']['total'], 0, 'invoice' );
+                            $this->Journal->setJournal( $invoice_id, $document_no, 'invoice_coa_credit_id', 0, $data['Invoice']['total'], 'invoice' );
                         }
 
                         if( !empty($customer['CustomerGroup']['CustomerGroupPattern']) ) {
@@ -4414,11 +4417,12 @@ class RevenuesController extends AppController {
                 if($this->Invoice->InvoicePaymentDetail->InvoicePayment->save()){
                     $this->loadModel('Journal');
                     $invoice_payment_id = $this->Invoice->InvoicePaymentDetail->InvoicePayment->id;
+                    $document_no = !empty($data['InvoicePayment']['nodoc'])?$data['InvoicePayment']['nodoc']:false;
                     $this->Journal->deleteJournal( $invoice_payment_id, 'invoice_payment' );
 
                     if( !empty($data['InvoicePayment']['grand_total_payment']) ) {
-                        $this->Journal->setJournal( $invoice_payment_id, 'pembayaran_invoice_coa_debit_id', $data['InvoicePayment']['grand_total_payment'], 0, 'invoice_payment' );
-                        $this->Journal->setJournal( $invoice_payment_id, 'pembayaran_invoice_coa_credit_id', 0, $data['InvoicePayment']['grand_total_payment'], 'invoice_payment' );
+                        $this->Journal->setJournal( $invoice_payment_id, $document_no, 'pembayaran_invoice_coa_debit_id', $data['InvoicePayment']['grand_total_payment'], 0, 'invoice_payment' );
+                        $this->Journal->setJournal( $invoice_payment_id, $document_no, 'pembayaran_invoice_coa_credit_id', 0, $data['InvoicePayment']['grand_total_payment'], 'invoice_payment' );
                     }
 
                     if($id && $data_local){
@@ -4645,10 +4649,13 @@ class RevenuesController extends AppController {
                     'canceled_date' => date('d/m/Y')
                 ));
 
-                if($this->Invoice->InvoicePaymentDetail->InvoicePayment->save()){$this->loadModel('Journal');
+                if($this->Invoice->InvoicePaymentDetail->InvoicePayment->save()){
+                    $this->loadModel('Journal');
+
                     if( !empty($invoice_payment['InvoicePayment']['grand_total_payment']) ) {
-                        $this->Journal->setJournal( $id, 'pembayaran_invoice_void_coa_debit_id', $invoice_payment['InvoicePayment']['grand_total_payment'], 0, 'invoice_payment_void' );
-                        $this->Journal->setJournal( $id, 'pembayaran_invoice_void_coa_credit_id', 0, $invoice_payment['InvoicePayment']['grand_total_payment'], 'invoice_payment_void' );
+                        $document_no = !empty($invoice_payment['InvoicePayment']['nodoc'])?$invoice_payment['InvoicePayment']['nodoc']:false;
+                        $this->Journal->setJournal( $id, $document_no, 'pembayaran_invoice_void_coa_debit_id', $invoice_payment['InvoicePayment']['grand_total_payment'], 0, 'invoice_payment_void' );
+                        $this->Journal->setJournal( $id, $document_no, 'pembayaran_invoice_void_coa_credit_id', 0, $invoice_payment['InvoicePayment']['grand_total_payment'], 'invoice_payment_void' );
                     }
 
                     $this->MkCommon->setCustomFlash(__('Berhasil menghapus invoice pembayaran'), 'success');
@@ -4926,8 +4933,9 @@ class RevenuesController extends AppController {
                         $this->loadModel('Journal');
 
                         if( !empty($invoice['Invoice']['total']) ) {
-                            $this->Journal->setJournal( $id, 'invoice_void_coa_debit_id', $invoice['Invoice']['total'], 0, 'invoice_void' );
-                            $this->Journal->setJournal( $id, 'invoice_void_coa_credit_id', 0, $invoice['Invoice']['total'], 'invoice_void' );
+                            $document_no = !empty($invoice['Invoice']['no_invoice'])?$invoice['Invoice']['no_invoice']:false;
+                            $this->Journal->setJournal( $id, $document_no, 'invoice_void_coa_debit_id', $invoice['Invoice']['total'], 0, 'invoice_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'invoice_void_coa_credit_id', 0, $invoice['Invoice']['total'], 'invoice_void' );
                         }
 
                         $this->Invoice->InvoiceDetail->updateAll(
@@ -6384,8 +6392,9 @@ class RevenuesController extends AppController {
                     $this->Journal->deleteJournal( $document_id, $journalName );
 
                     if( !empty($data['TtujPayment']['total_payment']) ) {
-                        $this->Journal->setJournal( $document_id, $journalDebitName, $data['TtujPayment']['total_payment'], 0, $journalName );
-                        $this->Journal->setJournal( $document_id, $journalCreditName, 0, $data['TtujPayment']['total_payment'], $journalName );
+                        $document_no = !empty($data['TtujPayment']['nodoc'])?$data['TtujPayment']['nodoc']:false;
+                        $this->Journal->setJournal( $document_id, $document_no, $journalDebitName, $data['TtujPayment']['total_payment'], 0, $journalName );
+                        $this->Journal->setJournal( $document_id, $document_no, $journalCreditName, 0, $data['TtujPayment']['total_payment'], $journalName );
                     }
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Berhasil melakukan Pembayaran %s'), $labelName), 'success'); 
@@ -6537,8 +6546,9 @@ class RevenuesController extends AppController {
                         ));
 
                         if( !empty($invoice['TtujPayment']['total_payment']) ) {
-                            $this->Journal->setJournal( $id, $journalDebitName, $invoice['TtujPayment']['total_payment'], 0, $journalName );
-                            $this->Journal->setJournal( $id, $journalCreditName, 0, $invoice['TtujPayment']['total_payment'], $journalName );
+                            $document_no = !empty($invoice['TtujPayment']['nodoc'])?$invoice['TtujPayment']['nodoc']:false;
+                            $this->Journal->setJournal( $id, $document_no, $journalDebitName, $invoice['TtujPayment']['total_payment'], 0, $journalName );
+                            $this->Journal->setJournal( $id, $document_no, $journalCreditName, 0, $invoice['TtujPayment']['total_payment'], $journalName );
                         }
 
                         $msg = array(

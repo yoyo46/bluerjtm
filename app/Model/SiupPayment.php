@@ -71,5 +71,21 @@ class SiupPayment extends AppModel {
         }
         return $result;
     }
+
+    function getMerge( $data, $id ){
+        if(empty($data['SiupPayment'])){
+            $data_merge = $this->find('first', array(
+                'conditions' => array(
+                    'SiupPayment.id' => $id,
+                ),
+            ));
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
 }
 ?>
