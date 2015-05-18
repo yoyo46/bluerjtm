@@ -287,21 +287,55 @@ class Ttuj extends AppModel {
             ),
         ));
         $total = 0;
-        $customer_name = false;
-        $from_name = false;
-        $to_name = false;
+        $customer_name = '';
+        $driver_name = '';
+        $change_driver_name = '';
+        $from_name = '';
+        $to_name = '';
+        $driver_id = '';
+        $driver_penganti_id = '';
 
         if( !empty($data_ttuj) ) {
-            $this->CustomerNoType = ClassRegistry::init('CustomerNoType');
-            $customer_id = !empty($data_ttuj['Ttuj']['customer_id'])?$data_ttuj['Ttuj']['customer_id']:false;
+            $this->Customer = ClassRegistry::init('Customer');
+            $this->Driver = ClassRegistry::init('Driver');
+            $customer_id = !empty($data_ttuj['Ttuj']['customer_id'])?$data_ttuj['Ttuj']['customer_id']:'';
+            $driver_id = !empty($data_ttuj['Ttuj']['driver_id'])?$data_ttuj['Ttuj']['driver_id']:'';
             $data_ttuj = $this->Customer->getMerge($data_ttuj, $customer_id);
-            $customer_name = !empty($data_ttuj['Customer']['customer_name_code'])?$data_ttuj['Customer']['customer_name_code']:false;
-            $from_name = !empty($data_ttuj['Ttuj']['from_city_name'])?$data_ttuj['Ttuj']['from_city_name']:false;
-            $to_name = !empty($data_ttuj['Ttuj']['to_city_name'])?$data_ttuj['Ttuj']['to_city_name']:false;
+            $data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_id);
+
+            $customer_name = !empty($data_ttuj['Customer']['customer_name_code'])?$data_ttuj['Customer']['customer_name_code']:'';
+            $driver_name = !empty($data_ttuj['Driver']['driver_name'])?$data_ttuj['Driver']['driver_name']:'';
+            $driver_id = !empty($data_ttuj['Ttuj']['id'])?$data_ttuj['Ttuj']['id']:'';
+            $change_driver_name = !empty($data_ttuj['DriverPenganti']['driver_name'])?$data_ttuj['DriverPenganti']['driver_name']:'';
+            $driver_penganti_id = !empty($data_ttuj['DriverPenganti']['id'])?$data_ttuj['DriverPenganti']['id']:'';
+            $from_name = !empty($data_ttuj['Ttuj']['from_city_name'])?$data_ttuj['Ttuj']['from_city_name']:'';
+            $to_name = !empty($data_ttuj['Ttuj']['to_city_name'])?$data_ttuj['Ttuj']['to_city_name']:'';
 
             switch ($data_action) {
-                case 'value':
-                    # code...
+                case 'commission':
+                    $commission = !empty($data_ttuj['Ttuj']['commission'])?$data_ttuj['Ttuj']['commission']:0;
+                    $commission_extra = !empty($data_ttuj['Ttuj']['commission_extra'])?$data_ttuj['Ttuj']['commission_extra']:0;
+                    $total = $commission + $commission_extra;
+                    break;
+                    
+                case 'uang_kuli_muat':
+                    $total = !empty($data_ttuj['Ttuj']['uang_kuli_muat'])?$data_ttuj['Ttuj']['uang_kuli_muat']:0;
+                    break;
+                    
+                case 'uang_kuli_bongkar':
+                    $total = !empty($data_ttuj['Ttuj']['uang_kuli_bongkar'])?$data_ttuj['Ttuj']['uang_kuli_bongkar']:0;
+                    break;
+                    
+                case 'asdp':
+                    $total = !empty($data_ttuj['Ttuj']['asdp'])?$data_ttuj['Ttuj']['asdp']:0;
+                    break;
+                    
+                case 'uang_kawal':
+                    $total = !empty($data_ttuj['Ttuj']['uang_kawal'])?$data_ttuj['Ttuj']['uang_kawal']:0;
+                    break;
+                    
+                case 'uang_keamanan':
+                    $total = !empty($data_ttuj['Ttuj']['uang_keamanan'])?$data_ttuj['Ttuj']['uang_keamanan']:0;
                     break;
                 
                 default:
@@ -316,6 +350,10 @@ class Ttuj extends AppModel {
         return array(
             'total' => $total,
             'customer_name' => $customer_name,
+            'driver_name' => $driver_name,
+            'driver_id' => $driver_id,
+            'change_driver_name' => $change_driver_name,
+            'driver_penganti_id' => $driver_penganti_id,
             'from_name' => $from_name,
             'to_name' => $to_name,
         );

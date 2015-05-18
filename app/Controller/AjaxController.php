@@ -1391,53 +1391,66 @@ class AjaxController extends AppController {
 		$this->set(compact('driver_name', 'no_sim', 'ttujs'));
 	}
 
-	function getUserCashBank(){
-		$model = 'Customer';
-		if(!empty($this->request->data['UserCashBank']['model'])){
-			$model = $this->request->data['UserCashBank']['model'];
-		}
-		
+	function getUserCashBank( $action_type = 'cash_bank' ){
 		$data_action = 'browse-form';
-		$title = __('User Kas Bank');
 		$data_change = 'receiver-id';
+		$listReceivers = array(
+        	'Customer' => __('Customer'),
+        	'Vendor' => __('Vendor'),
+        	'Employe' => __('karyawan')
+        );
 
+		switch ($action_type) {
+			case 'ttuj':
+				$model = 'Driver';
+				$title = __('Dibayar Kepada');
+				$listReceivers = array_merge(array(
+					'Driver' => __('Supir'),
+				), $listReceivers);
+				break;
+
+			case 'driver':
+				$model = 'Driver';
+				$title = __('Dibayar Kepada');
+				$listReceivers = false;
+				break;
+			
+			default:
+				$model = 'Customer';
+				$title = __('User Kas Bank');
+				break;
+		}
+
+		if(!empty($this->request->data['UserCashBank']['model'])){
+			$model = ucwords($this->request->data['UserCashBank']['model']);
+		}
+
+		$this->loadModel($model);
 		$default_conditions = array(
 			$model.'.status' => 1
 		);
 
 		if(!empty($this->request->data['UserCashBank']['name'])){
-			$default_conditions[$model.'.name LIKE'] = '%'.$this->request->data['UserCashBank']['name'].'%';
+			if( $model == 'Customer' ) {
+				$default_conditions[$model.'.customer_name_code LIKE'] = '%'.$this->request->data['UserCashBank']['name'].'%';
+			} else if( $model == 'Driver' ) {
+				$default_conditions[$model.'.driver_name LIKE'] = '%'.$this->request->data['UserCashBank']['name'].'%';
+			} else {
+				$default_conditions[$model.'.name LIKE'] = '%'.$this->request->data['UserCashBank']['name'].'%';
+			}
 		}
 
-		$list_result = array();
-		switch ($model) {
-			case 'Vendor':
-				$this->loadModel($model);
+		$list_result = $this->$model->getData('all', array(
+			'conditions' => $default_conditions
+		));
 
-				$list_result = $this->Vendor->getData('all', array(
-					'conditions' => $default_conditions
-				));
-				break;
-			case 'Employe':
-				$this->loadModel($model);
-
-				$list_result = $this->Employe->getData('all', array(
-					'conditions' => $default_conditions
-				));
-
-				break;
-			default:
-				$this->loadModel($model);
-
-				$list_result = $this->Customer->getData('all', array(
-					'conditions' => $default_conditions
-				));
-
-				break;
-		}
 		$this->request->data['UserCashBank']['model'] = $model;
 
-		$this->set(compact('list_result', 'model', 'data_action', 'title', 'data_change'));
+		$this->set(compact(
+			'list_result', 'model', 'data_action', 
+			'title', 'data_change', 'listReceivers',
+			'action_type'
+		));
 	}
 
 	function getInfoCoa(){

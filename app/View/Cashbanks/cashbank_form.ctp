@@ -62,7 +62,6 @@
 			?>
 		</div>
 		<?php
-
 				echo $this->Form->input('receiver_type',array(
 					'label'=> false, 
 					'class'=>'form-control',

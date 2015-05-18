@@ -741,4 +741,18 @@ class CommonHelper extends AppHelper {
         }
         return $dataTree;
     }
+
+    function getReceiverType ( $type ) {
+        $receiver_type = false;
+
+        if( $type == 'Driver' ) {
+            $receiver_type = __('(Supir)');
+        } else if( $type == 'Employe' ) {
+            $receiver_type = __('(Karyawan)');
+        } else {
+            $receiver_type = sprintf('(%s)', ucwords($type));
+        }
+
+        return $receiver_type;
+    }
 }

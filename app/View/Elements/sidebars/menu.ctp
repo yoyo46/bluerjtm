@@ -796,7 +796,10 @@
                             'cash_bank', 'approval_setting', 'kir_payments',
                             'stnk_payments', 'siup_payments', 'invoice_payments', 
                             'lku_payments', 'coa_setting', 'ksu_payments',
-                            'uang_jalan_payments'
+                            'uang_jalan_payments', 'commission_payments',
+                            'uang_kuli_muat_payments', 'uang_kuli_bongkar_payments',
+                            'asdp_payments', 'uang_kawal_payments',
+                            'uang_keamanan_payments'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -839,7 +842,8 @@
                             // if( in_array('view_invoice_payments', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Jalan', array(
                                     'controller' => 'revenues',
-                                    'action' => 'uang_jalan_payments',
+                                    'action' => 'ttuj_payments',
+                                    'uang_jalan',
                                 ), array(
                                     'escape' => false
                                 )), array(
@@ -850,7 +854,8 @@
                             // if( in_array('view_invoice_payments', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Komisi', array(
                                     'controller' => 'revenues',
-                                    'action' => 'commission_payments',
+                                    'action' => 'ttuj_payments',
+                                    'commission',
                                 ), array(
                                     'escape' => false
                                 )), array(
@@ -861,7 +866,8 @@
                             // if( in_array('view_invoice_payments', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Kuli Muat', array(
                                     'controller' => 'revenues',
-                                    'action' => 'uang_kuli_muat_payments',
+                                    'action' => 'ttuj_payments',
+                                    'uang_kuli_muat',
                                 ), array(
                                     'escape' => false
                                 )), array(
@@ -872,7 +878,8 @@
                             // if( in_array('view_invoice_payments', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Kuli Bongkar', array(
                                     'controller' => 'revenues',
-                                    'action' => 'uang_kuli_bongkar_payments',
+                                    'action' => 'ttuj_payments',
+                                    'uang_kuli_bongkar',
                                 ), array(
                                     'escape' => false
                                 )), array(
@@ -883,18 +890,20 @@
                             // if( in_array('view_invoice_payments', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Penyebrangan', array(
                                     'controller' => 'revenues',
-                                    'action' => 'uang_penyebrangan_payments',
+                                    'action' => 'ttuj_payments',
+                                    'asdp',
                                 ), array(
                                     'escape' => false
                                 )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_penyebrangan_payments' )?'active':'',
+                                    'class' => ( !empty($active_menu) && $active_menu == 'asdp_payments' )?'active':'',
                                 ));
                             // }
 
                             // if( in_array('view_invoice_payments', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Kawal', array(
                                     'controller' => 'revenues',
-                                    'action' => 'uang_kawal_payments',
+                                    'action' => 'ttuj_payments',
+                                    'uang_kawal',
                                 ), array(
                                     'escape' => false
                                 )), array(
@@ -905,7 +914,8 @@
                             // if( in_array('view_invoice_payments', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Keamanan', array(
                                     'controller' => 'revenues',
-                                    'action' => 'uang_keamanan_payments',
+                                    'action' => 'ttuj_payments',
+                                    'uang_keamanan',
                                 ), array(
                                     'escape' => false
                                 )), array(

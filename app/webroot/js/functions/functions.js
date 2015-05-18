@@ -1781,7 +1781,15 @@ var pickData = function () {
         
         if(data_change == '#receiver-id'){
             $('#receiver-type').val(vthis.attr('data-type'));
-            $('#cash-bank-user').val(vthis.attr('data-text'));
+            $('#cash-bank-user,#ttuj-receiver').val(vthis.attr('data-text'));
+
+            if( vthis.attr('data-type') == 'Driver' ) {
+                $('#tag-receiver-type').html('(Supir)');
+            } else if( vthis.attr('data-type') == 'Empoye' ) {
+                $('#tag-receiver-type').html('(Karyawan)');
+            } else {
+                $('#tag-receiver-type').html('('+vthis.attr('data-type')+')');
+            }
         }
 
         $('#myModal').modal('hide');
@@ -2063,8 +2071,16 @@ function findInfoTTujPayment(url){
         success: function(response, status) {
             $('.total-payment-ttuj').val(formatNumber(response.total));
             $('.customer-name').val(response.customer_name);
+            $('.driver-name').val(response.driver_name);
+            $('.change-driver-name').val(response.change_driver_name);
             $('.from-city-name').val(response.from_name);
             $('.to-city-name').val(response.to_name);
+
+            if( response.driver_penganti_id != '' ) {
+                $('.driver-id').val(response.driver_penganti_id);
+            } else if( response.driver_id != '' ) {
+                $('.driver-id').val(response.driver_id);
+            }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');

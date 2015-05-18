@@ -2,13 +2,17 @@
         echo $this->Form->create('UserCashBank', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
-                'action' => 'getUserCashBank'
+                'action' => 'getUserCashBank',
+                $action_type,
             )), 
             'role' => 'form',
             'inputDefaults' => array('div' => false),
         ));
 ?>
 <div class="row">
+    <?php 
+            if( !empty($listReceivers) ) {
+    ?>
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
@@ -17,15 +21,14 @@
                         'class'=>'form-control',
                         'required' => false,
                         'empty' => __('Pilih Tipe User'),
-                        'options' => array(
-                        	'Customer' => 'Customer',
-                        	'Vendor' => 'Vendor',
-                        	'Employe' => 'karyawan'
-                        )
+                        'options' => $listReceivers,
                     ));
             ?>
         </div>
     </div>
+    <?php 
+            }
+    ?>
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
@@ -51,6 +54,7 @@
             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
                 'controller' => 'ajax',
                 'action' => 'getUserCashBank',
+                $action_type,
             ), array(
                 'escape' => false, 
                 'class'=> 'btn btn-default btn-sm ajaxModal',
@@ -73,9 +77,20 @@
         <?php
                 if(!empty($list_result)){
                     foreach ($list_result as $key => $value) {
+                        if( !empty($value[$model]['customer_name_code']) ) {
+                            $receiver_name = $value[$model]['customer_name_code'];
+                        } else if( !empty($value[$model]['driver_name']) ) {
+                            $receiver_name = $value[$model]['driver_name'];
+                        } else {
+                            $receiver_name = $value[$model]['name'];
+                        }
         ?>
-        <tr data-value="<?php echo $value[$model]['id'];?>" data-text="<?php echo $value[$model]['name'];?>" data-type="<?php echo $model;?>" data-change="#<?php echo $data_change;?>">
-            <td><?php echo $value[$model]['name'];?></td>
+        <tr data-value="<?php echo $value[$model]['id'];?>" data-text="<?php echo $receiver_name;?>" data-type="<?php echo $model;?>" data-change="#<?php echo $data_change;?>">
+            <td>
+                <?php
+                        echo $receiver_name;
+                ?>
+            </td>
             <td><?php echo $value[$model]['address'];?></td>
         </tr>
         <?php

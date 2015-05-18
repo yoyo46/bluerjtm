@@ -14,7 +14,7 @@
 			echo $this->Html->tag('div', $msg['msg'], array('class' => 'alert alert-danger'));
 		}
 
-		switch ($data_action) {
+		switch ($action_type) {
 			case 'invoice':
 				echo $this->Html->tag('div', $this->Html->tag('p', __('Dengan melakukan penghapusan invoice, revenue akan berstatus menjadi posting dan jika sudah ada pembayaran invoice yang di lakukan, otomatis pembayaran invoice juga akan di batalkan.')) );
 				break;

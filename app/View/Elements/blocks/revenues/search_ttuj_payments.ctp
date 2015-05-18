@@ -7,11 +7,12 @@
     </div>
     <div class="box-body">
         <?php 
-                echo $this->Form->create('UangJalanPayment', array(
+                echo $this->Form->create('TtujPayment', array(
                     'url'=> $this->Html->url( array(
                         'controller' => 'revenues',
                         'action' => 'search',
-                        'uang_jalan_payments'
+                        'ttuj_payments',
+                        $action_type,
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
@@ -58,6 +59,16 @@
                         ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                        echo $this->Form->input('Ttuj.receiver_name',array(
+                            'label'=> __('Dibayar Kepada'),
+                            'class'=>'form-control',
+                            'required' => false,
+                            'placeholder' => __('Dibayar Kepada')
+                        ));
+                    ?>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -70,7 +81,8 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'uang_jalan_payments', 
+                                'action' => 'ttuj_payments', 
+                                $action_type,
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',

@@ -1,11 +1,23 @@
 <?php
-class UangJalanPayment extends AppModel {
-	var $name = 'UangJalanPayment';
+class TtujPayment extends AppModel {
+	var $name = 'TtujPayment';
 	var $validate = array(
         'ttuj_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'TTUJ harap dipilih'
+            ),
+        ),
+        'receiver_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Penerima (dibayar kepada) harap dipilih'
+            ),
+        ),
+        'receiver_type' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Penerima (dibayar kepada) harap dipilih'
             ),
         ),
         'nodoc' => array(
@@ -33,18 +45,50 @@ class UangJalanPayment extends AppModel {
             'className' => 'Ttuj',
             'foreignKey' => 'ttuj_id',
         ),
+        'Driver' => array(
+            'className' => 'Driver',
+            'foreignKey' => 'receiver_id',
+            'conditions' => array(
+                'TtujPayment.receiver_type' => 'Driver',
+            )
+        ),
+        'CustomerNoType' => array(
+            'className' => 'CustomerNoType',
+            'foreignKey' => 'receiver_id',
+            'conditions' => array(
+                'TtujPayment.receiver_type' => 'Customer',
+            )
+        ),
+        'Vendor' => array(
+            'className' => 'Vendor',
+            'foreignKey' => 'receiver_id',
+            'conditions' => array(
+                'TtujPayment.receiver_type' => 'Vendor',
+            )
+        ),
+        'Employe' => array(
+            'className' => 'Employe',
+            'foreignKey' => 'receiver_id',
+            'conditions' => array(
+                'TtujPayment.receiver_type' => 'Employe',
+            )
+        ),
 	);
 
 	function getData( $find, $options = false, $is_merge = true ){
         $default_options = array(
             'conditions'=> array(
-                'UangJalanPayment.status' => 1,
+                'TtujPayment.status' => 1,
             ),
             'order'=> array(
-                'UangJalanPayment.id' => 'DESC'
+                'TtujPayment.id' => 'DESC'
             ),
             'contain' => array(
-                'Ttuj'
+                'Ttuj',
+                'Driver',
+                'Vendor',
+                'CustomerNoType',
+                'Employe'
             ),
             'fields' => array(),
         );
