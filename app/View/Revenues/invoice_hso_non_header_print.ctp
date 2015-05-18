@@ -208,8 +208,8 @@ $tcpdf->Output($path.'/'.$filename, 'F');
             $border = 0;
 
             if( $action_print == 'excel' ) {
-                // header('Content-type: application/ms-excel');
-                // header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
+                header('Content-type: application/ms-excel');
+                header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
                 $tdStyle = 'text-align: center;';
             } else {
