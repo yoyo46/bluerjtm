@@ -39,7 +39,7 @@ if($action_print == 'pdf'){
 			$data_print = !empty($data_print)?$data_print:'invoice';
 			
 			if($action == 'tarif' && $data_print == 'invoice'){
-				$cityName = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_second_code'), array('places' => 0)) );
+				$cityName = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], '', array('places' => 0)) );
 			}else{
                 if( $data_print == 'date' && !empty($val_detail[0]['Invoice']['invoice_date']) ) {
 					$cityName = $this->Common->customDate($val_detail[0]['Invoice']['invoice_date'], 'd/m/Y');
@@ -147,7 +147,7 @@ if($action_print == 'pdf'){
 				$colom .= $this->Html->tag('td', $this->Number->format($grandTotalUnit), array(
 					'align' => 'center'
 				));
-				$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+				$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, '', array('places' => 0)), array(
 					'align' => 'right',
 					'colspan' => 2,
 				));
@@ -177,7 +177,7 @@ if($action_print == 'pdf'){
 
     $title_tipe_invoice = '';
     if($action == 'tarif'){
-		$title_tipe_invoice = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_second_code'), array('places' => 0)) );
+		$title_tipe_invoice = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], '', array('places' => 0)) );
 	}else{
 		$title_tipe_invoice = $val_detail[0]['City']['name'];
 	}
@@ -208,8 +208,8 @@ $tcpdf->Output($path.'/'.$filename, 'F');
             $border = 0;
 
             if( $action_print == 'excel' ) {
-                header('Content-type: application/ms-excel');
-                header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
+                // header('Content-type: application/ms-excel');
+                // header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
                 $tdStyle = 'text-align: center;';
             } else {
@@ -285,7 +285,7 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 									$initial = !empty($valueDetail['City']['initial'])?$valueDetail['City']['initial']:false;
 									$text = sprintf('%s - %s %s %s', $fromCity, $toCity, $month, $year);
 									$redaksional = sprintf('OKS ANGK SMH %s', $text);
-									$tujuan = sprintf('%s - %s', $fromCity, $toCityName);
+									$tujuan = sprintf('JKT - %s', $toCityName);
 			?>
 			<tr>
 				<?php 
@@ -295,7 +295,7 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 						));
 
 						if( !empty($price_unit) ) {
-							echo $this->Html->tag('td', $this->Number->format($price_unit, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+							echo $this->Html->tag('td', $this->Number->format($price_unit, '', array('places' => 0)), array(
 								'style' => 'text-align: right;'
 							));
 						} else {

@@ -132,7 +132,7 @@
 					'style' => 'text-align: center;',
 				));
 				$colom .= $this->Html->tag('td', '');
-				$colom .= $this->Html->tag('td', $this->Number->format($grandTotalTarif, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+				$colom .= $this->Html->tag('td', $this->Number->format($grandTotalTarif, '', array('places' => 0)), array(
 					'style' => 'text-align: right;',
 				));
 				$colom .= $this->Html->tag('td', '');

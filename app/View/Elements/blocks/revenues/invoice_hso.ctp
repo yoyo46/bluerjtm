@@ -49,7 +49,7 @@
 
 			if( !empty($showRate) ) {
 				$price_unit = !empty($revenueDetail['price_unit'])?$revenueDetail['price_unit']:0;
-				echo $this->Html->tag('td', $this->Number->format($price_unit, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+				echo $this->Html->tag('td', $this->Number->format($price_unit, '', array('places' => 0)), array(
 					'style' => 'text-align: right;'
 				));
 			} else {
@@ -57,7 +57,7 @@
 			}	
 
 			if( !empty($no) ) {
-				echo $this->Html->tag('td', $this->Number->format($total_price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+				echo $this->Html->tag('td', $this->Number->format($total_price, '', array('places' => 0)), array(
 					'style' => 'text-align: right;'
 				));
 			} else {
