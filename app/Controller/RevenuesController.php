@@ -4083,11 +4083,18 @@ class RevenuesController extends AppController {
                 }
             }
 
-            $this->paginate = $this->Customer->getData('paginate', array(
-                'conditions' => $default_conditions
-            ));
+            if(empty($data_action)){
+                $this->paginate = $this->Customer->getData('paginate', array(
+                    'conditions' => $default_conditions
+                ));
 
-            $customers = $this->paginate('Customer');
+                $customers = $this->paginate('Customer');
+            }else{
+                $customers = $this->Customer->getData('all', array(
+                    'conditions' => $default_conditions
+                ));
+                debug($customers);die();
+            }
 
             $list_customer = array();
             foreach ($customers as $key => $value) {

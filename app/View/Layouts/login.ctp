@@ -17,6 +17,7 @@
 		  background-color: #eee;
 		}
 	</style>
+	<title>ERP RJTM | Login Site</title>
 	<link rel="icon" href="/img/favicon.png" type="image/jpg" />
 </head>
 <body>

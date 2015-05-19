@@ -53,15 +53,26 @@
             <tbody>
                 <?php
                         if(!empty($customers)){
+                            $total_saldo = 0;
+                            $total_current = 0;
+                            $total_rev1to15 = 0;
+                            $total_rev16to30 = 0;
+                            $total_rev30 = 0;
                             foreach ($customers as $key => $value) {
                                 $total_pituang = !empty($value['piutang'][0][0]['total_pituang'])?$value['piutang'][0][0]['total_pituang']:0;
                                 $current_rev1to15 = !empty($value['current_rev1to15'][0][0]['current_rev1to15'])?$value['current_rev1to15'][0][0]['current_rev1to15']:0;
                                 $current_rev16to30 = !empty($value['current_rev16to30'][0][0]['current_rev16to30'])?$value['current_rev16to30'][0][0]['current_rev16to30']:0;
                                 $current_rev30 = !empty($value['current_rev30'][0][0]['current_rev30'])?$value['current_rev30'][0][0]['current_rev30']:0;
                                 $current = $total_pituang - $current_rev1to15 - $current_rev16to30 - $current_rev30;
+
+                                $total_saldo += $total_pituang;
+                                $total_current += $current;
+                                $total_rev1to15 += $current_rev1to15;
+                                $total_rev16to30 += $current_rev16to30;
+                                $total_rev30 += $current_rev30;
                 ?>
                 <tr>
-                    <td><?php echo $value['Customer']['customer_name_code'];?></td>
+                    <td><?php echo $value['Customer']['customer_code'];?></td>
                     <td class="text-right"><?php echo $this->Number->currency($total_pituang, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                     <td class="text-right"><?php echo $this->Number->currency($current, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                     <td class="text-right"><?php echo $this->Number->currency($current_rev1to15, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
@@ -70,6 +81,30 @@
                 </tr>
                 <?php
                             }
+                ?>
+                <tr>
+                    <?php
+                        echo $this->Html->tag('td', $this->Html->tag('strong', __('Total')), array(
+                            'align' => 'right'
+                        ));
+                        echo $this->Html->tag('td', $this->Number->currency($total_saldo, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                            'align' => 'right'
+                        ));
+                        echo $this->Html->tag('td', $this->Number->currency($total_current, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                            'align' => 'right'
+                        ));
+                        echo $this->Html->tag('td', $this->Number->currency($total_rev1to15, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                            'align' => 'right'
+                        ));
+                        echo $this->Html->tag('td', $this->Number->currency($total_rev16to30, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                            'align' => 'right'
+                        ));
+                        echo $this->Html->tag('td', $this->Number->currency($total_rev30, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                            'align' => 'right'
+                        ));
+                    ?>
+                </tr>
+                <?php
                         }
                 ?>
             </tbody>
@@ -111,6 +146,11 @@
             $no = 1;
 
             if(!empty($customers)){
+                $total_saldo = 0;
+                $total_current = 0;
+                $total_rev1to15 = 0;
+                $total_rev16to30 = 0;
+                $total_rev30 = 0;
                 foreach ($customers as $key => $value) {
                     $total_pituang = !empty($value['piutang'][0][0]['total_pituang'])?$value['piutang'][0][0]['total_pituang']:0;
                     $current_rev1to15 = !empty($value['current_rev1to15'][0][0]['current_rev1to15'])?$value['current_rev1to15'][0][0]['current_rev1to15']:0;
@@ -118,7 +158,13 @@
                     $current_rev30 = !empty($value['current_rev30'][0][0]['current_rev30'])?$value['current_rev30'][0][0]['current_rev30']:0;
                     $current = $total_pituang - $current_rev1to15 - $current_rev16to30 - $current_rev30;
 
-                    $content = $this->Html->tag('td', $value['Customer']['customer_name_code'], array(
+                    $total_saldo += $total_pituang;
+                    $total_current += $current;
+                    $total_rev1to15 += $current_rev1to15;
+                    $total_rev16to30 += $current_rev16to30;
+                    $total_rev30 += $current_rev30;
+
+                    $content = $this->Html->tag('td', $value['Customer']['customer_code'], array(
                         'style' => 'text-align: left; width: 120px;'
                     ));
                     $content .= $this->Html->tag('td', $this->Number->currency($total_pituang, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
@@ -140,6 +186,26 @@
                     $each_loop_message .= $this->Html->tag('tr', $content);
                     $no++;
                 }
+
+                $content = $this->Html->tag('td', $this->Html->tag('td', __('Total')), array(
+                    'style' => 'text-align: left; width: 120px;'
+                ));
+                $content .= $this->Html->tag('td', $this->Number->currency($total_saldo, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                    'style' => 'text-align: right;'
+                ));
+                $content .= $this->Html->tag('td', $this->Number->currency($total_current, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                    'style' => 'text-align: right;'
+                ));
+                $content .= $this->Html->tag('td', $this->Number->currency($total_rev1to15, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                    'style' => 'text-align: right;'
+                ));
+                $content .= $this->Html->tag('td', $this->Number->currency($total_rev16to30, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                    'style' => 'text-align: right;'
+                ));
+                $content .= $this->Html->tag('td', $this->Number->currency($total_rev30, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                    'style' => 'text-align: right;'
+                ));
+                $each_loop_message .= $this->Html->tag('tr', $content);
             }else{
                 $each_loop_message .= '<tr>
                     <td colspan="7">data tidak tersedia</td>
