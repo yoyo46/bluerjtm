@@ -23,7 +23,6 @@
                 <th>Parts</th>
                 <th>Code</th>
                 <th>Biaya Klaim</th>
-                <th>Biaya Klaim<br>Per Unit</th>
                 <th>Dibuat</th>
                 <th>Action</th>
             </tr>
@@ -37,15 +36,6 @@
             <tr>
                 <td><?php echo $value_data['name'];?></td>
                 <td><?php echo $value_data['code'];?></td>
-                <td>
-                    <?php 
-                        if(!empty($value_data['biaya_claim'])){
-                            echo $this->Number->currency($value_data['biaya_claim'], Configure::read('__Site.config_currency_code'), array('places' => 0));
-                        }else{
-                            echo '-';
-                        }
-                    ?>
-                </td>
                 <td>
                     <?php 
                         if(!empty($value_data['biaya_claim_unit'])){
@@ -82,7 +72,7 @@
                     } else {
                          echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '3'
+                            'colspan' => '6'
                         )));
                     }
             ?>

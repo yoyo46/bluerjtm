@@ -40,19 +40,6 @@
 				));
 			?>
         </div>
-         <div class="form-group">
-        	<?php 
-				echo $this->Form->label('biaya_claim',__('Biaya Klaim')); 
-
-				echo $this->Form->input('biaya_claim',array(
-					'type' => 'text',
-					'label'=> false, 
-					'class'=>'form-control input_price',
-					'required' => false,
-					'placeholder' => __('Biaya Klaim')
-				));
-			?>
-        </div>
         <div class="form-group">
         	<?php 
 				echo $this->Form->label('biaya_claim_unit',__('Biaya Klaim per unit')); 

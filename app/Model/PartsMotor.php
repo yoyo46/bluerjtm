@@ -14,13 +14,13 @@ class PartsMotor extends AppModel {
                 'message' => 'Kode Part motor harap diisi'
             ),
         ),
-        'biaya_claim' => array(
-            'numeric' => array(
-                'rule' => array('numeric'),
-                'allowEmpty' => true,
-                'message' => 'Biaya harus berupa angka'
-            ),
-        ),
+        // 'biaya_claim' => array(
+        //     'numeric' => array(
+        //         'rule' => array('numeric'),
+        //         'allowEmpty' => true,
+        //         'message' => 'Biaya harus berupa angka'
+        //     ),
+        // ),
         'biaya_claim_unit' => array(
             'numeric' => array(
                 'rule' => array('numeric'),

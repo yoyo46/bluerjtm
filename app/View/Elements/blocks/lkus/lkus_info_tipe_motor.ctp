@@ -18,6 +18,7 @@
                     <th><?php echo __('Tipe Motor');?></th>
                     <th><?php echo __('No. Rangka');?></th>
                     <th><?php echo __('Keterangan');?></th>
+                    <th><?php echo __('Part Motor');?></th>
                     <th><?php echo __('Jumlah Unit');?></th>
                     <th><?php printf(__('Biaya Klaim (%s)'), Configure::read('__Site.config_currency_code'));?></th>
                     <th><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
@@ -67,6 +68,18 @@
                                 'class' => 'form-control',
                                 'required' => false,
                                 'value' => (isset($this->request->data['LkuDetail'][$i]['note']) && !empty($this->request->data['LkuDetail'][$i]['note'])) ? $this->request->data['LkuDetail'][$i]['note'] : ''
+                            ));
+                        ?>
+                    </td>
+                    <td>
+                        <?php 
+                            echo $this->Form->input('LkuDetail.part_motor_id.', array(
+                                'label' => false,
+                                'class' => 'form-control part-motor-lku',
+                                'required' => false,
+                                'empty' => __('Pilih Part Motor'),
+                                'options' => $part_motors,
+                                'value' => (isset($this->request->data['LkuDetail'][$i]['part_motor_id']) && !empty($this->request->data['LkuDetail'][$i]['part_motor_id'])) ? $this->request->data['LkuDetail'][$i]['part_motor_id'] : ''
                             ));
                         ?>
                     </td>
@@ -122,7 +135,7 @@
                     }
                 ?>
                 <tr id="field-grand-total-lku">
-                    <td align="right" colspan="5"><?php echo __('Total Biaya Klaim')?></td>
+                    <td align="right" colspan="6"><?php echo __('Total Biaya Klaim')?></td>
                     <td align="right" id="grand-total-lku">
                         <?php 
                             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
@@ -167,6 +180,17 @@
                             'label' => false,
                             'class' => 'form-control',
                             'required' => false,
+                        ));
+                    ?>
+                </td>
+                <td>
+                    <?php 
+                        echo $this->Form->input('LkuDetail.part_motor_id.', array(
+                            'label' => false,
+                            'class' => 'form-control part-motor-lku',
+                            'required' => false,
+                            'empty' => __('Pilih Part Motor'),
+                            'options' => $part_motors,
                         ));
                     ?>
                 </td>
