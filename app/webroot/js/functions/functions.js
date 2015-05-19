@@ -3298,4 +3298,22 @@ $(function() {
         }
     }
     
+    $('.employe-field').change(function(){
+        var val = $(this).val();
+
+        if(val != ''){
+            $.ajax({
+                url: '/ajax/getInfoEmploye/'+val+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    $('.first-name-box').val($(response).filter('#data-first-name').html());
+                    $('.last-name-box').val($(response).filter('#data-last-name').html());
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        }
+    });
 });

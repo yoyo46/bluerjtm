@@ -466,8 +466,29 @@ class UsersController extends AppController {
                 'City.id', 'City.name'
             )
         ));
+
+        $this->loadModel('Employe');
+        $employes = $this->Employe->getData('all', array(
+            'conditions' => array(
+                'Employe.status' => 1,
+                'Employe.is_registered' => 0
+            ),
+            'contain' => array(
+                'EmployePosition'
+            )
+        ));
+
+        $arr_list = array();
+        if(!empty($employes)){
+            foreach ($employes as $key => $value) {
+                $arr_list[$value['Employe']['id']] = sprintf('%s (%s)', $value['Employe']['name'], $value['EmployePosition']['name']);
+            }
+
+            $employes = $arr_list;
+        }
+
         $this->set(compact(
-            'branches', 'groups', 'id', 'branch'
+            'branches', 'groups', 'id', 'branch', 'employes'
         ));
         $this->render('user_form');
     }

@@ -35,6 +35,25 @@
 		</div>
 		<div class="form-group">
 			<?php 
+					$title = __('Karyawan *');
+					echo $this->Form->label('employe_id', $title, array(
+						'class'=>'control-label col-sm-2'
+					)); 
+			?>
+			<div class="col-sm-8">
+			<?php 
+					echo $this->Form->input('employe_id',array(
+						'label'=>false,
+						'empty' => __('Pilih Karyawan'),
+						'required' => false,
+						'class' => 'form-control employe-field',
+						'options' => $employes
+					)); 
+			?>
+			</div>
+		</div>
+		<div class="form-group">
+			<?php 
 					$title = __('Email *');
 					echo $this->Form->label('email', $title, array(
 						'class'=>'control-label col-sm-2'
@@ -126,7 +145,8 @@
 						'label'=>false,
 						'placeholder' => $title,
 						'required' => false,
-						'class' => 'form-control',
+						'class' => 'form-control first-name-box',
+						'readonly' => 'readonly'
 					)); 
 			?>
 			</div>
@@ -144,7 +164,8 @@
 						'label'=>false,
 						'placeholder' => $title,
 						'required' => false,
-						'class' => 'form-control',
+						'class' => 'form-control last-name-box',
+						'readonly' => 'readonly'
 					)); 
 			?>
 			</div>

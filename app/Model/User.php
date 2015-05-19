@@ -20,6 +20,12 @@ class User extends AppModel {
                 'message' => 'Cabang harap dipilih'
             ),
         ),
+        'employe_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Karyawan harap dipilih'
+            ),
+        ),
         'first_name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
