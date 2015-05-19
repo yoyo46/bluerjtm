@@ -83,7 +83,7 @@ class Customer extends AppModel {
         $this->virtualFields['customer_code'] = sprintf('CONCAT(%s.name, \' - \', %s.code)', $this->alias, $this->alias);
         $this->virtualFields['customer_name_code'] = sprintf('CONCAT(%s.code, \' - \', %s.name, \' ( \', CustomerType.name, \' )\')', $this->alias, $this->alias);
         $this->virtualFields['customer_name'] = sprintf('CONCAT(%s.name, \' ( \', CustomerType.name, \' )\')', $this->alias);
-        // $this->virtualFields['order_sort'] = sprintf('CASE WHEN %s.order IS NULL THEN 1 ELSE 0 END', $this->alias);
+        $this->virtualFields['order_sort'] = sprintf('CASE WHEN %s.order IS NULL THEN 1 ELSE 0 END', $this->alias);
     }
 
 	function getData( $find, $options = false, $is_merge = true ){
@@ -92,7 +92,7 @@ class Customer extends AppModel {
                 'Customer.status' => 1,
             ),
             'order'=> array(
-                // 'Customer.order_sort' => 'ASC',
+                'Customer.order_sort' => 'ASC',
                 'Customer.order' => 'ASC',
                 'Customer.name' => 'ASC',
             ),
