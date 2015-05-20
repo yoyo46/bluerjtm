@@ -415,6 +415,22 @@ class UsersController extends AppController {
                 }
 
                 if($this->User->save($data)){
+                    $this->loadModel('Employe');
+                    if(!empty($data_local['User']['employe_id']) && $data_local['User']['employe_id'] != $data['User']['employe_id']){
+                        $this->Employe->updateAll(
+                            array(
+                                'Employe.is_registered' => 0
+                            ),
+                            array(
+                                'Employe.id' => $data_local['User']['employe_id']
+                            )
+                        );
+                    }
+                    
+                    $this->Employe->id = $data['User']['employe_id'];
+                    $this->Employe->set('is_registered', 1);
+                    $this->Employe->save();
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s User'), $msg), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses %s User #%s'), $msg, $this->User->id), $this->user_data, $this->RequestHandler, $this->params );
                     $this->redirect(array(
@@ -471,7 +487,15 @@ class UsersController extends AppController {
         $employes = $this->Employe->getData('all', array(
             'conditions' => array(
                 'Employe.status' => 1,
-                'Employe.is_registered' => 0
+                'OR' => array(
+                    array(
+                        'Employe.is_registered' => 0
+                    ),
+                    array(
+                        'Employe.is_registered' => 1,
+                        'Employe.id' => !empty($data_local['User']['employe_id']) ? $data_local['User']['employe_id'] : 0
+                    )
+                )
             ),
             'contain' => array(
                 'EmployePosition'

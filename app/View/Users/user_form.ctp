@@ -146,7 +146,6 @@
 						'placeholder' => $title,
 						'required' => false,
 						'class' => 'form-control first-name-box',
-						'readonly' => 'readonly'
 					)); 
 			?>
 			</div>
@@ -165,7 +164,6 @@
 						'placeholder' => $title,
 						'required' => false,
 						'class' => 'form-control last-name-box',
-						'readonly' => 'readonly'
 					)); 
 			?>
 			</div>
