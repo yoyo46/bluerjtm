@@ -1347,11 +1347,12 @@ var part_motor_lku = function(){
                 url: '/ajax/getPricePartMotor/'+val+'/',
                 type: 'POST',
                 success: function(response, status) {
-                    self.parents('tr').find('.price-tipe-motor').val($(response).filter('#price').html());
+                    self.parents('tr').find('.price-tipe-motor').val(formatNumber($(response).filter('#price').html()));
 
                     price_tipe_motor();
 
                     self.parents('tr').find('.claim-number').trigger('change');
+                    getTotalLKU(self);
                     grandTotalLku();
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
