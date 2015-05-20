@@ -18,18 +18,6 @@
     <div class="box-body">
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('name',__('Nama Part Motor *')); 
-
-				echo $this->Form->input('name',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'placeholder' => __('Nama Part Motor')
-				));
-			?>
-        </div>
-        <div class="form-group">
-        	<?php 
 				echo $this->Form->label('code',__('Kode Part Motor *')); 
 
 				echo $this->Form->input('code',array(
@@ -37,6 +25,18 @@
 					'class'=>'form-control',
 					'required' => false,
 					'placeholder' => __('Kode Part Motor')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('name',__('Nama Part Motor *')); 
+
+				echo $this->Form->input('name',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Nama Part Motor')
 				));
 			?>
         </div>
