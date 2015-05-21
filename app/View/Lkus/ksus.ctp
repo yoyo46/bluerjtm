@@ -43,6 +43,10 @@
                             'escape' => false
                         )));
 
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ksu.paid', __('Status Pembayaran'), array(
+                            'escape' => false
+                        )));
+
                         echo $this->Html->tag('th', $this->Paginator->sort('Ksu.created', __('Dibuat'), array(
                             'escape' => false
                         )));
@@ -65,10 +69,21 @@
                         } else{
                             echo $this->Html->tag('td', '<span class="label label-danger">Non-aktif</span>');
                         }
+
+                        if(empty($value['Ksu']['kekurangan_atpm'])){
+                            if(!empty($value['Ksu']['paid'])){
+                                echo $this->Html->tag('td', '<span class="label label-success">Sudah di bayar</span>');
+                            } else{
+                                echo $this->Html->tag('td', '<span class="label label-danger">Belum di bayar</span>');
+                            }
+                        }else{
+                            echo $this->Html->tag('td', '<span class="label label-success">Dibayar Main Dealer</span>');
+                        }
                 ?>
                 <td><?php echo $this->Common->customDate($value['Ksu']['created'], 'Y/m/d');?></td>
                 <td class="action">
                     <?php
+                        if( (empty($value['Ksu']['paid']) && !empty($value['Ksu']['status'])) ){
                             if( in_array('update_lkus', $allowModule) ) {
                                 echo $this->Html->link('Rubah', array(
                                     'controller' => 'lkus',
@@ -89,6 +104,7 @@
                                     'title' => 'disable status brand'
                                 ), __('Apakah Anda yakin akan menghapus data ini?'));
                             }
+                        }
                     ?>
                 </td>
             </tr>
