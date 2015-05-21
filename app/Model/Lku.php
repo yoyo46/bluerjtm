@@ -99,5 +99,17 @@ class Lku extends AppModel {
 
         return $data;
     }
+
+    function getLku($id){
+        return $this->find('first', array(
+            'conditions' => array(
+                'Lku.id' => $id
+            ),
+            'contain' => array(
+                'LkuDetail',
+                'Ttuj'
+            )
+        ));
+    }
 }
 ?>

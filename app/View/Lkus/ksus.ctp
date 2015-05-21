@@ -94,6 +94,14 @@
                 <td><?php echo $this->Common->customDate($value['Ksu']['created'], 'Y/m/d');?></td>
                 <td class="action">
                     <?php
+                        echo $this->Html->link('Info', array(
+                            'controller' => 'lkus',
+                            'action' => 'detail_ksu',
+                            $id
+                        ), array(
+                            'class' => 'btn btn-info btn-xs'
+                        ));
+
                         if( (empty($value['Ksu']['paid']) && !empty($value['Ksu']['status'])) ){
                             if( in_array('update_lkus', $allowModule) ) {
                                 echo $this->Html->link('Rubah', array(

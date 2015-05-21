@@ -58,9 +58,37 @@ class LkusController extends AppController {
     function detail($id = false){
         if( in_array('view_lkus', $this->allowModule) ) {
             if(!empty($id)){
+                $this->loadModel('Lku');
                 $Lku = $this->Lku->getLku($id);
-
+                
                 if(!empty($Lku)){
+                    if(!empty($Lku['LkuDetail'])){
+                        $this->loadModel('PartsMotor');
+                        $this->loadModel('TipeMotor');
+
+                        foreach ($Lku['LkuDetail'] as $key => $value) {
+                            $tipe_motor = $this->TipeMotor->getData('first', array(
+                                'conditions' => array(
+                                    'TipeMotor.id' => $value['tipe_motor_id']
+                                ),
+                                'contain' => array(
+                                    'GroupMotor'
+                                )
+                            ));
+
+                            if(!empty($tipe_motor)){
+                                $part_motor = $this->PartsMotor->getData('first', array(
+                                    'conditions' => array(
+                                        'PartsMotor.id' => $value['part_motor_id'],
+                                    )
+                                ), false);
+                                $Lku['LkuDetail'][$key]['TipeMotor'] = $tipe_motor['TipeMotor'];
+                                $Lku['LkuDetail'][$key]['GroupMotor'] = !empty($tipe_motor['GroupMotor']) ? $tipe_motor['GroupMotor'] : false;
+                                $Lku['LkuDetail'][$key]['PartsMotor'] = !empty($part_motor['PartsMotor'])?$part_motor['PartsMotor']:false;
+                            }
+                        }
+                    }
+
                     $sub_module_title = __('Detail LKU');
                     $this->set(compact('Lku', 'sub_module_title'));
                 }else{
@@ -1035,12 +1063,28 @@ class LkusController extends AppController {
         }
     }
 
-    function ksu_detail($id = false){
+    function detail_ksu($id = false){
         if( in_array('view_lkus', $this->allowModule) ) {
             if(!empty($id)){
+                $this->loadModel('Ksu');
                 $Ksu = $this->Ksu->getKsu($id);
 
                 if(!empty($Ksu)){
+                    if(!empty($Ksu['KsuDetail'])){
+                        $this->loadModel('Perlengkapan');
+                        foreach ($Ksu['KsuDetail'] as $key => $value) {
+                            $Perlengkapan = $this->Perlengkapan->getData('first', array(
+                                'conditions' => array(
+                                    'Perlengkapan.id' => $value['perlengkapan_id']
+                                ),
+                            ));
+
+                            if(!empty($Perlengkapan)){
+                                $Ksu['KsuDetail'][$key]['Perlengkapan'] = $Perlengkapan['Perlengkapan'];
+                            }
+                        }
+                    }
+
                     $sub_module_title = __('Detail KSU');
                     $this->set(compact('Ksu', 'sub_module_title'));
                 }else{

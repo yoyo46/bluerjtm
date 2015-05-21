@@ -102,5 +102,17 @@ class Ksu extends AppModel {
         }
         return $result;
     }
+
+    function getKsu($id){
+        return $this->find('first', array(
+            'conditions' => array(
+                'Ksu.id' => $id
+            ),
+            'contain' => array(
+                'KsuDetail',
+                'Ttuj'
+            )
+        ));
+    }
 }
 ?>
