@@ -733,9 +733,7 @@
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'lkus' )?'active':'',
                                 ));
-                             }
-
-                             if( in_array('view_lkus', $allowModule) ) {
+                             
                                  echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KSU', array(
                                     'controller' => 'lkus',
                                     'action' => 'ksus',

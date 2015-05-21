@@ -91,6 +91,7 @@ class LkusController extends AppController {
 
                     $sub_module_title = __('Detail LKU');
                     $this->set(compact('Lku', 'sub_module_title'));
+                    $this->set('active_menu', 'lkus');
                 }else{
                     $this->MkCommon->setCustomFlash(__('LKU tidak ditemukan.'), 'error');
                     $this->redirect($this->referer());
@@ -1087,6 +1088,7 @@ class LkusController extends AppController {
 
                     $sub_module_title = __('Detail KSU');
                     $this->set(compact('Ksu', 'sub_module_title'));
+                    $this->set('active_menu', 'ksus');
                 }else{
                     $this->MkCommon->setCustomFlash(__('KSU tidak ditemukan.'), 'error');
                     $this->redirect($this->referer());
