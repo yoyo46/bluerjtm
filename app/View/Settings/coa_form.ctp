@@ -45,6 +45,10 @@
 									echo $this->Html->tag('div', $coa['Coa']['with_parent_code'], array(
 										'class' => 'input-group-addon',
 									));
+								}else if(!empty($coa['Coa']['code'])){
+									echo $this->Html->tag('div', $coa['Coa']['code'], array(
+										'class' => 'input-group-addon',
+									));
 								}
 
 								echo $this->Form->input('code',array(
