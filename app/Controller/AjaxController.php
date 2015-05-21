@@ -228,6 +228,8 @@ class AjaxController extends AppController {
 			$lkus = $this->Lku->getData('all', array(
 				'conditions' => array(
 					'Lku.ttuj_id' => $ttuj_id,
+					'Lku.status' => 1,
+					'Lku.paid' => 0
 					// 'Lku.type_lku' => $type_lku
 				),
 				'contain' => array(
@@ -1214,7 +1216,7 @@ class AjaxController extends AppController {
                 break;
 
             case 'ksu':
-                $conditions['Ttuj.is_pool'] = 1;
+                $conditions['Ttuj.is_bongkaran'] = 1;
 				$data_change = 'getTtujInfoKsu';
                 break;
 
