@@ -755,4 +755,57 @@ class CommonHelper extends AppHelper {
 
         return $receiver_type;
     }
+
+    function printDataTree($data, $allowModule, $level){
+        $coa_title = '';
+        $coa_id = $data['Coa']['id'];
+        if(!empty($data['Coa']['code'])){
+            $codeCoa = $data['Coa']['code'];
+
+            if( !empty($parent['Coa']['code']) ) {
+                $codeCoa = sprintf('%s-%s', $parent['Coa']['code'], $codeCoa);
+            }
+
+            $coa_title = $this->Html->tag('label', $codeCoa);
+        }
+        $coa_title .= $data['Coa']['name'];
+        $dataTree = $this->Html->tag('span', $coa_title, array(
+            'title' => $coa_title,
+        ));
+        if( in_array('insert_coas', $allowModule) && $level < 4) {
+            $dataTree .= $this->Html->link('<i class="fa fa-plus-circle"></i>', array(
+                'controller' => 'settings',
+                'action' => 'coa_add',
+                $coa_id,
+            ), array(
+                'escape' => false,
+                'class' => 'bg-green'
+            ));
+        }
+
+        if( in_array('update_coas', $allowModule) ) {
+            $dataTree .= $this->Html->link('<i class="fa fa-pencil-square-o"></i>', array(
+                'controller' => 'settings',
+                'action' => 'coa_edit',
+                $coa_id,
+                $data['Coa']['parent_id'],
+            ), array(
+                'escape' => false,
+                'class' => 'bg-primary',
+                'title' => 'edit'
+            ));
+        }
+        if( in_array('delete_coas', $allowModule) ) {
+            $dataTree .= $this->Html->link('<i class="fa fa-minus-circle"></i>', array(
+                'controller' => 'settings',
+                'action' => 'coa_toggle',
+                $coa_id,
+            ), array(
+                'escape' => false,
+                'class' => 'bg-red'
+            ), __('Anda yakin ingin menghapus COA ini ?'));
+        }
+
+        return $dataTree;
+    }
 }

@@ -4,7 +4,10 @@
 			'action' => 'coas'
 		));
 		$this->Html->addCrumb($sub_module_title);
-		$coaCode = $coa['Coa']['code'];
+		$coaCode = '';
+		if(!empty($coa['Coa']['code'])){
+			$coaCode = $coa['Coa']['code'];
+		}
 
 		if( !empty($coa['Coa']['with_parent_code']) ) {
 			$coaCode = $coa['Coa']['with_parent_code'];
