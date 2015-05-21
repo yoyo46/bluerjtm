@@ -39,6 +39,14 @@
                             'escape' => false
                         )));
 
+                        echo $this->Html->tag('th', $this->Paginator->sort('Lku.total_klaim', __('Total Klaim'), array(
+                            'escape' => false
+                        )));
+
+                        echo $this->Html->tag('th', $this->Paginator->sort('Lku.total_price', __('Total Pembayaran'), array(
+                            'escape' => false
+                        )));
+
                         echo $this->Html->tag('th', $this->Paginator->sort('Lku.status', __('Status'), array(
                             'escape' => false
                         )));
@@ -62,8 +70,11 @@
             ?>
             <tr>
                 <td><?php echo $value['Lku']['no_doc'];?></td>
-                <?php echo $this->Html->tag('td', date('d M Y', strtotime($value['Lku']['tgl_lku'])));?>
                 <?php 
+                        echo $this->Html->tag('td', date('d M Y', strtotime($value['Lku']['tgl_lku'])));
+                        echo $this->Html->tag('td', $this->Number->format($value['Lku']['total_klaim']));
+                        echo $this->Html->tag('td', $this->Number->currency($value['Lku']['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0)) );
+
                         if(!empty($value['Lku']['status'])){
                             echo $this->Html->tag('td', '<span class="label label-success">Aktif</span>');
                         } else{
