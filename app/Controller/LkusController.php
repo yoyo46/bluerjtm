@@ -301,9 +301,12 @@ class LkusController extends AppController {
                         $tipe_motor = $this->TipeMotor->getData('first', array(
                             'conditions' => array(
                                 'TipeMotor.id' => $value['tipe_motor_id']
+                            ),
+                            'contain' => array(
+                                'GroupMotor'
                             )
                         ));
-                        $tipe_motor_list[$tipe_motor['TipeMotor']['id']] = $tipe_motor['TipeMotor']['name'];
+                        $tipe_motor_list[$tipe_motor['TipeMotor']['id']] = sprintf('%s (%s)', $tipe_motor['TipeMotor']['name'], $tipe_motor['GroupMotor']['name']);
                     }
                     $this->set('tipe_motor_list', $tipe_motor_list);
                 }
@@ -333,16 +336,12 @@ class LkusController extends AppController {
             $this->loadModel('Lku');
             $locale = $this->Lku->getData('first', array(
                 'conditions' => array(
-                    'Lku.id' => $id
-                )
+                    'Lku.id' => $id,
+                    'Lku.status' => 1
+                ),
             ));
 
             if($locale){
-                $value = true;
-                if($locale['Lku']['status']){
-                    $value = false;
-                }
-
                 $this->Lku->id = $id;
                 $this->Lku->set('status', 0);
 

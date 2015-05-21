@@ -1209,7 +1209,7 @@ class AjaxController extends AppController {
                 break;
 
             case 'lku':
-                $conditions['Ttuj.is_pool'] = 1;
+                $conditions['Ttuj.is_bongkaran'] = 1;
 				$data_change = 'getTtujInfo';
                 break;
 

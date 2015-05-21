@@ -187,7 +187,7 @@
                     $no++;
                 }
 
-                $content = $this->Html->tag('td', $this->Html->tag('td', __('Total')), array(
+                $content = $this->Html->tag('td',  __('Total'), array(
                     'style' => 'text-align: left; width: 120px;'
                 ));
                 $content .= $this->Html->tag('td', $this->Number->currency($total_saldo, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(

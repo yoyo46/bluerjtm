@@ -79,6 +79,7 @@
                 <td><?php echo $this->Common->customDate($value['Lku']['created']);?></td>
                 <td class="action">
                     <?php
+                        if( empty($value['Lku']['paid']) && !empty($value['Lku']['status']) ){
                             if( in_array('update_lkus', $allowModule) ) {
                                 echo $this->Html->link('Rubah', array(
                                     'controller' => 'lkus',
@@ -99,6 +100,7 @@
                                     'title' => 'disable status brand'
                                 ), __('Apakah Anda yakin akan mengbatalkan data ini?'));
                             }
+                        }
                     ?>
                 </td>
             </tr>

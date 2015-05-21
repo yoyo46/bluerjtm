@@ -4093,7 +4093,6 @@ class RevenuesController extends AppController {
                 $customers = $this->Customer->getData('all', array(
                     'conditions' => $default_conditions
                 ));
-                debug($customers);die();
             }
 
             $list_customer = array();

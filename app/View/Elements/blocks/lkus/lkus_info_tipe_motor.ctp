@@ -33,7 +33,7 @@
                     }
                     $total = 0;
                     for ($i=0; $i < $count; $i++) { 
-                        $price = (isset($this->request->data['LkuDetail'][$i]['price']) && !empty($this->request->data['LkuDetail'][$i]['price'])) ? $this->request->data['LkuDetail'][$i]['price'] : 0;
+                        $price = (isset($this->request->data['LkuDetail'][$i]['price']) && !empty($this->request->data['LkuDetail'][$i]['price'])) ? str_replace(',', '', $this->request->data['LkuDetail'][$i]['price']) : 0;
                         $qty = (isset($this->request->data['LkuDetail'][$i]['qty']) && !empty($this->request->data['LkuDetail'][$i]['qty'])) ? $this->request->data['LkuDetail'][$i]['qty'] : 0;
                 ?>
                 <tr class="lku-detail lku-detail-<?php echo $i+1;?>" rel="<?php echo $i+1;?>">
@@ -85,18 +85,19 @@
                     </td>
                     <td class="qty-tipe-motor" align="center">
                         <?php
-                            if(!empty($qty) && !empty($this->request->data['LkuDetail'][$i]['TipeMotor']['TtujTipeMotor']['qty'])){
+                            // if(!empty($qty) && !empty($this->request->data['LkuDetail'][$i]['TipeMotor']['TtujTipeMotor']['qty'])){
 
                                 echo $this->Form->input('LkuDetail.qty.', array(
                                     'placeholder' => __('Jumlah Klaim'),
                                     'class' => 'claim-number form-control',
                                     'div' => false,
                                     'label' => false,
-                                    'value' => $qty
+                                    'value' => $qty,
+                                    'readonly' => empty($qty) ? 'readonly' : false
                                 ));
-                            }else{
-                                echo '-';
-                            }
+                            // }else{
+                            //     echo '-';
+                            // }
                         ?>
                     </td>
                     <td align="right">
@@ -194,7 +195,23 @@
                         ));
                     ?>
                 </td>
-                <td class="qty-tipe-motor" align="center">-</td>
+                <td class="qty-tipe-motor" align="center">
+                    <?php
+                            // if(!empty($qty) && !empty($this->request->data['LkuDetail'][$i]['TipeMotor']['TtujTipeMotor']['qty'])){
+
+                                echo $this->Form->input('LkuDetail.qty.', array(
+                                    'placeholder' => __('Jumlah Klaim'),
+                                    'class' => 'claim-number form-control',
+                                    'div' => false,
+                                    'label' => false,
+                                    'value' => 0,
+                                    'readonly' =>'readonly'
+                                ));
+                            // }else{
+                            //     echo '-';
+                            // }
+                        ?>
+                </td>
                 <td align="right">
                     <?php 
                         echo $this->Form->input('LkuDetail.price.', array(

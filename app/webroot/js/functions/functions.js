@@ -520,6 +520,10 @@ var add_custom_field = function(){
                     input_price($('.ksu-detail-'+ksu_detail_len+' .input_price'));
                     price_perlengkapan();
                     delete_custom_field($('.ksu-detail-'+ksu_detail_len+' .delete-custom-field'));
+
+                    if($('.handle-atpm').is(':checked')){
+                        $('.price-perlengkapan').hide();
+                    }
                 // }
                 break;
             case 'lku_ttuj':
@@ -1473,7 +1477,7 @@ function grandTotalLku(){
             };
             
             val = text_val;
-
+            console.log(claim_number[i].value);
             total_price += claim_number[i].value * val;
         }
     };
@@ -1486,7 +1490,7 @@ function getTotalKSU(self){
     var qty = parent.find('td.qty-perlengkapan .claim-number').val();
     var val = parent.find('td .price-perlengkapan').val();
 
-    if(typeof qty != 'undefined' && typeof val != 'undefined'){
+    if(typeof qty != 'undefined' && typeof val != 'undefined' && !$('.handle-atpm').is(':checked') ){
         var arr_string = val.split(',');
         var text_val = '';
         for (var a = 0; a < arr_string.length; a++) {
@@ -1497,7 +1501,9 @@ function getTotalKSU(self){
         total = parseInt(val)*qty;
         parent.find('.total-price-claim').text('IDR '+formatNumber(total));
     }else{
-        parent.find('.total-price-claim').text('IDR 0');
+        if(!$('.handle-atpm').is(':checked')){
+            parent.find('.total-price-claim').text('IDR 0');
+        }
     }
     grandTotalKSU();
 }
@@ -1552,21 +1558,31 @@ var choose_item_info = function(){
     $('.lku-choose-tipe-motor').change(function(){
         var self = $(this);
         var ttuj_id = $('#getTtujInfo').val();
+        var val = self.val();
 
-        $.ajax({
-            url: '/ajax/getColorTipeMotor/'+self.val()+'/'+ttuj_id+'/',
-            type: 'POST',
-            success: function(response, status) {
-                self.parents('tr').find('td.qty-tipe-motor').html($(response).filter('#form-qty').html());
+        if(val != ''){
+            $.ajax({
+                url: '/ajax/getColorTipeMotor/'+val+'/'+ttuj_id+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    self.parents('tr').find('td.qty-tipe-motor').html($(response).filter('#form-qty').html());
 
-                price_tipe_motor();
-                part_motor_lku();
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
-                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                return false;
-            }
-        });
+                    price_tipe_motor();
+                    part_motor_lku();
+
+                    getTotalLKU(self);
+                    grandTotalLku();
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        }else{
+            self.parents('tr').find('td.qty-tipe-motor input').val(0).attr('readonly', 'readonly');
+            getTotalLKU(self);
+            grandTotalLku();
+        }
     });
 
     $('.ksu-choose-tipe-motor').change(function(){
