@@ -699,7 +699,7 @@ class SettingsController extends AppController {
                     ));
                     $this->set('sub_module_title', 'Rubah COA');
                     $this->set('coa', $coa);
-                   $this->doCoa( $id, $coa_current, $parent_id, $coa );
+                    $this->doCoa( $id, $coa_current, $parent_id, $coa );
                 } else {
                     $this->MkCommon->setCustomFlash(__('Coa tidak ditemukan.'), 'error');
                     $this->redirect($this->referer());
