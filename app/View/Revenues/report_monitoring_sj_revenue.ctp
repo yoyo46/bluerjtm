@@ -61,9 +61,10 @@
                                 'required' => false,
                                 'empty' => __('Pilih Status'),
                                 'options' => array(
-                                    'pending' => __('Belum Diterima'),
-                                    'hal_receipt' => __('Sebagian Diterima'),
-                                    'receipt' => __('Diterima'),
+                                    'pending' => __('Surat jalan Belum Diterima'),
+                                    'hal_receipt' => __('Surat jalan Sebagian Diterima'),
+                                    'receipt' => __('Surat jalan Diterima'),
+                                    'receipt_unpaid' => __('Surat jalan diterima belum ditagih'),
                                 ),
                             ));
                     ?>
