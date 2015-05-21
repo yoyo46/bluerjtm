@@ -331,19 +331,30 @@ class LkusController extends AppController {
         $this->render('lku_form');
     }
 
-    function toggle($id){
-        if( in_array('delete_lkus', $this->allowModule) ) {
+    function toggle($id, $action='inactive'){
+        if( in_array('delete_lkus', $this->allowModule) && in_array($action, array('inactive', 'activate')) ) {
             $this->loadModel('Lku');
+
+            $status = 1;
+            if($action == 'activate'){
+                $status = 0;
+            }
+
             $locale = $this->Lku->getData('first', array(
                 'conditions' => array(
                     'Lku.id' => $id,
-                    'Lku.status' => 1
+                    'Lku.status' => $status
                 ),
             ));
 
             if($locale){
                 $this->Lku->id = $id;
-                $this->Lku->set('status', 0);
+
+                $value = 0;
+                if($status == 'activate'){
+                    $value = 1;
+                }
+                $this->Lku->set('status', $value);
 
                 if($this->Lku->save()){
                     // if( !empty($locale['Lku']['total_price']) ) {
@@ -1299,23 +1310,29 @@ class LkusController extends AppController {
         $this->render('ksu_form');
     }
 
-    function ksu_toggle($id){
-        if( in_array('delete_lkus', $this->allowModule) ) {
+    function ksu_toggle($id, $action = 'inactive'){
+        if( in_array('delete_lkus', $this->allowModule) && in_array($action, array('inactive', 'activate')) ) {
             $this->loadModel('Ksu');
+
+            $status = 1;
+            if($action == 'activate'){
+                $status = 0;
+            }
             $locale = $this->Ksu->getData('first', array(
                 'conditions' => array(
-                    'Ksu.id' => $id
+                    'Ksu.id' => $id,
+                    'Ksu.status' => $status
                 )
             ));
 
             if($locale){
-                $value = true;
-                if($locale['Ksu']['status']){
-                    $value = false;
+                $value = 0;
+                if($status == 'activate'){
+                    $value = 1;
                 }
 
                 $this->Ksu->id = $id;
-                $this->Ksu->set('status', 0);
+                $this->Ksu->set('status', $value);
 
                 if($this->Ksu->save()){
                     // if( !empty($locale['Ksu']['total_price']) ) {

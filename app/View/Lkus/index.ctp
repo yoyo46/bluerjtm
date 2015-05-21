@@ -111,6 +111,18 @@
                                     'title' => 'disable status brand'
                                 ), __('Apakah Anda yakin akan mengbatalkan data ini?'));
                             }
+                        }else{
+                            if(in_array('delete_lkus', $allowModule) && empty($value['Lku']['status']) && empty($value['Lku']['paid'])){
+                                echo $this->Html->link(__('Cancel Void'), array(
+                                    'controller' => 'lkus',
+                                    'action' => 'toggle',
+                                    $id,
+                                    'activate'
+                                ), array(
+                                    'class' => 'btn btn-warning btn-xs',
+                                    'title' => 'disable status brand'
+                                ), __('Apakah Anda yakin akan mengaktifkan lagi data ini?'));
+                            }
                         }
                     ?>
                 </td>
