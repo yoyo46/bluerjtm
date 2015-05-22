@@ -435,7 +435,7 @@ class PaginatorHelper extends AppHelper {
 				list($sort, $direction) = array($this->sortKey($model, $url), current($url['order']));
 			}
 			unset($url['order']);
-			$url = array_merge($url, compact('sort', 'direction'));
+			// $url = array_merge($url, compact('sort', 'direction'));
 		}
 		$url = $this->_convertUrlKeys($url, $paging['paramType']);
 		if (!empty($url['page']) && $url['page'] == 1) {

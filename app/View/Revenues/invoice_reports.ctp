@@ -212,7 +212,7 @@
                 </tr>';
             }   
 
-            $date_title = __('Laporan Invoice Aging');
+            $date_title = __('Account Receivable Aging Report');
             $total_data = count($customers);
 $tbl = <<<EOD
 

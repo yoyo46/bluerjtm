@@ -4050,7 +4050,7 @@ class RevenuesController extends AppController {
             $this->loadModel('Customer');
 
             $this->set('active_menu', 'revenue');
-            $this->set('sub_module_title', __('Laporan Invoice Aging'));
+            $this->set('sub_module_title', __('Account Receivable Aging Report'));
 
             $default_conditions = array(
                  'Customer.status' => 1
@@ -4085,13 +4085,19 @@ class RevenuesController extends AppController {
 
             if(empty($data_action)){
                 $this->paginate = $this->Customer->getData('paginate', array(
-                    'conditions' => $default_conditions
+                    'conditions' => $default_conditions,
+                    'order' => array(
+                        'Customer.order_sort' => 'ASC',
+                    ),
                 ));
 
                 $customers = $this->paginate('Customer');
             }else{
                 $customers = $this->Customer->getData('all', array(
-                    'conditions' => $default_conditions
+                    'conditions' => $default_conditions,
+                    'order' => array(
+                        'Customer.order_sort' => 'ASC',
+                    ),
                 ));
             }
 
