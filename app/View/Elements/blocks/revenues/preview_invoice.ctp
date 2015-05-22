@@ -22,7 +22,7 @@
 			                if( $data_print == 'date' && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
 								echo $this->Common->customDate($val_detail[0]['Revenue']['date_revenue'], 'd/m/Y');
 			                } else {
-			                	if( $val_detail[0]['Revenue']['revenue_tarif_type'] == 'per_truck' ) {
+			                	if( $val_detail[0]['Revenue']['revenue_tarif_type'] == 'per_truck' && !empty($val_detail[0]['Revenue']['no_doc']) ) {
 									echo $val_detail[0]['Revenue']['no_doc'];
 			                	} else {
 									echo $val_detail[0]['City']['name'];
@@ -78,6 +78,7 @@
 						$revenue_id = !empty($value['Revenue']['id'])?$value['Revenue']['id']:false;
 						$nopol = !empty($value['Revenue']['Ttuj']['nopol'])?$value['Revenue']['Ttuj']['nopol']:false;
 						$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
+						$price = 0;
 						$total = 0;
 						$payment_type = !empty($value['RevenueDetail']['payment_type'])?$value['RevenueDetail']['payment_type']:false;
 
@@ -107,7 +108,7 @@
 							'align' => 'right'
 						));
 
-						if( !empty($value['RevenueDetail']['payment_type']) && $value['RevenueDetail']['payment_type'] == 'per_truck' ){
+						if( $payment_type == 'per_truck' ){
 							if( !empty($value['RevenueDetail']['total_price_unit']) ) {
 								$total = $value['RevenueDetail']['total_price_unit'];
 
@@ -159,59 +160,66 @@
 						'class' => 'total-row'
 					));
 
-					$ppn = !empty($totalPPN[0]['ppn'])?$totalPPN[0]['ppn']:0;
-					$colom = $this->Html->tag('td', '&nbsp;', array(
-						'colspan' => $totalMergeTotal+1,
-					));
-					$colom .= $this->Html->tag('td', __('PPN '), array(
-						'align' => 'right',
-						'style' => 'font-weight: bold;',
-					));
-					$colom .= $this->Html->tag('td', $this->Number->currency($ppn, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
-						'align' => 'right',
-						'style' => 'font-weight: bold;',
-					));
-					$colom .= $this->Html->tag('td', '&nbsp;');
-
-					echo $this->Html->tag('tr', $colom, array(
-						'class' => 'total-row'
-					));
-
 					$pph = !empty($totalPPh[0]['pph'])?$totalPPh[0]['pph']:0;
-					$colom = $this->Html->tag('td', '&nbsp;', array(
-						'colspan' => $totalMergeTotal+1,
-					));
-					$colom .= $this->Html->tag('td', __('PPh '), array(
-						'align' => 'right',
-						'style' => 'font-weight: bold;',
-					));
-					$colom .= $this->Html->tag('td', $this->Number->currency($pph, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
-						'align' => 'right',
-						'style' => 'font-weight: bold;',
-					));
-					$colom .= $this->Html->tag('td', '&nbsp;');
+					$ppn = !empty($totalPPN[0]['ppn'])?$totalPPN[0]['ppn']:0;
 
-					echo $this->Html->tag('tr', $colom, array(
-						'class' => 'total-row'
-					));
+					if( !empty($ppn) ) {
+						$colom = $this->Html->tag('td', '&nbsp;', array(
+							'colspan' => $totalMergeTotal+1,
+						));
+						$colom .= $this->Html->tag('td', __('PPN '), array(
+							'align' => 'right',
+							'style' => 'font-weight: bold;',
+						));
+						$colom .= $this->Html->tag('td', $this->Number->currency($ppn, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+							'align' => 'right',
+							'style' => 'font-weight: bold;',
+						));
+						$colom .= $this->Html->tag('td', '&nbsp;');
 
-					$grandTotalInvoice = $grandTotal + $ppn - $pph;
-					$colom = $this->Html->tag('td', '&nbsp;', array(
-						'colspan' => $totalMergeTotal+1,
-					));
-					$colom .= $this->Html->tag('td', __('Grantotal '), array(
-						'align' => 'right',
-						'style' => 'font-weight: bold;',
-					));
-					$colom .= $this->Html->tag('td', $this->Number->currency($grandTotalInvoice, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
-						'align' => 'right',
-						'style' => 'font-weight: bold;',
-					));
-					$colom .= $this->Html->tag('td', '&nbsp;');
+						echo $this->Html->tag('tr', $colom, array(
+							'class' => 'total-row'
+						));
+					}
 
-					echo $this->Html->tag('tr', $colom, array(
-						'class' => 'total-row'
-					));
+					if( !empty($pph) ) {
+						$colom = $this->Html->tag('td', '&nbsp;', array(
+							'colspan' => $totalMergeTotal+1,
+						));
+						$colom .= $this->Html->tag('td', __('PPh '), array(
+							'align' => 'right',
+							'style' => 'font-weight: bold;',
+						));
+						$colom .= $this->Html->tag('td', $this->Number->currency($pph, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+							'align' => 'right',
+							'style' => 'font-weight: bold;',
+						));
+						$colom .= $this->Html->tag('td', '&nbsp;');
+
+						echo $this->Html->tag('tr', $colom, array(
+							'class' => 'total-row'
+						));
+					}
+
+					if( !empty($ppn) || !empty($pph) ) {
+						$grandTotalInvoice = $grandTotal + $ppn - $pph;
+						$colom = $this->Html->tag('td', '&nbsp;', array(
+							'colspan' => $totalMergeTotal+1,
+						));
+						$colom .= $this->Html->tag('td', __('Grantotal '), array(
+							'align' => 'right',
+							'style' => 'font-weight: bold;',
+						));
+						$colom .= $this->Html->tag('td', $this->Number->currency($grandTotalInvoice, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+							'align' => 'right',
+							'style' => 'font-weight: bold;',
+						));
+						$colom .= $this->Html->tag('td', '&nbsp;');
+
+						echo $this->Html->tag('tr', $colom, array(
+							'class' => 'total-row'
+						));
+					}
 				}else{
 					$colom = $this->Html->tag('td', __('Data tidak ditemukan.'), array(
 						'colspan' => $totalMerge,

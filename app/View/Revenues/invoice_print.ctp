@@ -33,7 +33,11 @@ if($action_print == 'pdf'){
                 if( $data_print == 'date' && !empty($val_detail[0]['Invoice']['invoice_date']) ) {
 					$cityName = $this->Common->customDate($val_detail[0]['Invoice']['invoice_date'], 'd/m/Y');
                 } else {
-					$cityName = $val_detail[0]['City']['name'];
+                	if( $val_detail[0]['Revenue']['revenue_tarif_type'] == 'per_truck' && !empty($val_detail[0]['Revenue']['no_doc']) ) {
+						$cityName = $val_detail[0]['Revenue']['no_doc'];
+                	} else {
+						$cityName = $val_detail[0]['City']['name'];
+					}
                 }
 			}
 
@@ -70,16 +74,36 @@ if($action_print == 'pdf'){
 				$no=1;
 				$grandTotal = 0;
 				$grandTotalUnit = 0;
-				$rowSpan = 0;
 				$trData = '';
 				$totalFlag = true;
+				$old_revenue_id = false;
+				$recenueCnt = array();
 
 				foreach ($val_detail as $key => $value) {
+					$revenue_id = !empty($value['Revenue']['id'])?$value['Revenue']['id']:false;
+
+					if( !empty($recenueCnt[$revenue_id]) ) {
+						$recenueCnt[$revenue_id]++;
+					} else {
+						$recenueCnt[$revenue_id] = 1;
+					}
+				}
+
+				foreach ($val_detail as $key => $value) {
+					$revenue_id = !empty($value['Revenue']['id'])?$value['Revenue']['id']:false;
 					$nopol = !empty($value['Revenue']['Ttuj']['nopol'])?$value['Revenue']['Ttuj']['nopol']:false;
 					$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
-					$price = $value['RevenueDetail']['price_unit'];
+					$price = 0;
 					$total = 0;
 					$date_revenue = '-';
+					$payment_type = !empty($value['RevenueDetail']['payment_type'])?$value['RevenueDetail']['payment_type']:false;
+
+					if( $payment_type == 'per_truck' ){
+						$priceFormat = '-';
+					} else {
+						$price = $value['RevenueDetail']['price_unit'];
+						$priceFormat = $this->Number->currency($price, '', array('places' => 0));
+					}
 
 					$colom = $this->Html->tag('td', $no++);
 
@@ -98,61 +122,117 @@ if($action_print == 'pdf'){
 					}
 					$colom .= $this->Html->tag('td', $date_revenue);
 					$colom .= $this->Html->tag('td', $qty, array(
-						'align' => 'center'
+						'style' => 'text-align:center;',
 					));
-					$colom .= $this->Html->tag('td', $this->Number->currency($price, '', array('places' => 0)), array(
-						'align' => 'right'
+					$colom .= $this->Html->tag('td', $priceFormat, array(
+						'style' => 'text-align:right;',
 					));
 
-					if(!empty($value['RevenueDetail']['payment_type']) && $value['RevenueDetail']['payment_type'] == 'per_truck'){
+					if($payment_type == 'per_truck'){
 						if( !empty($value['RevenueDetail']['total_price_unit']) ) {
 							$total = $value['RevenueDetail']['total_price_unit'];
 
 							$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
-								'align' => 'right'
+								'style' => 'text-align:right;',
 							));
 						} else {
-							if( empty($rowSpan) ) {
+							if( $revenue_id != $old_revenue_id ) {
 								$total = !empty($value['Revenue']['tarif_per_truck'])?$value['Revenue']['tarif_per_truck']:0;
 								$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
-									'align' => 'right',
-									'data-rowspan' => 'data-value'
+									'style' => 'text-align:right;',
+									'rowspan' => !empty($recenueCnt[$revenue_id])?$recenueCnt[$revenue_id]:false,
 								));
 							}
-
-							$rowSpan++;
 						}
 					}else{
 						$total = $price * $qty;
 
 						$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
-							'align' => 'right'
+							'style' => 'text-align:right;',
 						));
 					}
 
-					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_reference']);
+					$colom .= $this->Html->tag('td', $this->Common->getNoRef($value['Revenue']['id']));
 					$trData .= $this->Html->tag('tr', $colom);
 					$grandTotal += $total;
+					$old_revenue_id = $revenue_id;
 				}
 
-				if( !empty($rowSpan) ) {
-					$trData = str_replace(array( 'data-rowspan', 'data-value' ), array( 'rowspan', $rowSpan ), $trData);
-				}
 				$content .= $trData;
-				$colom = $this->Html->tag('td', __('Total '), array(
+				$colom = $this->Html->tag('td', '&nbsp;', array(
 					'colspan' => $totalMergeTotal,
-					'align' => 'right'
+					'style' => 'text-align:right;',
 				));
 				$colom .= $this->Html->tag('td', $this->Number->format($grandTotalUnit), array(
-					'align' => 'center'
+					'style' => 'text-align:center;',
+				));
+				$colom .= $this->Html->tag('td', __('Total '), array(
+					'style' => 'font-weight: bold;text-align:right;',
 				));
 				$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
-					'align' => 'right',
-					'colspan' => 2,
+					'style' => 'text-align:right;',
 				));
 				$colom .= $this->Html->tag('td', '&nbsp;');
-
 				$content .=  $this->Html->tag('tr', $colom);
+
+				$pph = !empty($totalPPh[0]['pph'])?$totalPPh[0]['pph']:0;
+				$ppn = !empty($totalPPN[0]['ppn'])?$totalPPN[0]['ppn']:0;
+
+				if( !empty($ppn) ) {
+					$colom = $this->Html->tag('td', '&nbsp;', array(
+						'colspan' => $totalMergeTotal+1,
+					));
+					$colom .= $this->Html->tag('td', __('PPN '), array(
+						'style' => 'font-weight: bold;text-align:right;',
+					));
+					$colom .= $this->Html->tag('td', $this->Number->currency($ppn, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+						'style' => 'font-weight: bold;text-align:right;',
+					));
+					$colom .= $this->Html->tag('td', '&nbsp;');
+
+					$content .= $this->Html->tag('tr', $colom, array(
+						'class' => 'total-row'
+					));
+				}
+
+				if( !empty($pph) ) {
+					$colom = $this->Html->tag('td', '&nbsp;', array(
+						'colspan' => $totalMergeTotal+1,
+					));
+					$colom .= $this->Html->tag('td', __('PPh '), array(
+						'align' => 'right',
+						'style' => 'font-weight: bold;',
+					));
+					$colom .= $this->Html->tag('td', $this->Number->currency($pph, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+						'align' => 'right',
+						'style' => 'font-weight: bold;',
+					));
+					$colom .= $this->Html->tag('td', '&nbsp;');
+
+					$content .= $this->Html->tag('tr', $colom, array(
+						'class' => 'total-row'
+					));
+				}
+
+				if( !empty($ppn) || !empty($pph) ) {
+					$grandTotalInvoice = $grandTotal + $ppn - $pph;
+					$colom = $this->Html->tag('td', '&nbsp;', array(
+						'colspan' => $totalMergeTotal+1,
+					));
+					$colom .= $this->Html->tag('td', __('Grantotal '), array(
+						'align' => 'right',
+						'style' => 'font-weight: bold;',
+					));
+					$colom .= $this->Html->tag('td', $this->Number->currency($grandTotalInvoice, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+						'align' => 'right',
+						'style' => 'font-weight: bold;',
+					));
+					$colom .= $this->Html->tag('td', '&nbsp;');
+
+					$content .= $this->Html->tag('tr', $colom, array(
+						'class' => 'total-row'
+					));
+				}
 			}else{
 				$colom = $this->Html->tag('td', __('Data tidak ditemukan.'), array(
 					'colspan' => $totalMerge
