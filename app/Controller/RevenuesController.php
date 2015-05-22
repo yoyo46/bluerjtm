@@ -188,6 +188,7 @@ class RevenuesController extends AppController {
     }
 
     function saveTtujTipeMotor ( $data_action, $dataTtujTipeMotor = false, $data = false, $dataRevenue = false, $ttuj_id = false, $revenue_id = false, $tarifDefault = false ) {
+        $totalTarif = 0;
         $result = array(
             'validates' => true,
             'data' => false,
@@ -252,10 +253,12 @@ class RevenuesController extends AppController {
                         $tarif_angkutan_type = $tarifDefault['tarif_angkutan_type'];
                     }
 
+                    $qtyMuatan = !empty($dataValidate['TtujTipeMotor']['qty'])?$dataValidate['TtujTipeMotor']['qty']:0;
+                    $totalTarif += $priceUnit*$qtyMuatan;
                     $dataRevenue['RevenueDetail'] = array(
                         'revenue_id' => $revenue_id,
                         'group_motor_id' => $group_motor_id,
-                        'qty_unit' => $dataValidate['TtujTipeMotor']['qty'],
+                        'qty_unit' => $qtyMuatan,
                         'city_id' => !empty($data['TtujTipeMotor']['city_id'][$key])?$data['TtujTipeMotor']['city_id'][$key]:$data['Ttuj']['to_city_id'],
                         'price_unit' => $priceUnit,
                         'payment_type' => $jenis_unit,
@@ -280,6 +283,13 @@ class RevenuesController extends AppController {
                         $result['data'][$key] = $dataValidate;
                     }
                 }
+            }
+
+            if( !empty($tarifDefault['tarif']) && $tarifDefault['tarif'] == 'per_unit' && !empty($revenue_id) && !empty($totalTarif) ) {
+                $this->Revenue->set('total', $totalTarif);
+                $this->Revenue->set('total_without_tax', $totalTarif);
+                $this->Revenue->id = $revenue_id;
+                $this->Revenue->save();
             }
         }
 

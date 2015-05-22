@@ -59,15 +59,34 @@
 					$no=1;
 					$grandTotal = 0;
 					$grandTotalUnit = 0;
-					$rowSpan = 0;
 					$trData = '';
 					$totalFlag = true;
+					$old_revenue_id = false;
+					$recenueCnt = array();
 
 					foreach ($val_detail as $key => $value) {
+						$revenue_id = !empty($value['Revenue']['id'])?$value['Revenue']['id']:false;
+
+						if( !empty($recenueCnt[$revenue_id]) ) {
+							$recenueCnt[$revenue_id]++;
+						} else {
+							$recenueCnt[$revenue_id] = 1;
+						}
+					}
+
+					foreach ($val_detail as $key => $value) {
+						$revenue_id = !empty($value['Revenue']['id'])?$value['Revenue']['id']:false;
 						$nopol = !empty($value['Revenue']['Ttuj']['nopol'])?$value['Revenue']['Ttuj']['nopol']:false;
 						$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
-						$price = $value['RevenueDetail']['price_unit'];
 						$total = 0;
+						$payment_type = !empty($value['RevenueDetail']['payment_type'])?$value['RevenueDetail']['payment_type']:false;
+
+						if( $payment_type == 'per_truck' ){
+							$priceFormat = '-';
+						} else {
+							$price = $value['RevenueDetail']['price_unit'];
+							$priceFormat = $this->Number->currency($price, '', array('places' => 0));
+						}
 
 						$colom = $this->Html->tag('td', $no++);
 
@@ -84,11 +103,11 @@
 						$colom .= $this->Html->tag('td', $qty, array(
 							'align' => 'center'
 						));
-						$colom .= $this->Html->tag('td', $this->Number->currency($price, '', array('places' => 0)), array(
+						$colom .= $this->Html->tag('td', $priceFormat, array(
 							'align' => 'right'
 						));
 
-						if(!empty($value['RevenueDetail']['payment_type']) && $value['RevenueDetail']['payment_type'] == 'per_truck'){
+						if( !empty($value['RevenueDetail']['payment_type']) && $value['RevenueDetail']['payment_type'] == 'per_truck' ){
 							if( !empty($value['RevenueDetail']['total_price_unit']) ) {
 								$total = $value['RevenueDetail']['total_price_unit'];
 
@@ -96,15 +115,13 @@
 									'align' => 'right'
 								));
 							} else {
-								if( empty($rowSpan) ) {
+								if( $revenue_id != $old_revenue_id ) {
 									$total = !empty($value['Revenue']['tarif_per_truck'])?$value['Revenue']['tarif_per_truck']:0;
 									$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
 										'align' => 'right',
-										'data-rowspan' => 'data-value'
+										'rowspan' => !empty($recenueCnt[$revenue_id])?$recenueCnt[$revenue_id]:false,
 									));
 								}
-
-								$rowSpan++;
 							}
 						}else{
 							$total = $price * $qty;
@@ -117,11 +134,9 @@
 						$colom .= $this->Html->tag('td', $this->Common->getNoRef($value['Revenue']['id']));
 						$trData .= $this->Html->tag('tr', $colom);
 						$grandTotal += $total;
+						$old_revenue_id = $revenue_id;
 					}
 
-					if( !empty($rowSpan) ) {
-						$trData = str_replace(array( 'data-rowspan', 'data-value' ), array( 'rowspan', $rowSpan ), $trData);
-					}
 					echo $trData;
 
 					$colom = $this->Html->tag('td', '&nbsp;', array(
