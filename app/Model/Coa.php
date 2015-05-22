@@ -104,6 +104,22 @@ class Coa extends AppModel {
         return $result;
     }
 
+    function checkUniqCoa ( $coa, $id = false, $fields = 'with_parent_code' ) {
+        $existCoa = $this->getData('first', array(
+            'conditions' => array(
+                'Coa.'.$fields => $coa,
+                'Coa.status' => 1,
+                'Coa.id <>' => $id,
+            ),
+        ));
+
+        if( !empty($existCoa) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     function validateCode () {
         if( empty($this->data['Coa']['code']) ) {
             if( !empty($this->data['Coa']['level']) && $this->data['Coa']['level'] == 4 ) {
@@ -113,6 +129,9 @@ class Coa extends AppModel {
             } else {
                 return true;
             }
+        } else if( empty($this->data['Coa']['with_parent_code']) ) {
+            $coa_id = !empty($this->data['Coa']['id'])?$this->data['Coa']['id']:false;
+            return $this->checkUniqCoa($this->data['Coa']['code'], $coa_id, 'code');
         } else {
             return true;
         }
@@ -121,19 +140,7 @@ class Coa extends AppModel {
     function validateCodeWithParent () {
         if( !empty($this->data['Coa']['with_parent_code']) ) {
             $coa_id = !empty($this->data['Coa']['id'])?$this->data['Coa']['id']:false;
-            $existCoa = $this->getData('first', array(
-                'conditions' => array(
-                    'Coa.with_parent_code' => $this->data['Coa']['with_parent_code'],
-                    'Coa.status' => 1,
-                    'Coa.id <>' => $coa_id,
-                ),
-            ));
-            
-            if( !empty($existCoa) ) {
-                return false;
-            } else {
-                return true;
-            }
+            return $this->checkUniqCoa($this->data['Coa']['with_parent_code'], $coa_id, 'with_parent_code');
         } else {
             return true;
         }
