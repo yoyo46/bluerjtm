@@ -283,7 +283,7 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 									$toCity = !empty($valueDetail['City']['code'])?$valueDetail['City']['code']:false;
 									$toCityName = !empty($valueDetail['City']['name'])?$valueDetail['City']['name']:false;
 									$initial = !empty($valueDetail['City']['initial'])?$valueDetail['City']['initial']:false;
-									$text = sprintf('%s - %s %s %s', $fromCity, $toCity, $month, $year);
+									$text = sprintf('JKT - %s %s %s', $toCity, $month, $year);
 									$redaksional = sprintf('OKS ANGK SMH %s', $text);
 									$tujuan = sprintf('JKT - %s', $toCityName);
 			?>
