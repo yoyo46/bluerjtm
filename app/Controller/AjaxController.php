@@ -444,7 +444,7 @@ class AjaxController extends AppController {
 				'Customer.status' => 1
 			),
             'fields' => array(
-                'Customer.id', 'Customer.customer_name'
+                'Customer.id', 'Customer.customer_name_code'
             ),
 		));
 

@@ -2070,7 +2070,7 @@ function findInfoTTujRevenue(url){
             duplicate_row();
             datepicker();
             city_revenue_change();
-            change_customer_revenue();
+            // change_customer_revenue();
             checkCharge( $('.additional-charge') );
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -2869,7 +2869,7 @@ $(function() {
             findInfoTTujRevenue('/ajax/getInfoTtujRevenue/'+self.val()+'/');
         }
     });
-    change_customer_revenue();
+    // change_customer_revenue();
 
     $('.ttuj-invoice-ajax').change(function() {
         var self = $(this);

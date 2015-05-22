@@ -113,8 +113,7 @@
 						<?php 
 								echo $this->Form->input('Revenue.customer_id',array(
 									'label'=> __('Customer'), 
-									'class'=>'form-control',
-									// 'class'=>'form-control change-customer-revenue',
+									'class'=>'form-control change-customer-revenue',
 									'required' => false,
 									'options' => $customers,
 									'empty' => __('Pilih Customer')
