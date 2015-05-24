@@ -11,7 +11,7 @@
                 'url'=> $this->Html->url( array(
                     'controller' => 'settings',
                     'action' => 'search',
-                    'calendar_colors'
+                    'calendar_icons'
                 )), 
                 'role' => 'form',
                 'inputDefaults' => array('div' => false),
