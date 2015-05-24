@@ -54,9 +54,53 @@
 									));
 							?>
 						</div>
+						<div class="form-group">
+				        	<?php 
+				        			$attrBrowse = array(
+			                            'class' => 'ajaxModal visible-xs',
+			                            'escape' => false,
+			                            'title' => __('Invoice Customer'),
+			                            'data-action' => 'browse-invoice',
+			                            'data-change' => 'getTtujCustomerInfo',
+			                            'url' => $this->Html->url( array(
+				                            'controller'=> 'ajax', 
+				                            'action' => 'getTtujCustomerInfo',
+				                        ))
+			                        );
+									$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+			                        echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Ambil Tagihan'), 'javascript:', $attrBrowse);
+			                ?>
+				        </div>
 				    </div>
 				</div>
 			</div>
+			<div class="invoice-info-detail <?php echo (!empty($this->request->data) && !empty($invoices)) ? '' : 'hide';?>">
+				<div class="box box-primary">
+				    <div class="box-header">
+				        <h3 class="box-title"><?php echo __('Detail Info LKU'); ?></h3>
+				    </div>
+				    <div class="box-body table-responsive">
+				        <table class="table table-hover">
+				        	<thead>
+				        		<tr>
+				        			<th width="20%"><?php echo __('Tgl TTUJ');?></th>
+				                    <th><?php echo __('Nopol Truk');?></th>
+				                    <th><?php echo __('Dari');?></th>
+				                    <th><?php echo __('Tujuan');?></th>
+				                    <th><?php echo __('Total Klaim');?></th>
+				                    <th><?php echo __('Total Biaya Klaim');?></th>
+				                    <th><?php echo __('Action');?></th>
+				        		</tr>
+				        	</thead>
+				        	<tbody class="ttuj-info-table">
+				                <?php
+						    		echo $this->element('blocks/lkus/info_lku_payment_detail');
+						    	?>
+				        	</tbody>
+				    	</table>
+				    </div>
+				</div>
+		    </div>
 			<div class="col-sm-12" id="detail-customer-info">
 				<?php 
 					if(!empty($this->request->data['LkuPaymentDetail'])){

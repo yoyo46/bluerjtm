@@ -2913,20 +2913,20 @@ $(function() {
         var val = self.val();
         // var val_type_lku = $('.type-lku').val();
 
-        $.ajax({
-            url: '/ajax/getTtujCustomerInfo/'+val+'/',
-            type: 'POST',
-            success: function(response, status) {
-                $('#detail-customer-info').html(response);
-                add_custom_field();
-                choose_item_info();
-                delete_custom_field();
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
-                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                return false;
-            }
-        });
+        // $.ajax({
+        //     url: '/ajax/getTtujCustomerInfo/'+val+'/',
+        //     type: 'POST',
+        //     success: function(response, status) {
+        //         $('#detail-customer-info').html(response);
+        //         add_custom_field();
+        //         choose_item_info();
+        //         delete_custom_field();
+        //     },
+        //     error: function(XMLHttpRequest, textStatus, errorThrown) {
+        //         alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+        //         return false;
+        //     }
+        // });
     });
 
     $('#getTtujCustomerInfoKsu').change(function(){
@@ -3132,33 +3132,6 @@ $(function() {
                 return false;
             }
         });
-    });
-
-    $('.customer-ajax').change(function(){
-        var self = $(this);
-        var val = self.val();
-
-        // if(val != ''){
-        //     $.ajax({
-        //         url: '/ajax/getInfoInvoicePaymentDetail/'+val+'/',
-        //         type: 'POST',
-        //         success: function(response, status) {
-        //             $('#invoice-info').html(response);
-        //             $('#invoice-info').removeClass('hide');
-
-        //             delete_custom_field();
-        //             input_price();
-        //             invoice_price_payment();
-        //         },
-        //         error: function(XMLHttpRequest, textStatus, errorThrown) {
-        //             alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-        //             return false;
-        //         }
-        //     });
-        // }else{
-            $('#invoice-info').html('');
-            $( '.ttuj-info-table .child' ).remove();
-        // }
     });
 
     $('.customer-ajax').change(function(){
