@@ -46,7 +46,7 @@
         	<?php 
 					echo $this->Form->input('image',array(
 						'type' => 'file',
-						'label'=> __('Icon'), 
+						'label'=> __('Icon *'), 
 						'class'=>'form-control',
 						'required' => false
 					));

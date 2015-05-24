@@ -4083,6 +4083,7 @@ class SettingsController extends AppController {
         }
 
         $this->set('active_menu', 'calendar_icons');
+        $this->set('data_local', $data_local);
         $this->render('calendar_icon_form');
     }
 
