@@ -1351,7 +1351,7 @@ var part_motor_lku = function(){
                 url: '/ajax/getPricePartMotor/'+val+'/',
                 type: 'POST',
                 success: function(response, status) {
-                    self.parents('tr').find('.price-tipe-motor').val(formatNumber($(response).filter('#price').html()));
+                    self.parents('tr').find('.price-tipe-motor').val($(response).filter('#price').html());
 
                     price_tipe_motor();
 
@@ -1412,19 +1412,19 @@ var price_perlengkapan = function(){
     });
 }
 
-function getTotalLkuPayment(){
-    var target = $('.price-lku');
-    var length = target.length;
+// function getTotalLkuPayment(){
+//     var target = $('.price-lku');
+//     var length = target.length;
 
-    var grand_total = 0;
-    for (var i = 0; i < length; i++) {
-        if(typeof target[i] != 'undefined' && target[i].value != 0){
-            grand_total += parseInt(target[i].value);
-        }
-    }
+//     var grand_total = 0;
+//     for (var i = 0; i < length; i++) {
+//         if(typeof target[i] != 'undefined' && target[i].value != 0){
+//             grand_total += parseInt(target[i].value);
+//         }
+//     }
 
-    $('#grand-total-payment').text('IDR '+formatNumber(grand_total));
-}
+//     $('#grand-total-payment').text('IDR '+formatNumber(grand_total));
+// }
 
 function getTotalKsuPayment(){
     var target = $('.price-ksu');
@@ -1863,11 +1863,11 @@ var ajaxModal = function ( obj, prettyPhoto ) {
             type_action = vthis.attr('data-action');
 
             if(type_action == 'browse-invoice'){
-                if(typeof $('#customer-val').val() == 'undefined' || $('#customer-val').val() == ''){
+                if(typeof $('#customer-val, #getTtujCustomerInfo').val() == 'undefined' || $('#customer-val, #getTtujCustomerInfo').val() == ''){
                     goAjax = false;
                     alert('Mohon pilih customer terlebih dahulu');
                 }else{
-                    url += '/'+$('#customer-val').val()+'/not-list'
+                    url += '/'+$('#customer-val, #getTtujCustomerInfo').val()+'/not-list'
                 }
             }
         }
@@ -1916,7 +1916,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
                         pickData();
                         daterangepicker( $('#myModal .modal-body .date-range') );
-                    } else if( type_action == 'browse-invoice' ) {
+                    } else if( type_action == 'browse-invoice' || type_action == 'getTtujCustomerInfo' ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
                         pickData();
                         datepicker($('#myModal .modal-body .custom-date'));
@@ -2203,6 +2203,58 @@ var invoice_price_payment = function(){
 }
 function getTotalInvoicePayment(){
     var invoice_price = $('.invoice-price-payment');
+    var length = invoice_price.length;
+    var total = 0;
+    var total_price = 0;
+    for (var i = 0; i < length; i++) {
+        if(typeof invoice_price[i] != 'undefined'){
+            var price = invoice_price[i].value;
+            var arr_string = price.split(',');
+            var text_val = '';
+            for (var a = 0; a < arr_string.length; a++) {
+                text_val += arr_string[a].toString();
+            };
+            
+            price = text_val;
+            price = parseInt(price);
+            total = total_price += price;
+        }
+    };
+
+    var ppn = 0;
+    var pph = 0;
+    var revenue_ppn = $('.invoice-ppn').val();
+    var revenue_pph = $('.invoice-pph').val();
+
+    if( isNaN(total) ) {
+        total = 0;
+    }
+
+    if(typeof revenue_ppn != 'undefined' && revenue_ppn != ''){
+        ppn = total * (parseInt(revenue_ppn) / 100);
+    }
+
+    $('#ppn-total-invoice').html(formatNumber(ppn));
+
+    if(typeof revenue_pph != 'undefined' && revenue_pph != ''){
+        pph = total * (parseInt(revenue_pph) / 100);
+    }
+    
+    $('#pph-total-invoice').html(formatNumber(pph));
+    
+    if(pph > 0){
+        total -= pph;
+    }
+    if(ppn > 0){
+        total += ppn;
+    }
+
+    $('#all-total-invoice').html('IDR '+formatNumber(total));
+
+    $('#grand-total-payment').text('IDR '+formatNumber(total_price));
+}
+function getTotalLkuPayment(){
+    var invoice_price = $('.lku-price-payment');
     var length = invoice_price.length;
     var total = 0;
     var total_price = 0;
