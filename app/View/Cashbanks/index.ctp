@@ -64,7 +64,7 @@
 
                         $link = '';
                         
-                        if($value['CashBank']['is_revised'] && !$value['CashBank']['completed']){
+                        if(empty($value['CashBank']['is_rejected']) && !$value['CashBank']['completed']){
                             $link .= $this->Html->link('Rubah', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'cashbank_edit',
@@ -73,9 +73,7 @@
                                 'escape' => false,
                                 'class' => 'btn btn-primary btn-xs'
                             ));
-                        }
-
-                        if(!$value['CashBank']['completed']){
+                        
                             $link .= $this->Html->link('Hapus', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'cashbank_delete',
