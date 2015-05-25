@@ -20,10 +20,10 @@
         <div class="form-group">
             <?php 
                 echo $this->Form->input('name',array(
-                    'label'=> __('Label Warna'),
+                    'label'=> __('Label'),
                     'class'=>'form-control',
                     'required' => false,
-                    'placeholder' => __('Label Warna')
+                    'placeholder' => __('Label')
                 ));
             ?>
         </div>
@@ -35,7 +35,7 @@
                         'type' => 'submit',
                     ));
                     echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                        'action' => 'calendar_colors', 
+                        'action' => 'calendar_icons', 
                     ), array(
                         'escape' => false, 
                         'class'=> 'btn btn-default btn-sm',
