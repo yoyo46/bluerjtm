@@ -12,12 +12,6 @@ class LkuPayment extends AppModel {
                 'message' => 'No Dokumen telah terdaftar',
             ),
         ),
-        'type_lku' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tipe modul harap dipilih'
-            ),
-        ),
         'tgl_bayar' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -35,12 +29,22 @@ class LkuPayment extends AppModel {
                 'rule' => array('notempty'),
             ),
         ),
+        'coa_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Account harap dipilih'
+            ),
+        ),
 	);
 
     var $belongsTo = array(
         'Customer' => array(
             'className' => 'Customer',
             'foreignKey' => 'customer_id',
+        ),
+        'Coa' => array(
+            'className' => 'Coa',
+            'foreignKey' => 'coa_id',
         ),
     );
 

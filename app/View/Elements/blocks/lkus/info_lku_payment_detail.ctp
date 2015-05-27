@@ -1,27 +1,35 @@
 <?php
-    $total = $i = 0;
+    $total = $key = 0;
 
-    if(!empty($invoices)){
-        foreach ($invoices as $key => $value) {
-            $invoice = $value['Invoice'];
+    if(!empty($lkus)){
+        foreach ($lkus as $key => $value) {
+            $Lku = $value['Lku'];
 ?>
-<tr class="child child-<?php echo $invoice['id'];?>" rel="<?php echo $invoice['id'];?>">
+<tr class="child child-<?php echo $Lku['id'];?>" rel="<?php echo $Lku['id'];?>">
     <td>
         <?php
-            echo $this->Form->input('LkuPaymentDetail.lku_id.', array(
-                'options' => $lkus,
-                'class' => 'form-control lku-choose-ttuj',
-                'label' => false,
-                'empty' => __('Pilih Tanggal TTUJ'),
-                'required' => false,
-                'value' => (isset($this->request->data['LkuPaymentDetail'][$i]['lku_id']) && !empty($this->request->data['LkuPaymentDetail'][$i]['lku_id'])) ? $this->request->data['LkuPaymentDetail'][$i]['lku_id'] : ''
+            // echo $this->Form->input('LkuPaymentDetail.lku_id.', array(
+            //     'options' => $lkus,
+            //     'class' => 'form-control lku-choose-ttuj',
+            //     'label' => false,
+            //     'empty' => __('Pilih Tanggal TTUJ'),
+            //     'required' => false,
+            //     'value' => (isset($this->request->data['LkuPaymentDetail'][$key]['lku_id']) && !empty($this->request->data['LkuPaymentDetail'][$key]['lku_id'])) ? $this->request->data['LkuPaymentDetail'][$key]['lku_id'] : ''
+            // ));
+
+            printf('%s (%s)', date('d F Y', strtotime($value['Ttuj']['ttuj_date'])), $value['Ttuj']['no_ttuj']);
+
+            $keyd = (isset($this->request->data['LkuPaymentDetail'][$Lku['id']]['lku_id']) && !empty($this->request->data['LkuPaymentDetail'][$Lku['id']]['lku_id'])) ? $this->request->data['LkuPaymentDetail'][$Lku['id']]['lku_id'] : '';
+            echo $this->Form->input('LkuPaymentDetail.lku_id.'.$keyd, array(
+                'type' => 'hidden',
+                'value' => $keyd
             ));
         ?>
     </td>
     <td class="data-nopol">
         <?php
-            if(!empty($this->request->data['LkuPaymentDetail'][$i]['Ttuj']['nopol'])){
-                echo $this->request->data['LkuPaymentDetail'][$i]['Ttuj']['nopol'];
+            if(!empty($value['Ttuj']['nopol'])){
+                echo $value['Ttuj']['nopol'];
             }else{
                 echo '-';
             }
@@ -29,8 +37,8 @@
     </td>
     <td class="data-from-city">
         <?php
-            if(!empty($this->request->data['LkuPaymentDetail'][$i]['Ttuj']['from_city_name'])){
-                echo $this->request->data['LkuPaymentDetail'][$i]['Ttuj']['from_city_name'];
+            if(!empty($value['Ttuj']['from_city_name'])){
+                echo $value['Ttuj']['from_city_name'];
             }else{
                 echo '-';
             }
@@ -38,49 +46,48 @@
     </td>
     <td class="data-to-city">
         <?php
-            if(!empty($this->request->data['LkuPaymentDetail'][$i]['Ttuj']['to_city_name'])){
-                echo $this->request->data['LkuPaymentDetail'][$i]['Ttuj']['to_city_name'];
+            if(!empty($value['Ttuj']['to_city_name'])){
+                echo $value['Ttuj']['to_city_name'];
             }else{
                 echo '-';
             }
         ?>
     </td>
-    <td class="data-total-claim" align="right">
+    <td>
         <?php
-            if(!empty($this->request->data['LkuPaymentDetail'][$i]['Lku']['total_klaim'])){
-
-                echo $this->Form->hidden('LkuPaymentDetail.total_klaim.', array(
-                    'empty' => __('Pilih Jumlah Klaim'),
-                    'class' => 'lku-claim-number form-control',
-                    'div' => false,
-                    'label' => false,
-                    'value' => $this->request->data['LkuPaymentDetail'][$i]['Lku']['total_klaim']
-                ));
-
-                echo $this->request->data['LkuPaymentDetail'][$i]['Lku']['total_klaim'];
+                echo $this->Common->customDate($Lku['tgl_lku']);
+        ?>
+    </td>
+    <td class="text-right">
+        <?php
+            echo $this->Number->currency($Lku['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+        ?>
+    </td>
+    <td class="text-right">
+        <?php
+            $total_biaya_klaim = 0;
+            if(!empty($value['lku_has_paid'])){
+                echo $this->Number->currency($value['lku_has_paid'], Configure::read('__Site.config_currency_code'), array('places' => 0)); 
+                $total_biaya_klaim = $value['lku_has_paid'];
             }else{
                 echo '-';
             }
+            
         ?>
     </td>
-    <td class="data-total-price-claim" align="right">
+    <td class="text-right" valign="top">
         <?php
-            if(!empty($this->request->data['LkuPaymentDetail'][$i]['Lku']['total_price'])){
-                $max_qty = $this->request->data['LkuPaymentDetail'][$i]['Lku']['total_price'];
-                echo  $this->Form->hidden('LkuPaymentDetail.total_biaya_klaim.', array(
-                    'type' => 'text',
-                    'label' => false,
-                    'class' => 'form-control price-lku input_number',
-                    'required' => false,
-                    'max_price' => $max_qty,
-                    'placeholder' => sprintf(__('maksimal pembayaran : %s'), $max_qty),
-                    'value' => $max_qty
-                ));
-                $total += $max_qty;
+            echo $this->Form->input('LkuPaymentDetail.total_biaya_klaim.'.$Lku['id'], array(
+                'type' => 'text',
+                'label' => false,
+                'div' => false,
+                'required' => false,
+                'class' => 'form-control input_price invoice-price-payment',
+                'value' => (!empty($this->request->data['LkuPaymentDetail'][$Lku['id']]['total_biaya_klaim'])) ? $this->request->data['LkuPaymentDetail'][$Lku['id']]['total_biaya_klaim'] : $total_biaya_klaim
+            ));
 
-                echo $this->Number->currency($max_qty, Configure::read('__Site.config_currency_code'), array('places' => 0));
-            }else{
-                echo '-';
+            if(!empty($this->request->data['LkuPaymentDetail'][$Lku['id']]['total_biaya_klaim'])){
+                $total += str_replace(',', '', $this->request->data['LkuPaymentDetail'][$Lku['id']]['total_biaya_klaim']);
             }
         ?>
     </td>
@@ -96,15 +103,36 @@
 </tr>
 <?php
     }
+}
 ?>
 <tr id="field-grand-total-ttuj">
-    <td align="right" colspan="5"><?php echo __('Grand Total')?></td>
+    <td align="right" colspan="7"><?php echo __('Grand Total')?></td>
     <td align="right" id="grand-total-payment"><?php printf('%s %s', Configure::read('__Site.config_currency_code'), $total); ?></td>
     <td>&nbsp;</td>
 </tr>
-
+<tr class="additional-input-invoice" id="ppn-grand-total-invoice">
+    <td align="right" colspan="7" class="relative">
+        <?php 
+            echo $this->Form->input('LkuPayment.ppn', array(
+                'type' => 'text',
+                'label' => __('PPN'),
+                'class' => 'input_number invoice-ppn',
+                'required' => false,
+                'div' => false
+            )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
+        ?>
+    </td>
+    <td align="right" id="ppn-total-invoice">
+        <?php 
+                $ppn = !empty($this->request->data['LkuPayment']['ppn'])?$this->request->data['LkuPayment']['ppn']:0;
+                $ppn = $this->Common->calcFloat($total, $ppn);
+                echo $this->Number->currency($ppn, Configure::read('__Site.config_currency_code'), array('places' => 0));
+        ?>
+    </td>
+    <td>&nbsp;</td>
+</tr>
 <tr class="additional-input-invoice" id="pph-grand-total-invoice">
-    <td align="right" colspan="5" class="relative">
+    <td align="right" colspan="7" class="relative">
         <?php 
                 echo $this->Form->input('LkuPayment.pph', array(
                     'type' => 'text',
@@ -125,7 +153,7 @@
     <td>&nbsp;</td>
 </tr>
 <tr id="grand-total-invoice-payemnt">
-    <td align="right" colspan="5"><?php echo __('Grand Total')?></td>
+    <td align="right" colspan="7"><?php echo __('Grand Total')?></td>
     <td align="right" id="all-total-invoice">
         <?php 
             if($pph > 0){
@@ -140,6 +168,3 @@
     </td>
     <td>&nbsp;</td>
 </tr>
-<?php
-    }
-?>

@@ -212,10 +212,12 @@ class AjaxController extends AppController {
 	function getTtujCustomerInfo($customer_id = false){
 		$this->loadModel('Ttuj');
 		$this->loadModel('Lku');
+		$default_conditions = array(
+			'Ttuj.customer_id' => $customer_id
+		);
+
 		$ttuj_id = $this->Ttuj->getData('list', array(
-			'conditions' => array(
-				'Ttuj.customer_id' => $customer_id
-			),
+			'conditions' => $default_conditions,
 			'group' => array(
 				'Ttuj.customer_id'
 			),
@@ -223,30 +225,53 @@ class AjaxController extends AppController {
 				'Ttuj.id'
 			)
 		));
-		
+
+		$lku_condition = array(
+			'Lku.ttuj_id' => $ttuj_id,
+			'Lku.status' => 1,
+			'Lku.complete_paid' => 0
+			// 'Lku.type_lku' => $type_lku
+		);
 		if(!empty($ttuj_id)){
+			if(!empty($this->request->data['Lku']['date_from']) || !empty($this->request->data['Lku']['date_to'])){
+				if(!empty($this->request->data['Lku']['date_from'])){
+					$lku_condition['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') >='] = $this->request->data['Lku']['date_from'];
+				}
+				if(!empty($this->request->data['Lku']['date_to'])){
+					$lku_condition['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') <='] = $this->request->data['Lku']['date_to'];
+				}
+			}
+
 			$lkus = $this->Lku->getData('all', array(
-				'conditions' => array(
-					'Lku.ttuj_id' => $ttuj_id,
-					'Lku.status' => 1,
-					'Lku.paid' => 0
-					// 'Lku.type_lku' => $type_lku
-				),
+				'conditions' => $lku_condition,
 				'contain' => array(
 					'Ttuj'
 				)
 			));
 		}
 
-		$arr = array();
 		if(!empty($lkus)){
+			$this->loadModel('LkuPaymentDetail');
 			foreach ($lkus as $key => $value) {
-				$arr[$value['Lku']['id']] = sprintf('%s (%s)', date('d F Y', strtotime($value['Ttuj']['ttuj_date'])), $value['Ttuj']['no_ttuj']);
+				$lku_has_paid = $this->LkuPaymentDetail->getData('first', array(
+					'conditions' => array(
+						'LkuPaymentDetail.lku_id' => $value['Lku']['id'],
+						'LkuPaymentDetail.status' => 1
+					),
+					'fields' => array(
+						'SUM(LkuPaymentDetail.total_biaya_klaim) as lku_has_paid'
+					)
+				));
+
+				 $lkus[$key]['lku_has_paid'] = $lku_has_paid[0]['lku_has_paid'];
 			}
 		}
-		$lkus = $arr;
 		
 		$this->set('lkus', $lkus);
+		$data_change = 'browse-invoice';
+		$data_action = 'getTtujCustomerInfo';
+		$title = 'Pembayaran LKU Customer';
+		$this->set(compact('customer_id', 'data_change', 'data_action', 'title'));
 	}
 
 	function getTtujCustomerInfoKsu($customer_id = false){

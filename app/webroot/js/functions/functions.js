@@ -2202,7 +2202,7 @@ var invoice_price_payment = function(){
     });
 }
 function getTotalInvoicePayment(){
-    var invoice_price = $('.invoice-price-payment');
+    var invoice_price = $('.invoice-info-detail .invoice-price-payment');
     var length = invoice_price.length;
     var total = 0;
     var total_price = 0;
@@ -2358,6 +2358,7 @@ var check_all_checkbox = function(){
             }
         }else{
             $('.child-'+rel_id).remove();
+            getTotalInvoicePayment();
         } 
     }
 

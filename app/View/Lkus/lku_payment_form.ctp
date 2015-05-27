@@ -54,12 +54,23 @@
 									));
 							?>
 						</div>
-						<div class="form-group">
+				        <div class="form-group">
+				        	<?php 
+									echo $this->Form->input('description',array(
+										'type' => 'textarea',
+										'label'=> __('Keterangan'), 
+										'class'=>'form-control',
+										'required' => false,
+										'placeholder' => __('Keterangan'),
+									));
+							?>
+				        </div>
+				        <div class="form-group">
 				        	<?php 
 				        			$attrBrowse = array(
 			                            'class' => 'ajaxModal visible-xs',
 			                            'escape' => false,
-			                            'title' => __('Invoice Customer'),
+			                            'title' => __('Pembayaran LKU Customer'),
 			                            'data-action' => 'browse-invoice',
 			                            'data-change' => 'getTtujCustomerInfo',
 			                            'url' => $this->Html->url( array(
@@ -68,45 +79,40 @@
 				                        ))
 			                        );
 									$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-			                        echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Ambil Tagihan'), 'javascript:', $attrBrowse);
+			                        echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Ambil Pembayaran'), 'javascript:', $attrBrowse);
 			                ?>
 				        </div>
 				    </div>
 				</div>
 			</div>
-			<div class="invoice-info-detail <?php echo (!empty($this->request->data) && !empty($invoices)) ? '' : 'hide';?>">
-				<div class="box box-primary">
-				    <div class="box-header">
-				        <h3 class="box-title"><?php echo __('Detail Info LKU'); ?></h3>
-				    </div>
-				    <div class="box-body table-responsive">
-				        <table class="table table-hover">
-				        	<thead>
-				        		<tr>
-				        			<th width="20%"><?php echo __('Tgl TTUJ');?></th>
-				                    <th><?php echo __('Nopol Truk');?></th>
-				                    <th><?php echo __('Dari');?></th>
-				                    <th><?php echo __('Tujuan');?></th>
-				                    <th><?php echo __('Total Klaim');?></th>
-				                    <th><?php echo __('Total Biaya Klaim');?></th>
-				                    <th><?php echo __('Action');?></th>
-				        		</tr>
-				        	</thead>
-				        	<tbody class="ttuj-info-table">
-				                <?php
-						    		echo $this->element('blocks/lkus/info_lku_payment_detail');
-						    	?>
-				        	</tbody>
-				    	</table>
-				    </div>
-				</div>
-		    </div>
-			<div class="col-sm-12" id="detail-customer-info">
-				<?php 
-					if(!empty($this->request->data['LkuPaymentDetail'])){
-						echo $this->element('blocks/lkus/lkus_info_payment');
-					}
-				?>
+		</div>
+		<div class="invoice-info-detail <?php echo (!empty($this->request->data) && !empty($lkus)) ? '' : 'hide';?>">
+			<div class="box box-primary">
+			    <div class="box-header">
+			        <h3 class="box-title"><?php echo __('Detail Info Pembayaran LKU'); ?></h3>
+			    </div>
+			    <div class="box-body table-responsive">
+			        <table class="table table-hover">
+			        	<thead>
+			        		<tr>
+			        			<th width="20%"><?php echo __('Tgl TTUJ');?></th>
+				                <th><?php echo __('Nopol Truk');?></th>
+				                <th><?php echo __('Dari');?></th>
+				                <th><?php echo __('Tujuan');?></th>
+				                <th><?php echo __('Tanggal LKU');?></th>
+				                <th><?php echo __('Total');?></th>
+				                <th><?php echo __('Telah Dibayar');?></th>
+				                <th><?php echo __('Bayar');?></th>
+			                    <th class="text-center"><?php echo __('Action');?></th>
+			        		</tr>
+			        	</thead>
+			        	<tbody class="ttuj-info-table">
+			                <?php
+					    		echo $this->element('blocks/lkus/info_lku_payment_detail');
+					    	?>
+			        	</tbody>
+			    	</table>
+			    </div>
 			</div>
 		</div>
 		<div class="box-footer text-center action">

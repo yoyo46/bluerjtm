@@ -12,11 +12,6 @@ class LkuPaymentDetail extends AppModel {
                 'rule' => array('notempty'),
             ),
         ),
-        'total_klaim' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-            ),
-        ),
         'total_biaya_klaim' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -40,6 +35,7 @@ class LkuPaymentDetail extends AppModel {
             'conditions'=> array(),
             'order'=> array(),
             'fields' => array(),
+            'contain' => array()
         );
 
         if(!empty($options)){

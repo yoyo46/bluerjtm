@@ -43,6 +43,10 @@
                             'escape' => false
                         )));
 
+                        echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.grandtotal', __('Total Pembayaran'), array(
+                            'escape' => false
+                        )));
+
                         echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.paid', __('Status Pembayaran'), array(
                             'escape' => false
                         )));
@@ -65,6 +69,7 @@
                 <td><?php echo $value['LkuPayment']['no_doc'];?></td>
                 <?php echo $this->Html->tag('td', date('d M Y', strtotime($value['LkuPayment']['tgl_bayar'])));?>
                 <td><?php echo $value['Customer']['name'];?></td>
+                <td><?php echo $this->Number->currency($value['LkuPayment']['grandtotal'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <?php 
                         if(!empty($value['LkuPayment']['is_void'])){
                             echo $this->Html->tag('td', '<span class="label label-danger">Void</span>');
