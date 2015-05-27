@@ -1495,7 +1495,7 @@ class AjaxController extends AppController {
 			$default_conditions['Coa.code'] = $this->request->data['Coa']['code'];
 		}
 
-		$coas = $this->Coa->getData('threaded', array(
+		$coas = $this->Coa->getData('all', array(
             'conditions' => $default_conditions
         ));
         
