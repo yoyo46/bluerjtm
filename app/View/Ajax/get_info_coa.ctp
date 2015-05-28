@@ -59,10 +59,10 @@
         <thead>
             <tr>
                 <?php
-                    $input_all = $this->Form->checkbox('checkbox_all', array(
-                        'class' => 'checkAll-coa'
-                    ));
-                    echo $this->Html->tag('th', $input_all);
+                        $input_all = $this->Form->checkbox('checkbox_all', array(
+                            'class' => 'checkAll-coa'
+                        ));
+                        echo $this->Html->tag('th', $input_all);
                 ?>
                 <th><?php echo __('Kode Acc');?></th>
                 <th><?php echo __('Nama Acc');?></th>
