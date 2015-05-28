@@ -56,7 +56,6 @@ class AppController extends Controller {
 		Configure::write('__Site.config_pagination_unlimited', 1000);
 		Configure::write('__Site.cache_view_path', '/images/view');
 		Configure::write('__Site.upload_path', APP.'Uploads');
-		Configure::write('__Site.profile_photo_folder', 'users');
 
 		Configure::write('__Site.fullsize', 'fullsize');
 		Configure::write('__Site.max_image_size', 5241090);

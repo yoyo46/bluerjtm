@@ -29,7 +29,6 @@
 								'src' => $this->request->data['Driver']['photo'], 
 								'thumb'=>true,
 								'size' => 'pm',
-								'thumb' => true,
 							));
 
 							echo $this->Html->tag('div', $photo, array(
