@@ -3,32 +3,12 @@
         echo $this->element('blocks/revenues/search_ttuj_payments');
 
         switch ($action_type) {
-            case 'commission':
-                $labelAdd = __('Komisi');
-                break;
-
-            case 'uang_kuli_muat':
-                $labelAdd = __('Kuli Muat');
-                break;
-
-            case 'uang_kuli_bongkar':
-                $labelAdd = __('Kuli Bongkar');
-                break;
-
-            case 'asdp':
-                $labelAdd = __('Biaya Penyebrangan');
-                break;
-
-            case 'uang_kawal':
-                $labelAdd = __('Kuli Kawal');
-                break;
-
-            case 'uang_keamanan':
-                $labelAdd = __('Kuli Keamanan');
+            case 'biaya_ttuj':
+                $labelAdd = __('Biaya TTUJ');
                 break;
             
             default:
-                $labelAdd = __('Uang Jalan');
+                $labelAdd = __('Uang Jalan/Komisi');
                 break;
         }
 ?>
@@ -61,12 +41,12 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('TtujPayment.nodoc', __('No. Dokumen'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('TtujPayment.receiver_name', __('Dibayar Kepada'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.no_ttuj', __('No TTUJ'), array(
-                            'escape' => false
-                        )));
+                        // echo $this->Html->tag('th', $this->Paginator->sort('TtujPayment.receiver_name', __('Dibayar Kepada'), array(
+                        //     'escape' => false
+                        // )));
+                        // echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.no_ttuj', __('No TTUJ'), array(
+                        //     'escape' => false
+                        // )));
                         echo $this->Html->tag('th', $this->Paginator->sort('TtujPayment.total_payment', __('Total Dibayar'), array(
                             'escape' => false,
                             'class' => 'text-center'
@@ -90,8 +70,8 @@
             ?>
             <tr>
                 <td><?php echo $value['TtujPayment']['nodoc'];?></td>
-                <td><?php echo $value['TtujPayment']['receiver_name'];?></td>
-                <td><?php echo !empty($value['Ttuj']['no_ttuj'])?$value['Ttuj']['no_ttuj']:false;?></td>
+                <!-- <td><?php echo $value['TtujPayment']['receiver_name'];?></td>
+                <td><?php echo !empty($value['Ttuj']['no_ttuj'])?$value['Ttuj']['no_ttuj']:false;?></td> -->
                 <td align="right"><?php echo $this->Number->currency($value['TtujPayment']['total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <td class="text-center"><?php echo $this->Common->customDate($value['TtujPayment']['date_payment']);?></td>
                 <td>

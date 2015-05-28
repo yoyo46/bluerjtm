@@ -160,3 +160,13 @@
         </div>
     </div>
 </div>
+<div class="box-footer text-center action">
+	<?php
+    		echo $this->Html->link(__('Kembali'), array(
+    			'controller' => 'lkus',
+				'action' => 'index', 
+			), array(
+				'class'=> 'btn btn-default',
+			));
+	?>
+</div>

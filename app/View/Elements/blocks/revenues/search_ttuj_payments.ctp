@@ -37,7 +37,7 @@
                         ?>
                     </div>
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <?php 
                         echo $this->Form->input('Ttuj.no_ttuj',array(
                             'label'=> __('No. TTUJ'),
@@ -46,7 +46,7 @@
                             'placeholder' => __('No. TTUJ')
                         ));
                     ?>
-                </div>
+                </div> -->
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
@@ -59,7 +59,7 @@
                         ));
                     ?>
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <?php 
                         echo $this->Form->input('Ttuj.receiver_name',array(
                             'label'=> __('Dibayar Kepada'),
@@ -68,7 +68,7 @@
                             'placeholder' => __('Dibayar Kepada')
                         ));
                     ?>
-                </div>
+                </div> -->
             </div>
         </div>
         <div class="row">

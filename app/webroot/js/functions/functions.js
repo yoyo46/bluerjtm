@@ -1922,9 +1922,17 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                         pickData();
                         datepicker($('#myModal .modal-body .custom-date'));
                         check_all_checkbox();
-                    } else if( type_action == 'browse-cash-banks' ) {
+                    } else if( type_action == 'browse-cash-banks' || type_action == 'browse-check-docs' ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
-                        check_all_checkbox();
+
+                        if( type_action == 'browse-check-docs' ) {
+                            input_price($('#myModal .modal-body .input_price'));
+                            sisa_ttuj($('#myModal .modal-body .sisa-ttuj'));
+                            popup_checkbox();
+                            daterangepicker( $('#myModal .modal-body .date-range') );
+                        } else {
+                            check_all_checkbox();
+                        }
                     } else if(type_action == 'cancel_invoice'){
                         submitForm();
                         datepicker();
@@ -2385,6 +2393,54 @@ var check_all_checkbox = function(){
     }
 }
 
+var popup_checkbox = function(){
+    $('.checkAll').click(function(){
+        $('.check-option').not(this).prop('checked', this.checked);
+
+        if($('.child .check-option').length > 0){
+            jQuery.each( $('.child .check-option'), function( i, val ) {
+                var self = $(this);
+                check_option(self)
+            });
+        }
+    });
+    
+    $('.child .check-option').click(function(){
+        var self = $(this);
+        check_option(self)
+    });
+
+    function check_option(self){
+        var parent = self.parents('.child');
+        $('.checkbox-info-detail').removeClass('hide');
+        var id = parent.attr('data-value');
+
+        if(self.is(':checked')){
+            if( $('#checkbox-info-table .child-'+id).length > 0 ) {
+                alert('Biaya telah terdaftar');
+                self.attr('checked', false);
+            } else {
+                if($('.child-'+id).length <= 0){
+                    var html_content = '<tr class="child child-'+id+'">'+parent.html()+'</tr>';
+                    var sisa = convert_number(parent.find('.sisa-ttuj').val(), 'int');
+
+                    $('#checkbox-info-table').append(html_content);
+                    $('#checkbox-info-table .child-'+id+' .sisa-ttuj').val(sisa);
+                    $('.child-'+id).find('.checkbox-action').remove();
+                    input_price( $('.child-'+id+' .input_price') );
+                    sisa_ttuj($('#checkbox-info-table .child-'+id+' .sisa-ttuj'));
+                }
+            }
+        }else{
+            $('.child-'+id).remove();
+        } 
+
+        if( $('#total-biaya').length > 0 ) {
+            calcTotalBiayaTtuj();
+        }
+    }
+}
+
 var laka_ttuj_change = function(){
     $('#laka-ttuj-change').change(function(){
         var self = $(this);
@@ -2510,6 +2566,56 @@ var get_document_cashbank = function(){
     });
 }
 
+var convert_number = function ( num, type ) {
+    num = num.replace(/,/gi, "").replace(/ /gi, "");
+
+    if( type == 'int' ) {
+        num = parseInt(num);
+    } else if( type == 'float' ) {
+        num = parseFloat(num);
+    }
+
+    if( isNaN(num) ) {
+        num = 0;
+    }
+
+    return num;
+}
+
+var calcTotalBiayaTtuj = function () {
+    var biayaObj = $('#checkbox-info-table .sisa-ttuj');
+    var biayaLen = $('#checkbox-info-table .sisa-ttuj').length;
+    var totalBiaya = 0;
+
+    for (i = 0; i < biayaLen; i++) {
+        totalBiaya += convert_number(biayaObj[i].value, 'int');
+    };
+
+    $('#total-biaya').html('IDR '+formatNumber( totalBiaya, 0 ));
+}
+
+var sisa_ttuj = function ( obj ) {
+    if( typeof obj == 'undefined' ) {
+        obj = $('.sisa-ttuj');
+    }
+
+    obj.blur(function(){
+        var self = $(this);
+        var parent = self.parents('tr');
+        var total = convert_number(parent.children('.total-ttuj').html(), 'int');
+        var sisa = convert_number(self.val(), 'int');
+
+        if( sisa > total ) {
+            alert('Sisa tidak boleh melebihi total biaya');
+            self.val(formatNumber( total, 0 ));
+        } else if( sisa == 0 ) {
+            alert('Silahkan isi sisa biaya yang akan dibayar');
+        }
+
+        calcTotalBiayaTtuj();
+    });
+}
+
 $(function() {
     leasing_action();
     laka_ttuj_change();
@@ -2517,6 +2623,7 @@ $(function() {
     part_motor_lku();
     price_tipe_motor();
     price_perlengkapan();
+    sisa_ttuj();
 
     set_auth_cash_bank($('.cash-bank-auth-user'));
 

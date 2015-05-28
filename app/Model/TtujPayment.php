@@ -2,21 +2,9 @@
 class TtujPayment extends AppModel {
 	var $name = 'TtujPayment';
 	var $validate = array(
-        'ttuj_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'TTUJ harap dipilih'
-            ),
-        ),
-        'receiver_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Penerima (dibayar kepada) harap dipilih'
-            ),
-        ),
-        'receiver_type' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+        'receiver_name' => array(
+            'validateReceiver' => array(
+                'rule' => array('validateReceiver'),
                 'message' => 'Penerima (dibayar kepada) harap dipilih'
             ),
         ),
@@ -40,40 +28,46 @@ class TtujPayment extends AppModel {
         ),
 	);
 
-	var $belongsTo = array(
-        'Ttuj' => array(
-            'className' => 'Ttuj',
-            'foreignKey' => 'ttuj_id',
-        ),
-        'Driver' => array(
-            'className' => 'Driver',
-            'foreignKey' => 'receiver_id',
+	// var $belongsTo = array(
+ //        'Driver' => array(
+ //            'className' => 'Driver',
+ //            'foreignKey' => 'receiver_id',
+ //            'conditions' => array(
+ //                'TtujPayment.receiver_type' => 'Driver',
+ //            )
+ //        ),
+ //        'CustomerNoType' => array(
+ //            'className' => 'CustomerNoType',
+ //            'foreignKey' => 'receiver_id',
+ //            'conditions' => array(
+ //                'TtujPayment.receiver_type' => 'Customer',
+ //            )
+ //        ),
+ //        'Vendor' => array(
+ //            'className' => 'Vendor',
+ //            'foreignKey' => 'receiver_id',
+ //            'conditions' => array(
+ //                'TtujPayment.receiver_type' => 'Vendor',
+ //            )
+ //        ),
+ //        'Employe' => array(
+ //            'className' => 'Employe',
+ //            'foreignKey' => 'receiver_id',
+ //            'conditions' => array(
+ //                'TtujPayment.receiver_type' => 'Employe',
+ //            )
+ //        ),
+	// );
+
+    var $hasMany = array(
+        'TtujPaymentDetail' => array(
+            'className' => 'TtujPaymentDetail',
+            'foreignKey' => 'ttuj_payment_id',
             'conditions' => array(
-                'TtujPayment.receiver_type' => 'Driver',
-            )
+                'TtujPaymentDetail.status' => 1,
+            ),
         ),
-        'CustomerNoType' => array(
-            'className' => 'CustomerNoType',
-            'foreignKey' => 'receiver_id',
-            'conditions' => array(
-                'TtujPayment.receiver_type' => 'Customer',
-            )
-        ),
-        'Vendor' => array(
-            'className' => 'Vendor',
-            'foreignKey' => 'receiver_id',
-            'conditions' => array(
-                'TtujPayment.receiver_type' => 'Vendor',
-            )
-        ),
-        'Employe' => array(
-            'className' => 'Employe',
-            'foreignKey' => 'receiver_id',
-            'conditions' => array(
-                'TtujPayment.receiver_type' => 'Employe',
-            )
-        ),
-	);
+    );
 
 	function getData( $find, $options = false, $is_merge = true ){
         $default_options = array(
@@ -84,11 +78,10 @@ class TtujPayment extends AppModel {
                 'TtujPayment.id' => 'DESC'
             ),
             'contain' => array(
-                'Ttuj',
-                'Driver',
-                'Vendor',
-                'CustomerNoType',
-                'Employe'
+                // 'Driver',
+                // 'Vendor',
+                // 'CustomerNoType',
+                // 'Employe'
             ),
             'fields' => array(),
         );
@@ -120,6 +113,18 @@ class TtujPayment extends AppModel {
         }
         
         return $result;
+    }
+
+    function validateReceiver () {
+        if( !empty($this->data['TtujPayment']['type']) && $this->data['TtujPayment']['type'] == 'biaya_ttuj' ) {
+            if( !empty($this->data['TtujPayment']['receiver_id']) && !empty($this->data['TtujPayment']['receiver_name']) && !empty($this->data['TtujPayment']['receiver_type']) ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
     }
 }
 ?>

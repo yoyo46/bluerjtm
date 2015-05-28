@@ -398,7 +398,7 @@ class RevenuesController extends AppController {
 
             $data['Ttuj']['from_city_name'] = !empty($uangJalan['FromCity']['name'])?$uangJalan['FromCity']['name']:0;
             $data['Ttuj']['to_city_name'] = !empty($uangJalan['ToCity']['name'])?$uangJalan['ToCity']['name']:0;
-            $data['Ttuj']['customer_name'] = !empty($customer['Customer']['customer_name'])?$customer['Customer']['customer_name']:'';
+            $data['Ttuj']['customer_name'] = !empty($customer['Customer']['customer_name_code'])?$customer['Customer']['customer_name_code']:'';
             $data['Ttuj']['uang_jalan_id'] = !empty($uangJalan['UangJalan']['id'])?$uangJalan['UangJalan']['id']:false;
             $data['Ttuj']['nopol'] = !empty($truck['Truck']['nopol'])?$truck['Truck']['nopol']:false;
             $data['Ttuj']['ttuj_date'] = $this->MkCommon->getDate($data['Ttuj']['ttuj_date']);
@@ -6082,7 +6082,7 @@ class RevenuesController extends AppController {
         // }
     }
 
-    function ttuj_payments( $action_type = 'uang_jalan' ){
+    function ttuj_payments( $action_type = 'uang_jalan_commission' ){
         // if( in_array('view_invoice_payments', $this->allowModule) ) {
             $this->loadModel('TtujPayment');
             $conditions = array(
@@ -6090,39 +6090,14 @@ class RevenuesController extends AppController {
             );
 
             switch ($action_type) {
-                case 'commission':
-                    $this->set('active_menu', 'commission_payments');
-                    $this->set('sub_module_title', __('Pembayaran Komisi'));
-                    break;
-
-                case 'uang_kuli_muat':
-                    $this->set('active_menu', 'uang_kuli_muat_payments');
-                    $this->set('sub_module_title', __('Pembayaran Kuli Muat'));
-                    break;
-
-                case 'uang_kuli_bongkar':
-                    $this->set('active_menu', 'uang_kuli_bongkar_payments');
-                    $this->set('sub_module_title', __('Pembayaran Kuli Bongkar'));
-                    break;
-
-                case 'asdp':
-                    $this->set('active_menu', 'asdp_payments');
-                    $this->set('sub_module_title', __('Pembayaran Biaya Penyebrangan'));
-                    break;
-
-                case 'uang_kawal':
-                    $this->set('active_menu', 'uang_kawal_payments');
-                    $this->set('sub_module_title', __('Pembayaran Uang Kawal'));
-                    break;
-
-                case 'uang_keamanan':
-                    $this->set('active_menu', 'uang_keamanan_payments');
-                    $this->set('sub_module_title', __('Pembayaran Uang Keamanan'));
+                case 'biaya_ttuj':
+                    $this->set('active_menu', 'biaya_ttuj_payments');
+                    $this->set('sub_module_title', __('Pembayaran Biaya TTUJ'));
                     break;
                 
                 default:
-                    $this->set('active_menu', 'uang_jalan_payments');
-                    $this->set('sub_module_title', __('Pembayaran Uang Jalan'));
+                    $this->set('active_menu', 'uang_jalan_commission_payments');
+                    $this->set('sub_module_title', __('Pembayaran Uang Jalan/Komisi'));
                     break;
             }
 
@@ -6173,15 +6148,6 @@ class RevenuesController extends AppController {
             ));
             $invoices = $this->paginate('TtujPayment');
 
-            if( !empty($invoices) ) {
-                $this->loadModel('Customer');
-
-                foreach ($invoices as $key => $invoice) {
-                    $customer_id = !empty($invoice['CustomerNoType']['id'])?$invoice['CustomerNoType']['id']:false;
-                    $invoices[$key] = $this->Customer->getMerge($invoice, $customer_id);
-                }
-            }
-
             $this->set(compact(
                 'invoices', 'action_type'
             )); 
@@ -6193,32 +6159,12 @@ class RevenuesController extends AppController {
     function ttuj_payment_add( $action_type = 'uang_jalan' ){
         // if( in_array('insert_invoice_payments', $this->allowModule) ) {
             switch ($action_type) {
-                case 'commission':
-                    $module_title = __('Tambah Pembayaran Komisi');
-                    break;
-
-                case 'uang_kuli_muat':
-                    $module_title = __('Tambah Pembayaran Kuli Muat');
-                    break;
-
-                case 'uang_kuli_bongkar':
-                    $module_title = __('Tambah Pembayaran Kuli Bongkar');
-                    break;
-
-                case 'asdp':
-                    $module_title = __('Tambah Pembayaran Biaya Penyebrangan');
-                    break;
-
-                case 'uang_kawal':
-                    $module_title = __('Tambah Pembayaran Uang Kawal');
-                    break;
-
-                case 'uang_keamanan':
-                    $module_title = __('Tambah Pembayaran Uang Keamanan');
+                case 'biaya_ttuj':
+                    $module_title = __('Tambah Pembayaran TTUJ');
                     break;
                 
                 default:
-                    $module_title = __('Tambah Pembayaran Uang Jalan');
+                    $module_title = __('Tambah Pembayaran Uang Jalan/Komisi');
                     break;
             }
 
@@ -6236,14 +6182,12 @@ class RevenuesController extends AppController {
             'conditions' => array(
                 'TtujPayment.id' => $id
             ),
+            'contain' => array(
+                'TtujPaymentDetail',
+            ),
         ));
 
         switch ($action_type) {
-            case 'commission':
-                $this->set('active_menu', 'commission_payments');
-                $sub_module_title = $title_for_layout = 'Detail Pembayaran Komisi';
-                break;
-
             case 'uang_kuli_muat':
                 $module_title = __('Tambah Pembayaran Kuli Muat');
                 $this->set('active_menu', 'uang_kuli_muat_payments');
@@ -6281,21 +6225,23 @@ class RevenuesController extends AppController {
         }
 
         if(!empty($invoice)){
-            $customer_id = !empty($invoice['CustomerNoType']['id'])?$invoice['CustomerNoType']['id']:false;
-            $invoice = $this->Customer->getMerge($invoice, $customer_id);
-            $ttuj_id = !empty($invoice['TtujPayment']['ttuj_id'])?$invoice['TtujPayment']['ttuj_id']:false;
+            $this->request->data = $invoice;
 
-            if( !empty($ttuj_id) ) {
-                $result = $this->TtujPayment->Ttuj->getTtujPayment($ttuj_id, $action_type);
-                $invoice['TtujPayment']['total_payment'] = $result['total'];
-                $invoice['TtujPayment']['customer'] = $result['customer_name'];
-                $invoice['TtujPayment']['driver'] = $result['driver_name'];
-                $invoice['TtujPayment']['change_driver'] = $result['change_driver_name'];
-                $invoice['TtujPayment']['from_city'] = $result['from_name'];
-                $invoice['TtujPayment']['to_city'] = $result['to_name'];
+            if( !empty($invoice['TtujPaymentDetail']) ) {
+                $this->loadModel('Ttuj');
+
+                foreach ($invoice['TtujPaymentDetail'] as $key => $ttujPaymentDetail) {
+                    $ttuj_id = !empty($ttujPaymentDetail['ttuj_id'])?$ttujPaymentDetail['ttuj_id']:false;
+                    $dataTtujType = !empty($ttujPaymentDetail['type'])?$ttujPaymentDetail['type']:false;
+                    $amount = !empty($ttujPaymentDetail['amount'])?$ttujPaymentDetail['amount']:0;
+                    $resultTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $dataTtujType);
+                    $this->request->data['Ttuj'][] = $resultTtuj;
+                    $this->request->data['TtujPayment']['amount_payment'][] = $amount;
+                    $this->request->data['TtujPayment']['ttuj_id'][] = $ttuj_id;
+                    $this->request->data['TtujPayment']['data_type'][] = $dataTtujType;
+                }
             }
 
-            $this->request->data = $invoice;
             $this->set(compact(
                 'invoice', 'sub_module_title', 'title_for_layout',
                 'drivers', 'action_type'
@@ -6308,95 +6254,103 @@ class RevenuesController extends AppController {
         }
     }
 
+    function doTtujPaymentDetail ( $dataAmount, $ttuj_payment_id = false ) {
+        $flagTtujPaymentDetail = true;
+        $totalPayment = 0;
+
+        if( !empty($ttuj_payment_id) ) {
+            $this->TtujPayment->TtujPaymentDetail->updateAll( array(
+                'TtujPaymentDetail.status' => 0,
+            ), array(
+                'TtujPaymentDetail.ttuj_payment_id' => $ttuj_payment_id,
+            ));
+        }
+
+        if( !empty($dataAmount) ) {
+            foreach ($dataAmount as $key => $amount) {
+                $ttuj_id = !empty($this->request->data['TtujPayment']['ttuj_id'][$key])?$this->request->data['TtujPayment']['ttuj_id'][$key]:false;
+                $data_type = !empty($this->request->data['TtujPayment']['data_type'][$key])?$this->request->data['TtujPayment']['data_type'][$key]:false;
+                $amount = !empty($amount)?$this->MkCommon->convertPriceToString($amount, 0):0;
+                $dataTtuj = $this->TtujPayment->TtujPaymentDetail->Ttuj->getTtujPayment($ttuj_id, $data_type);
+                $dataTtujPaymentDetail = array(
+                    'TtujPaymentDetail' => array(
+                        'ttuj_id' => $ttuj_id,
+                        'type' => $data_type,
+                        'amount' => $amount,
+                    ),
+                );
+                $this->request->data['Ttuj'][$key] = $dataTtuj;
+                $this->request->data['TtujPayment']['amount_payment'][$key] = $amount;
+                $totalPayment += $amount;
+                $total_dibayar = $this->TtujPayment->TtujPaymentDetail->getTotalPayment($ttuj_id, $data_type) + $amount;
+
+                if( !empty($ttuj_payment_id) ) {
+                    $dataTtujPaymentDetail['TtujPaymentDetail']['ttuj_payment_id'] = $ttuj_payment_id;
+                    $total = !empty($dataTtuj['total'])?$dataTtuj['total']:0;
+
+                    if( !empty($total_dibayar) ) {
+                        $flagPaidTtuj = 'half';
+
+                        if( $total <= $total_dibayar ) {
+                            $flagPaidTtuj = 'full';
+                        }
+                    
+                        $this->TtujPayment->TtujPaymentDetail->Ttuj->set('paid_'.$data_type, $flagPaidTtuj);
+                        $this->TtujPayment->TtujPaymentDetail->Ttuj->id = $ttuj_id;
+                        
+                        if( !$this->TtujPayment->TtujPaymentDetail->Ttuj->save() ) {
+                            $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran %s #%s'), $data_type, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                        }
+                    }
+                }
+
+                $this->TtujPayment->TtujPaymentDetail->create();
+                $this->TtujPayment->TtujPaymentDetail->set($dataTtujPaymentDetail);
+
+                if( !empty($ttuj_payment_id) ) {
+                    if( !$this->TtujPayment->TtujPaymentDetail->save() ) {
+                        $flagTtujPaymentDetail = false;
+                    }
+                } else {
+                    if( !$this->TtujPayment->TtujPaymentDetail->validates() ) {
+                        $flagTtujPaymentDetail = false;
+                    }
+                }
+            }
+        }
+
+        if( !empty($totalPayment) && !empty($ttuj_payment_id) ) {
+            $this->TtujPayment->id = $ttuj_payment_id;
+            $this->TtujPayment->set('total_payment', $totalPayment);
+
+            if( !$this->TtujPayment->save() ) {
+                $this->Log->logActivity( sprintf(__('Gagal mengubah total pembayaran ttuj #%s'), $ttuj_payment_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+            }
+        }
+
+        return $flagTtujPaymentDetail;
+    }
+
     function doTtujPayment( $action_type, $id = false, $data_local = false){
         $this->loadModel('Ttuj');
         $this->loadModel('TtujPayment');
         $ttuj_id = false;
-        $ttujConditions = array(
-            'Ttuj.is_draft' => 0,
-            'Ttuj.status' => 1,
-        );
 
         switch ($action_type) {
-            case 'commission':
+            case 'biaya_ttuj':
                 $journalName = 'commission_payment';
                 $journalDebitName = 'commission_payment_coa_debit_id';
                 $journalCreditName = 'commission_payment_coa_credit_id';
-                $labelName = 'Komisi';
-                $ttujConditions['Ttuj.paid_commission'] = 0;
-                $ttujConditions['Ttuj.commission <>'] = 0;
-                $paidLabel = 'paid_commission';
+                $labelName = 'Biaya TTUJ';
 
-                $this->set('active_menu', 'commission_payments');
-                break;
-
-            case 'uang_kuli_muat':
-                $journalName = 'uang_kuli_muat_payment';
-                $journalDebitName = 'uang_kuli_muat_payment_coa_debit_id';
-                $journalCreditName = 'uang_kuli_muat_payment_coa_credit_id';
-                $labelName = 'Kuli Muat';
-                $ttujConditions['Ttuj.paid_uang_kuli_muat'] = 0;
-                $ttujConditions['Ttuj.uang_kuli_muat <>'] = 0;
-                $paidLabel = 'paid_uang_kuli_muat';
-
-                $this->set('active_menu', 'uang_kuli_muat_payments');
-                break;
-
-            case 'uang_kuli_bongkar':
-                $journalName = 'uang_kuli_bongkar_payment';
-                $journalDebitName = 'uang_kuli_bongkar_payment_coa_debit_id';
-                $journalCreditName = 'uang_kuli_bongkar_payment_coa_credit_id';
-                $labelName = 'Kuli Bongkar';
-                $ttujConditions['Ttuj.paid_uang_kuli_bongkar'] = 0;
-                $ttujConditions['Ttuj.uang_kuli_bongkar <>'] = 0;
-                $paidLabel = 'paid_uang_kuli_bongkar';
-
-                $this->set('active_menu', 'uang_kuli_bongkar_payments');
-                break;
-
-            case 'asdp':
-                $journalName = 'asdp_payment';
-                $journalDebitName = 'asdp_payment_coa_debit_id';
-                $journalCreditName = 'asdp_payment_coa_credit_id';
-                $labelName = 'Biaya Penyebrangan';
-                $ttujConditions['Ttuj.paid_asdp'] = 0;
-                $ttujConditions['Ttuj.asdp <>'] = 0;
-                $paidLabel = 'paid_asdp';
-
-                $this->set('active_menu', 'asdp_payments');
-                break;
-
-            case 'uang_kawal':
-                $journalName = 'uang_kawal_payment';
-                $journalDebitName = 'uang_kawal_payment_coa_debit_id';
-                $journalCreditName = 'uang_kawal_payment_coa_credit_id';
-                $labelName = 'Uang Kawal';
-                $ttujConditions['Ttuj.paid_uang_kawal'] = 0;
-                $ttujConditions['Ttuj.uang_kawal <>'] = 0;
-                $paidLabel = 'paid_uang_kawal';
-
-                $this->set('active_menu', 'uang_kawal_payments');
-                break;
-
-            case 'uang_keamanan':
-                $journalName = 'uang_keamanan_payment';
-                $journalDebitName = 'uang_keamanan_payment_coa_debit_id';
-                $journalCreditName = 'uang_keamanan_payment_coa_credit_id';
-                $labelName = 'Uang Keamanan';
-                $ttujConditions['Ttuj.paid_uang_keamanan'] = 0;
-                $ttujConditions['Ttuj.uang_keamanan <>'] = 0;
-                $paidLabel = 'paid_uang_keamanan';
-
-                $this->set('active_menu', 'uang_keamanan_payments');
+                $this->set('active_menu', 'biaya_ttuj_payments');
                 break;
             
             default:
                 $journalName = 'uang_jalan_payment';
                 $journalDebitName = 'uang_jalan_payment_coa_debit_id';
                 $journalCreditName = 'uang_jalan_payment_coa_credit_id';
-                $labelName = 'Uang Jalan';
-                $ttujConditions['Ttuj.paid_uang_jalan'] = 0;
-                $paidLabel = 'paid_uang_jalan';
+                $labelName = 'Uang Jalan/Komisi';
 
                 $this->set('active_menu', 'uang_jalan_payments');
                 break;
@@ -6404,31 +6358,20 @@ class RevenuesController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
-            $ttuj_id = !empty($data['TtujPayment']['ttuj_id'])?$data['TtujPayment']['ttuj_id']:false;
             $data['TtujPayment']['date_payment'] = !empty($data['TtujPayment']['date_payment']) ? $this->MkCommon->getDate($data['TtujPayment']['date_payment']) : '';
             $data['TtujPayment']['type'] = $action_type;
-
-            if( !empty($ttuj_id) ) {
-                $result = $this->Ttuj->getTtujPayment($ttuj_id, $action_type);
-                $data['TtujPayment']['total_payment'] = $result['total'];
-                $data['TtujPayment']['customer'] = $result['customer_name'];
-                $data['TtujPayment']['driver'] = $result['driver_name'];
-                $data['TtujPayment']['change_driver'] = $result['change_driver_name'];
-                $data['TtujPayment']['from_city'] = $result['from_name'];
-                $data['TtujPayment']['to_city'] = $result['to_name'];
-            }
+            $dataAmount = !empty($data['TtujPayment']['amount_payment'])?$data['TtujPayment']['amount_payment']:false;
+            $flagTtujPaymentDetail = $this->doTtujPaymentDetail($dataAmount);
 
             $this->TtujPayment->create();
             $this->TtujPayment->set($data);
 
-            if( $this->TtujPayment->validates() ){
+            if( $this->TtujPayment->validates() && !empty($flagTtujPaymentDetail) ){
                 if($this->TtujPayment->save()){
                     $this->loadModel('Journal');
                     $document_id = $this->TtujPayment->id;
-                    $this->Ttuj->setTtuj($ttuj_id, array(
-                        $paidLabel => 1,
-                    ));
                     $this->Journal->deleteJournal( $document_id, $journalName );
+                    $flagTtujPaymentDetail = $this->doTtujPaymentDetail($dataAmount, $document_id);
 
                     if( !empty($data['TtujPayment']['total_payment']) ) {
                         $document_no = !empty($data['TtujPayment']['nodoc'])?$data['TtujPayment']['nodoc']:false;
@@ -6448,33 +6391,33 @@ class RevenuesController extends AppController {
                     $this->Log->logActivity( sprintf(__('Gagal melakukan Pembayaran %s #%s'), $labelName, $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                 }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal melakukan Pembayaran'), 'error'); 
+                $msgError = array();
+
+                if( !empty($this->TtujPayment->TtujPaymentDetail->validationErrors) ) {
+                    $errorPaymentDetails = $this->TtujPayment->TtujPaymentDetail->validationErrors;
+
+                    foreach ($errorPaymentDetails as $key => $errorPaymentDetail) {
+                        if( !empty($errorPaymentDetail) ) {
+                            foreach ($errorPaymentDetail as $key => $err_msg) {
+                                $msgError[] = $err_msg;
+                            }
+                        }
+                    }
+                }
+
+                if( !empty($msgError) ) {
+                    $this->MkCommon->setCustomFlash('<ul><li>'.implode('</li><li>', $msgError).'</li></ul>', 'error'); 
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Gagal melakukan Pembayaran'), 'error'); 
+                }
             }
 
-            $this->request->data = $data;
+            $this->request->data['TtujPayment']['date_payment'] = !empty($data['TtujPayment']['date_payment']) ? $data['TtujPayment']['date_payment'] : '';
         }else if(!empty($id) && !empty($data_local)){
              $this->request->data = $data_local;
         }
-        $this->request->data['TtujPayment']['date_payment'] = !empty($this->request->data['TtujPayment']['date_payment']) ? $this->MkCommon->getDate($this->request->data['TtujPayment']['date_payment'], true) : '';
-
-        $ttujs = $this->Ttuj->getData('list', array(
-            'conditions' => $ttujConditions,
-            'fields' => array(
-                'Ttuj.id', 'Ttuj.no_ttuj'
-            ),
-            'order' => array(
-                'Ttuj.created' => 'ASC',
-                'Ttuj.id' => 'ASC',
-            ),
-        ));
-        $drivers = $this->TtujPayment->Driver->getData('list', array(
-            'fields' => array(
-                'Driver.id', 'Driver.driver_name'
-            ),
-        ));
 
         $this->set(compact(
-            'ttujs', 'ttuj', 'drivers',
             'action_type'
         ));
         $this->render('ttuj_payment_form');
@@ -6492,81 +6435,28 @@ class RevenuesController extends AppController {
                 'TtujPayment.status' => 1,
                 'TtujPayment.id' => $id,
             ),
+            'contain' => array(
+                'TtujPaymentDetail',
+            ),
         ));
-        
+
         if( !empty($invoice) ){
             if(!empty($this->request->data)){
                 $data = $this->request->data;
 
                 switch ($action_type) {
-                    case 'commission':
-                        $journalName = 'commission_payment_void';
-                        $paidLabel = 'paid_commission';
-                        $journalDebitName = 'commission_payment_void_coa_debit_id';
-                        $journalCreditName = 'commission_payment_void_coa_credit_id';
-                        $labelName = 'Komisi';
-
-                        $this->set('active_menu', 'commission_payments');
-                        break;
-
-                    case 'uang_kuli_muat':
+                    case 'biaya_ttuj':
                         $journalName = 'uang_kuli_muat_payment_void';
-                        $paidLabel = 'paid_uang_kuli_muat';
                         $journalDebitName = 'uang_kuli_muat_payment_void_coa_debit_id';
                         $journalCreditName = 'uang_kuli_muat_payment_void_coa_credit_id';
-                        $labelName = 'Kuli Muat';
-
-                        $this->set('active_menu', 'uang_kuli_muat_payments');
-                        break;
-
-                    case 'uang_kuli_bongkar':
-                        $journalName = 'uang_kuli_bongkar_payment_void';
-                        $paidLabel = 'paid_uang_kuli_bongkar';
-                        $journalDebitName = 'uang_kuli_bongkar_payment_void_coa_debit_id';
-                        $journalCreditName = 'uang_kuli_bongkar_payment_void_coa_credit_id';
-                        $labelName = 'Kuli Bongkar';
-
-                        $this->set('active_menu', 'uang_kuli_bongkar_payments');
-                        break;
-
-                    case 'asdp':
-                        $journalName = 'asdp_payment_void';
-                        $paidLabel = 'paid_asdp';
-                        $journalDebitName = 'asdp_payment_void_coa_debit_id';
-                        $journalCreditName = 'asdp_payment_void_coa_credit_id';
-                        $labelName = 'Biaya Penyebrangan';
-
-                        $this->set('active_menu', 'asdp_payments');
-                        break;
-
-                    case 'uang_kawal':
-                        $journalName = 'uang_kawal_payment_void';
-                        $paidLabel = 'paid_uang_kawal';
-                        $journalDebitName = 'uang_kawal_payment_void_coa_debit_id';
-                        $journalCreditName = 'uang_kawal_payment_void_coa_credit_id';
-                        $labelName = 'Uang Kawal';
-
-                        $this->set('active_menu', 'uang_kawal_payments');
-                        break;
-
-                    case 'uang_keamanan':
-                        $journalName = 'uang_keamanan_payment_void';
-                        $paidLabel = 'paid_uang_keamanan';
-                        $journalDebitName = 'uang_keamanan_payment_void_coa_debit_id';
-                        $journalCreditName = 'uang_keamanan_payment_void_coa_credit_id';
-                        $labelName = 'Uang Keamanan';
-
-                        $this->set('active_menu', 'uang_keamanan_payments');
+                        $labelName = 'Biaya TTUJ';
                         break;
                     
                     default:
                         $journalName = 'uang_jalan_payment_void';
-                        $paidLabel = 'paid_uang_jalan';
                         $journalDebitName = 'uang_jalan_payment_void_coa_debit_id';
                         $journalCreditName = 'uang_jalan_payment_void_coa_credit_id';
-                        $labelName = 'Uang Jalan';
-
-                        $this->set('active_menu', 'uang_jalan_payments');
+                        $labelName = 'Uang Jalan/Komisi';
                         break;
                 }
 
@@ -6580,9 +6470,26 @@ class RevenuesController extends AppController {
 
                     if($this->TtujPayment->save()){
                         $this->loadModel('Journal');
-                        $this->TtujPayment->Ttuj->setTtuj($ttuj_id, array(
-                            $paidLabel => 0,
-                        ));
+
+                        if( !empty($invoice['TtujPaymentDetail']) ) {
+                            foreach ($invoice['TtujPaymentDetail'] as $key => $ttujPaymentDetail) {
+                                $ttuj_id = !empty($ttujPaymentDetail['ttuj_id'])?$ttujPaymentDetail['ttuj_id']:false;
+                                $data_type = !empty($ttujPaymentDetail['type'])?$ttujPaymentDetail['type']:false;
+                                $total_dibayar = $this->TtujPayment->TtujPaymentDetail->getTotalPayment($ttuj_id, $data_type);
+                                $flagPaidTtuj = 'none';
+
+                                if( !empty($total_dibayar) ) {
+                                    $flagPaidTtuj = 'half';
+                                }
+                                    
+                                $this->TtujPayment->TtujPaymentDetail->Ttuj->set('paid_'.$data_type, $flagPaidTtuj);
+                                $this->TtujPayment->TtujPaymentDetail->Ttuj->id = $ttuj_id;
+                                
+                                if( !$this->TtujPayment->TtujPaymentDetail->Ttuj->save() ) {
+                                    $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran %s #%s'), $data_type, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                                }
+                            }
+                        }
 
                         if( !empty($invoice['TtujPayment']['total_payment']) ) {
                             $document_no = !empty($invoice['TtujPayment']['nodoc'])?$invoice['TtujPayment']['nodoc']:false;

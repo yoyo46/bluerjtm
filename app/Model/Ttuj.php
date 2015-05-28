@@ -287,13 +287,13 @@ class Ttuj extends AppModel {
             ),
         ));
         $total = 0;
-        $customer_name = '';
-        $driver_name = '';
-        $change_driver_name = '';
-        $from_name = '';
-        $to_name = '';
-        $driver_id = '';
-        $driver_penganti_id = '';
+        // $customer_name = '';
+        // $driver_name = '';
+        // $change_driver_name = '';
+        // $from_name = '';
+        // $to_name = '';
+        // $driver_id = '';
+        // $driver_penganti_id = '';
 
         if( !empty($data_ttuj) ) {
             $this->Customer = ClassRegistry::init('Customer');
@@ -303,13 +303,13 @@ class Ttuj extends AppModel {
             $data_ttuj = $this->Customer->getMerge($data_ttuj, $customer_id);
             $data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_id);
 
-            $customer_name = !empty($data_ttuj['Customer']['customer_name_code'])?$data_ttuj['Customer']['customer_name_code']:'';
-            $driver_name = !empty($data_ttuj['Driver']['driver_name'])?$data_ttuj['Driver']['driver_name']:'';
-            $driver_id = !empty($data_ttuj['Ttuj']['id'])?$data_ttuj['Ttuj']['id']:'';
-            $change_driver_name = !empty($data_ttuj['DriverPenganti']['driver_name'])?$data_ttuj['DriverPenganti']['driver_name']:'';
-            $driver_penganti_id = !empty($data_ttuj['DriverPenganti']['id'])?$data_ttuj['DriverPenganti']['id']:'';
-            $from_name = !empty($data_ttuj['Ttuj']['from_city_name'])?$data_ttuj['Ttuj']['from_city_name']:'';
-            $to_name = !empty($data_ttuj['Ttuj']['to_city_name'])?$data_ttuj['Ttuj']['to_city_name']:'';
+            // $customer_name = !empty($data_ttuj['Customer']['customer_name_code'])?$data_ttuj['Customer']['customer_name_code']:'';
+            // $driver_name = !empty($data_ttuj['Driver']['driver_name'])?$data_ttuj['Driver']['driver_name']:'';
+            // $driver_id = !empty($data_ttuj['Ttuj']['id'])?$data_ttuj['Ttuj']['id']:'';
+            // $change_driver_name = !empty($data_ttuj['DriverPenganti']['driver_name'])?$data_ttuj['DriverPenganti']['driver_name']:'';
+            // $driver_penganti_id = !empty($data_ttuj['DriverPenganti']['id'])?$data_ttuj['DriverPenganti']['id']:'';
+            // $from_name = !empty($data_ttuj['Ttuj']['from_city_name'])?$data_ttuj['Ttuj']['from_city_name']:'';
+            // $to_name = !empty($data_ttuj['Ttuj']['to_city_name'])?$data_ttuj['Ttuj']['to_city_name']:'';
 
             switch ($data_action) {
                 case 'commission':
@@ -347,16 +347,8 @@ class Ttuj extends AppModel {
             }
         }
 
-        return array(
-            'total' => $total,
-            'customer_name' => $customer_name,
-            'driver_name' => $driver_name,
-            'driver_id' => $driver_id,
-            'change_driver_name' => $change_driver_name,
-            'driver_penganti_id' => $driver_penganti_id,
-            'from_name' => $from_name,
-            'to_name' => $to_name,
-        );
+        $data_ttuj['total'] = $total;
+        return $data_ttuj;
     }
 
     function setTtuj ( $ttuj_id, $data ) {

@@ -794,10 +794,8 @@
                             'cash_bank', 'approval_setting', 'kir_payments',
                             'stnk_payments', 'siup_payments', 'invoice_payments', 
                             'lku_payments', 'coa_setting', 'ksu_payments',
-                            'uang_jalan_payments', 'commission_payments',
-                            'uang_kuli_muat_payments', 'uang_kuli_bongkar_payments',
-                            'asdp_payments', 'uang_kawal_payments',
-                            'uang_keamanan_payments', 'journal_report'
+                            'uang_jalan_commission_payments',
+                            'biaya_ttuj_payments', 'journal_report'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -838,86 +836,26 @@
                             ));
 
                             // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Jalan', array(
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Jalan/Komisi', array(
                                     'controller' => 'revenues',
                                     'action' => 'ttuj_payments',
-                                    'uang_jalan',
+                                    'uang_jalan_commission',
                                 ), array(
                                     'escape' => false
                                 )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan_payments' )?'active':'',
+                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan_commission_payments' )?'active':'',
                                 ));
                             // }
 
                             // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Komisi', array(
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Biaya TTUJ', array(
                                     'controller' => 'revenues',
                                     'action' => 'ttuj_payments',
-                                    'commission',
+                                    'biaya_ttuj',
                                 ), array(
                                     'escape' => false
                                 )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'commission_payments' )?'active':'',
-                                ));
-                            // }
-
-                            // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Kuli Muat', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ttuj_payments',
-                                    'uang_kuli_muat',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_kuli_muat_payments' )?'active':'',
-                                ));
-                            // }
-
-                            // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Kuli Bongkar', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ttuj_payments',
-                                    'uang_kuli_bongkar',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_kuli_bongkar_payments' )?'active':'',
-                                ));
-                            // }
-
-                            // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Penyebrangan', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ttuj_payments',
-                                    'asdp',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'asdp_payments' )?'active':'',
-                                ));
-                            // }
-
-                            // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Kawal', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ttuj_payments',
-                                    'uang_kawal',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_kawal_payments' )?'active':'',
-                                ));
-                            // }
-
-                            // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Keamanan', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ttuj_payments',
-                                    'uang_keamanan',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_keamanan_payments' )?'active':'',
+                                    'class' => ( !empty($active_menu) && $active_menu == 'biaya_ttuj_payments' )?'active':'',
                                 ));
                             // }
 
@@ -1089,7 +1027,8 @@
                             'cities', 'vendors', 'companies',
                             'perlengkapan', 'coas', 'branches', 
                             'classifications', 'banks', 'calendar_colors',
-                            'calendar_icons', 'settings', 'jenis_sim'
+                            'calendar_icons', 'settings', 'jenis_sim',
+                            'parts_motor'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {

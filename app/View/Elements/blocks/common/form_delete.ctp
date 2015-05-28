@@ -44,6 +44,7 @@
 		));
 
 		echo $this->Form->button('Hapus Data', array(
+			// 'class' => 'btn btn-success',
 			'class' => 'btn btn-success btn-submit-form',
 			'data-action' => 'canceled-date'
 		));

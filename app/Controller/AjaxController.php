@@ -1973,5 +1973,151 @@ class AjaxController extends AppController {
 
 		$this->set(compact('first_name', 'last_name'));
 	}
+
+	function getBiayaTtuj( $action_type = false ){
+		$this->loadModel('Ttuj');
+
+		$conditions = array(
+            'Ttuj.is_draft' => 0,
+            'Ttuj.status' => 1,
+        );
+
+        switch ($action_type) {
+        	case 'biaya_ttuj':
+				$title = __('Detail Biaya TTUJ');
+        		$conditions['OR'] = array(
+	            	array(
+		            	'Ttuj.paid_uang_kuli_muat <>' => 'full',
+		            	'Ttuj.uang_kuli_muat <>' => 0,
+	            	),
+	            	array(
+		            	'Ttuj.paid_uang_kuli_bongkar <>' => 'full',
+		            	'Ttuj.uang_kuli_bongkar <>' => 0,
+	            	),
+	            	array(
+		            	'Ttuj.paid_asdp <>' => 'full',
+		            	'Ttuj.asdp <>' => 0,
+	            	),
+	            	array(
+		            	'Ttuj.paid_uang_kawal <>' => 'full',
+		            	'Ttuj.uang_kawal <>' => 0,
+	            	),
+	            	array(
+		            	'Ttuj.paid_uang_keamanan <>' => 'full',
+		            	'Ttuj.uang_keamanan <>' => 0,
+	            	),
+	        	);
+        		break;
+        	
+        	default:
+				$title = __('Detail Biaya Uang Jalan / Komisi');
+        		$conditions['OR'] = array(
+	            	array(
+		            	'Ttuj.paid_commission <>' => 'full',
+		            	'Ttuj.commission <>' => 0,
+	            	),
+	            	array(
+		            	'Ttuj.paid_uang_jalan <>' => 'full',
+	            	),
+	        	);
+        		break;
+        }
+
+        if(!empty($this->request->data)){
+            if(!empty($this->request->data['Ttuj']['nottuj'])){
+                $nottuj = urldecode($this->request->data['Ttuj']['nottuj']);
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
+            }
+            if(!empty($this->request->data['Ttuj']['nopol'])){
+                $nopol = urldecode($this->request->data['Ttuj']['nopol']);
+                $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
+            }
+            if(!empty($this->request->data['Driver']['name'])){
+                $name = urldecode($this->request->data['Driver']['name']);
+                $this->Ttuj->virtualFields['ttuj_driver_name'] = 'CASE WHEN DriverPenganti.name IS NULL THEN Ttuj.driver_name ELSE DriverPenganti.name END';
+                $conditions['Ttuj.ttuj_driver_name LIKE'] = '%'.$name.'%';
+            }
+            if(!empty($this->request->data['Customer']['name'])){
+                $name = urldecode($this->request->data['Customer']['name']);
+                $customers = $this->Ttuj->Customer->getData('list', array(
+                	'conditions' => array(
+                		'Customer.customer_name LIKE' => '%'.$name.'%',
+            		),
+            		'fields' => array(
+            			'Customer.id', 'Customer.id'
+        			),
+            	));
+                $conditions['Ttuj.customer_id'] = $customers;
+            }
+            if(!empty($this->request->data['City']['name'])){
+                $name = urldecode($this->request->data['City']['name']);
+                $conditions['Ttuj.to_city_name LIKE '] = '%'.$name.'%';
+            }
+            if(!empty($this->request->data['Ttuj']['date'])){
+                $date = urldecode($this->request->data['Ttuj']['date']);
+                $date = explode('-', $date);
+
+                if( !empty($date[0]) ) {
+                	$from_date = trim($date[0]);
+            		$from_date = $this->MkCommon->getDate($from_date);
+                	$conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $from_date;
+                }
+
+                if( !empty($date[1]) ) {
+                	$to_date = trim($date[1]);
+            		$to_date = $this->MkCommon->getDate($to_date);
+                	$conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $to_date;
+                }
+            }
+        }
+
+        $this->paginate = $this->Ttuj->getData('paginate', array(
+            'conditions' => $conditions,
+            'order' => array(
+                'Ttuj.created' => 'ASC',
+                'Ttuj.id' => 'ASC',
+            ),
+            'limit' => Configure::read('__Site.config_pagination'),
+        ));
+        $ttujs = $this->paginate('Ttuj');
+
+        if( !empty($ttujs) ) {
+        	$this->loadModel('Customer');
+        	$this->loadModel('Driver');
+        	$this->loadModel('TtujPaymentDetail');
+
+        	foreach ($ttujs as $key => $ttuj) {
+        		$customer_id = !empty($ttuj['Ttuj']['customer_id'])?$ttuj['Ttuj']['customer_id']:'';
+            	$driver_id = !empty($ttuj['Ttuj']['driver_id'])?$ttuj['Ttuj']['driver_id']:'';
+            	$ttuj_id = !empty($ttuj['Ttuj']['id'])?$ttuj['Ttuj']['id']:'';
+        		$ttuj = $this->Customer->getMerge($ttuj, $customer_id);
+            	$ttuj = $this->Driver->getMerge($ttuj, $driver_id);
+
+            	switch ($action_type) {
+		        	case 'biaya_ttuj':
+            				$ttuj['uang_kuli_muat_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kuli_muat');
+            				$ttuj['uang_kuli_bongkar_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kuli_bongkar');
+            				$ttuj['asdp_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'asdp');
+            				$ttuj['uang_keamanan_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_keamanan');
+            				$ttuj['uang_kawal_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kawal');
+		        		break;
+		        	
+		        	default:
+		            	$ttuj['uang_jalan_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan');
+		            	$ttuj['commission_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'commission');
+		        		break;
+		        }
+
+            	$ttujs[$key] = $ttuj;
+        	}
+        }
+
+        $data_action = 'browse-check-docs';
+
+		$this->set(compact(
+			'data_action', 'title', 'ttujs',
+			'action_type'
+		));
+	}
 }
 ?>
