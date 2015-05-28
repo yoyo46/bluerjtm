@@ -91,5 +91,26 @@ class KsuPayment extends AppModel {
         }
         return $result;
     }
+
+    function getKsuPayment($id){
+        $this->bindModel(array(
+            'belongsTo' => array(
+                'CustomerNoType' => array(
+                    'className' => 'CustomerNoType',
+                    'foreignKey' => 'customer_id',
+                )
+            )
+        ));
+        
+        return $this->find('first', array(
+            'conditions' => array(
+                'KsuPayment.id' => $id
+            ),
+            'contain' => array(
+                'CustomerNoType',
+                'KsuPaymentDetail'
+            )
+        ));
+    }
 }
 ?>

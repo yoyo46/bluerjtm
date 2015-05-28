@@ -2115,4 +2115,84 @@ class LkusController extends AppController {
 
         $this->redirect($this->referer());
     }
+
+    function detail_payment($id = false){
+        if( in_array('view_lkus', $this->allowModule) ) {
+            if(!empty($id)){
+                $this->loadModel('LkuPayment');
+                $LkuPayment = $this->LkuPayment->getLkuPayment($id);
+                
+                if(!empty($LkuPayment)){
+                    if(!empty($LkuPayment['LkuPaymentDetail'])){
+                        foreach ($LkuPayment['LkuPaymentDetail'] as $key => $value) {
+                            $lku = $this->LkuPayment->LkuPaymentDetail->Lku->getData('first', array(
+                                'conditions' => array(
+                                    'Lku.id' => $value['lku_id']
+                                ),
+                                'contain' => array(
+                                    'Ttuj'
+                                )
+                            ));
+
+                            if(!empty($lku)){
+                                $LkuPayment['LkuPaymentDetail'][$key]['Lku'] = $lku['Lku'];
+                            }
+                        }
+                    }
+
+                    $sub_module_title = __('Detail Pembayaran LKU');
+                    $this->set(compact('LkuPayment', 'sub_module_title'));
+                    $this->set('active_menu', 'lku_payments');
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Pembayaran LKU tidak ditemukan.'), 'error');
+                    $this->redirect($this->referer());
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('Pembayaran LKU tidak ditemukan.'), 'error');
+                $this->redirect($this->referer());
+            }
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
+
+    function detail_ksu_payment($id = false){
+        if( in_array('view_lkus', $this->allowModule) ) {
+            if(!empty($id)){
+                $this->loadModel('KsuPayment');
+                $KsuPayment = $this->KsuPayment->getKsuPayment($id);
+                
+                if(!empty($KsuPayment)){
+                    if(!empty($KsuPayment['KsuPaymentDetail'])){
+                        foreach ($KsuPayment['KsuPaymentDetail'] as $key => $value) {
+                            $ksu = $this->KsuPayment->KsuPaymentDetail->Ksu->getData('first', array(
+                                'conditions' => array(
+                                    'Ksu.id' => $value['ksu_id']
+                                ),
+                                'contain' => array(
+                                    'Ttuj'
+                                )
+                            ));
+
+                            if(!empty($ksu)){
+                                $KsuPayment['KsuPaymentDetail'][$key]['Ksu'] = $ksu['Ksu'];
+                            }
+                        }
+                    }
+
+                    $sub_module_title = __('Detail Pembayaran KSU');
+                    $this->set(compact('KsuPayment', 'sub_module_title'));
+                    $this->set('active_menu', 'ksu_payments');
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Pembayaran KSU tidak ditemukan.'), 'error');
+                    $this->redirect($this->referer());
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('Pembayaran KSU tidak ditemukan.'), 'error');
+                $this->redirect($this->referer());
+            }
+        } else {
+            $this->redirect($this->referer());
+        }
+    }
 }

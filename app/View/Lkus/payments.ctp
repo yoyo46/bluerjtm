@@ -94,6 +94,14 @@
                             //     ));
                             // }
 
+                            echo $this->Html->link('Info', array(
+                                'controller' => 'lkus',
+                                'action' => 'detail_payment',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-info btn-xs'
+                            ));
+
                             if(empty($value['LkuPayment']['is_void'])){
                                 echo $this->Html->link('Void', array(
                                     'controller' => 'lkus',

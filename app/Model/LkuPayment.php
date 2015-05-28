@@ -95,5 +95,26 @@ class LkuPayment extends AppModel {
         }
         return $result;
     }
+
+    function getLkuPayment($id){
+        $this->bindModel(array(
+            'belongsTo' => array(
+                'CustomerNoType' => array(
+                    'className' => 'CustomerNoType',
+                    'foreignKey' => 'customer_id',
+                )
+            )
+        ));
+        
+        return $this->find('first', array(
+            'conditions' => array(
+                'LkuPayment.id' => $id
+            ),
+            'contain' => array(
+                'CustomerNoType',
+                'LkuPaymentDetail'
+            )
+        ));
+    }
 }
 ?>
