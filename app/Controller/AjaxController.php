@@ -2019,6 +2019,18 @@ class AjaxController extends AppController {
 	            	array(
 		            	'Ttuj.paid_uang_jalan <>' => 'full',
 	            	),
+	            	array(
+		            	'Ttuj.paid_uang_jalan_2 <>' => 'full',
+		            	'Ttuj.uang_jalan_2 <>' => 0,
+	            	),
+	            	array(
+		            	'Ttuj.paid_uang_jalan_extra <>' => 'full',
+		            	'Ttuj.uang_jalan_extra <>' => 0,
+	            	),
+	            	array(
+		            	'Ttuj.paid_commission_extra <>' => 'full',
+		            	'Ttuj.commission_extra <>' => 0,
+	            	),
 	        	);
         		break;
         }
@@ -2105,6 +2117,9 @@ class AjaxController extends AppController {
 		        	default:
 		            	$ttuj['uang_jalan_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan');
 		            	$ttuj['commission_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'commission');
+		            	$ttuj['uang_jalan_2_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan_2');
+		            	$ttuj['uang_jalan_extra_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan_extra');
+		            	$ttuj['commission_extra_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'commission_extra');
 		        		break;
 		        }
 

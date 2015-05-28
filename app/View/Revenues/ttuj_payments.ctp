@@ -41,12 +41,13 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('TtujPayment.nodoc', __('No. Dokumen'), array(
                             'escape' => false
                         )));
-                        // echo $this->Html->tag('th', $this->Paginator->sort('TtujPayment.receiver_name', __('Dibayar Kepada'), array(
-                        //     'escape' => false
-                        // )));
-                        // echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.no_ttuj', __('No TTUJ'), array(
-                        //     'escape' => false
-                        // )));
+
+                        if( $action_type == 'biaya_ttuj' ) {
+                            echo $this->Html->tag('th', $this->Paginator->sort('TtujPayment.receiver_name', __('Dibayar Kepada'), array(
+                                'escape' => false
+                            )));
+                        }
+
                         echo $this->Html->tag('th', $this->Paginator->sort('TtujPayment.total_payment', __('Total Dibayar'), array(
                             'escape' => false,
                             'class' => 'text-center'
@@ -69,58 +70,66 @@
                             $id = $value['TtujPayment']['id'];
             ?>
             <tr>
-                <td><?php echo $value['TtujPayment']['nodoc'];?></td>
-                <!-- <td><?php echo $value['TtujPayment']['receiver_name'];?></td>
-                <td><?php echo !empty($value['Ttuj']['no_ttuj'])?$value['Ttuj']['no_ttuj']:false;?></td> -->
-                <td align="right"><?php echo $this->Number->currency($value['TtujPayment']['total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
-                <td class="text-center"><?php echo $this->Common->customDate($value['TtujPayment']['date_payment']);?></td>
-                <td>
-                    <?php 
+                <?php 
+                        echo $this->Html->tag('td', $value['TtujPayment']['nodoc']);
+
+                        if( $action_type == 'biaya_ttuj' ) {
+                            echo $this->Html->tag('td', $value['TtujPayment']['receiver_name']);
+                        }
+
+                        echo $this->Html->tag('td', $this->Number->currency($value['TtujPayment']['total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                            'class' => 'text-right'
+                        ));
+
+                        echo $this->Html->tag('td', $this->Common->customDate($value['TtujPayment']['date_payment']), array(
+                            'class' => 'text-center'
+                        ));
+
                         if(empty($value['TtujPayment']['is_canceled'])){
                             if($value['TtujPayment']['status']){
-                                echo $this->Html->tag('span', 'aktif', array(
+                                $statusDoc = $this->Html->tag('span', 'aktif', array(
                                     'class' => 'label label-success'
                                 ));
                             }else{
-                                echo $this->Html->tag('span', 'non-aktif', array(
+                                $statusDoc = $this->Html->tag('span', 'non-aktif', array(
                                     'class' => 'label label-danger'
                                 ));
                             }
                         }else{
-                            echo $this->Html->tag('span', __('Void'), array(
+                            $statusDoc = $this->Html->tag('span', __('Void'), array(
                                 'class' => 'label label-danger'
                             ));
                             if(!empty($value['TtujPayment']['canceled_date'])){
-                                echo '<br>'.$this->Common->customDate($value['TtujPayment']['canceled_date'], 'd/m/Y');
+                                $statusDoc .= '<br>'.$this->Common->customDate($value['TtujPayment']['canceled_date'], 'd/m/Y');
                             }
                         }
-                    ?>
-                </td>
-                <td class="action">
-                    <?php 
-                            echo $this->Html->link('Detail', array(
+                        echo $this->Html->tag('td', $statusDoc);
+
+                        $actionDoc = $this->Html->link('Detail', array(
+                            'controller' => 'revenues',
+                            'action' => 'detail_ttuj_payment',
+                            $id,
+                            $action_type,
+                        ), array(
+                            'class' => 'btn btn-info btn-xs'
+                        ));
+                        
+                        if(empty($value['TtujPayment']['is_canceled'])){
+                            $actionDoc .= $this->Html->link(__('Void'), array(
                                 'controller' => 'revenues',
-                                'action' => 'detail_ttuj_payment',
+                                'action' => 'ttuj_payment_delete',
                                 $id,
                                 $action_type,
                             ), array(
-                                'class' => 'btn btn-info btn-xs'
+                                'class' => 'btn btn-danger btn-xs ajaxModal',
+                                'data-action' => 'cancel_invoice',
+                                'title' => __('Void Pembayaran Uang Jalan')
                             ));
-                            
-                            if(empty($value['TtujPayment']['is_canceled'])){
-                                echo $this->Html->link(__('Void'), array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ttuj_payment_delete',
-                                    $id,
-                                    $action_type,
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs ajaxModal',
-                                    'data-action' => 'cancel_invoice',
-                                    'title' => __('Void Pembayaran Uang Jalan')
-                                ));
-                            }
-                    ?>
-                </td>
+                        }
+                        echo $this->Html->tag('td', $actionDoc, array(
+                            'class' => 'action',
+                        ));
+                ?>
             </tr>
             <?php
                         }

@@ -117,7 +117,8 @@
                     echo $this->Html->tag('th', __('Tujuan'));
                     echo $this->Html->tag('th', __('Supir'));
                     echo $this->Html->tag('th', __('Jenis'), array(
-                        'width' => '5%',
+                        'width' => '15%',
+                        'class' => 'text-center',
                     ));
                     echo $this->Html->tag('th', __('Total'));
                     echo $this->Html->tag('th', __('Sisa'), array(
@@ -175,10 +176,31 @@
                                         'idx' => $key,
                                     ));
                                 }
+                                if( !empty($ttuj['Ttuj']['uang_jalan_2']) && $ttuj['Ttuj']['paid_uang_jalan_2'] != 'full' ) {
+                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                        'ttuj' => $ttuj,
+                                        'data_type' => 'uang_jalan_2',
+                                        'idx' => $key,
+                                    ));
+                                }
+                                if( !empty($ttuj['Ttuj']['uang_jalan_extra']) && $ttuj['Ttuj']['paid_uang_jalan_extra'] != 'full' ) {
+                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                        'ttuj' => $ttuj,
+                                        'data_type' => 'uang_jalan_extra',
+                                        'idx' => $key,
+                                    ));
+                                }
                                 if( !empty($ttuj['Ttuj']['commission']) && $ttuj['Ttuj']['paid_commission'] != 'full' ) {
                                     echo $this->element('blocks/ajax/biaya_uang_jalan', array(
                                         'ttuj' => $ttuj,
                                         'data_type' => 'commission',
+                                        'idx' => $key,
+                                    ));
+                                }
+                                if( !empty($ttuj['Ttuj']['commission_extra']) && $ttuj['Ttuj']['paid_commission_extra'] != 'full' ) {
+                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                        'ttuj' => $ttuj,
+                                        'data_type' => 'commission_extra',
                                         'idx' => $key,
                                     ));
                                 }

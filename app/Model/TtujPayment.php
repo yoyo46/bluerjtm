@@ -13,6 +13,10 @@ class TtujPayment extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'No. Dokumen harap diisi'
             ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'No. Dokumen telah terdaftar',
+            ),
         ),
         'total_payment' => array(
             'notempty' => array(

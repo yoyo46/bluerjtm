@@ -314,8 +314,9 @@ class Ttuj extends AppModel {
             switch ($data_action) {
                 case 'commission':
                     $commission = !empty($data_ttuj['Ttuj']['commission'])?$data_ttuj['Ttuj']['commission']:0;
-                    $commission_extra = !empty($data_ttuj['Ttuj']['commission_extra'])?$data_ttuj['Ttuj']['commission_extra']:0;
-                    $total = $commission + $commission_extra;
+                    // $commission_extra = !empty($data_ttuj['Ttuj']['commission_extra'])?$data_ttuj['Ttuj']['commission_extra']:0;
+                    // $total = $commission + $commission_extra;
+                    $total = $commission;
                     break;
                     
                 case 'uang_kuli_muat':
@@ -337,12 +338,25 @@ class Ttuj extends AppModel {
                 case 'uang_keamanan':
                     $total = !empty($data_ttuj['Ttuj']['uang_keamanan'])?$data_ttuj['Ttuj']['uang_keamanan']:0;
                     break;
+                    
+                case 'uang_jalan_2':
+                    $total = !empty($data_ttuj['Ttuj']['uang_jalan_2'])?$data_ttuj['Ttuj']['uang_jalan_2']:0;
+                    break;
+                    
+                case 'uang_jalan_extra':
+                    $total = !empty($data_ttuj['Ttuj']['uang_jalan_extra'])?$data_ttuj['Ttuj']['uang_jalan_extra']:0;
+                    break;
+                    
+                case 'commission_extra':
+                    $total = !empty($data_ttuj['Ttuj']['commission_extra'])?$data_ttuj['Ttuj']['commission_extra']:0;
+                    break;
                 
                 default:
                     $uang_jalan_1 = !empty($data_ttuj['Ttuj']['uang_jalan_1'])?$data_ttuj['Ttuj']['uang_jalan_1']:0;
-                    $uang_jalan_2 = !empty($data_ttuj['Ttuj']['uang_jalan_2'])?$data_ttuj['Ttuj']['uang_jalan_2']:0;
-                    $uang_jalan_extra = !empty($data_ttuj['Ttuj']['uang_jalan_extra'])?$data_ttuj['Ttuj']['uang_jalan_extra']:0;
-                    $total = $uang_jalan_1 + $uang_jalan_2 + $uang_jalan_extra;
+                    // $uang_jalan_2 = !empty($data_ttuj['Ttuj']['uang_jalan_2'])?$data_ttuj['Ttuj']['uang_jalan_2']:0;
+                    // $uang_jalan_extra = !empty($data_ttuj['Ttuj']['uang_jalan_extra'])?$data_ttuj['Ttuj']['uang_jalan_extra']:0;
+                    // $total = $uang_jalan_1 + $uang_jalan_2 + $uang_jalan_extra;
+                    $total = $uang_jalan_1;
                     break;
             }
         }

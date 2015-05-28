@@ -35,11 +35,14 @@
     			}
 		?>
 	</td>
-    <td>
+    <td class="text-center">
     	<?php
                 switch ($data_type) {
                     case 'asdp':
                         echo __('Uang Penyebrangan');
+                        break;
+                    case 'uang_jalan':
+                        echo __('Uang Jalan 1');
                         break;
                     
                     default:

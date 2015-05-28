@@ -5,7 +5,7 @@
 				break;
 			
 			default:
-				$titleCrumb = __('Pembayaran Uang Jalan');
+				$titleCrumb = __('Pembayaran Uang Jalan/Komisi');
 				break;
 		}
 
