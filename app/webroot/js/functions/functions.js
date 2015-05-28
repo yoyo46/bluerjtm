@@ -1917,7 +1917,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
                         pickData();
                         daterangepicker( $('#myModal .modal-body .date-range') );
-                    } else if( type_action == 'browse-invoice' || type_action == 'getTtujCustomerInfo' ) {
+                    } else if( type_action == 'browse-invoice' || type_action == 'getTtujCustomerInfo' || type_action == 'getTtujCustomerInfoKsu' ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
                         pickData();
                         datepicker($('#myModal .modal-body .custom-date'));

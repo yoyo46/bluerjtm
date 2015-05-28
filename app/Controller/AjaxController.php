@@ -235,10 +235,10 @@ class AjaxController extends AppController {
 		if(!empty($ttuj_id)){
 			if(!empty($this->request->data['Lku']['date_from']) || !empty($this->request->data['Lku']['date_to'])){
 				if(!empty($this->request->data['Lku']['date_from'])){
-					$lku_condition['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') >='] = $this->request->data['Lku']['date_from'];
+					$lku_condition['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') >='] = $this->MkCommon->getDate($this->request->data['Lku']['date_from']);
 				}
 				if(!empty($this->request->data['Lku']['date_to'])){
-					$lku_condition['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') <='] = $this->request->data['Lku']['date_to'];
+					$lku_condition['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') <='] = $this->MkCommon->getDate($this->request->data['Lku']['date_to']);
 				}
 			}
 
@@ -300,10 +300,10 @@ class AjaxController extends AppController {
 		if(!empty($ttuj_id)){
 			if(!empty($this->request->data['Ksu']['date_from']) || !empty($this->request->data['Ksu']['date_to'])){
 				if(!empty($this->request->data['Ksu']['date_from'])){
-					$ksu_condition['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') >='] = $this->request->data['Ksu']['date_from'];
+					$ksu_condition['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') >='] = $this->MkCommon->getDate($this->request->data['Ksu']['date_from']);
 				}
 				if(!empty($this->request->data['Ksu']['date_to'])){
-					$ksu_condition['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') <='] = $this->request->data['Ksu']['date_to'];
+					$ksu_condition['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') <='] = $this->MkCommon->getDate($this->request->data['Ksu']['date_to']);
 				}
 			}
 
