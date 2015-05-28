@@ -82,7 +82,11 @@
                         }
 
                         if(!empty($value['Lku']['paid'])){
-                            echo $this->Html->tag('td', '<span class="label label-success">Sudah di bayar</span>');
+                            if(!empty($value['Lku']['complete_paid'])){
+                                echo $this->Html->tag('td', '<span class="label label-success">Pembayaran Lunas</span>');
+                            }else{
+                                echo $this->Html->tag('td', '<span class="label label-success">Dibayar Sebagian</span>');
+                            }
                         } else{
                             echo $this->Html->tag('td', '<span class="label label-danger">Belum di bayar</span>');
                         }
@@ -140,7 +144,7 @@
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '5'
+                            'colspan' => '8'
                         )));
                     }
             ?>

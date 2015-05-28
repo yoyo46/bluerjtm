@@ -1,6 +1,9 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
-        echo $this->element('blocks/lkus/search_index_payment');
+        echo $this->element('blocks/lkus/search_index_payment', array(
+            'model' => 'KsuPayment',
+            'action' => 'ksu_payments'
+        ));
 ?>
 <div class="box box-success">
     <div class="box-header">
@@ -43,6 +46,10 @@
                             'escape' => false
                         )));
 
+                        echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.grandtotal', __('Total Pembayaran'), array(
+                            'escape' => false
+                        )));
+
                         echo $this->Html->tag('th', $this->Paginator->sort('KsuPayment.paid', __('Status Pembayaran'), array(
                             'escape' => false
                         )));
@@ -65,6 +72,7 @@
                 <td><?php echo $value['KsuPayment']['no_doc'];?></td>
                 <?php echo $this->Html->tag('td', date('d M Y', strtotime($value['KsuPayment']['tgl_bayar'])));?>
                 <td><?php echo $value['Customer']['name'];?></td>
+                <td><?php echo $this->Number->currency($value['KsuPayment']['grandtotal'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <?php 
                         if(!empty($value['KsuPayment']['is_void'])){
                             echo $this->Html->tag('td', '<span class="label label-danger">Void</span>');
@@ -106,7 +114,7 @@
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '6'
+                            'colspan' => '7'
                         )));
                     }
             ?>

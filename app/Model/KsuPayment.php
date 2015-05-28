@@ -51,7 +51,7 @@ class KsuPayment extends AppModel {
         )
     );
 
-	function getData($find, $options = false){
+	function getData($find, $options = false, $is_merge = true){
         $default_options = array(
             'conditions'=> array(
                 'KsuPayment.status' => 1,
@@ -64,7 +64,7 @@ class KsuPayment extends AppModel {
             'contain' => array()
         );
 
-        if(!empty($options)){
+        if(!empty($options) && $is_merge){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
@@ -80,6 +80,8 @@ class KsuPayment extends AppModel {
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
             }
+        }else{
+            $default_options = $options;
         }
 
         if( $find == 'paginate' ) {

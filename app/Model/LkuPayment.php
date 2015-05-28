@@ -55,7 +55,7 @@ class LkuPayment extends AppModel {
         )
     );
 
-	function getData($find, $options = false){
+	function getData($find, $options = false, $is_merge = true){
         $default_options = array(
             'conditions'=> array(
                 'LkuPayment.status' => 1,
@@ -68,7 +68,7 @@ class LkuPayment extends AppModel {
             'contain' => array()
         );
 
-        if(!empty($options)){
+        if(!empty($options) && $is_merge){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
@@ -84,6 +84,8 @@ class LkuPayment extends AppModel {
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
             }
+        }else{
+            $default_options = $options;
         }
 
         if( $find == 'paginate' ) {

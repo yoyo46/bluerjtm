@@ -7,11 +7,14 @@
     </div>
     <div class="box-body">
         <?php 
-            echo $this->Form->create('LkuPayment', array(
+            $model = (isset($model) && !empty($model)) ? $model : 'LkuPayment';
+            $action = (isset($action) && !empty($action)) ? $action : 'payments';
+            
+            echo $this->Form->create($model, array(
                 'url'=> $this->Html->url( array(
                     'controller' => 'lkus',
                     'action' => 'search',
-                    'payments'
+                    $action
                 )), 
                 'role' => 'form',
                 'inputDefaults' => array('div' => false),

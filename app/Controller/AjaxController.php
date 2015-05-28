@@ -277,10 +277,12 @@ class AjaxController extends AppController {
 	function getTtujCustomerInfoKsu($customer_id = false){
 		$this->loadModel('Ttuj');
 		$this->loadModel('Ksu');
+		$default_conditions = array(
+			'Ttuj.customer_id' => $customer_id
+		);
+
 		$ttuj_id = $this->Ttuj->getData('list', array(
-			'conditions' => array(
-				'Ttuj.customer_id' => $customer_id
-			),
+			'conditions' => $default_conditions,
 			'group' => array(
 				'Ttuj.customer_id'
 			),
@@ -289,28 +291,52 @@ class AjaxController extends AppController {
 			)
 		));
 
+		$ksu_condition = array(
+			'Ksu.ttuj_id' => $ttuj_id,
+			'Ksu.status' => 1,
+			'Ksu.complete_paid' => 0,
+			'Ksu.kekurangan_atpm' => 0
+		);
 		if(!empty($ttuj_id)){
+			if(!empty($this->request->data['Ksu']['date_from']) || !empty($this->request->data['Ksu']['date_to'])){
+				if(!empty($this->request->data['Ksu']['date_from'])){
+					$ksu_condition['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') >='] = $this->request->data['Ksu']['date_from'];
+				}
+				if(!empty($this->request->data['Ksu']['date_to'])){
+					$ksu_condition['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') <='] = $this->request->data['Ksu']['date_to'];
+				}
+			}
+
 			$ksus = $this->Ksu->getData('all', array(
-				'conditions' => array(
-					'Ksu.ttuj_id' => $ttuj_id,
-					'Ksu.kekurangan_atpm' => 0,
-					'Ksu.paid' => 0
-				),
+				'conditions' => $ksu_condition,
 				'contain' => array(
 					'Ttuj'
 				)
 			));
 		}
 
-		$arr = array();
 		if(!empty($ksus)){
+			$this->loadModel('KsuPaymentDetail');
 			foreach ($ksus as $key => $value) {
-				$arr[$value['Ksu']['id']] = sprintf('%s (%s)', date('d F Y', strtotime($value['Ttuj']['ttuj_date'])), $value['Ttuj']['no_ttuj']);
+				$ksu_has_paid = $this->KsuPaymentDetail->getData('first', array(
+					'conditions' => array(
+						'KsuPaymentDetail.ksu_id' => $value['Ksu']['id'],
+						'KsuPaymentDetail.status' => 1
+					),
+					'fields' => array(
+						'SUM(KsuPaymentDetail.total_biaya_klaim) as ksu_has_paid'
+					)
+				));
+				
+				$ksus[$key]['ksu_has_paid'] = $ksu_has_paid[0]['ksu_has_paid'];
 			}
 		}
-		$ksus = $arr;
 		
 		$this->set('ksus', $ksus);
+		$data_change = 'browse-invoice';
+		$data_action = 'getTtujCustomerInfoKsu';
+		$title = 'Pembayaran KSU Customer';
+		$this->set(compact('customer_id', 'data_change', 'data_action', 'title'));
 	}
 
 	function getTtujInfoLku($lku_id){

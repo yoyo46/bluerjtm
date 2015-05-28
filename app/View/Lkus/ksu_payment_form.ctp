@@ -1,7 +1,7 @@
 <?php
 		$this->Html->addCrumb(__('Pembayaran KSU'), array(
 			'controller' => 'lkus',
-			'action' => 'payments'
+			'action' => 'ksu_payments'
 		));
 		$this->Html->addCrumb($sub_module_title);
 
@@ -54,21 +54,71 @@
 									));
 							?>
 						</div>
+				        <div class="form-group">
+				        	<?php 
+									echo $this->Form->input('description',array(
+										'type' => 'textarea',
+										'label'=> __('Keterangan'), 
+										'class'=>'form-control',
+										'required' => false,
+										'placeholder' => __('Keterangan'),
+									));
+							?>
+				        </div>
+				        <div class="form-group">
+				        	<?php 
+				        			$attrBrowse = array(
+			                            'class' => 'ajaxModal visible-xs',
+			                            'escape' => false,
+			                            'title' => __('Pembayaran KSU Customer'),
+			                            'data-action' => 'browse-invoice',
+			                            'data-change' => 'getTtujCustomerInfoKsu',
+			                            'url' => $this->Html->url( array(
+				                            'controller'=> 'ajax', 
+				                            'action' => 'getTtujCustomerInfoKsu',
+				                        ))
+			                        );
+									$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+			                        echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Ambil Pembayaran'), 'javascript:', $attrBrowse);
+			                ?>
+				        </div>
 				    </div>
 				</div>
 			</div>
-			<div class="col-sm-12" id="detail-customer-info">
-				<?php 
-					if(!empty($this->request->data['KsuPaymentDetail'])){
-						echo $this->element('blocks/lkus/ksus_info_payment');
-					}
-				?>
+		</div>
+		<div class="invoice-info-detail <?php echo (!empty($this->request->data) && !empty($ksus)) ? '' : 'hide';?>">
+			<div class="box box-primary">
+			    <div class="box-header">
+			        <h3 class="box-title"><?php echo __('Detail Info Pembayaran KSU'); ?></h3>
+			    </div>
+			    <div class="box-body table-responsive">
+			        <table class="table table-hover">
+			        	<thead>
+			        		<tr>
+			        			<th width="20%"><?php echo __('Tgl TTUJ');?></th>
+				                <th><?php echo __('Nopol Truk');?></th>
+				                <th><?php echo __('Dari');?></th>
+				                <th><?php echo __('Tujuan');?></th>
+				                <th><?php echo __('Tanggal KSU');?></th>
+				                <th><?php echo __('Total');?></th>
+				                <th><?php echo __('Telah Dibayar');?></th>
+				                <th><?php echo __('Bayar');?></th>
+			                    <th class="text-center"><?php echo __('Action');?></th>
+			        		</tr>
+			        	</thead>
+			        	<tbody class="ttuj-info-table">
+			                <?php
+					    		echo $this->element('blocks/lkus/info_ksu_payment_detail');
+					    	?>
+			        	</tbody>
+			    	</table>
+			    </div>
 			</div>
 		</div>
 		<div class="box-footer text-center action">
 			<?php
 		    		echo $this->Html->link(__('Kembali'), array(
-						'action' => 'ksu_payments', 
+						'action' => 'payments', 
 					), array(
 						'class'=> 'btn btn-default',
 					));

@@ -34,10 +34,10 @@
 	                <dd>
 	                	<?php 
 	                		if(empty($Ksu['Ksu']['kekurangan_atpm'])){
-	                            if(!empty($Ksu['Ksu']['paid'])){
-	                                echo $this->Html->tag('td', '<span class="label label-success">Sudah di bayar</span>');
-	                            } else{
-	                                echo $this->Html->tag('td', '<span class="label label-danger">Belum di bayar</span>');
+	                            if(!empty($Ksu['Ksu']['complete_paid'])){
+	                                echo $this->Html->tag('td', '<span class="label label-success">Pembayaran Lunas</span>');
+	                            }else{
+	                                echo $this->Html->tag('td', '<span class="label label-success">Dibayar Sebagian</span>');
 	                            }
 	                        }else{
 	                            echo $this->Html->tag('td', '<span class="label label-success">Dibayar Main Dealer</span>');

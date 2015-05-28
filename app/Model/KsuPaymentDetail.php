@@ -40,6 +40,7 @@ class KsuPaymentDetail extends AppModel {
             'conditions'=> array(),
             'order'=> array(),
             'fields' => array(),
+            'contain' => array()
         );
 
         if(!empty($options)){

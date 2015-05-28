@@ -1597,6 +1597,7 @@ var choose_item_info = function(){
 
                 price_perlengkapan();
                 input_price(self.parents('tr').find('td.qty-perlengkapan .input_price'));
+                getTotalKSU(self.parents('tr').find('td.qty-perlengkapan .input_price'));
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
@@ -1863,11 +1864,11 @@ var ajaxModal = function ( obj, prettyPhoto ) {
             type_action = vthis.attr('data-action');
 
             if(type_action == 'browse-invoice'){
-                if(typeof $('#customer-val, #getTtujCustomerInfo').val() == 'undefined' || $('#customer-val, #getTtujCustomerInfo').val() == ''){
+                if(typeof $('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu').val() == 'undefined' || $('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu').val() == ''){
                     goAjax = false;
                     alert('Mohon pilih customer terlebih dahulu');
                 }else{
-                    url += '/'+$('#customer-val, #getTtujCustomerInfo').val()+'/not-list'
+                    url += '/'+$('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu').val()+'/not-list'
                 }
             }
         }
@@ -2892,6 +2893,7 @@ $(function() {
                     $('#ttuj-info').html($(response).filter('#form-ttuj-main').html());
                     $('#detail-perlengkapan').html($(response).filter('#form-ttuj-detail').html());
 
+                    price_perlengkapan();
                     add_custom_field();
                     input_number();
                     input_price();
@@ -2986,20 +2988,20 @@ $(function() {
         var self = $(this);
         var val = self.val();
 
-        $.ajax({
-            url: '/ajax/getTtujCustomerInfoKsu/'+val+'/',
-            type: 'POST',
-            success: function(response, status) {
-                $('#detail-customer-info').html(response);
-                add_custom_field();
-                choose_item_info();
-                delete_custom_field();
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
-                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                return false;
-            }
-        });
+        // $.ajax({
+        //     url: '/ajax/getTtujCustomerInfoKsu/'+val+'/',
+        //     type: 'POST',
+        //     success: function(response, status) {
+        //         $('#detail-customer-info').html(response);
+        //         add_custom_field();
+        //         choose_item_info();
+        //         delete_custom_field();
+        //     },
+        //     error: function(XMLHttpRequest, textStatus, errorThrown) {
+        //         alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+        //         return false;
+        //     }
+        // });
     });
 
     $('.popover-hover-bottom').popover({

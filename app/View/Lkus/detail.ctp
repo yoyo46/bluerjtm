@@ -34,7 +34,11 @@
 	                <dd>
 	                	<?php 
 	                		if(!empty($Lku['Lku']['paid'])){
-	                            echo $this->Html->tag('td', '<span class="label label-success">Sudah di bayar</span>');
+	                            if(!empty($Lku['Lku']['complete_paid'])){
+	                                echo $this->Html->tag('td', '<span class="label label-success">Pembayaran Lunas</span>');
+	                            }else{
+	                                echo $this->Html->tag('td', '<span class="label label-success">Dibayar Sebagian</span>');
+	                            }
 	                        } else{
 	                            echo $this->Html->tag('td', '<span class="label label-danger">Belum di bayar</span>');
 	                        }
