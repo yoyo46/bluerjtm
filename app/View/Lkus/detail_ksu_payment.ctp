@@ -31,14 +31,26 @@
 				<th><?php echo __('Total Pembayaran');?></th>
 				<td><?php echo $this->Number->currency($KsuPayment['KsuPayment']['grandtotal'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
 			</tr>
+			<?php
+				if(!empty($KsuPayment['KsuPayment']['pph'])){
+			?>
 			<tr>
 				<th><?php echo __('PPH');?></th>
 				<td><?php echo $KsuPayment['KsuPayment']['pph'].'%';?></td>
 			</tr>
+			<?php
+				}
+			?>
+			<?php
+				if(!empty($KsuPayment['KsuPayment']['ppn'])){
+			?>
 			<tr>
 				<th><?php echo __('PPN');?></th>
 				<td><?php echo $KsuPayment['KsuPayment']['ppn'].'%';?></td>
 			</tr>
+			<?php
+				}
+			?>
 		</table>
 	</div>
 </div>

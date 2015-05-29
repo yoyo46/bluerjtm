@@ -739,31 +739,28 @@ class LkusController extends AppController {
                         'Lku.id' => $value['lku_id'],
                         'Lku.status' => 1,
                         'Lku.complete_paid' => 0
-                        // 'Lku.type_lku' => $type_lku
                     );
 
-                    $lkus = $this->Lku->getData('all', array(
+                    $lku_data = $this->Lku->getData('first', array(
                         'conditions' => $lku_condition,
                         'contain' => array(
                             'Ttuj'
                         )
                     ));
 
-                    if(!empty($lkus)){
-                        $this->loadModel('LkuPaymentDetail');
-                        foreach ($lkus as $key => $value) {
-                            $lku_has_paid = $this->LkuPaymentDetail->getData('first', array(
-                                'conditions' => array(
-                                    'LkuPaymentDetail.lku_id' => $value['Lku']['id'],
-                                    'LkuPaymentDetail.status' => 1
-                                ),
-                                'fields' => array(
-                                    'SUM(LkuPaymentDetail.total_biaya_klaim) as lku_has_paid'
-                                )
-                            ));
+                    if(!empty($lku_data)){
+                        $lku_has_paid = $this->LkuPayment->LkuPaymentDetail->getData('first', array(
+                            'conditions' => array(
+                                'LkuPaymentDetail.lku_id' => $lku_data['Lku']['id'],
+                                'LkuPaymentDetail.status' => 1
+                            ),
+                            'fields' => array(
+                                'SUM(LkuPaymentDetail.total_biaya_klaim) as lku_has_paid'
+                            )
+                        ));
 
-                             $lkus[$key]['lku_has_paid'] = $lku_has_paid[0]['lku_has_paid'];
-                        }
+                        $lkus[$key]['lku_has_paid'] = $lku_has_paid[0]['lku_has_paid'];
+                        $lkus[$key] = array_merge($lkus[$key], $lku_data);
                     }
                 }
             }
@@ -1859,28 +1856,26 @@ class LkusController extends AppController {
                         'Ksu.kekurangan_atpm' => 0
                     );
 
-                    $ksus = $this->Ksu->getData('all', array(
+                    $ksu_data = $this->Ksu->getData('first', array(
                         'conditions' => $ksu_condition,
                         'contain' => array(
                             'Ttuj'
                         )
                     ));
 
-                    if(!empty($ksus)){
-                        $this->loadModel('KsuPaymentDetail');
-                        foreach ($ksus as $key => $value) {
-                            $ksu_has_paid = $this->KsuPaymentDetail->getData('first', array(
-                                'conditions' => array(
-                                    'KsuPaymentDetail.ksu_id' => $value['Ksu']['id'],
-                                    'KsuPaymentDetail.status' => 1
-                                ),
-                                'fields' => array(
-                                    'SUM(KsuPaymentDetail.total_biaya_klaim) as ksu_has_paid'
-                                )
-                            ));
+                    if(!empty($ksu_data)){
+                        $ksu_has_paid = $this->KsuPayment->KsuPaymentDetail->getData('first', array(
+                            'conditions' => array(
+                                'KsuPaymentDetail.ksu_id' => $ksu_data['Ksu']['id'],
+                                'KsuPaymentDetail.status' => 1
+                            ),
+                            'fields' => array(
+                                'SUM(KsuPaymentDetail.total_biaya_klaim) as ksu_has_paid'
+                            )
+                        ));
 
-                             $ksus[$key]['ksu_has_paid'] = $ksu_has_paid[0]['ksu_has_paid'];
-                        }
+                        $ksus[$key]['ksu_has_paid'] = $ksu_has_paid[0]['ksu_has_paid'];
+                        $ksus[$key] = array_merge($ksus[$key], $ksu_data);
                     }
                 }
             }

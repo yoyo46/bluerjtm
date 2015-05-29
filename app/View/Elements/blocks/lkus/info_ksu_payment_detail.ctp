@@ -107,10 +107,14 @@
 ?>
 <tr id="field-grand-total-ttuj">
     <td align="right" colspan="7"><?php echo __('Grand Total')?></td>
-    <td align="right" id="grand-total-payment"><?php printf('%s %s', Configure::read('__Site.config_currency_code'), $total); ?></td>
+    <td align="right" id="grand-total-payment">
+        <?php 
+            echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
+        ?>
+    </td>
     <td>&nbsp;</td>
 </tr>
-<tr class="additional-input-invoice" id="ppn-grand-total-invoice">
+<!-- <tr class="additional-input-invoice" id="ppn-grand-total-invoice">
     <td align="right" colspan="7" class="relative">
         <?php 
             echo $this->Form->input('KsuPayment.ppn', array(
@@ -167,4 +171,4 @@
         ?>
     </td>
     <td>&nbsp;</td>
-</tr>
+</tr> -->
