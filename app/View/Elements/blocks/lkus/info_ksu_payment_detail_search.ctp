@@ -146,6 +146,7 @@
                             $price_pay = $ksu['total_price'] - $value['ksu_has_paid'];
                         }else{
                             echo '-';
+                            $price_pay = $ksu['total_price'];
                         }
                     ?>
                 </td>

@@ -146,6 +146,7 @@
                             $price_pay = $lku['total_price'] - $value['lku_has_paid'];
                         }else{
                             echo '-';
+                            $price_pay = $lku['total_price'];
                         }
                     ?>
                 </td>
