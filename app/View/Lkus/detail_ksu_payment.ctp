@@ -62,9 +62,9 @@
 		<table class="table table-hover">
 			<thead class="header-KsuPayment-print">
 				<tr>
-					<th class="text-center"><?php echo __('No KSU');?></th>
-					<th class="text-center"><?php echo __('Tgl KSU');?></th>
-					<th class="text-right"><?php echo __('Jumlah Pembayaran.');?></th>
+					<th width="30%" class="text-center"><?php echo __('No KSU');?></th>
+					<th width="30%" class="text-center"><?php echo __('Tgl KSU');?></th>
+					<th width="30%" class="text-right"><?php echo __('Jumlah Pembayaran.');?></th>
 				</tr>
 			</thead>
 			<tbody>

@@ -1994,7 +1994,6 @@ class LkusController extends AppController {
                             $this->LkuPayment->LkuPaymentDetail->Lku->id = $value['lku_id'];
                             $this->LkuPayment->LkuPaymentDetail->Lku->set(array(
                                 'complete_paid' => 0,
-                                'paid' => 0,
                             ));
                             $this->LkuPayment->LkuPaymentDetail->Lku->save();
                         }
@@ -2068,7 +2067,6 @@ class LkusController extends AppController {
                             $this->KsuPayment->KsuPaymentDetail->Ksu->id = $value['ksu_id'];
                             $this->KsuPayment->KsuPaymentDetail->Ksu->set(array(
                                 'complete_paid' => 0,
-                                'paid' => 0,
                             ));
                             $this->KsuPayment->KsuPaymentDetail->Ksu->save();
                         }
