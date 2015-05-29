@@ -8,31 +8,41 @@
                         ));
                 ?>
             </div>
-            <div class="box-body">
-	        	<dl class="dl-horizontal">
-	                <dt><?php echo __('No Dokumen')?></dt>
-	                <dd><?php echo $Lku['Lku']['no_doc'];?></dd>
-	                <dt><?php echo __('Ttuj')?></dt>
-	                <dd><?php echo $Lku['Ttuj']['no_ttuj'];?></dd>
-	                <dt><?php echo __('Tanggal LKU')?></dt>
-	                <dd><?php echo $this->Common->customDate($Lku['Lku']['tgl_lku']);?></dd>
-	                <dt><?php echo __('Total Klaim')?></dt>
-	                <dd><?php echo !empty($Lku['Lku']['total_klaim'])?$Lku['Lku']['total_klaim']:'-';?></dd>
-	                <dt><?php echo __('Total Pembayaran')?></dt>
-	                <dd><?php echo $this->Number->currency($Lku['Lku']['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></dd>
-	                <dt><?php echo __('Status')?></dt>
-	                <dd>
-	                	<?php 
+            <div class="box-body table-responsive">
+	        	<table class="table table-hover">
+	        		<tr>
+						<th width="30%"><?php echo __('No. Dokumen');?></th>
+						<td><?php echo $Lku['Lku']['no_doc'];?></td>
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Ttuj');?></th>
+						<td><?php echo $Lku['Ttuj']['no_ttuj'];?></td>
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Tanggal LKU');?></th>
+						<td><?php echo date('Y/m/d', strtotime($Lku['Lku']['tgl_lku']));?></td>
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Total Klaim');?></th>
+						<td><?php echo !empty($Lku['Lku']['total_klaim'])?$Lku['Lku']['total_klaim']:'-';?></td>
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Total Pembayaran');?></th>
+						<td><?php echo $this->Number->currency($Lku['Lku']['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Status');?></th>
+						<?php 
 	                		if(!empty($Lku['Lku']['status'])){
 	                            echo $this->Html->tag('td', '<span class="label label-success">Aktif</span>');
 	                        } else{
 	                            echo $this->Html->tag('td', '<span class="label label-danger">Non-aktif</span>');
 	                        }
 	                	?>
-	                </dd>
-	                <dt><?php echo __('Status Pembayaran')?></dt>
-	                <dd>
-	                	<?php 
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Status Pembayaran');?></th>
+						<?php 
 	                		if(!empty($Lku['Lku']['paid'])){
 	                            if(!empty($Lku['Lku']['complete_paid'])){
 	                                echo $this->Html->tag('td', '<span class="label label-success">Pembayaran Lunas</span>');
@@ -43,8 +53,8 @@
 	                            echo $this->Html->tag('td', '<span class="label label-danger">Belum di bayar</span>');
 	                        }
 	                	?>
-	                </dd>
-	            </dl>
+					</tr>
+	            </table>
 	        </div>
         </div>
     </div>

@@ -8,31 +8,41 @@
                         ));
                 ?>
             </div>
-            <div class="box-body">
-	        	<dl class="dl-horizontal">
-	                <dt><?php echo __('No Dokumen')?></dt>
-	                <dd><?php echo $Ksu['Ksu']['no_doc'];?></dd>
-	                <dt><?php echo __('Ttuj')?></dt>
-	                <dd><?php echo $Ksu['Ttuj']['no_ttuj'];?></dd>
-	                <dt><?php echo __('Tanggal KSU')?></dt>
-	                <dd><?php echo date('Y/m/d', strtotime($Ksu['Ksu']['tgl_ksu']));?></dd>
-	                <dt><?php echo __('Total Klaim')?></dt>
-	                <dd><?php echo !empty($Ksu['Ksu']['total_klaim'])?$Ksu['Ksu']['total_klaim']:'-';?></dd>
-	                <dt><?php echo __('Total Pembayaran')?></dt>
-	                <dd><?php echo $this->Number->currency($Ksu['Ksu']['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></dd>
-	                <dt><?php echo __('Status')?></dt>
-	                <dd>
-	                	<?php 
+            <div class="box-body table-responsive">
+	    		<table class="table table-hover">
+	    			<tr>
+						<th width="30%"><?php echo __('No. Dokumen');?></th>
+						<td><?php echo $Ksu['Ksu']['no_doc'];?></td>
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Ttuj');?></th>
+						<td><?php echo $Ksu['Ttuj']['no_ttuj'];?></td>
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Tanggal KSU');?></th>
+						<td><?php echo date('Y/m/d', strtotime($Ksu['Ksu']['tgl_ksu']));?></td>
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Total Klaim');?></th>
+						<td><?php echo !empty($Ksu['Ksu']['total_klaim'])?$Ksu['Ksu']['total_klaim']:'-';?></td>
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Total Pembayaran');?></th>
+						<td><?php echo $this->Number->currency($Ksu['Ksu']['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Status');?></th>
+						<?php 
 	                		if(!empty($Ksu['Ksu']['status'])){
 	                            echo $this->Html->tag('td', '<span class="label label-success">Aktif</span>');
 	                        } else{
 	                            echo $this->Html->tag('td', '<span class="label label-danger">Non-aktif</span>');
 	                        }
 	                	?>
-	                </dd>
-	                <dt><?php echo __('Status Pembayaran')?></dt>
-	                <dd>
-	                	<?php 
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Status Pembayaran');?></th>
+						<?php 
 	                		if(empty($Ksu['Ksu']['kekurangan_atpm'])){
 	                            if(!empty($Ksu['Ksu']['complete_paid'])){
 	                                echo $this->Html->tag('td', '<span class="label label-success">Pembayaran Lunas</span>');
@@ -43,44 +53,48 @@
 	                            echo $this->Html->tag('td', '<span class="label label-success">Dibayar Main Dealer</span>');
 	                        }
 	                	?>
-	                </dd>
-	                <dt><?php echo __('Kekurangan ATPM')?></dt>
-	                <dd>
-	                	<?php 
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Kekurangan ATPM');?></th>
+						<?php 
 	                		if(empty($Ksu['Ksu']['kekurangan_atpm'])){
 	                            echo $this->Html->tag('td', '<span class="label label-danger">Tidak</span>');
 	                        }else{
 	                            echo $this->Html->tag('td', '<span class="label label-success">Dibayar Main Dealer</span>');
 	                        }
 	                	?>
-	                </dd>
+					</tr>
 	                <?php
 	                	if(!empty($Ksu['Ksu']['kekurangan_atpm'])){
 	                ?>
-	                <dt><?php echo __('Tanggal ATPM')?></dt>
-	                <dd>
-	                	<?php 
+	                <tr>
+						<th width="30%"><?php echo __('Tanggal ATPM');?></th>
+						<td>
+						<?php 
 	                		if(!empty($Ksu['Ksu']['date_atpm'])){
 	                            echo date('Y/m/d', strtotime($Ksu['Ksu']['date_atpm']));
 	                        }else{
 	                            echo '-';
 	                        }
 	                	?>
-	                </dd>
-	                <dt><?php echo __('Keterangan')?></dt>
-	                <dd>
-	                	<?php 
+	                	</td>
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Keterangan');?></th>
+						<td>
+						<?php 
 	                		if(!empty($Ksu['Ksu']['description_atpm'])){
 	                            echo $Ksu['Ksu']['description_atpm'];
 	                        }else{
 	                            echo '-';
 	                        }
 	                	?>
-	                </dd>
+	                	</td>
+					</tr>
 	                <?php
 	                	}
 	                ?>
-	            </dl>
+	            </table>
 	        </div>
         </div>
     </div>
@@ -192,4 +206,13 @@
 	        </div>
         </div>
     </div>
+</div>
+<div class="box-footer text-center action">
+	<?php
+    		echo $this->Html->link(__('Kembali'), array(
+				'action' => 'ksus', 
+			), array(
+				'class'=> 'btn btn-default',
+			));
+	?>
 </div>
