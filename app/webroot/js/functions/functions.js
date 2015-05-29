@@ -2427,8 +2427,12 @@ var popup_checkbox = function(){
                     $('#checkbox-info-table').append(html_content);
                     $('#checkbox-info-table .child-'+id+' .sisa-ttuj').val(sisa);
                     $('.child-'+id).find('.checkbox-action').remove();
+                    $('#checkbox-info-table .child-'+id+' .ttuj-payment-action').removeClass('hide');
+                    $('.action-biaya-ttuj').removeClass('hide');
+
                     input_price( $('.child-'+id+' .input_price') );
                     sisa_ttuj($('#checkbox-info-table .child-'+id+' .sisa-ttuj'));
+                    delete_biaya_ttuj($('#checkbox-info-table .child-'+id+' .ttuj-payment-action a'));
                 }
             }
         }else{
@@ -2613,6 +2617,22 @@ var sisa_ttuj = function ( obj ) {
         }
 
         calcTotalBiayaTtuj();
+    });
+}
+
+var delete_biaya_ttuj = function ( obj ) {
+    if( typeof obj == 'undefined' ) {
+        obj = $('.ttuj-payment-action a');
+    }
+
+    obj.click(function(){
+        var self = $(this);
+        var id = self.attr('data-id');
+        var parent = $('tr.'+id);
+        
+        if( confirm('Anda ingin menghapus biaya ini?') ) {
+            parent.remove();
+        }
     });
 }
 

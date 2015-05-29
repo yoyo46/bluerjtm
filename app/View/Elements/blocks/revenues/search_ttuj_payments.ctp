@@ -37,6 +37,18 @@
                         ?>
                     </div>
                 </div>
+                <?php 
+                        if( $action_type == 'biaya_ttuj' ) {
+                            echo $this->Html->tag('div', $this->Form->input('Ttuj.receiver_name',array(
+                                'label'=> __('Dibayar Kepada'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Dibayar Kepada')
+                            )), array(
+                                'class' => 'form-group',
+                            ));
+                        }
+                ?>
                 <!-- <div class="form-group">
                     <?php 
                         echo $this->Form->input('Ttuj.no_ttuj',array(
@@ -59,16 +71,6 @@
                         ));
                     ?>
                 </div>
-                <!-- <div class="form-group">
-                    <?php 
-                        echo $this->Form->input('Ttuj.receiver_name',array(
-                            'label'=> __('Dibayar Kepada'),
-                            'class'=>'form-control',
-                            'required' => false,
-                            'placeholder' => __('Dibayar Kepada')
-                        ));
-                    ?>
-                </div> -->
             </div>
         </div>
         <div class="row">

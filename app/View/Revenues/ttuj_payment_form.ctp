@@ -180,6 +180,9 @@
 			                    echo $this->Html->tag('th', __('Sisa'), array(
 			                        'width' => '15%',
 			                    ));
+			                    echo $this->Html->tag('th', __('Action'), array(
+			                    	'class' => 'hide action-biaya-ttuj',
+		                    	));
 			            ?>
 	        		</tr>
 	        	</thead>

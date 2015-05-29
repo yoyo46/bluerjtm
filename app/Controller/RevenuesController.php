@@ -1071,8 +1071,8 @@ class RevenuesController extends AppController {
                                 $commissionJournal += $locale['Ttuj']['commission_extra'];
                             }
 
-                            $this->Journal->setJournal( $id, $document_no, 'commission_void_coa_debit_id', $commissionJournal, 0, 'commission_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'commission_void_coa_credit_id', 0, $commissionJournal, 'commission_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'commission_coa_credit_id', $commissionJournal, 0, 'commission_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'commission_coa_debit_id', 0, $commissionJournal, 'commission_void' );
                         }
 
                         if( !empty($locale['Ttuj']['uang_jalan_1']) ) {
@@ -1086,33 +1086,33 @@ class RevenuesController extends AppController {
                                 $uangJalanJournal += $locale['Ttuj']['uang_jalan_extra'];
                             }
 
-                            $this->Journal->setJournal( $id, $document_no, 'uang_jalan_void_coa_debit_id', $uangJalanJournal, 0, 'uang_jalan_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'uang_jalan_void_coa_credit_id', 0, $uangJalanJournal, 'uang_jalan_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_jalan_coa_credit_id', $uangJalanJournal, 0, 'uang_jalan_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_jalan_coa_debit_id', 0, $uangJalanJournal, 'uang_jalan_void' );
                         }
 
                         if( !empty($locale['Ttuj']['uang_kuli_muat']) ) {
-                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_muat_void_coa_debit_id', $locale['Ttuj']['uang_kuli_muat'], 0, 'uang_kuli_muat_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_muat_void_coa_credit_id', 0, $locale['Ttuj']['uang_kuli_muat'], 'uang_kuli_muat_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_muat_coa_credit_id', $locale['Ttuj']['uang_kuli_muat'], 0, 'uang_kuli_muat_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_muat_coa_debit_id', 0, $locale['Ttuj']['uang_kuli_muat'], 'uang_kuli_muat_void' );
                         }
 
                         if( !empty($locale['Ttuj']['uang_kuli_bongkar']) ) {
-                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_bongkar_void_coa_debit_id', $locale['Ttuj']['uang_kuli_bongkar'], 0, 'uang_kuli_bongkar_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_bongkar_void_coa_credit_id', 0, $locale['Ttuj']['uang_kuli_bongkar'], 'uang_kuli_bongkar_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_bongkar_coa_credit_id', $locale['Ttuj']['uang_kuli_bongkar'], 0, 'uang_kuli_bongkar_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_bongkar_coa_debit_id', 0, $locale['Ttuj']['uang_kuli_bongkar'], 'uang_kuli_bongkar_void' );
                         }
 
                         if( !empty($locale['Ttuj']['asdp']) ) {
-                            $this->Journal->setJournal( $id, $document_no, 'asdp_void_coa_debit_id', $locale['Ttuj']['asdp'], 0, 'asdp_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'asdp_void_coa_credit_id', 0, $locale['Ttuj']['asdp'], 'asdp_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'asdp_coa_credit_id', $locale['Ttuj']['asdp'], 0, 'asdp_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'asdp_coa_debit_id', 0, $locale['Ttuj']['asdp'], 'asdp_void' );
                         }
 
                         if( !empty($locale['Ttuj']['uang_kawal']) ) {
-                            $this->Journal->setJournal( $id, $document_no, 'uang_kawal_void_coa_debit_id', $locale['Ttuj']['uang_kawal'], 0, 'uang_kawal_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'uang_kawal_void_coa_credit_id', 0, $locale['Ttuj']['uang_kawal'], 'uang_kawal_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_kawal_coa_credit_id', $locale['Ttuj']['uang_kawal'], 0, 'uang_kawal_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_kawal_coa_debit_id', 0, $locale['Ttuj']['uang_kawal'], 'uang_kawal_void' );
                         }
 
                         if( !empty($locale['Ttuj']['uang_keamanan']) ) {
-                            $this->Journal->setJournal( $id, $document_no, 'uang_keamanan_void_coa_debit_id', $locale['Ttuj']['uang_keamanan'], 0, 'uang_keamanan_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'uang_keamanan_void_coa_credit_id', 0, $locale['Ttuj']['uang_keamanan'], 'uang_keamanan_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_keamanan_coa_credit_id', $locale['Ttuj']['uang_keamanan'], 0, 'uang_keamanan_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'uang_keamanan_coa_debit_id', 0, $locale['Ttuj']['uang_keamanan'], 'uang_keamanan_void' );
                         }
                     }
 
@@ -4676,8 +4676,8 @@ class RevenuesController extends AppController {
 
                     if( !empty($invoice_payment['InvoicePayment']['grand_total_payment']) ) {
                         $document_no = !empty($invoice_payment['InvoicePayment']['nodoc'])?$invoice_payment['InvoicePayment']['nodoc']:false;
-                        $this->Journal->setJournal( $id, $document_no, 'pembayaran_invoice_void_coa_debit_id', $invoice_payment['InvoicePayment']['grand_total_payment'], 0, 'invoice_payment_void' );
-                        $this->Journal->setJournal( $id, $document_no, 'pembayaran_invoice_void_coa_credit_id', 0, $invoice_payment['InvoicePayment']['grand_total_payment'], 'invoice_payment_void' );
+                        $this->Journal->setJournal( $id, $document_no, 'pembayaran_invoice_coa_credit_id', $invoice_payment['InvoicePayment']['grand_total_payment'], 0, 'invoice_payment_void' );
+                        $this->Journal->setJournal( $id, $document_no, 'pembayaran_invoice_coa_debit_id', 0, $invoice_payment['InvoicePayment']['grand_total_payment'], 'invoice_payment_void' );
                     }
 
                     $this->MkCommon->setCustomFlash(__('Berhasil menghapus invoice pembayaran'), 'success');
@@ -4956,8 +4956,8 @@ class RevenuesController extends AppController {
 
                         if( !empty($invoice['Invoice']['total']) ) {
                             $document_no = !empty($invoice['Invoice']['no_invoice'])?$invoice['Invoice']['no_invoice']:false;
-                            $this->Journal->setJournal( $id, $document_no, 'invoice_void_coa_debit_id', $invoice['Invoice']['total'], 0, 'invoice_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'invoice_void_coa_credit_id', 0, $invoice['Invoice']['total'], 'invoice_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'invoice_coa_credit_id', $invoice['Invoice']['total'], 0, 'invoice_void' );
+                            $this->Journal->setJournal( $id, $document_no, 'invoice_coa_debit_id', 0, $invoice['Invoice']['total'], 'invoice_void' );
                         }
 
                         $this->Invoice->InvoiceDetail->updateAll(
@@ -6230,9 +6230,10 @@ class RevenuesController extends AppController {
         }
     }
 
-    function doTtujPaymentDetail ( $dataAmount, $ttuj_payment_id = false ) {
+    function doTtujPaymentDetail ( $dataAmount, $data, $ttuj_payment_id = false ) {
         $flagTtujPaymentDetail = true;
         $totalPayment = 0;
+        $document_type = !empty($data['TtujPayment']['type'])?$data['TtujPayment']['type']:false;
 
         if( !empty($ttuj_payment_id) ) {
             $this->TtujPayment->TtujPaymentDetail->updateAll( array(
@@ -6304,6 +6305,23 @@ class RevenuesController extends AppController {
 
             if( !$this->TtujPayment->save() ) {
                 $this->Log->logActivity( sprintf(__('Gagal mengubah total pembayaran ttuj #%s'), $ttuj_payment_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+            } else {
+                $this->loadModel('Journal');
+                $document_no = !empty($data['TtujPayment']['nodoc'])?$data['TtujPayment']['nodoc']:false;
+
+                switch ($document_type) {
+                    case 'biaya_ttuj':
+                        $this->Journal->deleteJournal( $ttuj_payment_id, 'biaya_ttuj_payment' );
+                        $this->Journal->setJournal( $ttuj_payment_id, $document_no, 'biaya_ttuj_payment_coa_debit_id', $totalPayment, 0, 'biaya_ttuj_payment' );
+                        $this->Journal->setJournal( $ttuj_payment_id, $document_no, 'biaya_ttuj_payment_coa_credit_id', 0, $totalPayment, 'biaya_ttuj_payment' );
+                        break;
+                    
+                    default:
+                        $this->Journal->deleteJournal( $ttuj_payment_id, 'uang_Jalan_commission_payment' );
+                        $this->Journal->setJournal( $ttuj_payment_id, $document_no, 'uang_Jalan_commission_payment_coa_debit_id', $totalPayment, 0, 'uang_Jalan_commission_payment' );
+                        $this->Journal->setJournal( $ttuj_payment_id, $document_no, 'uang_Jalan_commission_payment_coa_credit_id', 0, $totalPayment, 'uang_Jalan_commission_payment' );
+                        break;
+                }
             }
         }
 
@@ -6317,20 +6335,12 @@ class RevenuesController extends AppController {
 
         switch ($action_type) {
             case 'biaya_ttuj':
-                // $journalName = 'commission_payment';
-                // $journalDebitName = 'commission_payment_coa_debit_id';
-                // $journalCreditName = 'commission_payment_coa_credit_id';
                 $labelName = 'Biaya TTUJ';
-
                 $this->set('active_menu', 'biaya_ttuj_payments');
                 break;
             
             default:
-                // $journalName = 'uang_jalan_payment';
-                // $journalDebitName = 'uang_jalan_payment_coa_debit_id';
-                // $journalCreditName = 'uang_jalan_payment_coa_credit_id';
                 $labelName = 'Uang Jalan/Komisi';
-
                 $this->set('active_menu', 'uang_jalan_payments');
                 break;
         }
@@ -6340,23 +6350,15 @@ class RevenuesController extends AppController {
             $data['TtujPayment']['date_payment'] = !empty($data['TtujPayment']['date_payment']) ? $this->MkCommon->getDate($data['TtujPayment']['date_payment']) : '';
             $data['TtujPayment']['type'] = $action_type;
             $dataAmount = !empty($data['TtujPayment']['amount_payment'])?$data['TtujPayment']['amount_payment']:false;
-            $flagTtujPaymentDetail = $this->doTtujPaymentDetail($dataAmount);
+            $flagTtujPaymentDetail = $this->doTtujPaymentDetail($dataAmount, $data);
 
             $this->TtujPayment->create();
             $this->TtujPayment->set($data);
 
             if( $this->TtujPayment->validates() && !empty($flagTtujPaymentDetail) ){
                 if($this->TtujPayment->save()){
-                    // $this->loadModel('Journal');
                     $document_id = $this->TtujPayment->id;
-                    // $this->Journal->deleteJournal( $document_id, $journalName );
-                    $flagTtujPaymentDetail = $this->doTtujPaymentDetail($dataAmount, $document_id);
-
-                    // if( !empty($data['TtujPayment']['total_payment']) ) {
-                    //     $document_no = !empty($data['TtujPayment']['nodoc'])?$data['TtujPayment']['nodoc']:false;
-                    //     $this->Journal->setJournal( $document_id, $document_no, $journalDebitName, $data['TtujPayment']['total_payment'], 0, $journalName );
-                    //     $this->Journal->setJournal( $document_id, $document_no, $journalCreditName, 0, $data['TtujPayment']['total_payment'], $journalName );
-                    // }
+                    $flagTtujPaymentDetail = $this->doTtujPaymentDetail($dataAmount, $data, $document_id);
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Berhasil melakukan Pembayaran %s'), $labelName), 'success'); 
                     $this->Log->logActivity( sprintf(__('Berhasil melakukan Pembayaran %s #%s'), $labelName, $document_id), $this->user_data, $this->RequestHandler, $this->params );
@@ -6425,16 +6427,10 @@ class RevenuesController extends AppController {
 
                 switch ($action_type) {
                     case 'biaya_ttuj':
-                        // $journalName = 'uang_kuli_muat_payment_void';
-                        // $journalDebitName = 'uang_kuli_muat_payment_void_coa_debit_id';
-                        // $journalCreditName = 'uang_kuli_muat_payment_void_coa_credit_id';
                         $labelName = 'Biaya TTUJ';
                         break;
                     
                     default:
-                        // $journalName = 'uang_jalan_payment_void';
-                        // $journalDebitName = 'uang_jalan_payment_void_coa_debit_id';
-                        // $journalCreditName = 'uang_jalan_payment_void_coa_credit_id';
                         $labelName = 'Uang Jalan/Komisi';
                         break;
                 }
@@ -6448,7 +6444,9 @@ class RevenuesController extends AppController {
                     $this->TtujPayment->set($data);
 
                     if($this->TtujPayment->save()){
-                        // $this->loadModel('Journal');
+                        $this->loadModel('Journal');
+                        $document_no = !empty($invoice['TtujPayment']['nodoc'])?$invoice['TtujPayment']['nodoc']:false;
+
 
                         if( !empty($invoice['TtujPaymentDetail']) ) {
                             foreach ($invoice['TtujPaymentDetail'] as $key => $ttujPaymentDetail) {
@@ -6470,11 +6468,19 @@ class RevenuesController extends AppController {
                             }
                         }
 
-                        // if( !empty($invoice['TtujPayment']['total_payment']) ) {
-                        //     $document_no = !empty($invoice['TtujPayment']['nodoc'])?$invoice['TtujPayment']['nodoc']:false;
-                        //     $this->Journal->setJournal( $id, $document_no, $journalDebitName, $invoice['TtujPayment']['total_payment'], 0, $journalName );
-                        //     $this->Journal->setJournal( $id, $document_no, $journalCreditName, 0, $invoice['TtujPayment']['total_payment'], $journalName );
-                        // }
+                        if( !empty($invoice['TtujPayment']['total_payment']) ) {
+                            switch ($action_type) {
+                                case 'biaya_ttuj':
+                                    $this->Journal->setJournal( $id, $document_no, 'biaya_ttuj_payment_coa_credit_id', $invoice['TtujPayment']['total_payment'], 0, 'biaya_ttuj_payment' );
+                                    $this->Journal->setJournal( $id, $document_no, 'biaya_ttuj_payment_coa_debit_id', 0, $invoice['TtujPayment']['total_payment'], 'biaya_ttuj_payment' );
+                                    break;
+                                
+                                default:
+                                    $this->Journal->setJournal( $id, $document_no, 'uang_Jalan_commission_payment_coa_credit_id', $invoice['TtujPayment']['total_payment'], 0, 'uang_Jalan_commission_payment_void' );
+                                    $this->Journal->setJournal( $id, $document_no, 'uang_Jalan_commission_payment_coa_debit_id', 0, $invoice['TtujPayment']['total_payment'], 'uang_Jalan_commission_payment_void' );
+                                    break;
+                            }
+                        }
 
                         $msg = array(
                             'msg' => sprintf(__('Berhasil menghapus pembayaran %s.'), $labelName),

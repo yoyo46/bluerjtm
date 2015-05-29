@@ -386,13 +386,6 @@ class LkusController extends AppController {
                 $this->Lku->set('status', $value);
 
                 if($this->Lku->save()){
-                    // if( !empty($locale['Lku']['total_price']) ) {
-                    //     $this->loadModel('Journal');
-                    //     $document_no = !empty($locale['Lku']['no_doc'])?$locale['Lku']['no_doc']:false;
-                    //     $this->Journal->setJournal( $id, $document_no, 'lku_void_coa_debit_id', $locale['Lku']['total_price'], 0, 'lku_void' );
-                    //     $this->Journal->setJournal( $id, $document_no, 'lku_void_coa_credit_id', 0, $locale['Lku']['total_price'], 'lku_void' );
-                    // }
-
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses merubah status LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
                 }else{
