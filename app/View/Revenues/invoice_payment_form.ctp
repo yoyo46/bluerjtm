@@ -47,17 +47,17 @@
 	        		</div>
 	        	</div>
 	        </div>
-	        <!-- <div class="form-group">
+	        <div class="form-group">
 	        	<?php 
-						// echo $this->Form->input('coa_id',array(
-						// 	'label'=> __('Account *'), 
-						// 	'class'=>'form-control',
-						// 	'required' => false,
-						// 	'empty' => __('Pilih Kas Bank'),
-						// 	'options' => $coas
-						// ));
+						echo $this->Form->input('coa_id',array(
+							'label'=> __('Account *'), 
+							'class'=>'form-control',
+							'required' => false,
+							'empty' => __('Pilih Kas Bank'),
+							'options' => $coas
+						));
 				?>
-	        </div> -->
+	        </div>
 	        <div class="form-group">
 	        	<?php 
 						echo $this->Form->input('date_payment',array(
