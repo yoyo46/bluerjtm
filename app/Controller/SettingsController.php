@@ -3245,7 +3245,7 @@ class SettingsController extends AppController {
                 if(!empty($refine['capacity'])){
                     $capacity = urldecode($refine['capacity']);
                     $this->request->data['UangJalan']['capacity'] = $capacity;
-                    $options['conditions']['UangJalan.capacity LIKE'] = '%'.$capacity.'%';
+                    $options['conditions']['TarifAngkutan.capacity LIKE'] = '%'.$capacity.'%';
                 }
 
                 if(!empty($refine['from'])){
@@ -3369,9 +3369,8 @@ class SettingsController extends AppController {
             // }
 
             $this->TarifAngkutan->set($data);
-            $check_availability = $this->TarifAngkutan->check_availability( $data, $id );
 
-            if($this->TarifAngkutan->validates($data) && $check_availability){
+            if($this->TarifAngkutan->validates($data)){
                 if($this->TarifAngkutan->save($data)){
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Tarif Angkutan'), $msg), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses %s Tarif Angkutan #%s'), $msg, $this->TarifAngkutan->id), $this->user_data, $this->RequestHandler, $this->params );

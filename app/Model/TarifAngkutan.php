@@ -124,29 +124,6 @@ class TarifAngkutan extends AppModel {
         return $data;
     }
 
-    function check_availability( $data = false, $id = false ){
-        $data = $data['TarifAngkutan'];
-        $conditions = array(
-            'TarifAngkutan.from_city_id' => $data['from_city_id'],
-            'TarifAngkutan.to_city_id' => $data['to_city_id'],
-            'TarifAngkutan.jenis_unit' => $data['jenis_unit'],
-            'TarifAngkutan.customer_id' => $data['customer_id'],
-            'TarifAngkutan.group_motor_id' => $data['group_motor_id'],
-            'TarifAngkutan.id <>' => $id,
-            'TarifAngkutan.status' => 1,
-        );
-
-        $check_availability = $this->find('count', array(
-            'conditions' => $conditions,
-        ));
-
-        if( empty($check_availability) ){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
     function findTarif( $from_city_id, $to_city_id, $customer_id, $capacity = false, $group_motor_id = false ){
         $conditions = array(
             'from_city_id' => $from_city_id,
@@ -196,11 +173,16 @@ class TarifAngkutan extends AppModel {
             'TarifAngkutan.to_city_id' => $this->data['TarifAngkutan']['to_city_id'],
             'TarifAngkutan.jenis_unit' => $this->data['TarifAngkutan']['jenis_unit'],
             'TarifAngkutan.group_motor_id' => $this->data['TarifAngkutan']['group_motor_id'],
+            'TarifAngkutan.type' => $this->data['TarifAngkutan']['type'],
             'TarifAngkutan.status' => 1,
         );
 
         if( !empty($this->data['TarifAngkutan']['id']) ) {
             $conditions['TarifAngkutan.id <>'] = $this->data['TarifAngkutan']['id'];
+        }
+
+        if( !empty($this->data['TarifAngkutan']['jenis_unit']) && $this->data['TarifAngkutan']['jenis_unit'] == 'per_unit' ) {
+            $conditions['TarifAngkutan.capacity'] = $this->data['TarifAngkutan']['capacity'];
         }
 
         $tarifAngkutan = $this->find('first', array(
