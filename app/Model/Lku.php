@@ -53,7 +53,12 @@ class Lku extends AppModel {
                 'Lku.id' => 'DESC',
             ),
             'contain' => array(
-                'LkuDetail'
+                'LkuDetail' => array(
+                    'order'=> array(
+                        'LkuDetail.id' => 'ASC',
+                        'LkuDetail.created' => 'ASC',
+                    ),
+                ),
             ),
             'fields' => array(),
         );

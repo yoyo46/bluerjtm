@@ -400,8 +400,12 @@ var getUangjalan = function ( response ) {
     calcUangJalan();
 }
 
-var add_custom_field = function(){
-    $('.add-custom-field').click(function (e) {
+var add_custom_field = function( obj ){
+    if( typeof obj == 'undefined' ) {
+        obj = $('.add-custom-field');
+    }
+
+    obj.click(function (e) {
         var self = $(this);
         var action_type = self.attr('action_type');
         var data_custom = self.attr('data-custom');
@@ -916,33 +920,122 @@ var add_custom_field = function(){
                 leasing_action();
             break;
             case 'auth-cash-bank':
-                var count_cash_auth = $('.cash-auth-row').length;
+                var count_cash_auth = $('.wrapper-approval-setting').length-1;
+                var count_next = count_cash_auth+1;
+                var tempContent = $('#form-authorize').html();
+                var content = '<div class="box box-primary wrapper-approval-setting" rel="'+count_next+'"> \
+                    <div class="box-header"> \
+                        <h3 class="box-title">List Approval #'+(count_next+1)+'</h3> \
+                        <div class="pull-right box-tools"> \
+                            <button class="btn btn-danger btn-sm" data-widget="remove" data-toggle="tooltip" title="" data-original-title="Remove"><i class="fa fa-times"></i></button> \
+                        </div> \
+                    </div> \
+                    <div class="box-body"> \
+                        <div class="form-group"> \
+                            <label for="CashBankDetailMinAmount'+count_next+'">Range Jumlah Approval *</label> \
+                            <div class="row"> \
+                                <div class="col-sm-6"> \
+                                    <input name="data[CashBankDetail][min_amount]['+count_next+']" class="form-control" placeholder="Jumlah dari" type="text" id="CashBankDetailMinAmount'+count_next+'"> \
+                                </div> \
+                                <div class="col-sm-6"> \
+                                    <input name="data[CashBankDetail][max_amount]['+count_next+']" class="form-control" placeholder="Sampai Jumlah" type="text" id="CashBankDetailMaxAmount'+count_next+'"> \
+                                </div> \
+                            </div> \
+                        </div> \
+                        <div class="form-group action"> \
+                            <a href="javascript:" class="btn btn-success add-custom-field btn-xs" action_type="auth-cash-bank-user-approval"><i class="fa fa-plus-square"></i> Tambah Otorisasi</a> \
+                        </div> \
+                        <table class="table table-bordered"> \
+                            <thead> \
+                                <tr> \
+                                    <th>Nama Approval</th> \
+                                    <th>Grup</th> \
+                                    <th class="text-center">Approval Prioritas</th> \
+                                    <th class="text-center">Action</th> \
+                                </tr> \
+                            </thead> \
+                            <tbody class="cashbanks-auth-table"> \
+                                <tr class="cash-auth-row" id="cash-auth" rel="0"> \
+                                    <td> \
+                                        <div class="col-sm-10"> \
+                                            '+tempContent+' \
+                                            <input type="hidden" name="data[CashBankAuthMaster][id]['+count_next+'][]" id="CashBankAuthMasterId'+count_next+'"> \
+                                        </div> \
+                                        <div class="col-sm-2"> \
+                                            <a href="/ajax/getUserEmploye/0" class="btn bg-maroon ajaxModal" title="Data Karyawan" data-action="browse-form" data-change="cash-bank-auth-user-0"><i class="fa fa-search"></i></a> \
+                                        </div> \
+                                        <div class="clear"></div> \
+                                    </td> \
+                                    <td class="group_auth text-center"> \
+                                        - \
+                                    </td> \
+                                    <td class="text-center"> \
+                                        <label> \
+                                            <input type="hidden" name="data[CashBankAuthMaster][is_priority]['+count_next+'][]" id="CashBankAuthMasterIsPriority'+count_next+'" value="0"><input type="checkbox" name="data[CashBankAuthMaster][is_priority]['+count_next+'][]" value="1" id="CashBankAuthMasterIsPriority'+count_next+'"> \
+                                        </label> \
+                                    </td> \
+                                    <td class="action text-center"> \
+                                        <a href="javascript:" class="btn btn-danger delete-custom-field btn-xs" action_type="auth-cash-bank-user-approval" rel="0"><i class="fa fa-times-circle"></i></a> \
+                                    </td> \
+                                </tr> \
+                            </tbody> \
+                        </table> \
+                    </div> \
+                </div>';
 
-                if(count_cash_auth < 4){
-                    var count_next = count_cash_auth+1;
-                    var content = '<tr class="cash-auth-row" id="cash-auth-'+count_next+'" rel="'+count_next+'">'+
-                        '<td>'+
-                            '<div class="row">'+
-                                '<div class="col-sm-10">'+
-                                    $('#form-authorize').html()+
-                                    '<input type="hidden" name="data[CashBankAuthMaster][id][]" value="'+count_next+'" id="CashBankAuthMasterId">'+
-                                '</div>'+
-                                '<div class="col-sm-2">'+
-                                    '<a href="/ajax/getUserEmploye/'+count_next+'" class="btn bg-maroon ajaxModal" title="Data Karyawan" data-action="browse-form" data-change="cash-bank-auth-user"><i class="fa fa-search"></i></a>'+
-                                '</div>'+
-                            '</div>'+
-                        '</td>'+
-                        '<td align="center" class="group_auth">-</td>'+
-                        '<td align="center">'+count_next+'</td>'+
-                    '</tr>';
+                $('.list-approval-setting').append(content);
 
-                    $('.cashbanks-auth-table').append(content);
+                var objParentTable = '.wrapper-approval-setting[rel="'+count_next+'"]';
+                var objParentTr = objParentTable + ' #cash-auth[rel="0"]';
 
-                    var obj_parent = '#cash-auth-'+count_next;
-                    set_auth_cash_bank( obj_parent+' .cash-bank-auth-user' );
-                    ajaxModal( $(obj_parent+' .ajaxModal') );
-                    pickData();
-                }
+                $(objParentTr+' .cash-bank-auth-user').addClass('cash-bank-auth-user-0');
+                $(objParentTr+' .cash-bank-auth-user').attr('name', 'data[CashBankAuthMaster][employe_id]['+count_next+'][]');
+
+                set_auth_cash_bank( objParentTr+' .cash-bank-auth-user' );
+                delete_custom_field( $(objParentTr+' .delete-custom-field') );
+                add_custom_field( $(objParentTable+' .add-custom-field') );
+                ajaxModal( $(objParentTr+' .ajaxModal') );
+                pickData();
+            break;
+            case 'auth-cash-bank-user-approval':
+                var parent = self.parents('.wrapper-approval-setting');
+                var rel = parent.attr('rel');
+                var count_cash_auth = $('.cash-auth-row').length-1;
+                var count_next = count_cash_auth+1;
+                var tempContent = $('#form-authorize').html();
+                var content = '<tr class="cash-auth-row" id="cash-auth" rel="'+count_next+'"> \
+                    <td> \
+                        <div class="col-sm-10">'+
+                            tempContent +
+                            '<input type="hidden" name="data[CashBankAuthMaster][id]['+rel+'][]" id="CashBankAuthMasterId'+rel+count_next+'"> \
+                        </div> \
+                        <div class="col-sm-2"> \
+                            <a href="/ajax/getUserEmploye/'+count_next+'/" class="btn bg-maroon ajaxModal" title="Data Karyawan" data-action="browse-form" data-change="cash-bank-auth-user-'+count_next+'"><i class="fa fa-search"></i></a> \
+                        </div> \
+                        <div class="clear"></div> \
+                    </td> \
+                    <td class="group_auth text-center">-</td> \
+                    <td class="text-center"> \
+                        <label> \
+                            <input type="checkbox" name="data[CashBankAuthMaster][is_priority]['+rel+'][]" value="1" id="CashBankAuthMaster'+rel+count_next+'"> \
+                        </label> \
+                    </td> \
+                    <td class="action text-center"> \
+                        <a href="javascript:" class="btn btn-danger delete-custom-field btn-xs" action_type="auth-cash-bank-user-approval" rel="'+count_next+'"><i class="fa fa-times-circle"></i></a> \
+                    </td> \
+                </tr>';
+
+                var objParentTable = $('.wrapper-approval-setting[rel="'+rel+'"] .cashbanks-auth-table');
+                var objParentTr = '#cash-auth[rel="'+count_next+'"]';
+
+                objParentTable.append(content);
+                $(objParentTr+' .cash-bank-auth-user').addClass('cash-bank-auth-user-'+count_next);
+                $(objParentTr+' .cash-bank-auth-user').attr('name', 'data[CashBankAuthMaster][employe_id]['+rel+'][]');
+
+                set_auth_cash_bank( objParentTr+' .cash-bank-auth-user' );
+                delete_custom_field( $(objParentTr+' .delete-custom-field') );
+                ajaxModal( $(objParentTr+' .ajaxModal') );
+                pickData();
             break;
         }
     });
@@ -1051,6 +1144,10 @@ var delete_custom_field = function( obj ) {
             }else if( action_type == 'auth-cash-bank' ){
                 var length = $('.cash-auth-row').length;
                 $('#cash-auth-'+length).remove();
+            }else if( action_type == 'auth-cash-bank-user-approval' ){
+                var parent = self.parents('.wrapper-approval-setting');
+                var rel = self.attr('rel');
+                parent.find('.cash-auth-row[rel="'+rel+'"]').remove();
             }
         }
 
@@ -2472,16 +2569,17 @@ var set_auth_cash_bank = function(obj){
     $(obj).change(function(){
         var self = $(this);
         var val = self.val();
-        var parent = self.parents('tr');
-        var rel = parent.attr('rel');
+        var parentList = self.parents('.wrapper-approval-setting');
+        var parentTr = self.parents('tr');
+        var rel = parentTr.attr('rel');
         var content;
+
         if(val != ''){
             $.ajax({
                 url: '/ajax/getUserEmploye/'+rel+'/'+val+'/',
                 type: 'POST',
                 success: function(response, status) {
-                    content = $(response).filter('#group_user').html();
-                    $('#cash-auth-'+rel).find('.group_auth').html(content);
+                    parentList.find('#cash-auth[rel="'+rel+'"]').find('.group_auth').html(response);
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');

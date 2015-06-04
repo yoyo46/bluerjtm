@@ -9,60 +9,109 @@
 ?>
 <div class="box box-primary">
     <div class="box-header">
-        <h3 class="box-title"><?php echo __('Otorisasi Kas Bank'); ?></h3>
+        <h3 class="box-title"><?php echo __('List Approval Kas Bank'); ?></h3>
     </div>
     <div class="box-body table-responsive">
+        <div class="form-group">
+        	<?php 
+					echo $this->Form->input('module_type',array(
+						'label'=> __('Modul *'), 
+						'class'=>'form-control',
+						'required' => false,
+					));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+					echo $this->Form->input('requester_id',array(
+						'label'=> __('Posisi yg Mengajukan *'), 
+						'class'=>'form-control',
+						'required' => false,
+					));
+			?>
+        </div>
     	<div class="form-group action">
     		<?php 
-	                echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Tambah Otorisasi'), 'javascript:', array(
+	                echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Tambah List Approval'), 'javascript:', array(
 	                	'escape' => false,
-	                	'class' => 'btn btn-success add-custom-field',
-	                	'action_type' => 'auth-cash-bank'
-	                ));
-
-	                echo $this->Html->link('<i class="fa fa-times-circle"></i> '.__('Hapus'), 'javascript:', array(
-	                	'escape' => false,
-	                	'class' => 'btn btn-danger delete-custom-field',
+	                	'class' => 'btn btn-success add-custom-field btn-xs',
 	                	'action_type' => 'auth-cash-bank'
 	                ));
 	        ?>
     	</div>
-        <table class="table table-hover">
-        	<thead>
-        		<tr>
-        			<th width="30%"><?php echo __('Nama');?></th>
-                    <th width="30%"><?php echo __('Grup');?></th>
-                    <th width="30%"><?php echo __('level Otorisasi');?></th>
-        		</tr>
-        	</thead>
-        	<tbody class="cashbanks-auth-table">
-        		<?php
-        			$count = 1;
-        			if(!empty($auth_data['CashBankAuthMaster'])){
-        				$count = count($auth_data['CashBankAuthMaster']);
-        			}
+	</div>
+</div>
+<div class="list-approval-setting">
+	<div class="box box-primary wrapper-approval-setting" rel="0">
+	    <div class="box-header">
+	        <h3 class="box-title"><?php echo __('List Approval #1'); ?></h3>
+	        <div class="pull-right box-tools">
+	            <button class="btn btn-danger btn-sm" data-widget="remove" data-toggle="tooltip" title="Remove"><i class="fa fa-times"></i></button>
+	        </div>
+	    </div>
+	    <div class="box-body">
+	        <div class="form-group">
+	        	<?php 
+						echo $this->Form->label('CashBankDetail.min_amount.0', __('Range Jumlah Approval *'));
+				?>
 
-        			for ($i=1; $i <= $count; $i++) { 
-        				$id = $i-1;
-        		?>
-	            <tr class="cash-auth-row" id="cash-auth-<?php echo $i?>" rel="<?php echo $i?>">
-	                <td>
-	                	<div class="row">
+		        <div class="row">
+		        	<div class="col-sm-6">
+			        	<?php 
+								echo $this->Form->input('CashBankDetail.min_amount.0',array(
+									'label'=> false, 
+									'class'=>'form-control',
+									'required' => false,
+									'placeholder'=> __('Jumlah dari'), 
+								));
+						?>
+		        	</div>
+		        	<div class="col-sm-6">
+			        	<?php 
+								echo $this->Form->input('CashBankDetail.max_amount.0',array(
+									'label'=> false, 
+									'class'=>'form-control',
+									'required' => false,
+									'placeholder'=> __('Sampai Jumlah'), 
+								));
+						?>
+		        	</div>
+		        </div>
+	        </div>
+	    	<div class="form-group action">
+	    		<?php 
+		                echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Tambah Otorisasi'), 'javascript:', array(
+		                	'escape' => false,
+		                	'class' => 'btn btn-success add-custom-field btn-xs',
+		                	'action_type' => 'auth-cash-bank-user-approval'
+		                ));
+		        ?>
+	    	</div>
+	        <table class="table table-bordered">
+	        	<thead>
+	        		<tr>
+	        			<th><?php echo __('Nama Approval');?></th>
+	                    <th><?php echo __('Grup');?></th>
+	                    <th class="text-center"><?php echo __('Approval Prioritas');?></th>
+	                    <th class="text-center"><?php echo __('Action');?></th>
+	        		</tr>
+	        	</thead>
+	        	<tbody class="cashbanks-auth-table" rel="0">
+		            <tr class="cash-auth-row" id="cash-auth" rel="0">
+		                <td>
 	                		<div class="col-sm-10">
 	                			<?php 
-			                		echo $this->Form->input('CashBankAuthMaster.employe_id.', array(
-			                			'label' => false,
-			                			'empty' => __('Pilih Karyawan'),
-			                			'options' => $employes,
-			                			'class' => 'form-control cash-bank-auth-user',
-			                			'div' => false,
-			                			'value' => (isset($auth_data) && !empty($auth_data['CashBankAuthMaster'][$id]['employe_id'])) ? $auth_data['CashBankAuthMaster'][$id]['employe_id'] : ''
-			                		));
+				                		echo $this->Form->input('CashBankAuthMaster.employe_id.0.', array(
+				                			'label' => false,
+				                			'empty' => __('Pilih Karyawan'),
+				                			'options' => $employes,
+				                			'class' => 'form-control cash-bank-auth-user-0 cash-bank-auth-user',
+				                			'div' => false,
+				                		));
 
-			                		echo $this->Form->input('CashBankAuthMaster.id.', array(
-			                			'type' => 'hidden',
-			                			'value' => (isset($auth_data) && !empty($auth_data['CashBankAuthMaster'][$id]['id'])) ? $auth_data['CashBankAuthMaster'][$id]['id'] : $i
-			                		));
+				                		echo $this->Form->input('CashBankAuthMaster.id.0.', array(
+				                			'type' => 'hidden',
+				                		));
 			                	?>
 	                		</div>
 	                		<div class="col-sm-2">
@@ -72,44 +121,44 @@
 			                                'escape' => false,
 			                                'title' => __('Data Karyawan'),
 			                                'data-action' => 'browse-form',
-			                                'data-change' => 'cash-bank-auth-user',
+			                                'data-change' => 'cash-bank-auth-user-0',
 			                            );
 			        					$urlBrowse = array(
 			                                'controller'=> 'ajax', 
 			                                'action' => 'getUserEmploye',
-			                                $i
+			                                0,
 			                            );
 										$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
 			                            echo $this->Html->link('<i class="fa fa-search"></i>', $urlBrowse, $attrBrowse);
 			                    ?>
 	                		</div>
-	                	</div>
-	                </td>
-	                <td align="center" class="group_auth">
-	                	<?php
-	                		if(isset($auth_data) && !empty($auth_data['CashBankAuthMaster'][$id]['group'])){
-	                			echo $auth_data['CashBankAuthMaster'][$id]['group'];
-	                		}else{
-	                			echo '-';
-	                		}
-	                	?>
-	                </td>
-	                <td align="center">
-	                	<?php
-	                		if(isset($auth_data) && !empty($auth_data['CashBankAuthMaster'][$id]['level'])){
-	                			echo $auth_data['CashBankAuthMaster'][$id]['level'];
-	                		}else{
-	                			echo '1';
-	                		}
-	                	?>
-	                </td>
-	            </tr>
-	            <?php
-        			}
-        		?>
-        	</tbody>
-    	</table>
-    </div>
+	                		<div class="clear"></div>
+		                </td>
+		                <td class="group_auth text-center">
+		                	-
+		                </td>
+		                <td class="text-center">
+			                <label>
+			                	<?php 
+			                			echo $this->Form->checkbox('CashBankAuthMaster.is_priority.0.');
+			                	?>
+			                </label>
+		                </td>
+		                <td class="action text-center">
+				    		<?php 
+					                echo $this->Html->link('<i class="fa fa-times-circle"></i>', 'javascript:', array(
+					                	'escape' => false,
+					                	'class' => 'btn btn-danger delete-custom-field btn-xs',
+		                				'action_type' => 'auth-cash-bank-user-approval',
+		                				'rel' => '0',
+					                ));
+					        ?>
+		                </td>
+		            </tr>
+	        	</tbody>
+	    	</table>
+	    </div>
+	</div>
 </div>
 
 <div class="box-footer text-center action">
@@ -126,12 +175,12 @@
 ?>
 <div id="form-authorize" class="hide">
 	<?php 
-		echo $this->Form->input('CashBankAuthMaster.employe_id.', array(
-			'label' => false,
-			'empty' => __('Pilih Karyawan'),
-			'options' => $employes,
-			'class' => 'form-control cash-bank-auth-user',
-			'div' => false
-		));
+			echo $this->Form->input('CashBankAuthMaster.employe_id.', array(
+				'label' => false,
+				'empty' => __('Pilih Karyawan'),
+				'options' => $employes,
+				'class' => 'form-control cash-bank-auth-user',
+				'div' => false
+			));
 	?>
 </div>

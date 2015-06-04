@@ -243,6 +243,7 @@ class LkusController extends AppController {
                             'TipeMotor.id' => $value['tipe_motor_id']
                         ),
                     ));
+                    
                     if(!empty($tipe_motor)){
                         $Ttuj_Tipe_Motor = $this->Ttuj->TtujTipeMotor->getData('first', array(
                             'conditions' => array(

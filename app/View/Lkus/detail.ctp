@@ -156,7 +156,7 @@
 		                    }
 		                ?>
 		                <tr id="field-grand-total-lku">
-		                    <td align="right" colspan="6"><?php echo __('Total Biaya Klaim')?></td>
+		                    <td align="right" colspan="6"><?php echo $this->Html->tag('strong', __('Total Biaya Klaim')); ?></td>
 		                    <td align="right" id="grand-total-lku">
 		                        <?php 
 		                            echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
