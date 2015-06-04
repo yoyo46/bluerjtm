@@ -636,6 +636,10 @@ class SettingsController extends AppController {
                 'conditions' => array(
                     'Coa.status' => 1
                 ),
+                'order' => array(
+                    'Coa.code IS NULL' => 'ASC',
+                    'Coa.code' => 'ASC',
+                )
             ));
 
             $this->set('active_menu', 'coas');

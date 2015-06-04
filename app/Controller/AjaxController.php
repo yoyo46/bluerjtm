@@ -1518,7 +1518,9 @@ class AjaxController extends AppController {
 			$default_conditions['Coa.name LIKE'] = '%'.$this->request->data['Coa']['name'].'%';
 		}
 		if(!empty($this->request->data['Coa']['code'])){
-			$default_conditions['Coa.code'] = $this->request->data['Coa']['code'];
+			$code = trim($this->request->data['Coa']['code']);
+			$default_conditions['OR']['Coa.code LIKE'] = '%'.$code.'%';
+			$default_conditions['OR']['Coa.with_parent_code LIKE'] = '%'.$code.'%';
 		}
 
 		$coas = $this->Coa->getData('all', array(
