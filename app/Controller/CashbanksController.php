@@ -326,7 +326,7 @@ class CashbanksController extends AppController {
         }else{
             if($id && $data_local){
                 $this->request->data = $data = $data_local;
-                $this->request->data['CashBank']['tgl_cash_bank'] = $this->MkCommon->getDate($this->request->data['CashBank']['tgl_cash_bank']);
+                $this->request->data['CashBank']['tgl_cash_bank'] = $this->MkCommon->getDate($this->request->data['CashBank']['tgl_cash_bank'], true);
             }
         }
 
