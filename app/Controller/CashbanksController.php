@@ -499,7 +499,8 @@ class CashbanksController extends AppController {
                 foreach ($cash_bank_auth_master as $key => $value) {
                     $cash_bank_auth = $this->CashBank->CashBankAuth->getData('first', array(
                         'conditions' => array(
-                            'CashBankAuth.cash_bank_auth_master_id' => $value['CashBankAuthMaster']['id']
+                            'CashBankAuth.cash_bank_auth_master_id' => $value['CashBankAuthMaster']['id'],
+                            'CashBankAuth.cash_bank_id' => $id
                         )
                     ));
 
