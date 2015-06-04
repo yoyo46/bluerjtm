@@ -28,7 +28,7 @@
 		</div>
 		<?php
 				echo $this->Html->tag('div', $this->Form->input('coa_id',array(
-					'label'=> __('Kas Bank *'), 
+					'label'=> __('Account Kas/Bank *'), 
 					'class'=>'form-control',
 					'required' => false,
 					'empty' => __('Pilih Kas Bank '),
@@ -38,7 +38,7 @@
 				));
 
 				echo $this->Html->tag('div', $this->Form->input('receiving_cash_type',array(
-					'label'=> __('Jenis Kas Bank *'), 
+					'label'=> __('Jenis Kas/Bank *'), 
 					'class'=>'form-control cash-bank-handle',
 					'required' => false,
 					'options' => array(
@@ -78,10 +78,10 @@
 				));
 
 				echo $this->Html->tag('div', $this->Form->input('tgl_cash_bank',array(
-					'label'=> __('Tanggal Kas Bank *'), 
+					'label'=> __('Tanggal *'), 
 					'class'=>'form-control custom-date',
 					'required' => false,
-					'placeholder' => __('Tanggal Kas Bank'),
+					'placeholder' => __('Tanggal'),
 					'type' => 'text',
 					'value' => (!empty($this->request->data['CashBank']['tgl_cash_bank'])) ? $this->request->data['CashBank']['tgl_cash_bank'] : date('d/m/Y')
 				)), array(

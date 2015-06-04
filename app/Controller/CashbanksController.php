@@ -122,7 +122,7 @@ class CashbanksController extends AppController {
 
     public function cashbank_add() {
         // if( in_array('insert_cash_banks', $this->allowModule) ) {
-            $this->set('sub_module_title', 'Tambah Kas Bank');
+            $this->set('sub_module_title', 'Tambah transaksi Kas/Bank');
             $this->doCashBank();
         // } else {
         //     $this->redirect($this->referer());
@@ -131,7 +131,7 @@ class CashbanksController extends AppController {
 
     public function cashbank_edit( $id = false ) {
         // if( in_array('update_cash_banks', $this->allowModule) ) {
-            $this->set('sub_module_title', 'Rubah Kas Bank');
+            $this->set('sub_module_title', 'Rubah transaksi Kas/Bank');
             $coa = false;
 
             if( !empty($id) ) {
