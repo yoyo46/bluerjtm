@@ -726,11 +726,15 @@ class AjaxController extends AppController {
 		}
 
 		if(!empty($data_ttuj)){
-			$mainTarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $to_city_id, $customer_id, $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
-			$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $city_id, $customer_id, $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
+			if( !empty($to_city_id) ) {
+				$mainTarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $to_city_id, $customer_id, $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
+			} else {
+				$mainTarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $city_id, $customer_id, $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
+			}
+			
 			$detail = array(
 				'RevenueDetail' => array(
-					'price_unit' => $tarif,
+					'price_unit' => $mainTarif,
 				)
 			);
 		}
@@ -1551,13 +1555,15 @@ class AjaxController extends AppController {
 
 		if(!empty($user_id)){
 			$default_conditions['User.id'] = $user_id;
-
 			$users = $this->User->getData('first', array(
 	            'conditions' => $default_conditions,
 	            'contain' => array(
 	            	'Group'
 	            )
 	        ));
+
+	        echo !empty($users['Group']['name'])?$users['Group']['name']:false;
+	        die();
 		}else{
 			$groups = $this->User->Group->find('list', array(
 				'conditions' => array(
@@ -1568,8 +1574,6 @@ class AjaxController extends AppController {
 				)
 			));
 
-			$this->set('groups', $groups);
-
 			$this->paginate = $this->User->getData('paginate', array(
 	            'conditions' => $default_conditions,
 	            'contain' => array(
@@ -1578,15 +1582,15 @@ class AjaxController extends AppController {
 	        ));
 
 	        $users = $this->paginate('User');
+	        $data_action = 'browse-form';
+	        $data_change = 'cash-bank-auth-user-'.$rel;
+			$title = __('Data Karyawan');
+
+			$this->set(compact(
+				'data_action', 'title', 'data_change', 
+				'rel', 'user_id', 'users', 'groups'
+			));
 		}
-        
-        $this->set('users', $users);
-
-        $data_action = 'browse-form';
-        $data_change = 'cash-bank-auth-user';
-		$title = __('Data Karyawan');
-
-		$this->set(compact('data_action', 'title', 'data_change', 'rel', 'user_id'));
 	}
 
 	function getPricePartMotor($id){
