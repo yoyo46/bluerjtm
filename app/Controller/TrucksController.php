@@ -76,7 +76,8 @@ class TrucksController extends AppController {
                                     ),
                                 ),
                             )
-                        ));
+                        ), false);
+                        
                         $contain[] = 'Laka';
                         $contain[] = 'Ttuj';
                     }
@@ -87,7 +88,6 @@ class TrucksController extends AppController {
                             break;
 
                         case 'laka':
-                            $contain[] = 'Laka';
                             $conditions['Truck.sold'] = 0;
                             $conditions['Laka.id <>'] = NULL;
                             break;
