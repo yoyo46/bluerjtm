@@ -31,21 +31,6 @@
                             ));
                     ?>
                 </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->input('date',array(
-                                'label'=> __('Tanggal Laporan'),
-                                'class'=>'form-control date-range',
-                                'required' => false,
-                            ));
-                    ?>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
@@ -60,6 +45,58 @@
                                 'class'=> 'btn btn-default btn-sm',
                             ));
                     ?>
+                </div>
+            </div> 
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('date',array(
+                                'label'=> __('Tanggal Laporan'),
+                                'class'=>'form-control date-range',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <?php 
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Invoice.due_15', array(
+                                    'type' => 'checkbox',
+                                    'label'=> false,
+                                    'required' => false,
+                                    'value' => 1,
+                                    'div' => false,
+                                )).__('Over Due 1 - 15')), array(
+                                    'class' => 'checkbox',
+                                ));
+                        ?>
+                    </div>
+                    <div class="col-sm-4">
+                        <?php 
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Invoice.due_30', array(
+                                    'type' => 'checkbox',
+                                    'label'=> false,
+                                    'required' => false,
+                                    'value' => 1,
+                                    'div' => false,
+                                )).__('Over due 16 - 30')), array(
+                                    'class' => 'checkbox',
+                                ));
+                        ?>
+                    </div>
+                    <div class="col-sm-4">
+                        <?php 
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Invoice.due_above_30', array(
+                                    'type' => 'checkbox',
+                                    'label'=> false,
+                                    'required' => false,
+                                    'value' => 1,
+                                    'div' => false,
+                                )).__('Over due above 30')), array(
+                                    'class' => 'checkbox',
+                                ));
+                        ?>
+                    </div>
                 </div>
             </div>
         </div>

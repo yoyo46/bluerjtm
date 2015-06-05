@@ -4067,13 +4067,80 @@ class RevenuesController extends AppController {
             );
             $invoice_conditions = array();
 
+            $customer_id = array();
             if( !empty($this->params['named']) ){
                 $refine = $this->params['named'];
 
                 if(!empty($refine['customer'])){
                     $keyword = urldecode($refine['customer']);
-                    $default_conditions['Customer.id'] = $keyword;
                     $this->request->data['Invoice']['customer_id'] = $keyword;
+                    $customer_id = array_merge($customer_id, array($keyword));
+                }
+
+                if(!empty($refine['due_15'])){
+                    $inv_conditions = array(
+                        'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >=' => 1,
+                        'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 15,
+                    );
+
+                    $customer_id_temp = $this->Invoice->getData('list', array(
+                        'conditions' => $inv_conditions,
+                        'fields' => array(
+                            'Invoice.customer_id'
+                        ),
+                        'group' => array(
+                            'Invoice.customer_id'  
+                        )
+                    ));
+                    
+                    if(!empty($customer_id_temp)){
+                        $customer_id = array_merge($customer_id, $customer_id_temp);
+                    }
+
+                    $this->request->data['Invoice']['due_15'] = 1;
+                }
+                if(!empty($refine['due_30'])){
+                    $inv_conditions = array(
+                        'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >=' => 16,
+                        'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 30,
+                    );
+
+                    $customer_id_temp = $this->Invoice->getData('list', array(
+                        'conditions' => $inv_conditions,
+                        'fields' => array(
+                            'Invoice.customer_id'
+                        ),
+                        'group' => array(
+                            'Invoice.customer_id'  
+                        )
+                    ));
+                    
+                    if(!empty($customer_id_temp)){
+                        $customer_id = array_merge($customer_id, $customer_id_temp);
+                    }
+
+                    $this->request->data['Invoice']['due_30'] = 1;
+                }
+                if(!empty($refine['due_above_30'])){
+                    $inv_conditions = array(
+                        'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >' => 30,
+                    );
+
+                    $customer_id_temp = $this->Invoice->getData('list', array(
+                        'conditions' => $inv_conditions,
+                        'fields' => array(
+                            'Invoice.customer_id'
+                        ),
+                        'group' => array(
+                            'Invoice.customer_id'  
+                        )
+                    ));
+                    
+                    if(!empty($customer_id_temp)){
+                        $customer_id = array_merge($customer_id, $customer_id_temp);
+                    }
+                    
+                    $this->request->data['Invoice']['due_above_30'] = 1;
                 }
 
                 if(!empty($refine['date'])){
@@ -4091,6 +4158,10 @@ class RevenuesController extends AppController {
                     }
                     $this->request->data['Invoice']['date'] = $dateStr;
                 }
+            }
+
+            if(!empty($customer_id)){
+                $default_conditions['Customer.id'] = $customer_id;
             }
 
             if(empty($data_action)){
