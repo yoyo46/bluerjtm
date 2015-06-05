@@ -14,12 +14,12 @@ class Laka extends AppModel {
                 'message' => 'Tgl LAKA harap dipilih'
             ),
         ),
-        'ttuj_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'TTUJ harap dipilih'
-            ),
-        ),
+        // 'ttuj_id' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'TTUJ harap dipilih'
+        //     ),
+        // ),
         'truck_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

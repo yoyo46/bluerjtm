@@ -449,28 +449,34 @@
 				        		<?php
 			        				$list = '';
 			        				foreach ($this->request->data['LakaMedias'] as $key => $value) {
-			        					$photo = $this->Common->photo_thumbnail(array(
-											'save_path' => Configure::read('__Site.laka_photo_folder'), 
-											'src' => !empty($value['name'])?$value['name']:false, 
-											'thumb'=>true,
-											'size' => 'pm',
-											'thumb' => true,
-										));
-										$link = $this->Html->link('<i class="fa fa-times-circle"></i>', array(
-											'controller' => 'ajax',
-											'action' => 'delete_laka_media',
-											!empty($value['id'])?$value['id']:false,
-										), array(
-											'escape' => false,
-											'class' => 'delete-custom-field time-circle-laka',
-											'action_type' => 'delete-image-laka',
-											'title' => __('Hapus Media')
-										));
-			        					$list .= $this->Html->tag('li', $photo.$link, array(
-			        						'class' => 'relative'
-			        					));
+			        					if(!empty($value['name'])){
+			        						$photo = $this->Common->photo_thumbnail(array(
+												'save_path' => Configure::read('__Site.laka_photo_folder'), 
+												'src' => !empty($value['name'])?$value['name']:false, 
+												'thumb'=>true,
+												'size' => 'pm',
+												'thumb' => true,
+											));
+											$link = $this->Html->link('<i class="fa fa-times-circle"></i>', array(
+												'controller' => 'ajax',
+												'action' => 'delete_laka_media',
+												!empty($value['id'])?$value['id']:false,
+											), array(
+												'escape' => false,
+												'class' => 'delete-custom-field time-circle-laka',
+												'action_type' => 'delete-image-laka',
+												'title' => __('Hapus Media')
+											));
+				        					$list .= $this->Html->tag('li', $photo.$link, array(
+				        						'class' => 'relative'
+				        					));
+			        					}
+			        					
 			        				}
-			        				echo $this->Html->tag('ul', $list);
+
+			        				if(!empty($list)){
+			        					echo $this->Html->tag('ul', $list);
+			        				}
 				        		?>
 				        	</div>
 				        	<div class="clear"></div>
