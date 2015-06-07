@@ -19,7 +19,7 @@
                     <th><?php echo __('No. Rangka');?></th>
                     <th><?php echo __('Keterangan');?></th>
                     <th><?php echo __('Part Motor');?></th>
-                    <th><?php echo __('Jumlah Unit');?></th>
+                    <th><?php echo __('Jumlah');?></th>
                     <th><?php printf(__('Biaya Klaim (%s)'), Configure::read('__Site.config_currency_code'));?></th>
                     <th><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
                     <th><?php echo __('Action');?></th>
