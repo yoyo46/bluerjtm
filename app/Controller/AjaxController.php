@@ -1983,6 +1983,7 @@ class AjaxController extends AppController {
 	function getBiayaTtuj( $action_type = false ){
 		$this->loadModel('Ttuj');
 
+		$document_type = false;
 		$conditions = array(
             'Ttuj.is_draft' => 0,
             'Ttuj.status' => 1,
@@ -2013,6 +2014,13 @@ class AjaxController extends AppController {
 		            	'Ttuj.uang_keamanan <>' => 0,
 	            	),
 	        	);
+	        	$jenisBiaya = array(
+	        		'uang_kuli_muat' => __('Uang Kuli Muat'),
+	        		'uang_kuli_bongkar' => __('Uang Kuli Bongkar'),
+	        		'asdp' => __('Uang Penyebrangan'),
+	        		'uang_kawal' => __('Uang Kawal'),
+	        		'uang_keamanan' => __('Uang Keamanan'),
+        		);
         		break;
         	
         	default:
@@ -2038,6 +2046,13 @@ class AjaxController extends AppController {
 		            	'Ttuj.commission_extra <>' => 0,
 	            	),
 	        	);
+	        	$jenisBiaya = array(
+	        		'uang_jalan' => __('Uang Jalan'),
+	        		'uang_jalan_2' => __('Uang Jalan ke 2'),
+	        		'uang_jalan_extra' => __('Uang Jalan Extra'),
+	        		'commission' => __('Komisi'),
+	        		'commission_extra' => __('Komisi Extra'),
+        		);
         		break;
         }
 
@@ -2085,6 +2100,61 @@ class AjaxController extends AppController {
                 	$to_date = trim($date[1]);
             		$to_date = $this->MkCommon->getDate($to_date);
                 	$conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $to_date;
+                }
+            }
+            if(!empty($this->request->data['Ttuj']['document_type'])){
+                $document_type = urldecode($this->request->data['Ttuj']['document_type']);
+
+                switch ($document_type) {
+                	case 'uang_jalan':
+                		unset($conditions['OR']);
+                		$conditions['Ttuj.paid_uang_jalan <>'] = 'full';
+                		break;
+                	case 'uang_jalan_2':
+                		unset($conditions['OR']);
+                		$conditions['Ttuj.paid_uang_jalan_2 <>'] = 'full';
+                		$conditions['Ttuj.uang_jalan_2 <>'] = 0;
+                		break;
+                	case 'uang_jalan_extra':
+                		unset($conditions['OR']);
+                		$conditions['Ttuj.paid_uang_jalan_extra <>'] = 'full';
+                		$conditions['Ttuj.uang_jalan_extra <>'] = 0;
+                		break;
+                	case 'commission':
+                		unset($conditions['OR']);
+                		$conditions['Ttuj.paid_commission <>'] = 'full';
+                		$conditions['Ttuj.commission <>'] = 0;
+                		break;
+                	case 'commission_extra':
+                		unset($conditions['OR']);
+                		$conditions['Ttuj.paid_commission_extra <>'] = 'full';
+                		$conditions['Ttuj.commission_extra <>'] = 0;
+                		break;
+                	case 'uang_kuli_muat':
+                		unset($conditions['OR']);
+                		$conditions['Ttuj.paid_uang_kuli_muat <>'] = 'full';
+                		$conditions['Ttuj.uang_kuli_muat <>'] = 0;
+                		break;
+                	case 'uang_kuli_bongkar':
+                		unset($conditions['OR']);
+                		$conditions['Ttuj.paid_uang_kuli_bongkar <>'] = 'full';
+                		$conditions['Ttuj.uang_kuli_bongkar <>'] = 0;
+                		break;
+                	case 'asdp':
+                		unset($conditions['OR']);
+                		$conditions['Ttuj.paid_asdp <>'] = 'full';
+                		$conditions['Ttuj.asdp <>'] = 0;
+                		break;
+                	case 'uang_kawal':
+                		unset($conditions['OR']);
+                		$conditions['Ttuj.paid_uang_kawal <>'] = 'full';
+                		$conditions['Ttuj.uang_kawal <>'] = 0;
+                		break;
+                	case 'uang_keamanan':
+                		unset($conditions['OR']);
+                		$conditions['Ttuj.paid_uang_keamanan <>'] = 'full';
+                		$conditions['Ttuj.uang_keamanan <>'] = 0;
+                		break;
                 }
             }
         }
@@ -2137,7 +2207,7 @@ class AjaxController extends AppController {
 
 		$this->set(compact(
 			'data_action', 'title', 'ttujs',
-			'action_type'
+			'action_type', 'jenisBiaya', 'document_type'
 		));
 	}
 }

@@ -44,7 +44,12 @@
                     case 'uang_jalan':
                         echo __('Uang Jalan 1');
                         break;
-                    
+                    case 'commission':
+                        echo __('Komisi');
+                        break;
+                    case 'commission_extra':
+                        echo __('Komisi Extra');
+                        break;
                     default:
                         echo ucwords(str_replace('_', ' ', $data_type));
                         break;

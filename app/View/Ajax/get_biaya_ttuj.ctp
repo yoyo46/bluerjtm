@@ -41,6 +41,17 @@
                     ));
             ?>
         </div>
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->input('document_type',array(
+                        'label'=> __('Jenis Biaya'),
+                        'class'=>'form-control',
+                        'required' => false,
+                        'empty' => __('Semua Jenis Biaya'),
+                        'options' => !empty($jenisBiaya)?$jenisBiaya:false,
+                    ));
+            ?>
+        </div>
     </div>
     <div class="col-sm-6">
         <div class="form-group">
@@ -73,28 +84,28 @@
                     ));
             ?>
         </div>
+        <div class="form-group action">
+            <?php
+                    echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
+                        'div' => false, 
+                        'class'=> 'btn btn-success btn-sm ajaxModal',
+                        'data-action' => $data_action,
+                        'data-parent' => true,
+                        'title' => $title,
+                    ));
+                    echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                        'controller' => 'ajax',
+                        'action' => 'getBiayaTtuj',
+                        $action_type,
+                    ), array(
+                        'escape' => false, 
+                        'class'=> 'btn btn-default btn-sm ajaxModal',
+                        'data-action' => $data_action,
+                        'title' => $title,
+                    ));
+            ?>
+        </div>
     </div>
-</div>
-<div class="form-group action">
-    <?php
-            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
-                'div' => false, 
-                'class'=> 'btn btn-success btn-sm ajaxModal',
-                'data-action' => $data_action,
-                'data-parent' => true,
-                'title' => $title,
-            ));
-            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                'controller' => 'ajax',
-                'action' => 'getBiayaTtuj',
-                $action_type,
-            ), array(
-                'escape' => false, 
-                'class'=> 'btn btn-default btn-sm ajaxModal',
-                'data-action' => $data_action,
-                'title' => $title,
-            ));
-    ?>
 </div>
 <?php 
     echo $this->Form->end();
@@ -129,82 +140,90 @@
         <?php
                 if(!empty($ttujs)){
                     foreach ($ttujs as $key => $ttuj) {
-                        switch ($action_type) {
-                            case 'biaya_ttuj':
-                                if( !empty($ttuj['Ttuj']['uang_kuli_muat']) && $ttuj['Ttuj']['paid_uang_kuli_muat'] != 'full' ) {
-                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
-                                        'ttuj' => $ttuj,
-                                        'data_type' => 'uang_kuli_muat',
-                                        'idx' => $key,
-                                    ));
-                                }
-                                if( !empty($ttuj['Ttuj']['uang_kuli_bongkar']) && $ttuj['Ttuj']['paid_uang_kuli_bongkar'] != 'full' ) {
-                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
-                                        'ttuj' => $ttuj,
-                                        'data_type' => 'uang_kuli_bongkar',
-                                        'idx' => $key,
-                                    ));
-                                }
-                                if( !empty($ttuj['Ttuj']['asdp']) && $ttuj['Ttuj']['paid_asdp'] != 'full' ) {
-                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
-                                        'ttuj' => $ttuj,
-                                        'data_type' => 'asdp',
-                                        'idx' => $key,
-                                    ));
-                                }
-                                if( !empty($ttuj['Ttuj']['uang_kawal']) && $ttuj['Ttuj']['paid_uang_kawal'] != 'full' ) {
-                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
-                                        'ttuj' => $ttuj,
-                                        'data_type' => 'uang_kawal',
-                                        'idx' => $key,
-                                    ));
-                                }
-                                if( !empty($ttuj['Ttuj']['uang_keamanan']) && $ttuj['Ttuj']['paid_uang_keamanan'] != 'full' ) {
-                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
-                                        'ttuj' => $ttuj,
-                                        'data_type' => 'uang_keamanan',
-                                        'idx' => $key,
-                                    ));
-                                }
-                                break;
-                            
-                            default:
-                                if( !empty($ttuj['Ttuj']['uang_jalan_1']) && $ttuj['Ttuj']['paid_uang_jalan'] != 'full' ) {
-                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
-                                        'ttuj' => $ttuj,
-                                        'data_type' => 'uang_jalan',
-                                        'idx' => $key,
-                                    ));
-                                }
-                                if( !empty($ttuj['Ttuj']['uang_jalan_2']) && $ttuj['Ttuj']['paid_uang_jalan_2'] != 'full' ) {
-                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
-                                        'ttuj' => $ttuj,
-                                        'data_type' => 'uang_jalan_2',
-                                        'idx' => $key,
-                                    ));
-                                }
-                                if( !empty($ttuj['Ttuj']['uang_jalan_extra']) && $ttuj['Ttuj']['paid_uang_jalan_extra'] != 'full' ) {
-                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
-                                        'ttuj' => $ttuj,
-                                        'data_type' => 'uang_jalan_extra',
-                                        'idx' => $key,
-                                    ));
-                                }
-                                if( !empty($ttuj['Ttuj']['commission']) && $ttuj['Ttuj']['paid_commission'] != 'full' ) {
-                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
-                                        'ttuj' => $ttuj,
-                                        'data_type' => 'commission',
-                                        'idx' => $key,
-                                    ));
-                                }
-                                if( !empty($ttuj['Ttuj']['commission_extra']) && $ttuj['Ttuj']['paid_commission_extra'] != 'full' ) {
-                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
-                                        'ttuj' => $ttuj,
-                                        'data_type' => 'commission_extra',
-                                        'idx' => $key,
-                                    ));
-                                }
-                                break;
+                        if( !empty($document_type) ) {
+                            echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                'ttuj' => $ttuj,
+                                'data_type' => $document_type,
+                                'idx' => $key,
+                            ));
+                        } else {
+                            switch ($action_type) {
+                                case 'biaya_ttuj':
+                                    if( !empty($ttuj['Ttuj']['uang_kuli_muat']) && $ttuj['Ttuj']['paid_uang_kuli_muat'] != 'full' ) {
+                                        echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                            'ttuj' => $ttuj,
+                                            'data_type' => 'uang_kuli_muat',
+                                            'idx' => $key,
+                                        ));
+                                    }
+                                    if( !empty($ttuj['Ttuj']['uang_kuli_bongkar']) && $ttuj['Ttuj']['paid_uang_kuli_bongkar'] != 'full' ) {
+                                        echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                            'ttuj' => $ttuj,
+                                            'data_type' => 'uang_kuli_bongkar',
+                                            'idx' => $key,
+                                        ));
+                                    }
+                                    if( !empty($ttuj['Ttuj']['asdp']) && $ttuj['Ttuj']['paid_asdp'] != 'full' ) {
+                                        echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                            'ttuj' => $ttuj,
+                                            'data_type' => 'asdp',
+                                            'idx' => $key,
+                                        ));
+                                    }
+                                    if( !empty($ttuj['Ttuj']['uang_kawal']) && $ttuj['Ttuj']['paid_uang_kawal'] != 'full' ) {
+                                        echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                            'ttuj' => $ttuj,
+                                            'data_type' => 'uang_kawal',
+                                            'idx' => $key,
+                                        ));
+                                    }
+                                    if( !empty($ttuj['Ttuj']['uang_keamanan']) && $ttuj['Ttuj']['paid_uang_keamanan'] != 'full' ) {
+                                        echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                            'ttuj' => $ttuj,
+                                            'data_type' => 'uang_keamanan',
+                                            'idx' => $key,
+                                        ));
+                                    }
+                                    break;
+                                
+                                default:
+                                    if( !empty($ttuj['Ttuj']['uang_jalan_1']) && $ttuj['Ttuj']['paid_uang_jalan'] != 'full' ) {
+                                        echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                            'ttuj' => $ttuj,
+                                            'data_type' => 'uang_jalan',
+                                            'idx' => $key,
+                                        ));
+                                    }
+                                    if( !empty($ttuj['Ttuj']['uang_jalan_2']) && $ttuj['Ttuj']['paid_uang_jalan_2'] != 'full' ) {
+                                        echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                            'ttuj' => $ttuj,
+                                            'data_type' => 'uang_jalan_2',
+                                            'idx' => $key,
+                                        ));
+                                    }
+                                    if( !empty($ttuj['Ttuj']['uang_jalan_extra']) && $ttuj['Ttuj']['paid_uang_jalan_extra'] != 'full' ) {
+                                        echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                            'ttuj' => $ttuj,
+                                            'data_type' => 'uang_jalan_extra',
+                                            'idx' => $key,
+                                        ));
+                                    }
+                                    if( !empty($ttuj['Ttuj']['commission']) && $ttuj['Ttuj']['paid_commission'] != 'full' ) {
+                                        echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                            'ttuj' => $ttuj,
+                                            'data_type' => 'commission',
+                                            'idx' => $key,
+                                        ));
+                                    }
+                                    if( !empty($ttuj['Ttuj']['commission_extra']) && $ttuj['Ttuj']['paid_commission_extra'] != 'full' ) {
+                                        echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                            'ttuj' => $ttuj,
+                                            'data_type' => 'commission_extra',
+                                            'idx' => $key,
+                                        ));
+                                    }
+                                    break;
+                            }
                         }
         ?>
         
@@ -213,7 +232,7 @@
                 }else{
                     echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                         'class' => 'alert alert-warning text-center',
-                        'colspan' => '9'
+                        'colspan' => '10'
                     )));
                 }
         ?>
