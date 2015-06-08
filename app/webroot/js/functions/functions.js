@@ -2554,7 +2554,7 @@ var laka_ttuj_change = function(){
                 $('#city-laka').html($(response).filter('#destination-laka').html());
 
                 if($(response).filter('#data-supir-pengganti').html() != ''){
-                    $('#laka-driver-change-name').val($(response).filter('#data-supir-pengganti').html());
+                    $('#data-supir-pengganti').html($(response).filter('#data-supir-pengganti').html());
                 }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -3174,6 +3174,7 @@ $(function() {
                 $('#laka-ttuj-change').attr('readonly', false);
 
                 laka_ttuj_change();
+                $('.supir-pengganti-val').val('');
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');

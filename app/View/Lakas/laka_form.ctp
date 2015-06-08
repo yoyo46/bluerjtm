@@ -133,17 +133,28 @@
 			                    </div>
 			                </div>
 				        </div>
-				        <div class="form-group">
+				        <div class="form-group" id="data-supir-pengganti">
 				        	<?php 
-									echo $this->Form->input('change_driver_id',array(
-										'label'=> __('Nama Supir Pengganti'), 
-										'class'=>'form-control',
-										'required' => false,
-										'empty' => __('Pilih Supir Pengganti'),
-										'options' => $driverPengantis,
-										'readonly' => false,
-										'id' => 'laka-driver-change-name'
+									echo $this->Form->hidden('Laka.change_driver_id',array(
+										'class' => 'supir-pengganti-val',
+										'id' => 'laka-driver-change-id',
+										'readonly' => true,
+										'value' => !empty($this->request->data['Laka']['change_driver_id']) ? $this->request->data['Laka']['change_driver_id'] : 0
 									));
+
+									echo $this->Form->input('Laka.change_driver_name',array(
+										'type' => 'text',
+										'label'=> __('Nama Supir Pengganti'), 
+										'class'=>'form-control supir-pengganti-val',
+										'required' => false,
+										'id' => 'laka-driver-change-name',
+										'value' => !empty($this->request->data['Laka']['change_driver_name']) ? $this->request->data['Laka']['change_driver_name']: '',
+										'readonly' => true
+									));
+
+									if ($this->Form->isFieldError('change_driver_id')) {
+									    echo $this->Form->error('change_driver_id');
+									}
 							?>
 				        </div>
 				        <div class="form-group">

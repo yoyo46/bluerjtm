@@ -28,8 +28,22 @@
 		?>
 	</div>
 </div>
-<div id="data-supir-pengganti"><?php
-		if(!empty($data_ttuj['Ttuj']['driver_pengganti_id'])){
-			echo $data_ttuj['Ttuj']['driver_pengganti_id'];
-		}
-	?></div>
+<div id="data-supir-pengganti">
+	<?php
+		echo $this->Form->hidden('Laka.change_driver_id',array(
+			'id' => 'laka-driver-change-id',
+			'readonly' => true,
+			'value' => !empty($data_ttuj['Ttuj']['driver_penganti_id']) ? $data_ttuj['Ttuj']['driver_penganti_id'] : 0
+		));
+
+		echo $this->Form->input('Laka.change_driver_name',array(
+			'type' => 'text',
+			'label'=> __('Nama Supir Pengganti'), 
+			'class'=>'form-control',
+			'required' => false,
+			'id' => 'laka-driver-change-name',
+			'value' => !empty($data_ttuj['Driver']['driver_name']) ? $data_ttuj['Driver']['driver_name']: '',
+			'readonly' => true
+		));
+	?>
+</div>

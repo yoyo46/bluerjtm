@@ -14,12 +14,22 @@ class Laka extends AppModel {
                 'message' => 'Tgl LAKA harap dipilih'
             ),
         ),
-        // 'ttuj_id' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'TTUJ harap dipilih'
-        //     ),
-        // ),
+        'ttuj_id' => array(
+            // 'notempty' => array(
+            //     'rule' => array('notempty'),
+            //     'message' => 'TTUJ harap dipilih'
+            // ),
+            'validateTtuj' => array(
+                'rule' => array('validateTtuj'),
+                'message' => 'TTUJ harap dipilih'
+            )
+        ),
+        'change_driver_id' => array(
+            'validateChangeDriver' => array(
+                'rule' => array('validateChangeDriver'),
+                'message' => 'Harap Pilih TTUJ yang memiliki supir pengganti untuk bisa melanjutkan LAKA'
+            )
+        ),
         'truck_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -102,6 +112,26 @@ class Laka extends AppModel {
             'foreignKey' => 'laka_id',
         ),
     );
+
+    function validateTtuj($data){
+        $result = true;
+        if(empty($this->data['Laka']['driver_name']) && empty($data['ttuj_id'])){
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    function validateChangeDriver($data){
+        $result = true;
+        if(empty($this->data['Laka']['driver_name'])){
+            if((empty($this->data['Laka']['ttuj_id']) && empty($data['change_driver_id'])) || (!empty($this->data['Laka']['ttuj_id']) && empty($data['change_driver_id']))){
+                $result = false;
+            }
+        }
+        
+        return $result;
+    }
 
     function completeValidate($data){
         if(!empty($this->data['Laka']['completed'])){

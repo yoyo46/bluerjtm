@@ -136,7 +136,7 @@ class LakasController extends AppController {
                 ));
 
                 if(!empty($driver['Driver']['name'])){
-                    $data['Laka']['change_driver_name'] = $driver['Driver']['name'];
+                    $data['Laka']['change_driver_name'] = $driver['Driver']['driver_name'];
                 }
             }
             
@@ -272,6 +272,19 @@ class LakasController extends AppController {
 
             if( !empty($this->request->data['Laka']['to_city_id']) ) {
                 $this->request->data['Laka']['to_city_name'] = $this->City->getCity( $this->request->data['Laka']['to_city_id'], 'name' );
+            }
+
+            if(!empty($this->request->data['Laka']['change_driver_id'])){
+                $this->loadModel('Driver');
+                $driver_change = $this->Driver->find('first', array(
+                    'conditions' => array(
+                        'Driver.id' => $this->request->data['Laka']['change_driver_id']
+                    )
+                ));
+
+                if(!empty($driver_change['Driver']['driver_name'])){
+                    $this->request->data['Laka']['change_driver_name'] = $driver_change['Driver']['driver_name'];
+                }
             }
         }
 
