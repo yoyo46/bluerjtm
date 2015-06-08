@@ -6421,7 +6421,7 @@ class RevenuesController extends AppController {
             
             default:
                 $labelName = 'Uang Jalan/Komisi';
-                $this->set('active_menu', 'uang_jalan_payments');
+                $this->set('active_menu', 'uang_jalan_commission_payments');
                 break;
         }
 

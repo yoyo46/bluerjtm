@@ -177,7 +177,7 @@
 			                        'width' => '5%',
 			                    ));
 			                    echo $this->Html->tag('th', __('Total'));
-			                    echo $this->Html->tag('th', __('Sisa'), array(
+			                    echo $this->Html->tag('th', __('Biaya Dibayar'), array(
 			                        'width' => '15%',
 			                    ));
 			                    echo $this->Html->tag('th', __('Action'), array(

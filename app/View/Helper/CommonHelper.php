@@ -811,42 +811,43 @@ class CommonHelper extends AppHelper {
         return $dataTree;
     }
 
-    function getBiayaTtuj ( $ttuj, $data_type, $format_currency = true ) {
+    function getBiayaTtuj ( $ttuj, $data_type, $format_currency = true, $tampilkan_sisa = true ) {
         $total = 0;
+        $biaya = 0;
 
         switch ($data_type) {
             case 'uang_kuli_muat':
-                $uang_kuli_muat = !empty($ttuj['Ttuj']['uang_kuli_muat'])?$ttuj['Ttuj']['uang_kuli_muat']:0;
+                $biaya = $uang_kuli_muat = !empty($ttuj['Ttuj']['uang_kuli_muat'])?$ttuj['Ttuj']['uang_kuli_muat']:0;
                 $uang_kuli_muat_dibayar = !empty($ttuj['uang_kuli_muat_dibayar'])?$ttuj['uang_kuli_muat_dibayar']:0;
 
                 $total = $uang_kuli_muat - $uang_kuli_muat_dibayar;
                 break;
             case 'uang_kuli_bongkar':
-                $uang_kuli_bongkar = !empty($ttuj['Ttuj']['uang_kuli_bongkar'])?$ttuj['Ttuj']['uang_kuli_bongkar']:0;
+                $biaya = $uang_kuli_bongkar = !empty($ttuj['Ttuj']['uang_kuli_bongkar'])?$ttuj['Ttuj']['uang_kuli_bongkar']:0;
                 $uang_kuli_bongkar_dibayar = !empty($ttuj['uang_kuli_bongkar_dibayar'])?$ttuj['uang_kuli_bongkar_dibayar']:0;
 
                 $total = $uang_kuli_bongkar - $uang_kuli_bongkar_dibayar;
                 break;
             case 'asdp':
-                $asdp = !empty($ttuj['Ttuj']['asdp'])?$ttuj['Ttuj']['asdp']:0;
+                $biaya = $asdp = !empty($ttuj['Ttuj']['asdp'])?$ttuj['Ttuj']['asdp']:0;
                 $asdp_dibayar = !empty($ttuj['asdp_dibayar'])?$ttuj['asdp_dibayar']:0;
 
                 $total = $asdp - $asdp_dibayar;
                 break;
             case 'uang_kawal':
-                $uang_kawal = !empty($ttuj['Ttuj']['uang_kawal'])?$ttuj['Ttuj']['uang_kawal']:0;
+                $biaya = $uang_kawal = !empty($ttuj['Ttuj']['uang_kawal'])?$ttuj['Ttuj']['uang_kawal']:0;
                 $uang_kawal_dibayar = !empty($ttuj['uang_kawal_dibayar'])?$ttuj['uang_kawal_dibayar']:0;
 
                 $total = $uang_kawal - $uang_kawal_dibayar;
                 break;
             case 'uang_keamanan':
-                $uang_keamanan = !empty($ttuj['Ttuj']['uang_keamanan'])?$ttuj['Ttuj']['uang_keamanan']:0;
+                $biaya = $uang_keamanan = !empty($ttuj['Ttuj']['uang_keamanan'])?$ttuj['Ttuj']['uang_keamanan']:0;
                 $uang_keamanan_dibayar = !empty($ttuj['uang_keamanan_dibayar'])?$ttuj['uang_keamanan_dibayar']:0;
 
                 $total = $uang_keamanan - $uang_keamanan_dibayar;
                 break;
             case 'commission':
-                $commission = !empty($ttuj['Ttuj']['commission'])?$ttuj['Ttuj']['commission']:0;
+                $biaya = $commission = !empty($ttuj['Ttuj']['commission'])?$ttuj['Ttuj']['commission']:0;
                 // $commission_extra = !empty($ttuj['Ttuj']['commission_extra'])?$ttuj['Ttuj']['commission_extra']:0;
                 $commission_dibayar = !empty($ttuj['commission_dibayar'])?$ttuj['commission_dibayar']:0;
 
@@ -854,26 +855,26 @@ class CommonHelper extends AppHelper {
                 $total = $commission - $commission_dibayar;
                 break;
             case 'uang_jalan_2':
-                $uang_jalan_2 = !empty($ttuj['Ttuj']['uang_jalan_2'])?$ttuj['Ttuj']['uang_jalan_2']:0;
+                $biaya = $uang_jalan_2 = !empty($ttuj['Ttuj']['uang_jalan_2'])?$ttuj['Ttuj']['uang_jalan_2']:0;
                 $uang_jalan_2_dibayar = !empty($ttuj['uang_jalan_2_dibayar'])?$ttuj['uang_jalan_2_dibayar']:0;
 
                 $total = $uang_jalan_2 - $uang_jalan_2_dibayar;
                 break;
             case 'uang_jalan_extra':
-                $uang_jalan_extra = !empty($ttuj['Ttuj']['uang_jalan_extra'])?$ttuj['Ttuj']['uang_jalan_extra']:0;
+                $biaya = $uang_jalan_extra = !empty($ttuj['Ttuj']['uang_jalan_extra'])?$ttuj['Ttuj']['uang_jalan_extra']:0;
                 $uang_jalan_extra_dibayar = !empty($ttuj['uang_jalan_extra_dibayar'])?$ttuj['uang_jalan_extra_dibayar']:0;
 
                 $total = $uang_jalan_extra - $uang_jalan_extra_dibayar;
                 break;
             case 'commission_extra':
-                $commission_extra = !empty($ttuj['Ttuj']['commission_extra'])?$ttuj['Ttuj']['commission_extra']:0;
+                $biaya = $commission_extra = !empty($ttuj['Ttuj']['commission_extra'])?$ttuj['Ttuj']['commission_extra']:0;
                 $commission_extra_dibayar = !empty($ttuj['commission_extra_dibayar'])?$ttuj['commission_extra_dibayar']:0;
 
                 $total = $commission_extra - $commission_extra_dibayar;
                 break;
             
             default:
-                $uang_jalan_1 = !empty($ttuj['Ttuj']['uang_jalan_1'])?$ttuj['Ttuj']['uang_jalan_1']:0;
+                $biaya = $uang_jalan_1 = !empty($ttuj['Ttuj']['uang_jalan_1'])?$ttuj['Ttuj']['uang_jalan_1']:0;
                 // $uang_jalan_2 = !empty($ttuj['Ttuj']['uang_jalan_2'])?$ttuj['Ttuj']['uang_jalan_2']:0;
                 // $uang_jalan_extra = !empty($ttuj['Ttuj']['uang_jalan_extra'])?$ttuj['Ttuj']['uang_jalan_extra']:0;
                 $uang_jalan_dibayar = !empty($ttuj['uang_jalan_dibayar'])?$ttuj['uang_jalan_dibayar']:0;
@@ -881,6 +882,10 @@ class CommonHelper extends AppHelper {
                 // $total = $uang_jalan_1 + $uang_jalan_2 + $uang_jalan_extra - $uang_jalan_dibayar;
                 $total = $uang_jalan_1 - $uang_jalan_dibayar;
                 break;
+        }
+
+        if( !$tampilkan_sisa ) {
+            $total = $biaya;
         }
 
         if( $format_currency ) {

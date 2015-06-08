@@ -58,16 +58,17 @@
 	</td>
     <td class="total-ttuj">
     	<?php
-    			echo $this->Common->getBiayaTtuj( $ttuj, $data_type );
+    			echo $this->Common->getBiayaTtuj( $ttuj, $data_type, true, false );
 		?>
 	</td>
     <td>
     	<?php
+                $sisaAmount = $this->Common->getBiayaTtuj( $ttuj, $data_type );
     			echo $this->Form->input('TtujPayment.amount_payment.',array(
                     'label'=> false,
                     'class'=>'form-control input_price sisa-ttuj text-right',
                     'required' => false,
-                    'value' => !empty($this->request->data['TtujPayment']['amount_payment'][$idx])?$this->request->data['TtujPayment']['amount_payment'][$idx]:0,
+                    'value' => !empty($this->request->data['TtujPayment']['amount_payment'][$idx])?$this->request->data['TtujPayment']['amount_payment'][$idx]:$sisaAmount,
                 ));
                 echo $this->Form->hidden('TtujPayment.ttuj_id.',array(
                     'value'=> $ttuj['Ttuj']['id'],
