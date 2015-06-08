@@ -135,26 +135,20 @@
 				        </div>
 				        <div class="form-group" id="data-supir-pengganti">
 				        	<?php 
-									echo $this->Form->hidden('Laka.change_driver_id',array(
-										'class' => 'supir-pengganti-val',
-										'id' => 'laka-driver-change-id',
-										'readonly' => true,
-										'value' => !empty($this->request->data['Laka']['change_driver_id']) ? $this->request->data['Laka']['change_driver_id'] : 0
-									));
-
-									echo $this->Form->input('Laka.change_driver_name',array(
-										'type' => 'text',
-										'label'=> __('Nama Supir Pengganti'), 
+									echo $this->Form->input('Laka.change_driver_id',array(
+										// 'type' => 'text',
+										'empty'=> __('Pilih Supir Pengganti'), 
 										'class'=>'form-control supir-pengganti-val',
+										'options' => $driverPengantis,
 										'required' => false,
-										'id' => 'laka-driver-change-name',
-										'value' => !empty($this->request->data['Laka']['change_driver_name']) ? $this->request->data['Laka']['change_driver_name']: '',
-										'readonly' => true
+										'id' => 'laka-driver-change-id',
+										// 'value' => !empty($this->request->data['Laka']['change_driver_name']) ? $this->request->data['Laka']['change_driver_name']: '',
+										'disabled' => !empty($this->request->data['Laka']['ttuj_id']) ? true: false
 									));
 
-									if ($this->Form->isFieldError('change_driver_id')) {
-									    echo $this->Form->error('change_driver_id');
-									}
+									// if ($this->Form->isFieldError('change_driver_id')) {
+									//     echo $this->Form->error('change_driver_id');
+									// }
 							?>
 				        </div>
 				        <div class="form-group">

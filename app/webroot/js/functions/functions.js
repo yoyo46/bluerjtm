@@ -2546,22 +2546,31 @@ var laka_ttuj_change = function(){
     $('#laka-ttuj-change').change(function(){
         var self = $(this);
         var val = self.val();
+        
+        if(val != ''){
+            $.ajax({
+                url: '/ajax/getInfoLaka/'+val+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    $('#city-laka').html($(response).filter('#destination-laka').html());
 
-        $.ajax({
-            url: '/ajax/getInfoLaka/'+val+'/',
-            type: 'POST',
-            success: function(response, status) {
-                $('#city-laka').html($(response).filter('#destination-laka').html());
-
-                if($(response).filter('#data-supir-pengganti').html() != ''){
-                    $('#data-supir-pengganti').html($(response).filter('#data-supir-pengganti').html());
+                    if($(response).find('#laka-driver-change-id').val() != ''){
+                        $('#laka-driver-change-id').val($(response).find('#laka-driver-change-id').val());
+                        $('#laka-driver-change-id').attr('disabled', true);
+                    }else{
+                        $('#laka-driver-change-id').val('');
+                        $('#laka-driver-change-id').attr('disabled', false);
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
                 }
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
-                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                return false;
-            }
-        });
+            });
+        }else{
+            $('#laka-driver-change-id').val('');
+            $('#laka-driver-change-id').attr('disabled', false);
+        }
     });
 }
 

@@ -66,7 +66,15 @@
                             $id = $value['Laka']['id'];
             ?>
             <tr>
-                <td><?php echo $value['Laka']['driver_name'];?></td>
+                <td>
+                    <?php 
+                        if(!empty($value['Laka']['driver_name'])){
+                            echo $value['Laka']['driver_name'];
+                        }else if(!empty($value['Laka']['change_driver_name'])){
+                            echo sprintf('%s (supir pengganti)', $value['Laka']['change_driver_name']);
+                        }
+                    ?>
+                </td>
                 <td><?php echo $value['Laka']['nopol'];?></td>
                 <?php
                         echo $this->Html->tag('td', $value['Laka']['lokasi_laka']);

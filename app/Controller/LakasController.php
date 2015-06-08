@@ -127,16 +127,15 @@ class LakasController extends AppController {
                 $msg = 'menambah';
             }
 
-            if(!empty($data['Laka']['change_driver_id'])){
-                $driver = $this->Ttuj->Truck->Driver->getData('first', array(
+            if(!empty($data['Laka']['truck_id'])){
+                $truck = $this->Ttuj->Truck->getData('first', array(
                     'conditions' => array(
-                        'Driver.id' => $data['Laka']['change_driver_id'],
-                        'Driver.status' => 1
+                        'Truck.id' => $data['Laka']['truck_id']
                     )
                 ));
 
-                if(!empty($driver['Driver']['name'])){
-                    $data['Laka']['change_driver_name'] = $driver['Driver']['driver_name'];
+                if(!empty($truck)){
+                    $data['Laka']['nopol'] = $truck['Truck']['nopol'];
                 }
             }
             
@@ -170,6 +169,23 @@ class LakasController extends AppController {
                         'Ttuj.id' => $data['Laka']['ttuj_id']
                     )
                 ));
+
+                if(!empty($ttuj_data['Ttuj']['driver_penganti_id'])){
+                    $data['Laka']['change_driver_id'] = $ttuj_data['Ttuj']['driver_penganti_id'];
+                }
+            }
+
+            if(!empty($data['Laka']['change_driver_id'])){
+                $driver = $this->Ttuj->Truck->Driver->getData('first', array(
+                    'conditions' => array(
+                        'Driver.id' => $data['Laka']['change_driver_id'],
+                        'Driver.status' => 1
+                    )
+                ));
+
+                if(!empty($driver['Driver']['name'])){
+                    $data['Laka']['change_driver_name'] = $driver['Driver']['driver_name'];
+                }
             }
             
             $this->Laka->set($data);
@@ -255,6 +271,8 @@ class LakasController extends AppController {
 
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LAKA'), $msg), 'error');
             }
+
+            $this->request->data = $data;
         } else if($id && $data_local){
             $this->request->data= $data_local;
             

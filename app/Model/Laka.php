@@ -114,20 +114,22 @@ class Laka extends AppModel {
     );
 
     function validateTtuj($data){
-        $result = true;
-        if(empty($this->data['Laka']['driver_name']) && empty($data['ttuj_id'])){
-            $result = false;
+        $result = false;
+        if(empty($this->data['Laka']['driver_name']) && (!empty($this->data['Laka']['change_driver_id']) || !empty($this->data['Laka']['ttuj_id']) ) ){
+            if(!empty($this->data['Laka']['ttuj_id']) && !empty($this->data['Laka']['change_driver_id'])){
+                $result = true;
+            }else if(empty($this->data['Laka']['ttuj_id']) && !empty($this->data['Laka']['change_driver_id'])){
+                $result = true;
+            }
         }
 
         return $result;
     }
 
     function validateChangeDriver($data){
-        $result = true;
-        if(empty($this->data['Laka']['driver_name'])){
-            if((empty($this->data['Laka']['ttuj_id']) && empty($data['change_driver_id'])) || (!empty($this->data['Laka']['ttuj_id']) && empty($data['change_driver_id']))){
-                $result = false;
-            }
+        $result = false;
+        if(empty($this->data['Laka']['driver_name']) && (!empty($this->data['Laka']['change_driver_id']) || !empty($this->data['Laka']['ttuj_id']) ) ){
+            $result = true;
         }
         
         return $result;
