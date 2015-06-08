@@ -298,6 +298,7 @@
                                 if( !empty($ttuj['SuratJalan']['tgl_surat_jalan']) ) {
                                     $tglSJ = $this->Common->customDate($ttuj['SuratJalan']['tgl_surat_jalan'], 'd/m/Y');
                                     $leadSj = floor($str/3600/24);
+                                    $avgLeadSj += $leadSj;
                                 } else {
                                     $leadSj = 0;
                                     $tglSJ = '-';
@@ -306,6 +307,7 @@
                                 if( !empty($ttuj['SuratJalan']['tgl_surat_jalan']) && !empty($ttuj['Invoice']['invoice_date']) ) {
                                     $str = strtotime($dtInvoice) - (strtotime($dtSj));
                                     $leadSjBilling = floor($str/3600/24);
+                                    $avgLeadSjBilling += $leadSjBilling;
                                 } else {
                                     $leadSjBilling = 0;
                                 }
@@ -314,6 +316,7 @@
 
                                 if( !empty($ttuj['Invoice']['invoice_date']) ) {
                                     $leadSjInvoiced = floor($str/3600/24);
+                                    $avgLeadSjInvoiced += $leadSjInvoiced;
                                 } else {
                                     $leadSjInvoiced = 0;
                                 }
@@ -324,9 +327,6 @@
                                 $totalUnitSjNotRecipt += $unitSjNotRecipt;
                                 $totalUnitJSUnInvoiced += $unitJSUnInvoiced;
                                 $totalUnitUnInvoiced += $unitUnInvoiced;
-                                $avgLeadSj += $leadSj;
-                                $avgLeadSjBilling += $leadSjBilling;
-                                $avgLeadSjInvoiced += $leadSjInvoiced;
                 ?>
                 <tr>
                     <?php 
