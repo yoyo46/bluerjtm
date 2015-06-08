@@ -172,7 +172,7 @@ class TarifAngkutan extends AppModel {
             'TarifAngkutan.from_city_id' => $this->data['TarifAngkutan']['from_city_id'],
             'TarifAngkutan.to_city_id' => $this->data['TarifAngkutan']['to_city_id'],
             'TarifAngkutan.jenis_unit' => $this->data['TarifAngkutan']['jenis_unit'],
-            'TarifAngkutan.group_motor_id' => $this->data['TarifAngkutan']['group_motor_id'],
+            'TarifAngkutan.capacity' => $this->data['TarifAngkutan']['capacity'],
             'TarifAngkutan.type' => $this->data['TarifAngkutan']['type'],
             'TarifAngkutan.status' => 1,
         );
@@ -182,7 +182,7 @@ class TarifAngkutan extends AppModel {
         }
 
         if( !empty($this->data['TarifAngkutan']['jenis_unit']) && $this->data['TarifAngkutan']['jenis_unit'] == 'per_unit' ) {
-            $conditions['TarifAngkutan.capacity'] = $this->data['TarifAngkutan']['capacity'];
+            $conditions['TarifAngkutan.group_motor_id'] = $this->data['TarifAngkutan']['group_motor_id'];
         }
 
         $tarifAngkutan = $this->find('first', array(

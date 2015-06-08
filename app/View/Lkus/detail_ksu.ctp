@@ -114,7 +114,7 @@
 		                    <th><?php echo __('Perlengkapan');?></th>
 		                    <th><?php echo __('No. Rangka');?></th>
 		                    <th><?php echo __('Keterangan');?></th>
-		                    <th><?php echo __('Jumlah Unit');?></th>
+		                    <th><?php echo __('Jumlah');?></th>
 		                    <?php if(empty($Ksu['Ksu']['kekurangan_atpm'])){?>
 		                    <th><?php printf(__('Biaya Klaim (%s)'), Configure::read('__Site.config_currency_code'));?></th>
 		                    <th><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
