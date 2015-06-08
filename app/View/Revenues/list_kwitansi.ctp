@@ -5,13 +5,19 @@
             $tdStyle = '';
             $border = 0;
             $headerRowspan = false;
-            $addClass = 'easyui-datagrid';
+
+            if( !empty($invoices) ) {
+                $addClass = 'easyui-datagrid';
+            } else {
+                $addClass = '';
+            }
 
             if( $data_action == 'excel' ) {
                 header('Content-type: application/ms-excel');
                 header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
                 $tdStyle = 'text-align: center;';
+                $addClass = '';
             }
 
             if( $data_action != 'excel' ) {
@@ -179,7 +185,7 @@
                                 'mainalign' => 'center',
                             ));
 
-                            if( $data_action != 'excel' ) {
+                            if( $data_action != 'excel' && !empty($invoices) ) {
                     ?>
                 </tr>
             </thead>
