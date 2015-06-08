@@ -36,10 +36,10 @@
                         <div class="form-group">
                             <?php 
                                 echo $this->Form->input('receiving_cash_type',array(
-                                    'label'=> __('Tipe Kas Bank'),
+                                    'label'=> __('Tipe Kas/Bank'),
                                     'class'=>'form-control',
                                     'required' => false,
-                                    'empty' => __('Pilih Tipe Kas Bank'),
+                                    'empty' => __('Pilih Tipe Kas/Bank'),
                                     'options' => array(
                                         'in' => 'Cash In',
                                         'out' => 'Cash Out'
@@ -53,7 +53,7 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                        echo $this->Form->label('date_from', 'Tanggal Kas Bank');
+                        echo $this->Form->label('date_from', 'Tanggal Transaksi');
                     ?>
                     <div class="row">
                         <div class="col-sm-6">

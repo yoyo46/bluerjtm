@@ -53,7 +53,7 @@
 							'label'=> __('Account *'), 
 							'class'=>'form-control',
 							'required' => false,
-							'empty' => __('Pilih Kas Bank'),
+							'empty' => __('Pilih Kas/Bank'),
 							'options' => $coas
 						));
 				?>

@@ -5,25 +5,25 @@ class CoaSetting extends AppModel {
 		'cashbank_out_coa_debit_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'COA Debit Kas Bank Keluar harap dipilih'
+                'message' => 'COA Debit Kas/Bank Keluar harap dipilih'
             ),
 		),
         'cashbank_out_coa_credit_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'COA Kredit Kas Bank Keluar harap dipilih'
+                'message' => 'COA Kredit Kas/Bank Keluar harap dipilih'
             ),
         ),
         'cashbank_in_coa_debit_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'COA Debit Kas Bank Masuk harap dipilih'
+                'message' => 'COA Debit Kas/Bank Masuk harap dipilih'
             ),
         ),
         'cashbank_in_coa_credit_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'COA Kredit Kas Bank Masuk harap dipilih'
+                'message' => 'COA Kredit Kas/Bank Masuk harap dipilih'
             ),
         ),
         'ttuj_coa_debit_id' => array(

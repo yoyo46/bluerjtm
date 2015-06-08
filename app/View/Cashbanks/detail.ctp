@@ -1,5 +1,5 @@
 <?php
-        $this->Html->addCrumb(__('Kas Bank'), array(
+        $this->Html->addCrumb(__('Kas/Bank'), array(
             'action' => 'index'
         ));
         $this->Html->addCrumb($sub_module_title);
@@ -10,7 +10,7 @@
         <div class="box box-primary">
             <div class="box-header">
                 <?php 
-                        echo $this->Html->tag('h3', __('Informasi Kas Bank'), array(
+                        echo $this->Html->tag('h3', __('Informasi Kas/Bank'), array(
                             'class' => 'box-title',
                         ));
                 ?>
@@ -45,7 +45,7 @@
                         ?>
                     </dt>
                     <dd><?php echo $cashbank['CashBank']['receiver'];?></dd>
-                    <dt><?php echo __('Tanggal Kas Bank')?></dt>
+                    <dt><?php echo __('Tanggal Kas/Bank')?></dt>
                     <dd><?php echo $this->Common->customDate($cashbank['CashBank']['tgl_cash_bank'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Keterangan')?></dt>
                     <dd><?php echo !empty($cashbank['CashBank']['description'])?$cashbank['CashBank']['description']:'-';?></dd>
@@ -154,7 +154,7 @@
         <div class="box box-success">
             <div class="box-header">
                 <?php 
-                        echo $this->Html->tag('h3', __('Approval Kas Bank'), array(
+                        echo $this->Html->tag('h3', __('Approval Kas/Bank'), array(
                             'class' => 'box-title',
                         ));
                 ?>

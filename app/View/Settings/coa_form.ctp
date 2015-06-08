@@ -112,7 +112,7 @@
 			    		<div class="checkbox">
 			                <label>
 			                	<?php 
-			                			echo $this->Form->checkbox('is_cash_bank').' Termasuk Kas Bank?';
+			                			echo $this->Form->checkbox('is_cash_bank').' Termasuk Kas/Bank?';
 			                	?>
 			                </label>
 			            </div>

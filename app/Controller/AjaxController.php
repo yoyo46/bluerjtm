@@ -1475,7 +1475,7 @@ class AjaxController extends AppController {
 			
 			default:
 				$model = 'Customer';
-				$title = __('User Kas Bank');
+				$title = __('User Kas/Bank');
 				break;
 		}
 
@@ -1535,7 +1535,7 @@ class AjaxController extends AppController {
         $this->set('coas', $coas);
 
         $data_action = 'browse-cash-banks';
-		$title = __('Detail Kas Bank');
+		$title = __('Detail Kas/Bank');
 
 		$this->set(compact('data_action', 'title'));
 	}

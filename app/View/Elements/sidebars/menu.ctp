@@ -805,12 +805,12 @@
             <li class="treeview <?php echo $activeSetting; ?>">
                 <a href="#">
                     <i class="fa fa-book"></i>
-                    <span>Kas Bank</span>
+                    <span>Kas/Bank</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
                     <?php
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kas Bank</span>', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kas/Bank</span>', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'index'
                             ), array(

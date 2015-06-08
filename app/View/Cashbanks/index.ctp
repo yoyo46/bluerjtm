@@ -1,5 +1,5 @@
 <?php 
-        $this->Html->addCrumb(__('Kas Bank'));
+        $this->Html->addCrumb(__('Kas/Bank'));
         echo $this->element('blocks/cashbanks/search_index');
 ?>
 <div class="box">
@@ -10,7 +10,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Kas Bank', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Transaksi Kas/Bank', array(
                     'controller' => 'cashbanks',
                     'action' => 'cashbank_add'
                 ), array(
@@ -29,7 +29,7 @@
                 <tr>
                     <th>No Dokumen</th>
                     <th>Diterima/Dibayar kepada</th>
-                    <th>Tgl Kas Bank</th>
+                    <th>Tanggal Transaksi</th>
                     <th style="text-align:center;">Tipe Kas</th>
                     <th style="text-align:center;">Status</th>
                     <th>Action</th>

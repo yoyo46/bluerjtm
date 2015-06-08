@@ -1,5 +1,5 @@
 <?php
-		$this->Html->addCrumb(__('Kas Bank'), array(
+		$this->Html->addCrumb(__('Kas/Bank'), array(
 			'controller' => 'cashbanks',
 			'action' => 'index'
 		));
@@ -31,7 +31,7 @@
 					'label'=> __('Account Kas/Bank *'), 
 					'class'=>'form-control',
 					'required' => false,
-					'empty' => __('Pilih Kas Bank '),
+					'empty' => __('Pilih Kas/Bank '),
 					'options' => $coas
 				)), array(
 					'class' => 'form-group'
@@ -49,7 +49,7 @@
 						'prepayment_in' => __('Prepayment - IN'),
 						'prepayment_out' => __('Prepayment - Out'),
 					),
-					'empty' => __('Pilih Jenis Kas Bank'),
+					'empty' => __('Pilih Jenis Kas/Bank'),
 				)), array(
 					'class' => 'form-group'
 				));
@@ -113,7 +113,7 @@
 							$attrBrowse = array(
                                 'class' => 'ajaxModal visible-xs',
                                 'escape' => false,
-                                'title' => __('Data User Kas Bank'),
+                                'title' => __('Data User Kas/Bank'),
                                 'data-action' => 'browse-form',
                                 'data-change' => 'cash-bank-user',
                             );
@@ -143,7 +143,7 @@
         			$attrBrowse = array(
                         'class' => 'ajaxModal visible-xs',
                         'escape' => false,
-                        'title' => __('Detail Kas Bank'),
+                        'title' => __('Detail Kas/Bank'),
                         'data-action' => 'browse-cash-banks',
                         'data-change' => 'cashbanks-info-table',
                         'url' => $this->Html->url( array(
@@ -161,7 +161,7 @@
 <div class="cashbank-info-detail <?php echo (!empty($this->request->data['CashBankDetail'])) ? '' : 'hide';?>">
 	<div class="box box-primary">
 	    <div class="box-header">
-	        <h3 class="box-title"><?php echo __('Detail Info Kas Bank'); ?></h3>
+	        <h3 class="box-title"><?php echo __('Detail Info Kas/Bank'); ?></h3>
 	    </div>
 	    <div class="box-body table-responsive">
 	        <table class="table table-hover">

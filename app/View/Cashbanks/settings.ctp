@@ -86,7 +86,7 @@
         </table>
         <?php
         	}else{
-        		echo $this->Html->tag('div', __('List Kas Bank belum tersedia.'), array(
+        		echo $this->Html->tag('div', __('Transaksi Kas/Bank belum tersedia.'), array(
         			'class' => 'alert alert-danger'
         		));
         	}

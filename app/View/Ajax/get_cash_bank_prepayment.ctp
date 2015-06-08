@@ -64,7 +64,7 @@
             <tr>
                 <th>No Dokumen</th>
                 <th>Diterima/Dibayar kepada</th>
-                <th>Tgl Kas Bank</th>
+                <th>Tgl Kas/Bank</th>
             </tr>
         </thead>
         <?php

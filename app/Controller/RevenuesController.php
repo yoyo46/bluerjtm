@@ -6258,7 +6258,7 @@ class RevenuesController extends AppController {
     function detail_ttuj_payment($id = false, $action_type = 'uang_jalan_commission'){
         $this->loadModel('Customer');
         $this->loadModel('TtujPayment');
-        $module_title = __('Kas Bank');
+        $module_title = __('Kas/Bank');
         $invoice = $this->TtujPayment->getData('first', array(
             'conditions' => array(
                 'TtujPayment.id' => $id

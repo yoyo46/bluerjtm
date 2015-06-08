@@ -11,13 +11,13 @@ class CashBank extends AppModel {
         'receiving_cash_type' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Tipe Kas Bank harap dipilih'
+                'message' => 'Jenis Kas/Bank harap dipilih'
             ),
         ),
         'tgl_cash_bank' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Tanggal Kas Bank harap diisi'
+                'message' => 'Tanggal Transaksi harap diisi'
             ),
         ),
         'receiver' => array(
@@ -29,7 +29,7 @@ class CashBank extends AppModel {
         'coa_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Kas Bank harap dipilih'
+                'message' => 'Account Kas/Bank harap dipilih'
             ),
         ),
         'document_id' => array(

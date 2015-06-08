@@ -9,8 +9,8 @@ class CashbanksController extends AppController {
 
     function beforeFilter() {
         parent::beforeFilter();
-        $this->set('title_for_layout', __('ERP RJTM | Kas Bank'));
-        $this->set('module_title', __('Kas Bank'));
+        $this->set('title_for_layout', __('ERP RJTM | Kas/Bank'));
+        $this->set('module_title', __('Kas/Bank'));
     }
 
     function search( $index = 'index', $param_get = false ){
@@ -147,10 +147,10 @@ class CashbanksController extends AppController {
                 ));
 
                 if( !empty($cashbank) ) {
-                    $this->set('sub_module_title', 'Rubah Kas Bank');
+                    $this->set('sub_module_title', 'Rubah Kas/Bank');
                     $this->doCashBank( $id, $cashbank);
                 } else {
-                    $this->MkCommon->setCustomFlash(__('Kas Bank tidak ditemukan.'), 'error');
+                    $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
                     $this->redirect($this->referer());
                 }
             } 
@@ -306,20 +306,20 @@ class CashbanksController extends AppController {
                         }
                     }
 
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Kas Bank'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Kas Bank #%s'), $msg, $this->CashBank->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Kas/Bank'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Kas/Bank #%s'), $msg, $this->CashBank->id), $this->user_data, $this->RequestHandler, $this->params );
                     $this->redirect(array(
                         'controller' => 'cashbanks',
                         'action' => 'index'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Kas Bank'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Kas Bank #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Kas/Bank'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Kas/Bank #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
                 }
             }else{
-                $text = sprintf(__('Gagal %s Kas Bank'), $msg);
+                $text = sprintf(__('Gagal %s Kas/Bank'), $msg);
                 if($coas_validate){
-                    $text .= __(', COA Kas Bank harap di pilih');
+                    $text .= __(', COA Kas/Bank harap di pilih');
                 }
                 $this->MkCommon->setCustomFlash($text, 'error');
             }
@@ -427,7 +427,7 @@ class CashbanksController extends AppController {
         ));
 
         $this->set('active_menu', 'cash_bank');
-        $this->set('module_title', 'Kas Bank');
+        $this->set('module_title', 'Kas/Bank');
         $this->render('cashbank_form');
     }
 
@@ -466,13 +466,13 @@ class CashbanksController extends AppController {
                     }
 
                     $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Kas Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Sukses merubah status Kas/Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status Kas Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Gagal merubah status Kas/Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                 }
             }else{
-                $this->MkCommon->setCustomFlash(__('Kas Bank tidak ditemukan.'), 'error');
+                $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
             }
 
             $this->redirect($this->referer());
@@ -482,7 +482,7 @@ class CashbanksController extends AppController {
     }
 
     function detail($id = false){
-        $this->set('sub_module_title', 'Detail Kas Bank');
+        $this->set('sub_module_title', 'Detail Kas/Bank');
         $coa = false;
 
         if( !empty($id) ) {
@@ -631,11 +631,11 @@ class CashbanksController extends AppController {
                                     }
                                 }
 
-                                $this->MkCommon->setCustomFlash('Berhasil melakukan Approval Kas Bank.', 'success');
-                                $this->Log->logActivity( sprintf(__('Berhasil melakukan %s Kas Bank #%s'), $status_document, $id), $this->user_data, $this->RequestHandler, $this->params );
+                                $this->MkCommon->setCustomFlash('Berhasil melakukan Approval Kas/Bank.', 'success');
+                                $this->Log->logActivity( sprintf(__('Berhasil melakukan %s Kas/Bank #%s'), $status_document, $id), $this->user_data, $this->RequestHandler, $this->params );
                             }else{
-                                $this->MkCommon->setCustomFlash('Gagal melakukan Approval Kas Bank.', 'error');
-                                $this->Log->logActivity( sprintf(__('Berhasil melakukan %s Kas Bank #%s'), $status_document, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                                $this->MkCommon->setCustomFlash('Gagal melakukan Approval Kas/Bank.', 'error');
+                                $this->Log->logActivity( sprintf(__('Berhasil melakukan %s Kas/Bank #%s'), $status_document, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                             }
                         }else{
                             $this->MkCommon->setCustomFlash('Silahkan pilih Status Approval', 'error');
@@ -714,7 +714,7 @@ class CashbanksController extends AppController {
                 $this->set('cashbank', $cashbank);                
                 $this->set('cashbank_auth_id', $cashbank_auth_id);
             } else {
-                $this->MkCommon->setCustomFlash(__('Kas Bank tidak ditemukan.'), 'error');
+                $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
                 $this->redirect($this->referer());
             }
         } 
@@ -775,7 +775,7 @@ class CashbanksController extends AppController {
                     ));
                 }
             }else{
-                $this->MkCommon->setCustomFlash('Harap masukkan karyawan yang akan di jadikan approval Kas Bank.', 'error');
+                $this->MkCommon->setCustomFlash('Harap masukkan karyawan yang akan di jadikan approval Kas/Bank.', 'error');
             }
         }else{
             $data = array();
