@@ -5458,25 +5458,29 @@ class RevenuesController extends AppController {
                 $this->SuratJalan->set($data);
 
                 if($this->SuratJalan->validates($data)){
-                    if($this->SuratJalan->save($data)){
-                        if( $qtySJNow >= $qtyTipeMotor ) {
-                            $this->SuratJalan->Ttuj->set('is_sj_completed', 1);
-                        } else {
-                            $this->SuratJalan->Ttuj->set('is_sj_completed', 0);
-                        }
-                        $this->SuratJalan->Ttuj->id = $ttuj_id;
-                        $this->SuratJalan->Ttuj->save();
+                    if( $qtySJNow <= $qtyTipeMotor ) {
+                        if($this->SuratJalan->save($data)){
+                            if( $qtySJNow >= $qtyTipeMotor ) {
+                                $this->SuratJalan->Ttuj->set('is_sj_completed', 1);
+                            } else {
+                                $this->SuratJalan->Ttuj->set('is_sj_completed', 0);
+                            }
+                            $this->SuratJalan->Ttuj->id = $ttuj_id;
+                            $this->SuratJalan->Ttuj->save();
 
-                        $this->MkCommon->setCustomFlash(__('Sukses menyimpan penerimaan SJ'), 'success');
-                        $this->Log->logActivity( sprintf(__('Sukses menerima SJ #%s'), $this->SuratJalan->id), $this->user_data, $this->RequestHandler, $this->params );
-                        $this->redirect(array(
-                            'controller' => 'revenues',
-                            'action' => 'surat_jalan',
-                            $ttuj_id,
-                        ));
-                    }else{
-                        $this->MkCommon->setCustomFlash(__('Gagal menyimpan penerimaan SJ'), 'error'); 
-                        $this->Log->logActivity( sprintf(__('Gagal menyimpan penerimaan SJ - TTUJ #%s'), $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                            $this->MkCommon->setCustomFlash(__('Sukses menyimpan penerimaan SJ'), 'success');
+                            $this->Log->logActivity( sprintf(__('Sukses menerima SJ #%s'), $this->SuratJalan->id), $this->user_data, $this->RequestHandler, $this->params );
+                            $this->redirect(array(
+                                'controller' => 'revenues',
+                                'action' => 'surat_jalan',
+                                $ttuj_id,
+                            ));
+                        }else{
+                            $this->MkCommon->setCustomFlash(__('Gagal menyimpan penerimaan SJ'), 'error'); 
+                            $this->Log->logActivity( sprintf(__('Gagal menyimpan penerimaan SJ - TTUJ #%s'), $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                        }
+                    } else {
+                        $this->MkCommon->setCustomFlash(__('Qty diterima melebihi muatan truk'), 'error');
                     }
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal menyimpan penerimaan SJ'), 'error');

@@ -279,7 +279,6 @@
                                 $unitInvoiced = !empty($ttuj['unitInvoiced'])?$ttuj['unitInvoiced']:0;
                                 $unitJSUnInvoiced = $unitSj - $unitInvoiced;
                                 $unitUnInvoiced = $unit - $unitInvoiced;
-                                $tglSJ = !empty($ttuj['SuratJalan']['tgl_surat_jalan'])?$this->Common->customDate($ttuj['SuratJalan']['tgl_surat_jalan'], 'd/m/Y'):'-';
                                 $tglInvoiced = !empty($ttuj['Invoice']['invoice_date'])?$this->Common->customDate($ttuj['Invoice']['invoice_date'], 'd/m/Y'):'-';
 
                                 if( !empty($ttuj['SuratJalan']['tgl_surat_jalan']) ) {
@@ -295,17 +294,30 @@
                                 }
 
                                 $str = strtotime($dtSj) - (strtotime($ttuj['Ttuj']['ttuj_date']));
-                                $leadSj = floor($str/3600/24);
+
+                                if( !empty($ttuj['SuratJalan']['tgl_surat_jalan']) ) {
+                                    $tglSJ = $this->Common->customDate($ttuj['SuratJalan']['tgl_surat_jalan'], 'd/m/Y');
+                                    $leadSj = floor($str/3600/24);
+                                } else {
+                                    $leadSj = 0;
+                                    $tglSJ = '-';
+                                }
 
                                 if( !empty($ttuj['SuratJalan']['tgl_surat_jalan']) && !empty($ttuj['Invoice']['invoice_date']) ) {
                                     $str = strtotime($dtInvoice) - (strtotime($dtSj));
                                     $leadSjBilling = floor($str/3600/24);
                                 } else {
-                                    $leadSjBilling = '-';
+                                    $leadSjBilling = 0;
                                 }
 
                                 $str = strtotime($dtInvoice) - (strtotime($ttuj['Ttuj']['ttuj_date']));
-                                $leadSjInvoiced = floor($str/3600/24);
+
+                                if( !empty($ttuj['Invoice']['invoice_date']) ) {
+                                    $leadSjInvoiced = floor($str/3600/24);
+                                } else {
+                                    $leadSjInvoiced = 0;
+                                }
+
                                 $totalUnit += $unit;
                                 $totalUnitSj += $unitSj;
                                 $totalUnitInvoiced += $unitInvoiced;
