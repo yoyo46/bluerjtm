@@ -2923,12 +2923,12 @@ class RevenuesController extends AppController {
             $dataTtuj = array();
             $checkQty = true;
 
-            if( !empty($tarif_angkutan_types) ) {
-                $tarif_angkutan_types = array_unique($tarif_angkutan_types);
+            // if( !empty($tarif_angkutan_types) ) {
+            //     $tarif_angkutan_types = array_unique($tarif_angkutan_types);
 
-                foreach ($tarif_angkutan_types as $key => $tarif_angkutan_type) {
+            //     foreach ($tarif_angkutan_types as $key => $tarif_angkutan_type) {
                     $dataRevenue = $data;
-                    $dataRevenue['Revenue']['type'] = $tarif_angkutan_type;
+                    // $dataRevenue['Revenue']['type'] = $tarif_angkutan_type;
                     $dataRevenuDetail = array();
 
                     // if( !empty($i) ) {
@@ -2941,7 +2941,7 @@ class RevenuesController extends AppController {
                         foreach ($dataRevenue['RevenueDetail']['tarif_angkutan_type'] as $keyDetail => $revenueDetail) {
                             $tarifType = isset($data['RevenueDetail']['tarif_angkutan_type'][$keyDetail])?$data['RevenueDetail']['tarif_angkutan_type'][$keyDetail]:false;
 
-                            if( $tarifType == $tarif_angkutan_type ) {
+                            // if( $tarifType == $tarif_angkutan_type ) {
                                 $dataRevenuDetail['RevenueDetail']['city_id'][$idx] = isset($data['RevenueDetail']['city_id'][$keyDetail])?$data['RevenueDetail']['city_id'][$keyDetail]:false;
                                 $dataRevenuDetail['RevenueDetail']['tarif_angkutan_id'][$idx] = isset($data['RevenueDetail']['tarif_angkutan_id'][$keyDetail])?$data['RevenueDetail']['tarif_angkutan_id'][$keyDetail]:false;
                                 $dataRevenuDetail['RevenueDetail']['tarif_angkutan_type'][$idx] = isset($data['RevenueDetail']['tarif_angkutan_type'][$keyDetail])?$data['RevenueDetail']['tarif_angkutan_type'][$keyDetail]:false;
@@ -2955,18 +2955,19 @@ class RevenuesController extends AppController {
                                 $dataRevenuDetail['RevenueDetail']['price_unit'][$idx] = isset($data['RevenueDetail']['price_unit'][$keyDetail])?$data['RevenueDetail']['price_unit'][$keyDetail]:false;
                                 $dataRevenuDetail['RevenueDetail']['total_price_unit'][$idx] = isset($data['RevenueDetail']['total_price_unit'][$keyDetail])?$data['RevenueDetail']['total_price_unit'][$keyDetail]:false;
                                 $idx++;
-                            }
+                            // }
                         }
                     }
 
                     unset($dataRevenue['RevenueDetail']);
                     $dataRevenue['RevenueDetail'] = !empty($dataRevenuDetail['RevenueDetail'])?$dataRevenuDetail['RevenueDetail']:false;
-                    $dataRevenues[$key] = $dataRevenue;
-                    $i++;
-                }
-            }
-            
-            if( !empty($dataRevenues) ) {
+                    $dataRevenues = $dataRevenue;
+                    // $dataRevenues[$key] = $dataRevenue;
+                    // $i++;
+            //     }
+            // }
+
+            // if( !empty($dataRevenues) ) {
                 if($id && $data_local){
                     $this->Revenue->id = $id;
                     $msg = 'merubah';
@@ -2976,7 +2977,8 @@ class RevenuesController extends AppController {
                     $msg = 'membuat';
                 }
 
-                foreach ($dataRevenues as $key => $dataRevenue) {
+                $dataRevenue = $dataRevenues;
+                // foreach ($dataRevenues as $key => $dataRevenue) {
                     /*validasi revenue detail*/
                     $validate_detail = true;
                     $validate_qty = true;
@@ -3000,7 +3002,7 @@ class RevenuesController extends AppController {
                         foreach ($dataRevenue['RevenueDetail']['no_do'] as $keyDetail => $value) {
                             $tarif_angkutan_type = !empty($dataRevenue['RevenueDetail']['tarif_angkutan_type'][$keyDetail])?$dataRevenue['RevenueDetail']['tarif_angkutan_type'][$keyDetail]:'angkut';
 
-                            if( $tarif_angkutan_type == $dataRevenue['Revenue']['type'] ) {
+                            // if( $tarif_angkutan_type == $dataRevenue['Revenue']['type'] ) {
                                 $data_detail['RevenueDetail'] = array(
                                     'no_do' => $value,
                                     'no_sj' => $dataRevenue['RevenueDetail']['no_sj'][$keyDetail],
@@ -3042,7 +3044,7 @@ class RevenuesController extends AppController {
                                         $total_revenue += $dataRevenue['RevenueDetail']['price_unit'][$keyDetail] * $dataRevenue['RevenueDetail']['qty_unit'][$keyDetail];
                                     }
                                 }
-                            }
+                            // }
                         }
                     }
 
@@ -3071,10 +3073,10 @@ class RevenuesController extends AppController {
 
                     $dataRevenue['Revenue']['total'] = $total_revenue;
                     $dataRevenue['Revenue']['total_without_tax'] = $totalWithoutTax;
-                    $dataRevenues[$key] = $dataRevenue;
+                    // $dataRevenues[$key] = $dataRevenue;
                     /*end validasi revenue detail*/
 
-                    $this->Revenue->set($dataRevenues);
+                    $this->Revenue->set($dataRevenue);
                     $validate_qty = true;
                     $qtyReview = $this->Revenue->checkQtyUsed( $dataRevenue['Revenue']['ttuj_id'], $id );
                     $qtyTtuj = !empty($qtyReview['qtyTtuj'])?$qtyReview['qtyTtuj']:0;
@@ -3103,12 +3105,13 @@ class RevenuesController extends AppController {
                             $text .= ', jumlah muatan melebihi jumlah maksimum TTUJ';
                         }
                         $this->MkCommon->setCustomFlash($text, 'error');
-                        break;
+                        // break;
                     }
-                }
+                // }
 
                 if( $checkQty ) {
-                    foreach ($dataRevenues as $key => $dataRevenue) {
+                    $dataRevenue = $dataRevenues;
+                    // foreach ($dataRevenues as $key => $dataRevenue) {
                         if($id && $data_local){
                             $this->Revenue->id = $id;
                             $msg = 'merubah';
@@ -3187,9 +3190,9 @@ class RevenuesController extends AppController {
                             $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Revenue'), $msg), 'error'); 
                             $this->Log->logActivity( sprintf(__('Gagal %s Revenue #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
                         }
-                    }
+                    // }
 
-                    if( count($flagSave) == count($dataRevenues) ) {
+                    // if( count($flagSave) == count($dataRevenues) ) {
                         if( empty($id) ) {
                             $msgAlert = sprintf(__('Sukses %s Revenue! No Ref: %s'), $msg, str_pad($no_ref, 5, '0', STR_PAD_LEFT));
                         } else {
@@ -3202,11 +3205,11 @@ class RevenuesController extends AppController {
                             'controller' => 'revenues',
                             'action' => 'index'
                         ));
-                    }
+                    // }
                 }
-            } else {
-                $this->MkCommon->setCustomFlash(__('Gagal menyimpan Revenue'), 'error');
-            }
+            // } else {
+            //     $this->MkCommon->setCustomFlash(__('Gagal menyimpan Revenue'), 'error');
+            // }
         }else if($id && $data_local){
             $this->request->data = $data_local;
 

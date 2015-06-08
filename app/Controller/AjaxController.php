@@ -727,10 +727,10 @@ class AjaxController extends AppController {
 		}
 
 		if(!empty($data_ttuj)){
-			if( !empty($to_city_id) ) {
-				$mainTarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $to_city_id, $customer_id, $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
-			} else {
+			if( !empty($city_id) ) {
 				$mainTarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $city_id, $customer_id, $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
+			} else {
+				$mainTarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $to_city_id, $customer_id, $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
 			}
 			
 			$detail = array(

@@ -238,7 +238,7 @@
                             ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Invoice.complete_paid', __('Status')), array(
                                 'style' => 'text-align: center;width: 100px;vertical-align: middle;',
-                                'data-options' => 'field:\'status\',width:100',
+                                'data-options' => 'field:\'status\',width:100,styler:cellStyler',
                                 'align' => 'center',
                             ));
                     ?>
@@ -607,3 +607,13 @@ EOD;
         readfile($path.'/'.$filename);
     }
 ?>
+<script type="text/javascript">
+    function cellStyler(value,row,index){
+        var status_doc = $(value).filter('.label').html() + '';
+        status_doc = status_doc.toLowerCase();
+
+        if( status_doc == 'unpaid' ) {
+            return 'background-color:#777;color:#FFFFFF;';
+        }
+    }
+</script>
