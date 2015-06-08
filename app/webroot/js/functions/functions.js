@@ -2513,10 +2513,7 @@ var popup_checkbox = function(){
         var id = parent.attr('data-value');
 
         if(self.is(':checked')){
-            if( $('#checkbox-info-table .child-'+id).length > 0 ) {
-                alert('Biaya telah terdaftar');
-                self.attr('checked', false);
-            } else {
+            if( $('#checkbox-info-table .child-'+id).length <= 0 ) {
                 if($('.child-'+id).length <= 0){
                     var html_content = '<tr class="child child-'+id+'">'+parent.html()+'</tr>';
                     var sisa = convert_number(parent.find('.sisa-ttuj').val(), 'int');
