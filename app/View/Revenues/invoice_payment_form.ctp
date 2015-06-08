@@ -114,7 +114,7 @@
 		                    <th class="text-center"><?php echo __('Periode');?></th>
 		                    <th class="text-center"><?php echo __('Total');?></th>
 		                    <th class="text-center"><?php echo __('Telah Dibayar');?></th>
-		                    <th class="text-center" width="15%"><?php echo __('Bayar');?></th>
+		                    <th class="text-center" width="15%"><?php echo __('Invoice Dibayar');?></th>
 		                    <th class="text-center"><?php echo __('Action');?></th>
 		        		</tr>
 		        	</thead>

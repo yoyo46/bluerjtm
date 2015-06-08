@@ -108,7 +108,7 @@
 </div>
 
 <style type="text/css">
-    .list_kwitansi table tr td a {
+    .list_kwitansi .datagrid-body table tr td a {
         color: #FFFFFF;
     }
 </style>

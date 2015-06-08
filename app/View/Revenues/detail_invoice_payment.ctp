@@ -45,7 +45,7 @@
 					<th class="text-center"><?php echo __('No. Invoice');?></th>
 					<th class="text-center"><?php echo __('Tgl Invoice');?></th>
                     <th class="text-center"><?php echo __('Periode');?></th>
-					<th class="text-center"><?php echo __('Jumlah Pembayaran.');?></th>
+					<th class="text-center"><?php echo __('Invoice Dibayar');?></th>
 				</tr>
 			</thead>
 			<tbody>

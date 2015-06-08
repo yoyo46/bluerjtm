@@ -74,6 +74,9 @@
                 if(!empty($invoices)){
                     foreach ($invoices as $key => $value) {
                         $invoice = $value['Invoice'];
+                        $total = !empty($invoice['total'])?$invoice['total']:0;
+                        $totalPaid = !empty($value['invoice_has_paid'])?$value['invoice_has_paid']:0;
+                        $sisaPembayaran = $total - $totalPaid;
             ?>
             <tr class="child-search child-search-<?php echo $invoice['id'];?>" rel="<?php echo $invoice['id'];?>">
                 <td class="checkbox-detail">
@@ -106,19 +109,16 @@
                 </td>
                 <td class="text-right">
                     <?php
-                        echo $this->Number->currency($invoice['total'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+                        echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
                     ?>
                 </td>
                 <td class="text-right">
                     <?php
-                        $price_pay = 0;
-                        if(!empty($value['invoice_has_paid'])){
-                            echo $this->Number->currency($value['invoice_has_paid'], Configure::read('__Site.config_currency_code'), array('places' => 0)); 
-                            $price_pay = $value['invoice_has_paid'];
-                        }else{
-                            echo '-';
-                        }
-                        
+                            if(!empty($totalPaid)){
+                                echo $this->Number->currency($totalPaid, Configure::read('__Site.config_currency_code'), array('places' => 0)); 
+                            }else{
+                                echo '-';
+                            }
                     ?>
                 </td>
                 <td class="text-right action-search hide" valign="top">
@@ -129,7 +129,7 @@
                             'div' => false,
                             'required' => false,
                             'class' => 'form-control input_price invoice-price-payment',
-                            'value' => (!empty($this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']])) ? $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']] : $price_pay
+                            'value' => (!empty($this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']])) ? $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']] : $sisaPembayaran
                         ));
 
                         if(!empty($this->request->data['InvoicePaymentDetail']['price_pay'][$key])){
