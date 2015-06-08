@@ -4673,6 +4673,9 @@ class RevenuesController extends AppController {
                 'Coa.status' => 1,
                 'Coa.is_cash_bank' => 1
             ),
+            'fields' => array(
+                'Coa.id', 'Coa.coa_name'
+            ),
         ));
 
         $this->set(compact(

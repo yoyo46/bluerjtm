@@ -1528,7 +1528,7 @@ class AjaxController extends AppController {
 		}
 
 		$coas = $this->Coa->getData('all', array(
-            'conditions' => $default_conditions
+            'conditions' => $default_conditions,
         ));
         
         $this->set('coas', $coas);

@@ -71,6 +71,7 @@ class Coa extends AppModel {
                 'Coa.status' => 1,
             ),
             'order'=> array(
+                'Coa.with_parent_code' => 'ASC',
                 'Coa.code' => 'ASC',
                 'Coa.id' => 'ASC',
             ),
