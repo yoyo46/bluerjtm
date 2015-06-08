@@ -115,7 +115,15 @@
                                             }
 
                                             if( !empty($data['is_laka']) ) {
-                                                $formLaka = $this->Html->tag('p', sprintf(__('Supir: %s', $data['driver_name'])));
+                                                $driver_name = !empty($data['driver_name'])?$data['driver_name']:'-';
+
+                                                $formLaka = $this->Html->tag('p', sprintf(__('Supir: %s', $driver_name)));
+
+                                                if( !empty($driver_pengganti_name) ) {
+                                                    $driver_pengganti_name = $data['driver_pengganti_name'];
+                                                    $formLaka = $this->Html->tag('p', sprintf(__('Supir Pengganti: %s', $driver_pengganti_name)));
+                                                }
+
                                                 $formLaka .= $this->Html->tag('p', sprintf(__('Lokasi: %s', $data['lokasi_laka'])));
                                                 $formLaka .= $this->Html->tag('p', sprintf(__('Kondisi Truk: %s', $data['truck_condition'])));
                                                 $formTtuj .= $this->Html->tag('p', sprintf(__('Tanggal LAKA: %s', $data['laka_date'])));
@@ -186,10 +194,16 @@
                                                 )));
                                             }
 
+                                            $driver = $this->Html->tag('p', sprintf(__('Supir: %s', !empty($data['Driver'])?$data['Driver']:'-')));
+
+                                            if( !empty($data['DriverChange']) ) {
+                                                $driver .= $this->Html->tag('p', sprintf(__('Supir Pengganti: %s', $data['DriverChange'])));
+                                            }
+
                                             $point[] = $this->Html->tag('div', $this->Html->tag('div', $icon, array(
                                                 'title' => $data['title'].' <span class="pull-right"><a href="javascript:"><i class="popover-close">Tutup</i></a></span>',
                                                 'class' => 'popover-hover-top-click',
-                                                'data-content' => sprintf('%s %s %s %s %s', $this->Html->tag('label', $data['Tujuan']), $this->Html->tag('p', sprintf(__('Supir: %s', $data['Driver']))), $this->Html->tag('p', sprintf(__('Truk: %s', $nopol))), $this->Html->tag('p', sprintf(__('Muatan: %s', $data['Muatan']))), $formTtuj)
+                                                'data-content' => sprintf('%s %s %s %s %s', $this->Html->tag('label', $data['Tujuan']), $driver, $this->Html->tag('p', sprintf(__('Truk: %s', $nopol))), $this->Html->tag('p', sprintf(__('Muatan: %s', $data['Muatan']))), $formTtuj)
                                             )), array(
                                                 'class' => 'text-center',
                                             ));

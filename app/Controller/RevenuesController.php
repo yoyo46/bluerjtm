@@ -2391,6 +2391,7 @@ class RevenuesController extends AppController {
                     $dataTmp = array(
                         'Tujuan' => $value['Ttuj']['to_city_name'],
                         'Driver' => $value['Ttuj']['driver_name'],
+                        'DriverChange' => !empty($value['DriverPenganti']['name'])?$value['DriverPenganti']['name']:false,
                         'Muatan' => $totalMuatan,
                     );
                     $date = date('Y-m-d', strtotime($value['Ttuj']['tgljam_berangkat']));
@@ -2488,6 +2489,7 @@ class RevenuesController extends AppController {
                             'driver_name' => $value['Laka']['driver_name'],
                             'lokasi_laka' => $value['Laka']['lokasi_laka'],
                             'truck_condition' => $value['Laka']['truck_condition'],
+                            'driver_pengganti_name' => !empty($value['DriverPenganti']['name'])?$value['DriverPenganti']['name']:false,
                         ));
                     }
                     if( !empty($tglTiba) ) {
