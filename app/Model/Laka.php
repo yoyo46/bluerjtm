@@ -121,6 +121,8 @@ class Laka extends AppModel {
             }else if(empty($this->data['Laka']['ttuj_id']) && !empty($this->data['Laka']['change_driver_id'])){
                 $result = true;
             }
+        }else if(!empty($this->data['Laka']['driver_name'])){
+            $result = true;
         }
 
         return $result;
@@ -129,6 +131,8 @@ class Laka extends AppModel {
     function validateChangeDriver($data){
         $result = false;
         if(empty($this->data['Laka']['driver_name']) && (!empty($this->data['Laka']['change_driver_id']) || !empty($this->data['Laka']['ttuj_id']) ) ){
+            $result = true;
+        }else if(!empty($this->data['Laka']['driver_name'])){
             $result = true;
         }
         

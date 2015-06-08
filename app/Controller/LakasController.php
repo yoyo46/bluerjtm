@@ -307,15 +307,25 @@ class LakasController extends AppController {
         }
 
         $this->loadModel('Truck');
+        $this->Truck->bindModel(array(
+            'hasOne' => array(
+                'Laka' => array(
+                    'className' => 'Laka',
+                    'foreignKey' => 'truck_id'
+                )
+            )
+        ));
         $trucks = $this->Truck->getData('all', array(
             'fields' => array(
                 'Truck.id', 'Truck.nopol', 'Driver.name'
             ),
             'conditions' => array(
                 'Truck.status' => 1,
+                'Laka.id' => NULL,
             ),
             'contain' => array(
-                'Driver'
+                'Driver',
+                'Laka'
             ),
             'order' => array(
                 'Truck.nopol' => 'ASC',
