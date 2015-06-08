@@ -249,6 +249,12 @@ class LakasController extends AppController {
                             $this->Ttuj->save();
                         }
 
+                        if(!empty($data['Laka']['completed']) && !empty($data['Laka']['ttuj_id'])){
+                            $this->Ttuj->id = $data['Laka']['ttuj_id'];
+                            $this->Ttuj->set('is_laka', 0);
+                            $this->Ttuj->save();
+                        }
+
                         $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s LAKA'), $msg), 'success');
                         $this->Log->logActivity( sprintf(__('Berhasil %s LAKA #%s'), $msg, $laka_id), $this->user_data, $this->RequestHandler, $this->params );
                         
