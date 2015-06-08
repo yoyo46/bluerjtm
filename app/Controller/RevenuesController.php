@@ -4404,8 +4404,8 @@ class RevenuesController extends AppController {
 
             $customers = $this->Invoice->Customer->getData('list', array(
                 'fields' => array(
-                    'Customer.id', 'Customer.name'
-                )
+                    'Customer.id', 'Customer.customer_name_code'
+                ),
             ));
             $this->set('customers', $customers);
         // } else {
@@ -4965,8 +4965,8 @@ class RevenuesController extends AppController {
 
             $customers = $this->Invoice->Customer->getData('list', array(
                 'fields' => array(
-                    'Customer.id', 'Customer.name'
-                )
+                    'Customer.id', 'Customer.customer_name_code'
+                ),
             ));
             $this->set('customers', $customers);
             $this->set('sub_module_title', __('List Kwitansi'));
@@ -5628,7 +5628,7 @@ class RevenuesController extends AppController {
 
             // $customers = $this->Invoice->Customer->getData('list', array(
             //     'fields' => array(
-            //         'Customer.id', 'Customer.name'
+            //         'Customer.id', 'Customer.customer_name_code'
             //     )
             // ));
             // $this->set('customers', $customers);
@@ -6066,7 +6066,7 @@ class RevenuesController extends AppController {
             );
             $customerList = $this->Customer->getData('list', array(
                 'fields' => array(
-                    'Customer.id', 'Customer.customer_name'
+                    'Customer.id', 'Customer.customer_name_code'
                 )
             ));
 

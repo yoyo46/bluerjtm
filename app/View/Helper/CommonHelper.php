@@ -620,7 +620,7 @@ class CommonHelper extends AppHelper {
         $statusContent = $this->Html->tag('span', sprintf(__('Unpaid : %s'), $data['InvoiceUnpaid']), array(
             'class' => 'label label-default',
         ));
-        $statusContent .= $this->Html->tag('span', sprintf(__('Hafl Paid : %s'), $data['InvoiceHalfPaid']), array(
+        $statusContent .= $this->Html->tag('span', sprintf(__('Half Paid : %s'), $data['InvoiceHalfPaid']), array(
             'class' => 'label label-primary',
         ));
         $statusContent .= $this->Html->tag('span', sprintf(__('Paid : %s'), $data['InvoicePaid']), array(

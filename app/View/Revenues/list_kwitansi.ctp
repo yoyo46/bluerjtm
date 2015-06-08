@@ -100,7 +100,14 @@
         ?>
     </div>
 </div>
-<section class="content invoice">
+
+<style type="text/css">
+    .list_kwitansi table tr td a {
+        color: #FFFFFF;
+    }
+</style>
+
+<section class="content invoice list_kwitansi">
     <h2 class="page-header">
         <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
     </h2>
@@ -129,7 +136,23 @@
 
                 echo $this->Common->getInvoiceStatusContent( $dataStatus );
         ?>
-        <table id="tt" class="table table-bordered <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true" border="<?php echo $border; ?>">
+        <table id="tt" class="table table-bordered <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" border="<?php echo $border; ?>" data-options="
+                singleSelect: true,
+                rowStyler: function(index,row){
+                    var doc_status = $(row.status).filter('.label').html() + '';
+                    doc_status = doc_status.toLowerCase();
+
+                    if ( doc_status == 'void' ){
+                        return 'background-color:#d9534f;color:#fff;';
+                    } else if ( doc_status == 'half paid' ){
+                        return 'background-color:#337ab7;color:#fff;';
+                    } else if ( doc_status == 'paid' ){
+                        return 'background-color:#5cb85c;color:#fff;';
+                    } else if ( doc_status == 'unpaid' ){
+                        return 'background-color:#777;color:#fff;';
+                    }
+                }
+            ">
             <thead frozen="true">
                 <tr>
                     <?php 
@@ -269,7 +292,7 @@
                                 ), array(
                                     'target' => '_blank'
                                 )), array(
-                                'style' => 'text-align: left;vertical-align: middle;',
+                                'style' => 'text-align: left;vertical-align: middle;color: #FFFFFF;',
                             ));
                             echo $this->Html->tag('td', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
