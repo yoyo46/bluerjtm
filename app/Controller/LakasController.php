@@ -209,6 +209,12 @@ class LakasController extends AppController {
                 if($this->Laka->save($data)){
                     $laka_id = $this->Laka->id;
 
+                    if(!empty($data_local['Laka']['ttuj_id']) && $data['Laka']['ttuj_id'] != $data_local['Laka']['ttuj_id']){
+                        $this->Ttuj->id = $data_local['Laka']['ttuj_id'];
+                        $this->Ttuj->set('is_laka', 0);
+                        $this->Ttuj->save();
+                    }
+
                     if(empty($id) && empty($data_local)){
                         $data['LakaDetail']['laka_id'] = $laka_id;
                         $this->Laka->LakaDetail->create();
