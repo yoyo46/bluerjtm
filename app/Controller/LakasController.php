@@ -139,9 +139,6 @@ class LakasController extends AppController {
                 }
             }
             
-            $data['Laka']['tgl_laka'] = (!empty($data['Laka']['tgl_laka'])) ? $this->MkCommon->getDate($data['Laka']['tgl_laka']) : '';
-            $data['LakaDetail']['date_birth'] = (!empty($data['LakaDetail']['date_birth'])) ? $this->MkCommon->getDate($data['LakaDetail']['date_birth']) : '';
-
             if( empty($data['Laka']['completed']) ) {
                 $data['Laka']['complete_desc'] = '';
                 $data['Laka']['completed_date'] = '';
@@ -191,6 +188,8 @@ class LakasController extends AppController {
             $this->Laka->set($data);
 
             if($this->Laka->validates($data)){
+                $data['LakaDetail']['date_birth'] = (!empty($data['LakaDetail']['date_birth'])) ? $this->MkCommon->getDate($data['LakaDetail']['date_birth']) : '';
+                $data['Laka']['tgl_laka'] = (!empty($data['Laka']['tgl_laka'])) ? $this->MkCommon->getDate($data['Laka']['tgl_laka']) : '';
                 $data['Laka']['completeness'] = (!empty($data['Laka']['completeness'])) ? serialize($data['Laka']['completeness']) : '';
                 $data['Laka']['completeness_insurance'] = (!empty($data['Laka']['completeness_insurance'])) ? serialize($data['Laka']['completeness_insurance']) : '';
 
@@ -278,7 +277,8 @@ class LakasController extends AppController {
             
             $this->request->data['Laka']['completeness'] = !empty($this->request->data['Laka']['completeness']) ? unserialize($this->request->data['Laka']['completeness']) : '';
             $this->request->data['Laka']['completeness_insurance'] = !empty($this->request->data['Laka']['completeness_insurance']) ? unserialize($this->request->data['Laka']['completeness_insurance']) : '';
-            $this->request->data['Laka']['tgl_laka'] = $this->MkCommon->customDate($this->request->data['Laka']['tgl_laka'], 'd/m/Y');
+            $this->request->data['Laka']['tgl_laka'] = (!empty($this->request->data['Laka']['tgl_laka']) ? $this->MkCommon->customDate($this->request->data['Laka']['tgl_laka'], 'd/m/Y') : '' );
+            $this->request->data['LakaDetail']['date_birth'] = (!empty($this->request->data['LakaDetail']['date_birth'])) ? $this->MkCommon->getDate($this->request->data['LakaDetail']['date_birth'], true) : '';
 
             if( !empty($this->request->data['Laka']['completed']) ) {
                 $this->request->data['Laka']['completed_date'] = date('d/m/Y', strtotime($this->request->data['Laka']['completed_date']));
@@ -311,7 +311,11 @@ class LakasController extends AppController {
             'hasOne' => array(
                 'Laka' => array(
                     'className' => 'Laka',
-                    'foreignKey' => 'truck_id'
+                    'foreignKey' => 'truck_id',
+                    'conditions' => array(
+                        'Laka.status' => 1,
+                        'Laka.completed' => 0
+                    )
                 )
             )
         ));
@@ -321,7 +325,14 @@ class LakasController extends AppController {
             ),
             'conditions' => array(
                 'Truck.status' => 1,
-                'Laka.id' => NULL,
+                'OR' => array(
+                    array(
+                        'Laka.id' => NULL
+                    ),
+                    array(
+                        'Laka.truck_id' => !empty($data_local['Laka']['truck_id']) ? $data_local['Laka']['truck_id'] : false
+                    )
+                )
             ),
             'contain' => array(
                 'Driver',
