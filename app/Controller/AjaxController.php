@@ -191,6 +191,7 @@ class AjaxController extends AppController {
 
 		if( !empty($data_ttuj) ) {
 			$driver_id = $data_ttuj['Ttuj']['driver_id'];
+
 			if(!empty($data_ttuj['Ttuj']['driver_penganti_id'])){
 				$driver_id = $data_ttuj['Ttuj']['driver_penganti_id'];
 			}

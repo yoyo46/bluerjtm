@@ -376,10 +376,11 @@ class LakasController extends AppController {
         $insurance = $this->LakaInsurance->find('list');
 
         $ttujs = array();
+        
         if(!empty($this->request->data['Laka']['truck_id'])){
             $ttujs = $this->Ttuj->getData('list', array(
                 'conditions' => array(
-                    // 'Ttuj.is_pool <>' => 1,
+                    'Ttuj.is_pool <>' => 1,
                     'Ttuj.is_draft' => 0,
                     'Ttuj.status' => 1,
                     'Ttuj.truck_id' => $this->request->data['Laka']['truck_id']

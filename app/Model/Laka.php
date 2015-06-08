@@ -21,13 +21,13 @@ class Laka extends AppModel {
             // ),
             'validateTtuj' => array(
                 'rule' => array('validateTtuj'),
-                'message' => 'TTUJ harap dipilih'
+                'message' => 'Harap Pilih TTUJ atau supir pengganti untuk bisa melanjutkan LAKA'
             )
         ),
         'change_driver_id' => array(
             'validateChangeDriver' => array(
                 'rule' => array('validateChangeDriver'),
-                'message' => 'Harap Pilih TTUJ yang memiliki supir pengganti untuk bisa melanjutkan LAKA'
+                'message' => 'Harap Pilih TTUJ atau supir pengganti untuk bisa melanjutkan LAKA'
             )
         ),
         'truck_id' => array(
