@@ -2917,7 +2917,7 @@ class RevenuesController extends AppController {
             $data['Revenue']['ppn'] = !empty($data['Revenue']['ppn'])?$data['Revenue']['ppn']:0;
             $data['Revenue']['pph'] = !empty($data['Revenue']['pph'])?$data['Revenue']['pph']:0;
             $data['Revenue']['additional_charge'] = !empty($data['Revenue']['additional_charge'])?$data['Revenue']['additional_charge']:0;
-            $tarif_angkutan_types = !empty($data['RevenueDetail']['tarif_angkutan_type'])?$data['RevenueDetail']['tarif_angkutan_type']:array();
+            // $tarif_angkutan_types = !empty($data['RevenueDetail']['tarif_angkutan_type'])?$data['RevenueDetail']['tarif_angkutan_type']:array();
             $dataRevenues = array();
             $flagSave = array();
             $dataTtuj = array();
@@ -2939,7 +2939,7 @@ class RevenuesController extends AppController {
                         $idx = 0;
 
                         foreach ($dataRevenue['RevenueDetail']['tarif_angkutan_type'] as $keyDetail => $revenueDetail) {
-                            $tarifType = isset($data['RevenueDetail']['tarif_angkutan_type'][$keyDetail])?$data['RevenueDetail']['tarif_angkutan_type'][$keyDetail]:false;
+                            // $tarifType = isset($data['RevenueDetail']['tarif_angkutan_type'][$keyDetail])?$data['RevenueDetail']['tarif_angkutan_type'][$keyDetail]:false;
 
                             // if( $tarifType == $tarif_angkutan_type ) {
                                 $dataRevenuDetail['RevenueDetail']['city_id'][$idx] = isset($data['RevenueDetail']['city_id'][$keyDetail])?$data['RevenueDetail']['city_id'][$keyDetail]:false;
@@ -3073,6 +3073,7 @@ class RevenuesController extends AppController {
 
                     $dataRevenue['Revenue']['total'] = $total_revenue;
                     $dataRevenue['Revenue']['total_without_tax'] = $totalWithoutTax;
+                    $dataRevenues = $dataRevenue;
                     // $dataRevenues[$key] = $dataRevenue;
                     /*end validasi revenue detail*/
 
@@ -3088,13 +3089,13 @@ class RevenuesController extends AppController {
                     }
 
                     if( $this->Revenue->validates($dataRevenue) && $validate_detail && $validate_qty ){
-                        if( $dataRevenue['Revenue']['type'] == 'angkut' ) {
+                        // if( $dataRevenue['Revenue']['type'] == 'angkut' ) {
                             if( $qtyUse >= $qtyTtuj ) {
                                 $dataTtuj['Ttuj']['is_revenue'] = 1;
                             } else {
                                 $dataTtuj['Ttuj']['is_revenue'] = 0;
                             }
-                        }
+                        // }
                     }else{
                         $checkQty = false;
                         $text = sprintf(__('Gagal %s Revenue'), $msg);
@@ -3124,9 +3125,9 @@ class RevenuesController extends AppController {
                         if($this->Revenue->save($dataRevenue)){
                             $revenue_id = $this->Revenue->id;
 
-                            if( $dataRevenue['Revenue']['type'] == 'angkut' ) {
+                            // if( $dataRevenue['Revenue']['type'] == 'angkut' ) {
                                 $no_ref = $revenue_id;
-                            }
+                            // }
 
                             if($id && $data_local){
                                 $this->Revenue->RevenueDetail->deleteAll(array(
@@ -3173,7 +3174,7 @@ class RevenuesController extends AppController {
                                 $this->Revenue->RevenueDetail->save();
                             }
 
-                            if( $dataRevenue['Revenue']['type'] == 'angkut' ) {
+                            // if( $dataRevenue['Revenue']['type'] == 'angkut' ) {
                                 if( !empty($dataTtuj) ) {
                                     $this->Ttuj->id = $dataRevenue['Revenue']['ttuj_id'];
                                     $this->Ttuj->save($dataTtuj);
@@ -3184,7 +3185,7 @@ class RevenuesController extends AppController {
                                     $this->Ttuj->id = $data_local['Ttuj']['id'];
                                     $this->Ttuj->save();
                                 }
-                            }
+                            // }
                             $flagSave[] = true;
                         }else{
                             $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Revenue'), $msg), 'error'); 
@@ -3764,43 +3765,48 @@ class RevenuesController extends AppController {
             ));
 
             if( !empty($customer) ) {
-                $data['Invoice']['bank_id'] = $customer['Customer']['bank_id'];
                 $data['Invoice']['billing_id'] = $customer['Customer']['billing_id'];
                 $data['Invoice']['term_of_payment'] = $customer['Customer']['term_of_payment'];
+
+                if( empty($data['Invoice']['bank_id']) ) {
+                    $data['Invoice']['bank_id'] = !empty($customer['Customer']['bank_id'])?$customer['Customer']['bank_id']:false;
+                }
             }
 
             $this->Invoice->set($data);
 
             if($this->Invoice->validates()){
                 $this->loadModel('Journal');
-                $revenues = $this->Revenue->getData('all', array(
-                    'conditions' => array(
-                        'Revenue.customer_id' => $customer_id,
-                        'Revenue.transaction_status' => 'posting',
-                        'Revenue.type' => !empty($data['Invoice']['tarif_type'])?$data['Invoice']['tarif_type']:false,
-                        'Revenue.status' => 1,                      
-                    ),
-                    'order' => array(
-                        'Revenue.date_revenue' => 'ASC'
-                    ),
-                ));
+                $tarif_type = !empty($data['Invoice']['tarif_type'])?$data['Invoice']['tarif_type']:false;
+                // $revenues = $this->Revenue->getData('all', array(
+                //     'conditions' => array(
+                //         'Revenue.customer_id' => $customer_id,
+                //         'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
+                //         // 'Revenue.type' => !empty($data['Invoice']['tarif_type'])?$data['Invoice']['tarif_type']:false,
+                //         'Revenue.status' => 1,                      
+                //     ),
+                //     'order' => array(
+                //         'Revenue.date_revenue' => 'ASC'
+                //     ),
+                // ));
 
-                if(!empty($revenues)){
-                    $total = 0;
-                    foreach ($revenues as $key => $value) {
-                        $total += $value['Revenue']['total'];   
-                    }
-                    $data['Invoice']['total'] = $total;
-                }
+                // if(!empty($revenues)){
+                //     $total = 0;
+                //     foreach ($revenues as $key => $value) {
+                //         $total += $value['Revenue']['total'];   
+                //     }
+                //     $data['Invoice']['total'] = $total;
+                // }
                 
-                $this->Invoice->set($data);
-
                 if($action == 'tarif'){
-                    if(!empty($revenues) && !empty($customer)){
-                        $revenue_id = Set::extract('/Revenue/id', $revenues);
+                    if(!empty($customer)){
                         $revenue_detail = $this->Revenue->RevenueDetail->getData('all', array(
                             'conditions' => array(
-                                'RevenueDetail.revenue_id' => $revenue_id,
+                                'Revenue.customer_id' => $customer_id,
+                                'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
+                                'Revenue.status' => 1,
+                                'RevenueDetail.invoice_id' => NULL,
+                                'RevenueDetail.tarif_angkutan_type' => $tarif_type,
                             ),
                             'order' => array(
                                 'RevenueDetail.price_unit' => 'DESC'
@@ -3831,12 +3837,7 @@ class RevenuesController extends AppController {
                                         $this->Journal->setJournal( $invoice_id, $invoice_number, 'invoice_coa_credit_id', 0, $data['Invoice']['total'], 'invoice' );
                                     }
 
-                                    foreach ($value as $key => $value_detail) {
-                                        $this->Revenue->RevenueDetail->id = $value_detail['RevenueDetail']['id'];
-                                        $this->Revenue->RevenueDetail->set('invoice_id', $this->Invoice->id);
-                                        $this->Revenue->RevenueDetail->save();
-                                    }
-
+                                    $this->Revenue->getProsesInvoice( $customer_id, $invoice_id, $tarif_type );
                                     $this->Log->logActivity( sprintf(__('Berhasil %s Invoice #%s'), $msg, $this->Invoice->id), $this->user_data, $this->RequestHandler, $this->params );
                                 } else {
                                     $this->Log->logActivity( sprintf(__('Gagal %s Invoice #%s'), $msg, $this->Invoice->id), $this->user_data, $this->RequestHandler, $this->params, 1 );
@@ -3871,60 +3872,15 @@ class RevenuesController extends AppController {
                             $this->Customer->CustomerGroup->CustomerGroupPattern->save();
                         }
 
-                        // if( !empty($customer['CustomerPattern']) ) {
-                        //     $last_number = str_replace($customer['CustomerPattern']['pattern'], '', $data['Invoice']['no_invoice']);
-                        //     $last_number = intval($last_number)+1;
-                        //     $this->Customer->CustomerPattern->set('last_number', $last_number);
-                        //     $this->Customer->CustomerPattern->id = $customer['CustomerPattern']['id'];
-                        //     $this->Customer->CustomerPattern->save();
-                        // }
-
-                        if($action == 'tarif'){
-                            $revenue_id = $this->Revenue->getData('list', array(
-                                'conditions' => array(
-                                    'Revenue.customer_id' => $customer_id,
-                                    'Revenue.transaction_status' => 'posting',
-                                    'Revenue.type' => !empty($data['Invoice']['tarif_type'])?$data['Invoice']['tarif_type']:false,
-                                    'Revenue.status' => 1,                      
-                                ),
-                                'order' => array(
-                                    'Revenue.date_revenue' => 'ASC'
-                                ),
-                            ));
-                        }else{
-                            $revenue_id = $this->Revenue->getData('list', array(
-                                'conditions' => array(
-                                    'Revenue.customer_id' => $data['Invoice']['customer_id'],
-                                    'Revenue.transaction_status' => 'posting',
-                                    'Revenue.type' => !empty($data['Invoice']['tarif_type'])?$data['Invoice']['tarif_type']:false,
-                                    'Revenue.status' => 1
-                                )
-                            ), false);
-
-                            if(!empty($revenue_id)){
-                                foreach ($revenue_id as $rev_id => $value) {
-                                    $this->Invoice->InvoiceDetail->create();
-                                    $this->Invoice->InvoiceDetail->set(array(
-                                        'invoice_id' => $invoice_id,
-                                        'revenue_id' => $rev_id
-                                    ));
-                                    $this->Invoice->InvoiceDetail->save();
-
-                                    $this->Revenue->id = $rev_id;
-                                    $this->Revenue->set('transaction_status', 'invoiced');
-                                    $this->Revenue->save();
-                                }
-                            }
+                        if( !empty($customer['CustomerPattern']) ) {
+                            $last_number = str_replace($customer['CustomerPattern']['pattern'], '', $data['Invoice']['no_invoice']);
+                            $last_number = intval($last_number)+1;
+                            $this->Customer->CustomerPattern->set('last_number', $last_number);
+                            $this->Customer->CustomerPattern->id = $customer['CustomerPattern']['id'];
+                            $this->Customer->CustomerPattern->save();
                         }
 
-                        if(!empty($revenue_id)){
-                            $this->Revenue->RevenueDetail->updateAll(array(
-                                'RevenueDetail.invoice_id' => $invoice_id
-                            ), array(
-                                'RevenueDetail.revenue_id' => $revenue_id,
-                            ));
-                        }
-
+                        $this->Revenue->getProsesInvoice( $customer_id, $invoice_id, $tarif_type );
                         $this->MkCommon->setCustomFlash(sprintf(__('Berhasil %s Invoice'), $msg), 'success'); 
                         $this->Log->logActivity( sprintf(__('Berhasil %s Invoice #%s'), $msg, $invoice_id), $this->user_data, $this->RequestHandler, $this->params );
                         $this->redirect(array(
@@ -3949,7 +3905,7 @@ class RevenuesController extends AppController {
         }
 
         $conditionsRevenue = array(
-            'Revenue.transaction_status' => 'posting',
+            'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
             'Revenue.status' => 1,                      
         );
         $banks = $this->Bank->getData('list', array(
@@ -5000,13 +4956,13 @@ class RevenuesController extends AppController {
     }
 
     function invoice_delete($id){
+        $this->loadModel('Invoice');
         $is_ajax = $this->RequestHandler->isAjax();
         $action_type = 'invoice';
         $msg = array(
             'msg' => '',
             'type' => 'error'
         );
-        $this->loadModel('Invoice');
         $invoice = $this->Invoice->getData('first', array(
             'conditions' => array(
                 'Invoice.status' => 1,
@@ -5016,11 +4972,13 @@ class RevenuesController extends AppController {
                 'InvoiceDetail'
             )
         ));
-        
+
         // if( !empty($invoice) && empty($invoice['Invoice']['complete_paid']) && empty($invoice['Invoice']['paid']) ){
         if( !empty($invoice) ){
             if(!empty($this->request->data)){
                 if(!empty($this->request->data['Invoice']['canceled_date'])){
+                    $this->loadModel('Revenue');
+
                     $this->request->data['Invoice']['canceled_date'] = $this->MkCommon->getDate($this->request->data['Invoice']['canceled_date']);
                     $this->request->data['Invoice']['is_canceled'] = 1;
                     $this->request->data['Invoice']['paid'] = 0;
@@ -5049,9 +5007,10 @@ class RevenuesController extends AppController {
                         );
 
                         if($invoice['Invoice']['type_invoice'] == 'region' && !empty($invoice['InvoiceDetail'])){
-                            $revenue_id = Set::extract('/InvoiceDetail/revenue_id', $invoice);
+                            $revenueId = Set::extract('/InvoiceDetail/revenue_id', $invoice);
+                            $revenueDetailId = Set::extract('/InvoiceDetail/revenue_detail_id', $invoice);
                         }else{
-                            $revenue_id = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getData('list', array(
+                            $revenueId = $this->Revenue->RevenueDetail->getData('list', array(
                                 'conditions' => array(
                                     'RevenueDetail.invoice_id' => $id
                                 ),
@@ -5062,17 +5021,48 @@ class RevenuesController extends AppController {
                                     'RevenueDetail.revenue_id'
                                 )
                             ));
+                            $revenueDetailId = $this->Revenue->RevenueDetail->getData('list', array(
+                                'conditions' => array(
+                                    'RevenueDetail.invoice_id' => $id
+                                ),
+                                'fields' => array(
+                                    'RevenueDetail.id', 'RevenueDetail.id',
+                                )
+                            ));
                         }
 
-                        if(!empty($revenue_id)){
-                            $this->Invoice->InvoiceDetail->Revenue->updateAll(
+                        if(!empty($revenueDetailId)){
+                            $this->Revenue->RevenueDetail->updateAll(
                                 array(
-                                    'transaction_status' => "'posting'"
+                                    'invoice_id' => NULL,
                                 ),
                                 array(
-                                    'Revenue.id' => $revenue_id
+                                    'RevenueDetail.id' => $revenueDetailId
                                 )
                             );
+                        }
+
+                        $revenueId = array_unique($revenueId);
+
+                        if( !empty($revenueId) ) {
+                            foreach ($revenueId as $key => $revenue_id) {
+                                $revenueDetails = $this->Revenue->RevenueDetail->getData('first', array(
+                                    'conditions' => array(
+                                        'RevenueDetail.revenue_id' => $revenue_id,
+                                        'RevenueDetail.invoice_id <>' => NULL,
+                                    ),
+                                ), false);
+
+                                $this->Revenue->id = $revenue_id;
+
+                                if(!empty($revenueDetails)){
+                                    $this->Revenue->set('transaction_status', 'half_invoiced');
+                                } else {
+                                    $this->Revenue->set('transaction_status', 'posting');
+                                }
+
+                                $this->Revenue->save();
+                            }
                         }
 
                         $invoice_payment_id = $this->Invoice->InvoicePaymentDetail->getData('list', array(

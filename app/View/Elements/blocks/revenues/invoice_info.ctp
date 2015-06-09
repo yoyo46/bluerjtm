@@ -16,10 +16,16 @@
 		<div class="col-sm-12">
 			<?php 
 					$total = 0;
-					if(!empty($this->request->data['Invoice']['total'])){
-						$total = $this->request->data['Invoice']['total'];
+					$totalWithoutTax = 0;
+
+					if(!empty($this->request->data['Invoice']['total_revenue'])){
+						$totalWithoutTax = $this->request->data['Invoice']['total_revenue'];
 						
 					}
+					if(!empty($this->request->data['Invoice']['total'])){
+						$total = $this->request->data['Invoice']['total'];
+					}
+
 					echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
 					
 					echo $this->Form->hidden('Invoice.total',array(
@@ -27,6 +33,12 @@
 						'class'=>'form-control',
 						'readonly' => true,
 						'value' => $total
+					));
+					echo $this->Form->hidden('Invoice.total_revenue',array(
+						'label'=> false, 
+						'class'=>'form-control',
+						'readonly' => true,
+						'value' => $totalWithoutTax
 					));
 			?>
 		</div>

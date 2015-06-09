@@ -310,5 +310,63 @@ class Revenue extends AppModel {
         $this->set('paid_ppn', $status);
         return $this->save();
     }
+
+    function getProsesInvoice ( $customer_id, $invoice_id, $tarif_type ) {
+        $revenueDetails = $this->RevenueDetail->getData('list', array(
+            'conditions' => array(
+                'Revenue.customer_id' => $customer_id,
+                'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
+                'RevenueDetail.tarif_angkutan_type' => $tarif_type,
+                'Revenue.status' => 1
+            ),
+            'contain' => array(
+                'Revenue'
+            ),
+            'fields' => array(
+                'RevenueDetail.id', 'Revenue.id'
+            ),
+        ), false);
+        $revenueId = array();
+
+        if(!empty($revenueDetails)){
+            foreach ($revenueDetails as $revenue_detail_id => $revenue_id) {
+                $this->InvoiceDetail->create();
+                $this->InvoiceDetail->set(array(
+                    'invoice_id' => $invoice_id,
+                    'revenue_id' => $revenue_id,
+                    'revenue_detail_id' => $revenue_detail_id,
+                ));
+                $this->InvoiceDetail->save();
+
+                $this->RevenueDetail->id = $revenue_detail_id;
+                $this->RevenueDetail->set('invoice_id', $invoice_id);
+                $this->RevenueDetail->save();
+                $revenueId[] = $revenue_id;
+            }
+        }
+
+        $revenueId = array_unique($revenueId);
+
+        if( !empty($revenueId) ) {
+            foreach ($revenueId as $key => $revenue_id) {
+                $revenueDetails = $this->RevenueDetail->getData('first', array(
+                    'conditions' => array(
+                        'RevenueDetail.revenue_id' => $revenue_id,
+                        'RevenueDetail.invoice_id' => NULL,
+                    ),
+                ), false);
+
+                $this->id = $revenue_id;
+
+                if(empty($revenueDetails)){
+                    $this->set('transaction_status', 'invoiced');
+                } else {
+                    $this->set('transaction_status', 'half_invoiced');
+                }
+
+                $this->save();
+            }
+        }
+    }
 }
 ?>

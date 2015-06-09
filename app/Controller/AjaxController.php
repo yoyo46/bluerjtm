@@ -749,30 +749,60 @@ class AjaxController extends AppController {
 		$this->loadModel('Revenue');
 		$this->loadModel('Bank');
 		$this->loadModel('Customer');
+		$conditions = array(
+			'Revenue.customer_id' => $customer_id,
+			'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
+			// 'Revenue.type' => $tarif_type,
+			'Revenue.status' => 1,
+		);
 		$customer = $this->Customer->getData('first', array(
             'conditions' => array(
                 'Customer.id' => $customer_id
             ),
         ));
-		$revenues = $this->Revenue->getData('first', array(
-			'conditions' => array(
-				'Revenue.customer_id' => $customer_id,
-				'Revenue.transaction_status' => 'posting',
-				'Revenue.type' => $tarif_type,						
-				'Revenue.status' => 1,						
-			),
+
+        $conditionsDetail = $conditions;
+        $conditionsDetail['RevenueDetail.invoice_id'] = NULL;
+        $conditionsDetail['RevenueDetail.tarif_angkutan_type'] = $tarif_type;
+		$revenueDetail = $this->Revenue->RevenueDetail->getData('first', array(
+			'conditions' => $conditionsDetail,
 			'order' => array(
 				'Revenue.date_revenue' => 'ASC'
 			),
 			'fields' => array(
-				'SUM(Revenue.total) total',
-				'MAX(Revenue.date_revenue) period_to',
-				'MIN(Revenue.date_revenue) period_from',
+				'SUM(RevenueDetail.total_price_unit) total',
+				'Revenue.customer_id',
 			),
 			'group' => array(
 				'Revenue.customer_id'
 			),
+			'contain' => array(
+				'Revenue'
+			),
 		));
+		$revenueId = $this->Revenue->RevenueDetail->getData('list', array(
+			'conditions' => $conditionsDetail,
+			'fields' => array(
+				'RevenueDetail.revenue_id',
+				'RevenueDetail.revenue_id',
+			),
+			'contain' => array(
+				'Revenue'
+			),
+		));
+        $conditions['Revenue.id'] = $revenueId;
+		$revenue = $this->Revenue->getData('first', array(
+			'conditions' => $conditions,
+			'fields' => array(
+				'SUM(Revenue.total_without_tax) total',
+				'MAX(Revenue.date_revenue) period_to',
+				'MIN(Revenue.date_revenue) period_from',
+				'Revenue.customer_id',
+			),
+			'group' => array(
+				'Revenue.customer_id'
+			),
+		), false);
         $banks = $this->Bank->getData('list', array(
             'conditions' => array(
                 'Bank.status' => 1,
@@ -783,13 +813,20 @@ class AjaxController extends AppController {
         	'text' => '',
     	);
 
-		if(!empty($revenues) && !empty($customer)){
-			$monthFrom = !empty($revenues[0]['period_from'])?$this->MkCommon->customDate($revenues[0]['period_from'], 'Y-m'):false;
-			$monthTo = !empty($revenues[0]['period_to'])?$this->MkCommon->customDate($revenues[0]['period_to'], 'Y-m'):false;
+		if(!empty($revenue) && !empty($revenueDetail) && !empty($customer)){
+			$monthFrom = !empty($revenue[0]['period_from'])?$this->MkCommon->customDate($revenue[0]['period_from'], 'Y-m'):false;
+			$monthTo = !empty($revenue[0]['period_to'])?$this->MkCommon->customDate($revenue[0]['period_to'], 'Y-m'):false;
 			$this->request->data['Invoice']['bank_id'] = !empty($customer['Customer']['bank_id'])?$customer['Customer']['bank_id']:false;
-			$this->request->data['Invoice']['period_from'] = !empty($revenues[0]['period_from'])?$this->MkCommon->customDate($revenues[0]['period_from'], 'd/m/Y'):false;
-			$this->request->data['Invoice']['period_to'] = !empty($revenues[0]['period_to'])?$this->MkCommon->customDate($revenues[0]['period_to'], 'd/m/Y'):false;
-			$this->request->data['Invoice']['total'] = !empty($revenues[0]['total'])?$revenues[0]['total']:0;;
+			$this->request->data['Invoice']['period_from'] = !empty($revenue[0]['period_from'])?$this->MkCommon->customDate($revenue[0]['period_from'], 'd/m/Y'):false;
+			$this->request->data['Invoice']['period_to'] = !empty($revenue[0]['period_to'])?$this->MkCommon->customDate($revenue[0]['period_to'], 'd/m/Y'):false;
+			$this->request->data['Invoice']['total_revenue'] = !empty($revenue[0]['total'])?$revenue[0]['total']:0;;
+			$this->request->data['Invoice']['total'] = !empty($revenueDetail[0]['total'])?$revenueDetail[0]['total']:0;;
+
+			switch ($tarif_type) {
+				case 'angkut':
+					$this->request->data['Invoice']['total'] += $this->request->data['Invoice']['total_revenue'];
+					break;
+			}
 
 			if( $monthFrom != $monthTo ) {
 		        $msg = array(
@@ -814,7 +851,7 @@ class AjaxController extends AppController {
 		$revenues = $this->Revenue->getData('first', array(
 			'conditions' => array(
 				'Revenue.customer_id' => $customer_id,
-				'Revenue.transaction_status' => 'posting',
+				'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
 				'Revenue.status' => 1,						
 			),
 			'order' => array(
@@ -845,13 +882,13 @@ class AjaxController extends AppController {
 		$this->loadModel('Ttuj');
 		$conditions = array(
 			'Revenue.customer_id' => $customer_id,
-			'Revenue.transaction_status' => 'posting',
+			'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
 			'Revenue.status' => 1,
 		);
 
-		if( !empty($invoice_type) ) {
-			$conditions['Revenue.type'] = $invoice_type;
-		}
+		// if( !empty($invoice_type) ) {
+		// 	$conditions['Revenue.type'] = $invoice_type;
+		// }
 
 		$revenue_id = $this->Revenue->getData('list', array(
 			'conditions' => $conditions,

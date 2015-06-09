@@ -199,7 +199,8 @@ class RevenueDetail extends AppModel {
         }
 
         if( !empty($invoice_type) ) {
-            $conditions['Revenue.type'] = $invoice_type;
+            $conditions['RevenueDetail.tarif_angkutan_type'] = $invoice_type;
+            // $conditions['Revenue.type'] = $invoice_type;
         }
 
         if( $action == 'tarif' && $data_action == 'invoice' ){
