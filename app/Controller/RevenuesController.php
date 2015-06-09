@@ -39,6 +39,7 @@ class RevenuesController extends AppController {
         if( in_array('view_ttuj', $this->allowModule) ) {
             $this->loadModel('Ttuj');
             $this->loadModel('SuratJalan');
+            $this->set('module_title', __('TTUJ'));
             $this->set('active_menu', 'ttuj');
             $this->set('sub_module_title', __('TTUJ'));
             $this->set('label_tgl', __('Tanggal Berangkat'));
@@ -1010,6 +1011,7 @@ class RevenuesController extends AppController {
             ),
         ));
 
+        $this->set('module_title', __('TTUJ'));
         $this->set('active_menu', 'ttuj');
         $this->set(compact(
             'trucks', 'customers', 'driverPengantis',
@@ -1135,6 +1137,7 @@ class RevenuesController extends AppController {
     public function truk_tiba() {
         if( in_array('view_truk_tiba', $this->allowModule) ) {
             $this->loadModel('Ttuj');
+            $this->set('module_title', __('TTUJ'));
             $this->set('active_menu', 'truk_tiba');
             $this->set('sub_module_title', __('Truk Tiba'));
             $this->set('label_tgl', __('Tanggal Tiba'));
@@ -1223,6 +1226,7 @@ class RevenuesController extends AppController {
         $this->loadModel('ColorMotor');
         $module_title = __('Truk Tiba');
         $data_action = false;
+        $this->set('module_title', __('TTUJ'));
 
         if( !empty($this->params['named']['no_ttuj']) ) {
             $conditionsDataLocal = array(
@@ -1515,6 +1519,7 @@ class RevenuesController extends AppController {
         $this->loadModel('TipeMotor');
         $this->loadModel('Perlengkapan');
         $this->loadModel('ColorMotor');
+        $this->set('module_title', __('TTUJ'));
         $conditions = array(
             'Ttuj.id' => $ttuj_id,
             'Ttuj.is_draft' => 0,
@@ -1628,6 +1633,7 @@ class RevenuesController extends AppController {
     public function bongkaran() {
         if( in_array('view_bongkaran', $this->allowModule) ) {
             $this->loadModel('Ttuj');
+            $this->set('module_title', __('TTUJ'));
             $this->set('active_menu', 'bongkaran');
             $this->set('sub_module_title', __('Bongkaran'));
             $this->set('label_tgl', __('Tanggal Bongkaran'));
@@ -1698,6 +1704,7 @@ class RevenuesController extends AppController {
     public function balik() {
         if( in_array('view_balik', $this->allowModule) ) {
             $this->loadModel('Ttuj');
+            $this->set('module_title', __('TTUJ'));
             $this->set('active_menu', 'balik');
             $this->set('sub_module_title', __('Balik'));
             $this->set('label_tgl', __('Tanggal Balik'));
@@ -1768,6 +1775,7 @@ class RevenuesController extends AppController {
     public function pool() {
         if( in_array('view_pool', $this->allowModule) ) {
             $this->loadModel('Ttuj');
+            $this->set('module_title', __('TTUJ'));
             $this->set('active_menu', 'pool');
             $this->set('sub_module_title', __('Sampai di Pool'));
             $this->set('label_tgl', __('Tanggal Sampai Pool'));

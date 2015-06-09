@@ -954,7 +954,7 @@ class SettingsController extends AppController {
             $uangJalans = $this->paginate('UangJalan');
 
             $this->set('active_menu', 'uang_jalan');
-            $this->set('module_title', 'Data Master');
+            $this->set('module_title', __('TTUJ'));
             $this->set('sub_module_title', 'Uang Jalan');
 
 
@@ -1468,7 +1468,7 @@ class SettingsController extends AppController {
         ));
 
         $this->set('active_menu', 'uang_jalan');
-        $this->set('module_title', 'Data Master');
+        $this->set('module_title', __('TTUJ'));
         $this->set(compact(
             'fromCities', 'groupClassifications', 'toCities',
             'groupMotors'
@@ -1563,7 +1563,7 @@ class SettingsController extends AppController {
         }
 
         $this->set('active_menu', sprintf('uang_kuli_%s', $data_action));
-        $this->set('module_title', 'Data Master');
+        $this->set('module_title', __('TTUJ'));
         $this->set('sub_module_title', sprintf('Uang Kuli %s', ucwords($data_action)));
         $this->set(compact(
             'uangKulis', 'data_action'
@@ -1696,7 +1696,7 @@ class SettingsController extends AppController {
         ));
 
         $this->set('active_menu', sprintf('uang_kuli_%s', $data_action));
-        $this->set('module_title', 'Data Master');
+        $this->set('module_title', __('TTUJ'));
         $this->set(compact(
             'groupClassifications', 'cities',
             'groupMotors', 'data_action', 'customers'
@@ -4346,6 +4346,7 @@ class SettingsController extends AppController {
             $this->loadModel('UangJalan');
             App::import('Vendor', 'excelreader'.DS.'excel_reader2');
 
+            $this->set('module_title', 'TTUJ');
             $this->set('active_menu', 'uang_jalan_import');
             $this->set('sub_module_title', __('Import Uang Jalan'));
 
