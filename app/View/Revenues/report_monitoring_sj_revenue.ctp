@@ -300,7 +300,7 @@
 
                                 if( !empty($ttuj['SuratJalan']['tgl_surat_jalan']) ) {
                                     $tglSJ = $this->Common->customDate($ttuj['SuratJalan']['tgl_surat_jalan'], 'd/m/Y');
-                                    $leadSj = floor($str/3600/24);
+                                    $leadSj = floor($str/3600/24)+1;
                                     $avgLeadSj += $leadSj;
                                     $cntAvgLeadSj++;
                                 } else {
@@ -310,7 +310,7 @@
 
                                 if( !empty($ttuj['SuratJalan']['tgl_surat_jalan']) && !empty($ttuj['Invoice']['invoice_date']) ) {
                                     $str = strtotime($dtInvoice) - (strtotime($dtSj));
-                                    $leadSjBilling = floor($str/3600/24);
+                                    $leadSjBilling = floor($str/3600/24)+1;
                                     $avgLeadSjBilling += $leadSjBilling;
                                     $cntAvgLeadSjBilling++;
                                 } else {
@@ -320,7 +320,7 @@
                                 $str = strtotime($dtInvoice) - (strtotime($ttuj['Ttuj']['ttuj_date']));
 
                                 if( !empty($ttuj['Invoice']['invoice_date']) ) {
-                                    $leadSjInvoiced = floor($str/3600/24);
+                                    $leadSjInvoiced = floor($str/3600/24)+1;
                                     $avgLeadSjInvoiced += $leadSjInvoiced;
                                     $cntAvgLeadSjInvoiced++;
                                 } else {
@@ -601,6 +601,19 @@
             $contentHeader .= '</tr>';
 
             if(!empty($ttujs)){
+                $totalUnit = 0;
+                $totalUnitSj = 0;
+                $totalUnitInvoiced = 0;
+                $totalUnitSjNotRecipt = 0;
+                $totalUnitJSUnInvoiced = 0;
+                $totalUnitUnInvoiced = 0;
+                $avgLeadSj = 0;
+                $avgLeadSjBilling = 0;
+                $avgLeadSjInvoiced = 0;
+                $cntAvgLeadSj = 0;
+                $cntAvgLeadSjBilling = 0;
+                $cntAvgLeadSjInvoiced = 0;
+
                 foreach ($ttujs as $key => $ttuj) {
                     $city_name = !empty($ttuj['city_name'])?$ttuj['city_name']:'-';
                     $unit = !empty($ttuj['Qty'])?$ttuj['Qty']:0;
@@ -609,7 +622,6 @@
                     $unitInvoiced = !empty($ttuj['unitInvoiced'])?$ttuj['unitInvoiced']:0;
                     $unitJSUnInvoiced = $unitSj - $unitInvoiced;
                     $unitUnInvoiced = $unit - $unitInvoiced;
-                    $tglSJ = !empty($ttuj['SuratJalan']['tgl_surat_jalan'])?$this->Common->customDate($ttuj['SuratJalan']['tgl_surat_jalan'], 'd/m/Y'):'-';
                     $tglInvoiced = !empty($ttuj['Invoice']['invoice_date'])?$this->Common->customDate($ttuj['Invoice']['invoice_date'], 'd/m/Y'):'-';
 
                     if( !empty($ttuj['SuratJalan']['tgl_surat_jalan']) ) {
@@ -625,17 +637,42 @@
                     }
 
                     $str = strtotime($dtSj) - (strtotime($ttuj['Ttuj']['ttuj_date']));
-                    $leadSj = floor($str/3600/24);
+
+                    if( !empty($ttuj['SuratJalan']['tgl_surat_jalan']) ) {
+                        $tglSJ = $this->Common->customDate($ttuj['SuratJalan']['tgl_surat_jalan'], 'd/m/Y');
+                        $leadSj = floor($str/3600/24)+1;
+                        $avgLeadSj += $leadSj;
+                        $cntAvgLeadSj++;
+                    } else {
+                        $leadSj = 0;
+                        $tglSJ = '-';
+                    }
 
                     if( !empty($ttuj['SuratJalan']['tgl_surat_jalan']) && !empty($ttuj['Invoice']['invoice_date']) ) {
                         $str = strtotime($dtInvoice) - (strtotime($dtSj));
-                        $leadSjBilling = floor($str/3600/24);
+                        $leadSjBilling = floor($str/3600/24)+1;
+                        $avgLeadSjBilling += $leadSjBilling;
+                        $cntAvgLeadSjBilling++;
                     } else {
-                        $leadSjBilling = '-';
+                        $leadSjBilling = 0;
                     }
 
                     $str = strtotime($dtInvoice) - (strtotime($ttuj['Ttuj']['ttuj_date']));
-                    $leadSjInvoiced = floor($str/3600/24);
+
+                    if( !empty($ttuj['Invoice']['invoice_date']) ) {
+                        $leadSjInvoiced = floor($str/3600/24)+1;
+                        $avgLeadSjInvoiced += $leadSjInvoiced;
+                        $cntAvgLeadSjInvoiced++;
+                    } else {
+                        $leadSjInvoiced = 0;
+                    }
+
+                    $totalUnit += $unit;
+                    $totalUnitSj += $unitSj;
+                    $totalUnitInvoiced += $unitInvoiced;
+                    $totalUnitSjNotRecipt += $unitSjNotRecipt;
+                    $totalUnitJSUnInvoiced += $unitJSUnInvoiced;
+                    $totalUnitUnInvoiced += $unitUnInvoiced;
 
                     $each_loop_message .= '<tr>';
                     $each_loop_message .= $this->Html->tag('td', $this->Html->link($ttuj['Ttuj']['no_ttuj'], array(
@@ -689,6 +726,78 @@
                     ));
                     $each_loop_message .= '</tr>';
                 }
+
+                $each_loop_message .= '<tr>';
+                $each_loop_message .= $this->Html->tag('td', '', array(
+                    'style' => 'text-align: center;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', '', array(
+                    'style' => 'text-align: center;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', '', array(
+                    'style' => 'text-align: center;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', __('Total'), array(
+                    'style' => 'text-align: right;display: block;'
+                )), array(
+                    'style' => 'text-align: center;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', $totalUnit), array(
+                    'style' => 'text-align: center;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', $totalUnitSj), array(
+                    'style' => 'text-align: center;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', $totalUnitInvoiced), array(
+                    'style' => 'text-align: center;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', $totalUnitSjNotRecipt), array(
+                    'style' => 'text-align: center;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', $totalUnitJSUnInvoiced), array(
+                    'style' => 'text-align: center;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', $totalUnitUnInvoiced), array(
+                    'style' => 'text-align: center;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', '', array(
+                    'style' => 'text-align: center;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', __('AVG')), array(
+                    'style' => 'text-align: right;',
+                ));
+
+                if( !empty($cntAvgLeadSj) ) {
+                    $avgLeadSj = $avgLeadSj/$cntAvgLeadSj;
+                } else {
+                    $avgLeadSj = 0;
+                }
+
+                if( !empty($cntAvgLeadSjBilling) ) {
+                    $avgLeadSjBilling = $avgLeadSjBilling/$cntAvgLeadSjBilling;
+                } else {
+                    $avgLeadSjBilling = 0;
+                }
+
+                if( !empty($cntAvgLeadSjInvoiced) ) {
+                    $avgLeadSjInvoiced = $avgLeadSjInvoiced/$cntAvgLeadSjInvoiced;
+                } else {
+                    $avgLeadSjInvoiced = 0;
+                }
+
+                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', round($avgLeadSj, 2)), array(
+                    'align' => 'center',
+                    'style' => 'text-align: center;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', round($avgLeadSjBilling, 2)), array(
+                    'align' => 'center',
+                    'style' => 'text-align: center;',
+                ));
+                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', round($avgLeadSjInvoiced, 2)), array(
+                    'align' => 'center',
+                    'style' => 'text-align: center;',
+                ));
+                $each_loop_message .= '</tr>';
             }
 
             $date_title = $sub_module_title;
