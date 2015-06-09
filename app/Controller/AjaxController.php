@@ -2140,60 +2140,116 @@ class AjaxController extends AppController {
                 	$conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $to_date;
                 }
             }
-            if(!empty($this->request->data['Ttuj']['document_type'])){
-                $document_type = urldecode($this->request->data['Ttuj']['document_type']);
+            // if(!empty($this->request->data['Ttuj']['document_type'])){
+            //     $document_type = urldecode($this->request->data['Ttuj']['document_type']);
 
-                switch ($document_type) {
-                	case 'uang_jalan':
-                		unset($conditions['OR']);
-                		$conditions['Ttuj.paid_uang_jalan <>'] = 'full';
-                		break;
-                	case 'uang_jalan_2':
-                		unset($conditions['OR']);
-                		$conditions['Ttuj.paid_uang_jalan_2 <>'] = 'full';
-                		$conditions['Ttuj.uang_jalan_2 <>'] = 0;
-                		break;
-                	case 'uang_jalan_extra':
-                		unset($conditions['OR']);
-                		$conditions['Ttuj.paid_uang_jalan_extra <>'] = 'full';
-                		$conditions['Ttuj.uang_jalan_extra <>'] = 0;
-                		break;
-                	case 'commission':
-                		unset($conditions['OR']);
-                		$conditions['Ttuj.paid_commission <>'] = 'full';
-                		$conditions['Ttuj.commission <>'] = 0;
-                		break;
-                	case 'commission_extra':
-                		unset($conditions['OR']);
-                		$conditions['Ttuj.paid_commission_extra <>'] = 'full';
-                		$conditions['Ttuj.commission_extra <>'] = 0;
-                		break;
-                	case 'uang_kuli_muat':
-                		unset($conditions['OR']);
-                		$conditions['Ttuj.paid_uang_kuli_muat <>'] = 'full';
-                		$conditions['Ttuj.uang_kuli_muat <>'] = 0;
-                		break;
-                	case 'uang_kuli_bongkar':
-                		unset($conditions['OR']);
-                		$conditions['Ttuj.paid_uang_kuli_bongkar <>'] = 'full';
-                		$conditions['Ttuj.uang_kuli_bongkar <>'] = 0;
-                		break;
-                	case 'asdp':
-                		unset($conditions['OR']);
-                		$conditions['Ttuj.paid_asdp <>'] = 'full';
-                		$conditions['Ttuj.asdp <>'] = 0;
-                		break;
-                	case 'uang_kawal':
-                		unset($conditions['OR']);
-                		$conditions['Ttuj.paid_uang_kawal <>'] = 'full';
-                		$conditions['Ttuj.uang_kawal <>'] = 0;
-                		break;
-                	case 'uang_keamanan':
-                		unset($conditions['OR']);
-                		$conditions['Ttuj.paid_uang_keamanan <>'] = 'full';
-                		$conditions['Ttuj.uang_keamanan <>'] = 0;
-                		break;
-                }
+            //     switch ($document_type) {
+            //     	case 'uang_jalan':
+            //     		unset($conditions['OR']);
+            //     		$conditions['Ttuj.paid_uang_jalan <>'] = 'full';
+            //     		break;
+            //     	case 'uang_jalan_2':
+            //     		unset($conditions['OR']);
+            //     		$conditions['Ttuj.paid_uang_jalan_2 <>'] = 'full';
+            //     		$conditions['Ttuj.uang_jalan_2 <>'] = 0;
+            //     		break;
+            //     	case 'uang_jalan_extra':
+            //     		unset($conditions['OR']);
+            //     		$conditions['Ttuj.paid_uang_jalan_extra <>'] = 'full';
+            //     		$conditions['Ttuj.uang_jalan_extra <>'] = 0;
+            //     		break;
+            //     	case 'commission':
+            //     		unset($conditions['OR']);
+            //     		$conditions['Ttuj.paid_commission <>'] = 'full';
+            //     		$conditions['Ttuj.commission <>'] = 0;
+            //     		break;
+            //     	case 'commission_extra':
+            //     		unset($conditions['OR']);
+            //     		$conditions['Ttuj.paid_commission_extra <>'] = 'full';
+            //     		$conditions['Ttuj.commission_extra <>'] = 0;
+            //     		break;
+            //     	case 'uang_kuli_muat':
+            //     		unset($conditions['OR']);
+            //     		$conditions['Ttuj.paid_uang_kuli_muat <>'] = 'full';
+            //     		$conditions['Ttuj.uang_kuli_muat <>'] = 0;
+            //     		break;
+            //     	case 'uang_kuli_bongkar':
+            //     		unset($conditions['OR']);
+            //     		$conditions['Ttuj.paid_uang_kuli_bongkar <>'] = 'full';
+            //     		$conditions['Ttuj.uang_kuli_bongkar <>'] = 0;
+            //     		break;
+            //     	case 'asdp':
+            //     		unset($conditions['OR']);
+            //     		$conditions['Ttuj.paid_asdp <>'] = 'full';
+            //     		$conditions['Ttuj.asdp <>'] = 0;
+            //     		break;
+            //     	case 'uang_kawal':
+            //     		unset($conditions['OR']);
+            //     		$conditions['Ttuj.paid_uang_kawal <>'] = 'full';
+            //     		$conditions['Ttuj.uang_kawal <>'] = 0;
+            //     		break;
+            //     	case 'uang_keamanan':
+            //     		unset($conditions['OR']);
+            //     		$conditions['Ttuj.paid_uang_keamanan <>'] = 'full';
+            //     		$conditions['Ttuj.uang_keamanan <>'] = 0;
+            //     		break;
+            //     }
+            // }
+
+            if(!empty($this->request->data['Ttuj']['uang_jalan_1']) || !empty($this->request->data['Ttuj']['uang_jalan_2']) || !empty($this->request->data['Ttuj']['uang_jalan_extra']) || !empty($this->request->data['Ttuj']['commission']) || !empty($this->request->data['Ttuj']['commission_extra']) || !empty($this->request->data['Ttuj']['uang_kuli_muat']) || !empty($this->request->data['Ttuj']['uang_kuli_bongkar']) || !empty($this->request->data['Ttuj']['asdp']) || !empty($this->request->data['Ttuj']['uang_kawal']) || !empty($this->request->data['Ttuj']['uang_keamanan'])){
+            	unset($conditions['OR']);
+            	$idx = 0;
+                $document_type = true;
+        	}
+
+            if(!empty($this->request->data['Ttuj']['uang_jalan_1'])){
+        		$conditions['OR'][$idx]['Ttuj.paid_uang_jalan <>'] = 'full';
+        		$idx++;
+        	}
+            if(!empty($this->request->data['Ttuj']['uang_jalan_2'])){
+        		$conditions['OR'][$idx]['Ttuj.paid_uang_jalan_2 <>'] = 'full';
+        		$conditions['OR'][$idx]['Ttuj.uang_jalan_2 <>'] = 0;
+        		$idx++;
+        	}
+            if(!empty($this->request->data['Ttuj']['uang_jalan_extra'])){
+        		$conditions['OR'][$idx]['Ttuj.paid_uang_jalan_extra <>'] = 'full';
+        		$conditions['OR'][$idx]['Ttuj.uang_jalan_extra <>'] = 0;
+        		$idx++;
+        	}
+            if(!empty($this->request->data['Ttuj']['commission'])){
+        		$conditions['OR'][$idx]['Ttuj.paid_commission <>'] = 'full';
+        		$conditions['OR'][$idx]['Ttuj.commission <>'] = 0;
+        		$idx++;
+        	}
+            if(!empty($this->request->data['Ttuj']['commission_extra'])){
+        		$conditions['OR'][$idx]['Ttuj.paid_commission_extra <>'] = 'full';
+        		$conditions['OR'][$idx]['Ttuj.commission_extra <>'] = 0;
+        		$idx++;
+        	}
+            if(!empty($this->request->data['Ttuj']['uang_kuli_muat'])){
+        		$conditions['OR'][$idx]['Ttuj.paid_uang_kuli_muat <>'] = 'full';
+        		$conditions['OR'][$idx]['Ttuj.uang_kuli_muat <>'] = 0;
+        		$idx++;
+        	}
+            if(!empty($this->request->data['Ttuj']['uang_kuli_bongkar'])){
+        		$conditions['OR'][$idx]['Ttuj.paid_uang_kuli_bongkar <>'] = 'full';
+        		$conditions['OR'][$idx]['Ttuj.uang_kuli_bongkar <>'] = 0;
+        		$idx++;
+        	}
+            if(!empty($this->request->data['Ttuj']['asdp'])){
+        		$conditions['OR'][$idx]['Ttuj.paid_asdp <>'] = 'full';
+        		$conditions['OR'][$idx]['Ttuj.asdp <>'] = 0;
+        		$idx++;
+        	}
+            if(!empty($this->request->data['Ttuj']['uang_kawal'])){
+        		$conditions['OR'][$idx]['Ttuj.paid_uang_kawal <>'] = 'full';
+        		$conditions['OR'][$idx]['Ttuj.uang_kawal <>'] = 0;
+        		$idx++;
+        	}
+            if(!empty($this->request->data['Ttuj']['uang_keamanan'])){
+        		$conditions['OR'][$idx]['Ttuj.paid_uang_keamanan <>'] = 'full';
+        		$conditions['OR'][$idx]['Ttuj.uang_keamanan <>'] = 0;
+        		$idx++;
             }
         }
 
