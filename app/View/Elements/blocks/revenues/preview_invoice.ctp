@@ -13,6 +13,9 @@
 ?>
 <table border="1" width="100%" style="margin-top: 20px;">
 	<thead class="header-invoice-print">
+		<?php 
+				if( $data_print != 'date' ) {
+		?>
 		<tr>
 			<th colspan="<?php echo $totalMerge; ?>" class="text-center" style="text-transform:uppercase;">
 				<?php 
@@ -32,6 +35,9 @@
 				?>
 			</th>
 		</tr>
+		<?php 
+				}
+		?>
 		<tr>
 			<th class="text-center"><?php echo __('No.');?></th>
 			<?php 
@@ -43,7 +49,15 @@
 					}
 			?>
 			<th class="text-center"><?php echo __('No. Truk');?></th>
-			<th class="text-center"><?php echo __('No.DO');?></th>
+			<th class="text-center">
+				<?php
+						if( $data_print == 'date' ) {
+							echo __('Keterangan');
+						} else {
+							echo __('No.DO');
+						}
+				?>
+			</th>
 			<th class="text-center"><?php echo __('No. SJ');?></th>
 			<!-- <th class="text-center"><?php // echo __('Keterangan');?></th> -->
 			<th class="text-center"><?php echo __('Tanggal');?></th>
@@ -67,10 +81,12 @@
 					foreach ($val_detail as $key => $value) {
 						$revenue_id = !empty($value['Revenue']['id'])?$value['Revenue']['id']:false;
 
-						if( !empty($recenueCnt[$revenue_id]) ) {
-							$recenueCnt[$revenue_id]++;
-						} else {
-							$recenueCnt[$revenue_id] = 1;
+						if( empty($value['RevenueDetail']['total_price_unit']) ) {
+							if( !empty($recenueCnt[$revenue_id]) ) {
+								$recenueCnt[$revenue_id]++;
+							} else {
+								$recenueCnt[$revenue_id] = 1;
+							}
 						}
 					}
 

@@ -215,8 +215,8 @@ class RevenueDetail extends AppModel {
             $revenue_detail = $this->getData('all', array(
                 'conditions' => $conditions,
                 'order' => array(
-                    'RevenueDetail.total_price_unit',
-                    'RevenueDetail.id',
+                    'Revenue.date_revenue' => 'ASC',
+                    'RevenueDetail.id' => 'ASC',
                 ),
                 'contain' => $contains,
             ));
@@ -247,8 +247,9 @@ class RevenueDetail extends AppModel {
 
             foreach ($revenue_detail as $key => $value) {
                 if( $data_action == 'date' && !empty($value['Revenue']['date_revenue']) ) {
-                    $date_revenue = date('d/m/Y', strtotime($value['Revenue']['date_revenue']));
-                    $result[$date_revenue][] = $value;
+                    // $date_revenue = date('d/m/Y', strtotime($value['Revenue']['date_revenue']));
+                    // $result[$date_revenue][] = $value;
+                    $result[0][] = $value;
                 } else {
                     if( $value['Revenue']['revenue_tarif_type'] == 'per_truck' ) {
                         $result[$value['Revenue']['no_doc']][] = $value;

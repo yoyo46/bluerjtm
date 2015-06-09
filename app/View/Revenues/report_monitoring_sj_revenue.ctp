@@ -300,7 +300,14 @@
 
                                 if( !empty($ttuj['SuratJalan']['tgl_surat_jalan']) ) {
                                     $tglSJ = $this->Common->customDate($ttuj['SuratJalan']['tgl_surat_jalan'], 'd/m/Y');
-                                    $leadSj = floor($str/3600/24)+1;
+                                    $leadSj = floor($str/3600/24);
+
+                                    if( $leadSj < 0 ) {
+                                        $leadSj -= 1;
+                                    } else {
+                                        $leadSj += 1;
+                                    }
+
                                     $avgLeadSj += $leadSj;
                                     $cntAvgLeadSj++;
                                 } else {
@@ -310,7 +317,14 @@
 
                                 if( !empty($ttuj['SuratJalan']['tgl_surat_jalan']) && !empty($ttuj['Invoice']['invoice_date']) ) {
                                     $str = strtotime($dtInvoice) - (strtotime($dtSj));
-                                    $leadSjBilling = floor($str/3600/24)+1;
+                                    $leadSjBilling = floor($str/3600/24);
+
+                                    if( $leadSjBilling < 0 ) {
+                                        $leadSjBilling -= 1;
+                                    } else {
+                                        $leadSjBilling += 1;
+                                    }
+
                                     $avgLeadSjBilling += $leadSjBilling;
                                     $cntAvgLeadSjBilling++;
                                 } else {
@@ -320,7 +334,14 @@
                                 $str = strtotime($dtInvoice) - (strtotime($ttuj['Ttuj']['ttuj_date']));
 
                                 if( !empty($ttuj['Invoice']['invoice_date']) ) {
-                                    $leadSjInvoiced = floor($str/3600/24)+1;
+                                    $leadSjInvoiced = floor($str/3600/24);
+
+                                    if( $leadSjInvoiced < 0 ) {
+                                        $leadSjInvoiced -= 1;
+                                    } else {
+                                        $leadSjInvoiced += 1;
+                                    }
+
                                     $avgLeadSjInvoiced += $leadSjInvoiced;
                                     $cntAvgLeadSjInvoiced++;
                                 } else {
@@ -640,7 +661,14 @@
 
                     if( !empty($ttuj['SuratJalan']['tgl_surat_jalan']) ) {
                         $tglSJ = $this->Common->customDate($ttuj['SuratJalan']['tgl_surat_jalan'], 'd/m/Y');
-                        $leadSj = floor($str/3600/24)+1;
+                        $leadSj = floor($str/3600/24);
+
+                        if( $leadSj < 0 ) {
+                            $leadSj -= 1;
+                        } else {
+                            $leadSj += 1;
+                        }
+
                         $avgLeadSj += $leadSj;
                         $cntAvgLeadSj++;
                     } else {
@@ -650,7 +678,14 @@
 
                     if( !empty($ttuj['SuratJalan']['tgl_surat_jalan']) && !empty($ttuj['Invoice']['invoice_date']) ) {
                         $str = strtotime($dtInvoice) - (strtotime($dtSj));
-                        $leadSjBilling = floor($str/3600/24)+1;
+                        $leadSjBilling = floor($str/3600/24);
+
+                        if( $leadSjBilling < 0 ) {
+                            $leadSjBilling -= 1;
+                        } else {
+                            $leadSjBilling += 1;
+                        }
+
                         $avgLeadSjBilling += $leadSjBilling;
                         $cntAvgLeadSjBilling++;
                     } else {
@@ -660,7 +695,14 @@
                     $str = strtotime($dtInvoice) - (strtotime($ttuj['Ttuj']['ttuj_date']));
 
                     if( !empty($ttuj['Invoice']['invoice_date']) ) {
-                        $leadSjInvoiced = floor($str/3600/24)+1;
+                        $leadSjInvoiced = floor($str/3600/24);
+
+                        if( $leadSjInvoiced < 0 ) {
+                            $leadSjInvoiced -= 1;
+                        } else {
+                            $leadSjInvoiced += 1;
+                        }
+                        
                         $avgLeadSjInvoiced += $leadSjInvoiced;
                         $cntAvgLeadSjInvoiced++;
                     } else {
