@@ -137,6 +137,7 @@
 				        	<?php 
 									echo $this->Form->input('Laka.change_driver_id',array(
 										// 'type' => 'text',
+										'label'=> __('Supir Pengganti'), 
 										'empty'=> __('Pilih Supir Pengganti'), 
 										'class'=>'form-control supir-pengganti-val',
 										'options' => $driverPengantis,
