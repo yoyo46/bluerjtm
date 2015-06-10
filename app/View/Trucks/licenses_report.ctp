@@ -18,7 +18,7 @@
         <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
     </h2>
     <div class="row no-print print-action">
-        <div class="col-xs-12 action">
+        <div class="col-xs-6 action pull-right">
             <?php
                 if( $data_action != 'excel' ) {
                     echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $this->here.'/excel', array(
@@ -32,9 +32,26 @@
                 }
             ?>
         </div>
+        <div class="col-xs-6">
+            <?php
+                $statusContent = $this->Html->tag('span', __('<i class="fa fa-check"></i> Aktif'), array(
+                    'class' => 'label label-success',
+                ));
+                $statusContent .= $this->Html->tag('span', __('<i class="fa fa-times"></i> Expired'), array(
+                    'class' => 'label label-danger',
+                ));
+                $statusContent .= $this->Html->tag('span', __('<i class="fa fa-exclamation-triangle"></i> Akan Expired'), array(
+                    'class' => 'label label-warning',
+                ));
+
+                echo $this->Html->tag('div', $statusContent, array(
+                    'class' => 'status-content'
+                ));
+            ?>
+        </div>
     </div>
     <div class="table-responsive">
-        <table class="table table-bordered report" border="<?php echo $border; ?>">
+        <table class="table table-bordered" border="<?php echo $border; ?>">
             <thead>
                 <tr>
                     <?php
