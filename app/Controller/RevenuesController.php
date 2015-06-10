@@ -4036,14 +4036,20 @@ class RevenuesController extends AppController {
             );
             $invoice_conditions = array();
 
-            $customer_id = array();
+            $customer_id = '';
+            $customer_collect_id = array();
+            $due_30= false;
+            $due_15= false;
+            $due_above_30= false;
             if( !empty($this->params['named']) ){
                 $refine = $this->params['named'];
 
                 if(!empty($refine['customer'])){
                     $keyword = urldecode($refine['customer']);
                     $this->request->data['Invoice']['customer_id'] = $keyword;
-                    $customer_id = array_merge($customer_id, array($keyword));
+                    $customer_id = $keyword;
+
+                    $default_conditions['Customer.id'] = $customer_id;
                 }
 
                 if(!empty($refine['due_15'])){
@@ -4052,6 +4058,10 @@ class RevenuesController extends AppController {
                         'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 15,
                     );
 
+                    if(!empty($customer_id)){
+                        $inv_conditions['Invoice.customer_id'] = $customer_id;
+                    }
+
                     $customer_id_temp = $this->Invoice->getData('list', array(
                         'conditions' => $inv_conditions,
                         'fields' => array(
@@ -4063,10 +4073,11 @@ class RevenuesController extends AppController {
                     ));
                     
                     if(!empty($customer_id_temp)){
-                        $customer_id = array_merge($customer_id, $customer_id_temp);
+                        $customer_collect_id = array_merge($customer_collect_id, $customer_id_temp);
                     }
 
                     $this->request->data['Invoice']['due_15'] = 1;
+                    $due_15= true;
                 }
                 if(!empty($refine['due_30'])){
                     $inv_conditions = array(
@@ -4074,6 +4085,10 @@ class RevenuesController extends AppController {
                         'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 30,
                     );
 
+                    if(!empty($customer_id)){
+                        $inv_conditions['Invoice.customer_id'] = $customer_id;
+                    }
+
                     $customer_id_temp = $this->Invoice->getData('list', array(
                         'conditions' => $inv_conditions,
                         'fields' => array(
@@ -4085,16 +4100,21 @@ class RevenuesController extends AppController {
                     ));
                     
                     if(!empty($customer_id_temp)){
-                        $customer_id = array_merge($customer_id, $customer_id_temp);
+                        $customer_collect_id = array_merge($customer_collect_id, $customer_id_temp);
                     }
 
                     $this->request->data['Invoice']['due_30'] = 1;
+                    $due_30= true;
                 }
                 if(!empty($refine['due_above_30'])){
                     $inv_conditions = array(
                         'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >' => 30,
                     );
 
+                    if(!empty($customer_id)){
+                        $inv_conditions['Invoice.customer_id'] = $customer_id;
+                    }
+
                     $customer_id_temp = $this->Invoice->getData('list', array(
                         'conditions' => $inv_conditions,
                         'fields' => array(
@@ -4106,10 +4126,11 @@ class RevenuesController extends AppController {
                     ));
                     
                     if(!empty($customer_id_temp)){
-                        $customer_id = array_merge($customer_id, $customer_id_temp);
+                        $customer_collect_id = array_merge($customer_collect_id, $customer_id_temp);
                     }
                     
                     $this->request->data['Invoice']['due_above_30'] = 1;
+                    $due_above_30 = true;
                 }
 
                 if(!empty($refine['date'])){
@@ -4129,8 +4150,10 @@ class RevenuesController extends AppController {
                 }
             }
 
-            if(!empty($customer_id)){
-                $default_conditions['Customer.id'] = $customer_id;
+            if(!empty($customer_collect_id)){
+                $default_conditions['Customer.id'] = $customer_collect_id;
+            }else if(empty($customer_collect_id) && ($due_30 || $due_15 || $due_above_30) ){
+                $default_conditions['Customer.id'] = false;
             }
 
             if(empty($data_action)){

@@ -32,7 +32,7 @@
         <?php 
                 }
         ?>
-        <table class="table table-bordered report" border="<?php echo $border; ?>">
+        <table class="table table-bordered" border="<?php echo $border; ?>">
             <thead>
     			<tr>
     				<th rowspan="2" class="text-center text-middle">
