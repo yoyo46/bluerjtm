@@ -1344,7 +1344,7 @@ function grandTotalRevenue(){
 
         totalQty += qtyUnit;
 
-        if( (revenue_tarif_type != 'per_truck' && tarifAngkutanType == 'angkut') || ( tarifAngkutanType != 'angkut' || is_additional_charge[i].checked == true ) ) {
+        if( (revenue_tarif_type != 'per_truck') || ( tarifAngkutanType != 'angkut' || is_additional_charge[i].checked == true ) ) {
             if( is_additional_charge[i].checked == true ) {
                 addCharge = parseInt(total_price[i].value);
 
@@ -1360,10 +1360,12 @@ function grandTotalRevenue(){
             }
         }
 
-        if( (revenue_tarif_type != 'per_truck' && tarifAngkutanType == 'angkut') || ( tarifAngkutanType != 'angkut' && is_additional_charge[i].checked == true ) ) {
+        if( (revenue_tarif_type != 'per_truck') || ( tarifAngkutanType != 'angkut' && is_additional_charge[i].checked == true ) ) {
             var totalPrice = priceUnit * qtyUnit;
             $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-revenue-perunit').html('IDR '+formatNumber(totalPrice));
             $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-price-perunit').val(totalPrice);
+        } else if( revenue_tarif_type == 'per_truck' && is_additional_charge[i].checked != true ) {
+            $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-revenue-perunit').html('');
         }
     };
 
@@ -2306,6 +2308,7 @@ var checkCharge = function ( obj ) {
         }
 
         parent.find('.additional-charge-hidden').val(val);
+
         changeDetailRevenue( parent, city_id, group_motor_id, val, qty );
     });
 }

@@ -121,12 +121,15 @@
                 <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';?></td>
                 <td>
                     <?php 
-                            $class_status = 'label label-warning';
+                            $class_status = 'label label-default';
                             $statusRevenue = ucfirst($value['Revenue']['transaction_status']);
 
                             if(!empty($value['Invoice']['complete_paid'])){
                                 $class_status = 'label label-success';
                                 $statusRevenue = __('Paid');
+                            } else if($value['Revenue']['transaction_status'] == 'half_invoiced'){
+                                $class_status = 'label label-warning';
+                                $statusRevenue = __('Half Invoiced');
                             } else if($value['Revenue']['transaction_status'] == 'invoiced'){
                                 $class_status = 'label label-primary';
                             } elseif($value['Revenue']['transaction_status'] == 'posting'){
