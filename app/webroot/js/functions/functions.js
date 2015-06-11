@@ -1224,7 +1224,7 @@ var duplicate_row = function(){
     });
 }
 
-var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge ) {
+var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge, qty ) {
     var ttuj_id = $('#getTtujInfoRevenue').val();
     var customer_id = $('.change-customer-revenue').val();
     var to_city_id = $('#toCityId').val();
@@ -1232,9 +1232,12 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge 
     if( typeof is_charge == 'undefined' ){
         is_charge = 0;
     }
+    if( typeof qty == 'undefined' ){
+        qty = 0;
+    }
 
     $.ajax({
-        url: '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/',
+        url: '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/',
         type: 'POST',
         success: function(response, status) {
             $('.revenue_tarif_type').html($(response).filter('#main_jenis_unit').html());
@@ -1282,8 +1285,9 @@ var city_revenue_change = function( obj_city, obj_tipe_motor ){
         var val = self.val();
         var parent = self.parents('tr');
         var group_motor_id = parent.find('.revenue-group-motor').val();
+        var qty = parent.find('.revenue-qty').val();
 
-        changeDetailRevenue( parent, val, group_motor_id );
+        changeDetailRevenue( parent, val, group_motor_id, 0, qty );
     });
 
     obj_tipe_motor.change(function() {
@@ -1291,8 +1295,9 @@ var city_revenue_change = function( obj_city, obj_tipe_motor ){
         var val = self.val();
         var parent = self.parents('tr');
         var city_id = parent.find('.city-revenue-change').val();
+        var qty = parent.find('.revenue-qty').val();
 
-        changeDetailRevenue( parent, city_id, val );
+        changeDetailRevenue( parent, city_id, val, 0, qty );
 
         return false;
     });
@@ -1304,6 +1309,7 @@ function grandTotalRevenue(){
     var total_price = $('.total-price-perunit');
     var is_additional_charge = $('.additional-charge');
     var jenis_unit = $('.jenis_unit');
+    var tarif_angkutan_type = $('.tarif_angkutan_type');
     var length = $('.tipe-motor-table tr.list-revenue').length;
     var listRevenue = $('.tipe-motor-table tr.list-revenue');
     var total_temp = $('#total_retail_revenue').val();
@@ -1330,9 +1336,15 @@ function grandTotalRevenue(){
             qtyUnit = 0;
         }
 
+        if( typeof tarif_angkutan_type[i] != 'undefined' && tarif_angkutan_type[i].value != '' ) {
+            tarifAngkutanType = tarif_angkutan_type[i].value;
+        } else {
+            tarifAngkutanType = 'angkut';
+        }
+
         totalQty += qtyUnit;
 
-        if( revenue_tarif_type != 'per_truck' || is_additional_charge[i].checked == true ) {
+        if( (revenue_tarif_type != 'per_truck' && tarifAngkutanType == 'angkut') || ( tarifAngkutanType != 'angkut' || is_additional_charge[i].checked == true ) ) {
             if( is_additional_charge[i].checked == true ) {
                 addCharge = parseInt(total_price[i].value);
 
@@ -1348,7 +1360,7 @@ function grandTotalRevenue(){
             }
         }
 
-        if( revenue_tarif_type != 'per_truck' ){
+        if( (revenue_tarif_type != 'per_truck' && tarifAngkutanType == 'angkut') || ( tarifAngkutanType != 'angkut' && is_additional_charge[i].checked == true ) ) {
             var totalPrice = priceUnit * qtyUnit;
             $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-revenue-perunit').html('IDR '+formatNumber(totalPrice));
             $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-price-perunit').val(totalPrice);
@@ -2287,13 +2299,14 @@ var checkCharge = function ( obj ) {
         var val = 0;
         var city_id = parent.find('.city-revenue-change').val();
         var group_motor_id = parent.find('.revenue-group-motor').val();
+        var qty = parent.find('.revenue-qty').val();
 
         if( $(this).is(':checked') ) {
             val = 1;
         }
 
         parent.find('.additional-charge-hidden').val(val);
-        changeDetailRevenue( parent, city_id, group_motor_id, val );
+        changeDetailRevenue( parent, city_id, group_motor_id, val, qty );
     });
 }
 var leasing_action = function(){

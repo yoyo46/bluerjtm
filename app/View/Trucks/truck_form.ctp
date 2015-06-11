@@ -374,7 +374,7 @@
 		        <div class="form-group">
 		        	<?php 
 						echo $this->Form->input('tgl_siup',array(
-							'label'=> __('Tgl Perpanjang Ijin Usaha *'), 
+							'label'=> __('Tgl Perpanjang Ijin Usaha'), 
 							'class'=>'form-control custom-date',
 							'required' => false,
 							'placeholder' => __('Tgl Perpanjang Ijin Usaha'),
@@ -385,7 +385,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('siup',array(
-								'label'=> __('Biaya Ijin Usaha *'), 
+								'label'=> __('Biaya Ijin Usaha'), 
 								'class'=>'form-control input_price',
 								'required' => false,
 								'placeholder' => __('Biaya Ijin Usaha'),

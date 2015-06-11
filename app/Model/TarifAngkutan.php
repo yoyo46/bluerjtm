@@ -142,11 +142,10 @@ class TarifAngkutan extends AppModel {
             if( !empty($result['TarifAngkutan']['capacity']) ) {
                 $addConditions['capacity'] = $capacity;
             }
-            if( !empty($result['TarifAngkutan']['group_motor_id']) && $result['TarifAngkutan']['jenis_unit'] == 'per_unit' ) {
-                $addConditions['group_motor_id'] = $result['TarifAngkutan']['group_motor_id'];
-            }
-            if( !empty($group_motor_id) && $result['TarifAngkutan']['jenis_unit'] == 'per_unit' ) {
+            if( !empty($result['TarifAngkutan']['group_motor_id']) && !empty($group_motor_id) && $result['TarifAngkutan']['jenis_unit'] == 'per_unit' ) {
                 $addConditions['group_motor_id'] = $group_motor_id;
+            } else if( !empty($result['TarifAngkutan']['group_motor_id']) && $result['TarifAngkutan']['jenis_unit'] == 'per_unit' ) {
+                $addConditions['group_motor_id'] = $result['TarifAngkutan']['group_motor_id'];
             }
 
             $result = $this->find('first', array(

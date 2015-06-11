@@ -86,7 +86,7 @@
                             ));
 
                             if(!empty($value_leasing['status'])){
-                                echo $this->Html->link('Disable', array(
+                                echo $this->Html->link('Void', array(
                                     'controller' => 'leasings',
                                     'action' => 'toggle',
                                     $id
@@ -95,14 +95,14 @@
                                     'title' => 'disable status brand'
                                 ), __('Apakah Anda yakin akan menon-aktifkan kontrak ini?'));
                             }else{
-                                echo $this->Html->link('Enable', array(
-                                    'controller' => 'leasings',
-                                    'action' => 'toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-success btn-xs',
-                                    'title' => 'enable status brand'
-                                ), __('Apakah Anda yakin akan mengaktifkan kontrak ini?'));
+                                // echo $this->Html->link('Enable', array(
+                                //     'controller' => 'leasings',
+                                //     'action' => 'toggle',
+                                //     $id
+                                // ), array(
+                                //     'class' => 'btn btn-success btn-xs',
+                                //     'title' => 'enable status brand'
+                                // ), __('Apakah Anda yakin akan mengaktifkan kontrak ini?'));
                             }
                     ?>
                 </td>

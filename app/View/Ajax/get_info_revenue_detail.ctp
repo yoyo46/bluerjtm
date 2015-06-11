@@ -1,15 +1,18 @@
 <?php
+        $tarif_angkutan_type = !empty($mainTarif['tarif_angkutan_type'])?$mainTarif['tarif_angkutan_type']:'angkut';
+        $jenis_unit =!empty($mainTarif['jenis_unit']) ? $mainTarif['jenis_unit'] : 'per_unit';
+
         echo $this->Form->hidden('Revenue.payment_type', array(
             'type' => 'text',
             'label' => false,
             'id' => 'main_jenis_unit',
             'required' => false,
-            'value' =>  !empty($mainTarif['jenis_unit']) ? $mainTarif['jenis_unit'] : 'per_unit'
+            'value' => $jenis_unit,
         ));
         echo $this->Form->hidden('RevenueDetail.tarif_angkutan_type.', array(
             'id' => 'tarif_angkutan_type',
             'required' => false,
-            'value' => !empty($detail['RevenueDetail']['price_unit']['tarif_angkutan_type'])?$detail['RevenueDetail']['price_unit']['tarif_angkutan_type']:'angkut',
+            'value' => $tarif_angkutan_type,
         ));
         echo $this->Form->hidden('RevenueDetail.tarif_angkutan_id.', array(
             'id' => 'tarif_angkutan_id',
@@ -30,7 +33,7 @@
         $total = 0;
         $flagTruck = false;
 
-        if( !empty($detail['RevenueDetail']['price_unit']['jenis_unit']) && $detail['RevenueDetail']['price_unit']['jenis_unit'] == 'per_truck' && !$is_charge ) {
+        if( $jenis_unit == 'per_truck' && !$is_charge ) {
             $flagTruck = true;
         }
 ?>
@@ -47,13 +50,13 @@
                 'label' => false,
                 'class' => 'jenis_unit',
                 'required' => false,
-                'value' =>  !empty($price['jenis_unit']) ? $price['jenis_unit'] : 'per_unit'
+                'value' =>  $jenis_unit,
             ));
     ?>
 </div>
 <div id="price-data">
     <?php 
-            if( !$flagTruck && empty($is_charge) ) {
+            if( ( !$flagTruck && empty($is_charge) ) || $tarif_angkutan_type != 'angkut' ) {
                 if(is_array($price)){
                     $price = $price['tarif'];
                     echo $this->Number->format($price, Configure::read('__Site.config_currency_code'), array('places' => 0));
@@ -82,7 +85,7 @@
                 'value' => 1,
                 'checked' => !empty($is_charge)?true:false,
                 'hiddenField' => false,
-                'disabled' => ( !empty($flagTruck) || !empty($is_charge) )?false:true,
+                'disabled' => ( ( !empty($flagTruck) || !empty($is_charge) ) || $tarif_angkutan_type != 'angkut' )?false:true,
             ));
             echo $this->Form->hidden('RevenueDetail.is_charge.', array(
                 'value' => !empty($is_charge)?1:0,
@@ -95,11 +98,17 @@
             $formatValuePrice = '';
             $value_price = 0;
 
-            if( !$flagTruck ) {
-                if(is_array($price)){
-                    if(!empty($price) && !empty($qty) && $price['jenis_unit'] == 'per_unit'){
+            if( (!$flagTruck && $tarif_angkutan_type == 'angkut') || ( $tarif_angkutan_type != 'angkut' || !empty($is_charge) ) ) {
+                if( $tarif_angkutan_type != 'angkut' && is_numeric($price) ) {
+                    if(!empty($price) && !empty($qty) && $jenis_unit == 'per_unit'){
+                        $value_price = $price * $qty;
+                    }else if(!empty($price) && $jenis_unit == 'per_truck'){
+                        $value_price = $price;
+                    }
+                } else if(is_array($price)){
+                    if(!empty($price) && !empty($qty) && $jenis_unit == 'per_unit'){
                         $value_price = $price['tarif'] * $qty;
-                    }else if(!empty($price) && $price['jenis_unit'] == 'per_truck'){
+                    }else if(!empty($price) && $jenis_unit == 'per_truck'){
                         $value_price = $price['tarif'];
                     }
                 }

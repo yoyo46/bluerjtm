@@ -156,11 +156,11 @@ class LkusController extends AppController {
             }
             
             $data['Lku']['tgl_lku'] = (!empty($data['Lku']['tgl_lku'])) ? $this->MkCommon->getDate($data['Lku']['tgl_lku']) : '';
-            
             $validate_lku_detail = true;
             $temp_detail = array();
             $total_price = 0;
             $total_klaim = 0;
+
             if(!empty($data['LkuDetail']['tipe_motor_id'])){
                 foreach ($data['LkuDetail']['tipe_motor_id'] as $key => $value) {
                     if( !empty($value) ){
@@ -227,11 +227,11 @@ class LkusController extends AppController {
                         'action' => 'index',
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LKU'), $msg), 'error');
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LKU. Lengkapi field yang dibutuhkan'), $msg), 'error');
                     $this->Log->logActivity( sprintf(__('Berhasil %s LKU #%s'), $msg, $lku_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 }
             }else{
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LKU'), $msg), 'error');
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LKU. Lengkapi field yang dibutuhkan'), $msg), 'error');
             }
         } else if($id && $data_local){
             $this->request->data = $data_local;
@@ -262,8 +262,10 @@ class LkusController extends AppController {
 
         if(!empty($this->request->data['LkuDetail']['tipe_motor_id'])){
             $temp = array();
+            $idx = 1;
+
             foreach ($this->request->data['LkuDetail']['tipe_motor_id'] as $key => $value) {
-                if( !empty($value) ){
+                if( $idx != count($this->request->data['LkuDetail']['tipe_motor_id']) ){
                     $temp['LkuDetail'][$key] = array(
                         'tipe_motor_id' => $value,
                         'no_rangka' => (!empty($data['LkuDetail']['no_rangka'][$key])) ? $data['LkuDetail']['no_rangka'][$key] : '',
@@ -290,10 +292,15 @@ class LkusController extends AppController {
                         $temp['LkuDetail'][$key]['ColorMotor'] = !empty($Ttuj_Tipe_Motor['ColorMotor'])?$Ttuj_Tipe_Motor['ColorMotor']:false;
                     }
                 }
+
+                $idx++;
             }
 
             unset($this->request->data['LkuDetail']);
-            $this->request->data['LkuDetail'] = $temp['LkuDetail'];
+
+            if( !empty($temp['LkuDetail']) ) {
+                $this->request->data['LkuDetail'] = $temp['LkuDetail'];
+            }
         }
 
         $ttujs = $this->Ttuj->getData('list', array(
@@ -1296,8 +1303,8 @@ class LkusController extends AppController {
             $temp_detail = array();
             $total_price = 0;
             $total_klaim = 0;
-
             $total_choosen = 0;
+
             if(!empty($data['KsuDetail']['perlengkapan_id'])){
                 foreach ($data['KsuDetail']['perlengkapan_id'] as $key => $value) {
                     if( !empty($value) ){
@@ -1404,8 +1411,10 @@ class LkusController extends AppController {
 
         if(!empty($this->request->data['KsuDetail']['perlengkapan_id'])){
             $temp = array();
+            $idx = 1;
+
             foreach ($this->request->data['KsuDetail']['perlengkapan_id'] as $key => $value) {
-                if( !empty($value) ){
+                if( $idx != count($this->request->data['KsuDetail']['perlengkapan_id']) ){
                     $temp['KsuDetail'][$key] = array(
                         'perlengkapan_id' => $value,
                         'no_rangka' => (!empty($data['KsuDetail']['no_rangka'][$key])) ? $data['KsuDetail']['no_rangka'][$key] : '',
@@ -1431,9 +1440,12 @@ class LkusController extends AppController {
                         $temp['KsuDetail'][$key]['Perlengkapan'] = array_merge($perlengkapan['Perlengkapan'], $Ttuj_perlengkapan);
                     }
                 }
+                
+                $idx++;
             }
 
             unset($this->request->data['KsuDetail']);
+
             if(!empty($temp['KsuDetail'])){
                 $this->request->data['KsuDetail'] = $temp['KsuDetail'];
             }

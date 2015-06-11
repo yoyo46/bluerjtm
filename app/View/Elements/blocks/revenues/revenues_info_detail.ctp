@@ -38,6 +38,8 @@
                         foreach ($data as $key => $detail) {
                             $qty = !empty($detail['RevenueDetail']['qty_unit'])?$detail['RevenueDetail']['qty_unit']:0;
                             $totalQty += $qty;
+                            $tarif_angkutan_type = !empty($detail['RevenueDetail']['price_unit']['tarif_angkutan_type'])?$detail['RevenueDetail']['price_unit']['tarif_angkutan_type']:0;
+                            $is_charge = !empty($detail['RevenueDetail']['is_charge'])?$detail['RevenueDetail']['is_charge']:false;
 
                             if( !empty($detail['RevenueDetail']['price_unit']) ){
                                 $price = $detail['RevenueDetail']['price_unit'];
@@ -59,12 +61,8 @@
 
                             $flagShowPrice = false;
 
-                            if( empty($tarifTruck) && $jenis_unit != 'per_truck' ) {
+                            if( (empty($tarifTruck) && $jenis_unit != 'per_truck') || ( $tarif_angkutan_type != 'angkut' && !empty($is_charge) ) ) {
                                 $flagShowPrice = true;
-                            }
-
-                            if( !empty($detail['RevenueDetail']['is_charge']) ) {
-                                $is_charge = true;
                             }
                 ?>
                 <tr rel="<?php echo $key; ?>" class="list-revenue">
@@ -88,7 +86,7 @@
                                 echo $this->Form->hidden('RevenueDetail.tarif_angkutan_type.', array(
                                     'required' => false,
                                     'class' => 'tarif_angkutan_type',
-                                    'value' => ( is_array($price) && !empty($price['tarif_angkutan_type'])) ? $price['tarif_angkutan_type'] : 'angkut'
+                                    'value' => ( is_array($price) && !empty($tarif_angkutan_type)) ? $tarif_angkutan_type : 'angkut'
                                 ));
                         ?>
                     </td>
