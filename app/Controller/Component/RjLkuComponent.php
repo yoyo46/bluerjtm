@@ -1,6 +1,8 @@
 <?php
 App::uses('Sanitize', 'Utility');
 class RjLkuComponent extends Component {
+
+	var $components = array('MkCommon');
 	
 	function processRefine($refine = false, $default_conditions = array()) {
 		if(!$refine) {
@@ -15,11 +17,35 @@ class RjLkuComponent extends Component {
 				if( !empty($refine['LkuPayment']['no_doc']) ) {
 					$refine_conditions['LkuPayment']['nodoc'] = $refine['LkuPayment']['no_doc'];
 				}
+				if( !empty($refine['Lku']['from_date']) ) {
+					$refine_conditions['Lku']['from'] = $this->MkCommon->getDate($refine['Lku']['from_date']);
+				}
+				if( !empty($refine['Lku']['to_date']) ) {
+					$refine_conditions['Lku']['to'] = $this->MkCommon->getDate($refine['Lku']['to_date']);
+				}
+				if( !empty($refine['Lku']['no_ttuj']) ) {
+					$refine_conditions['Lku']['no_ttuj'] = $refine['Lku']['no_ttuj'];
+				}
+				if( !empty($refine['Lku']['customer_id']) ) {
+					$refine_conditions['Lku']['customer'] = $refine['Lku']['customer_id'];
+				}
 				if( !empty($refine['Ksu']['no_doc']) ) {
 					$refine_conditions['Ksu']['nodoc'] = $refine['Ksu']['no_doc'];
 				}
 				if( !empty($refine['KsuPayment']['no_doc']) ) {
 					$refine_conditions['KsuPayment']['nodoc'] = $refine['KsuPayment']['no_doc'];
+				}
+				if( !empty($refine['Ksu']['from_date']) ) {
+					$refine_conditions['Ksu']['from'] = $this->MkCommon->getDate($refine['Ksu']['from_date']);
+				}
+				if( !empty($refine['Ksu']['to_date']) ) {
+					$refine_conditions['Ksu']['to'] = $this->MkCommon->getDate($refine['Ksu']['to_date']);
+				}
+				if( !empty($refine['Ksu']['no_ttuj']) ) {
+					$refine_conditions['Ksu']['no_ttuj'] = $refine['Ksu']['no_ttuj'];
+				}
+				if( !empty($refine['Ksu']['customer_id']) ) {
+					$refine_conditions['Ksu']['customer'] = $refine['Ksu']['customer_id'];
 				}
 			}
 				

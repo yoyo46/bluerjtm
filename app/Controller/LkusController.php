@@ -28,6 +28,9 @@ class LkusController extends AppController {
 	public function index() {
         if( in_array('view_lkus', $this->allowModule) ) {
             $this->loadModel('Lku');
+            $this->loadModel('Ttuj');
+            $this->loadModel('Customer');
+
     		$this->set('active_menu', 'lkus');
     		$this->set('sub_module_title', __('Data LKU'));
             $conditions = array(
@@ -42,14 +45,68 @@ class LkusController extends AppController {
                     $this->request->data['Lku']['no_doc'] = $no_doc;
                     $conditions['Lku.no_doc LIKE '] = '%'.$no_doc.'%';
                 }
+
+                if(!empty($refine['from'])){
+                    $from = urldecode($refine['from']);
+                    $this->request->data['Lku']['from_date'] = $this->MkCommon->getDate($from, true);
+                    $conditions['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') >='] = $from;
+                }
+
+                if(!empty($refine['to'])){
+                    $to = urldecode($refine['to']);
+                    $this->request->data['Lku']['to_date'] = $this->MkCommon->getDate($to, true);
+                    $conditions['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') <='] = $to;
+                }
+
+                if(!empty($refine['no_ttuj'])){
+                    $no_ttuj = urldecode($refine['no_ttuj']);
+                    $this->request->data['Lku']['no_ttuj'] = $no_ttuj;
+                    $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
+                }
+
+                if(!empty($refine['customer'])){
+                    $customer = urldecode($refine['customer']);
+                    $this->request->data['Lku']['customer_id'] = $customer;
+                    $conditions['Ttuj.customer_id'] = $customer;
+                }
             }
 
             $this->paginate = $this->Lku->getData('paginate', array(
-                'conditions' => $conditions
+                'conditions' => $conditions,
+                'contain' => array(
+                    'Ttuj'
+                )
             ));
+
             $Lkus = $this->paginate('Lku');
 
+            if(!empty($Lkus)){
+                foreach ($Lkus as $key => $value) {
+                    $customer_data['Customer'] = array();
+                    
+                    if(!empty($value['Ttuj']['customer_id'])){
+                        $customer_data = $this->Customer->getData('first', array(
+                            'conditions' => array(
+                                'Customer.id' => $value['Ttuj']['customer_id']
+                            )
+                        ));
+                    }
+
+                    $Lkus[$key]['Customer'] = $customer_data['Customer'];
+                }
+            }
+
             $this->set('Lkus', $Lkus);
+
+            $customers = $this->Customer->getData('list', array(
+                'conditions' => array(
+                    'Customer.status' => 1
+                ),
+                'fields' => array(
+                    'Customer.id', 'Customer.customer_name_code'
+                ),
+            ));
+            $this->set('customers', $customers);
         } else {
             $this->redirect($this->referer());
         }
@@ -1181,6 +1238,8 @@ class LkusController extends AppController {
     public function ksus() {
         if( in_array('view_lkus', $this->allowModule) ) {
             $this->loadModel('Ksu');
+            $this->loadModel('Customer');
+
             $this->set('active_menu', 'ksus');
             $this->set('sub_module_title', __('Data KSU'));
             $conditions = array();
@@ -1193,14 +1252,67 @@ class LkusController extends AppController {
                     $this->request->data['Ksu']['no_doc'] = $no_doc;
                     $conditions['Ksu.no_doc LIKE '] = '%'.$no_doc.'%';
                 }
+
+                if(!empty($refine['from'])){
+                    $from = urldecode($refine['from']);
+                    $this->request->data['Ksu']['from_date'] = $this->MkCommon->getDate($from, true);
+                    $conditions['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') >='] = $from;
+                }
+
+                if(!empty($refine['to'])){
+                    $to = urldecode($refine['to']);
+                    $this->request->data['Ksu']['to_date'] = $this->MkCommon->getDate($to, true);
+                    $conditions['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') <='] = $to;
+                }
+
+                if(!empty($refine['no_ttuj'])){
+                    $no_ttuj = urldecode($refine['no_ttuj']);
+                    $this->request->data['Ksu']['no_ttuj'] = $no_ttuj;
+                    $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
+                }
+
+                if(!empty($refine['customer'])){
+                    $customer = urldecode($refine['customer']);
+                    $this->request->data['Ksu']['customer_id'] = $customer;
+                    $conditions['Ttuj.customer_id'] = $customer;
+                }
             }
 
             $this->paginate = $this->Ksu->getData('paginate', array(
-                'conditions' => $conditions
+                'conditions' => $conditions,
+                'contain' => array(
+                    'Ttuj'
+                )
             ));
             $Ksus = $this->paginate('Ksu');
 
+            if(!empty($Ksus)){
+                foreach ($Ksus as $key => $value) {
+                    $customer_data['Customer'] = array();
+                    
+                    if(!empty($value['Ttuj']['customer_id'])){
+                        $customer_data = $this->Customer->getData('first', array(
+                            'conditions' => array(
+                                'Customer.id' => $value['Ttuj']['customer_id']
+                            )
+                        ));
+                    }
+
+                    $Ksus[$key]['Customer'] = $customer_data['Customer'];
+                }
+            }
+
             $this->set('Ksus', $Ksus);
+
+            $customers = $this->Customer->getData('list', array(
+                'conditions' => array(
+                    'Customer.status' => 1
+                ),
+                'fields' => array(
+                    'Customer.id', 'Customer.customer_name_code'
+                ),
+            ));
+            $this->set('customers', $customers);
         } else {
             $this->redirect($this->referer());
         }

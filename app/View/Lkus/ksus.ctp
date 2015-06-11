@@ -35,6 +35,12 @@
                             'escape' => false
                         )));
 
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.no_ttuj', __('No TTUJ'), array(
+                            'escape' => false
+                        )));
+
+                        echo $this->Html->tag('th', __('Customer'));
+
                         echo $this->Html->tag('th', $this->Paginator->sort('Ksu.tgl_lku', __('Tgl KSU'), array(
                             'escape' => false
                         )));
@@ -71,6 +77,13 @@
             <tr>
                 <td><?php echo $value['Ksu']['no_doc'];?></td>
                 <?php 
+                        echo $this->Html->tag('td', $value['Ttuj']['no_ttuj']);
+
+                        $customer = '';
+                        if(!empty($value['Customer']['customer_name_code'])){
+                            $customer = $value['Customer']['customer_name_code'];
+                        }
+                        echo $this->Html->tag('td', $customer);
                         echo $this->Html->tag('td', date('d M Y', strtotime($value['Ksu']['tgl_ksu'])));
                         echo $this->Html->tag('td', $this->Number->format($value['Ksu']['total_klaim']));
                         echo $this->Html->tag('td', $this->Number->currency($value['Ksu']['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0)) );

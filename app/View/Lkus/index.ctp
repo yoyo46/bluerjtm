@@ -31,11 +31,17 @@
         <table class="table table-hover">
             <tr>
                 <?php 
-                        echo $this->Html->tag('th', $this->Paginator->sort('Lku.no_doc', __('No Lku'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Lku.no_doc', __('No LKU'), array(
                             'escape' => false
                         )));
 
-                        echo $this->Html->tag('th', $this->Paginator->sort('Lku.tgl_lku', __('Tgl Lku'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.no_ttuj', __('No TTUJ'), array(
+                            'escape' => false
+                        )));
+
+                        echo $this->Html->tag('th', __('Customer'));
+
+                        echo $this->Html->tag('th', $this->Paginator->sort('Lku.tgl_lku', __('Tgl LKU'), array(
                             'escape' => false
                         )));
 
@@ -71,7 +77,16 @@
             <tr>
                 <td><?php echo $value['Lku']['no_doc'];?></td>
                 <?php 
+                        echo $this->Html->tag('td', $value['Ttuj']['no_ttuj']);
+
+                        $customer = '';
+                        if(!empty($value['Customer']['customer_name_code'])){
+                            $customer = $value['Customer']['customer_name_code'];
+                        }
+
+                        echo $this->Html->tag('td', $customer);
                         echo $this->Html->tag('td', date('d M Y', strtotime($value['Lku']['tgl_lku'])));
+
                         echo $this->Html->tag('td', $this->Number->format($value['Lku']['total_klaim']));
                         echo $this->Html->tag('td', $this->Number->currency($value['Lku']['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0)) );
 
@@ -144,7 +159,7 @@
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '8'
+                            'colspan' => '10'
                         )));
                     }
             ?>
