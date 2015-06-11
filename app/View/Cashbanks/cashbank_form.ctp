@@ -87,6 +87,22 @@
 				)), array(
 					'class' => 'form-group'
 				));
+				echo $this->Form->input('prepayment_out_id',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'type' => 'hidden',
+					'id' => 'prepayment-out-id',
+					'value' => !empty($prepayment_out_id)?$prepayment_out_id:false,
+				));
+				echo $this->Form->input('cash_bank_id',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'type' => 'hidden',
+					'id' => 'cash-bank-id',
+					'value' => !empty($id)?$id:false,
+				));
 
 		?>
 		<div class="form-group">

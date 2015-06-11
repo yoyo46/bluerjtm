@@ -112,7 +112,11 @@ class CashbanksController extends AppController {
                     }
                 }
             }
+            $this->loadModel('CashBankAuthMaster');
+            $cash_bank_auth_master = $this->CashBankAuthMaster->getUserApproval();
+            $cashbank_auth_id = Set::extract('/CashBankAuthMaster/employe_id', $cash_bank_auth_master);
 
+            $this->set('cashbank_auth_id', $cashbank_auth_id);
             $this->set('cash_banks', $cash_banks);
             $this->set('active_menu', 'cash_bank');
         // } else {
@@ -129,9 +133,39 @@ class CashbanksController extends AppController {
         // }
     }
 
-    public function cashbank_edit( $id = false ) {
+    // public function cashbank_edit( $id = false ) {
+    //     // if( in_array('update_cash_banks', $this->allowModule) ) {
+    //         $this->set('sub_module_title', 'Rubah transaksi Kas/Bank');
+    //         $coa = false;
+
+    //         if( !empty($id) ) {
+    //             $cashbank = $this->CashBank->getData('first', array(
+    //                 'conditions' => array(
+    //                     'CashBank.id' => $id,
+    //                     'CashBank.status' => 1,
+    //                 ),
+    //                 'contain' => array(
+    //                     'CashBankDetail',
+    //                     'CashBankAuth'
+    //                 )
+    //             ));
+
+    //             if( !empty($cashbank) ) {
+    //                 $this->set('sub_module_title', 'Rubah Kas/Bank');
+    //                 $this->doCashBank( $id, $cashbank);
+    //             } else {
+    //                 $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
+    //                 $this->redirect($this->referer());
+    //             }
+    //         } 
+    //     // } else {
+    //     //     $this->redirect($this->referer());
+    //     // }
+    // }
+
+    public function cashbank_detail( $id = false ) {
         // if( in_array('update_cash_banks', $this->allowModule) ) {
-            $this->set('sub_module_title', 'Rubah transaksi Kas/Bank');
+            $this->set('sub_module_title', 'Detail Transaksi Kas/Bank');
             $coa = false;
 
             if( !empty($id) ) {
@@ -142,7 +176,8 @@ class CashbanksController extends AppController {
                     ),
                     'contain' => array(
                         'CashBankDetail',
-                        'CashBankAuth'
+                        'CashBankAuth',
+                        'Coa'
                     )
                 ));
 
@@ -153,7 +188,10 @@ class CashbanksController extends AppController {
                     $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
                     $this->redirect($this->referer());
                 }
-            } 
+            }  else {
+                $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
+                $this->redirect($this->referer());
+            }
         // } else {
         //     $this->redirect($this->referer());
         // }
@@ -162,6 +200,7 @@ class CashbanksController extends AppController {
     function doCashBank($id = false, $data_local = false){
         $this->loadModel('Coa');
         $this->loadModel('User');
+        $prepayment_out_id = !empty($data_local['CashBank']['document_id'])?$data_local['CashBank']['document_id']:false;
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -325,6 +364,7 @@ class CashbanksController extends AppController {
             }
         }else{
             if($id && $data_local){
+                $data_local = $this->CashBank->getDataCashBank($data_local, $prepayment_out_id);
                 $this->request->data = $data = $data_local;
                 $this->request->data['CashBank']['tgl_cash_bank'] = $this->MkCommon->getDate($this->request->data['CashBank']['tgl_cash_bank'], true);
             }
@@ -399,10 +439,11 @@ class CashbanksController extends AppController {
                 $this->request->data['CashBank']['document_type'] = $docs_result['docs_type'];
             }
         } else if( $receiving_cash_type == 'prepayment_in' ) {
-            $docs_result = $this->CashBank->getDocumentCashBank();
+            $docs_result = $this->CashBank->getDocumentCashBank($prepayment_out_id);
             $urlBrowseDocument = array(
                 'controller'=> 'ajax', 
                 'action' => 'getCashBankPrepayment',
+                $prepayment_out_id,
             );
 
             if( !empty($docs_result) ) {
@@ -423,12 +464,16 @@ class CashbanksController extends AppController {
         ));
         $this->set(compact(
             'coas', 'document_id', 'receiving_cash_type',
-            'docs', 'urlBrowseDocument'
+            'docs', 'urlBrowseDocument', 'prepayment_out_id',
+            'id', 'data_local'
         ));
 
         $this->set('active_menu', 'cash_bank');
         $this->set('module_title', 'Kas/Bank');
-        $this->render('cashbank_form');
+
+        if( empty($id) ) {
+            $this->render('cashbank_form');
+        }
     }
 
     function cashbank_delete($id){
@@ -487,28 +532,7 @@ class CashbanksController extends AppController {
 
         if( !empty($id) ) {
             $this->loadModel('CashBankAuthMaster');
-            $cash_bank_auth_master = $this->CashBankAuthMaster->find('all', array(
-                'contain' => array(
-                    'User' => array(
-                        'Group'
-                    )
-                )
-            ));
-
-            if(!empty($cash_bank_auth_master)){
-                foreach ($cash_bank_auth_master as $key => $value) {
-                    $cash_bank_auth = $this->CashBank->CashBankAuth->getData('first', array(
-                        'conditions' => array(
-                            'CashBankAuth.cash_bank_auth_master_id' => $value['CashBankAuthMaster']['id'],
-                            'CashBankAuth.cash_bank_id' => $id
-                        )
-                    ));
-
-                    if(!empty($cash_bank_auth)){
-                        $cash_bank_auth_master[$key] = array_merge($value, $cash_bank_auth);
-                    }
-                }
-            }
+            $cash_bank_auth_master = $this->CashBankAuthMaster->getUserApproval($id);
             $this->set('cash_bank_auth_master', $cash_bank_auth_master);
 
             $cash_bank_master_user = $this->CashBankAuthMaster->find('first', array(

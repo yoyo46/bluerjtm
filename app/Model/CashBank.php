@@ -172,5 +172,19 @@ class CashBank extends AppModel {
             return 'none';
         }
     }
+
+    function getDataCashBank ( $data, $id ) {
+        $dataCashbank = $this->getData('first', array(
+            'conditions' => array(
+                'CashBank.id' => $id,
+            ),
+        ));
+
+        if( !empty($dataCashbank) ) {
+            $data['PrepaymentOut'] = $dataCashbank['CashBank'];
+        }
+
+        return $data;
+    }
 }
 ?>

@@ -150,7 +150,7 @@
     <?php
         if(!empty($cash_bank_auth_master)){
     ?>
-    <div class="col-sm-12">
+    <div class="col-sm-12" id="list-approval">
         <div class="box box-success">
             <div class="box-header">
                 <?php 

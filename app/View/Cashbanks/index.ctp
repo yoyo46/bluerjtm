@@ -62,36 +62,35 @@
                             'align' => 'center'
                         ));
 
-                        $link = '';
-                        
-                        if(empty($value['CashBank']['is_rejected']) && !$value['CashBank']['completed']){
-                            $link .= $this->Html->link('Rubah', array(
-                                'controller' => 'cashbanks',
-                                'action' => 'cashbank_edit',
-                                $value['CashBank']['id']
-                            ), array(
-                                'escape' => false,
-                                'class' => 'btn btn-primary btn-xs'
-                            ));
-                        
-                            $link .= $this->Html->link('Hapus', array(
-                                'controller' => 'cashbanks',
-                                'action' => 'cashbank_delete',
-                                $value['CashBank']['id']
-                            ), array(
-                                'escape' => false,
-                                'class' => 'btn btn-danger btn-xs'
-                            ), __('Anda yakin ingin menghapus data ini?'));
-                        }
-
-                        $link .= $this->Html->link('Info dan Approval', array(
+                        $link = $this->Html->link('Detail', array(
                             'controller' => 'cashbanks',
                             'action' => 'detail',
                             $value['CashBank']['id']
                         ), array(
                             'escape' => false,
-                            'class' => 'btn btn-info btn-xs'
+                            'class' => 'btn btn-primary btn-xs'
                         ));
+                        
+                        $link .= $this->Html->link('Hapus', array(
+                            'controller' => 'cashbanks',
+                            'action' => 'cashbank_delete',
+                            $value['CashBank']['id']
+                        ), array(
+                            'escape' => false,
+                            'class' => 'btn btn-danger btn-xs'
+                        ), __('Anda yakin ingin menghapus data ini?'));
+
+                        if( in_array($User['id'], $cashbank_auth_id) && empty($value['CashBank']['is_rejected']) && empty($value['CashBank']['completed']) ){
+                            $link .= $this->Html->link('Approval', array(
+                                'controller' => 'cashbanks',
+                                'action' => 'detail',
+                                $value['CashBank']['id'],
+                                '#' => 'list-approval',
+                            ), array(
+                                'escape' => false,
+                                'class' => 'btn btn-success btn-xs'
+                            ));
+                        }
 
                         $content .= $this->Html->tag('td', $link, array(
                             'class' => 'action'

@@ -56,5 +56,37 @@ class CashBankAuthMaster extends AppModel {
         }
         return $result;
     }
+
+    function getUserApproval ( $id = false ) {
+        $cash_bank_auth_master = $this->find('all', array(
+            'contain' => array(
+                'User' => array(
+                    'Group'
+                )
+            )
+        ));
+
+        if(!empty($cash_bank_auth_master)){
+            foreach ($cash_bank_auth_master as $key => $value) {
+                $conditions = array(
+                    'CashBankAuth.cash_bank_auth_master_id' => $value['CashBankAuthMaster']['id'],
+                );
+
+                if( !empty($id) ) {
+                    $conditions['CashBankAuth.cash_bank_id'] = $id;
+                }
+
+                $cash_bank_auth = $this->CashBankAuth->getData('first', array(
+                    'conditions' => $conditions,
+                ));
+
+                if(!empty($cash_bank_auth)){
+                    $cash_bank_auth_master[$key] = array_merge($value, $cash_bank_auth);
+                }
+            }
+        }
+
+        return $cash_bank_auth_master;
+    }
 }
 ?>
