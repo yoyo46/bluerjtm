@@ -2621,6 +2621,7 @@ var get_document_cashbank = function(){
         var self = $(this);
         var val = self.val();
         var doc_type = $('.cash-bank-handle').val();
+        var cash_bank_id = $('#cash-bank-id').val();
         var url = '/ajax/getCustomer/revenue_id:'+val+'/';
 
         if(doc_type == 'prepayment_in'){
@@ -2629,7 +2630,7 @@ var get_document_cashbank = function(){
 
         if(val != ''){
             $.ajax({
-                url: url,
+                url: url+cash_bank_id+'/',
                 type: 'POST',
                 success: function(response, status) {
                     var customer_id = $(response).filter('#customer-id').html();
@@ -3522,6 +3523,7 @@ $(function() {
 
     $('.cash-bank-handle').change(function(){
         var value = $(this).val();
+        var prepayment_out_id = $('#prepayment-out-id').val();;
 
         if(value == 'in' || value == 'ppn_in' || value == 'prepayment_in'){
             $('.cash_bank_user_type').html('Diterima dari');

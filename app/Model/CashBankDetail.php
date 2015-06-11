@@ -57,16 +57,22 @@ class CashBankDetail extends AppModel {
         return $result;
     }
 
-    function totalPrepaymentDibayarPerCoa ( $prepayment_id, $coa_id ) {
+    function totalPrepaymentDibayarPerCoa ( $prepayment_id, $coa_id, $cash_bank_id = false ) {
+        $conditions = array(
+            'CashBank.document_id' => $cash_bank_id,
+            'CashBankDetail.coa_id' => $coa_id,
+            'CashBank.status' => 1,
+            'CashBank.prepayment_status <>' => 'full_paid',
+            'CashBank.is_rejected' => 0,
+            'CashBank.receiving_cash_type' => 'prepayment_in',
+        );
+
+        if( !empty($cash_bank_id) ) {
+            $options['conditions']['CashBank.id <>'] = $cash_bank_id;
+        }
+
         $docPaid = $this->getData('first', array(
-            'conditions' => array(
-                'CashBank.document_id' => $prepayment_id,
-                'CashBankDetail.coa_id' => $coa_id,
-                'CashBank.status' => 1,
-                'CashBank.prepayment_status <>' => 'full_paid',
-                'CashBank.is_rejected' => 0,
-                'CashBank.receiving_cash_type' => 'prepayment_in',
-            ),
+            'conditions' => $conditions,
             'contain' => array(
                 'CashBank',
             ),

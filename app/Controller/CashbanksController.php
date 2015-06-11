@@ -133,35 +133,35 @@ class CashbanksController extends AppController {
         // }
     }
 
-    // public function cashbank_edit( $id = false ) {
-    //     // if( in_array('update_cash_banks', $this->allowModule) ) {
-    //         $this->set('sub_module_title', 'Rubah transaksi Kas/Bank');
-    //         $coa = false;
+    public function cashbank_edit( $id = false ) {
+        // if( in_array('update_cash_banks', $this->allowModule) ) {
+            $this->set('sub_module_title', 'Rubah transaksi Kas/Bank');
+            $coa = false;
 
-    //         if( !empty($id) ) {
-    //             $cashbank = $this->CashBank->getData('first', array(
-    //                 'conditions' => array(
-    //                     'CashBank.id' => $id,
-    //                     'CashBank.status' => 1,
-    //                 ),
-    //                 'contain' => array(
-    //                     'CashBankDetail',
-    //                     'CashBankAuth'
-    //                 )
-    //             ));
+            if( !empty($id) ) {
+                $cashbank = $this->CashBank->getData('first', array(
+                    'conditions' => array(
+                        'CashBank.id' => $id,
+                        'CashBank.status' => 1,
+                    ),
+                    'contain' => array(
+                        'CashBankDetail',
+                        'CashBankAuth'
+                    )
+                ));
 
-    //             if( !empty($cashbank) ) {
-    //                 $this->set('sub_module_title', 'Rubah Kas/Bank');
-    //                 $this->doCashBank( $id, $cashbank);
-    //             } else {
-    //                 $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
-    //                 $this->redirect($this->referer());
-    //             }
-    //         } 
-    //     // } else {
-    //     //     $this->redirect($this->referer());
-    //     // }
-    // }
+                if( !empty($cashbank) ) {
+                    $this->set('sub_module_title', 'Rubah Kas/Bank');
+                    $this->doCashBank( $id, $cashbank);
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
+                    $this->redirect($this->referer());
+                }
+            } 
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
+    }
 
     public function cashbank_detail( $id = false ) {
         // if( in_array('update_cash_banks', $this->allowModule) ) {
@@ -214,7 +214,8 @@ class CashbanksController extends AppController {
             $credit_total = 0;
             $total_coa = 0;
             $prepayment_status = false;
-            
+            $data['CashBank']['is_revised'] = 0;
+
             if($id && $data_local){
                 $this->CashBank->id = $id;
                 $msg = 'merubah';
@@ -471,9 +472,7 @@ class CashbanksController extends AppController {
         $this->set('active_menu', 'cash_bank');
         $this->set('module_title', 'Kas/Bank');
 
-        if( empty($id) ) {
-            $this->render('cashbank_form');
-        }
+        $this->render('cashbank_form');
     }
 
     function cashbank_delete($id){

@@ -112,19 +112,28 @@ class CashBank extends AppModel {
         return $data;
     }
 
-    function getDocumentCashBank () {
+    function getDocumentCashBank ( $prepayment_id ) {
         $result = array(
             'docs' => array(),
             'docs_type' => false,
         );
+        $conditions = array(
+            'CashBank.status' => 1,
+            'CashBank.is_rejected' => 0,
+            'CashBank.receiving_cash_type' => 'prepayment_out',
+        );
+
+        if( !empty($prepayment_out_id) ) {
+            $options['conditions']['OR'] = array(
+                'CashBank.prepayment_status <>' => 'full_paid',
+                'CashBank.id' => $prepayment_out_id,
+            );
+        } else {
+            $options['conditions']['CashBank.prepayment_status <>'] = 'full_paid';
+        }
 
         $docTmps = $this->getData('all', array(
-            'conditions' => array(
-                'CashBank.status' => 1,
-                'CashBank.prepayment_status <>' => 'full_paid',
-                'CashBank.is_rejected' => 0,
-                'CashBank.receiving_cash_type' => 'prepayment_out',
-            ),
+            'conditions' => $conditions,
             'order' => array(
                 'CashBank.id' => 'ASC'
             ),
@@ -147,14 +156,24 @@ class CashBank extends AppModel {
     }
 
     function totalPrepaymentDibayar ( $prepayment_id ) {
-        $docPaid = $this->getData('first', array(
-            'conditions' => array(
-                'CashBank.document_id' => $prepayment_id,
-                'CashBank.status' => 1,
+        $conditions = array(
+            'CashBank.document_id' => $prepayment_id,
+            'CashBank.status' => 1,
+            'CashBank.is_rejected' => 0,
+            'CashBank.receiving_cash_type' => 'prepayment_in',
+        );
+
+        if( !empty($prepayment_id) ) {
+            $conditions['OR'] = array(
                 'CashBank.prepayment_status <>' => 'full_paid',
-                'CashBank.is_rejected' => 0,
-                'CashBank.receiving_cash_type' => 'prepayment_in',
-            ),
+                'CashBank.id' => $prepayment_id,
+            );
+        } else {
+            $conditions['CashBank.prepayment_status <>'] = 'full_paid';
+        }
+
+        $docPaid = $this->getData('first', array(
+            'conditions' => $conditions,
             'fields' => array(
                 'SUM(CashBank.debit_total+CashBank.credit_total) AS total'
             ),

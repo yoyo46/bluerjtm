@@ -1789,15 +1789,15 @@ class AjaxController extends AppController {
     	));
 	}
 
-	public function getCashBankPrepayment() {
+	public function getCashBankPrepayment( $prepayment_out_id = false ) {
         $this->loadModel('CashBank');
 		$title = __('Data Prepayment');
 		$data_action = 'browse-form';
 		$data_change = 'document-id';
+
 		$options = array(
             'conditions' => array(
 	            'CashBank.status' => 1,
-                'CashBank.prepayment_status <>' => 'full_paid',
                 'CashBank.is_rejected' => 0,
                 'CashBank.receiving_cash_type' => 'prepayment_out',
 	        ),
@@ -1806,6 +1806,15 @@ class AjaxController extends AppController {
 				'CashBank.id' => 'ASC'
 			),
         );
+
+        if( !empty($prepayment_out_id) ) {
+            $options['conditions']['OR'] = array(
+                'CashBank.prepayment_status <>' => 'full_paid',
+                'CashBank.id' => $prepayment_out_id,
+            );
+        } else {
+            $options['conditions']['CashBank.prepayment_status <>'] = 'full_paid';
+        }
 
         if(!empty($this->request->data)){
         	$refine = $this->request->data['CashBank'];
@@ -1880,7 +1889,7 @@ class AjaxController extends AppController {
     	));
 	}
 
-	function getCustomer () {
+	function getCustomer ( $cash_bank_id = false ) {
 		$revenue_id = !empty($this->params['named']['revenue_id'])?$this->params['named']['revenue_id']:false;
 		$prepayment_id = !empty($this->params['named']['prepayment_id'])?$this->params['named']['prepayment_id']:false;
 
@@ -1903,7 +1912,7 @@ class AjaxController extends AppController {
 				if( !empty($customer['CashBankDetail']) ) {
 					foreach ($customer['CashBankDetail'] as $key => $cashBankDetail) {
 						$coa_id = !empty($cashBankDetail['coa_id'])?$cashBankDetail['coa_id']:false;
-						$totalDibayar = $this->CashBank->CashBankDetail->totalPrepaymentDibayarPerCoa($prepayment_id, $coa_id);
+						$totalDibayar = $this->CashBank->CashBankDetail->totalPrepaymentDibayarPerCoa($prepayment_id, $coa_id, $cash_bank_id);
 						$totalTagihan = !empty($customer['CashBankDetail'][$key]['total'])?$customer['CashBankDetail'][$key]['total']:0;
 						$totalSisaTagihan = $totalTagihan - $totalDibayar;
 

@@ -62,15 +62,26 @@
                             'align' => 'center'
                         ));
 
-                        $link = $this->Html->link('Detail', array(
-                            'controller' => 'cashbanks',
-                            'action' => 'detail',
-                            $value['CashBank']['id']
-                        ), array(
-                            'escape' => false,
-                            'class' => 'btn btn-primary btn-xs'
-                        ));
-                        
+                        if( !empty($value['CashBank']['is_revised']) ){
+                            $link = $this->Html->link(__('Ubah'), array(
+                                'controller' => 'cashbanks',
+                                'action' => 'cashbank_edit',
+                                $value['CashBank']['id'],
+                            ), array(
+                                'escape' => false,
+                                'class' => 'btn btn-info btn-xs'
+                            ));
+                        } else {
+                            $link = $this->Html->link('Detail', array(
+                                'controller' => 'cashbanks',
+                                'action' => 'detail',
+                                $value['CashBank']['id']
+                            ), array(
+                                'escape' => false,
+                                'class' => 'btn btn-primary btn-xs'
+                            ));
+                        }
+
                         $link .= $this->Html->link('Hapus', array(
                             'controller' => 'cashbanks',
                             'action' => 'cashbank_delete',
