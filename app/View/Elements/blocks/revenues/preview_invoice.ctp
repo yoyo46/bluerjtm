@@ -100,9 +100,11 @@
 
 						if( $payment_type == 'per_truck' ){
 							$priceFormat = '-';
-						} else {
+						} else if( !empty($value['RevenueDetail']['total_price_unit']) ) {
 							$price = $value['RevenueDetail']['price_unit'];
 							$priceFormat = $this->Number->currency($price, '', array('places' => 0));
+						} else {
+							$priceFormat = '-';
 						}
 
 						$colom = $this->Html->tag('td', $no++);
@@ -140,7 +142,7 @@
 									));
 								}
 							}
-						}else{
+						} else if( !empty($value['RevenueDetail']['total_price_unit']) ) {
 							$total = $price * $qty;
 
 							$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(

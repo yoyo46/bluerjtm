@@ -773,6 +773,8 @@ class AjaxController extends AppController {
 			'fields' => array(
 				'SUM(RevenueDetail.total_price_unit) total',
 				'Revenue.customer_id',
+				'MAX(Revenue.date_revenue) period_to',
+				'MIN(Revenue.date_revenue) period_from',
 			),
 			'group' => array(
 				'Revenue.customer_id'
@@ -792,12 +794,11 @@ class AjaxController extends AppController {
 			),
 		));
         $conditions['Revenue.id'] = $revenueId;
+        $conditions['Revenue.revenue_tarif_type'] = 'per_truck';
 		$revenue = $this->Revenue->getData('first', array(
 			'conditions' => $conditions,
 			'fields' => array(
 				'SUM(Revenue.total_without_tax) total',
-				'MAX(Revenue.date_revenue) period_to',
-				'MIN(Revenue.date_revenue) period_from',
 				'Revenue.customer_id',
 			),
 			'group' => array(
@@ -814,14 +815,14 @@ class AjaxController extends AppController {
         	'text' => '',
     	);
 
-		if(!empty($revenue) && !empty($revenueDetail) && !empty($customer)){
-			$monthFrom = !empty($revenue[0]['period_from'])?$this->MkCommon->customDate($revenue[0]['period_from'], 'Y-m'):false;
-			$monthTo = !empty($revenue[0]['period_to'])?$this->MkCommon->customDate($revenue[0]['period_to'], 'Y-m'):false;
+		if(!empty($revenueDetail) && !empty($customer)){
+			$monthFrom = !empty($revenueDetail[0]['period_from'])?$this->MkCommon->customDate($revenueDetail[0]['period_from'], 'Y-m'):false;
+			$monthTo = !empty($revenueDetail[0]['period_to'])?$this->MkCommon->customDate($revenueDetail[0]['period_to'], 'Y-m'):false;
 			$this->request->data['Invoice']['bank_id'] = !empty($customer['Customer']['bank_id'])?$customer['Customer']['bank_id']:false;
-			$this->request->data['Invoice']['period_from'] = !empty($revenue[0]['period_from'])?$this->MkCommon->customDate($revenue[0]['period_from'], 'd/m/Y'):false;
-			$this->request->data['Invoice']['period_to'] = !empty($revenue[0]['period_to'])?$this->MkCommon->customDate($revenue[0]['period_to'], 'd/m/Y'):false;
-			$this->request->data['Invoice']['total_revenue'] = !empty($revenue[0]['total'])?$revenue[0]['total']:0;;
-			$this->request->data['Invoice']['total'] = !empty($revenueDetail[0]['total'])?$revenueDetail[0]['total']:0;;
+			$this->request->data['Invoice']['period_from'] = !empty($revenueDetail[0]['period_from'])?$this->MkCommon->customDate($revenueDetail[0]['period_from'], 'd/m/Y'):false;
+			$this->request->data['Invoice']['period_to'] = !empty($revenueDetail[0]['period_to'])?$this->MkCommon->customDate($revenueDetail[0]['period_to'], 'd/m/Y'):false;
+			$this->request->data['Invoice']['total_revenue'] = !empty($revenue[0]['total'])?$revenue[0]['total']:0;
+			$this->request->data['Invoice']['total'] = !empty($revenueDetail[0]['total'])?$revenueDetail[0]['total']:0;
 
 			switch ($tarif_type) {
 				case 'angkut':
@@ -875,7 +876,7 @@ class AjaxController extends AppController {
 		}
 	}
 
-	function previewInvoice($customer_id = false, $invoice_type = false, $action = false){
+	function previewInvoice($customer_id = false, $invoice_type = 'angkut', $action = false){
 		$this->loadModel('Revenue');
 		$this->loadModel('TipeMotor');
 		$this->loadModel('City');
