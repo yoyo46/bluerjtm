@@ -976,14 +976,14 @@ class RevenuesController extends AppController {
         $driverPengantis = $this->Ttuj->Truck->Driver->getData('list', array(
             'conditions' => array(
                 'Driver.status' => 1,
-                'Truck.id' => NULL,
+                // 'Truck.id' => NULL,
             ),
             'fields' => array(
                 'Driver.id', 'Driver.driver_name'
             ),
-            'contain' => array(
-                'Truck'
-            )
+            // 'contain' => array(
+            //     'Truck'
+            // )
         ));
         $perlengkapans = $this->Perlengkapan->getData('list', array(
             'fields' => array(
