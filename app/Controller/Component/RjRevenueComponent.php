@@ -16,13 +16,13 @@ class RjRevenueComponent extends Component {
 					$refine_conditions['Ttuj']['nottuj'] = urlencode($refine['Ttuj']['nottuj']);
 				}
 				if( !empty($refine['Ttuj']['nopol']) ) {
-					$refine_conditions['Ttuj']['nopol'] = urlencode($refine['Ttuj']['nopol']);
+					$refine_conditions['Ttuj']['nopol'] = $refine['Ttuj']['nopol'];
 				}
 				if( !empty($refine['Ttuj']['customer']) ) {
-					$refine_conditions['Ttuj']['customer'] = urlencode($refine['Ttuj']['customer']);
+					$refine_conditions['Ttuj']['customer'] = $refine['Ttuj']['customer'];
 				}
 				if( !empty($refine['Ttuj']['driver_name']) ) {
-					$refine_conditions['Ttuj']['driver_name'] = urlencode($refine['Ttuj']['driver_name']);
+					$refine_conditions['Ttuj']['driver_name'] = $refine['Ttuj']['driver_name'];
 				}
 				if( !empty($refine['Ttuj']['date']) ) {
 					$refine_conditions['Ttuj']['date'] = urlencode($refine['Ttuj']['date']);

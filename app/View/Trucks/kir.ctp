@@ -42,9 +42,7 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Kir.price', __('Biaya Perpanjang'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Kir.paid', __('Status'), array(
-                            'escape' => false
-                        )));
+                        echo $this->Html->tag('th', __('Status'));
                         echo $this->Html->tag('th', $this->Paginator->sort('Kir.created', __('Dibuat'), array(
                             'escape' => false
                         )));
@@ -66,7 +64,9 @@
                 </td>
                 <td>
                     <?php 
-                            if( !empty($value['Kir']['paid']) ) {
+                            if( empty($value['Kir']['status']) ) {
+                                echo '<span class="label label-danger">Non-Aktif</span>'; 
+                            } else if( !empty($value['Kir']['paid']) ) {
                                 echo '<span class="label label-success">Sudah Bayar</span>'; 
                             } else if( !empty($value['Kir']['rejected']) ) {
                                 echo '<span class="label label-danger">Ditolak</span>'; 
@@ -78,8 +78,14 @@
                 <td><?php echo $this->Time->niceShort($value['Kir']['created']);?></td>
                 <td class="action">
                     <?php
+                            if(!empty($value['Kir']['status'])) {
+                                $label = __('Ubah');
+                            } else {
+                                $label = __('Detail');
+                            }
+
                             if( in_array('update_kirs', $allowModule) ) {
-                                echo $this->Html->link('Rubah', array(
+                                echo $this->Html->link($label, array(
                                     'controller' => 'trucks',
                                     'action' => 'kir_edit',
                                     $id
@@ -88,7 +94,7 @@
                                 ));
                             }
 
-                            if( in_array('delete_kirs', $allowModule) ) {
+                            if( in_array('delete_kirs', $allowModule) && !empty($value['Kir']['status']) ) {
                                 if( empty($value['Kir']['paid']) && empty($value['Kir']['rejected']) ){
                                     echo $this->Html->link(__('Hapus'), array(
                                         'controller' => 'trucks',

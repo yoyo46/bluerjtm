@@ -14,6 +14,18 @@ class Kir extends AppModel {
                 'message' => 'Truk harap diisi'
             ),
         ),
+        'from_date' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl Berakhir KIR harap diisi pada data Truk'
+            ),
+        ),
+        'to_date' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Berlaku Sampai harap diisi pada data Truk'
+            ),
+        ),
         'tgl_kir' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -41,6 +53,7 @@ class Kir extends AppModel {
                 'Kir.status' => 1,
             ),
             'order'=> array(
+                'Kir.status' => 'DESC',
                 'Kir.rejected' => 'ASC',
                 'Kir.paid' => 'ASC',
                 'Kir.tgl_kir' => 'DESC',

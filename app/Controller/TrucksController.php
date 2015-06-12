@@ -46,7 +46,15 @@ class TrucksController extends AppController {
                 if(!empty($refine['nopol'])){
                     $nopol = urldecode($refine['nopol']);
                     $this->request->data['Truck']['nopol'] = $nopol;
-                    $conditions['Truck.nopol LIKE '] = '%'.$nopol.'%';
+                    $truckSearch = $this->Truck->getData('list', array(
+                        'conditions' => array(
+                            'Truck.nopol LIKE' => '%'.$nopol.'%',
+                        ),
+                        'fields' => array(
+                            'Truck.id', 'Truck.id',
+                        ),
+                    ));
+                    $conditions['Truck.id'] = $truckSearch;
                 }
                 if(!empty($refine['name'])){
                     $data = urldecode($refine['name']);
@@ -1023,13 +1031,27 @@ class TrucksController extends AppController {
                 if(!empty($refine['nopol'])){
                     $name = urldecode($refine['nopol']);
                     $this->request->data['Truck']['nopol'] = $name;
-                    $conditions['Kir.no_pol LIKE'] = '%'.$name.'%';
+                    $truckSearch = $this->Kir->Truck->getData('list', array(
+                        'conditions' => array(
+                            'Truck.nopol LIKE' => '%'.$name.'%',
+                        ),
+                        'fields' => array(
+                            'Truck.id', 'Truck.id',
+                        ),
+                    ));
+                    $conditions['Kir.truck_id'] = $truckSearch;
                 }
             }
             $this->paginate = $this->Kir->getData('paginate', array(
                 'conditions' => $conditions,
                 'contain' => array(
                     'Truck'
+                ),
+                'order'=> array(
+                    'Kir.status' => 'DESC',
+                    'Kir.rejected' => 'ASC',
+                    'Kir.paid' => 'ASC',
+                    'Kir.tgl_kir' => 'DESC',
                 ),
             ));
             $kir = $this->paginate('Kir');
@@ -1112,11 +1134,11 @@ class TrucksController extends AppController {
             $data['Kir']['user_id'] = $this->user_id;
             $data['Kir']['truck_id'] = $truck['Truck']['id'];
             $data['Kir']['no_pol'] = $truck['Truck']['nopol'];
-            $data['Kir']['tgl_kir'] = (!empty($data['Kir']['tgl_kir'])) ? $this->MkCommon->getDate($data['Kir']['tgl_kir']) : '';
-            $data['Kir']['from_date'] = (!empty($data['Kir']['from_date'])) ? $this->MkCommon->getDate($data['Kir']['from_date']) : '';
-            $data['Kir']['to_date'] = (!empty($data['Kir']['to_date'])) ? $this->MkCommon->getDate($data['Kir']['to_date']) : '';
-            $data['Kir']['price_estimate'] = $this->MkCommon->convertPriceToString($truck['Truck']['kir']);
-            $data['Kir']['price'] = $this->MkCommon->convertPriceToString($data['Kir']['price']);
+            $data['Kir']['tgl_kir'] = (!empty($data['Kir']['tgl_kir'])) ? $this->MkCommon->getDate($data['Kir']['tgl_kir']) :  date('Y-m-d');
+            $data['Kir']['from_date'] = (!empty($data['Kir']['from_date'])) ? $this->MkCommon->getDate($data['Kir']['from_date']) : false;
+            $data['Kir']['to_date'] = (!empty($data['Kir']['to_date'])) ? $this->MkCommon->getDate($data['Kir']['to_date']) :  false;
+            $data['Kir']['price_estimate'] = !empty($truck['Truck']['kir'])?$this->MkCommon->convertPriceToString($truck['Truck']['kir']):0;
+            $data['Kir']['price'] = !empty($data['Kir']['price'])?$this->MkCommon->convertPriceToString($data['Kir']['price']):0;
             $data['Kir']['denda'] = (!empty($data['Kir']['denda'])) ? $this->MkCommon->convertPriceToString($data['Kir']['denda']) : 0;
             $this->Kir->set($data);
 
@@ -1197,9 +1219,18 @@ class TrucksController extends AppController {
                 $refine = $this->params['named'];
 
                 if(!empty($refine['nopol'])){
+                    $this->loadModel('Truck');
                     $name = urldecode($refine['nopol']);
                     $this->request->data['Truck']['nopol'] = $name;
-                    $conditions['Kir.no_pol LIKE'] = '%'.$name.'%';
+                    $truckSearch = $this->Truck->getData('list', array(
+                        'conditions' => array(
+                            'Truck.nopol LIKE' => '%'.$name.'%',
+                        ),
+                        'fields' => array(
+                            'Truck.id', 'Truck.id',
+                        ),
+                    ));
+                    $conditions['Kir.truck_id'] = $truckSearch;
                 }
             }
             $this->paginate = $this->KirPayment->getData('paginate', array(
@@ -1208,7 +1239,7 @@ class TrucksController extends AppController {
                 'contain' => array(
                     'Kir'
                 )
-            ), false);
+            ), date('Y-m-d'));
 
             $kirPayments = $this->paginate('KirPayment');
 
@@ -1441,7 +1472,15 @@ class TrucksController extends AppController {
                 if(!empty($refine['nopol'])){
                     $name = urldecode($refine['nopol']);
                     $this->request->data['Truck']['nopol'] = $name;
-                    $conditions['Siup.no_pol LIKE'] = '%'.$name.'%';
+                    $truckSearch = $this->Siup->Truck->getData('list', array(
+                        'conditions' => array(
+                            'Truck.nopol LIKE' => '%'.$name.'%',
+                        ),
+                        'fields' => array(
+                            'Truck.id', 'Truck.id',
+                        ),
+                    ));
+                    $conditions['Siup.truck_id'] = $truckSearch;
                 }
             }
             $this->paginate = $this->Siup->getData('paginate', array(
@@ -1609,9 +1648,18 @@ class TrucksController extends AppController {
                 $refine = $this->params['named'];
 
                 if(!empty($refine['nopol'])){
+                    $this->loadModel('Truck');
                     $name = urldecode($refine['nopol']);
                     $this->request->data['Truck']['nopol'] = $name;
-                    $conditions['Siup.no_pol LIKE'] = '%'.$name.'%';
+                    $truckSearch = $this->Truck->getData('list', array(
+                        'conditions' => array(
+                            'Truck.nopol LIKE' => '%'.$name.'%',
+                        ),
+                        'fields' => array(
+                            'Truck.id', 'Truck.id',
+                        ),
+                    ));
+                    $conditions['Siup.truck_id'] = $truckSearch;
                 }
             }
             $this->paginate = $this->SiupPayment->getData('paginate', array(
@@ -2308,7 +2356,15 @@ class TrucksController extends AppController {
                 if(!empty($refine['nopol'])){
                     $name = urldecode($refine['nopol']);
                     $this->request->data['Truck']['nopol'] = $name;
-                    $conditions['Stnk.no_pol LIKE'] = '%'.$name.'%';
+                    $truckSearch = $this->Stnk->Truck->getData('list', array(
+                        'conditions' => array(
+                            'Truck.nopol LIKE' => '%'.$name.'%',
+                        ),
+                        'fields' => array(
+                            'Truck.id', 'Truck.id',
+                        ),
+                    ));
+                    $conditions['Stnk.truck_id'] = $truckSearch;
                 }
             }
             $this->paginate = $this->Stnk->getData('paginate', array(
@@ -2591,9 +2647,18 @@ class TrucksController extends AppController {
                 $refine = $this->params['named'];
 
                 if(!empty($refine['nopol'])){
+                    $this->loadModel('Truck');
                     $name = urldecode($refine['nopol']);
                     $this->request->data['Truck']['nopol'] = $name;
-                    $conditions['Stnk.no_pol LIKE'] = '%'.$name.'%';
+                    $truckSearch = $this->Truck->getData('list', array(
+                        'conditions' => array(
+                            'Truck.nopol LIKE' => '%'.$name.'%',
+                        ),
+                        'fields' => array(
+                            'Truck.id', 'Truck.id',
+                        ),
+                    ));
+                    $conditions['Stnk.truck_id'] = $truckSearch;
                 }
             }
             $this->paginate = $this->StnkPayment->getData('paginate', array(
@@ -2786,7 +2851,15 @@ class TrucksController extends AppController {
                 }
                 if(!empty($refine['nopol'])){
                     $data = urldecode($refine['nopol']);
-                    $defaul_condition['Truck.nopol LIKE'] = '%'.$data.'%';
+                    $truckSearch = $this->Truck->getData('list', array(
+                        'conditions' => array(
+                            'Truck.nopol LIKE' => '%'.$data.'%',
+                        ),
+                        'fields' => array(
+                            'Truck.id', 'Truck.id',
+                        ),
+                    ));
+                    $defaul_condition['Truck.id'] = $truckSearch;
                     $this->request->data['Truck']['nopol'] = $data;
                 }
                 if(!empty($refine['name'])){
@@ -3479,7 +3552,15 @@ class TrucksController extends AppController {
 
                 if(!empty($refine['nopol'])){
                     $data = urldecode($refine['nopol']);
-                    $conditions['Truck.nopol LIKE'] = '%'.$data.'%';
+                    $truckSearch = $this->Truck->getData('list', array(
+                        'conditions' => array(
+                            'Truck.nopol LIKE' => '%'.$data.'%',
+                        ),
+                        'fields' => array(
+                            'Truck.id', 'Truck.id',
+                        ),
+                    ));
+                    $conditions['Truck.id'] = $truckSearch;
                     $this->request->data['Truck']['nopol'] = $data;
                 }
                 if(!empty($refine['license_stat'])){

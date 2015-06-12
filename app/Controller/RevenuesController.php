@@ -60,7 +60,15 @@ class RevenuesController extends AppController {
                 if(!empty($refine['nopol'])){
                     $nopol = urldecode($refine['nopol']);
                     $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
+                    $truckSearch = $this->Ttuj->Truck->getData('list', array(
+                        'conditions' => array(
+                            'Truck.nopol LIKE' => '%'.$nopol.'%',
+                        ),
+                        'fields' => array(
+                            'Truck.id', 'Truck.id',
+                        ),
+                    ));
+                    $conditions['Ttuj.truck_id'] = $truckSearch;
                 }
                 if(!empty($refine['customer'])){
                     $customer = urldecode($refine['customer']);
@@ -2249,9 +2257,18 @@ class RevenuesController extends AppController {
                 if( !empty($refine['nopol']) ) {
                     $nopol = urldecode($refine['nopol']);
                     $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $default_conditionsLaka['Laka.nopol LIKE'] = $default_conditions['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
-                    $default_conditionsTruck['Truck.nopol LIKE'] = '%'.$nopol.'%';
-                    $default_conditionsEvent['CalendarEvent.nopol LIKE'] = '%'.$nopol.'%';
+                    $truckSearch = $this->Ttuj->Truck->getData('list', array(
+                        'conditions' => array(
+                            'Truck.nopol LIKE' => '%'.$nopol.'%',
+                        ),
+                        'fields' => array(
+                            'Truck.id', 'Truck.id',
+                        ),
+                    ));
+                    $default_conditionsLaka['Laka.truck_id'] = $truckSearch;
+                    $default_conditions['Ttuj.truck_id'] = $truckSearch;
+                    $default_conditionsTruck['Truck.id'] = $truckSearch;
+                    $default_conditionsEvent['CalendarEvent.truck_id'] = $truckSearch;
                 }
             }
 
@@ -2769,7 +2786,15 @@ class RevenuesController extends AppController {
                 if(!empty($refine['nopol'])){
                     $nopol = urldecode($refine['nopol']);
                     $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
+                    $truckSearch = $this->Ttuj->Truck->getData('list', array(
+                        'conditions' => array(
+                            'Truck.nopol LIKE' => '%'.$nopol.'%',
+                        ),
+                        'fields' => array(
+                            'Truck.id', 'Truck.id',
+                        ),
+                    ));
+                    $conditions['Ttuj.truck_id'] = $truckSearch;
                 }
 
                 if(!empty($refine['status'])){

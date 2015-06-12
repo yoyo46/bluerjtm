@@ -1033,7 +1033,15 @@ class AjaxController extends AppController {
         if(!empty($this->request->data)){
             if(!empty($this->request->data['Truck']['nopol'])){
                 $nopol = urldecode($this->request->data['Truck']['nopol']);
-                $options['conditions']['Truck.nopol LIKE '] = '%'.$nopol.'%';
+                $truckSearch = $this->Truck->getData('list', array(
+                	'conditions' => array(
+                		'Truck.nopol LIKE' => '%'.$nopol.'%',
+            		),
+            		'fields' => array(
+            			'Truck.id', 'Truck.id',
+        			),
+            	));
+                $options['conditions']['Truck.id'] = $truckSearch;
             }
             if(!empty($this->request->data['Driver']['name'])){
                 $name = urldecode($this->request->data['Driver']['name']);
@@ -1077,7 +1085,15 @@ class AjaxController extends AppController {
         if(!empty($this->request->data)){
             if(!empty($this->request->data['Kir']['nopol'])){
                 $nopol = urldecode($this->request->data['Kir']['nopol']);
-                $conditions['Kir.no_pol LIKE '] = '%'.$nopol.'%';
+                $truckSearch = $this->Kir->Truck->getData('list', array(
+                	'conditions' => array(
+                		'Truck.nopol LIKE' => '%'.$nopol.'%',
+            		),
+            		'fields' => array(
+            			'Truck.id', 'Truck.id',
+        			),
+            	));
+                $conditions['Kir.truck_id'] = $truckSearch;
             }
             if(!empty($this->request->data['Driver']['name'])){
                 $name = urldecode($this->request->data['Driver']['name']);
@@ -1101,7 +1117,10 @@ class AjaxController extends AppController {
 
         if(!empty($trucks)){
             foreach ($trucks as $key => $truck) {
-                $truck = $this->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
+                $truck = $this->Truck->getMerge($truck, $truck['Kir']['truck_id']);
+
+                $driver_id = !empty($truck['Truck']['driver_id'])?$truck['Truck']['driver_id']:false;
+                $truck = $this->Truck->Driver->getMerge($truck, $driver_id);
                 $trucks[$key] = $truck;
             }
         }
@@ -1127,7 +1146,15 @@ class AjaxController extends AppController {
         if(!empty($this->request->data)){
             if(!empty($this->request->data['Stnk']['nopol'])){
                 $nopol = urldecode($this->request->data['Stnk']['nopol']);
-                $conditions['Stnk.no_pol LIKE '] = '%'.$nopol.'%';
+                $truckSearch = $this->Stnk->Truck->getData('list', array(
+                	'conditions' => array(
+                		'Truck.nopol LIKE' => '%'.$nopol.'%',
+            		),
+            		'fields' => array(
+            			'Truck.id', 'Truck.id',
+        			),
+            	));
+                $conditions['Stnk.truck_id'] = $truckSearch;
             }
             if(!empty($this->request->data['Driver']['name'])){
                 $name = urldecode($this->request->data['Driver']['name']);
@@ -1180,7 +1207,15 @@ class AjaxController extends AppController {
         if(!empty($this->request->data)){
             if(!empty($this->request->data['Siup']['nopol'])){
                 $nopol = urldecode($this->request->data['Siup']['nopol']);
-                $conditions['Siup.no_pol LIKE '] = '%'.$nopol.'%';
+                $truckSearch = $this->Siup->Truck->getData('list', array(
+                	'conditions' => array(
+                		'Truck.nopol LIKE' => '%'.$nopol.'%',
+            		),
+            		'fields' => array(
+            			'Truck.id', 'Truck.id',
+        			),
+            	));
+                $conditions['Siup.truck_id'] = $truckSearch;
             }
             if(!empty($this->request->data['Driver']['name'])){
                 $name = urldecode($this->request->data['Driver']['name']);
@@ -1237,7 +1272,15 @@ class AjaxController extends AppController {
             }
             if(!empty($this->request->data['Ttuj']['nopol'])){
                 $nopol = urldecode($this->request->data['Ttuj']['nopol']);
-                $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
+                $truckSearch = $this->Ttuj->Truck->getData('list', array(
+                	'conditions' => array(
+                		'Truck.nopol LIKE' => '%'.$nopol.'%',
+            		),
+            		'fields' => array(
+            			'Truck.id', 'Truck.id',
+        			),
+            	));
+                $conditions['Ttuj.truck_id'] = $truckSearch;
             }
             if(!empty($this->request->data['Driver']['name'])){
                 $name = urldecode($this->request->data['Driver']['name']);
@@ -1738,8 +1781,17 @@ class AjaxController extends AppController {
             }
 
             if(!empty($refine['nopol'])){
+				$this->loadModel('Truck');
                 $nopol = urldecode($refine['nopol']);
-                $options['conditions']['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
+                $truckSearch = $this->Truck->getData('list', array(
+                	'conditions' => array(
+                		'Truck.nopol LIKE' => '%'.$nopol.'%',
+            		),
+            		'fields' => array(
+            			'Truck.id', 'Truck.id',
+        			),
+            	));
+                $options['conditions']['Ttuj.truck_id'] = $truckSearch;
             }
 
             if(!empty($refine['transaction_status'])){
@@ -2112,7 +2164,15 @@ class AjaxController extends AppController {
             }
             if(!empty($this->request->data['Ttuj']['nopol'])){
                 $nopol = urldecode($this->request->data['Ttuj']['nopol']);
-                $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
+                $truckSearch = $this->Ttuj->Truck->getData('list', array(
+                	'conditions' => array(
+                		'Truck.nopol LIKE' => '%'.$nopol.'%',
+            		),
+            		'fields' => array(
+            			'Truck.id', 'Truck.id',
+        			),
+            	));
+                $conditions['Ttuj.truck_id'] = $truckSearch;
             }
             if(!empty($this->request->data['Driver']['name'])){
                 $name = urldecode($this->request->data['Driver']['name']);

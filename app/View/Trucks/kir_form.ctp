@@ -20,18 +20,22 @@
 		    <div class="box-body">
 		        <div class="form-group">
         			<?php 
-        					$attrBrowse = array(
-                                'class' => 'ajaxModal visible-xs',
-                                'escape' => false,
-								'title' => __('Data Truk'),
-								'data-action' => 'browse-form',
-								'data-change' => 'truckID',
-                            );
-        					$urlBrowse = array(
-                                'controller'=> 'ajax', 
-								'action' => 'getTrucks',
-                            );
-							echo $this->Form->label('truck_id', __('Truk * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+        					if( !empty($kir) && empty($kir['Kir']['status']) ) {
+        						echo $this->Html->tag('label', __('Nopol Truk'));
+        						echo $this->Html->tag('div', $kir['Kir']['no_pol']);
+        					} else {
+	        					$attrBrowse = array(
+	                                'class' => 'ajaxModal visible-xs',
+	                                'escape' => false,
+									'title' => __('Data Truk'),
+									'data-action' => 'browse-form',
+									'data-change' => 'truckID',
+	                            );
+	        					$urlBrowse = array(
+	                                'controller'=> 'ajax', 
+									'action' => 'getTrucks',
+	                            );
+								echo $this->Form->label('truck_id', __('Truk * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 					?>
 		        	<div class="row">
 		        		<div class="col-sm-10">
@@ -55,6 +59,9 @@
 	                        ?>
 	                    </div>
 		        	</div>
+		        	<?php 
+		        			}
+		        	?>
 		        </div>
 		        <div class="form-group">
 		        	<?php 
@@ -163,13 +170,16 @@
 
 <div class="box-footer text-center action">
 	<?php
-            if( empty($kir['Kir']['paid']) && empty($kir['Kir']['rejected']) ){
-	    		echo $this->Form->button(__('Simpan'), array(
-					'div' => false, 
-					'class'=> 'btn btn-success',
-					'type' => 'submit',
-				));
-	    	}
+			if( empty($kir) || !empty($kir['Kir']['status']) ) {
+	            if( empty($kir['Kir']['paid']) && empty($kir['Kir']['rejected']) ){
+		    		echo $this->Form->button(__('Simpan'), array(
+						'div' => false, 
+						'class'=> 'btn btn-success',
+						'type' => 'submit',
+					));
+		    	}
+		    }
+
     		echo $this->Html->link(__('Kembali'), array(
 				'action' => 'kir'
 			), array(
