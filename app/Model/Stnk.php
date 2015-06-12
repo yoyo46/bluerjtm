@@ -38,6 +38,18 @@ class Stnk extends AppModel {
                 'message' => 'Harga harus lebih besar dari 0'
             ),
         ),
+        'from_date' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl Berakhir STNK harap diisi pada data Truk'
+            ),
+        ),
+        'to_date' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl Berakhir STNK harap diisi pada data Truk'
+            ),
+        ),
 	);
 
     var $belongsTo = array(

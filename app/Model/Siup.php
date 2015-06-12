@@ -26,6 +26,18 @@ class Siup extends AppModel {
                 'message' => 'Biaya Ijin Usaha harap diisi'
             ),
         ),
+        'from_date' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl Berakhir Ijin Usaha harap diisi pada data Truk'
+            ),
+        ),
+        'to_date' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl Berakhir Ijin Usaha harap diisi pada data Truk'
+            ),
+        ),
     );
 
     var $belongsTo = array(

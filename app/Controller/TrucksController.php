@@ -1132,8 +1132,8 @@ class TrucksController extends AppController {
             }
             
             $data['Kir']['user_id'] = $this->user_id;
-            $data['Kir']['truck_id'] = $truck['Truck']['id'];
-            $data['Kir']['no_pol'] = $truck['Truck']['nopol'];
+            $data['Kir']['truck_id'] = !empty($truck['Truck']['id'])?$truck['Truck']['id']:false;
+            $data['Kir']['no_pol'] = !empty($truck['Truck']['nopol'])?$truck['Truck']['nopol']:false;
             $data['Kir']['tgl_kir'] = (!empty($data['Kir']['tgl_kir'])) ? $this->MkCommon->getDate($data['Kir']['tgl_kir']) :  date('Y-m-d');
             $data['Kir']['from_date'] = (!empty($data['Kir']['from_date'])) ? $this->MkCommon->getDate($data['Kir']['from_date']) : false;
             $data['Kir']['to_date'] = (!empty($data['Kir']['to_date'])) ? $this->MkCommon->getDate($data['Kir']['to_date']) :  false;
@@ -1577,13 +1577,13 @@ class TrucksController extends AppController {
             }
             
             $data['Siup']['user_id'] = $this->user_id;
-            $data['Siup']['truck_id'] = $truck['Truck']['id'];
-            $data['Siup']['no_pol'] = $truck['Truck']['nopol'];
+            $data['Siup']['truck_id'] = !empty($truck['Truck']['id'])?$truck['Truck']['id']:false;
+            $data['Siup']['no_pol'] = !empty($truck['Truck']['nopol'])?$truck['Truck']['nopol']:false;
             $data['Siup']['tgl_siup'] = (!empty($data['Siup']['tgl_siup'])) ? $this->MkCommon->getDate($data['Siup']['tgl_siup']) : '';
             $data['Siup']['from_date'] = (!empty($data['Siup']['from_date'])) ? $this->MkCommon->getDate($data['Siup']['from_date']) : '';
             $data['Siup']['to_date'] = (!empty($data['Siup']['to_date'])) ? $this->MkCommon->getDate($data['Siup']['to_date']) : '';
-            $data['Siup']['price_estimate'] = $this->MkCommon->convertPriceToString($truck['Truck']['siup']);
-            $data['Siup']['price'] = $this->MkCommon->convertPriceToString($data['Siup']['price']);
+            $data['Siup']['price_estimate'] = !empty($truck['Truck']['siup'])?$this->MkCommon->convertPriceToString($truck['Truck']['siup']):false;
+            $data['Siup']['price'] = !empty($data['Siup']['price'])?$this->MkCommon->convertPriceToString($data['Siup']['price']):false;
             $data['Siup']['denda'] = (!empty($data['Siup']['denda'])) ? $this->MkCommon->convertPriceToString($data['Siup']['denda']) : 0;
             $this->Siup->set($data);
 
@@ -2469,8 +2469,8 @@ class TrucksController extends AppController {
 
             $price = trim($data['Stnk']['price']);
             $data['Stnk']['user_id'] = $this->user_id;
-            $data['Stnk']['truck_id'] = $truck['Truck']['id'];
-            $data['Stnk']['no_pol'] = $truck['Truck']['nopol'];
+            $data['Stnk']['truck_id'] = !empty($truck['Truck']['id'])?$truck['Truck']['id']:false;
+            $data['Stnk']['no_pol'] = !empty($truck['Truck']['nopol'])?$truck['Truck']['nopol']:false;
             $data['Stnk']['tgl_bayar'] = (!empty($data['Stnk']['tgl_bayar'])) ? $this->MkCommon->getDate($data['Stnk']['tgl_bayar']) : '';
             $data['Stnk']['from_date'] = (!empty($data['Stnk']['from_date'])) ? $this->MkCommon->getDate($data['Stnk']['from_date']) : '';
             $data['Stnk']['to_date'] = (!empty($data['Stnk']['to_date'])) ? $this->MkCommon->getDate($data['Stnk']['to_date']) : '';
@@ -2483,7 +2483,7 @@ class TrucksController extends AppController {
                 unset($data['Stnk']['plat_to_date']);
             }
 
-            $data['Stnk']['price_estimate'] = $this->MkCommon->convertPriceToString($truck['Truck']['bbnkb']+$truck['Truck']['pkb']);
+            $data['Stnk']['price_estimate'] = !empty($truck['Truck'])?$this->MkCommon->convertPriceToString($truck['Truck']['bbnkb']+$truck['Truck']['pkb']):false;
             $data['Stnk']['price'] = $this->MkCommon->convertPriceToString($data['Stnk']['price']);
             $data['Stnk']['denda'] = (!empty($data['Stnk']['denda'])) ? $this->MkCommon->convertPriceToString($data['Stnk']['denda']) : 0;
 

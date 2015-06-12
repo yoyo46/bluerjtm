@@ -22,6 +22,10 @@
 .informasi-sj {
 	display: none;
 }
+
+#sj-remove {
+	color: #FFFFFF;
+}
 /*
 **	END TTUJ
 */

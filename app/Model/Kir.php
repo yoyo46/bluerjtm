@@ -23,7 +23,7 @@ class Kir extends AppModel {
         'to_date' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Berlaku Sampai harap diisi pada data Truk'
+                'message' => 'Tgl Berakhir KIR harap diisi pada data Truk'
             ),
         ),
         'tgl_kir' => array(
