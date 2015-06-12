@@ -170,7 +170,7 @@ class TarifAngkutan extends AppModel {
             'TarifAngkutan.customer_id' => $this->data['TarifAngkutan']['customer_id'],
             'TarifAngkutan.from_city_id' => $this->data['TarifAngkutan']['from_city_id'],
             'TarifAngkutan.to_city_id' => $this->data['TarifAngkutan']['to_city_id'],
-            'TarifAngkutan.jenis_unit' => $this->data['TarifAngkutan']['jenis_unit'],
+            // 'TarifAngkutan.jenis_unit' => $this->data['TarifAngkutan']['jenis_unit'],
             'TarifAngkutan.capacity' => $this->data['TarifAngkutan']['capacity'],
             'TarifAngkutan.type' => $this->data['TarifAngkutan']['type'],
             'TarifAngkutan.status' => 1,
