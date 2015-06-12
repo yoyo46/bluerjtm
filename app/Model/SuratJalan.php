@@ -89,5 +89,23 @@ class SuratJalan extends AppModel {
 
         return $data;
     }
+
+    function getSJKembali ( $ttuj_id ) {
+        $muatan_kembali = 0;
+        $sj = $this->getData('first', array(
+            'conditions' => array(
+                'SuratJalan.ttuj_id' => $ttuj_id,
+            ),
+            'fields' => array(
+                'SUM(qty) muatan'
+            ),
+        ));
+
+        if( !empty($sj[0]['muatan']) ) {
+            $muatan_kembali = $sj[0]['muatan'];
+        }
+
+        return $muatan_kembali;
+    }
 }
 ?>

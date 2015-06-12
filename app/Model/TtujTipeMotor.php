@@ -145,5 +145,24 @@ class TtujTipeMotor extends AppModel {
 
         return $data;
     }
+
+    function getTotalMuatan ( $ttuj_id ) {
+        $kembali = 0;
+        $ttujTipeMotor = $this->getData('first', array(
+            'conditions' => array(
+                'TtujTipeMotor.status' => 1,
+                'TtujTipeMotor.ttuj_id' => $ttuj_id,
+            ),
+            'fields' => array(
+                'SUM(qty) muatan'
+            ),
+        ));
+
+        if( !empty($ttujTipeMotor[0]['muatan']) ) {
+            $kembali = $ttujTipeMotor[0]['muatan'];
+        }
+
+        return $kembali;
+    }
 }
 ?>

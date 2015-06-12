@@ -1017,6 +1017,7 @@ class AjaxController extends AppController {
                         'Ttuj.status' => 1,
                         'Ttuj.is_pool' => 0,
                         'Ttuj.id <>' => $action_id,
+                        'Ttuj.is_laka' => 0,
                     ),
                     'fields' => array(
                     	'Ttuj.id', 'Ttuj.truck_id',
@@ -2373,6 +2374,15 @@ class AjaxController extends AppController {
 		$this->set(compact(
 			'data_action', 'title', 'ttujs',
 			'action_type', 'jenisBiaya', 'document_type'
+		));
+	}
+
+	function getSjDriver( $driver_id ) {
+		$this->loadModel('Ttuj');
+		$sjOutstanding = $this->Ttuj->getSJOutstanding( $driver_id );
+
+		$this->set(compact(
+			'sjOutstanding', 'driver_id'
 		));
 	}
 }

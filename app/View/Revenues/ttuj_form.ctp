@@ -204,8 +204,10 @@
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('driver_penganti_id',array(
-										'label'=> __('Supir Pengganti'), 
-										'class'=>'form-control',
+										'label'=> sprintf(__('Supir Pengganti %s'), $this->Html->tag('small', '', array(
+											'class' => 'sj_outstanding_pengganti'
+										))), 
+										'class'=>'form-control driver-penganti',
 										'required' => false,
 										'empty' => __('Pilih Supir Pengganti --'),
 									));
@@ -664,6 +666,7 @@
 			        	?>
 				    </div>
 				</div>
+				<div id="informasi-sj"></div>
 			</div>
 		</div>
 		<div class="box-footer text-center action">

@@ -292,6 +292,7 @@ var getUangjalan = function ( response ) {
 
     if( $(response).filter('#sj_outstanding').html() != null ) {
         $('.sj_outstanding').html($(response).filter('#sj_outstanding').html());
+        view_sj_list( $('.sj_outstanding #view_sj_outstanding') );
     }
 
     var total_muatan = 0;
@@ -2757,6 +2758,32 @@ var delete_biaya_ttuj = function ( obj ) {
     });
 }
 
+var view_sj_list = function( obj ) {
+    obj.click(function(){
+        var val = $(this).attr('data-driver');
+
+        if(val != ''){
+            $.ajax({
+                url: '/revenues/surat_jalan_outstanding/'+val+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    if( $(response).filter('#wrapper-sj').html() != null ) {
+                        $('#informasi-sj').html($(response).filter('#wrapper-sj').html());
+
+                        $('#sj-remove').click(function(){
+                            $('#informasi-sj').empty();
+                        });
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        }
+    });
+}
+
 $(function() {
     leasing_action();
     laka_ttuj_change();
@@ -3603,6 +3630,27 @@ $(function() {
                 success: function(response, status) {
                     $('.first-name-box').val($(response).filter('#data-first-name').html());
                     $('.last-name-box').val($(response).filter('#data-last-name').html());
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        }
+    });
+    
+    $('.driver-penganti').change(function(){
+        var val = $(this).val();
+
+        if(val != ''){
+            $.ajax({
+                url: '/ajax/getSjDriver/'+val+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    if( $(response).filter('#sj_outstanding').html() != null ) {
+                        $('.sj_outstanding_pengganti').html($(response).filter('#sj_outstanding').html());
+                        view_sj_list( $('.sj_outstanding_pengganti #view_sj_outstanding') );
+                    }
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');

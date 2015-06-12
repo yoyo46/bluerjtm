@@ -946,10 +946,11 @@ class RevenuesController extends AppController {
                         'Ttuj.status' => 1,
                         'Ttuj.is_pool' => 0,
                         'Ttuj.id <>' => $id,
+                        'Ttuj.is_laka' => 0,
                     ),
                 )
             )
-        ));
+        ), false);
 
         $trucks = $this->Truck->getData('list', array(
             'conditions' => array(
@@ -975,7 +976,7 @@ class RevenuesController extends AppController {
         $driverPengantis = $this->Ttuj->Truck->Driver->getData('list', array(
             'conditions' => array(
                 'Driver.status' => 1,
-                'Truck.id <>' => NULL,
+                'Truck.id' => NULL,
             ),
             'fields' => array(
                 'Driver.id', 'Driver.driver_name'
@@ -2355,7 +2356,7 @@ class RevenuesController extends AppController {
                         ),
                     ),
                 )
-            ));
+            ), false);
 
             $this->paginate = $this->Truck->getData('paginate', array(
                 'conditions' => $conditionTrucks,
@@ -3479,7 +3480,7 @@ class RevenuesController extends AppController {
                         'foreignKey' => 'truck_id',
                     )
                 )
-            ));
+            ), false);
 
             if(!empty($this->params['named'])){
                 $refine = $this->params['named'];
@@ -5590,7 +5591,7 @@ class RevenuesController extends AppController {
         // }
     }
 
-    public function surat_jalan_outstanding( $driver_id = false ) {
+    public function surat_jalan_outstanding( $driver_id = false, $pengganti = false ) {
         // if( in_array('delete_cities', $this->allowModule) ) {
             $this->loadModel('Ttuj');
             $this->loadModel('Revenue');
@@ -5604,15 +5605,24 @@ class RevenuesController extends AppController {
             if( !empty($driver) ) {
                 $ttujs = $this->Ttuj->getData('all', array(
                     'conditions' => array(
-                        'Ttuj.driver_id' => $driver_id,
+                        'OR' => array(
+                            'Ttuj.driver_id' => $driver_id,
+                            'Ttuj.driver_penganti_id' => $driver_id,
+                        ),
                         'Ttuj.is_sj_completed' => 0,
                         'Ttuj.status' => 1,
-                    )
+                    ),
+                    'order' => array(
+                        'Ttuj.created' => 'DESC',
+                        'Ttuj.id' => 'DESC',
+                    ),
                 ), false);
 
                 if( !empty($ttujs) ) {
                     foreach ($ttujs as $key => $ttuj) {
-                        $ttuj = $this->Revenue->getPaid( $ttuj, $ttuj['Ttuj']['id'] );
+                        // $ttuj = $this->Revenue->getPaid( $ttuj, $ttuj['Ttuj']['id'] );
+                        $ttuj['SjKembali'] = $this->Ttuj->SuratJalan->getSJKembali( $ttuj['Ttuj']['id'] );
+                        $ttuj['TotalMuatan'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj['Ttuj']['id'] );
                         $ttujs[$key] = $ttuj;
                     }
 
@@ -5907,7 +5917,7 @@ class RevenuesController extends AppController {
                                 ),
                             )
                         )
-                    ));
+                    ), false);
 
                     switch ($status) {
                         case 'pending':

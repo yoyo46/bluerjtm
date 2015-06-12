@@ -14,8 +14,13 @@
 	right: 10px;
 }
 
-.ttuj-form small {
-	color: #808080;
+.ttuj-form .sj_outstanding_pengganti a,
+.ttuj-form .sj_outstanding a {
+	color: #d9534f;
+}
+
+.informasi-sj {
+	display: none;
 }
 /*
 **	END TTUJ
