@@ -2725,6 +2725,7 @@ class RevenuesController extends AppController {
 
                 if(!empty($refine['nodoc'])){
                     $nodoc = urldecode($refine['nodoc']);
+                    $nodoc = $this->MkCommon->replaceSlash($nodoc);
                     $this->request->data['Revenue']['nodoc'] = $nodoc;
                     $conditions['Revenue.nodoc LIKE '] = '%'.$nodoc.'%';
                 }
@@ -3642,6 +3643,7 @@ class RevenuesController extends AppController {
 
                 if(!empty($refine['nodoc'])){
                     $nodoc = urldecode($refine['nodoc']);
+                    $nodoc = $this->MkCommon->replaceSlash($nodoc);
                     $this->request->data['Invoice']['nodoc'] = $nodoc;
                     $conditions['Invoice.nodoc LIKE '] = '%'.$nodoc.'%';
                 }
