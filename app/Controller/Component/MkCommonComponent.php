@@ -342,5 +342,9 @@ class MkCommonComponent extends Component {
             return '';
         }
     }
+
+    function replaceSlash ( $string ) {
+        return str_replace('%2F', '/', $string);
+    }
 }
 ?>

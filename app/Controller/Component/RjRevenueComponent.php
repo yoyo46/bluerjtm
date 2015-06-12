@@ -10,19 +10,19 @@ class RjRevenueComponent extends Component {
 
 			if(!empty($refine)) {
 				if( !empty($refine['Ttuj']['no_ttuj']) ) {
-					$refine_conditions['Ttuj']['no_ttuj'] = $refine['Ttuj']['no_ttuj'];
+					$refine_conditions['Ttuj']['no_ttuj'] = urlencode($refine['Ttuj']['no_ttuj']);
 				}
 				if( !empty($refine['Ttuj']['nottuj']) ) {
-					$refine_conditions['Ttuj']['nottuj'] = $refine['Ttuj']['nottuj'];
+					$refine_conditions['Ttuj']['nottuj'] = urlencode($refine['Ttuj']['nottuj']);
 				}
 				if( !empty($refine['Ttuj']['nopol']) ) {
-					$refine_conditions['Ttuj']['nopol'] = $refine['Ttuj']['nopol'];
+					$refine_conditions['Ttuj']['nopol'] = urlencode($refine['Ttuj']['nopol']);
 				}
 				if( !empty($refine['Ttuj']['customer']) ) {
-					$refine_conditions['Ttuj']['customer'] = $refine['Ttuj']['customer'];
+					$refine_conditions['Ttuj']['customer'] = urlencode($refine['Ttuj']['customer']);
 				}
 				if( !empty($refine['Ttuj']['driver_name']) ) {
-					$refine_conditions['Ttuj']['driver_name'] = $refine['Ttuj']['driver_name'];
+					$refine_conditions['Ttuj']['driver_name'] = urlencode($refine['Ttuj']['driver_name']);
 				}
 				if( !empty($refine['Ttuj']['date']) ) {
 					$refine_conditions['Ttuj']['date'] = urlencode($refine['Ttuj']['date']);
@@ -140,7 +140,7 @@ class RjRevenueComponent extends Component {
 					$refine_conditions['Ttuj']['monitoring_customer_id'] = implode(',', $refine_conditions['Ttuj']['monitoring_customer_id']);
 				}
 				if( !empty($refine['Revenue']['customer']) ) {
-					$refine_conditions['Revenue']['customer'] = $refine['Revenue']['customer'];
+					$refine_conditions['Revenue']['customer'] = urlencode($refine['Revenue']['customer']);
 				}
 			}
 				

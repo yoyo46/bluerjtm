@@ -22,6 +22,7 @@ class RevenuesController extends AppController {
         if(!empty($this->request->data)) {
             $refine = $this->RjRevenue->processRefine($this->request->data);
             $params = $this->RjRevenue->generateSearchURL($refine);
+
             if(!empty($id)){
                 array_push($params, $id);
             }
@@ -52,6 +53,7 @@ class RevenuesController extends AppController {
 
                 if(!empty($refine['nottuj'])){
                     $nottuj = urldecode($refine['nottuj']);
+                    $nottuj = $this->MkCommon->replaceSlash($nottuj);
                     $this->request->data['Ttuj']['nottuj'] = $nottuj;
                     $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
                 }
