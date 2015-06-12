@@ -1488,9 +1488,13 @@ class TrucksController extends AppController {
                 'contain' => array(
                     'Truck'
                 ),
-            ));
+                'order'=> array(
+                    'Siup.status' => 'DESC',
+                    'Siup.tgl_kir' => 'DESC',
+                ),
+            ), false);
             $siup = $this->paginate('Siup');
-            
+
             $this->set('active_menu', 'siup');
             $sub_module_title = __('Ijin Usaha');
             $this->set(compact('siup', 'sub_module_title'));
@@ -1518,7 +1522,7 @@ class TrucksController extends AppController {
                 'conditions' => array(
                     'Siup.id' => $id,
                 )
-            ));
+            ), false);
 
             if(!empty($siup)){
                 $this->doSiup($id, $siup);
@@ -2368,10 +2372,14 @@ class TrucksController extends AppController {
                 }
             }
             $this->paginate = $this->Stnk->getData('paginate', array(
-                'conditions' => $conditions
-            ));
+                'conditions' => $conditions,
+                'order'=> array(
+                    'Stnk.status' => 'DESC',
+                    'Stnk.tgl_stnk' => 'DESC',
+                ),
+            ), false);
             $stnks = $this->paginate('Stnk');
-            
+
             $this->set('active_menu', 'stnk');
             $sub_module_title = __('STNK');
             $this->set(compact('stnks', 'sub_module_title'));
@@ -2402,7 +2410,7 @@ class TrucksController extends AppController {
                 'contain' => array(
                     'Truck'
                 ),
-            ));
+            ), false);
 
             if(!empty($Stnk)){
                 $this->doStnk($id, $Stnk);

@@ -78,7 +78,7 @@
                 <td><?php echo $this->Time->niceShort($value['Kir']['created']);?></td>
                 <td class="action">
                     <?php
-                            if(!empty($value['Kir']['status'])) {
+                            if(!empty($value['Kir']['status']) && empty($value['Kir']['paid'])) {
                                 $label = __('Ubah');
                             } else {
                                 $label = __('Detail');

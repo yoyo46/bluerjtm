@@ -20,18 +20,22 @@
 		    <div class="box-body">
 		        <div class="form-group">
         			<?php 
-        					$attrBrowse = array(
-                                'class' => 'ajaxModal visible-xs',
-                                'escape' => false,
-								'title' => __('Data Truk'),
-								'data-action' => 'browse-form',
-								'data-change' => 'truckID',
-                            );
-        					$urlBrowse = array(
-                                'controller'=> 'ajax', 
-								'action' => 'getTrucks',
-                            );
-							echo $this->Form->label('driver_id', __('Supir Truk ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+        					if( !empty($siup) && empty($siup['Siup']['status']) ) {
+        						echo $this->Html->tag('label', __('Nopol Truk'));
+        						echo $this->Html->tag('div', $siup['Siup']['no_pol']);
+        					} else {
+	        					$attrBrowse = array(
+	                                'class' => 'ajaxModal visible-xs',
+	                                'escape' => false,
+									'title' => __('Data Truk'),
+									'data-action' => 'browse-form',
+									'data-change' => 'truckID',
+	                            );
+	        					$urlBrowse = array(
+	                                'controller'=> 'ajax', 
+									'action' => 'getTrucks',
+	                            );
+								echo $this->Form->label('driver_id', __('Supir Truk ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 					?>
 		        	<div class="row">
 		        		<div class="col-sm-10">
@@ -55,6 +59,9 @@
 	                        ?>
 	                    </div>
 		        	</div>
+		        	<?php 
+		        			}
+		        	?>
 		        </div>
 		        <div class="form-group">
 		        	<?php 
@@ -163,13 +170,16 @@
 
 <div class="box-footer text-center action">
 	<?php
-            if( empty($siup['Siup']['paid']) && empty($siup['Siup']['rejected']) ){
-	    		echo $this->Form->button(__('Simpan'), array(
-					'div' => false, 
-					'class'=> 'btn btn-success',
-					'type' => 'submit',
-				));
-	    	}
+			if( empty($siup) || !empty($siup['Siup']['status']) ) {
+	            if( empty($siup['Siup']['paid']) && empty($siup['Siup']['rejected']) ){
+		    		echo $this->Form->button(__('Simpan'), array(
+						'div' => false, 
+						'class'=> 'btn btn-success',
+						'type' => 'submit',
+					));
+		    	}
+		    }
+
     		echo $this->Html->link(__('Kembali'), array(
 				'action' => 'siup'
 			), array(

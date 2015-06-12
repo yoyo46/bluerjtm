@@ -20,18 +20,22 @@
 		    <div class="box-body">
 		    	<div class="form-group">
         			<?php 
-        					$attrTruck = array(
-								'class' => 'ajaxModal visible-xs',
-								'escape' => false,
-								'title' => __('Data Truk'),
-								'data-action' => 'browse-form',
-								'data-change' => 'truckID',
-							);
-        					$urlTruck = array(
-								'controller'=> 'ajax', 
-								'action' => 'getTrucks',
-							);
-							echo $this->Form->label('truck_id', __('Truk * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlTruck, $attrTruck));
+        					if( !empty($stnk) && empty($stnk['Stnk']['status']) ) {
+        						echo $this->Html->tag('label', __('Nopol Truk'));
+        						echo $this->Html->tag('div', $stnk['Stnk']['no_pol']);
+        					} else {
+	        					$attrTruck = array(
+									'class' => 'ajaxModal visible-xs',
+									'escape' => false,
+									'title' => __('Data Truk'),
+									'data-action' => 'browse-form',
+									'data-change' => 'truckID',
+								);
+	        					$urlTruck = array(
+									'controller'=> 'ajax', 
+									'action' => 'getTrucks',
+								);
+								echo $this->Form->label('truck_id', __('Truk * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlTruck, $attrTruck));
 					?>
 		        	<div class="row">
 		        		<div class="col-sm-10">
@@ -55,6 +59,9 @@
 							?>
 		        		</div>
 		        	</div>
+		        	<?php 
+		        			}
+		        	?>
 		        </div>
 		        <div class="form-group">
 		        	<?php 
@@ -199,13 +206,16 @@
 </div>
 <div class="box-footer text-center action">
 	<?php
-            if( empty($stnk['Stnk']['paid']) && empty($stnk['Stnk']['rejected']) ){
-	    		echo $this->Form->button(__('Simpan'), array(
-					'div' => false, 
-					'class'=> 'btn btn-success',
-					'type' => 'submit',
-				));
-	    	}
+			if( empty($stnk) || !empty($stnk['Siup']['status']) ) {
+	            if( empty($stnk['Stnk']['paid']) && empty($stnk['Stnk']['rejected']) ){
+		    		echo $this->Form->button(__('Simpan'), array(
+						'div' => false, 
+						'class'=> 'btn btn-success',
+						'type' => 'submit',
+					));
+		    	}
+		    }
+
     		echo $this->Html->link(__('Kembali'), array(
 				'action' => 'stnk',
 			), array(

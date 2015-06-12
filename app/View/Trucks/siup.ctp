@@ -66,7 +66,9 @@
                 </td>
                 <td>
                     <?php 
-                            if( !empty($value['Siup']['paid']) ) {
+                            if( empty($value['Siup']['status']) ) {
+                                echo '<span class="label label-danger">Non-Aktif</span>'; 
+                            } else if( !empty($value['Siup']['paid']) ) {
                                 echo '<span class="label label-success">Sudah Bayar</span>'; 
                             } else if( !empty($value['Siup']['rejected']) ) {
                                 echo '<span class="label label-danger">Ditolak</span>'; 
@@ -78,8 +80,14 @@
                 <td><?php echo $this->Time->niceShort($value['Siup']['created']);?></td>
                 <td class="action">
                     <?php
+                            if(!empty($value['Siup']['status']) && empty($value['Siup']['paid'])) {
+                                $label = __('Ubah');
+                            } else {
+                                $label = __('Detail');
+                            }
+
                             if( in_array('update_siup', $allowModule) ) {
-                                echo $this->Html->link('Rubah', array(
+                                echo $this->Html->link($label, array(
                                     'controller' => 'trucks',
                                     'action' => 'siup_edit',
                                     $id
@@ -88,7 +96,7 @@
                                 ));
                             }
 
-                            if( in_array('delete_siup', $allowModule) ) {
+                            if( in_array('delete_siup', $allowModule) && !empty($value['Siup']['status']) ) {
                                 if( empty($value['Siup']['paid']) && empty($value['Siup']['rejected']) ){
                                     echo $this->Html->link(__('Hapus'), array(
                                         'controller' => 'trucks',

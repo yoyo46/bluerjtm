@@ -1,5 +1,6 @@
 <?php 
-    $this->Html->addCrumb($sub_module_title);
+        $this->Html->addCrumb($sub_module_title);
+        echo $this->element('blocks/trucks/search_stnk');
 ?>
 <div class="box">
     <div class="box-header">
@@ -44,9 +45,7 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Stnk.price', __('Biaya Perpanjang'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Stnk.paid', __('Status'), array(
-                            'escape' => false
-                        )));
+                        echo $this->Html->tag('th', __('Status'));
                         echo $this->Html->tag('th', $this->Paginator->sort('Stnk.created', __('Dibuat'), array(
                             'escape' => false
                         )));
@@ -71,7 +70,9 @@
                 <td><?php echo $this->Number->currency($value['Stnk']['price'], 'Rp. ');?></td>
                 <td>
                     <?php 
-                            if( !empty($value['Stnk']['paid']) ) {
+                            if( empty($value['Stnk']['status']) ) {
+                                echo '<span class="label label-danger">Non-Aktif</span>'; 
+                            } else if( !empty($value['Stnk']['paid']) ) {
                                 echo '<span class="label label-success">Sudah Bayar</span>'; 
                             } else if( !empty($value['Stnk']['rejected']) ) {
                                 echo '<span class="label label-danger">Ditolak</span>'; 
@@ -83,8 +84,14 @@
                 <td><?php echo $this->Time->niceShort($value['Stnk']['created']);?></td>
                 <td class="action">
                     <?php
+                            if(!empty($value['Stnk']['status']) && empty($value['Stnk']['paid'])) {
+                                $label = __('Ubah');
+                            } else {
+                                $label = __('Detail');
+                            }
+
                             if( in_array('update_stnk', $allowModule) ) {
-                                echo $this->Html->link('Rubah', array(
+                                echo $this->Html->link($label, array(
                                     'controller' => 'trucks',
                                     'action' => 'stnk_edit',
                                     $id
@@ -93,7 +100,7 @@
                                 ));
                             }
 
-                            if( in_array('delete_stnk', $allowModule) ) {
+                            if( in_array('delete_stnk', $allowModule) && !empty($value['Stnk']['status']) ) {
                                 if( empty($value['Stnk']['paid']) && empty($value['Stnk']['rejected']) ){
                                     echo $this->Html->link(__('Hapus'), array(
                                         'controller' => 'trucks',
