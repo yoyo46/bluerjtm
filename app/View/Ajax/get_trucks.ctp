@@ -14,13 +14,33 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('nopol',array(
-                        'label'=> __('Nopol'),
-                        'class'=>'form-control',
-                        'required' => false,
-                        'placeholder' => __('Nopol')
-                    ));
+                    echo $this->Form->label('type', __('Truk'));
             ?>
+            <div class="row">
+                <div class="col-sm-4">
+                    <?php 
+                            echo $this->Form->input('type',array(
+                                'label'=> false,
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => false,
+                                'options' => array(
+                                    '1' => __('Nopol'),
+                                    '2' => __('ID Truk'),
+                                ),
+                            ));
+                    ?>
+                </div>
+                <div class="col-sm-8">
+                    <?php 
+                            echo $this->Form->input('nopol',array(
+                                'label'=> false,
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+            </div>
         </div>
     </div>
     <div class="col-sm-6">
@@ -77,7 +97,7 @@
                         $id = $value_truck['id'];
         ?>
         <tr data-value="<?php echo $id;?>" data-change="#<?php echo $data_change;?>">
-            <td><?php echo str_pad($id, 4, '0', STR_PAD_LEFT);?></td>
+            <td><?php echo $id;?></td>
             <td><?php echo $value_truck['nopol'];?></td>
             <td><?php echo !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:'-';?></td>
             <td><?php echo !empty($value['TruckBrand']['name'])?$value['TruckBrand']['name']:'-';?></td>

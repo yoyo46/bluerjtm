@@ -60,10 +60,21 @@ class RevenuesController extends AppController {
                 if(!empty($refine['nopol'])){
                     $nopol = urldecode($refine['nopol']);
                     $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $truckSearch = $this->Ttuj->Truck->getData('list', array(
-                        'conditions' => array(
+                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                    $this->request->data['Ttuj']['type'] = $typeTruck;
+
+                    if( $typeTruck == 2 ) {
+                        $conditionsNopol = array(
+                            'Truck.id' => $nopol,
+                        );
+                    } else {
+                        $conditionsNopol = array(
                             'Truck.nopol LIKE' => '%'.$nopol.'%',
-                        ),
+                        );
+                    }
+
+                    $truckSearch = $this->Ttuj->Truck->getData('list', array(
+                        'conditions' => $conditionsNopol,
                         'fields' => array(
                             'Truck.id', 'Truck.id',
                         ),
@@ -1883,7 +1894,14 @@ class RevenuesController extends AppController {
                 if(!empty($refine['nopol'])){
                     $nopol = urldecode($refine['nopol']);
                     $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $conditions['Truck.nopol LIKE '] = '%'.$nopol.'%';
+                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                    $this->request->data['Ttuj']['type'] = $typeTruck;
+
+                    if( $typeTruck == 2 ) {
+                        $conditions ['Truck.id'] = $nopol;
+                    } else {
+                        $conditions ['Truck.nopol LIKE'] = '%'.$nopol.'%';
+                    }
                 }
 
                 if(!empty($refine['driver_name'])){
@@ -2258,10 +2276,21 @@ class RevenuesController extends AppController {
                 if( !empty($refine['nopol']) ) {
                     $nopol = urldecode($refine['nopol']);
                     $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $truckSearch = $this->Ttuj->Truck->getData('list', array(
-                        'conditions' => array(
+                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                    $this->request->data['Ttuj']['type'] = $typeTruck;
+
+                    if( $typeTruck == 2 ) {
+                        $conditionsNopol = array(
+                            'Truck.id' => $nopol,
+                        );
+                    } else {
+                        $conditionsNopol = array(
                             'Truck.nopol LIKE' => '%'.$nopol.'%',
-                        ),
+                        );
+                    }
+
+                    $truckSearch = $this->Ttuj->Truck->getData('list', array(
+                        'conditions' => $conditionsNopol,
                         'fields' => array(
                             'Truck.id', 'Truck.id',
                         ),
@@ -2787,10 +2816,21 @@ class RevenuesController extends AppController {
                 if(!empty($refine['nopol'])){
                     $nopol = urldecode($refine['nopol']);
                     $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $truckSearch = $this->Ttuj->Truck->getData('list', array(
-                        'conditions' => array(
+                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                    $this->request->data['Ttuj']['type'] = $typeTruck;
+
+                    if( $typeTruck == 2 ) {
+                        $conditionsNopol = array(
+                            'Truck.id' => $nopol,
+                        );
+                    } else {
+                        $conditionsNopol = array(
                             'Truck.nopol LIKE' => '%'.$nopol.'%',
-                        ),
+                        );
+                    }
+
+                    $truckSearch = $this->Ttuj->Truck->getData('list', array(
+                        'conditions' => $conditionsNopol,
                         'fields' => array(
                             'Truck.id', 'Truck.id',
                         ),

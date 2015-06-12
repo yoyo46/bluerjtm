@@ -19,13 +19,33 @@
         ?>
         <div class="form-group">
             <?php 
-                echo $this->Form->input('Truck.nopol',array(
-                    'label'=> __('No. Pol'),
-                    'class'=>'form-control',
-                    'required' => false,
-                    'placeholder' => __('No. Pol')
-                ));
+                    echo $this->Form->label('Truck.type', __('Truk'));
             ?>
+            <div class="row">
+                <div class="col-sm-4">
+                    <?php 
+                            echo $this->Form->input('Truck.type',array(
+                                'label'=> false,
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => false,
+                                'options' => array(
+                                    '1' => __('Nopol'),
+                                    '2' => __('ID Truk'),
+                                ),
+                            ));
+                    ?>
+                </div>
+                <div class="col-sm-8">
+                    <?php 
+                            echo $this->Form->input('Truck.nopol',array(
+                                'label'=> false,
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+            </div>
         </div>
         <div class="form-group action">
             <?php

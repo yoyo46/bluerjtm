@@ -12,6 +12,9 @@ class RjLakaComponent extends Component {
 				if( !empty($refine['Laka']['nopol']) ) {
 					$refine_conditions['Laka']['nopol'] = $refine['Laka']['nopol'];
 				}
+				if( !empty($refine['Laka']['type']) ) {
+					$refine_conditions['Laka']['type'] = $refine['Laka']['type'];
+				}
 			}
 				
 			return $refine_conditions;

@@ -18,6 +18,9 @@ class RjRevenueComponent extends Component {
 				if( !empty($refine['Ttuj']['nopol']) ) {
 					$refine_conditions['Ttuj']['nopol'] = $refine['Ttuj']['nopol'];
 				}
+				if( !empty($refine['Ttuj']['type']) ) {
+					$refine_conditions['Ttuj']['type'] = $refine['Ttuj']['type'];
+				}
 				if( !empty($refine['Ttuj']['customer']) ) {
 					$refine_conditions['Ttuj']['customer'] = $refine['Ttuj']['customer'];
 				}

@@ -38,14 +38,25 @@ class LakasController extends AppController {
                 if(!empty($refine['nopol'])){
                     $this->loadModel('Truck');
                     $nopol = urldecode($refine['nopol']);
-                    $truckSearch = $this->Truck->getData('list', array(
-                        'conditions' => array(
+                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
+
+                    if( $typeTruck == 2 ) {
+                        $conditionsNopol = array(
+                            'Truck.id' => $nopol,
+                        );
+                    } else {
+                        $conditionsNopol = array(
                             'Truck.nopol LIKE' => '%'.$nopol.'%',
-                        ),
+                        );
+                    }
+                    
+                    $truckSearch = $this->Truck->getData('list', array(
+                        'conditions' => $conditionsNopol,
                         'fields' => array(
                             'Truck.id', 'Truck.id',
                         ),
                     ));
+                    $this->request->data['Laka']['type'] = $typeTruck;
                     $this->request->data['Laka']['nopol'] = $nopol;
                     $conditions['Laka.truck_id'] = $truckSearch;
                 }
