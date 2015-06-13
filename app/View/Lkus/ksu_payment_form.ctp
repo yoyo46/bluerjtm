@@ -86,7 +86,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="invoice-info-detail <?php echo (!empty($this->request->data) && !empty($ksus)) ? '' : 'hide';?>">
+		<div class="invoice-info-detail <?php echo (!empty($this->request->data) && !empty($ksu_details)) ? '' : 'hide';?>">
 			<div class="box box-primary">
 			    <div class="box-header">
 			        <h3 class="box-title"><?php echo __('Detail Info Pembayaran KSU'); ?></h3>
@@ -95,11 +95,10 @@
 			        <table class="table table-hover">
 			        	<thead>
 			        		<tr>
-			        			<th width="20%"><?php echo __('Tgl TTUJ');?></th>
+			        			<th width="20%"><?php echo __('No LKU');?></th>
+				                <th><?php echo __('TTUJ');?></th>
 				                <th><?php echo __('Nopol Truk');?></th>
-				                <th><?php echo __('Dari');?></th>
-				                <th><?php echo __('Tujuan');?></th>
-				                <th><?php echo __('Tanggal KSU');?></th>
+				                <th><?php echo __('Perlengkapan');?></th>
 				                <th><?php echo __('Total');?></th>
 				                <th><?php echo __('Telah Dibayar');?></th>
 				                <th><?php echo __('Bayar');?></th>

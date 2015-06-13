@@ -65,6 +65,7 @@ class KsuDetail extends AppModel {
                 'KsuDetail.created' => 'DESC',
                 'KsuDetail.id' => 'DESC',
             ),
+            'contain' => array(),
             'fields' => array(),
         );
 

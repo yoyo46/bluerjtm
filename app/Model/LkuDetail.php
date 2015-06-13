@@ -62,6 +62,7 @@ class LkuDetail extends AppModel {
                 'LkuDetail.id' => 'DESC',
             ),
             'fields' => array(),
+            'contain' => array()
         );
 
         if(!empty($options)){

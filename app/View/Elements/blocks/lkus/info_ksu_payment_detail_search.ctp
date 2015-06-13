@@ -2,7 +2,7 @@
         echo $this->Form->create('Ksu', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
-                'action' => 'getTtujCustomerInfoKsu',
+                'action' => 'getTtujCustomerInfo',
                 $customer_id
             )), 
             'role' => 'form',
@@ -60,11 +60,10 @@
                     ));
                     echo $this->Html->tag('th', $input_all);
                 ?>
-                <th width="20%"><?php echo __('Tgl TTUJ');?></th>
+                <th width="20%"><?php echo __('No LKU');?></th>
+                <th><?php echo __('TTUJ');?></th>
                 <th><?php echo __('Nopol Truk');?></th>
-                <th><?php echo __('Dari');?></th>
-                <th><?php echo __('Tujuan');?></th>
-                <th><?php echo __('Tanggal KSU');?></th>
+                <th><?php echo __('Perlengkapan');?></th>
                 <th><?php echo __('Total');?></th>
                 <th><?php echo __('Telah Dibayar');?></th>
             </tr>
@@ -73,27 +72,32 @@
             <?php
                 $total = $i = 0;
 
-                if(!empty($ksus)){
-                    foreach ($ksus as $key => $value) {
+                if(!empty($ksu_details)){
+                    foreach ($ksu_details as $key => $value) {
                         $ksu = $value['Ksu'];
             ?>
-            <tr class="child-search child-search-<?php echo $ksu['id'];?>" rel="<?php echo $ksu['id'];?>">
+            <tr class="child-search child-search-<?php echo $value['KsuDetail']['id'];?>" rel="<?php echo $value['KsuDetail']['id'];?>">
                 <td class="checkbox-detail">
                     <?php
-                        echo $this->Form->checkbox('ksu_id.', array(
+                        echo $this->Form->checkbox('ksu_detail_id.', array(
                             'class' => 'check-option',
-                            'value' => $ksu['id']
+                            'value' => $value['KsuDetail']['id']
                         ));
                     ?>
                 </td>
                 <td>
                     <?php
-                        printf('%s (%s)', date('d F Y', strtotime($value['Ttuj']['ttuj_date'])), $value['Ttuj']['no_ttuj']);
+                        printf('%s (%s)', date('d F Y', strtotime($value['Ksu']['tgl_ksu'])), $value['Ksu']['no_doc']);
 
-                        echo $this->Form->input('KsuPaymentDetail.ksu_id.'.$ksu['id'], array(
+                        echo $this->Form->input('KsuPaymentDetail.ksu_detail_id.'.$value['KsuDetail']['id'], array(
                             'type' => 'hidden',
-                            'value' => $ksu['id']
+                            'value' => $value['KsuDetail']['id']
                         ));
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        echo $value['Ttuj']['no_ttuj'];
                     ?>
                 </td>
                 <td>
@@ -107,58 +111,44 @@
                 </td>
                 <td>
                     <?php
-                        if(!empty($value['Ttuj']['from_city_name'])){
-                            echo $value['Ttuj']['from_city_name'];
+                        if(!empty($value['KsuDetail']['Perlengkapan']['name'])){
+                            echo $value['KsuDetail']['Perlengkapan']['name'];
                         }else{
                             echo '-';
                         }
-                    ?>
-                </td>
-                <td>
-                    <?php
-                        if(!empty($value['Ttuj']['to_city_name'])){
-                            echo $value['Ttuj']['to_city_name'];
-                        }else{
-                            echo '-';
-                        }
-                    ?>
-                </td>
-                <td>
-                    <?php
-                            echo $this->Common->customDate($ksu['tgl_ksu']);
                     ?>
                 </td>
                 <td class="text-right">
                     <?php
-                        echo $this->Number->currency($ksu['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+                        echo $this->Number->currency($value['KsuDetail']['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0));
 
-                        echo $this->Form->hidden('KsuPaymentDetail.total_biaya_klaim.'.$ksu['id'], array(
+                        echo $this->Form->hidden('KsuPaymentDetail.total_biaya_klaim.'.$value['KsuDetail']['id'], array(
                             'class' => 'ksu-price-payment',
-                            'value' => (!empty($ksu['total_price'])) ? $ksu['total_price'] : 0
+                            'value' => (!empty($value['KsuDetail']['total_price'])) ? $value['KsuDetail']['total_price'] : 0
                         ));
                     ?>
                 </td>
                 <td class="text-right">
                     <?php
                         $price_pay = 0;
-                        if(!empty($value['ksu_has_paid'])){
-                            echo $this->Number->currency($value['ksu_has_paid'], Configure::read('__Site.config_currency_code'), array('places' => 0)); 
-                            $price_pay = $ksu['total_price'] - $value['ksu_has_paid'];
+                        if(!empty($value['KsuDetail']['ksu_has_paid'])){
+                            echo $this->Number->currency($value['KsuDetail']['ksu_has_paid'], Configure::read('__Site.config_currency_code'), array('places' => 0)); 
+                            $price_pay = $value['KsuDetail']['total_price'] - $value['KsuDetail']['ksu_has_paid'];
                         }else{
                             echo '-';
-                            $price_pay = $ksu['total_price'];
+                            $price_pay = $value['KsuDetail']['total_price'];
                         }
                     ?>
                 </td>
                 <td class="text-right action-search hide" valign="top">
                     <?php
-                        echo $this->Form->input('KsuPaymentDetail.total_biaya_klaim.'.$ksu['id'], array(
+                        echo $this->Form->input('KsuPaymentDetail.total_biaya_klaim.'.$value['KsuDetail']['id'], array(
                             'type' => 'text',
                             'label' => false,
                             'div' => false,
                             'required' => false,
                             'class' => 'form-control input_price invoice-price-payment',
-                            'value' => (!empty($this->request->data['KsuPaymentDetail']['total_biaya_klaim'][$ksu['id']])) ? $this->request->data['KsuPaymentDetail']['total_biaya_klaim'][$ksu['id']] : $price_pay
+                            'value' => (!empty($this->request->data['KsuPaymentDetail']['total_biaya_klaim'][$value['KsuDetail']['id']])) ? $this->request->data['KsuPaymentDetail']['total_biaya_klaim'][$value['KsuDetail']['id']] : $price_pay
                         ));
 
                         if(!empty($this->request->data['KsuPaymentDetail']['total_biaya_klaim'][$key])){

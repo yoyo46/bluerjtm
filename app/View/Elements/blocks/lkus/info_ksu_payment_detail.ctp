@@ -1,32 +1,43 @@
 <?php
     $total = $key = 0;
 
-    if(!empty($ksus)){
-        foreach ($ksus as $key => $value) {
-            $Ksu = $value['Ksu'];
+    if(!empty($ksu_details)){
+        foreach ($ksu_details as $key => $value) {
+            $Ksu = $value['KsuDetail'];
 ?>
 <tr class="child child-<?php echo $Ksu['id'];?>" rel="<?php echo $Ksu['id'];?>">
     <td>
         <?php
             // echo $this->Form->input('KsuPaymentDetail.ksu_id.', array(
             //     'options' => $ksus,
-            //     'class' => 'form-control lku-choose-ttuj',
+            //     'class' => 'form-control ksu-choose-ttuj',
             //     'label' => false,
             //     'empty' => __('Pilih Tanggal TTUJ'),
             //     'required' => false,
             //     'value' => (isset($this->request->data['KsuPaymentDetail'][$key]['ksu_id']) && !empty($this->request->data['KsuPaymentDetail'][$key]['ksu_id'])) ? $this->request->data['KsuPaymentDetail'][$key]['ksu_id'] : ''
             // ));
 
-            printf('%s (%s)', date('d F Y', strtotime($value['Ttuj']['ttuj_date'])), $value['Ttuj']['no_ttuj']);
+            // printf('%s (%s)', date('d F Y', strtotime($value['Ttuj']['ttuj_date'])), $value['Ttuj']['no_ttuj']);
+            printf('%s (%s)', date('d F Y', strtotime($value['Ksu']['tgl_ksu'])), $value['Ksu']['no_doc']);
 
-            $keyd = (isset($this->request->data['KsuPaymentDetail'][$Ksu['id']]['ksu_id']) && !empty($this->request->data['KsuPaymentDetail'][$Ksu['id']]['ksu_id'])) ? $this->request->data['KsuPaymentDetail'][$Ksu['id']]['ksu_id'] : '';
-            echo $this->Form->input('KsuPaymentDetail.ksu_id.'.$keyd, array(
+            $keyd = (isset($this->request->data['KsuPaymentDetail'][$Ksu['id']]['ksu_detail_id']) && !empty($this->request->data['KsuPaymentDetail'][$Ksu['id']]['ksu_detail_id'])) ? $this->request->data['KsuPaymentDetail'][$Ksu['id']]['ksu_detail_id'] : '';
+
+            echo $this->Form->input('KsuPaymentDetail.ksu_detail_id.'.$keyd, array(
                 'type' => 'hidden',
                 'value' => $keyd
             ));
         ?>
     </td>
-    <td class="data-nopol">
+    <td class="data-no-ttuj">
+        <?php
+            if(!empty($value['Ttuj']['no_ttuj'])){
+                echo $value['Ttuj']['no_ttuj'];
+            }else{
+                echo '-';
+            }
+        ?>
+    </td>
+    <td class="data-from-city">
         <?php
             if(!empty($value['Ttuj']['nopol'])){
                 echo $value['Ttuj']['nopol'];
@@ -35,32 +46,23 @@
             }
         ?>
     </td>
-    <td class="data-from-city">
-        <?php
-            if(!empty($value['Ttuj']['from_city_name'])){
-                echo $value['Ttuj']['from_city_name'];
-            }else{
-                echo '-';
-            }
-        ?>
-    </td>
     <td class="data-to-city">
         <?php
-            if(!empty($value['Ttuj']['to_city_name'])){
-                echo $value['Ttuj']['to_city_name'];
+            if(!empty($value['Perlengkapan']['name'])){
+                echo $value['Perlengkapan']['name'];
             }else{
                 echo '-';
             }
-        ?>
-    </td>
-    <td>
-        <?php
-                echo $this->Common->customDate($Ksu['tgl_ksu']);
         ?>
     </td>
     <td class="text-right">
         <?php
-            echo $this->Number->currency($Ksu['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+            echo $this->Number->currency($value['KsuDetail']['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+
+            echo $this->Form->hidden('KsuPaymentDetail.total_biaya_klaim.'.$value['KsuDetail']['id'], array(
+                'class' => 'ksu-price-payment',
+                'value' => (!empty($value['KsuDetail']['total_price'])) ? $value['KsuDetail']['total_price'] : 0
+            ));
         ?>
     </td>
     <td class="text-right">
@@ -106,7 +108,7 @@
 }
 ?>
 <tr id="field-grand-total-ttuj">
-    <td align="right" colspan="7"><?php echo __('Grand Total')?></td>
+    <td align="right" colspan="6"><?php echo __('Grand Total')?></td>
     <td align="right" id="grand-total-payment">
         <?php 
             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
@@ -115,7 +117,7 @@
     <td>&nbsp;</td>
 </tr>
 <!-- <tr class="additional-input-invoice" id="ppn-grand-total-invoice">
-    <td align="right" colspan="7" class="relative">
+    <td align="right" colspan="6" class="relative">
         <?php 
             echo $this->Form->input('KsuPayment.ppn', array(
                 'type' => 'text',
@@ -136,7 +138,7 @@
     <td>&nbsp;</td>
 </tr>
 <tr class="additional-input-invoice" id="pph-grand-total-invoice">
-    <td align="right" colspan="7" class="relative">
+    <td align="right" colspan="6" class="relative">
         <?php 
                 echo $this->Form->input('KsuPayment.pph', array(
                     'type' => 'text',
@@ -157,7 +159,7 @@
     <td>&nbsp;</td>
 </tr>
 <tr id="grand-total-invoice-payemnt">
-    <td align="right" colspan="7"><?php echo __('Grand Total')?></td>
+    <td align="right" colspan="6"><?php echo __('Grand Total')?></td>
     <td align="right" id="all-total-invoice">
         <?php 
             if($pph > 0){

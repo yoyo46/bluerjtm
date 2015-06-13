@@ -62,9 +62,10 @@
 		<table class="table table-hover">
 			<thead class="header-KsuPayment-print">
 				<tr>
-					<th width="30%" class="text-center"><?php echo __('No KSU');?></th>
-					<th width="30%" class="text-center"><?php echo __('Tgl KSU');?></th>
-					<th width="30%" class="text-right"><?php echo __('Jumlah Pembayaran.');?></th>
+					<th width="20%" class="text-center"><?php echo __('No KSU');?></th>
+					<th width="20%" class="text-center"><?php echo __('Tgl KSU');?></th>
+					<th width="20%" class="text-center"><?php echo __('Perlengkapan');?></th>
+					<th width="20%" class="text-right"><?php echo __('Jumlah Pembayaran.');?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -75,21 +76,38 @@
 
 							foreach ($KsuPayment['KsuPaymentDetail'] as $key => $value) {
 								$grandTotal += $value['total_biaya_klaim'];
-								$colom = $this->Html->tag('td', $value['Ksu']['no_doc'], array(
+
+								$link_lku = '-';
+								if(!empty($value['Ksu']['no_doc'])){
+									$link_lku = $this->Html->link($value['Ksu']['no_doc'], array(
+										'controller' => 'lkus',
+										'action' => 'detail_ksu',
+										$value['Ksu']['id']
+									), array(
+										'target' => 'blank'
+									));
+								}
+
+								$colom = $this->Html->tag('td', $link_lku, array(
 									'class' => 'text-center'
 								));
-								$colom .= $this->Html->tag('td', $this->Common->customDate($value['Ksu']['tgl_ksu']), array(
+								$colom .= $this->Html->tag('td', (!empty($value['Ksu']['tgl_ksu']) ? $this->Common->customDate($value['Ksu']['tgl_ksu']) : '-'), array(
 									'class' => 'text-center'
 								));
+
+								$colom .= $this->Html->tag('td', (!empty($value['Perlengkapan']['name']) ? $value['Perlengkapan']['name'] : ' - '), array(
+									'class' => 'text-center'
+								));
+								
 								$colom .= $this->Html->tag('td', $this->Number->currency($value['total_biaya_klaim'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
-									'class' => 'text-right'
+									'class' => 'text-right',
 									));
 
 								echo $this->Html->tag('tr', $colom);
 							}
 
 							$colom = $this->Html->tag('td', __('Total '), array(
-								'colspan' => 2,
+								'colspan' => 3,
 								'align' => 'right'
 							));
 							$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
@@ -101,7 +119,7 @@
 							));
 						}else{
 							$colom = $this->Html->tag('td', __('Data tidak ditemukan.'), array(
-								'colspan' => 2
+								'colspan' => 4
 							));
 
 							echo $this->Html->tag('tr', $colom);

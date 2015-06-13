@@ -25,9 +25,9 @@ class KsuPaymentDetail extends AppModel {
 	);
 
     var $belongsTo = array(
-        'Ksu' => array(
-            'className' => 'Ksu',
-            'foreignKey' => 'ksu_id',
+        'KsuDetail' => array(
+            'className' => 'KsuDetail',
+            'foreignKey' => 'ksu_detail_id',
         ),
         'KsuPayment' => array(
             'className' => 'KsuPayment',

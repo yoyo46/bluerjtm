@@ -60,7 +60,7 @@ class Ksu extends AppModel {
         return $result;
     }
 
-	function getData($find, $options = false, $is_merge = false){
+	function getData($find, $options = false, $is_merge = true){
         $default_options = array(
             'conditions'=> array(
                 'Ksu.status' => 1,
@@ -70,7 +70,12 @@ class Ksu extends AppModel {
                 'Ksu.id' => 'DESC',
             ),
             'contain' => array(
-                'KsuDetail'
+                'KsuDetail' => array(
+                    'order'=> array(
+                        'KsuDetail.id' => 'ASC',
+                        'KsuDetail.created' => 'ASC',
+                    ),
+                )
             ),
             'fields' => array(),
         );

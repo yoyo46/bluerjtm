@@ -1,9 +1,9 @@
 <?php
     $total = $key = 0;
 
-    if(!empty($lkus)){
-        foreach ($lkus as $key => $value) {
-            $Lku = $value['Lku'];
+    if(!empty($lku_details)){
+        foreach ($lku_details as $key => $value) {
+            $Lku = $value['LkuDetail'];
 ?>
 <tr class="child child-<?php echo $Lku['id'];?>" rel="<?php echo $Lku['id'];?>">
     <td>
@@ -17,16 +17,27 @@
             //     'value' => (isset($this->request->data['LkuPaymentDetail'][$key]['lku_id']) && !empty($this->request->data['LkuPaymentDetail'][$key]['lku_id'])) ? $this->request->data['LkuPaymentDetail'][$key]['lku_id'] : ''
             // ));
 
-            printf('%s (%s)', date('d F Y', strtotime($value['Ttuj']['ttuj_date'])), $value['Ttuj']['no_ttuj']);
+            // printf('%s (%s)', date('d F Y', strtotime($value['Ttuj']['ttuj_date'])), $value['Ttuj']['no_ttuj']);
+            printf('%s (%s)', date('d F Y', strtotime($value['Lku']['tgl_lku'])), $value['Lku']['no_doc']);
 
-            $keyd = (isset($this->request->data['LkuPaymentDetail'][$Lku['id']]['lku_id']) && !empty($this->request->data['LkuPaymentDetail'][$Lku['id']]['lku_id'])) ? $this->request->data['LkuPaymentDetail'][$Lku['id']]['lku_id'] : '';
-            echo $this->Form->input('LkuPaymentDetail.lku_id.'.$keyd, array(
+            $keyd = (isset($this->request->data['LkuPaymentDetail'][$Lku['id']]['lku_detail_id']) && !empty($this->request->data['LkuPaymentDetail'][$Lku['id']]['lku_detail_id'])) ? $this->request->data['LkuPaymentDetail'][$Lku['id']]['lku_detail_id'] : '';
+
+            echo $this->Form->input('LkuPaymentDetail.lku_detail_id.'.$keyd, array(
                 'type' => 'hidden',
                 'value' => $keyd
             ));
         ?>
     </td>
-    <td class="data-nopol">
+    <td class="data-no-ttuj">
+        <?php
+            if(!empty($value['Ttuj']['no_ttuj'])){
+                echo $value['Ttuj']['no_ttuj'];
+            }else{
+                echo '-';
+            }
+        ?>
+    </td>
+    <td class="data-from-city">
         <?php
             if(!empty($value['Ttuj']['nopol'])){
                 echo $value['Ttuj']['nopol'];
@@ -35,19 +46,10 @@
             }
         ?>
     </td>
-    <td class="data-from-city">
-        <?php
-            if(!empty($value['Ttuj']['from_city_name'])){
-                echo $value['Ttuj']['from_city_name'];
-            }else{
-                echo '-';
-            }
-        ?>
-    </td>
     <td class="data-to-city">
         <?php
-            if(!empty($value['Ttuj']['to_city_name'])){
-                echo $value['Ttuj']['to_city_name'];
+            if(!empty($value['TipeMotor']['name'])){
+                echo $value['TipeMotor']['name'];
             }else{
                 echo '-';
             }
@@ -55,12 +57,21 @@
     </td>
     <td>
         <?php
-                echo $this->Common->customDate($Lku['tgl_lku']);
+            if(!empty($value['PartsMotor']['name'])){
+                echo $value['PartsMotor']['name'];
+            }else{
+                echo '-';
+            }
         ?>
     </td>
     <td class="text-right">
         <?php
-            echo $this->Number->currency($Lku['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+            echo $this->Number->currency($value['LkuDetail']['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+
+            echo $this->Form->hidden('LkuPaymentDetail.total_biaya_klaim.'.$value['LkuDetail']['id'], array(
+                'class' => 'lku-price-payment',
+                'value' => (!empty($value['LkuDetail']['total_price'])) ? $value['LkuDetail']['total_price'] : 0
+            ));
         ?>
     </td>
     <td class="text-right">

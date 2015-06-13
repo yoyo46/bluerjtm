@@ -233,6 +233,8 @@ class AjaxController extends AppController {
 			'Lku.complete_paid' => 0
 			// 'Lku.type_lku' => $type_lku
 		);
+
+		$lku_details = array();
 		if(!empty($ttuj_id)){
 			if(!empty($this->request->data['Lku']['date_from']) || !empty($this->request->data['Lku']['date_to'])){
 				if(!empty($this->request->data['Lku']['date_from'])){
@@ -246,25 +248,68 @@ class AjaxController extends AppController {
 			$lkus = $this->Lku->getData('all', array(
 				'conditions' => $lku_condition,
 				'contain' => array(
-					'Ttuj'
+					'Ttuj',
+					'LkuDetail' => array(
+						'conditions' => array(
+							'complete_paid' => 0
+						)
+					)
 				)
 			));
-		}
 
-		if(!empty($lkus)){
+			if(!empty($lkus)){
+				$i = 0;
+				foreach ($lkus as $key => $value) {
+					if(!empty($value['LkuDetail'])){
+						foreach ($value['LkuDetail'] as $key => $val) {
+							$lku_details[$i++] = array(
+								'LkuDetail' => $val,
+								'Lku' => !empty($value['Lku']) ? $value['Lku'] : array(),
+								'Ttuj' => !empty($value['Ttuj']) ? $value['Ttuj'] : array()
+							);
+						}
+					}
+				}
+			}
+		}
+		
+		if(!empty($lku_details)){
 			$this->loadModel('LkuPaymentDetail');
-			foreach ($lkus as $key => $value) {
+			$this->loadModel('PartsMotor');
+			$this->loadModel('TipeMotor');
+
+			foreach ($lku_details as $key => $value) {
 				$lku_has_paid = $this->LkuPaymentDetail->getData('first', array(
 					'conditions' => array(
-						'LkuPaymentDetail.lku_id' => $value['Lku']['id'],
+						'LkuPaymentDetail.lku_detail_id' => $value['LkuDetail']['id'],
 						'LkuPaymentDetail.status' => 1
 					),
 					'fields' => array(
 						'SUM(LkuPaymentDetail.total_biaya_klaim) as lku_has_paid'
-					)
+					),
 				));
 
-				 $lkus[$key]['lku_has_paid'] = $lku_has_paid[0]['lku_has_paid'];
+				$lku_details[$key]['LkuDetail']['lku_has_paid'] = $lku_has_paid[0]['lku_has_paid'];
+
+				$part_motor = array();
+				if(!empty($value['LkuDetail']['part_motor_id'])){
+					$part_motor = $this->PartsMotor->getData('first', array(
+						'conditions' => array(
+							'PartsMotor.id' => $value['LkuDetail']['part_motor_id']
+						)
+					));
+				}
+				$lku_details[$key]['LkuDetail']['PartsMotor'] = !empty($part_motor['PartsMotor']) ? $part_motor['PartsMotor'] : array();
+
+				$tipe_motor = array();
+				if(!empty($value['LkuDetail']['tipe_motor_id'])){
+					$tipe_motor = $this->TipeMotor->getData('first', array(
+						'conditions' => array(
+							'TipeMotor.id' => $value['LkuDetail']['tipe_motor_id']
+						)
+					));
+				}
+				$lku_details[$key]['LkuDetail']['TipeMotor'] = !empty($tipe_motor['TipeMotor']) ? $tipe_motor['TipeMotor'] : array();
 			}
 		}
 		
@@ -272,7 +317,7 @@ class AjaxController extends AppController {
 		$data_change = 'browse-invoice';
 		$data_action = 'getTtujCustomerInfo';
 		$title = 'Pembayaran LKU Customer';
-		$this->set(compact('customer_id', 'data_change', 'data_action', 'title'));
+		$this->set(compact('customer_id', 'data_change', 'data_action', 'title', 'lku_details'));
 	}
 
 	function getTtujCustomerInfoKsu($customer_id = false){
@@ -298,6 +343,8 @@ class AjaxController extends AppController {
 			'Ksu.complete_paid' => 0,
 			'Ksu.kekurangan_atpm' => 0
 		);
+
+		$ksu_details = array();
 		if(!empty($ttuj_id)){
 			if(!empty($this->request->data['Ksu']['date_from']) || !empty($this->request->data['Ksu']['date_to'])){
 				if(!empty($this->request->data['Ksu']['date_from'])){
@@ -311,33 +358,65 @@ class AjaxController extends AppController {
 			$ksus = $this->Ksu->getData('all', array(
 				'conditions' => $ksu_condition,
 				'contain' => array(
-					'Ttuj'
+					'Ttuj',
+					'KsuDetail' => array(
+						'conditions' => array(
+							'complete_paid' => 0
+						)
+					)
 				)
 			));
+			
+			if(!empty($ksus)){
+				$i = 0;
+				foreach ($ksus as $key => $value) {
+					if(!empty($value['KsuDetail'])){
+						foreach ($value['KsuDetail'] as $key => $val) {
+							$ksu_details[$i++] = array(
+								'KsuDetail' => $val,
+								'Ksu' => !empty($value['Ksu']) ? $value['Ksu'] : array(),
+								'Ttuj' => !empty($value['Ttuj']) ? $value['Ttuj'] : array()
+							);
+						}
+					}
+				}
+			}
 		}
-
-		if(!empty($ksus)){
+		
+		if(!empty($ksu_details)){
 			$this->loadModel('KsuPaymentDetail');
-			foreach ($ksus as $key => $value) {
+			$this->loadModel('Perlengkapan');
+
+			foreach ($ksu_details as $key => $value) {
 				$ksu_has_paid = $this->KsuPaymentDetail->getData('first', array(
 					'conditions' => array(
-						'KsuPaymentDetail.ksu_id' => $value['Ksu']['id'],
+						'KsuPaymentDetail.ksu_detail_id' => $value['KsuDetail']['id'],
 						'KsuPaymentDetail.status' => 1
 					),
 					'fields' => array(
 						'SUM(KsuPaymentDetail.total_biaya_klaim) as ksu_has_paid'
-					)
+					),
 				));
-				
-				$ksus[$key]['ksu_has_paid'] = $ksu_has_paid[0]['ksu_has_paid'];
+
+				$ksu_details[$key]['KsuDetail']['ksu_has_paid'] = $ksu_has_paid[0]['ksu_has_paid'];
+
+				$Perlengkapan = array();
+				if(!empty($value['KsuDetail']['perlengkapan_id'])){
+					$Perlengkapan = $this->Perlengkapan->getData('first', array(
+						'conditions' => array(
+							'Perlengkapan.id' => $value['KsuDetail']['perlengkapan_id']
+						)
+					));
+				}
+				$ksu_details[$key]['KsuDetail']['Perlengkapan'] = !empty($Perlengkapan['Perlengkapan']) ? $Perlengkapan['Perlengkapan'] : array();
 			}
 		}
 		
 		$this->set('ksus', $ksus);
 		$data_change = 'browse-invoice';
-		$data_action = 'getTtujCustomerInfoKsu';
-		$title = 'Pembayaran KSU Customer';
-		$this->set(compact('customer_id', 'data_change', 'data_action', 'title'));
+		$data_action = 'getTtujCustomerInfo';
+		$title = 'Pembayaran LKU Customer';
+		$this->set(compact('customer_id', 'data_change', 'data_action', 'title', 'ksu_details'));
 	}
 
 	function getTtujInfoLku($lku_id){

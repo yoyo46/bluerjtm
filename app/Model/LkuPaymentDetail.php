@@ -7,7 +7,7 @@ class LkuPaymentDetail extends AppModel {
                 'rule' => array('notempty'),
             ),
         ),
-        'lku_id' => array(
+        'lku_detail_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
             ),
@@ -20,9 +20,9 @@ class LkuPaymentDetail extends AppModel {
 	);
 
     var $belongsTo = array(
-        'Lku' => array(
-            'className' => 'Lku',
-            'foreignKey' => 'lku_id',
+        'LkuDetail' => array(
+            'className' => 'LkuDetail',
+            'foreignKey' => 'lku_detail_id',
         ),
         'LkuPayment' => array(
             'className' => 'LkuPayment',
