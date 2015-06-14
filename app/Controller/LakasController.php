@@ -60,10 +60,35 @@ class LakasController extends AppController {
                     $this->request->data['Laka']['nopol'] = $nopol;
                     $conditions['Laka.truck_id'] = $truckSearch;
                 }
+
+                if(!empty($refine['date'])){
+                    $dateStr = urldecode($refine['date']);
+                    $date = explode('-', $dateStr);
+
+                    if( !empty($date) ) {
+                        $date[0] = urldecode($date[0]);
+                        $date[1] = urldecode($date[1]);
+                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                        $dateFrom = $this->MkCommon->getDate($date[0]);
+                        $dateTo = $this->MkCommon->getDate($date[1]);
+                        $conditions['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') >='] = $dateFrom;
+                        $conditions['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') <='] = $dateTo;
+                    }
+                    $this->request->data['Laka']['date'] = $dateStr;
+                }
+
+                if(!empty($refine['no_ttuj'])){
+                    $no_ttuj = urldecode($refine['no_ttuj']);
+                    $this->request->data['Ttuj']['no_ttuj'] = $no_ttuj;
+                    $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
+                }
             }
 
             $this->paginate = $this->Laka->getData('paginate', array(
-                'conditions' => $conditions
+                'conditions' => $conditions,
+                'contain' => array(
+                    'Ttuj'
+                )
             ));
             $Lakas = $this->paginate('Laka');
 

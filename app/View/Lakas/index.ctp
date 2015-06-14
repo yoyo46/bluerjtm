@@ -31,6 +31,10 @@
         <table class="table table-hover">
             <tr>
                 <?php 
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.no_ttuj', __('No TTUJ'), array(
+                            'escape' => false
+                        )));
+
                         echo $this->Html->tag('th', $this->Paginator->sort('Laka.driver_name', __('Supir'), array(
                             'escape' => false
                         )));
@@ -66,6 +70,15 @@
                             $id = $value['Laka']['id'];
             ?>
             <tr>
+                <td>
+                    <?php 
+                        if(!empty($value['Ttuj']['no_ttuj'])){
+                            echo $value['Ttuj']['no_ttuj'];
+                        }else{
+                            echo ' - ';
+                        }
+                    ?>
+                </td>
                 <td>
                     <?php 
                         if(!empty($value['Laka']['driver_name'])){

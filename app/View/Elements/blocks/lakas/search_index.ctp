@@ -49,6 +49,15 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('date',array(
+                                'label'=> __('Tanggal'),
+                                'class'=>'form-control date-range',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
@@ -61,6 +70,17 @@
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',
+                            ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Ttuj.no_ttuj',array(
+                                'label'=> __('No TTUJ'),
+                                'class'=>'form-control',
+                                'required' => false,
                             ));
                     ?>
                 </div>
