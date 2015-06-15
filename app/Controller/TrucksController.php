@@ -134,6 +134,7 @@ class TrucksController extends AppController {
                     $data = urldecode($refine['category']);
                     $conditions['TruckCategory.name LIKE'] = '%'.$data.'%';
                     $this->request->data['Truck']['category'] = $data;
+                    $contain[] = 'TruckCategory';
                 }
             }
 
