@@ -787,8 +787,8 @@ class AjaxController extends AppController {
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
 				'Ttuj.id' => $ttuj_id,
-                'Ttuj.is_draft' => 0,
-                'Ttuj.status' => 1,
+                // 'Ttuj.is_draft' => 0,
+                // 'Ttuj.status' => 1,
 			),
 		), false);
 
