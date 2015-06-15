@@ -3314,6 +3314,19 @@ class RevenuesController extends AppController {
                 if( !empty($this->request->data['RevenueDetail']) ) {
                     foreach ($this->request->data['RevenueDetail'] as $key => $value) {
                         $value = $this->GroupMotor->getMerge( $value, $value['RevenueDetail']['group_motor_id'] );
+                        $jenis_unit = !empty($this->request->data['Revenue']['revenue_tarif_type'])?$this->request->data['Revenue']['revenue_tarif_type']:'per_unit';
+                        $total_price_unit = !empty($value[0]['total_price_unit'])?$value[0]['total_price_unit']:0;
+
+                        if( $value['RevenueDetail']['payment_type'] == 'per_truck' ) {
+                            if( empty($value['RevenueDetail']['is_charge']) && $jenis_unit == 'per_truck' ) {
+                                $tarif = $data_local['Revenue']['tarif_per_truck'];
+                            } else {
+                                $tarif = 0;
+                            }
+                        } else {
+                            $tarif = $value['RevenueDetail']['price_unit'];
+                        }
+
                         $data_revenue_detail[$key] = array(
                             'TtujTipeMotor' => array(
                                 'qty' => !empty($value[0]['qty_unit'])?$value[0]['qty_unit']:0,
@@ -3325,7 +3338,7 @@ class RevenuesController extends AppController {
                                 'to_city_name' => !empty($value['City']['name'])?$value['City']['name']:'',
                                 'price_unit' => array(
                                     'jenis_unit' => $value['RevenueDetail']['payment_type'],
-                                    'tarif' => ( $value['RevenueDetail']['payment_type'] == 'per_truck' && empty($value['RevenueDetail']['is_charge']) )?$data_local['Revenue']['tarif_per_truck']:$value['RevenueDetail']['price_unit'],
+                                    'tarif' => $tarif,
                                     'tarif_angkutan_id' => $value['RevenueDetail']['tarif_angkutan_id'],
                                     'tarif_angkutan_type' => $value['RevenueDetail']['tarif_angkutan_type'],
                                 ),

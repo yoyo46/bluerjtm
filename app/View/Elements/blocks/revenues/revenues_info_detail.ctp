@@ -40,6 +40,9 @@
                             $totalQty += $qty;
                             $tarif_angkutan_type = !empty($detail['RevenueDetail']['price_unit']['tarif_angkutan_type'])?$detail['RevenueDetail']['price_unit']['tarif_angkutan_type']:0;
                             $is_charge = !empty($detail['RevenueDetail']['is_charge'])?$detail['RevenueDetail']['is_charge']:false;
+                            $jenis_unit_angkutan = !empty($detail['RevenueDetail']['price_unit']['jenis_unit'])?$detail['RevenueDetail']['price_unit']['jenis_unit']:0;
+                            $flagShowPrice = false;
+                            $total_price_unit = !empty($detail['RevenueDetail']['total_price_unit'])?$detail['RevenueDetail']['total_price_unit']:0;
 
                             if( !empty($detail['RevenueDetail']['price_unit']) ){
                                 $price = $detail['RevenueDetail']['price_unit'];
@@ -55,13 +58,7 @@
                                 $price = '';
                             }
 
-                            if( $jenis_unit != 'per_truck' ) {
-                                $jenis_unit = !empty($detail['RevenueDetail']['payment_type'])?$detail['RevenueDetail']['payment_type']:false;
-                            }
-
-                            $flagShowPrice = false;
-
-                            if( (empty($tarifTruck) && $jenis_unit != 'per_truck') || ( $tarif_angkutan_type != 'angkut' && !empty($is_charge) ) ) {
+                            if( ( $jenis_unit_angkutan != 'per_truck' && ( $tarif_angkutan_type != 'angkut' && !empty($is_charge) ) ) || $jenis_unit == 'per_unit' ) {
                                 $flagShowPrice = true;
                             }
                 ?>
@@ -138,7 +135,7 @@
                                     'label' => false,
                                     'class' => 'jenis_unit',
                                     'required' => false,
-                                    'value' =>  !empty($jenis_unit) ? $jenis_unit : 'per_unit'
+                                    'value' =>  !empty($jenis_unit_angkutan) ? $jenis_unit_angkutan : 'per_unit'
                                 ));
                         ?>
                     </td>
@@ -161,19 +158,26 @@
                     </td>
                     <td class="price-data text-right">
                         <?php 
-                                if( $flagShowPrice ) {
-                                    if( is_array($price) ){
-                                        $price = $price['tarif'];
+                                $spanPrice = '';
+                                
+                                if( $jenis_unit_angkutan != 'per_truck' ) {
+                                    if( empty($is_charge) || $tarif_angkutan_type != 'angkut' ) {
+                                        if(is_array($price)){
+                                            $price = $price['tarif'];
+                                            $spanPrice = $this->Number->format($price, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                                        }else{
+                                            $spanPrice = $price;
+                                        }
+                                    } else if( is_string($price) ) {
+                                        $spanPrice = $price;
                                     }
-
-                                    if( is_numeric($price) ) {
-                                        echo $this->Number->format($price, Configure::read('__Site.config_currency_code'), array('places' => 0));
-                                    } else {
-                                        echo $price;
-                                    }
+                                } else if( $jenis_unit_angkutan == 'per_truck' && $jenis_unit == 'per_unit' ) {
+                                    $price = $total_price_unit;
                                 } else {
                                     $price = '';
                                 }
+
+                                echo $this->Html->tag('span', $spanPrice);
 
                                 echo $this->Form->hidden('RevenueDetail.price_unit.', array(
                                     'type' => 'text',
@@ -190,17 +194,21 @@
 
                                 if( $flagShowPrice ) {
                                     if(is_array($price)){
-                                        if(!empty($price) && !empty($qty) && $jenis_unit == 'per_unit'){
+                                        if(!empty($price) && !empty($qty) && $jenis_unit_angkutan == 'per_unit'){
                                             $value_price = $price['tarif'] * $qty;
-                                        }else if(!empty($price) && !empty($qty) && $jenis_unit == 'per_truck'){
+                                        }else if(!empty($price) && !empty($qty) && $jenis_unit_angkutan == 'per_truck'){
                                             $value_price = $price['tarif'];
                                         }
                                     } else {
-                                        $value_price = $price * $qty;
+                                        if( $jenis_unit_angkutan == 'per_truck' ) {
+                                            $value_price = $price;
+                                        } else {
+                                            $value_price = $price * $qty;
+                                        }
                                     }
                                     $total += $value_price;
-                                } else if ( !empty($detail['RevenueDetail']['is_charge']) && !empty($detail['RevenueDetail']['total_price_unit']) ) {
-                                    $value_price = $detail['RevenueDetail']['total_price_unit'];
+                                } else if ( !empty($detail['RevenueDetail']['is_charge']) && !empty($total_price_unit) ) {
+                                    $value_price = $total_price_unit;
                                 }
                                 
                                 echo $this->Html->tag('span', $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(

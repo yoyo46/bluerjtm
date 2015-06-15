@@ -104,12 +104,12 @@
             <tr>
                 <td>
                     <?php
-                        if($value['Revenue']['transaction_status'] != 'invoiced'){
-                            echo $this->Form->checkbox('revenue_id.', array(
-                                'class' => 'check-option',
-                                'value' => $id
-                            ));
-                        }
+                            if( !in_array($value['Revenue']['transaction_status'], array( 'invoiced', 'half_invoiced' )) ){
+                                echo $this->Form->checkbox('revenue_id.', array(
+                                    'class' => 'check-option',
+                                    'value' => $id
+                                ));
+                            }
                     ?>
                 </td>
                 <td><?php echo str_pad($value['Revenue']['id'], 5, '0', STR_PAD_LEFT);?></td>
@@ -152,7 +152,7 @@
                                 ));
                             }
                             
-                            if($value['Revenue']['transaction_status'] != 'invoiced'){
+                            if( !in_array($value['Revenue']['transaction_status'], array( 'invoiced', 'half_invoiced' )) ){
                                 if( in_array('delete_revenues', $allowModule) ) {
                                     echo $this->Html->link(__('Hapus'), array(
                                         'controller' => 'revenues',
