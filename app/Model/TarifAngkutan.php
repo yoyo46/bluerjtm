@@ -171,28 +171,49 @@ class TarifAngkutan extends AppModel {
             'TarifAngkutan.from_city_id' => $this->data['TarifAngkutan']['from_city_id'],
             'TarifAngkutan.to_city_id' => $this->data['TarifAngkutan']['to_city_id'],
             // 'TarifAngkutan.jenis_unit' => $this->data['TarifAngkutan']['jenis_unit'],
-            'TarifAngkutan.capacity' => $this->data['TarifAngkutan']['capacity'],
+            // 'TarifAngkutan.capacity' => $this->data['TarifAngkutan']['capacity'],
             'TarifAngkutan.type' => $this->data['TarifAngkutan']['type'],
             'TarifAngkutan.status' => 1,
         );
-
-        if( !empty($this->data['TarifAngkutan']['id']) ) {
-            $conditions['TarifAngkutan.id <>'] = $this->data['TarifAngkutan']['id'];
-        }
-
-        if( !empty($this->data['TarifAngkutan']['jenis_unit']) && $this->data['TarifAngkutan']['jenis_unit'] == 'per_unit' ) {
-            $conditions['TarifAngkutan.group_motor_id'] = $this->data['TarifAngkutan']['group_motor_id'];
-        }
-
         $tarifAngkutan = $this->find('first', array(
             'conditions' => $conditions,
         ));
+        $result = true;
 
-        if( !empty($tarifAngkutan) ) {
-            return false;
-        } else {
-            return true;
+        if( !empty($tarifAngkutan) && !empty($this->data['TarifAngkutan']['jenis_unit']) ) {
+            if( $tarifAngkutan['TarifAngkutan']['jenis_unit'] != $this->data['TarifAngkutan']['jenis_unit'] ) {
+                $result = false;
+            } else {
+                if( !empty($this->data['TarifAngkutan']['id']) ) {
+                    $conditions['TarifAngkutan.id <>'] = $this->data['TarifAngkutan']['id'];
+                }
+                
+                if( $tarifAngkutan['TarifAngkutan']['jenis_unit'] == 'per_truck' ) {
+                    $conditions['TarifAngkutan.capacity'] = $this->data['TarifAngkutan']['capacity'];
+
+                    $tarifAngkutan = $this->find('first', array(
+                        'conditions' => $conditions,
+                    ));
+
+                    if( !empty($tarifAngkutan) ) {
+                        $result = false;
+                    }
+                } else {
+                    $group_motor_id = !empty($this->data['TarifAngkutan']['group_motor_id'])?$this->data['TarifAngkutan']['group_motor_id']:0;
+                    $conditions['TarifAngkutan.group_motor_id'] = $group_motor_id;
+
+                    $tarifAngkutan = $this->find('first', array(
+                        'conditions' => $conditions,
+                    ));
+
+                    if( !empty($tarifAngkutan) ) {
+                        $result = false;
+                    }
+                }
+            }
         }
+
+        return $result;
     }
 }
 ?>
