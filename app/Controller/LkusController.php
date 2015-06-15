@@ -755,7 +755,7 @@ class LkusController extends AppController {
                     $text .= ', mohon isi field pembayaran';
                 }
                 if(!$validate_price_pay){
-                    $text .= ', Total Pembayaran tidak boleh lebih besar dari total LKU';
+                    $text .= ', Total Pembayaran tidak boleh lebih besar dari total pembayaran per unit LKU';
                 }
 
                 $this->MkCommon->setCustomFlash($text, 'error');
@@ -2478,7 +2478,7 @@ class LkusController extends AppController {
                 ));
 
                 if(!empty($lku_detail_id)){
-                    $lku_has_paid = $this->LkuPayment->LkuPaymentDetail->getData('all', array(
+                    $lku_has_paid = $this->LkuPayment->LkuPaymentDetail->getData('first', array(
                         'conditions' => array(
                             'LkuPaymentDetail.lku_detail_id' => $lku_detail_id,
                             'LkuPaymentDetail.status' => 1,
@@ -2502,7 +2502,7 @@ class LkusController extends AppController {
                     }else{
                         $this->Lku->id = $value['Lku']['id'];
                         $this->Lku->set(array(
-                            'paid' => 1,
+                            'paid' => !empty($invoice_paid) ? 1 : 0,
                             'complete_paid' => 0
                         ));
                         $this->Lku->save();
@@ -2559,7 +2559,7 @@ class LkusController extends AppController {
                     }else{
                         $this->Ksu->id = $value['Ksu']['id'];
                         $this->Ksu->set(array(
-                            'paid' => 1,
+                            'paid' => !empty($invoice_paid) ? 1 : 0,
                             'complete_paid' => 0
                         ));
                         $this->Ksu->save();

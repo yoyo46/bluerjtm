@@ -2478,6 +2478,7 @@ var check_all_checkbox = function(){
                 delete_custom_field($('.child-'+rel_id+' .delete-custom-field'));
 
                 invoice_price_payment();
+                getTotalInvoicePayment();
             }
         }else{
             $('.child-'+rel_id).remove();
