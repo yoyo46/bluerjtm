@@ -20,6 +20,16 @@
 </div>
 <div class="form-group">
 	<?php 
+			echo $this->Form->input('DriverPenganti.driver_name',array(
+				'label'=> __('Nama Supir Pengganti'), 
+				'class'=>'form-control',
+				'required' => false,
+				'readonly' => true
+			));
+	?>
+</div>
+<div class="form-group">
+	<?php 
 			echo $this->Form->label('Ttuj.from_city_name', __('Tujuan Dari'));
 	?>
 	<div class="row">

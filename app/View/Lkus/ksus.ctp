@@ -84,7 +84,7 @@
                             $customer = $value['Customer']['customer_name_code'];
                         }
                         echo $this->Html->tag('td', $customer);
-                        echo $this->Html->tag('td', date('d M Y', strtotime($value['Ksu']['tgl_ksu'])));
+                        echo $this->Html->tag('td', date('d/m/Y', strtotime($value['Ksu']['tgl_ksu'])));
                         echo $this->Html->tag('td', $this->Number->format($value['Ksu']['total_klaim']));
                         echo $this->Html->tag('td', $this->Number->currency($value['Ksu']['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0)) );
 
