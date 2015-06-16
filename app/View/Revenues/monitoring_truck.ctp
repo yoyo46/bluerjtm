@@ -1,10 +1,11 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
-        $addStyle = 'width: 100%;height: 550px;';
+        $addStyle = 'min-width: 980px;';
         $tdStyle = '';
         $border = 0;
         $headerRowspan = false;
-        $addClass = 'easyui-datagrid';
+        // $addClass = 'easyui-datagrid';
+        $addClass = '';
 
         echo $this->element('blocks/trucks/search_report_monitoring_truck');
 ?>
@@ -52,14 +53,14 @@
                 <tr>
                     <?php 
                             echo $this->Html->tag('th', __('Truk'), array(
-                                'style' => 'text-align: center;width: 150px;',
+                                'style' => 'text-align: center;width: 100px;display:block;',
                                 'data-options' => 'field:\'nopol\',width:150,sortable:true',
                             ));
                     ?>
-                </tr>
+                <!-- </tr>
             </thead>
             <thead>
-                <tr>
+                <tr> -->
                     <?php
 
                             for ($i=1; $i <= $lastDay; $i++) {
@@ -78,10 +79,11 @@
                         if( !empty($trucks) ) {
                             foreach ($trucks as $key => $truck) {
                                 $nopol = $truck['Truck']['nopol'];
+                                $truck_id = $truck['Truck']['id'];
+
                                 echo '<tr>';
                                 echo $this->Html->tag('td', $nopol, array(
                                     'class' => 'text-center',
-                                    'style' => 'width: 100px;',
                                 ));
                                 $bg = '';
 
@@ -95,14 +97,15 @@
                                     $style = '';
                                     $rit = '';
 
-                                    if( !empty($dataRit[$nopol]['rit'][$thisMonth][$idx]) && count($dataRit[$nopol]['rit'][$thisMonth][$idx]) > 1 ) {
-                                        $rit = count($dataRit[$nopol]['rit'][$thisMonth][$idx]);
+                                    if( !empty($dataRit['Truck-'.$truck_id]['rit'][$thisMonth][$idx]) && count($dataRit['Truck-'.$truck_id]['rit'][$thisMonth][$idx]) > 1 ) {
+                                        $rit = count($dataRit['Truck-'.$truck_id]['rit'][$thisMonth][$idx]);
                                     }
 
-                                    if( !empty($dataTtuj[$nopol][$thisMonth][$idx]) ) {
-                                        foreach ($dataTtuj[$nopol][$thisMonth][$idx] as $key => $data) {
+                                    if( !empty($dataTtuj['Truck-'.$truck_id][$thisMonth][$idx]) ) {
+                                        foreach ($dataTtuj['Truck-'.$truck_id][$thisMonth][$idx] as $key => $data) {
                                             $style = sprintf('background: %s;', $data['color']);
                                             $formTtuj = $this->Html->tag('p', sprintf(__('Berangkat: %s', $data['from_date'])));
+                                            $ttujNopol = $data['NoPol'];
 
                                             if( !empty($data['tglTiba']) ) {
                                                 $formTtuj .= $this->Html->tag('p', sprintf(__('Tiba: %s', $data['tglTiba'])));
@@ -203,15 +206,15 @@
                                             $point[] = $this->Html->tag('div', $this->Html->tag('div', $icon, array(
                                                 'title' => $data['title'].' <span class="pull-right"><a href="javascript:"><i class="popover-close">Tutup</i></a></span>',
                                                 'class' => 'popover-hover-top-click',
-                                                'data-content' => sprintf('%s %s %s %s %s', $this->Html->tag('label', $data['Tujuan']), $driver, $this->Html->tag('p', sprintf(__('Truk: %s', $nopol))), $this->Html->tag('p', sprintf(__('Muatan: %s', $data['Muatan']))), $formTtuj)
+                                                'data-content' => sprintf('%s %s %s %s %s', $this->Html->tag('label', $data['Tujuan']), $driver, $this->Html->tag('p', sprintf(__('Truk: %s', $ttujNopol))), $this->Html->tag('p', sprintf(__('Muatan: %s', $data['Muatan']))), $formTtuj)
                                             )), array(
                                                 'class' => 'text-center',
                                             ));
                                         }
                                     }
 
-                                    if( !empty($dataEvent[$nopol][$thisMonth][sprintf("%02s", $i)]) ) {
-                                        foreach ($dataEvent[$nopol][$thisMonth][sprintf("%02s", $i)] as $key => $event) {
+                                    if( !empty($dataEvent['Truck-'.$truck_id][$thisMonth][sprintf("%02s", $i)]) ) {
+                                        foreach ($dataEvent['Truck-'.$truck_id][$thisMonth][sprintf("%02s", $i)] as $key => $event) {
                                             $title = $event['title'];
                                             $fromDateTime = $this->Html->tag('p', sprintf(__('Tanggal: %s', $event['from_date'])));
                                             $toDateTime = $this->Html->tag('p', sprintf(__('Sampai: %s', $event['to_date'])));
