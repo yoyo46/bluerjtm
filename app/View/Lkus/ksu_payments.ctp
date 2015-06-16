@@ -71,7 +71,7 @@
             <tr>
                 <td><?php echo $value['KsuPayment']['no_doc'];?></td>
                 <?php echo $this->Html->tag('td', date('d M Y', strtotime($value['KsuPayment']['tgl_bayar'])));?>
-                <td><?php echo $value['Customer']['name'];?></td>
+                <td><?php echo $value['Customer']['customer_name_code'];?></td>
                 <td><?php echo $this->Number->currency($value['KsuPayment']['grandtotal'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <?php 
                         if(!empty($value['KsuPayment']['is_void'])){

@@ -48,6 +48,19 @@
                     ?>
                 </div>
             </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php
+                           echo $this->Form->input('Lku.customer_id',array(
+                                'label'=> __('Customer'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Customer'),
+                                'options' => $customers
+                            )); 
+                    ?>
+                </div>
+            </div>
         </div>
         <?php 
                 echo $this->Form->end();

@@ -475,6 +475,8 @@ class LkusController extends AppController {
     function payments() {
         if( in_array('view_lku_payments', $this->allowModule) ) {
             $this->loadModel('LkuPayment');
+            $this->loadModel('Customer');
+
             $this->set('active_menu', 'lku_payments');
             $this->set('sub_module_title', __('Data Pembayaran LKU'));
             $conditions = array();
@@ -486,6 +488,12 @@ class LkusController extends AppController {
                     $no_doc = urldecode($refine['nodoc']);
                     $this->request->data['LkuPayment']['no_doc'] = $no_doc;
                     $conditions['LkuPayment.no_doc LIKE '] = '%'.$no_doc.'%';
+                }
+
+                if(!empty($refine['customer'])){
+                    $customer = urldecode($refine['customer']);
+                    $this->request->data['Lku']['customer_id'] = $customer;
+                    $conditions['LkuPayment.customer_id'] = $customer;
                 }
             }
 
@@ -506,6 +514,16 @@ class LkusController extends AppController {
             }
 
             $this->set('payments', $payments);
+
+            $customers = $this->Customer->getData('list', array(
+                'conditions' => array(
+                    'Customer.status' => 1
+                ),
+                'fields' => array(
+                    'Customer.id', 'Customer.customer_name_code'
+                ),
+            ));
+            $this->set('customers', $customers);
         } else {
             $this->redirect($this->referer());
         }
@@ -1695,6 +1713,8 @@ class LkusController extends AppController {
     function ksu_payments() {
         if( in_array('view_lku_payments', $this->allowModule) ) {
             $this->loadModel('KsuPayment');
+            $this->loadModel('Customer');
+
             $this->set('active_menu', 'ksu_payments');
             $this->set('sub_module_title', __('Data Pembayaran KSU'));
             $conditions = array();
@@ -1706,6 +1726,12 @@ class LkusController extends AppController {
                     $no_doc = urldecode($refine['nodoc']);
                     $this->request->data['KsuPayment']['no_doc'] = $no_doc;
                     $conditions['KsuPayment.no_doc LIKE '] = '%'.$no_doc.'%';
+                }
+
+                if(!empty($refine['customer'])){
+                    $customer = urldecode($refine['customer']);
+                    $this->request->data['Lku']['customer_id'] = $customer;
+                    $conditions['KsuPayment.customer_id'] = $customer;
                 }
             }
 
@@ -1723,6 +1749,16 @@ class LkusController extends AppController {
             }
 
             $this->set('payments', $payments);
+
+            $customers = $this->Customer->getData('list', array(
+                'conditions' => array(
+                    'Customer.status' => 1
+                ),
+                'fields' => array(
+                    'Customer.id', 'Customer.customer_name_code'
+                ),
+            ));
+            $this->set('customers', $customers);
         } else {
             $this->redirect($this->referer());
         }
