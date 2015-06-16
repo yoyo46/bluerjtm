@@ -20,7 +20,7 @@
 					</tr>
 					<tr>
 						<th width="30%"><?php echo __('Tanggal LKU');?></th>
-						<td><?php echo date('Y/m/d', strtotime($Lku['Lku']['tgl_lku']));?></td>
+						<td><?php echo date('d/m/Y', strtotime($Lku['Lku']['tgl_lku']));?></td>
 					</tr>
 					<tr>
 						<th width="30%"><?php echo __('Total Klaim');?></th>

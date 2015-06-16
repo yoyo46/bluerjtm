@@ -85,7 +85,7 @@
                         }
 
                         echo $this->Html->tag('td', $customer);
-                        echo $this->Html->tag('td', date('d M Y', strtotime($value['Lku']['tgl_lku'])));
+                        echo $this->Html->tag('td', date('d/m/Y', strtotime($value['Lku']['tgl_lku'])));
 
                         echo $this->Html->tag('td', $this->Number->format($value['Lku']['total_klaim']));
                         echo $this->Html->tag('td', $this->Number->currency($value['Lku']['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0)) );
