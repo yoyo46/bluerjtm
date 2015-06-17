@@ -92,11 +92,15 @@
 
 					foreach ($val_detail as $key => $value) {
 						$revenue_id = !empty($value['Revenue']['id'])?$value['Revenue']['id']:false;
+						$is_charge = !empty($value['RevenueDetail']['is_charge'])?$value['RevenueDetail']['is_charge']:false;
+						$revenue_temp = sprintf('%s-%s', $revenue_id, $is_charge);
+
 						$nopol = !empty($value['Revenue']['Ttuj']['nopol'])?$value['Revenue']['Ttuj']['nopol']:false;
 						$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
 						$price = 0;
 						$total = 0;
 						$payment_type = !empty($value['RevenueDetail']['payment_type'])?$value['RevenueDetail']['payment_type']:false;
+						$jenis_tarif = !empty($value['Revenue']['revenue_tarif_type'])?$value['Revenue']['revenue_tarif_type']:false;
 
 						if( $payment_type == 'per_truck' ){
 							$priceFormat = '-';
@@ -126,7 +130,7 @@
 							'align' => 'right'
 						));
 
-						if( $payment_type == 'per_truck' ){
+						if( $jenis_tarif == 'per_truck' ){
 							if( !empty($value['RevenueDetail']['total_price_unit']) ) {
 								$total = $value['RevenueDetail']['total_price_unit'];
 
@@ -134,7 +138,7 @@
 									'align' => 'right'
 								));
 							} else {
-								if( $revenue_id != $old_revenue_id ) {
+								if( $revenue_temp != $old_revenue_id ) {
 									$total = !empty($value['Revenue']['tarif_per_truck'])?$value['Revenue']['tarif_per_truck']:0;
 									$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
 										'align' => 'right',
@@ -153,7 +157,7 @@
 						$colom .= $this->Html->tag('td', $this->Common->getNoRef($value['Revenue']['id']));
 						$trData .= $this->Html->tag('tr', $colom);
 						$grandTotal += $total;
-						$old_revenue_id = $revenue_id;
+						$old_revenue_id = sprintf('%s-%s', $revenue_id, $is_charge);
 					}
 
 					echo $trData;

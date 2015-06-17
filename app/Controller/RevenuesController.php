@@ -2429,6 +2429,7 @@ class RevenuesController extends AppController {
                     $value = $this->Laka->getMergeTtuj($value['Ttuj']['id'], $value, array(
                         'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\')' => $currentMonth,
                     ));
+                    $truck_id = $value['Ttuj']['truck_id'];
                     $nopol = $value['Ttuj']['nopol'];
                     $ttujTipeMotor = $this->TtujTipeMotor->find('first', array(
                         'conditions' => array(
@@ -2450,6 +2451,7 @@ class RevenuesController extends AppController {
                         'Driver' => $value['Ttuj']['driver_name'],
                         'DriverChange' => !empty($value['DriverPenganti']['name'])?$value['DriverPenganti']['name']:false,
                         'Muatan' => $totalMuatan,
+                        'NoPol' => $nopol,
                     );
                     $date = date('Y-m-d', strtotime($value['Ttuj']['tgljam_berangkat']));
                     $tglBerangkat = $this->MkCommon->customDate($value['Ttuj']['tgljam_berangkat'], 'Y-m-d H:i:s');
@@ -2564,7 +2566,7 @@ class RevenuesController extends AppController {
                         $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_laka'])?$setting['Setting']['icon_laka']:'';
                         $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                         $dataTtujCalendar['color'] = '#dd545f';
-                        $dataTtuj[$nopol][$this->MkCommon->customDate($lakaDate, 'm')][$this->MkCommon->customDate($lakaDate, 'd')][] = $dataTtujCalendar;
+                        $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($lakaDate, 'm')][$this->MkCommon->customDate($lakaDate, 'd')][] = $dataTtujCalendar;
                         $differentTtuj = true;
                         $inArr[] = $this->MkCommon->customDate($lakaDate, 'd');
                     }
@@ -2573,17 +2575,17 @@ class RevenuesController extends AppController {
                         $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_pool'])?$setting['Setting']['icon_pool']:'';
                         $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                         $dataTtujCalendar['color'] = '#00a65a';
-                        $dataTtuj[$nopol][$this->MkCommon->customDate($tglPool, 'm')][$this->MkCommon->customDate($tglPool, 'd')][] = $dataTtujCalendar;
+                        $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglPool, 'm')][$this->MkCommon->customDate($tglPool, 'd')][] = $dataTtujCalendar;
                         $differentTtuj = true;
                         $inArr[] = $this->MkCommon->customDate($tglPool, 'd');
-                        $dataRit[$nopol]['rit'][$this->MkCommon->customDate($tglPool, 'm')][$this->MkCommon->customDate($tglPool, 'd')][] = $tglPool;
+                        $dataRit['Truck-'.$truck_id]['rit'][$this->MkCommon->customDate($tglPool, 'm')][$this->MkCommon->customDate($tglPool, 'd')][] = $tglPool;
                     }
                     if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglBalik, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglBalik, 'd'), $inArr) ) {
                         $dataTtujCalendar['title'] = __('Balik');
                         $dataTtujCalendar['icon'] = '/img/on-the-way.gif';
                         $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                         $dataTtujCalendar['color'] = '#3d9970';
-                        $dataTtuj[$nopol][$this->MkCommon->customDate($tglBalik, 'm')][$this->MkCommon->customDate($tglBalik, 'd')][] = $dataTtujCalendar;
+                        $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglBalik, 'm')][$this->MkCommon->customDate($tglBalik, 'd')][] = $dataTtujCalendar;
                         $differentTtuj = true;
                         $inArr[] = $this->MkCommon->customDate($tglBalik, 'd');
                     }
@@ -2592,7 +2594,7 @@ class RevenuesController extends AppController {
                         $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_bongkaran'])?$setting['Setting']['icon_bongkaran']:'';
                         $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                         $dataTtujCalendar['color'] = '#d3e3d4';
-                        $dataTtuj[$nopol][$this->MkCommon->customDate($tglBongkaran, 'm')][$this->MkCommon->customDate($tglBongkaran, 'd')][] = $dataTtujCalendar;
+                        $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglBongkaran, 'm')][$this->MkCommon->customDate($tglBongkaran, 'd')][] = $dataTtujCalendar;
                         $differentTtuj = true;
                         $inArr[] = $this->MkCommon->customDate($tglBongkaran, 'd');
                     }
@@ -2601,7 +2603,7 @@ class RevenuesController extends AppController {
                         $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_tiba'])?$setting['Setting']['icon_tiba']:'';
                         $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                         $dataTtujCalendar['color'] = '#f39c12';
-                        $dataTtuj[$nopol][$this->MkCommon->customDate($tglTiba, 'm')][$this->MkCommon->customDate($tglTiba, 'd')][] = $dataTtujCalendar;
+                        $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglTiba, 'm')][$this->MkCommon->customDate($tglTiba, 'd')][] = $dataTtujCalendar;
                         $differentTtuj = true;
                         $inArr[] = $this->MkCommon->customDate($tglTiba, 'd');
                     }
@@ -2614,7 +2616,7 @@ class RevenuesController extends AppController {
                             $currMonthly = date('m', strtotime($date));
                             
                             // if( !empty($value['Laka']['id']) ) {
-                            //     $dataTtuj[$nopol][$currDay][] = array(
+                            //     $dataTtuj['Truck-'.$truck_id][$currDay][] = array(
                             //         'is_laka' => true,
                             //         'from_date' => $this->MkCommon->customDate($value['Laka']['tgl_laka'], 'd/m/Y - H:i'),
                             //         'to_date' => !empty($value['Laka']['completed_date'])?$this->MkCommon->customDate($value['Laka']['completed_date'], 'd/m/Y - H:i'):'-',
@@ -2640,7 +2642,7 @@ class RevenuesController extends AppController {
                                 } else if( !empty($tglPool) && $this->MkCommon->customDate($tglPool, 'Y-m-d') <= $date ) {
                                     $dataTtujCalendar['color'] = '#00a65a';
                                     $icon = !empty($setting['Setting']['icon_pool'])?$setting['Setting']['icon_pool']:'';
-                                    $dataRit[$nopol]['rit'][$currMonthly][$currDay][] = $tglPool;
+                                    $dataRit['Truck-'.$truck_id]['rit'][$currMonthly][$currDay][] = $tglPool;
                                 } else if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m-d') <= $date ) {
                                     $dataTtujCalendar['color'] = '#3d9970';
                                     $icon = !empty($setting['Setting']['icon_balik'])?$setting['Setting']['icon_balik']:'';
@@ -2674,7 +2676,7 @@ class RevenuesController extends AppController {
                                 }
 
                                 $dataTtujCalendar['iconPopup'] = $popIcon;
-                                $dataTtuj[$nopol][$currMonthly][$currDay][] = $dataTtujCalendar;
+                                $dataTtuj['Truck-'.$truck_id][$currMonthly][$currDay][] = $dataTtujCalendar;
                             }
 
                             $date = date ("Y-m-d", strtotime("+1 day", strtotime($date)));
@@ -2695,7 +2697,9 @@ class RevenuesController extends AppController {
                     while (strtotime($date) <= strtotime($end_date)) {
                         if( date('Y-m', strtotime($date)) == $currentMonth ) {
                             $toDate = date('Y-m-d', strtotime($event['CalendarEvent']['to_date']));
-                            $dataEvent[$event['CalendarEvent']['nopol']][date('m', strtotime($date))][date('d', strtotime($date))][] = array(
+                            $truck_id = $event['CalendarEvent']['truck_id'];
+
+                            $dataEvent['Truck-'.$truck_id][date('m', strtotime($date))][date('d', strtotime($date))][] = array(
                                 'id' => $event['CalendarEvent']['id'],
                                 'from_date' => $this->MkCommon->customDate($event['CalendarEvent']['from_date'], 'd/m/Y - H:i'),
                                 'to_date' => $this->MkCommon->customDate($event['CalendarEvent']['to_date'], 'd/m/Y - H:i'),
@@ -2936,12 +2940,12 @@ class RevenuesController extends AppController {
         }
     }
 
-    function add(){
+    function add( $action_type = false ){
         if( in_array('insert_revenues', $this->allowModule) ) {
             $this->loadModel('Revenue');
             $module_title = __('Tambah Revenue');
             $this->set('sub_module_title', trim($module_title));
-            $this->doRevenue();
+            $this->doRevenue( false, false, $action_type );
         } else {
             $this->redirect($this->referer());
         }
@@ -2976,7 +2980,7 @@ class RevenuesController extends AppController {
         }
     }
 
-    function doRevenue($id = false, $data_local = false){
+    function doRevenue($id = false, $data_local = false, $action_type = false){
         $this->loadModel('Ttuj');
         $this->loadModel('TarifAngkutan');
         $this->loadModel('City');
@@ -3474,10 +3478,50 @@ class RevenuesController extends AppController {
 
         $this->set(compact(
             'toCities', 'groupMotors', 'tarifTruck',
-            'id', 'data_local'
+            'id', 'data_local', 'trucks'
         ));
         $this->set('active_menu', 'revenues');
-        $this->render('revenue_form');
+
+        if( $action_type == 'manual' ) {
+            $this->loadModel('Truck');
+            $this->Truck->bindModel(array(
+                'hasOne' => array(
+                    'Ttuj' => array(
+                        'className' => 'Ttuj',
+                        'foreignKey' => 'truck_id',
+                        'conditions' => array(
+                            'Ttuj.status' => 1,
+                            'Ttuj.is_pool' => 0,
+                            'Ttuj.id <>' => $id,
+                            'Ttuj.is_laka' => 0,
+                        ),
+                    )
+                )
+            ), false);
+
+            $trucks = $this->Truck->getData('list', array(
+                'conditions' => array(
+                    'Ttuj.id' => NULL,
+                ),
+                'fields' => array(
+                    'Truck.id', 'Truck.nopol'
+                ),
+                'contain' => array(
+                    'Ttuj'
+                ),
+                'order' => array(
+                    'Truck.nopol'
+                ),
+            ));
+
+            $this->set(compact(
+                'trucks'
+            ));
+
+            $this->render('revenue_manual_form');
+        } else {
+            $this->render('revenue_form');
+        }
     }
 
     function revenue_toggle( $id ){
@@ -4076,13 +4120,14 @@ class RevenuesController extends AppController {
             $invoice = $this->Customer->getMerge($invoice, $invoice['Invoice']['customer_id']);
             $invoice = $this->User->getMerge($invoice, $invoice['Invoice']['billing_id']);
             $invoice = $this->Customer->Bank->getMerge($invoice, $invoice['Invoice']['bank_id']);
+            $revenueDetailId = Set::extract('/InvoiceDetail/revenue_detail_id', $invoice);
 
             if( $data_print == 'header' ) {
                 $this->loadModel('Setting');
                 $setting = $this->Setting->find('first');
                 $invoice = $this->Revenue->RevenueDetail->getSumUnit($invoice, $invoice['Invoice']['id']);
             } else {
-                $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($invoice['Invoice']['id'], $invoice['Invoice']['tarif_type'], $action_print, $data_print);
+                $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($invoice['Invoice']['id'], $invoice['Invoice']['tarif_type'], $action_print, $data_print, $revenueDetailId);
             }
 
             $action = $invoice['Invoice']['type_invoice'];

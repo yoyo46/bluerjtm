@@ -171,7 +171,7 @@ class RevenueDetail extends AppModel {
         ));
     }
 
-    function getPreviewInvoice ( $id = false, $invoice_type = 'angkut', $action = false, $data_action = false ) {
+    function getPreviewInvoice ( $id = false, $invoice_type = 'angkut', $action = false, $data_action = false, $revenue_detail_id = false ) {
         $this->TipeMotor = ClassRegistry::init('TipeMotor');
         $this->City = ClassRegistry::init('City');
         $this->TarifAngkutan = ClassRegistry::init('TarifAngkutan');
@@ -187,7 +187,12 @@ class RevenueDetail extends AppModel {
             $contains[] = 'Invoice';
         }
 
-        if( in_array($data_action, array( 'invoice', 'date' )) ) {
+        if( !empty($revenue_detail_id) ) {
+            $conditions = array(
+                'RevenueDetail.id' => $revenue_detail_id,
+                'Revenue.status' => 1,
+            );
+        } else if( in_array($data_action, array( 'invoice', 'date' )) ) {
             $conditions = array(
                 'RevenueDetail.invoice_id' => $id,
             );

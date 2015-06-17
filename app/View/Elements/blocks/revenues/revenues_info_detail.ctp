@@ -1,6 +1,6 @@
 <div class="box box-primary">
     <div class="box-header">
-        <h3 class="box-title"><?php echo __('Detail Revenue'); ?></h3>
+        <h3 class="box-title"><?php echo __('Informasi Muatan Truk'); ?></h3>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
