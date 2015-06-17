@@ -213,6 +213,7 @@ class AjaxController extends AppController {
 	function getTtujCustomerInfo($customer_id = false){
 		$this->loadModel('Ttuj');
 		$this->loadModel('Lku');
+		$this->loadModel('LkuDetail');
 		$default_conditions = array(
 			'Ttuj.customer_id' => $customer_id
 		);
@@ -246,30 +247,22 @@ class AjaxController extends AppController {
 			}
 
 			$lkus = $this->Lku->getData('all', array(
-				'conditions' => $lku_condition,
-				'contain' => array(
-					'Ttuj',
-					'LkuDetail' => array(
-						'conditions' => array(
-							'complete_paid' => 0
-						)
-					)
-				)
+				'conditions' => $lku_condition
 			));
 
 			if(!empty($lkus)){
-				$i = 0;
-				foreach ($lkus as $key => $value) {
-					if(!empty($value['LkuDetail'])){
-						foreach ($value['LkuDetail'] as $key => $val) {
-							$lku_details[$i++] = array(
-								'LkuDetail' => $val,
-								'Lku' => !empty($value['Lku']) ? $value['Lku'] : array(),
-								'Ttuj' => !empty($value['Ttuj']) ? $value['Ttuj'] : array()
-							);
-						}
-					}
-				}
+				$lku_id = Set::extract('/Lku/id', $lkus);
+				$this->paginate = $this->LkuDetail->getData('paginate', array(
+					'conditions' => array(
+						'LkuDetail.lku_id' => $lku_id,
+						'LkuDetail.complete_paid' => 0
+					),
+					'contain' => array(
+						'Lku'
+					)
+				));
+				
+				$lku_details = $this->paginate('LkuDetail');
 			}
 		}
 		
@@ -290,6 +283,14 @@ class AjaxController extends AppController {
 				));
 
 				$lku_details[$key]['LkuDetail']['lku_has_paid'] = $lku_has_paid[0]['lku_has_paid'];
+
+				$ttuj = $this->Ttuj->getData('first', array(
+					'conditions' => array(
+						'Ttuj.id' => $value['Lku']['ttuj_id']
+					)
+				));
+
+				$lku_details[$key]['Ttuj'] = !empty($ttuj['Ttuj']) ? $ttuj['Ttuj'] : array();
 
 				$part_motor = array();
 				if(!empty($value['LkuDetail']['part_motor_id'])){
@@ -323,6 +324,8 @@ class AjaxController extends AppController {
 	function getTtujCustomerInfoKsu($customer_id = false){
 		$this->loadModel('Ttuj');
 		$this->loadModel('Ksu');
+		$this->loadModel('KsuDetail');
+
 		$default_conditions = array(
 			'Ttuj.customer_id' => $customer_id
 		);
@@ -356,30 +359,22 @@ class AjaxController extends AppController {
 			}
 
 			$ksus = $this->Ksu->getData('all', array(
-				'conditions' => $ksu_condition,
-				'contain' => array(
-					'Ttuj',
-					'KsuDetail' => array(
-						'conditions' => array(
-							'complete_paid' => 0
-						)
-					)
-				)
+				'conditions' => $ksu_condition
 			));
 			
 			if(!empty($ksus)){
-				$i = 0;
-				foreach ($ksus as $key => $value) {
-					if(!empty($value['KsuDetail'])){
-						foreach ($value['KsuDetail'] as $key => $val) {
-							$ksu_details[$i++] = array(
-								'KsuDetail' => $val,
-								'Ksu' => !empty($value['Ksu']) ? $value['Ksu'] : array(),
-								'Ttuj' => !empty($value['Ttuj']) ? $value['Ttuj'] : array()
-							);
-						}
-					}
-				}
+				$ksu_id = Set::extract('/Ksu/id', $ksus);
+				$this->paginate = $this->KsuDetail->getData('paginate', array(
+					'conditions' => array(
+						'KsuDetail.ksu_id' => $ksu_id,
+						'KsuDetail.complete_paid' => 0
+					),
+					'contain' => array(
+						'Ksu'
+					)
+				));
+				
+				$ksu_details = $this->paginate('KsuDetail');
 			}
 		}
 		
@@ -397,6 +392,14 @@ class AjaxController extends AppController {
 						'SUM(KsuPaymentDetail.total_biaya_klaim) as ksu_has_paid'
 					),
 				));
+
+				$ttuj = $this->Ttuj->getData('first', array(
+					'conditions' => array(
+						'Ttuj.id' => $value['Ksu']['ttuj_id']
+					)
+				));
+
+				$ksu_details[$key]['Ttuj'] = !empty($ttuj['Ttuj']) ? $ttuj['Ttuj'] : array();
 
 				$ksu_details[$key]['KsuDetail']['ksu_has_paid'] = $ksu_has_paid[0]['ksu_has_paid'];
 

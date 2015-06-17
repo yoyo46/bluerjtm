@@ -175,3 +175,11 @@
         </tbody>
     </table>
 </div>
+<?php
+        echo $this->element('pagination', array(
+            'options' => array(
+                'data-action' => $data_action,
+                'class' => 'ajaxModal',
+            ),
+        ));
+?>
