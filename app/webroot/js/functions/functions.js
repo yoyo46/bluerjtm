@@ -3705,18 +3705,12 @@ $(function() {
     $('.handle-atpm').click(function(){
         if($(this).is(':checked')) {
             $('#atpm-box').removeClass('hide');
-            $('.price-perlengkapan').removeClass('show');
-            $('.price-perlengkapan').addClass('hide');
-            $('.hide-atpm').addClass('hide');
-            $('.total-ksu').hide();
             $('.total-price-claim').text('-');
             $('#grand-total-ksu').text('IDR 0');
+            $('.hide-atpm').addClass('hide');
         }else{
             $('#atpm-box').addClass('hide');
-            $('.price-perlengkapan').removeClass('hide').val('');
-            $('.price-perlengkapan').addClass('show');
-            $('.total-ksu').show();
-            $('.price-perlengkapan').show();
+            $('.price-perlengkapan').val('');
             $('.hide-atpm').removeClass('hide');
         }
     });
