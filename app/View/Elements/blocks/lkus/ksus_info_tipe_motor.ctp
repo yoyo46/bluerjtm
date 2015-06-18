@@ -1,3 +1,6 @@
+<?php 
+        $show = !empty($this->request->data['Ksu']['kekurangan_atpm']) ? 'hide' : '';
+?>
 <div class="box box-primary">
     <div class="box-header">
         <h3 class="box-title"><?php echo __('Detail KSU'); ?></h3>
@@ -19,8 +22,8 @@
                     <th><?php echo __('No. Rangka');?></th>
                     <th><?php echo __('Keterangan');?></th>
                     <th><?php echo __('Jumlah');?></th>
-                    <th><?php printf(__('Biaya Klaim (%s)'), Configure::read('__Site.config_currency_code'));?></th>
-                    <th><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
+                    <th class="hide-atpm <?php echo $show; ?>"><?php printf(__('Biaya Klaim (%s)'), Configure::read('__Site.config_currency_code'));?></th>
+                    <th class="hide-atpm <?php echo $show; ?>"><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
                     <th><?php echo __('Action');?></th>
                 </tr>
             </thead>
@@ -84,9 +87,8 @@
                             ));
                         ?>
                     </td>
-                    <td align="right">
+                    <td class="hide-atpm <?php echo $show; ?> text-right">
                         <?php 
-                            $show = !empty($this->request->data['Ksu']['kekurangan_atpm']) ? 'hide' : 'show';
                             echo $this->Form->input('KsuDetail.price.', array(
                                 'type' => 'text',
                                 'label' => false,
@@ -96,7 +98,7 @@
                             ));
                         ?>
                     </td>
-                    <td class="total-price-claim" align="right">
+                    <td class="hide-atpm <?php echo $show; ?> total-price-claim text-right">
                         <?php 
                             if(empty($this->request->data['Ksu']['kekurangan_atpm'])){
                                 $value_price = 0;
@@ -125,8 +127,8 @@
                     }
                 ?>
                 <tr id="field-grand-total-ksu">
-                    <td align="right" colspan="5" class="total-ksu" style="display:<?php echo ($show == 'show') ? 'table-cell' : 'none';?>;"><?php echo __('Total Biaya Klaim')?></td>
-                    <td align="right" id="grand-total-ksu" class="total-ksu" style="display:<?php echo ($show == 'show') ? 'table-cell' : 'none';?>;">
+                    <td align="right" colspan="5" class="total-ksu" style="display:<?php echo ($show != 'hide') ? 'table-cell' : 'none';?>;"><?php echo __('Total Biaya Klaim')?></td>
+                    <td align="right" id="grand-total-ksu" class="total-ksu" style="display:<?php echo ($show != 'hide') ? 'table-cell' : 'none';?>;">
                         <?php 
                             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
                         ?>

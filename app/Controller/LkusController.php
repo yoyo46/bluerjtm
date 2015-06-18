@@ -1283,7 +1283,9 @@ class LkusController extends AppController {
 
             $this->set('active_menu', 'ksus');
             $this->set('sub_module_title', __('Data KSU'));
-            $conditions = array();
+            $conditions = array(
+                'Ksu.status' => array( 0, 1 ),
+            );
             
             if(!empty($this->params['named'])){
                 $refine = $this->params['named'];

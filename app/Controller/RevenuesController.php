@@ -3272,7 +3272,7 @@ class RevenuesController extends AppController {
                             }
 
                             // if( $dataRevenue['Revenue']['type'] == 'angkut' ) {
-                                if( !empty($dataTtuj) ) {
+                                if( !empty($dataTtuj) && !empty($ttuj_id) ) {
                                     $this->Ttuj->id = $ttuj_id;
                                     $this->Ttuj->save($dataTtuj);
                                 }
@@ -3861,15 +3861,12 @@ class RevenuesController extends AppController {
             $this->set('invoices', $invoices); 
 
             $this->loadModel('Customer');
-            $customers = $this->Customer->find('list', array(
+            $customers = $this->Customer->getData('list', array(
                 'conditions' => array(
                     'Customer.status' => 1
                 ),
                 'fields' => array(
                     'Customer.id', 'Customer.customer_name_code'
-                ),
-                'contain' => array(
-                    'CustomerType'
                 ),
             ));
             $this->set('customers', $customers);
@@ -4227,6 +4224,7 @@ class RevenuesController extends AppController {
                     $inv_conditions = array(
                         'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >=' => 1,
                         'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 15,
+                        'Invoice.paid' => 0,
                     );
 
                     if(!empty($customer_id)){
@@ -4254,6 +4252,7 @@ class RevenuesController extends AppController {
                     $inv_conditions = array(
                         'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >=' => 16,
                         'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 30,
+                        'Invoice.paid' => 0,
                     );
 
                     if(!empty($customer_id)){
@@ -4280,6 +4279,7 @@ class RevenuesController extends AppController {
                 if(!empty($refine['due_above_30'])){
                     $inv_conditions = array(
                         'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >' => 30,
+                        'Invoice.paid' => 0,
                     );
 
                     if(!empty($customer_id)){
@@ -4363,6 +4363,7 @@ class RevenuesController extends AppController {
                 ));
 
                 $default_conditions = array(
+                    'Invoice.paid' => 0,
                     'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >=' => 1,
                     'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 15,
                     'Invoice.customer_id' => $value['Customer']['id'],
@@ -4377,6 +4378,7 @@ class RevenuesController extends AppController {
                     )
                 ));
                 $default_conditions = array(
+                    'Invoice.paid' => 0,
                     'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >=' => 16,
                     'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 30,
                     'Invoice.customer_id' => $value['Customer']['id'],
@@ -4392,6 +4394,7 @@ class RevenuesController extends AppController {
                 ));
 
                 $default_conditions = array(
+                    'Invoice.paid' => 0,
                     'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >' => 30,
                     'Invoice.customer_id' => $value['Customer']['id'],
                 );
