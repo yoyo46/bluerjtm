@@ -70,7 +70,8 @@ class DATABASE_CONFIG {
 		'host' => 'localhost',
 		'login' => 'root',
 		'password' => '',
-		'database' => 'rjtm_erp',
+		'database' => 'rjtm_erp_backup',
+		// 'database' => 'rjtm_erp',
 		'prefix' => '',
 		//'encoding' => 'utf8',
 	);

@@ -12,15 +12,34 @@
                 if( in_array('insert_revenues', $allowModule) ) {
         ?>
         <div class="box-tools">
-            <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Revenue', array(
-                    'controller' => 'revenues',
-                    'action' => 'add'
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app btn-success pull-right'
-                ));
-            ?>
+            <div class="btn-group pull-right">
+                <?php 
+                        echo $this->Html->tag('button', '<i class="fa fa-plus"></i> Tambah', array(
+                            'data-toggle' => 'dropdown',
+                            'class' => 'btn btn-app btn-success dropdown-toggle'
+                        ));
+                ?>
+                <ul class="dropdown-menu" role="menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link(__('Revenue'), array(
+                                'controller' => 'revenues',
+                                'action' => 'add'
+                            ), array(
+                                'escape' => false,
+                            )));
+                            echo $this->Html->tag('li', '', array(
+                                'class' => 'divider',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(__('Manual Revenue'), array(
+                                'controller' => 'revenues',
+                                'action' => 'add',
+                                'manual',
+                            ), array(
+                                'escape' => false,
+                            )));
+                    ?>
+                </ul>
+            </div>
             <div class="clear"></div>
         </div>
         <?php 
@@ -117,8 +136,22 @@
                 <!-- <td><?php // echo ucfirst($value['Revenue']['type']);?></td> -->
                 <td><?php echo $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y');?></td>
                 <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
-                <td><?php echo !empty($value['Ttuj']['nopol'])?$value['Ttuj']['nopol']:'-';?></td>
-                <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';?></td>
+                <td>
+                    <?php
+                            if( !empty($value['Ttuj']['nopol']) ) {
+                                echo $value['Ttuj']['nopol'];
+                            } elseif( !empty($value['Truck']['nopol']) ) {
+                                echo $value['Truck']['nopol'];
+                            } else {
+                                echo '-';
+                            }
+                    ?>
+                </td>
+                <td>
+                    <?php
+                            echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';
+                    ?>
+                </td>
                 <td>
                     <?php 
                             $class_status = 'label label-default';
@@ -143,11 +176,17 @@
                 <td class="action">
                     <?php
                             if( in_array('update_revenues', $allowModule) ) {
-                                echo $this->Html->link('Rubah', array(
+                                $urlEdit = array(
                                     'controller' => 'revenues',
                                     'action' => 'edit',
                                     $id
-                                ), array(
+                                );
+
+                                if( empty($revenue['Revenue']['ttuj_id']) ) {
+                                    $urlEdit[] = 'manual';
+                                }
+
+                                echo $this->Html->link('Rubah', $urlEdit, array(
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
                             }

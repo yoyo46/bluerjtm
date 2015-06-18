@@ -149,7 +149,7 @@
  *	`manager_index()` and `/manager/controller/index`
  *
  */
-	//Configure::write('Routing.prefixes', array('admin'));
+	Configure::write('Routing.prefixes', array('admin'));
 
 /**
  * Turn off all caching application-wide.
@@ -222,12 +222,12 @@
 /**
  * A random string used in security hashing methods.
  */
-	Configure::write('Security.salt', 'mPeJHH0VSQZ6QQPV4oVUkIhqGwDrRHO6UPyAbvn72GcNTd2EG64b6H8lw7wGGxg');
+	Configure::write('Security.salt', 'Nb27EvmwAaqGyytf3LMvxWKLF2YUcCjVecdKafSeRPKfdPnG');
 
 /**
  * A random numeric string (digits only) used to encrypt/decrypt strings.
  */
-	Configure::write('Security.cipherSeed', '2176859309657453542496749683645');
+	Configure::write('Security.cipherSeed', '4856976934523125464859563452346368');
 
 /**
  * Apply timestamps with the last modified time to static assets (js, css, images).
@@ -339,6 +339,12 @@
  *		'prefix' => Inflector::slug(APP_DIR) . '_', //[optional]  prefix every cache file with this string
  *	));
  */
+Cache::config('default', array(
+	'engine' => 'File',
+	'groups' => array(
+		'DataProductPage'
+	)
+));
 
 /**
  * Configure the cache handlers that CakePHP will use for internal

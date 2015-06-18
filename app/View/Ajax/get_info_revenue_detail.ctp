@@ -1,6 +1,7 @@
 <?php
         $tarif_angkutan_type = !empty($mainTarif['tarif_angkutan_type'])?$mainTarif['tarif_angkutan_type']:'angkut';
         $jenis_unit_angkutan =!empty($mainTarif['jenis_unit']) ? $mainTarif['jenis_unit'] : 'per_unit';
+        $jenis_unit = !empty($jenis_unit)?$jenis_unit:$jenis_unit_angkutan;
 
         echo $this->Form->hidden('RevenueDetail.tarif_angkutan_type.', array(
             'id' => 'tarif_angkutan_type',
@@ -23,10 +24,18 @@
             $price = sprintf(__('Tarif tidak ditemukan, silahkan buat tarif angkutan %s'), $link);
         }
 
+        if( !empty($truck['Truck']['capacity']) ) {
+            echo $this->Form->hidden('RevenueDetail.tarif_angkutan_type.', array(
+                'id' => 'truck_capacity',
+                'required' => false,
+                'value' => $truck['Truck']['capacity'],
+            ));
+        }
+
         $total = 0;
         $flagTruck = false;
 
-        if( $jenis_unit_angkutan == 'per_truck' && !$is_charge ) {
+        if( $jenis_unit == 'per_truck' && !$is_charge ) {
             $flagTruck = true;
         }
 ?>
@@ -73,6 +82,8 @@
 </div>
 <div id="additional-charge-data">
     <?php
+            $data_type = empty($ttuj_id)?'revenue-manual':false;
+
             echo $this->Form->checkbox('RevenueDetail.is_charge_temp.', array(
                 'label' => false,
                 'class' => 'additional-charge',
@@ -81,6 +92,7 @@
                 'checked' => !empty($is_charge)?true:false,
                 'hiddenField' => false,
                 'disabled' => ( ( !empty($flagTruck) || !empty($is_charge) ) || ( $tarif_angkutan_type != 'angkut' ) )?false:true,
+                'data-type' => $data_type,
             ));
             echo $this->Form->hidden('RevenueDetail.is_charge.', array(
                 'value' => !empty($is_charge)?1:0,

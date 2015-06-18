@@ -175,6 +175,11 @@ class TarifAngkutan extends AppModel {
             'TarifAngkutan.type' => $this->data['TarifAngkutan']['type'],
             'TarifAngkutan.status' => 1,
         );
+
+        if( !empty($this->data['TarifAngkutan']['id']) ) {
+            $conditions['TarifAngkutan.id <>'] = $this->data['TarifAngkutan']['id'];
+        }
+        
         $tarifAngkutan = $this->find('first', array(
             'conditions' => $conditions,
         ));
@@ -183,11 +188,7 @@ class TarifAngkutan extends AppModel {
         if( !empty($tarifAngkutan) && !empty($this->data['TarifAngkutan']['jenis_unit']) ) {
             if( $tarifAngkutan['TarifAngkutan']['jenis_unit'] != $this->data['TarifAngkutan']['jenis_unit'] ) {
                 $result = false;
-            } else {
-                if( !empty($this->data['TarifAngkutan']['id']) ) {
-                    $conditions['TarifAngkutan.id <>'] = $this->data['TarifAngkutan']['id'];
-                }
-                
+            } else {                
                 if( $tarifAngkutan['TarifAngkutan']['jenis_unit'] == 'per_truck' ) {
                     $conditions['TarifAngkutan.capacity'] = $this->data['TarifAngkutan']['capacity'];
 

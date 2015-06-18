@@ -782,7 +782,7 @@ class AjaxController extends AppController {
         // }
     }
 
-	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $city_id = false, $group_motor_id = false, $is_charge = false, $to_city_id = false, $qty = 0, $jenis_unit = '' ){
+	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $city_id = false, $group_motor_id = false, $is_charge = false, $to_city_id = false, $qty = 0, $jenis_unit = '', $from_city_id = false, $truck_id = false ){
 		$this->loadModel('Ttuj');
 		$this->loadModel('GroupMotor');
 		$this->loadModel('TarifAngkutan');
@@ -794,6 +794,24 @@ class AjaxController extends AppController {
                 // 'Ttuj.status' => 1,
 			),
 		), false);
+		$from_city_id = !empty($data_ttuj['Ttuj']['from_city_id'])?$data_ttuj['Ttuj']['from_city_id']:$from_city_id;
+
+		if( !empty($truck_id) ) {
+			$this->loadModel('Truck');
+			$truck = $this->Truck->getData('first', array(
+                'conditions' => array(
+                    'Truck.status' => 1,
+                    'Truck.id' => $truck_id,
+                ),
+                'fields' => array(
+                    'Truck.id', 'Truck.nopol',
+                    'Truck.capacity'
+                ),
+            ));
+			$truck_capacity = !empty($truck['Truck']['capacity'])?$truck['Truck']['capacity']:false;
+		} else {
+			$truck_capacity = !empty($data_ttuj['Ttuj']['truck_capacity'])?$data_ttuj['Ttuj']['truck_capacity']:false;
+		}
 
 		if( !empty($group_motor_id) ) {
 			$groupMotor = $this->GroupMotor->getData('first', array(
@@ -808,11 +826,11 @@ class AjaxController extends AppController {
 			}
 		}
 
-		if(!empty($data_ttuj)){
+		if(!empty($from_city_id)){
 			if( !empty($city_id) ) {
-				$mainTarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $city_id, $customer_id, $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
+				$mainTarif = $this->TarifAngkutan->findTarif($from_city_id, $city_id, $customer_id, $truck_capacity, $group_motor_id);
 			} else {
-				$mainTarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $to_city_id, $customer_id, $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
+				$mainTarif = $this->TarifAngkutan->findTarif($from_city_id, $to_city_id, $customer_id, $truck_capacity, $group_motor_id);
 			}
 
 			$detail = array(
@@ -824,7 +842,8 @@ class AjaxController extends AppController {
 
 		$this->set(compact(
 			'detail', 'is_charge', 'mainTarif',
-			'qty', 'jenis_unit'
+			'qty', 'jenis_unit', 'truck',
+			'ttuj_id'
 		));
 	}
 
@@ -1161,6 +1180,21 @@ class AjaxController extends AppController {
         	'trucks', 'data_action', 'title',
         	'data_change', 'action_type', 'action_id'
     	));
+	}
+
+	function getDataTruck ( $truck_id = false ) {
+		$this->loadModel('Truck');
+		$options = array(
+            'conditions' => array(
+	            'Truck.id' => $truck_id,
+	            'Truck.status' => 1,
+	        ),
+        );
+        $result = $this->Truck->getData('first', $options);
+        $this->set(compact(
+        	'result'
+    	));
+    	$this->render('get_info_truck');
 	}
 
 	function getKirs () {

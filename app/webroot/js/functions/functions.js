@@ -43,7 +43,6 @@ var calcUangJalan = function () {
     var uang_jalan_extra = $('.uang_jalan_extra_ori').val();
     var min_capacity = $('.min_capacity').val();
     var commission_extra = $('.commission_extra_ori').val();
-    var uang_jalan_2 = $('.uang_jalan_2').val().replace(/,/gi, "");
     var uang_jalan_per_unit = $('.uang_jalan_per_unit').val();
     var uang_kuli_muat_per_unit = $('.uang_kuli_muat_per_unit').val();
     var uang_kuli_bongkar_per_unit = $('.uang_kuli_bongkar_per_unit').val();
@@ -68,6 +67,12 @@ var calcUangJalan = function () {
     var commission_extra_tipe_motor = 0;
     var min_capacity_commission_extra = 0;
     var total_commission_extra = 0;
+
+    if( $('.uang_jalan_2').length > 0 ) {
+        var uang_jalan_2 = $('.uang_jalan_2').val().replace(/,/gi, "");
+    } else {
+        var uang_jalan_2 = '';
+    }
 
     for (var i = 0; i < qtyLen; i++) {
         var tipe_motor_id = parseInt($('#ttujDetail tbody tr .tipe_motor_id[rel="'+i+'"] option:selected').val());
@@ -1038,6 +1043,69 @@ var add_custom_field = function( obj ){
                 ajaxModal( $(objParentTr+' .ajaxModal') );
                 pickData();
             break;
+            case 'revenue-detail':
+                var customer_id = $('#customer-revenue-manual').val();
+                var truck_id = $('.truck-revenue-id').val();
+                var from_city_id = $('#from-city-revenue-id').val();
+                var to_city_id = $('#to-city-revenue-id').val();
+
+                if( customer_id != '' && truck_id != '' && from_city_id != '' && to_city_id != '' ) {
+                    var idx = $('#muatan-revenue-detail tbody.tipe-motor-table tr').length;
+                    var optionCity = $('#city-revenue').html();
+                    var groupMotorRevenue = $('#group-motor-revenue').html();
+                    var to_city_id = $('#to-city-revenue-id').val();
+                    var count_next = idx+1;
+
+                    $('#muatan-revenue-detail tbody.tipe-motor-table').append(' \
+                    <tr rel="'+count_next+'" class="list-revenue"> \
+                        <td class="city-data"> \
+                            <select name="data[RevenueDetail][city_id][]" class="form-control city-revenue-change" id="RevenueDetailCityId" data-type="revenue-manual">'+optionCity+'</select> \
+                            <input type="hidden" name="data[RevenueDetail][tarif_angkutan_id][]" class="tarif_angkutan_id" id="RevenueDetailTarifAngkutanId"> \
+                            <input type="hidden" name="data[RevenueDetail][tarif_angkutan_type][]" class="tarif_angkutan_type" id="RevenueDetailTarifAngkutanType"> \
+                        </td> \
+                        <td class="no-do-data" align="center"> \
+                            <input name="data[RevenueDetail][no_do][]" class="form-control" type="text" id="RevenueDetailNoDo"> \
+                        </td> \
+                        <td class="no-sj-data"> \
+                            <input name="data[RevenueDetail][no_sj][]" class="form-control" type="text" id="RevenueDetailNoSj"> \
+                        </td> \
+                        <td class="tipe-motor-data"> \
+                            <select name="data[RevenueDetail][group_motor_id][]" class="form-control revenue-group-motor" id="RevenueDetailGroupMotorId" data-type="revenue-manual">'+groupMotorRevenue+'</select> \
+                        </td> \
+                        <td class="qty-tipe-motor-data" align="center"> \
+                            <input name="data[RevenueDetail][qty_unit][]" class="form-control revenue-qty input_number" type="text" id="RevenueDetailQtyUnit"> \
+                            <input type="hidden" name="data[RevenueDetail][payment_type][]" class="jenis_unit" id="RevenueDetailPaymentType"> \
+                        </td> \
+                        <td class="additional-charge-data" align="center"> \
+                            <input type="checkbox" name="data[RevenueDetail][is_charge_temp][]" class="additional-charge" value="1" disabled="disabled" id="RevenueDetailIsChargeTemp" data-type="revenue-manual"> \
+                            <input type="hidden" name="data[RevenueDetail][is_charge][]" value="0" class="additional-charge-hidden" id="RevenueDetailIsCharge"> \
+                        </td> \
+                        <td class="price-data text-right"> \
+                            <span></span> \
+                            <input type="hidden" name="data[RevenueDetail][price_unit][]" class="form-control price-unit-revenue input_number" id="RevenueDetailPriceUnit"> \
+                        </td> \
+                        <td class="total-price-revenue text-right"> \
+                            <span class="total-revenue-perunit"></span> \
+                            <input type="hidden" name="data[RevenueDetail][total_price_unit][]" class="total-price-perunit" id="RevenueDetailTotalPriceUnit"> \
+                        </td> \
+                        <td class="handle-row"> \
+                            <a action_type="revenue-detail" href="javascript:" class="delete-custom-field btn btn-danger btn-xs" title="Hapus Muatan" rel="'+count_next+'"><i class="fa fa-times"></i></a> \
+                        </td> \
+                    </tr>');
+
+                    objQty = $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .revenue-qty');
+                    objPrice = $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .price-unit-revenue');
+                    objPPhPPn = $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .revenue-pph, #muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .revenue-ppn');
+                    delete_custom_field( $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .delete-custom-field') );
+                    city_revenue_change( $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .city-revenue-change'), $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .revenue-group-motor') );
+                    checkCharge( $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .additional-charge') );
+                    revenue_detail( objQty, objPrice, objPPhPPn );
+
+                    $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .city-revenue-change').val( to_city_id );
+                } else {
+                    alert('Mohon pilih Customer, No. Pol dan Tujuan');
+                }
+                break;
         }
     });
 }
@@ -1149,6 +1217,10 @@ var delete_custom_field = function( obj ) {
                 var parent = self.parents('.wrapper-approval-setting');
                 var rel = self.attr('rel');
                 parent.find('.cash-auth-row[rel="'+rel+'"]').remove();
+            } else if( action_type == 'revenue-detail' ) {
+                var rel = self.attr('rel');
+                $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').remove();
+                grandTotalRevenue();
             }
         }
 
@@ -1225,21 +1297,30 @@ var duplicate_row = function(){
     });
 }
 
-var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge, qty ) {
+var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge, qty, data_type ) {
     var ttuj_id = $('#getTtujInfoRevenue').val();
     var customer_id = $('.change-customer-revenue').val();
     var to_city_id = $('#toCityId').val();
     var revenue_tarif_type = $('.revenue_tarif_type').val();
+    var url = '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+revenue_tarif_type+'/';
 
     if( typeof is_charge == 'undefined' ){
         is_charge = 0;
     }
-    if( typeof qty == 'undefined' ){
+    if( typeof qty == 'undefined' || isNaN(qty) || qty == '' ){
         qty = 0;
+    }
+    if( data_type == 'revenue-manual' ) {
+        customer_id = $('#customer-revenue-manual').val();
+        truck_id = $('.truck-revenue-id').val();
+        from_city_id = $('#from-city-revenue-id').val();
+        to_city_id = $('#to-city-revenue-id').val();
+
+        url = '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+revenue_tarif_type+'/'+from_city_id+'/'+truck_id+'/';
     }
 
     $.ajax({
-        url: '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+revenue_tarif_type+'/',
+        url: url,
         type: 'POST',
         success: function(response, status) {
             var jenis_unit_angkutan = $(response).find('.jenis_unit').val();
@@ -1290,8 +1371,9 @@ var city_revenue_change = function( obj_city, obj_tipe_motor ){
         var parent = self.parents('tr');
         var group_motor_id = parent.find('.revenue-group-motor').val();
         var qty = parent.find('.revenue-qty').val();
+        var data_type = self.attr('data-type');
 
-        changeDetailRevenue( parent, val, group_motor_id, 0, qty );
+        changeDetailRevenue( parent, val, group_motor_id, 0, qty, data_type );
     });
 
     obj_tipe_motor.change(function() {
@@ -1300,8 +1382,9 @@ var city_revenue_change = function( obj_city, obj_tipe_motor ){
         var parent = self.parents('tr');
         var city_id = parent.find('.city-revenue-change').val();
         var qty = parent.find('.revenue-qty').val();
+        var data_type = self.attr('data-type');
 
-        changeDetailRevenue( parent, city_id, val, 0, qty );
+        changeDetailRevenue( parent, city_id, val, 0, qty, data_type );
 
         return false;
     });
@@ -1815,8 +1898,18 @@ var choose_item_info = function(){
 }
 choose_item_info();
 
-var revenue_detail = function(){
-    $('.revenue-qty').keyup(function(event){
+var revenue_detail = function( objQty, objPrice, objPPhPPn ){
+    if( typeof objQty == 'undefined' ) {
+        objQty = $('.revenue-qty');
+    }
+    if( typeof objPrice == 'undefined' ) {
+        objPrice = $('.price-unit-revenue');
+    }
+    if( typeof objPPhPPn == 'undefined' ) {
+        objPPhPPn = $('.revenue-pph, .revenue-ppn');
+    }
+
+    objQty.keyup(function(event){
         var self = $(this);
         // var max = parseInt(self.attr('max'));
         // var val = parseInt(self.val());
@@ -1830,11 +1923,11 @@ var revenue_detail = function(){
         total_revenue_unit(self);
     });
 
-    $('.price-unit-revenue').keyup(function(){
+    objPrice.keyup(function(){
         total_revenue_unit(self);
     });
 
-    $('.revenue-pph, .revenue-ppn').keyup(function(){
+    objPPhPPn.keyup(function(){
         calcPPNPPH();
     });
 }
@@ -1850,7 +1943,10 @@ function total_revenue_unit(self){
     grandTotalRevenue();
 }
 
-revenue_detail();
+if( $('.revenue-qty').length ) {
+    revenue_detail();
+}
+
 var datepicker = function( obj ){
     if( typeof obj == 'undefined' ) {
         obj = $( ".custom-date" );
@@ -2312,6 +2408,7 @@ var checkCharge = function ( obj ) {
         var city_id = parent.find('.city-revenue-change').val();
         var group_motor_id = parent.find('.revenue-group-motor').val();
         var qty = parent.find('.revenue-qty').val();
+        var data_type = $(this).attr('data-type');
 
         if( $(this).is(':checked') ) {
             val = 1;
@@ -2319,7 +2416,7 @@ var checkCharge = function ( obj ) {
 
         parent.find('.additional-charge-hidden').val(val);
 
-        changeDetailRevenue( parent, city_id, group_motor_id, val, qty );
+        changeDetailRevenue( parent, city_id, group_motor_id, val, qty, data_type );
     });
 }
 var leasing_action = function(){
@@ -3668,5 +3765,54 @@ $(function() {
                 }
             });
         }
+    });
+    
+    $('#customer-revenue-manual,.truck-revenue-id,#from-city-revenue-id,#to-city-revenue-id').change(function(){
+        var customer_id = $('#customer-revenue-manual').val();
+        var truck_id = $('.truck-revenue-id').val();
+        var from_city_id = $('#from-city-revenue-id').val();
+        var to_city_id = $('#to-city-revenue-id').val();
+
+        if( customer_id != '' && truck_id != '' && from_city_id != '' && to_city_id != '' ) {
+            $.ajax({
+                url: '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+to_city_id+'/0/0/'+to_city_id+'/0/angkut/'+from_city_id+'/'+truck_id+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    var jenis_unit = $(response).find('.jenis_unit').val();
+                    $('.revenue_tarif_type').val( jenis_unit );
+                    $('#revenue-truck-capacity').val( $(response).filter('#truck_capacity').val() );
+
+                    if( jenis_unit == 'per_truck' ) {
+                        var totalPriceFormat = $(response).find('.total-revenue-perunit').html();
+                        var totalPrice = $(response).find('.total-price-perunit').val();
+
+                        $('#grand-total-revenue').html( totalPriceFormat );
+                        $('#total_retail_revenue').val( totalPrice );
+                        $('.tarif_per_truck').val( totalPrice );
+                        grandTotalRevenue();
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        }
+    });
+
+    $('.truck-revenue-id').change(function(){
+        var truck_id = $(this).val();
+
+        $.ajax({
+            url: '/ajax/getDataTruck/'+truck_id+'/',
+            type: 'POST',
+            success: function(response, status) {
+                $('#revenue-truck-capacity').val( $(response).filter('#truck_capacity').html() );
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
     });
 });

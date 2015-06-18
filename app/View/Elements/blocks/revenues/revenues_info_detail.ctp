@@ -1,3 +1,6 @@
+<?php 
+        $data_type = !empty($data_type)?$data_type:false;
+?>
 <div class="box box-primary">
     <div class="box-header">
         <h3 class="box-title"><?php echo __('Informasi Muatan Truk'); ?></h3>
@@ -71,7 +74,8 @@
                                     'required' => false,
                                     'label' => false,
                                     'class' => 'form-control city-revenue-change',
-                                    'value' => (!empty($detail['RevenueDetail']['city_id'])) ? $detail['RevenueDetail']['city_id'] : 0
+                                    'value' => (!empty($detail['RevenueDetail']['city_id'])) ? $detail['RevenueDetail']['city_id'] : 0,
+                                    'data-type' => $data_type,
                                 ));
 
                                 echo $this->Form->hidden('RevenueDetail.tarif_angkutan_id.', array(
@@ -118,6 +122,7 @@
                                     'value' => (!empty($detail['RevenueDetail']['group_motor_id'])) ? $detail['RevenueDetail']['group_motor_id'] : 0,
                                     'options' => $groupMotors,
                                     'empty' => __('Pilih Group Motor'),
+                                    'data-type' => $data_type,
                                 ));
                         ?>
                     </td>
@@ -225,6 +230,7 @@
                     <td class="handle-row">
                         <?php
                                 // if( isset($price['tarif']) && is_numeric($price['tarif'])){
+                                if( $data_type != 'revenue-manual' ) {
                                     $open_duplicate = false;
 
                                     if(empty($arr_duplicate[$detail['RevenueDetail']['group_motor_id']][$detail['RevenueDetail']['city_id']])){
@@ -246,13 +252,23 @@
                                         'title' => __('hapus baris')
                                     ));
                                     }
-                                // }
+                                } else {
+                                    echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
+                                        'class' => 'delete-custom-field btn btn-danger btn-xs',
+                                        'action_type' => 'revenue-detail',
+                                        'title' => __('Hapus Muatan'),
+                                        'rel' => $key,
+                                        'escape' => false,
+                                    ));
+                                }
                         ?>
                     </td>
                 </tr>
                 <?php
                     }
                 ?>
+            </tbody>
+            <tbody>
                 <tr id="field-grand-total-revenue">
                     <?php 
                             echo $this->Html->tag('td', __('Total Muatan'), array(

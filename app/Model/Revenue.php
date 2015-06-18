@@ -31,6 +31,30 @@ class Revenue extends AppModel {
                 'message' => 'Tanggal revenue harap diisi'
             ),
         ),
+        'truck_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Truk harap dipilih'
+            ),
+        ),
+        'from_city_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Kota asal harap dipilih'
+            ),
+        ),
+        'to_city_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Kota tujuan harap dipilih'
+            ),
+        ),
+        'tarif_per_truck' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Mohon pilih muatan'
+            ),
+        ),
 	);
 
     var $belongsTo = array(
