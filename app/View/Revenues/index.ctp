@@ -182,7 +182,7 @@
                                     $id
                                 );
 
-                                if( empty($revenue['Revenue']['ttuj_id']) ) {
+                                if( empty($value['Ttuj']['id']) ) {
                                     $urlEdit[] = 'manual';
                                 }
 
