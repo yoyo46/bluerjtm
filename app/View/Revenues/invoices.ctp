@@ -107,12 +107,12 @@
                             <?php 
                                 // if(empty($value['Invoice']['is_canceled'])){
                                     if( $value['Invoice']['tarif_type'] == 'angkut' ) {
-                                        echo $this->Html->tag('li', $this->Html->link(__('Print Detail'), array(
+                                        echo $this->Html->tag('li', $this->Html->link(__('Print Detail per Kota'), array(
                                             'controller' => 'revenues',
                                             'action' => 'invoice_print',
                                             $id
                                         )));
-                                        echo $this->Html->tag('li', $this->Html->link(__('Print Per Tanggal'), array(
+                                        echo $this->Html->tag('li', $this->Html->link(__('Print Detail'), array(
                                             'controller' => 'revenues',
                                             'action' => 'invoice_print',
                                             $id,
