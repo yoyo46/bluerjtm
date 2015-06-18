@@ -33,6 +33,16 @@
         </div>
         <div class="form-group">
             <?php 
+                    echo $this->Form->input('Ttuj.from_city',array(
+                        'label'=> __('Kota Asal'),
+                        'class'=>'form-control',
+                        'required' => false,
+                        'placeholder' => __('Kota Asal')
+                    ));
+            ?>
+        </div>
+        <div class="form-group">
+            <?php 
                     echo $this->Form->label('type', __('Truk'));
             ?>
             <div class="row">
@@ -90,6 +100,16 @@
                         'class'=>'form-control',
                         'required' => false,
                         'placeholder' => __('Nama Supir')
+                    ));
+            ?>
+        </div>
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->input('Ttuj.to_city',array(
+                        'label'=> __('Kota Tujuan'),
+                        'class'=>'form-control',
+                        'required' => false,
+                        'placeholder' => __('Kota Tujuan')
                     ));
             ?>
         </div>
@@ -253,6 +273,7 @@
                     ));
                     echo $this->Html->tag('th', __('NoPol'));
                     echo $this->Html->tag('th', __('Customer'));
+                    echo $this->Html->tag('th', __('Asal'));
                     echo $this->Html->tag('th', __('Tujuan'));
                     echo $this->Html->tag('th', __('Supir'));
                     echo $this->Html->tag('th', __('Jenis'), array(
@@ -261,7 +282,7 @@
                     ));
                     echo $this->Html->tag('th', __('Total'));
                     echo $this->Html->tag('th', __('Sisa'), array(
-                        'width' => '15%',
+                        'width' => '25%',
                     ));
             ?>
         </tr>

@@ -22,9 +22,10 @@
         }
 ?>
     <td><?php echo $ttuj['Ttuj']['no_ttuj'];?></td>
-    <td><?php echo date('d/m/Y', strtotime($ttuj['Ttuj']['ttuj_date']));?></td>
+    <td><?php echo date('d M Y', strtotime($ttuj['Ttuj']['ttuj_date']));?></td>
     <td><?php echo $ttuj['Ttuj']['nopol'];?></td>
     <td><?php echo !empty($ttuj['Customer']['customer_name_code'])?$ttuj['Customer']['customer_name_code']:false;?></td>
+    <td><?php echo $ttuj['Ttuj']['from_city_name'];?></td>
     <td><?php echo $ttuj['Ttuj']['to_city_name'];?></td>
     <td>
     	<?php

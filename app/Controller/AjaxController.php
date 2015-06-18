@@ -2382,6 +2382,14 @@ class AjaxController extends AppController {
                 $name = urldecode($this->request->data['City']['name']);
                 $conditions['Ttuj.to_city_name LIKE '] = '%'.$name.'%';
             }
+            if(!empty($this->request->data['Ttuj']['from_city'])){
+                $name = urldecode($this->request->data['Ttuj']['from_city']);
+                $conditions['Ttuj.from_city_name LIKE'] = '%'.$name.'%';
+            }
+            if(!empty($this->request->data['Ttuj']['to_city'])){
+                $name = urldecode($this->request->data['Ttuj']['to_city']);
+                $conditions['Ttuj.to_city_name LIKE'] = '%'.$name.'%';
+            }
             if(!empty($this->request->data['Ttuj']['date'])){
                 $date = urldecode($this->request->data['Ttuj']['date']);
                 $date = explode('-', $date);
