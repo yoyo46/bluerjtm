@@ -95,7 +95,6 @@
 						$is_charge = !empty($value['RevenueDetail']['is_charge'])?$value['RevenueDetail']['is_charge']:false;
 						$revenue_temp = sprintf('%s-%s', $revenue_id, $is_charge);
 
-						$nopol = !empty($value['Revenue']['Ttuj']['nopol'])?$value['Revenue']['Ttuj']['nopol']:false;
 						$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
 						$price = 0;
 						$total = 0;
@@ -109,6 +108,14 @@
 							$priceFormat = $this->Number->currency($price, '', array('places' => 0));
 						} else {
 							$priceFormat = '-';
+						}
+
+						if( !empty($value['Revenue']['Ttuj']['nopol']) ) {
+							$nopol = $value['Revenue']['Ttuj']['nopol'];
+						} else if( !empty($value['Truck']['nopol']) ) {
+							$nopol = $value['Truck']['nopol'];
+						} else {
+							$nopol = false;
 						}
 
 						$colom = $this->Html->tag('td', $no++);

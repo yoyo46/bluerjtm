@@ -147,11 +147,11 @@ class TarifAngkutan extends AppModel {
                 $flagTarifGroupMotor = false;
 
                 if( $tarifCapacity == $capacity ) {
-                    $addConditions['TarifAngkutan.capacity'] = $capacity;
+                    $addConditions['TarifAngkutan.capacity'] = array( 0, '', $capacity );
                     $flagTarifCapacity = true;
                 }
                 if( $tarifGroupMotor == $group_motor_id ) {
-                    $addConditions['TarifAngkutan.group_motor_id'] = $group_motor_id;
+                    $addConditions['TarifAngkutan.group_motor_id'] = array( 0, '', $group_motor_id );
                     $flagTarifGroupMotor = true;
                 }
 
@@ -175,6 +175,10 @@ class TarifAngkutan extends AppModel {
 
             $result = $this->find('first', array(
                 'conditions' => $addConditions,
+                'order' => array(
+                    'TarifAngkutan.group_motor_id' => 'DESC',
+                    'TarifAngkutan.capacity' => 'DESC',
+                ),
             ));
 
             if( !empty($result) ) {
