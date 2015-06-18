@@ -77,9 +77,11 @@
             <tr>
                 <td><?php echo $value['Lku']['no_doc'];?></td>
                 <?php 
+                        $allowChange = true;
+                        $customer = '';
+
                         echo $this->Html->tag('td', $value['Ttuj']['no_ttuj']);
 
-                        $customer = '';
                         if(!empty($value['Customer']['customer_name_code'])){
                             $customer = $value['Customer']['customer_name_code'];
                         }
@@ -102,6 +104,7 @@
                             }else{
                                 echo $this->Html->tag('td', '<span class="label label-success">Dibayar Sebagian</span>');
                             }
+                            $allowChange = false;
                         } else{
                             echo $this->Html->tag('td', '<span class="label label-danger">Belum di bayar</span>');
                         }
@@ -117,7 +120,7 @@
                             'class' => 'btn btn-info btn-xs'
                         ));
 
-                        if( empty($value['Lku']['paid']) && !empty($value['Lku']['status']) ){
+                        if( $allowChange && !empty($value['Lku']['status']) ){
                             if( in_array('update_lkus', $allowModule) ) {
                                 echo $this->Html->link('Rubah', array(
                                     'controller' => 'lkus',

@@ -77,12 +77,15 @@
             <tr>
                 <td><?php echo $value['Ksu']['no_doc'];?></td>
                 <?php 
+                        $customer = '';
+                        $allowChange = true;
+
                         echo $this->Html->tag('td', $value['Ttuj']['no_ttuj']);
 
-                        $customer = '';
                         if(!empty($value['Customer']['customer_name_code'])){
                             $customer = $value['Customer']['customer_name_code'];
                         }
+
                         echo $this->Html->tag('td', $customer);
                         echo $this->Html->tag('td', date('d/m/Y', strtotime($value['Ksu']['tgl_ksu'])));
                         echo $this->Html->tag('td', $this->Number->format($value['Ksu']['total_klaim']));
@@ -101,6 +104,8 @@
                                 }else{
                                     echo $this->Html->tag('td', '<span class="label label-success">Dibayar Sebagian</span>');
                                 }
+                                
+                                $allowChange = false;
                             } else{
                                 echo $this->Html->tag('td', '<span class="label label-danger">Belum di bayar</span>');
                             }
@@ -119,7 +124,7 @@
                             'class' => 'btn btn-info btn-xs'
                         ));
 
-                        if( empty($value['Ksu']['paid']) && !empty($value['Ksu']['status']) ){
+                        if( $allowChange && !empty($value['Ksu']['status']) ){
                             if( in_array('update_lkus', $allowModule) ) {
                                 echo $this->Html->link('Rubah', array(
                                     'controller' => 'lkus',
@@ -141,17 +146,17 @@
                                 ), __('Apakah Anda yakin akan mengbatalkan data ini?'));
                             }
                         }else{
-                            if(in_array('delete_lkus', $allowModule) && empty($value['Ksu']['status']) && empty($value['Ksu']['paid'])){
-                                echo $this->Html->link(__('Cancel Void'), array(
-                                    'controller' => 'lkus',
-                                    'action' => 'ksu_toggle',
-                                    $id,
-                                    'activate'
-                                ), array(
-                                    'class' => 'btn btn-warning btn-xs',
-                                    'title' => 'disable status brand'
-                                ), __('Apakah Anda yakin akan mengaktifkan lagi data ini?'));
-                            }
+                            // if(in_array('delete_lkus', $allowModule) && empty($value['Ksu']['status']) && empty($value['Ksu']['paid'])){
+                            //     echo $this->Html->link(__('Cancel Void'), array(
+                            //         'controller' => 'lkus',
+                            //         'action' => 'ksu_toggle',
+                            //         $id,
+                            //         'activate'
+                            //     ), array(
+                            //         'class' => 'btn btn-warning btn-xs',
+                            //         'title' => 'disable status brand'
+                            //     ), __('Apakah Anda yakin akan mengaktifkan lagi data ini?'));
+                            // }
                         }
                     ?>
                 </td>
