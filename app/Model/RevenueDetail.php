@@ -187,23 +187,23 @@ class RevenueDetail extends AppModel {
             $contains[] = 'Invoice';
         }
 
-        if( !empty($revenue_detail_id) ) {
+        if( in_array($data_action, array( 'invoice', 'date' )) ) {
+            $conditions = array(
+                'RevenueDetail.invoice_id' => $id,
+            );
+        } else if( !empty($revenue_detail_id) ) {
             $conditions = array(
                 'RevenueDetail.id' => $revenue_detail_id,
                 'Revenue.status' => 1,
             );
-        } else if( in_array($data_action, array( 'invoice', 'date' )) ) {
-            $conditions = array(
-                'RevenueDetail.invoice_id' => $id,
-            );
+            $conditions['RevenueDetail.invoice_id'] = NULL;
         } else {
             $conditions = array(
                 'RevenueDetail.revenue_id' => $id,
                 'Revenue.status' => 1,
             );
+            $conditions['RevenueDetail.invoice_id'] = NULL;
         }
-
-        $conditions['RevenueDetail.invoice_id'] = NULL;
 
         if( !empty($invoice_type) ) {
             $conditions['RevenueDetail.tarif_angkutan_type'] = $invoice_type;
