@@ -187,16 +187,15 @@ class RevenueDetail extends AppModel {
             $contains[] = 'Invoice';
         }
 
-        if( in_array($data_action, array( 'invoice', 'date' )) ) {
-            $conditions = array(
-                'RevenueDetail.invoice_id' => $id,
-            );
-        } else if( !empty($revenue_detail_id) ) {
+        if( !empty($revenue_detail_id) ) {
             $conditions = array(
                 'RevenueDetail.id' => $revenue_detail_id,
                 'Revenue.status' => 1,
             );
-            $conditions['RevenueDetail.invoice_id'] = NULL;
+        } else if( in_array($data_action, array( 'invoice', 'date' )) ) {
+            $conditions = array(
+                'RevenueDetail.invoice_id' => $id,
+            );
         } else {
             $conditions = array(
                 'RevenueDetail.revenue_id' => $id,
