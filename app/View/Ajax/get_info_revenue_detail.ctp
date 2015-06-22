@@ -2,6 +2,7 @@
         $tarif_angkutan_type = !empty($mainTarif['tarif_angkutan_type'])?$mainTarif['tarif_angkutan_type']:'angkut';
         $jenis_unit_angkutan =!empty($mainTarif['jenis_unit']) ? $mainTarif['jenis_unit'] : 'per_unit';
         $jenis_unit = !empty($jenis_unit)?$jenis_unit:$jenis_unit_angkutan;
+        $from_ttuj = !empty($from_ttuj)?true:false;
 
         echo $this->Form->hidden('RevenueDetail.tarif_angkutan_type.', array(
             'id' => 'tarif_angkutan_type',
@@ -84,19 +85,34 @@
     <?php
             $data_type = empty($ttuj_id)?'revenue-manual':false;
 
+            if( !empty($from_ttuj) ) {
+                $checkedCharge = false;
+            } else if( !empty($is_charge) ) {
+                $checkedCharge = true;
+            } else {
+                $checkedCharge = false;
+            }
+
             echo $this->Form->checkbox('RevenueDetail.is_charge_temp.', array(
                 'label' => false,
                 'class' => 'additional-charge',
                 'required' => false,
                 'value' => 1,
-                'checked' => !empty($is_charge)?true:false,
+                'checked' => $checkedCharge,
                 'hiddenField' => false,
-                'disabled' => ( ( !empty($flagTruck) || !empty($is_charge) ) || ( $tarif_angkutan_type != 'angkut' ) )?false:true,
+                'disabled' => ( ( !empty($flagTruck) || !empty($is_charge) || $tarif_angkutan_type != 'angkut' ) && empty($from_ttuj) )?false:true,
                 'data-type' => $data_type,
             ));
             echo $this->Form->hidden('RevenueDetail.is_charge.', array(
                 'value' => !empty($is_charge)?1:0,
                 'class' => 'additional-charge-hidden',
+            ));
+            echo $this->Form->hidden('RevenueDetail.from_ttuj.', array(
+                'type' => 'text',
+                'label' => false,
+                'class' => 'form-control from-ttuj',
+                'required' => false,
+                'value' => $from_ttuj,
             ));
     ?>
 </div>

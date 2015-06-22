@@ -286,6 +286,7 @@ class RevenuesController extends AppController {
                         'payment_type' => $jenis_unit,
                         'tarif_angkutan_id' => $tarif_angkutan_id,
                         'tarif_angkutan_type' => $tarif_angkutan_type,
+                        'from_ttuj' => 1,
                     );
                 }
 
@@ -3049,6 +3050,7 @@ class RevenuesController extends AppController {
                                 $dataRevenuDetail['RevenueDetail']['qty_unit'][$idx] = isset($data['RevenueDetail']['qty_unit'][$keyDetail])?$data['RevenueDetail']['qty_unit'][$keyDetail]:false;
                                 $dataRevenuDetail['RevenueDetail']['payment_type'][$idx] = isset($data['RevenueDetail']['payment_type'][$keyDetail])?$data['RevenueDetail']['payment_type'][$keyDetail]:false;
                                 $dataRevenuDetail['RevenueDetail']['is_charge'][$idx] = isset($data['RevenueDetail']['is_charge'][$keyDetail])?$data['RevenueDetail']['is_charge'][$keyDetail]:false;
+                                $dataRevenuDetail['RevenueDetail']['from_ttuj'][$idx] = !empty($data['RevenueDetail']['from_ttuj'][$keyDetail])?true:false;
                                 $dataRevenuDetail['RevenueDetail']['price_unit'][$idx] = isset($data['RevenueDetail']['price_unit'][$keyDetail])?$data['RevenueDetail']['price_unit'][$keyDetail]:false;
                                 $dataRevenuDetail['RevenueDetail']['total_price_unit'][$idx] = isset($data['RevenueDetail']['total_price_unit'][$keyDetail])?$data['RevenueDetail']['total_price_unit'][$keyDetail]:false;
                                 $idx++;
@@ -3113,6 +3115,7 @@ class RevenuesController extends AppController {
                                     'tarif_angkutan_type' => $tarif_angkutan_type,
                                     'payment_type' => $dataRevenue['RevenueDetail']['payment_type'][$keyDetail],
                                     'is_charge' => !empty($dataRevenue['RevenueDetail']['is_charge'][$keyDetail])?$dataRevenue['RevenueDetail']['is_charge'][$keyDetail]:0,
+                                    'from_ttuj' => !empty($dataRevenue['RevenueDetail']['from_ttuj'][$keyDetail])?true:false,
                                 );
 
                                 $this->Revenue->RevenueDetail->set($data_detail);
@@ -3265,6 +3268,7 @@ class RevenuesController extends AppController {
                                     'no_reference' => str_pad ( $getLastReference++ , 10, "0", STR_PAD_LEFT),
                                     'payment_type' => $dataRevenue['RevenueDetail']['payment_type'][$key],
                                     'is_charge' => !empty($dataRevenue['RevenueDetail']['is_charge'][$key])?$dataRevenue['RevenueDetail']['is_charge'][$key]:0,
+                                    'from_ttuj' => !empty($dataRevenue['RevenueDetail']['from_ttuj'][$key])?true:false,
                                 );
 
                                 $this->Revenue->RevenueDetail->set($data_detail);
@@ -3368,6 +3372,7 @@ class RevenuesController extends AppController {
                                 'group_motor_id' => $value['RevenueDetail']['group_motor_id'],
                                 'city_id' => $value['RevenueDetail']['city_id'],
                                 'is_charge' => $value['RevenueDetail']['is_charge'],
+                                'from_ttuj' => !empty($value['RevenueDetail']['from_ttuj'])?$value['RevenueDetail']['from_ttuj']:false,
                             )
                         );
                     }
@@ -3471,9 +3476,11 @@ class RevenuesController extends AppController {
                             'group_motor_id' => $this->request->data['RevenueDetail']['group_motor_id'][$key],
                             'city_id' => $to_city_id,
                             'is_charge' => $this->request->data['RevenueDetail']['is_charge'][$key],
+                            'from_ttuj' => !empty($this->request->data['RevenueDetail']['from_ttuj'][$key])?true:false,
                             'TipeMotor' => array(
                                 'name' => $group_motor_name,
                             ),
+                            'from_ttuj' => !empty($value['RevenueDetail']['from_ttuj'])?$value['RevenueDetail']['from_ttuj']:false,
                         )
                     );
                 }

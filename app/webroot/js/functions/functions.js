@@ -1297,12 +1297,12 @@ var duplicate_row = function(){
     });
 }
 
-var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge, qty, data_type ) {
+var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge, qty, data_type, from_ttuj ) {
     var ttuj_id = $('#getTtujInfoRevenue').val();
     var customer_id = $('.change-customer-revenue').val();
     var to_city_id = $('#toCityId').val();
     var revenue_tarif_type = $('.revenue_tarif_type').val();
-    var url = '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+revenue_tarif_type+'/';
+    var url = '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+revenue_tarif_type+'/0/0/'+from_ttuj+'/';
 
     if( typeof is_charge == 'undefined' ){
         is_charge = 0;
@@ -1316,7 +1316,7 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
         from_city_id = $('#from-city-revenue-id').val();
         to_city_id = $('#to-city-revenue-id').val();
 
-        url = '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+revenue_tarif_type+'/'+from_city_id+'/'+truck_id+'/';
+        url = '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+revenue_tarif_type+'/'+from_city_id+'/'+truck_id+'/'+from_ttuj+'/';;
     }
 
     $.ajax({
@@ -1371,9 +1371,10 @@ var city_revenue_change = function( obj_city, obj_tipe_motor ){
         var parent = self.parents('tr');
         var group_motor_id = parent.find('.revenue-group-motor').val();
         var qty = parent.find('.revenue-qty').val();
+        var from_ttuj = parent.find('.from-ttuj').val();
         var data_type = self.attr('data-type');
 
-        changeDetailRevenue( parent, val, group_motor_id, 0, qty, data_type );
+        changeDetailRevenue( parent, val, group_motor_id, 0, qty, data_type, from_ttuj );
     });
 
     obj_tipe_motor.change(function() {
@@ -1382,9 +1383,10 @@ var city_revenue_change = function( obj_city, obj_tipe_motor ){
         var parent = self.parents('tr');
         var city_id = parent.find('.city-revenue-change').val();
         var qty = parent.find('.revenue-qty').val();
+        var from_ttuj = parent.find('.from-ttuj').val();
         var data_type = self.attr('data-type');
 
-        changeDetailRevenue( parent, city_id, val, 0, qty, data_type );
+        changeDetailRevenue( parent, city_id, val, 0, qty, data_type, from_ttuj );
 
         return false;
     });
@@ -2409,6 +2411,7 @@ var checkCharge = function ( obj ) {
         var group_motor_id = parent.find('.revenue-group-motor').val();
         var qty = parent.find('.revenue-qty').val();
         var data_type = $(this).attr('data-type');
+        var from_ttuj = parent.find('.from-ttuj').val();
 
         if( $(this).is(':checked') ) {
             val = 1;
@@ -2416,7 +2419,7 @@ var checkCharge = function ( obj ) {
 
         parent.find('.additional-charge-hidden').val(val);
 
-        changeDetailRevenue( parent, city_id, group_motor_id, val, qty, data_type );
+        changeDetailRevenue( parent, city_id, group_motor_id, val, qty, data_type, from_ttuj );
     });
 }
 var leasing_action = function(){

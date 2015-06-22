@@ -782,7 +782,7 @@ class AjaxController extends AppController {
         // }
     }
 
-	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $city_id = false, $group_motor_id = false, $is_charge = false, $to_city_id = false, $qty = 0, $jenis_unit = '', $from_city_id = false, $truck_id = false ){
+	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $city_id = false, $group_motor_id = false, $is_charge = false, $to_city_id = false, $qty = 0, $jenis_unit = '', $from_city_id = false, $truck_id = false, $from_ttuj = false ){
 		$this->loadModel('Ttuj');
 		$this->loadModel('GroupMotor');
 		$this->loadModel('TarifAngkutan');
@@ -843,7 +843,7 @@ class AjaxController extends AppController {
 		$this->set(compact(
 			'detail', 'is_charge', 'mainTarif',
 			'qty', 'jenis_unit', 'truck',
-			'ttuj_id'
+			'ttuj_id', 'from_ttuj'
 		));
 	}
 

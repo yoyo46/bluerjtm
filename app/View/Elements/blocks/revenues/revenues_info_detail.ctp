@@ -46,6 +46,7 @@
                             $jenis_unit_angkutan = !empty($detail['RevenueDetail']['price_unit']['jenis_unit'])?$detail['RevenueDetail']['price_unit']['jenis_unit']:0;
                             $flagShowPrice = false;
                             $total_price_unit = !empty($detail['RevenueDetail']['total_price_unit'])?$detail['RevenueDetail']['total_price_unit']:0;
+                            $from_ttuj = !empty($detail['RevenueDetail']['from_ttuj'])?true:false;
 
                             if( !empty($detail['RevenueDetail']['price_unit']) ){
                                 $price = $detail['RevenueDetail']['price_unit'];
@@ -146,18 +147,33 @@
                     </td>
                     <td class="additional-charge-data" align="center">
                         <?php
+                                if( empty($from_ttuj) ) {
+                                    $checkedCharge = false;
+                                } else if( !empty($detail['RevenueDetail']['is_charge']) ) {
+                                    $checkedCharge = true;
+                                } else {
+                                    $checkedCharge = false;
+                                }
+
                                 echo $this->Form->checkbox('RevenueDetail.is_charge_temp.', array(
                                     'label' => false,
                                     'class' => 'additional-charge',
                                     'required' => false,
                                     'hiddenField' => false,
-                                    'checked' => (!empty($detail['RevenueDetail']['is_charge'])) ? true : false,
+                                    'checked' => $checkedCharge,
                                     'value' => 1,
-                                    'disabled' => ( !empty($flagTruck) || !empty($is_charge) )?false:true,
+                                    'disabled' => ( ( !empty($flagTruck) || !empty($is_charge) ) && empty($from_ttuj) )?false:true,
                                 ));
                                 echo $this->Form->hidden('RevenueDetail.is_charge.', array(
                                     'value' => !empty($is_charge)?1:0,
                                     'class' => 'additional-charge-hidden',
+                                ));
+                                echo $this->Form->hidden('RevenueDetail.from_ttuj.', array(
+                                    'type' => 'text',
+                                    'label' => false,
+                                    'class' => 'form-control from-ttuj',
+                                    'required' => false,
+                                    'value' => $from_ttuj,
                                 ));
                         ?>
                     </td>
