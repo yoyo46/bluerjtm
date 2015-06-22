@@ -143,7 +143,7 @@ class RevenueDetail extends AppModel {
                     'RevenueDetail.price_unit', 'RevenueDetail.tarif_angkutan_id',
                     'RevenueDetail.total_price_unit', 'RevenueDetail.city_id',
                     'SUM(RevenueDetail.total_price_unit) AS total_price_unit',
-                    'RevenueDetail.tarif_angkutan_type', 'RevenueDetail.from_ttuj',
+                    'RevenueDetail.tarif_angkutan_type', 'MAX(RevenueDetail.from_ttuj) from_ttuj',
                     // 'RevenueDetail.note', 
                 ),
             ));

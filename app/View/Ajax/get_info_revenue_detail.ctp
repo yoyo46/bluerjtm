@@ -85,12 +85,18 @@
     <?php
             $data_type = empty($ttuj_id)?'revenue-manual':false;
 
-            if( !empty($from_ttuj) ) {
-                $checkedCharge = false;
-            } else if( !empty($is_charge) ) {
+            if( !empty($is_charge) && empty($from_ttuj) ) {
                 $checkedCharge = true;
+            } else if( !empty($from_ttuj) ) {
+                $checkedCharge = false;
             } else {
                 $checkedCharge = false;
+            }
+
+            if( ( !empty($flagTruck) || !empty($is_charge) || $tarif_angkutan_type != 'angkut' ) && empty($from_ttuj) ) {
+                $disabledCharge = false;
+            } else {
+                $disabledCharge = true;
             }
 
             echo $this->Form->checkbox('RevenueDetail.is_charge_temp.', array(
@@ -100,11 +106,11 @@
                 'value' => 1,
                 'checked' => $checkedCharge,
                 'hiddenField' => false,
-                'disabled' => ( ( !empty($flagTruck) || !empty($is_charge) || $tarif_angkutan_type != 'angkut' ) && empty($from_ttuj) )?false:true,
+                'disabled' => $disabledCharge,
                 'data-type' => $data_type,
             ));
             echo $this->Form->hidden('RevenueDetail.is_charge.', array(
-                'value' => !empty($is_charge)?1:0,
+                'value' => $checkedCharge,
                 'class' => 'additional-charge-hidden',
             ));
             echo $this->Form->hidden('RevenueDetail.from_ttuj.', array(

@@ -1268,6 +1268,7 @@ var duplicate_row = function(){
         var parent = self.parents('tr');
         var tag_element = parent.html();
         var uniqid = Date.now();
+        var revenue_tarif_type = $('.revenue_tarif_type').val();
         var html = '<tr rel="'+uniqid+'" class="list-revenue">'+
             '<td class="city-data">'+$(tag_element).filter('.city-data').html()+'</td>'+
             '<td class="no-do-data" align="center">'+$(tag_element).filter('.no-do-data').html()+'</td>'+
@@ -1287,6 +1288,11 @@ var duplicate_row = function(){
         $('tr[rel="'+uniqid+'"] .additional-charge').attr('checked', false);
         $('tr[rel="'+uniqid+'"] .total-revenue-perunit').html('');
         $('tr[rel="'+uniqid+'"] .total-price-perunit').html('');
+        $('tr[rel="'+uniqid+'"] .from-ttuj').val('');
+
+        if( revenue_tarif_type == 'per_truck' ) {
+            $('tr[rel="'+uniqid+'"] .additional-charge').attr('disabled', false);
+        }
 
         revenue_detail();
         grandTotalRevenue();
@@ -1302,14 +1308,19 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
     var customer_id = $('.change-customer-revenue').val();
     var to_city_id = $('#toCityId').val();
     var revenue_tarif_type = $('.revenue_tarif_type').val();
-    var url = '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+revenue_tarif_type+'/0/0/'+from_ttuj+'/';
 
+    if( typeof customer_id == 'undefined' || isNaN(customer_id) || customer_id == '' ){
+        customer_id = 0;
+    }
     if( typeof is_charge == 'undefined' ){
         is_charge = 0;
     }
     if( typeof qty == 'undefined' || isNaN(qty) || qty == '' ){
         qty = 0;
     }
+    
+    var url = '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+revenue_tarif_type+'/0/0/'+from_ttuj+'/';
+    
     if( data_type == 'revenue-manual' ) {
         customer_id = $('#customer-revenue-manual').val();
         truck_id = $('.truck-revenue-id').val();

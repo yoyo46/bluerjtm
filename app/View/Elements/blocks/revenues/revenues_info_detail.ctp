@@ -24,7 +24,6 @@
                         $total = 0;
                         $totalQty = 0;
                         $flagTruck = false;
-                        $arr_duplicate = array();
 
                         if( !empty($tarifTruck['jenis_unit']) ) {
                             $jenis_unit = $tarifTruck['jenis_unit'];
@@ -147,12 +146,18 @@
                     </td>
                     <td class="additional-charge-data" align="center">
                         <?php
-                                if( empty($from_ttuj) ) {
-                                    $checkedCharge = false;
-                                } else if( !empty($detail['RevenueDetail']['is_charge']) ) {
+                                if( !empty($detail['RevenueDetail']['is_charge']) && empty($from_ttuj) ) {
                                     $checkedCharge = true;
+                                } else if( empty($from_ttuj) ) {
+                                    $checkedCharge = false;
                                 } else {
                                     $checkedCharge = false;
+                                }
+
+                                if( ( !empty($flagTruck) || !empty($is_charge) ) && empty($from_ttuj) ) {
+                                    $disabledCharge = false;
+                                } else {
+                                    $disabledCharge = true;
                                 }
 
                                 echo $this->Form->checkbox('RevenueDetail.is_charge_temp.', array(
@@ -162,10 +167,10 @@
                                     'hiddenField' => false,
                                     'checked' => $checkedCharge,
                                     'value' => 1,
-                                    'disabled' => ( ( !empty($flagTruck) || !empty($is_charge) ) && empty($from_ttuj) )?false:true,
+                                    'disabled' => $disabledCharge,
                                 ));
                                 echo $this->Form->hidden('RevenueDetail.is_charge.', array(
-                                    'value' => !empty($is_charge)?1:0,
+                                    'value' => $checkedCharge,
                                     'class' => 'additional-charge-hidden',
                                 ));
                                 echo $this->Form->hidden('RevenueDetail.from_ttuj.', array(
@@ -185,7 +190,12 @@
                                     if( empty($is_charge) || $tarif_angkutan_type != 'angkut' ) {
                                         if(is_array($price)){
                                             $price = $price['tarif'];
-                                            $spanPrice = $this->Number->format($price, Configure::read('__Site.config_currency_code'), array('places' => 0));
+
+                                            if( empty($price) && $jenis_unit == 'per_truck' ) {
+                                                $spanPrice = '';
+                                            } else {
+                                                $spanPrice = $this->Number->format($price, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                                            }
                                         }else{
                                             $spanPrice = $price;
                                         }
@@ -232,7 +242,13 @@
                                     $value_price = $total_price_unit;
                                 }
                                 
-                                echo $this->Html->tag('span', $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                                if( empty($value_price) && $jenis_unit == 'per_truck' ) {
+                                    $value_price = '';
+                                } else {
+                                    $value_price = $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                                }
+
+                                echo $this->Html->tag('span', $value_price, array(
                                     'class' => 'total-revenue-perunit'
                                 ));
 
@@ -249,8 +265,7 @@
                                 if( $data_type != 'revenue-manual' ) {
                                     $open_duplicate = false;
 
-                                    if(empty($arr_duplicate[$detail['RevenueDetail']['group_motor_id']][$detail['RevenueDetail']['city_id']])){
-                                        $arr_duplicate[$detail['RevenueDetail']['group_motor_id']][$detail['RevenueDetail']['city_id']] = true;
+                                    if( !empty($from_ttuj) ){
                                         $open_duplicate = true;
                                     }
 
@@ -324,7 +339,11 @@
                     <td align="right" colspan="7"><?php echo __('Additional Charge')?></td>
                     <td align="right" id="additional-total-revenue">
                         <?php 
-                                if( !empty($tarifTruck['addCharge']) ) {
+                                if( !empty($this->request->data['Revenue']['additional_charge']) ) {
+                                    $addCharge = $this->request->data['Revenue']['additional_charge'];
+                                    $total += $addCharge;
+                                    echo $this->Number->currency($addCharge, Configure::read('__Site.config_currency_code'), array('places' => 0));   
+                                } else if( !empty($tarifTruck['addCharge']) ) {
                                     $total += $tarifTruck['addCharge'];
                                     echo $this->Number->currency($tarifTruck['addCharge'], Configure::read('__Site.config_currency_code'), array('places' => 0));
                                 } else {

@@ -3372,7 +3372,7 @@ class RevenuesController extends AppController {
                                 'group_motor_id' => $value['RevenueDetail']['group_motor_id'],
                                 'city_id' => $value['RevenueDetail']['city_id'],
                                 'is_charge' => $value['RevenueDetail']['is_charge'],
-                                'from_ttuj' => !empty($value['RevenueDetail']['from_ttuj'])?$value['RevenueDetail']['from_ttuj']:false,
+                                'from_ttuj' => !empty($value[0]['from_ttuj'])?true:false,
                             )
                         );
                     }
@@ -3480,7 +3480,6 @@ class RevenuesController extends AppController {
                             'TipeMotor' => array(
                                 'name' => $group_motor_name,
                             ),
-                            'from_ttuj' => !empty($value['RevenueDetail']['from_ttuj'])?$value['RevenueDetail']['from_ttuj']:false,
                         )
                     );
                 }
