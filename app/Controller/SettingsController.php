@@ -3262,6 +3262,11 @@ class SettingsController extends AppController {
                     $this->request->data['UangJalan']['to_city'] = $name;
                     $options['conditions']['ToCity.name LIKE'] = '%'.$name.'%';
                 }
+                if(!empty($refine['jenis_unit'])){
+                    $name = urldecode($refine['jenis_unit']);
+                    $this->request->data['TarifAngkutan']['jenis_unit'] = $name;
+                    $options['conditions']['TarifAngkutan.jenis_unit LIKE'] = '%'.$name.'%';
+                }
             }
 
             $this->paginate = $this->TarifAngkutan->getData('paginate', $options);

@@ -87,6 +87,10 @@ class RjSettingComponent extends Component {
 					$refine_conditions['TarifAngkutan']['name'] = $refine['TarifAngkutan']['name'];
 				}
 			
+				if( !empty($refine['TarifAngkutan']['jenis_unit']) ) {
+					$refine_conditions['TarifAngkutan']['jenis_unit'] = $refine['TarifAngkutan']['jenis_unit'];
+				}
+			
 				if( !empty($refine['Bank']['name']) ) {
 					$refine_conditions['Bank']['name'] = $refine['Bank']['name'];
 				}

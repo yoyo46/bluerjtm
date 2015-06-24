@@ -38,6 +38,20 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('TarifAngkutan.jenis_unit',array(
+                                'label'=> __('Jenis Unit'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'options' => array(
+                                    'per_unit' => __('Per Unit'),
+                                    'per_truck' => __('Per Truk'),
+                                ),
+                                'empty' => __('Pilih Jenis Unit'),
+                            ));
+                    ?>
+                </div>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
