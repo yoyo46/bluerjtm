@@ -275,11 +275,12 @@
 
                                 echo '<tr>';
                                 echo $this->Html->tag('td', __('Total'), array(
-                                    'style' => 'font-weight: bold;text-align: left;',
-                                ));
-                                echo $this->Html->tag('td', $this->Number->format($grandtotalSaldoAwalCust, '', array('places' => 0)), array(
                                     'style' => 'font-weight: bold;text-align: right;',
+                                    'colspan' => 2,
                                 ));
+                                // echo $this->Html->tag('td', $this->Number->format($grandtotalSaldoAwalCust, '', array('places' => 0)), array(
+                                //     'style' => 'font-weight: bold;text-align: right;',
+                                // ));
                                 echo $this->Html->tag('td', $this->Number->format($grandtotalTagihanCust, '', array('places' => 0)), array(
                                     'style' => 'font-weight: bold;text-align: right;',
                                 ));
@@ -292,9 +293,10 @@
                                 echo $this->Html->tag('td', $this->Number->format($grandtotalKwBatalCust, '', array('places' => 0)), array(
                                     'style' => 'font-weight: bold;text-align: right;',
                                 ));
-                                echo $this->Html->tag('td', $this->Number->format($grandtotalSaldoAkhirCust, '', array('places' => 0)), array(
-                                    'style' => 'font-weight: bold;text-align: right;',
-                                ));
+                                // echo $this->Html->tag('td', $this->Number->format($grandtotalSaldoAkhirCust, '', array('places' => 0)), array(
+                                //     'style' => 'font-weight: bold;text-align: right;',
+                                // ));
+                                echo $this->Html->tag('td', '');
                                 echo '</tr>';
                             }
                     ?>
@@ -304,12 +306,12 @@
 
                             echo '<tr>';
                             echo $this->Html->tag('td', __('Grand Total:'), array(
-                                'style' => 'font-weight: bold;text-align: center;',
-                                'colspan' => 2,
-                            ));
-                            echo $this->Html->tag('td', $this->Number->format($grandtotalSaldoAwal, '', array('places' => 0)), array(
                                 'style' => 'font-weight: bold;text-align: right;',
+                                'colspan' => 4,
                             ));
+                            // echo $this->Html->tag('td', $this->Number->format($grandtotalSaldoAwal, '', array('places' => 0)), array(
+                            //     'style' => 'font-weight: bold;text-align: right;',
+                            // ));
                             echo $this->Html->tag('td', $this->Number->format($grandtotalTagihan, '', array('places' => 0)), array(
                                 'style' => 'font-weight: bold;text-align: right;',
                             ));
@@ -322,9 +324,10 @@
                             echo $this->Html->tag('td', $this->Number->format($grandtotalKwBatal, '', array('places' => 0)), array(
                                 'style' => 'font-weight: bold;text-align: right;',
                             ));
-                            echo $this->Html->tag('td', $this->Number->format($grandtotalSaldoAkhir, '', array('places' => 0)), array(
-                                'style' => 'font-weight: bold;text-align: right;',
-                            ));
+                            echo $this->Html->tag('td', '');
+                            // echo $this->Html->tag('td', $this->Number->format($grandtotalSaldoAkhir, '', array('places' => 0)), array(
+                            //     'style' => 'font-weight: bold;text-align: right;',
+                            // ));
                             echo '</tr>';
                         }
                 ?>
