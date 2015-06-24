@@ -256,7 +256,10 @@ class Ttuj extends AppModel {
         $sjCount = $this->getData('count', array(
             'conditions' => array(
                 'Ttuj.status' => 1,
-                'Ttuj.driver_id' => $driver_id,
+                'OR' => array(
+                    'Ttuj.driver_id' => $driver_id,
+                    'Ttuj.driver_penganti_id' => $driver_id,
+                ),
                 'Ttuj.is_sj_completed' => 0,
             ),
         ));
