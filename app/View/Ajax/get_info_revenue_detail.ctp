@@ -83,7 +83,12 @@
 </div>
 <div id="additional-charge-data">
     <?php
-            $data_type = empty($ttuj_id)?'revenue-manual':false;
+            if( empty($ttuj_id) ) {
+                $data_type = 'revenue-manual';
+                $from_ttuj = false;
+            } else {
+                $data_type = false;
+            }
 
             if( !empty($is_charge) && empty($from_ttuj) ) {
                 $checkedCharge = true;

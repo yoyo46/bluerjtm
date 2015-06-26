@@ -47,6 +47,10 @@
                             $total_price_unit = !empty($detail['RevenueDetail']['total_price_unit'])?$detail['RevenueDetail']['total_price_unit']:0;
                             $from_ttuj = !empty($detail['RevenueDetail']['from_ttuj'])?true:false;
 
+                            if( $data_type == 'revenue-manual' ) {
+                                $from_ttuj = false;
+                            }
+
                             if( !empty($detail['RevenueDetail']['price_unit']) ){
                                 $price = $detail['RevenueDetail']['price_unit'];
                             } else if( empty($id) ) {
@@ -243,12 +247,12 @@
                                 }
                                 
                                 if( empty($value_price) && $jenis_unit == 'per_truck' ) {
-                                    $value_price = '';
+                                    $priceFormat = '';
                                 } else {
-                                    $value_price = $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                                    $priceFormat = $this->Number->currency($value_price, Configure::read('__Site.config_currency_code'), array('places' => 0));
                                 }
 
-                                echo $this->Html->tag('span', $value_price, array(
+                                echo $this->Html->tag('span', $priceFormat, array(
                                     'class' => 'total-revenue-perunit'
                                 ));
 
