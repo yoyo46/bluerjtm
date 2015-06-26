@@ -27,64 +27,89 @@
                 $this->Html->addCrumb($sub_module_title);
                 echo $this->element('blocks/trucks/search_report_truck');
 
-                // echo $this->Form->create('Truck', array(
-                //     'url'=> $this->Html->url( array(
-                //         'controller' => 'trucks',
-                //         'action' => 'search',
-                //         'reports'
-                //     )), 
-                //     'class' => 'form-inline text-right hidden-print',
-                //     'inputDefaults' => array('div' => false),
-                // ));
-
-                // $find_sort = array(
-                //     '' => __('Urutkan Berdasarkan'),
-                //     '1' => __('No. Pol A - Z'),
-                //     '2' => __('No. Pol Z - A'),
-                //     '3' => __('Nama Supir Z - A'),
-                //     '4' => __('Nama Supir Z - A'),
-                // );
-
-                // echo $this->Html->tag('div', $this->Form->input('Truck.sortby', array(
-                //     'label'=> false,
-                //     'options'=> $find_sort,
-                //     'div' => false,
-                //     'data-placeholder' => 'Order By',
-                //     'autocomplete'=> false,
-                //     'empty'=> false,
-                //     'error' => false,
-                //     'onChange' => 'submit()',
-                //     'class' => 'form-control order-by-list'
-                // )), array(
-                //     'class' => 'form-group'
-                // ));
-
-                // echo $this->Form->end();
+                $dataColumns = array(
+                    'nomor_id' => array(
+                        'name' => __('No. ID'),
+                        'field_model' => 'Truck.id',
+                        'display' => false,
+                    ),
+                    'nopol' => array(
+                        'name' => __('Nopol'),
+                        'field_model' => 'Truck.nopol',
+                        'display' => true,
+                    ),
+                    'brand_name' => array(
+                        'name' => __('Merek'),
+                        'field_model' => 'TruckBrand.name',
+                        'display' => true,
+                    ),
+                    'atas_nama' => array(
+                        'name' => __('Pemilik'),
+                        'field_model' => 'Truck.atas_nama',
+                        'display' => true,
+                    ),
+                    'category_name' => array(
+                        'name' => __('Jenis'),
+                        'field_model' => 'TruckCategory.name',
+                        'display' => true,
+                    ),
+                    'driver_name' => array(
+                        'name' => __('Supir'),
+                        'field_model' => 'Driver.driver_name',
+                        'display' => true,
+                    ),
+                    'customer_code' => array(
+                        'name' => __('Alokasi'),
+                        'field_model' => 'CustomerNoType.code',
+                        'display' => true,
+                    ),
+                    'capacity' => array(
+                        'name' => __('Kapasitas'),
+                        'field_model' => 'Truck.capacity',
+                        'display' => true,
+                    ),
+                    'tahun' => array(
+                        'name' => __('Tahun'),
+                        'field_model' => 'Truck.tahun',
+                        'display' => true,
+                    ),
+                    'truck_facility' => array(
+                        'name' => __('Truk Fasilitas'),
+                        'field_model' => 'TruckFacility.name',
+                        'display' => false,
+                    ),
+                    'no_rangka' => array(
+                        'name' => __('No Rangka'),
+                        'field_model' => 'Truck.no_rangka',
+                        'display' => false,
+                    ),
+                );
+                $showHideColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'show-hide' );
+                $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 ?>
 <section class="content invoice">
     <h2 class="page-header">
         <i class="fa fa-globe"></i> <?php echo __('Laporan Truk');?>
         <small class="pull-right">
             <?php
-                echo $text;
+                    echo $text;
             ?>
         </small>
     </h2>
-    <div class="row no-print print-action">
-        <div class="col-xs-12 action">
-            <div class="list-field">
-                <?php 
-                        echo $this->Html->link('<i class="fa fa-th-large"></i> Kolom Laporan', 'javascript:', array(
-                            'escape' => false,
-                            'class' => 'show',
-                        ));
-                ?>
-                <ul>
+    <div class="no-print print-action">
+        <?php 
+                if( !empty($showHideColumn) ) {
+        ?>
+        <div class="list-field pull-left">
+            <div class="btn-group" id="columnDropdown">
+                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Show/Hide Kolom <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li>Kolom Table</li>
+                    <li class="divider"></li>
                     <?php 
-                            echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
-                                'escape' => false,
-                                'class' => 'close'
-                            ));
+                            echo $showHideColumn;
                     ?>
                     <li>
                         <div class="checkbox">
@@ -124,44 +149,35 @@
                     </li>
                 </ul>
             </div>
-            <!-- <button class="btn btn-default" onclick="window.print();"><i class="fa fa-print"></i> Print</button> -->
-            <?php
-                echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $this->here.'/excel', array(
-                    'escape' => false,
-                    'class' => 'btn btn-success pull-right'
-                ));
-                echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $this->here.'/pdf', array(
-                    'escape' => false,
-                    'class' => 'btn btn-primary pull-right'
-                ));
-            ?>
         </div>
-    </div>
-    <div class="table-responsive">
         <?php 
                 }
         ?>
-        <table class="table table-bordered report" border="<?php echo $border; ?>">
+        <div class="action pull-right">
+            <?php
+                    echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $this->here.'/excel', array(
+                        'escape' => false,
+                        'class' => 'btn btn-success pull-right'
+                    ));
+                    echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $this->here.'/pdf', array(
+                        'escape' => false,
+                        'class' => 'btn btn-primary pull-right'
+                    ));
+            ?>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="table-responsive center-table">
+        <?php 
+                }
+        ?>
+        <table class="table table-bordered sorting" border="<?php echo $border; ?>">
             <thead>
                 <tr>
                     <?php
-                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.id', __('No. ID')), array(
-                                'class' => 'hide nomor_id',
-                            ));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.nopol', __('Nopol')));
-                            echo $this->Html->tag('th', $this->Common->getSorting('TruckBrand.name', __('Merek')));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.atas_nama', __('Pemilik')));
-                            echo $this->Html->tag('th', $this->Common->getSorting('TruckCategory.name', __('Jenis')));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Driver.driver_name', __('Supir')));
-                            echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.code', __('Alokasi')));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.capacity', __('Kapasitas')));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.tahun', __('Tahun')));
-                            echo $this->Html->tag('th', $this->Common->getSorting('TruckFacility.name', __('Truk Fasilitas')), array(
-                                'class' => 'hide truck_facility',
-                            ));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.no_rangka', __('No. Rangka')), array(
-                                'class' => 'hide no_rangka',
-                            ));
+                            if( !empty($fieldColumn) ) {
+                                echo $fieldColumn;
+                            }
                     ?>
                 </tr>
             </thead>
@@ -174,17 +190,30 @@
                                 'style' => 'text-align: left;'
                             ));
                             $content .= $this->Html->tag('td', $truck['Truck']['nopol'], array(
-                                'style' => 'text-align: left;'
+                                'style' => 'text-align: left;',
+                                'class' => 'nopol',
                             ));
-                            $content .= $this->Html->tag('td', $truck['TruckBrand']['name']);
-                            $content .= $this->Html->tag('td', $truck['Truck']['atas_nama']);
-                            $content .= $this->Html->tag('td', $truck['TruckCategory']['name']);
-                            $content .= $this->Html->tag('td', $truck['Driver']['driver_name']);
-                            $content .= $this->Html->tag('td', $truck['CustomerNoType']['code']);
+                            $content .= $this->Html->tag('td', $truck['TruckBrand']['name'], array(
+                                'class' => 'brand_name',
+                            ));
+                            $content .= $this->Html->tag('td', $truck['Truck']['atas_nama'], array(
+                                'class' => 'atas_nama',
+                            ));
+                            $content .= $this->Html->tag('td', $truck['TruckCategory']['name'], array(
+                                'class' => 'category_name',
+                            ));
+                            $content .= $this->Html->tag('td', $truck['Driver']['driver_name'], array(
+                                'class' => 'driver_name',
+                            ));
+                            $content .= $this->Html->tag('td', $truck['CustomerNoType']['code'], array(
+                                'class' => 'customer_code',
+                            ));
                             $content .= $this->Html->tag('td', $truck['Truck']['capacity'], array(
+                                'class' => 'capacity',
                                 'style' => 'text-align: center;'
                             ));
                             $content .= $this->Html->tag('td', $truck['Truck']['tahun'], array(
+                                'class' => 'tahun',
                                 'style' => 'text-align: center;'
                             ));
                             $content .= $this->Html->tag('td', $truck['TruckFacility']['name'], array(

@@ -222,6 +222,7 @@ class RevenueDetail extends AppModel {
                 'conditions' => $conditions,
                 'order' => array(
                     'Revenue.date_revenue' => 'ASC',
+                    'RevenueDetail.id' => 'ASC',
                     'Revenue.id' => 'ASC',
                 ),
                 'contain' => $contains,

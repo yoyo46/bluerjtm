@@ -1318,6 +1318,9 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
     if( typeof qty == 'undefined' || isNaN(qty) || qty == '' ){
         qty = 0;
     }
+    if( typeof group_motor_id == 'undefined' || isNaN(group_motor_id) || group_motor_id == '' ){
+        group_motor_id = 0;
+    }
     
     var url = '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+revenue_tarif_type+'/0/0/'+from_ttuj+'/';
     
@@ -3824,5 +3827,26 @@ $(function() {
                 return false;
             }
         });
+    });
+
+    $('#columnDropdown').on({
+        "shown.bs.dropdown": function() { this.closable = false; },
+        "click":             function(e) { 
+            var target = $(e.target);
+
+            if( target.parents('ul.dropdown-menu').length == 0 ) 
+                this.closable = true;
+            else 
+                this.closable = false; 
+        },
+        "hide.bs.dropdown":  function() { return this.closable; }
+    });
+
+    $(document).click(function(e){
+        var target = $(e.target);
+        
+        if( target.parents('#columnDropdown').length == 0 ) {
+            $('#columnDropdown').removeClass('open');
+        }
     });
 });

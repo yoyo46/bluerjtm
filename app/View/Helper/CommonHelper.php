@@ -491,13 +491,13 @@ class CommonHelper extends AppHelper {
     function getSorting ( $model = false,  $label = false ) {
         $named = $this->params['named'];
         
-        if( !empty($named['sort']) && $named['sort'] == $model ) {
-            if( !empty($named['direction']) && strtolower($named['direction']) == 'desc' ) {
-                $label = sprintf('%s <i class="fa fa-sort-amount-desc"></i>', $label);
-            } else {
-                $label = sprintf('%s <i class="fa fa-sort-amount-asc"></i>', $label);
-            }
-        }
+        // if( !empty($named['sort']) && $named['sort'] == $model ) {
+        //     if( !empty($named['direction']) && strtolower($named['direction']) == 'desc' ) {
+        //         $label = sprintf('%s <i class="fa fa-sort-amount-desc"></i>', $label);
+        //     } else {
+        //         $label = sprintf('%s <i class="fa fa-sort-amount-asc"></i>', $label);
+        //     }
+        // }
 
         if( $this->Paginator->hasPage() ) {
             return $this->Paginator->sort($model, $label, array(
@@ -893,5 +893,47 @@ class CommonHelper extends AppHelper {
         } else {
             return $total;
         }
+    }
+
+    function _generateShowHideColumn ( $dataColumns, $data_type ) {
+        $result = false;
+
+        if( !empty($dataColumns) ) {
+            foreach ($dataColumns as $key_field => $dataColumn) {
+                $field_model = !empty($dataColumn['field_model'])?$dataColumn['field_model']:false;
+                $name = !empty($dataColumn['name'])?$dataColumn['name']:false;
+                $display = !empty($dataColumn['display'])?$dataColumn['display']:false;
+
+                if( !empty($display) ) {
+                    $checked = true;
+                    $addClass = '';
+                } else {
+                    $checked = false;
+                    $addClass = 'hide';
+                }
+
+                switch ($data_type) {
+                    case 'show-hide':
+                        $checkbox = $this->Form->checkbox($field_model, array(
+                            'data-field' => $key_field,
+                            'checked' => $checked,
+                        ));
+                        $content = $this->Html->tag('li', $this->Html->tag('div', $this->Html->tag('label', $checkbox.$name), array(
+                            'class' => 'checkbox',
+                        )));
+                        break;
+                    
+                    default:
+                        $content = $this->Html->tag('th', $this->getSorting($field_model, $name), array(
+                            'class' => sprintf('%s %s', $addClass, $key_field),
+                        ));
+                        break;
+                }
+
+                $result[] = $content;
+            }
+        }
+
+        return is_array($result)?implode('', $result):$result;
     }
 }
