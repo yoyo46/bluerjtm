@@ -1,3 +1,5 @@
 <?php
-        echo $this->element('blocks/revenues/preview_invoice');
+        echo $this->element('blocks/revenues/preview_invoice', array(
+        	'preview' => true,
+    	));
 ?>

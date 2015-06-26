@@ -266,8 +266,9 @@
                 'class' => 'alert alert-warning text-center',
             )));
         }
-?>
 
+        if( empty($preview) ) {
+?>
 <div class="box-footer text-center action">
 	<?php
     		echo $this->Html->link(__('Kembali'), array(
@@ -277,3 +278,6 @@
 			));
 	?>
 </div>
+<?php 
+		}
+?>

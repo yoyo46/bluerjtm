@@ -53,15 +53,8 @@
                 <tr>
                     <?php 
                             echo $this->Html->tag('th', __('Truk'), array(
-                                'style' => 'text-align: center;width: 100px;display:block;',
-                                'data-options' => 'field:\'nopol\',width:150,sortable:true',
+                                'style' => 'text-align: center;min-width: 100px;',
                             ));
-                    ?>
-                <!-- </tr>
-            </thead>
-            <thead>
-                <tr> -->
-                    <?php
 
                             for ($i=1; $i <= $lastDay; $i++) {
                                 echo $this->Html->tag('th', $i, array(

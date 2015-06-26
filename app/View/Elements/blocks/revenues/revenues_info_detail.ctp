@@ -172,6 +172,7 @@
                                     'checked' => $checkedCharge,
                                     'value' => 1,
                                     'disabled' => $disabledCharge,
+                                    'data-type' => $data_type,
                                 ));
                                 echo $this->Form->hidden('RevenueDetail.is_charge.', array(
                                     'value' => $checkedCharge,

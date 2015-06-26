@@ -3053,6 +3053,10 @@ class RevenuesController extends AppController {
                                 $dataRevenuDetail['RevenueDetail']['from_ttuj'][$idx] = !empty($data['RevenueDetail']['from_ttuj'][$keyDetail])?true:false;
                                 $dataRevenuDetail['RevenueDetail']['price_unit'][$idx] = isset($data['RevenueDetail']['price_unit'][$keyDetail])?$data['RevenueDetail']['price_unit'][$keyDetail]:false;
                                 $dataRevenuDetail['RevenueDetail']['total_price_unit'][$idx] = isset($data['RevenueDetail']['total_price_unit'][$keyDetail])?$data['RevenueDetail']['total_price_unit'][$keyDetail]:false;
+
+                                if( $dataRevenuDetail['RevenueDetail']['payment_type'][$idx] == 'per_truck' && empty($dataRevenuDetail['RevenueDetail']['is_charge'][$idx]) ) {
+                                    $dataRevenuDetail['RevenueDetail']['total_price_unit'][$idx] = 0;
+                                }
                                 $idx++;
                             // }
                         }
