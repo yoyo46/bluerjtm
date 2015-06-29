@@ -517,7 +517,7 @@ class AjaxController extends AppController {
 		                ),
 		                'fields' => array(
 		                    'SUM(RevenueDetail.qty_unit) as count_qty'
-		                )
+		                ),
 		            ));
 
 		            if( !empty($qtyUsed[0]['count_qty']) ) {

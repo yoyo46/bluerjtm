@@ -126,7 +126,7 @@ class Revenue extends AppModel {
         return $result;
     }
 
-    function getMerge ($data, $id, $data_type = 'first') {
+    function getMerge ($data, $invoice_id, $id, $data_type = 'first') {
         if(empty($data['Revenue'])){
             switch ($data_type) {
                 case 'all':
@@ -136,7 +136,11 @@ class Revenue extends AppModel {
                             'Revenue.status' => 1,
                         ),
                         'contain' => array(
-                            'RevenueDetail',
+                            'RevenueDetail' => array(
+                                'conditions' => array(
+                                    'RevenueDetail.invoice_id' => $invoice_id,
+                                ),
+                            ),
                         ),
                     ));
 
@@ -341,7 +345,8 @@ class Revenue extends AppModel {
                 'Revenue.customer_id' => $customer_id,
                 'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
                 'RevenueDetail.tarif_angkutan_type' => $tarif_type,
-                'Revenue.status' => 1
+                'RevenueDetail.invoice_id' => NULL,
+                'Revenue.status' => 1,
             ),
             'contain' => array(
                 'Revenue'
@@ -349,7 +354,7 @@ class Revenue extends AppModel {
             'fields' => array(
                 'RevenueDetail.id', 'Revenue.id'
             ),
-        ), false);
+        ));
         $revenueId = array();
 
         if(!empty($revenueDetails)){

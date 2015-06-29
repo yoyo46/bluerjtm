@@ -156,15 +156,19 @@
                     <?php 
                             $class_status = 'label label-default';
                             $statusRevenue = ucfirst($value['Revenue']['transaction_status']);
+                            $labelEdit = __('Ubah');
 
                             if(!empty($value['Invoice']['complete_paid'])){
                                 $class_status = 'label label-success';
                                 $statusRevenue = __('Paid');
+                                $labelEdit = __('Detail');
                             } else if($value['Revenue']['transaction_status'] == 'half_invoiced'){
                                 $class_status = 'label label-warning';
                                 $statusRevenue = __('Half Invoiced');
+                                $labelEdit = __('Detail');
                             } else if($value['Revenue']['transaction_status'] == 'invoiced'){
                                 $class_status = 'label label-primary';
+                                $labelEdit = __('Detail');
                             } elseif($value['Revenue']['transaction_status'] == 'posting'){
                                 $class_status = 'label label-info';
                             }
@@ -186,7 +190,7 @@
                                     $urlEdit[] = 'manual';
                                 }
 
-                                echo $this->Html->link('Rubah', $urlEdit, array(
+                                echo $this->Html->link($labelEdit, $urlEdit, array(
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
                             }

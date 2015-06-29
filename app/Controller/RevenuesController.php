@@ -3234,8 +3234,10 @@ class RevenuesController extends AppController {
                             // }
 
                             if($id && $data_local){
-                                $this->Revenue->RevenueDetail->deleteAll(array(
-                                    'revenue_id' => $revenue_id
+                                $this->Revenue->RevenueDetail->updateAll(array(
+                                    'RevenueDetail.status' => 0
+                                ), array(
+                                    'RevenueDetail.revenue_id' => $revenue_id,
                                 ));
 
                                 $this->TtujTipeMotorUse->deleteAll(array(
@@ -5229,7 +5231,7 @@ class RevenuesController extends AppController {
                                 'fields' => array(
                                     'RevenueDetail.revenue_id'
                                 )
-                            ));
+                            ), false);
                             $revenueDetailId = $this->Revenue->RevenueDetail->getData('list', array(
                                 'conditions' => array(
                                     'RevenueDetail.invoice_id' => $id
@@ -5237,7 +5239,7 @@ class RevenuesController extends AppController {
                                 'fields' => array(
                                     'RevenueDetail.id', 'RevenueDetail.id',
                                 )
-                            ));
+                            ), false);
                         }
 
                         if(!empty($revenueDetailId)){
@@ -5258,7 +5260,7 @@ class RevenuesController extends AppController {
                                 $revenueDetails = $this->Revenue->RevenueDetail->getData('first', array(
                                     'conditions' => array(
                                         'RevenueDetail.revenue_id' => $revenue_id,
-                                        'RevenueDetail.invoice_id <>' => NULL,
+                                        'RevenueDetail.invoice_id' => $id,
                                     ),
                                 ), false);
 
@@ -5768,7 +5770,6 @@ class RevenuesController extends AppController {
 
                 if( !empty($ttujs) ) {
                     foreach ($ttujs as $key => $ttuj) {
-                        // $ttuj = $this->Revenue->getPaid( $ttuj, $ttuj['Ttuj']['id'] );
                         $ttuj['SjKembali'] = $this->Ttuj->SuratJalan->getSJKembali( $ttuj['Ttuj']['id'] );
                         $ttuj['TotalMuatan'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj['Ttuj']['id'] );
                         $ttujs[$key] = $ttuj;
@@ -6199,12 +6200,12 @@ class RevenuesController extends AppController {
 
                     if( !empty($invoice['InvoiceDetail']) ) {
                         $revenue_id = Set::extract('/InvoiceDetail/revenue_id', $invoice['InvoiceDetail']);
-                        $invoice = $this->Revenue->getMerge($invoice, $revenue_id, 'all');
+                        $invoice = $this->Revenue->getMerge($invoice, $id, $revenue_id, 'all');
 
                         if( !empty($invoice['Revenue']) ) {
                             foreach ($invoice['Revenue'] as $key => $revenue) {
-                                $revenue = $this->Revenue->RevenueDetail->getSumUnit($revenue, $revenue['Revenue']['id'], 'revenue');
-                                $revenue = $this->Revenue->RevenueDetail->getSumUnit($revenue, $revenue['Revenue']['id'], 'revenue_price');
+                                $revenue = $this->Revenue->RevenueDetail->getSumUnit($revenue, $id, 'revenue');
+                                $revenue = $this->Revenue->RevenueDetail->getSumUnit($revenue, $id, 'revenue_price');
                                 $invoice['Revenue'][$key] = $revenue;
                             }
                         }

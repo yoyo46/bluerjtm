@@ -4,6 +4,7 @@
 			'action' => 'index'
 		));
 		$this->Html->addCrumb($sub_module_title);
+		$data_local = !empty($data_local)?$data_local:false;
 
 		echo $this->Form->create('Revenue', array(
 			'url'=> $this->Html->url( null, true ), 
@@ -178,29 +179,7 @@
 				'class'=> 'btn btn-default',
 			));
 
-			$posting = false;
-			$invoiced = false;
-
-			if( !empty($data_local['Revenue']['transaction_status']) && $data_local['Revenue']['transaction_status'] == 'posting' ) {
-				$posting = true;
-			}
-			if( !empty($data_local['Revenue']['transaction_status']) && $data_local['Revenue']['transaction_status'] == 'invoiced' ) {
-				$invoiced = true;
-			}
-
-			if( !$invoiced ) {
-	    		echo $this->Form->button(__('Posting'), array(
-	    			'type' => 'submit',
-					'class'=> 'btn btn-success submit-form btn-lg',
-					'action_type' => 'posting'
-				));
-				
-				echo $this->Form->button(__('Unposting'), array(
-	    			'type' => 'submit',
-					'class'=> 'btn btn-primary submit-form',
-					'action_type' => 'unposting'
-				));
-			}
+			$this->Common->_getButtonPostingUnposting( $data_local );
 	?>
 </div>
 <?php

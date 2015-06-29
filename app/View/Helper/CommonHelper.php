@@ -936,4 +936,30 @@ class CommonHelper extends AppHelper {
 
         return is_array($result)?implode('', $result):$result;
     }
+
+    function _getButtonPostingUnposting ( $revenue = false ) {
+        $posting = false;
+        $invoiced = false;
+
+        if( !empty($revenue['Revenue']['transaction_status']) && $revenue['Revenue']['transaction_status'] == 'posting' ) {
+            $posting = true;
+        }
+        if( !empty($revenue['Revenue']['transaction_status']) && in_array($revenue['Revenue']['transaction_status'], array( 'invoiced', 'half_invoiced' )) ) {
+            $invoiced = true;
+        }
+
+        if( !$invoiced ) {
+            echo $this->Form->button(__('Posting'), array(
+                'type' => 'submit',
+                'class'=> 'btn btn-success submit-form btn-lg',
+                'action_type' => 'posting'
+            ));
+            
+            echo $this->Form->button(__('Unposting'), array(
+                'type' => 'submit',
+                'class'=> 'btn btn-primary submit-form',
+                'action_type' => 'unposting'
+            ));
+        }
+    }
 }

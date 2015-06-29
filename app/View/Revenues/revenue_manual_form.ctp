@@ -323,17 +323,7 @@
 				'class'=> 'btn btn-default',
 			));
 
-    		echo $this->Form->button(__('Posting'), array(
-    			'type' => 'submit',
-				'class'=> 'btn btn-success submit-form btn-lg',
-				'action_type' => 'posting'
-			));
-			
-			echo $this->Form->button(__('Unposting'), array(
-    			'type' => 'submit',
-				'class'=> 'btn btn-primary submit-form',
-				'action_type' => 'unposting'
-			));
+			$this->Common->_getButtonPostingUnposting( $data_local );
 	?>
 </div>
 <?php

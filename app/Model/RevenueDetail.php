@@ -65,7 +65,9 @@ class RevenueDetail extends AppModel {
         ),
     );
 
-	function getData($find, $options = false){
+	function getData( $find, $options = false, $elements = array(), $is_merge = true ){
+        $active = isset($elements['active'])?$elements['active']:true;
+
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(),
@@ -75,7 +77,11 @@ class RevenueDetail extends AppModel {
             'fields' => array(),
         );
 
-        if(!empty($options)){
+        if( !empty($active) ) {
+            $options['conditions']['RevenueDetail.status'] = 1;
+        }
+
+        if( !empty($options) && !empty($is_merge) ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
@@ -91,6 +97,8 @@ class RevenueDetail extends AppModel {
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
             }
+        } else if( !empty($options) && empty($is_merge) ) {
+            $default_options = $options;
         }
 
         if( $find == 'paginate' ) {
@@ -103,11 +111,13 @@ class RevenueDetail extends AppModel {
 
     function getMerge($data, $id){
         if(empty($data['RevenueDetail'])){
-            $data_merge = $this->find('first', array(
+            $data_merge = $this->getData('first', array(
                 'conditions' => array(
-                    'id' => $id
-                )
-            ));
+                    'id' => $id,
+                ),
+            ), array(
+                'active' => true
+            ), false);
 
             if(!empty($data_merge)){
                 $data = array_merge($data, $data_merge);
@@ -119,7 +129,7 @@ class RevenueDetail extends AppModel {
 
     function getMergeAll($data, $revenue_id){
         if(empty($data['RevenueDetail'])){
-            $data_merge = $this->find('all', array(
+            $data_merge = $this->getData('all', array(
                 'conditions' => array(
                     'RevenueDetail.revenue_id' => $revenue_id,
                 ),
@@ -146,7 +156,9 @@ class RevenueDetail extends AppModel {
                     'RevenueDetail.tarif_angkutan_type', 'MAX(RevenueDetail.from_ttuj) from_ttuj',
                     // 'RevenueDetail.note', 
                 ),
-            ));
+            ), array(
+                'active' => true,
+            ), false);
 
             if(!empty($data_merge)){
                 $data['RevenueDetail'] = $data_merge;
@@ -157,7 +169,7 @@ class RevenueDetail extends AppModel {
     }
 
     function getLastReference(){
-        return $this->find('first', array(
+        return $this->getData('first', array(
             'conditions' => array(
                 'RevenueDetail.no_reference <>' => ''
             ),
@@ -165,10 +177,9 @@ class RevenueDetail extends AppModel {
                 'RevenueDetail.no_reference'
             ),
             'order' => array(
-                'RevenueDetail.id' => 'no_reference',
                 'RevenueDetail.id' => 'DESC'
             )
-        ));
+        ), false, false);
     }
 
     function getPreviewInvoice ( $id = false, $invoice_type = 'angkut', $action = false, $data_action = false, $revenue_detail_id = false ) {
@@ -288,13 +299,13 @@ class RevenueDetail extends AppModel {
         switch ($data_action) {
             case 'revenue':
                 $options['conditions'] = array(
-                    'RevenueDetail.revenue_id' => $id,
+                    'RevenueDetail.invoice_id' => $id,
                 );
                 $options['group'] = array(
                     'RevenueDetail.revenue_id',
                 );
 
-                $data_merge = $this->find('first', $options);
+                $data_merge = $this->getData('first', $options, false, false);
 
                 if(!empty($data_merge[0])){
                     $data['qty_unit'] = $data_merge[0]['qty_unit'];
@@ -304,7 +315,7 @@ class RevenueDetail extends AppModel {
             case 'revenue_price':
                 $options = array(
                     'conditions' => array(
-                        'RevenueDetail.revenue_id' => $id,
+                        'RevenueDetail.invoice_id' => $id,
                     ),
                     'group' => array(
                         'RevenueDetail.revenue_id',
@@ -314,7 +325,7 @@ class RevenueDetail extends AppModel {
                     ),
                 );
 
-                $data_merge = $this->find('first', $options);
+                $data_merge = $this->getData('first', $options, false, false);
 
                 if(!empty($data_merge[0])){
                     $data['total_price'] = $data_merge[0]['total_price'];
@@ -329,7 +340,7 @@ class RevenueDetail extends AppModel {
                     'RevenueDetail.invoice_id',
                 );
 
-                $data_merge = $this->find('first', $options);
+                $data_merge = $this->getData('first', $options, false, false);
 
                 if(!empty($data_merge[0])){
                     $data['RevenueDetail']['qty_unit'] = $data_merge[0]['qty_unit'];
@@ -341,7 +352,7 @@ class RevenueDetail extends AppModel {
     }
 
     function getToCity($data, $ttuj_id){
-        $revenueDetails = $this->find('list', array(
+        $revenueDetails = $this->getData('list', array(
             'conditions' => array(
                 'Revenue.ttuj_id' => $ttuj_id,
                 'Revenue.status' => 1,
@@ -359,7 +370,9 @@ class RevenueDetail extends AppModel {
             'group' => array(
                 'RevenueDetail.city_id'
             ),
-        ));
+        ), array(
+            'active' => true,
+        ), false);
 
         if(!empty($revenueDetails)){
             $data['city_name'] = implode(', ', $revenueDetails);
