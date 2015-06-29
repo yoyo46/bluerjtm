@@ -897,13 +897,13 @@ class CommonHelper extends AppHelper {
 
     function _allowShowColumn ( $modelName, $fieldName ) {
         $_allowShow = isset($this->request->data[$modelName][$fieldName])?$this->request->data[$modelName][$fieldName]:true;
-        $style = false;
+        $result = true;
 
         if( empty($_allowShow) ) {
-            $style = 'display: none;';
+            $result = false;
         }
 
-        return $style;
+        return $result;
     }
 
     function _generateShowHideColumn ( $dataColumns, $data_type, $is_print = false ) {
@@ -921,6 +921,7 @@ class CommonHelper extends AppHelper {
                 $style = !empty($dataColumn['style'])?$dataColumn['style']:false;
                 $name = !empty($dataColumn['name'])?$dataColumn['name']:false;
                 $display = !empty($dataColumn['display'])?$dataColumn['display']:false;
+                $content = false;
 
                 if( !empty($display) ) {
                     $checked = true;
@@ -943,16 +944,21 @@ class CommonHelper extends AppHelper {
                     
                     default:
                         // Set Allow Show Column
-                        $style = $this->_allowShowColumn($modelName, $fieldName);
+                        $allowShow = $this->_allowShowColumn($modelName, $fieldName);
 
-                        $content = $this->Html->tag('th', $this->getSorting($field_model, $name, $is_print), array(
-                            'class' => sprintf('%s %s', $addClass, $key_field),
-                            'style' => $style,
-                        ));
+                        if( !empty($allowShow) ) {
+                            $content = $this->Html->tag('th', $this->getSorting($field_model, $name, $is_print), array(
+                                'class' => sprintf('%s %s', $addClass, $key_field),
+                                'style' => $style,
+                            ));
+                        }
+
                         break;
                 }
 
-                $result[] = $content;
+                if( !empty($content) ) {
+                    $result[] = $content;
+                }
             }
         }
 
@@ -961,18 +967,24 @@ class CommonHelper extends AppHelper {
 
     function _getDataColumn ( $value, $modelName, $fieldName, $options = false ) {
         $default_style = !empty($options['style'])?$options['style']:false;
+        $style = false;
+        $result = false;
 
         // Set Allow Show Column
-        $style = $this->_allowShowColumn($modelName, $fieldName);
+        $allowShow = $this->_allowShowColumn($modelName, $fieldName);
 
-        $default_style .= $style;
-        $options['style'] = $default_style;
+        if( !empty($allowShow) ) {
+            $default_style .= $style;
+            $options['style'] = $default_style;
 
-        if( empty($options['style']) ) {
-            unset($options['style']);
+            if( empty($options['style']) ) {
+                unset($options['style']);
+            }
+
+            $result = $this->Html->tag('td', $value, $options);
         }
 
-        return $this->Html->tag('td', $value, $options);
+        return $result;
     }
 
     function _getShowHideColumn ( $formName, $showHideColumn, $options_form = false ) {
