@@ -2920,9 +2920,9 @@ class TrucksController extends AppController {
             $this->set('sub_module_title', __('Laporan Truk'));
             
             $defaul_condition = array();
-
             $from_date = '';
             $to_date = '';
+
             if(!empty($this->params['named'])){
                 $refine = $this->params['named'];
                 if(!empty($refine['from'])){
@@ -3024,7 +3024,6 @@ class TrucksController extends AppController {
                     'TruckBrand', 
                     'TruckCategory',
                     'TruckFacility',
-                    'Driver',
                     'TruckCustomer',
                     'CustomerNoType',
                 )
@@ -3038,6 +3037,13 @@ class TrucksController extends AppController {
 
             $this->paginate = $options;
             $trucks = $this->paginate('Truck');
+
+            if( !empty($trucks) ) {
+                foreach ($trucks as $key => $truck) {
+                    $truck = $this->Truck->Driver->getMerge( $truck, $truck['Truck']['driver_id'] );
+                    $trucks[$key] = $truck;
+                }
+            }
 
             $this->set(compact('trucks', 'from_date', 'to_date', 'data_action'));
 

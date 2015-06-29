@@ -2190,6 +2190,42 @@ var ajaxModal = function ( obj, prettyPhoto ) {
     });
 }
 
+var ajaxLink = function ( obj, prettyPhoto ) {
+    if( typeof obj == 'undefined' ) {
+        obj = $('.ajaxLink');
+    }
+
+    obj.click(function(msg) {
+        var type_action = '';
+        var vthis = $(this);
+        var url = vthis.attr('href');
+        var alert_msg = vthis.attr('alert');
+        var getData = vthis.attr('data-request');
+        var form = $(getData);
+        var data = false;
+
+        if( alert_msg != null ) {
+            if ( !confirm(alert_msg) ) { 
+                return false;
+            }
+        }
+
+        if( typeof getData != 'undefined' ) {
+            data = form.serialize();
+            form.attr('action', url);
+            form.submit();
+        }
+
+        return false;
+    });
+
+    $('#myModal').on('hidden.bs.modal', function () {
+        $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
+        $('.modal-dialog').removeClass('expand-modal');
+        $('.modal-content').removeClass('expand-content-modal');
+    });
+}
+
 var closeModal = function () {
     $('.close-modal').click(function(){
         $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
@@ -3471,6 +3507,7 @@ $(function() {
 
     duplicate_row();
     ajaxModal();
+    ajaxLink();
     city_revenue_change();
     checkCharge( $('.additional-charge') );
     check_all_checkbox();

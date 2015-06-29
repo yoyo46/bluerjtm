@@ -488,7 +488,7 @@ class CommonHelper extends AppHelper {
 
 
 
-    function getSorting ( $model = false,  $label = false ) {
+    function getSorting ( $model = false,  $label = false, $is_print = false ) {
         $named = $this->params['named'];
         
         // if( !empty($named['sort']) && $named['sort'] == $model ) {
@@ -499,7 +499,7 @@ class CommonHelper extends AppHelper {
         //     }
         // }
 
-        if( $this->Paginator->hasPage() ) {
+        if( $this->Paginator->hasPage() && empty($is_print) ) {
             return $this->Paginator->sort($model, $label, array(
                 'escape' => false
             ));
@@ -895,12 +895,30 @@ class CommonHelper extends AppHelper {
         }
     }
 
-    function _generateShowHideColumn ( $dataColumns, $data_type ) {
+    function _allowShowColumn ( $modelName, $fieldName ) {
+        $_allowShow = isset($this->request->data[$modelName][$fieldName])?$this->request->data[$modelName][$fieldName]:true;
+        $style = false;
+
+        if( empty($_allowShow) ) {
+            $style = 'display: none;';
+        }
+
+        return $style;
+    }
+
+    function _generateShowHideColumn ( $dataColumns, $data_type, $is_print = false ) {
         $result = false;
 
         if( !empty($dataColumns) ) {
             foreach ($dataColumns as $key_field => $dataColumn) {
                 $field_model = !empty($dataColumn['field_model'])?$dataColumn['field_model']:false;
+                // Get Data Model
+                $data_model = explode('.', $field_model);
+                if( !empty($data_model) ) {
+                    list($modelName, $fieldName) = $data_model;
+                }
+
+                $style = !empty($dataColumn['style'])?$dataColumn['style']:false;
                 $name = !empty($dataColumn['name'])?$dataColumn['name']:false;
                 $display = !empty($dataColumn['display'])?$dataColumn['display']:false;
 
@@ -924,8 +942,12 @@ class CommonHelper extends AppHelper {
                         break;
                     
                     default:
-                        $content = $this->Html->tag('th', $this->getSorting($field_model, $name), array(
+                        // Set Allow Show Column
+                        $style = $this->_allowShowColumn($modelName, $fieldName);
+
+                        $content = $this->Html->tag('th', $this->getSorting($field_model, $name, $is_print), array(
                             'class' => sprintf('%s %s', $addClass, $key_field),
+                            'style' => $style,
                         ));
                         break;
                 }
@@ -935,6 +957,71 @@ class CommonHelper extends AppHelper {
         }
 
         return is_array($result)?implode('', $result):$result;
+    }
+
+    function _getDataColumn ( $value, $modelName, $fieldName, $options = false ) {
+        $default_style = !empty($options['style'])?$options['style']:false;
+
+        // Set Allow Show Column
+        $style = $this->_allowShowColumn($modelName, $fieldName);
+
+        $default_style .= $style;
+        $options['style'] = $default_style;
+
+        if( empty($options['style']) ) {
+            unset($options['style']);
+        }
+
+        return $this->Html->tag('td', $value, $options);
+    }
+
+    function _getShowHideColumn ( $formName, $showHideColumn, $options_form = false ) {
+        if( empty($options_form) ) {
+            $options_form = array(
+                'url'=> $this->Html->url( null, true ), 
+                'role' => 'form',
+                'inputDefaults' => array('div' => false),
+            );
+        }
+
+        // Set Form
+        $content = $this->Form->create($formName, $options_form);
+
+        // Set Button
+        $_caret = $this->Html->tag('span', '', array(
+            'class' => 'caret',
+        ));
+        $_title_button = sprintf(__('Show/Hide Kolom %s'), $_caret);
+        $_button = $this->Form->button($_title_button, array(
+            'class' => 'btn btn-info dropdown-toggle',
+            'data-toggle' => 'dropdown',
+        ));
+        $contentDiv = $_button;
+
+        // Set UL
+        $contentLI = $this->Html->tag('li', __('Kolom Table'));
+        $contentLI .= $this->Html->tag('li', '', array(
+            'class' => 'divider',
+        ));
+        $contentLI .= $showHideColumn;
+        $contentUL = $this->Html->tag('ul', $contentLI, array(
+            'class' => 'dropdown-menu',
+            'role' => 'menu',
+        ));
+        $contentDiv .= $contentUL;
+
+        // Set Content
+        $content .= $this->Html->tag('div', $this->Html->tag('div', $contentDiv, array(
+            'class' => 'btn-group',
+            'id' => 'columnDropdown',
+        )), array(
+            'class' => 'list-field pull-left',
+        ));
+
+        // Set End Form
+        $content .= $this->Form->end();
+
+        return $content;
     }
 
     function _getButtonPostingUnposting ( $revenue = false ) {
@@ -961,5 +1048,36 @@ class CommonHelper extends AppHelper {
                 'action_type' => 'unposting'
             ));
         }
+    }
+
+    function _getPrint ( $options = false ) {
+        $_excel = isset($options['_excel'])?$options['_excel']:true;
+        $_pdf = isset($options['_pdf'])?$options['_pdf']:true;
+        $_attr = isset($options['_attr'])?$options['_attr']:true;
+        $result = false;
+        $default_attr = array(
+            'escape' => false,
+            'class' => false,
+        );
+
+        if( !empty($_attr) ) {
+            $default_attr = array_merge($default_attr, $_attr);
+        }
+
+        if( !empty($_excel) ) {
+            $_excel_attr = $default_attr;
+            $_excel_attr['class'] = $default_attr['class'].' btn btn-success pull-right';
+            $result .= $this->Html->link('<i class="fa fa-download"></i> Download Excel', $this->here.'/excel', $_excel_attr);
+        }
+
+        if( !empty($_pdf) ) {
+            $_pdf_attr = $default_attr;
+            $_pdf_attr['class'] = $default_attr['class'].' btn btn-primary pull-right';
+            $result .= $this->Html->link('<i class="fa fa-download"></i> Download PDF', $this->here.'/pdf', $_pdf_attr);
+        }
+
+        return $this->Html->tag('div', $result, array(
+            'class' => 'action pull-right',
+        ));
     }
 }
