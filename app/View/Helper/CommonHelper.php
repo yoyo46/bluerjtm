@@ -499,7 +499,7 @@ class CommonHelper extends AppHelper {
         //     }
         // }
 
-        if( $this->Paginator->hasPage() && empty($is_print) ) {
+        if( !empty($model) && $this->Paginator->hasPage() && empty($is_print) ) {
             return $this->Paginator->sort($model, $label, array(
                 'escape' => false
             ));
@@ -906,21 +906,33 @@ class CommonHelper extends AppHelper {
         return $result;
     }
 
-    function _generateShowHideColumn ( $dataColumns, $data_type, $is_print = false ) {
+    function _generateShowHideColumn ( $dataColumns, $data_type, $is_print = false, $options = false ) {
         $result = false;
+        // Global Attribut
+        $_class = !empty($options['class'])?$options['class']:false;
+        $_style = !empty($options['style'])?$options['style']:false;
 
         if( !empty($dataColumns) ) {
+            $childArr = array();
+
             foreach ($dataColumns as $key_field => $dataColumn) {
                 $field_model = !empty($dataColumn['field_model'])?$dataColumn['field_model']:false;
                 // Get Data Model
                 $data_model = explode('.', $field_model);
+                $data_model = array_filter($data_model);
                 if( !empty($data_model) ) {
                     list($modelName, $fieldName) = $data_model;
+                } else {
+                    $modelName = false;
+                    $fieldName = false;
                 }
 
                 $style = !empty($dataColumn['style'])?$dataColumn['style']:false;
                 $name = !empty($dataColumn['name'])?$dataColumn['name']:false;
                 $display = !empty($dataColumn['display'])?$dataColumn['display']:false;
+                $child = !empty($dataColumn['child'])?$dataColumn['child']:false;
+                $rowspan = !empty($dataColumn['rowspan'])?$dataColumn['rowspan']:false;
+                $class = !empty($dataColumn['class'])?$dataColumn['class']:false;
                 $content = false;
 
                 if( !empty($display) ) {
@@ -947,10 +959,24 @@ class CommonHelper extends AppHelper {
                         $allowShow = $this->_allowShowColumn($modelName, $fieldName);
 
                         if( !empty($allowShow) ) {
+                            // Colspan
+                            if( !empty($child) ) {
+                                $colspan = count($child);
+                            } else {
+                                $colspan = false;
+                            }
+
                             $content = $this->Html->tag('th', $this->getSorting($field_model, $name, $is_print), array(
-                                'class' => sprintf('%s %s', $addClass, $key_field),
+                                'class' => sprintf('%s %s %s %s', $addClass, $key_field, $class, $_class),
                                 'style' => $style,
+                                'colspan' => $colspan,
+                                'rowspan' => $rowspan,
                             ));
+
+                            // Append Child
+                            if( !empty($child) ) {
+                                $childArr[] = $this->_generateShowHideColumn( $child, $data_type, $is_print, $options );
+                            }
                         }
 
                         break;
@@ -962,7 +988,19 @@ class CommonHelper extends AppHelper {
             }
         }
 
-        return is_array($result)?implode('', $result):$result;
+        if( is_array($result) ) {
+            if( !empty($childArr) && is_array($childArr) ) {
+                $result_child = implode('', $childArr);
+                $result_child = '</tr><tr style="'.$_style.'">'.$result_child;
+                $result[] = $result_child;
+            }
+
+            $result = implode('', $result);
+        }
+
+        $result = is_array($result)?implode('', $result):$result;
+
+        return $result;
     }
 
     function _getDataColumn ( $value, $modelName, $fieldName, $options = false ) {
@@ -1091,5 +1129,61 @@ class CommonHelper extends AppHelper {
         return $this->Html->tag('div', $result, array(
             'class' => 'action pull-right',
         ));
+    }
+
+    function filterEmptyField ( $value, $modelName, $fieldName, $empty = false ) {
+        return !empty($value[$modelName][$fieldName])?$this->safeTagPrint($value[$modelName][$fieldName]):$empty;
+    }
+
+    function getMergePrepayment ( $prepayment, $class = false ) {
+        $result = false;
+        $content = array();
+        $nodoc = $this->filterEmptyField($prepayment, 'CashBank', 'nodoc');
+        $dt = $this->customDate($this->filterEmptyField($prepayment, 'CashBank', 'tgl_cash_bank'), 'd M Y');
+        $coa_name = $this->filterEmptyField($prepayment, 'Coa', 'name');
+        $receiver_name = $this->filterEmptyField($prepayment, 'Receiver', 'name');
+        $description = $this->filterEmptyField($prepayment, 'CashBank', 'description');
+        $debit_total = $this->filterEmptyField($prepayment, 'CashBank', 'debit_total', 0);
+        $credit_total = $this->filterEmptyField($prepayment, 'CashBank', 'credit_total', 0);
+
+        $content[] = $this->Html->tag('td', $nodoc, array(
+            'style' => 'text-align:left;',
+        ));
+        $content[] = $this->Html->tag('td', $dt, array(
+            'style' => 'text-align:center;',
+        ));
+        $content[] = $this->Html->tag('td', $coa_name, array(
+            'style' => 'text-align:left;',
+        ));
+        $content[] = $this->Html->tag('td', $receiver_name, array(
+            'style' => 'text-align:left;',
+        ));
+        $content[] = $this->Html->tag('td', $description, array(
+            'style' => 'text-align:left;',
+        ));
+        $content[] = $this->Html->tag('td', $this->Number->format($debit_total, '', array('places' => 0)), array(
+            'style' => 'text-align:right;',
+        ));
+        $content[] = $this->Html->tag('td', $this->Number->format($credit_total, '', array('places' => 0)), array(
+            'style' => 'text-align:right;',
+        ));
+
+        // Give Class IF There Not Prepayment IN
+        if( !empty($prepayment['PrepaymentIN']) ) {
+            $class = 'complete';
+        }
+
+        $result .= $this->Html->tag('tr', implode('', $content), array(
+            'class' => $class,
+        ));
+
+        // Prepayment IN
+        if( !empty($prepayment['PrepaymentIN']) ) {
+            foreach ($prepayment['PrepaymentIN'] as $key => $prepaymentIN) {
+                $result .= $this->getMergePrepayment( $prepaymentIN, $class );
+            }
+        }
+
+        return $result;
     }
 }

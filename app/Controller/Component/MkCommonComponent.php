@@ -346,5 +346,9 @@ class MkCommonComponent extends Component {
     function replaceSlash ( $string ) {
         return str_replace('%2F', '/', $string);
     }
+
+    function filterEmptyField ( $value, $modelName, $fieldName, $empty = false ) {
+        return !empty($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
+    }
 }
 ?>

@@ -160,5 +160,21 @@ class Coa extends AppModel {
             return true;
         }
     }
+
+    function getMerge($data, $id){
+        if(empty($data['Coa'])){
+            $data_merge = $this->find('first', array(
+                'conditions' => array(
+                    'Coa.id' => $id,
+                )
+            ));
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

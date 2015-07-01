@@ -27,7 +27,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->
-                        <li class="user-header bg-light-blue">
+                        <li class="user-header">
                             <p>
                                 <?php
                                     echo $name;

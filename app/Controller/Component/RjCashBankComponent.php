@@ -16,6 +16,21 @@ class RjCashBankComponent extends Component {
 				if( !empty($refine['CashBank']['nodoc']) ) {
 					$refine_conditions['CashBank']['nodoc'] = $refine['CashBank']['nodoc'];
 				}
+				if( !empty($refine['CashBank']['date']) ) {
+					$refine_conditions['CashBank']['date'] = urlencode($refine['CashBank']['date']);
+				}
+				if( !empty($refine['CashBank']['receiver']) ) {
+					$refine_conditions['CashBank']['receiver'] = $refine['CashBank']['receiver'];
+				}
+				if( !empty($refine['CashBank']['document_type']) ) {
+					$refine_conditions['CashBank']['document_type'] = $refine['CashBank']['document_type'];
+				}
+				if( !empty($refine['CashBank']['total']) ) {
+					$refine_conditions['CashBank']['total'] = $refine['CashBank']['total'];
+				}
+				if( !empty($refine['CashBank']['note']) ) {
+					$refine_conditions['CashBank']['note'] = $refine['CashBank']['note'];
+				}
 				if( !empty($refine['CashBank']['receiving_cash_type']) ) {
 					$refine_conditions['CashBank']['cash'] = $refine['CashBank']['receiving_cash_type'];
 				}

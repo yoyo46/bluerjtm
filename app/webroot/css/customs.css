@@ -185,3 +185,13 @@ ul.list-calendar {
 /*
 **	END Revenue
 */
+
+/*
+**	Prepayment
+*/
+tr.complete {
+  	background-color: #e3e2e2;
+}
+/*
+**	END Prepayment
+*/

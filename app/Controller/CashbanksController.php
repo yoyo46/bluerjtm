@@ -953,4 +953,121 @@ class CashbanksController extends AppController {
             'journals', 'data_action'
         ));
     }
+
+    function getPrepaymentMerge ( $prepayment ) {
+        // Get Data Prepayment IN
+        $prepayment_out_id = $this->MkCommon->filterEmptyField($prepayment, 'CashBank', 'id');
+        $prepayment['PrepaymentIN'] = $this->CashBank->getDocumentCashBank( $prepayment_out_id, 'prepayment_in' );
+
+        if( !empty($prepayment['PrepaymentIN']) ) {
+            foreach ($prepayment['PrepaymentIN'] as $key => $prepaymentIN) {
+                $prepayment['PrepaymentIN'][$key] = $this->getPrepaymentMerge( $prepaymentIN );
+            }
+        }
+
+        // Diterima/Dibayar Kepada
+        $receiver_id = $this->MkCommon->filterEmptyField($prepayment, 'CashBank', 'receiver_id');
+        $receiver_type = $this->MkCommon->filterEmptyField($prepayment, 'CashBank', 'receiver_type');
+        $prepayment['Receiver']['name'] = $this->CashBank->getReceiver( $receiver_type, $receiver_id );
+
+        // Get Data COA
+        $coa_id = $this->MkCommon->filterEmptyField($prepayment, 'CashBank', 'coa_id');
+        $prepayment = $this->Coa->getMerge($prepayment, $coa_id);
+
+        return $prepayment;
+    }
+
+    public function prepayment_report( $data_action = false ) {
+        $this->loadModel('CashBank');
+        $conditions = array(
+            'CashBank.status' => 1,
+            'CashBank.is_rejected' => 0,
+            'CashBank.receiving_cash_type' => 'prepayment_out',
+        );
+        $fromDate = date('01/m/Y');
+        $toDate = date('t/m/Y');
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
+
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                    $fromDate = $date[0];
+                    $toDate = $date[1];
+                }
+            }
+
+            if( !empty($refine['receiver']) ){
+                $value = urldecode($refine['receiver']);
+                $receivers = $this->CashBank->getReceiver('Customer', $value, 'search' );
+                $receivers = array_merge($receivers, $this->CashBank->getReceiver('Vendor', $value, 'search' ));
+                $receivers = array_merge($receivers, $this->CashBank->getReceiver('Employe', $value, 'search' ));
+                $conditions['CashBank.receiver_id'] = $receivers;
+                $this->request->data['CashBank']['receiver'] = $value;
+            }
+
+            if( !empty($refine['total']) ){
+                $value = urldecode($refine['total']);
+                $conditions['CashBank.debit_total LIKE'] = '%'.$value.'%';
+                $this->request->data['CashBank']['total'] = $value;
+            }
+
+            if( !empty($refine['note']) ){
+                $value = urldecode($refine['note']);
+                $conditions['CashBank.description LIKE'] = '%'.$value.'%';
+                $this->request->data['CashBank']['note'] = $value;
+            }
+
+            if( !empty($refine['document_type']) ){
+                $value = urldecode($refine['document_type']);
+
+                switch ($value) {
+                    case 'outstanding':
+                        $conditions['CashBank.prepayment_status <>'] = 'full_paid';
+                        break;
+                }
+                $this->request->data['CashBank']['document_type'] = $value;
+            }
+        }
+
+        $this->request->data['CashBank']['date'] = sprintf('%s - %s', $fromDate, $toDate);
+        $conditions['DATE_FORMAT(CashBank.created, \'%Y-%m-%d\') >='] = $this->MkCommon->getDate($fromDate);
+        $conditions['DATE_FORMAT(CashBank.created, \'%Y-%m-%d\') <='] = $this->MkCommon->getDate($toDate);
+
+        $prepayments = $this->CashBank->getData('all', array(
+            'conditions' => $conditions,
+            'order' => array(
+                'CashBank.created' => 'DESC',
+                'CashBank.id' => 'DESC',
+            ),
+        ));
+
+        if( !empty($prepayments) ) {
+            $this->loadModel('Coa');
+
+            foreach ($prepayments as $key => $prepayment) {
+                $prepayments[$key] = $this->getPrepaymentMerge( $prepayment );
+            }
+        }
+
+        $this->set('sub_module_title', __('Laporan Prepayment'));
+        $this->set('active_menu', 'prepayment_report');
+        $this->set('period_label', sprintf(__('Periode : %s s/d %s'), $fromDate, $toDate));
+
+        $this->set(compact(
+            'prepayments', 'data_action'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
+    }
 }

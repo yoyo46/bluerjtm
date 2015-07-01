@@ -795,7 +795,8 @@
                             'stnk_payments', 'siup_payments', 'invoice_payments', 
                             'lku_payments', 'coa_setting', 'ksu_payments',
                             'uang_jalan_commission_payments',
-                            'biaya_ttuj_payments', 'journal_report'
+                            'biaya_ttuj_payments', 'journal_report',
+                            'prepayment_report'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -948,6 +949,15 @@
                                     // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
                                 ));
                             // }
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Prepayment</span>', array(
+                                'controller' => 'cashbanks',
+                                'action' => 'prepayment_report'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'prepayment_report' )?'active':'',
+                            ));
 
                             // if( in_array('view_invoice_payments', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Jurnal', array(

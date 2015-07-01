@@ -112,7 +112,7 @@ class CashBank extends AppModel {
         return $data;
     }
 
-    function getDocumentCashBank ( $prepayment_out_id = false ) {
+    function getDocumentCashBank ( $prepayment_out_id = false, $document_type = 'prepayment_out' ) {
         $result = array(
             'docs' => array(),
             'docs_type' => false,
@@ -121,35 +121,48 @@ class CashBank extends AppModel {
             'conditions' => array(
                 'CashBank.status' => 1,
                 'CashBank.is_rejected' => 0,
-                'CashBank.receiving_cash_type' => 'prepayment_out',
+                'CashBank.receiving_cash_type' => $document_type,
             ),
         );
 
-        if( !empty($prepayment_out_id) ) {
-            $options['conditions']['OR'] = array(
-                'CashBank.prepayment_status <>' => 'full_paid',
-                'CashBank.id' => $prepayment_out_id,
-            );
-        } else {
-            $options['conditions']['CashBank.prepayment_status <>'] = 'full_paid';
+        switch ($document_type) {
+            case 'prepayment_in':
+                $options['conditions']['document_id'] = $prepayment_out_id;
+                break;
+            
+            default:
+                if( !empty($prepayment_out_id) ) {
+                    $options['conditions']['OR'] = array(
+                        'CashBank.prepayment_status <>' => 'full_paid',
+                        'CashBank.id' => $prepayment_out_id,
+                    );
+                } else {
+                    $options['conditions']['CashBank.prepayment_status <>'] = 'full_paid';
+                }
+                break;
         }
 
         $docTmps = $this->getData('all', $options, false);
-        $docs = array();
-        
-        if( !empty($docTmps) ) {
-            foreach ($docTmps as $key => $docTmp) {
-                $id = $docTmp['CashBank']['id'];
-                $docs[$id] = $docTmp['CashBank']['nodoc'];
+
+        if( $document_type == 'prepayment_in' ) {
+            return $docTmps;
+        } else {
+            $docs = array();
+            
+            if( !empty($docTmps) ) {
+                foreach ($docTmps as $key => $docTmp) {
+                    $id = $docTmp['CashBank']['id'];
+                    $docs[$id] = $docTmp['CashBank']['nodoc'];
+                }
             }
+
+            $result = array(
+                'docs' => $docs,
+                'docs_type' => 'prepayment',
+            );
+
+            return $result;
         }
-
-        $result = array(
-            'docs' => $docs,
-            'docs_type' => 'prepayment',
-        );
-
-        return $result;
     }
 
     function totalPrepaymentDibayar ( $prepayment_id ) {
@@ -201,6 +214,47 @@ class CashBank extends AppModel {
         }
 
         return $data;
+    }
+
+    function getReceiver ( $receiver_type, $receiver = false, $data_type = 'default' ) {
+        $model = $receiver_type;
+        // Load Model
+        $this->{$model} = ClassRegistry::init($model);
+        // Default conditions
+        $conditions = array(
+            $model.'.status' => 1
+        );
+
+        switch ($data_type) {
+            case 'search':
+                // If call by id
+                if( !empty($receiver) ) {
+                    $conditions[$model.'.name LIKE'] = '%'.$receiver.'%';
+                }
+
+                $result = $this->{$model}->getData('list', array(
+                    'conditions' => $conditions,
+                    'fields' => array(
+                        $model.'.id', $model.'.id',
+                    ),
+                ));
+
+                return $result;
+                break;
+            
+            default:
+                // If call by id
+                if( !empty($receiver) ) {
+                    $conditions[$model.'.id'] = $receiver;
+                }
+
+                $result = $this->{$model}->getData('first', array(
+                    'conditions' => $conditions,
+                ));
+
+                return !empty($result[$model]['name'])?$result[$model]['name']:false;
+                break;
+        }
     }
 }
 ?>
