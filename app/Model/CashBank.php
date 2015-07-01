@@ -112,15 +112,17 @@ class CashBank extends AppModel {
         return $data;
     }
 
-    function getDocumentCashBank ( $prepayment_id ) {
+    function getDocumentCashBank ( $prepayment_out_id = false ) {
         $result = array(
             'docs' => array(),
             'docs_type' => false,
         );
-        $conditions = array(
-            'CashBank.status' => 1,
-            'CashBank.is_rejected' => 0,
-            'CashBank.receiving_cash_type' => 'prepayment_out',
+        $options = array(
+            'conditions' => array(
+                'CashBank.status' => 1,
+                'CashBank.is_rejected' => 0,
+                'CashBank.receiving_cash_type' => 'prepayment_out',
+            ),
         );
 
         if( !empty($prepayment_out_id) ) {
@@ -132,12 +134,7 @@ class CashBank extends AppModel {
             $options['conditions']['CashBank.prepayment_status <>'] = 'full_paid';
         }
 
-        $docTmps = $this->getData('all', array(
-            'conditions' => $conditions,
-            'order' => array(
-                'CashBank.id' => 'ASC'
-            ),
-        ), false);
+        $docTmps = $this->getData('all', $options, false);
         $docs = array();
         
         if( !empty($docTmps) ) {
