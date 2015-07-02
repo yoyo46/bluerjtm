@@ -40,7 +40,7 @@ class AppController extends Controller {
 	);
 
 	var $uses = array(
-		'Log', 'Module'
+		'Log', 'Module', 'Notification'
 	);
 
 	function beforeFilter() {
@@ -157,6 +157,123 @@ class AppController extends Controller {
             		'ModuleAction.id', 'ModuleAction.action'
         		),
 	        ));
+
+	        $cacheName = sprintf('LeadTime-%s', $this->user_id);
+			$lead_time_notif = Cache::read($cacheName, 'short');
+
+			if(empty($lead_time_notif)){
+				$this->loadModel('Ttuj');
+				$overlead_time_destination = $this->Ttuj->getData('list', array(
+					'conditions' => array(
+						'Ttuj.is_arrive' => 1,
+						'Ttuj.arrive_over_time >' => 0,
+						'Ttuj.is_pool' => 0,
+						'Ttuj.status' => 1
+					),
+					'fields' => array(
+						'Ttuj.id'
+					)
+				));
+
+				$overlead_time_pool = $this->Ttuj->getData('all', array(
+					'conditions' => array(
+						'Ttuj.is_arrive' => 1,
+						'Ttuj.back_orver_time >' => 0,
+						'Ttuj.is_pool' => 1,
+						'Ttuj.status' => 1
+					),
+					'fields' => array(
+						'Ttuj.id', 'Ttuj.nopol', 'Ttuj.no_ttuj'
+					)
+				));
+
+				if(!empty($overlead_time_destination) || !empty($overlead_time_pool)){
+					$this->loadModel('User');
+
+					$list_id_user_admin = $this->User->getData('list', array(
+						'conditions' => array(
+							'User.group_id' => 1,
+							'User.status' => 1
+						),
+						'fields' => array(
+							'User.id'
+						)
+					));
+
+					if(!empty($list_id_user_admin)){
+						if(!empty($overlead_time_destination)){
+							$ttuj_id = Set::extract('/Notification/id', $overlead_time_destination);
+
+							$check_notif = $this->Notification->getData('list', array(
+								'conditions' => array(
+									'Notification.document_id' => $ttuj_id,
+									'Notification.action' => 'overlead_time_destination'
+								)
+							));
+
+							if(empty($check_notif)){
+								foreach ($overlead_time_destination as $key => $value) {
+									$data_ttuj = $value['Ttuj'];
+									$this->Notification->saveData($list_id_user_admin, array(
+										'document_id' => $data_ttuj['id'],
+										'action' => 'overlead_time_destination',
+										'name' => sprintf(__('Truk dengan Nopol %s dengan no TTUJ %s telah melewati lead time tujuan'), $data_ttuj['nopol'], $data_ttuj['no_ttuj']),
+										'url' => serialize(array(
+											'controller' => 'revenues',
+											'action' => 'ttuj_edit',
+											$data_ttuj['id']
+										)),
+										'type_notif' => 'danger',
+										'icon_modul' => 'truck',
+										'link' => __('Lihat TTUJ')
+									));
+								}
+							}
+						}
+
+						if(!empty($overlead_time_pool)){
+							$ttuj_id = Set::extract('/Notification/id', $overlead_time_pool);
+
+							$check_notif = $this->Notification->getData('list', array(
+								'conditions' => array(
+									'Notification.document_id' => $ttuj_id,
+									'Notification.action' => 'overlead_time_pool'
+								)
+							));
+
+							if(empty($check_notif)){
+								foreach ($overlead_time_pool as $key => $value) {
+									$data_ttuj = $value['Ttuj'];
+									$this->Notification->saveData($list_id_user_admin, array(
+										'document_id' => $data_ttuj['id'],
+										'action' => 'overlead_time_pool',
+										'name' => sprintf(__('Truk dengan Nopol %s dengan no TTUJ %s telah melewati lead time balik pool'), $data_ttuj['nopol'], $data_ttuj['no_ttuj']),
+										'url' => serialize(array(
+											'controller' => 'revenues',
+											'action' => 'ttuj_edit',
+											$data_ttuj['id']
+										)),
+										'type_notif' => 'danger',
+										'icon_modul' => 'truck',
+										'link' => __('Lihat TTUJ')
+									));
+								}
+							}
+						}
+					}
+				}
+
+				Cache::write($cacheName, 1, 'short');
+			}
+
+			$notifications = $this->Notification->getData('all', array(
+				'conditions' => array(
+					'Notification.user_id' => $this->user_id,
+					'Notification.read' => 0
+				)
+			));
+
+			$this->set('notifications', $notifications);
 		}
 		$this->allowModule = $allowModule;
 

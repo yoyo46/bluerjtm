@@ -367,6 +367,14 @@ if (Configure::read('debug') > 0) {
 // Prefix each application on the same server with a different string, to avoid Memcache and APC conflicts.
 $prefix = 'myapp_';
 
+Cache::config('short', array(
+	'engine' => 'File',
+	'duration' => '+1800 seconds',
+	'default' => array(
+		'LeadTime'
+	)
+));
+
 /**
  * Configure the cache used for general framework caching. Path information,
  * object listings, and translation cache files are stored with this configuration.

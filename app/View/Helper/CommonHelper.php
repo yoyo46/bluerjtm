@@ -1,7 +1,7 @@
 <?php
 class CommonHelper extends AppHelper {
 	var $helpers = array(
-        'Html', 'Number', 'Paginator', 'Form'
+        'Html', 'Number', 'Paginator', 'Form', 'Text'
     );
 
     /**
@@ -1185,5 +1185,69 @@ class CommonHelper extends AppHelper {
         }
 
         return $result;
+    }
+
+    function getNotif($type_notif = false, $data, $header = true){
+        $url = 'javascript;';
+        if(!empty($data['Notification']['url'])){
+            $url = unserialize($data['Notification']['url']);
+        }
+
+        $content_notif = $data['Notification']['name'];
+        if($header){
+            App::uses('TextHelper', 'View/Helper');
+            $this->Text = new TextHelper(new View(null));
+
+            $content_notif = $this->Text->truncate($content_notif, 150, 
+                array(
+                    'ending' => '...',
+                    'exact' => false
+                )
+            );
+        }
+
+        if(!empty($type_notif)){
+            switch ($type_notif) {
+                case 'warning':
+                    $type_notif = sprintf('<i class="fa fa-%s warning"></i> ', $data['Notification']['icon_modul']);
+                break;
+                case 'success':
+                    $type_notif = sprintf('<i class="fa fa-%s success"></i> ', $data['Notification']['icon_modul']);
+                break;
+                case 'danger':
+                    $type_notif = sprintf('<i class="fa fa-%s danger"></i> ', $data['Notification']['icon_modul']);
+                break;
+            }
+        }else{
+            $type_notif = '';
+        }
+
+        $content = $this->Html->link(sprintf('%s%s', $type_notif, $content_notif), $url, array(
+            'escape' => false
+        ));
+
+        return $this->Html->tag('li', $content);
+    }
+
+    /**
+    *
+    *   function format tanggal
+    *   @param string $dateString : tanggal
+    *   @param string $format : format tanggal
+    *   @return string tanggal
+    */
+    function formatDate($dateString, $format = false) {
+        App::uses('TimeHelper', 'View/Helper');
+        $this->Time = new TimeHelper(new View(null));
+
+        if( empty($dateString) || $dateString == '0000-00-00' || $dateString == '0000-00-00 00:00:00') {
+            return '-';
+        } else {
+            if( !empty($format) ) {
+                return date($format, strtotime($dateString));
+            } else {
+                return $this->Time->niceShort(strtotime($dateString));
+            }
+        }
     }
 }
