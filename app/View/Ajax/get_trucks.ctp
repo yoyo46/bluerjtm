@@ -68,6 +68,8 @@
             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
                 'controller' => 'ajax',
                 'action' => 'getTrucks',
+                $action_type,
+                $action_id,
             ), array(
                 'escape' => false, 
                 'class'=> 'btn btn-default btn-sm ajaxModal',

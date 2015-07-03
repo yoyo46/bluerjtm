@@ -298,6 +298,8 @@ var getUangjalan = function ( response ) {
     if( $(response).filter('#sj_outstanding').html() != null ) {
         $('.sj_outstanding').html($(response).filter('#sj_outstanding').html());
         view_sj_list( $('.sj_outstanding #view_sj_outstanding') );
+    } else {
+        $('.sj_outstanding').html('');
     }
 
     var total_muatan = 0;
@@ -3807,6 +3809,8 @@ $(function() {
                     if( $(response).filter('#sj_outstanding').html() != null ) {
                         $('.sj_outstanding_pengganti').html($(response).filter('#sj_outstanding').html());
                         view_sj_list( $('.sj_outstanding_pengganti #view_sj_outstanding') );
+                    } else {
+                        $('.sj_outstanding_pengganti').html('');
                     }
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {

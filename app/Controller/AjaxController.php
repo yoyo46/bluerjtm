@@ -55,7 +55,10 @@ class AjaxController extends AppController {
 		$result = $this->Truck->getInfoTruck($truck_id);
 
 		if( !empty($result) ) {
-			$sjOutstanding = $this->Ttuj->getSJOutstanding( $result['Truck']['driver_id'] );
+			if( !empty($result['Truck']['driver_id']) ) {
+				$sjOutstanding = $this->Ttuj->getSJOutstanding( $result['Truck']['driver_id'] );
+			}
+			
 			$uangJalan = $this->UangJalan->getNopol( $from_city_id, $to_city_id, $result['Truck']['capacity'] );
 			$uangKuli = $this->UangKuli->getUangKuli( $from_city_id, $to_city_id, $customer_id, $result['Truck']['capacity'] );
 			$uangKuliMuat = !empty($uangKuli['UangKuliMuat'])?$uangKuli['UangKuliMuat']:false;
