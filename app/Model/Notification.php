@@ -95,5 +95,21 @@ class Notification extends AppModel {
             return false;
         }
     }
+
+    function notifCheck($user_id, $id){
+        $notification = $this->find('first', array(
+            'conditions' => array(
+                'Notification.user_id' => $user_id,
+                'Notification.id' => $id,
+                'Notification.read' => 1
+            )
+        ));
+
+        if( empty($notification) ){
+            $this->id = $id;
+            $this->set(array('read' => 1));
+            $this->save();
+        }
+    }
 }
 ?>

@@ -1207,6 +1207,12 @@ class CommonHelper extends AppHelper {
         }
 
         if(!empty($type_notif)){
+            if($url != 'javascript:'){
+                $url = array_merge($url, array(
+                    'ntf' => $data['Notification']['id']
+                ));
+            }
+
             switch ($type_notif) {
                 case 'warning':
                     $type_notif = sprintf('<i class="fa fa-%s warning"></i> ', $data['Notification']['icon_modul']);

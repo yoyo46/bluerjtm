@@ -158,6 +158,10 @@ class AppController extends Controller {
         		),
 	        ));
 
+	        if(isset($this->params['named']['ntf']) && !empty($this->params['named']['ntf'])){
+	        	$this->Notification->notifCheck($this->user_id, $this->params['named']['ntf']);
+	        }
+
 	        $cacheName = sprintf('LeadTime-%s', $this->user_id);
 			$lead_time_notif = Cache::read($cacheName, 'short');
 
