@@ -1987,11 +1987,11 @@ class RevenuesController extends AppController {
                         'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <=' => $dateTo,
                     );
 
-                    if( $data_type == 'retail' ) {
-                        $conditionsTtuj['Ttuj.is_retail'] = 1;
-                    } else {
-                        $conditionsTtuj['Ttuj.is_retail'] = 0;
-                    }
+                    // if( $data_type == 'retail' ) {
+                    //     $conditionsTtuj['Ttuj.is_retail'] = 1;
+                    // } else {
+                    //     $conditionsTtuj['Ttuj.is_retail'] = 0;
+                    // }
 
                     $total = $this->Ttuj->getData('count', array(
                         'conditions' => $conditionsTtuj
