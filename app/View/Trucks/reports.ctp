@@ -140,7 +140,7 @@
                                 'class' => 'hide nomor_id',
                                 'style' => 'text-align: left;',
                             ));
-                            $content .= $this->Common->_getDataColumn($truck['Truck']['nopol'], 'Truck', 'id', array(
+                            $content .= $this->Common->_getDataColumn($truck['Truck']['nopol'], 'Truck', 'nopol', array(
                                 'style' => 'text-align: left;',
                                 'class' => 'nopol',
                             ));
