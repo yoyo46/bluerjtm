@@ -358,5 +358,50 @@ class Truck extends AppModel {
 
         return $data;
     }
+
+    function getListTruck ( $include_this_truck_id = false ) {
+        $this->bindModel(array(
+            'hasOne' => array(
+                'Ttuj' => array(
+                    'className' => 'Ttuj',
+                    'foreignKey' => 'truck_id',
+                    'conditions' => array(
+                        'Ttuj.status' => 1,
+                        'Ttuj.is_pool' => 0,
+                        'Ttuj.is_laka' => 0,
+                    ),
+                )
+            )
+        ), false);
+
+        if( !empty($include_this_truck_id) ) {
+            // Ambil data truck berikut id ini
+            $conditions = array(
+                'OR' => array(
+                    'Truck.id' => $include_this_truck_id,
+                    'Ttuj.id' => NULL,
+                ),
+            );
+        } else {
+            $conditions = array(
+                'Ttuj.id' => NULL,
+            );
+        }
+
+        $trucks = $this->getData('list', array(
+            'conditions' => $conditions,
+            'fields' => array(
+                'Truck.id', 'Truck.nopol'
+            ),
+            'contain' => array(
+                'Ttuj'
+            ),
+            'order' => array(
+                'Truck.nopol'
+            ),
+        ));
+
+        return $trucks;
+    }
 }
 ?>

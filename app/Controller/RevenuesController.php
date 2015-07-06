@@ -93,57 +93,75 @@ class RevenuesController extends AppController {
                 }
                 if(!empty($refine['is_commit'])){
                     $is_commit = urldecode($refine['is_commit']);
-                    $conditions['Ttuj.is_draft'] = 0;
-                    $conditions['Ttuj.is_arrive'] = 0;
-                    $conditions['Ttuj.is_bongkaran'] = 0;
-                    $conditions['Ttuj.is_balik'] = 0;
-                    $conditions['Ttuj.is_pool'] = 0;
+                    $conditions['OR'][]= array(
+                        'Ttuj.is_draft' => 0,
+                        'Ttuj.is_arrive' => 0,
+                        'Ttuj.is_bongkaran' => 0,
+                        'Ttuj.is_balik' => 0,
+                        'Ttuj.is_pool' => 0,
+                    );
                     $this->request->data['Ttuj']['is_commit'] = $is_commit;
                 }
                 if(!empty($refine['is_arrive'])){
                     $is_arrive = urldecode($refine['is_arrive']);
-                    $conditions['Ttuj.is_arrive'] = 1;
-                    $conditions['Ttuj.is_bongkaran'] = 0;
-                    $conditions['Ttuj.is_balik'] = 0;
-                    $conditions['Ttuj.is_pool'] = 0;
+                    $conditions['OR'][] = array(
+                        'Ttuj.is_arrive' => 1,
+                        'Ttuj.is_bongkaran' => 0,
+                        'Ttuj.is_balik' => 0,
+                        'Ttuj.is_pool' => 0,
+                    );
                     $this->request->data['Ttuj']['is_arrive'] = $is_arrive;
                 }
                 if(!empty($refine['is_bongkaran'])){
                     $is_bongkaran = urldecode($refine['is_bongkaran']);
-                    $conditions['Ttuj.is_bongkaran'] = 1;
-                    $conditions['Ttuj.is_balik'] = 0;
-                    $conditions['Ttuj.is_pool'] = 0;
+                    $conditions['OR'][] = array(
+                        'Ttuj.is_bongkaran' => 1,
+                        'Ttuj.is_balik' => 0,
+                        'Ttuj.is_pool' => 0,
+                    );
                     $this->request->data['Ttuj']['is_bongkaran'] = $is_bongkaran;
                 }
                 if(!empty($refine['is_balik'])){
                     $is_balik = urldecode($refine['is_balik']);
-                    $conditions['Ttuj.is_balik'] = 1;
-                    $conditions['Ttuj.is_pool'] = 0;
+                    $conditions['OR'][] = array(
+                        'Ttuj.is_balik' => 1,
+                        'Ttuj.is_pool' => 0,
+                    );
                     $this->request->data['Ttuj']['is_balik'] = $is_balik;
                 }
                 if(!empty($refine['is_pool'])){
                     $is_pool = urldecode($refine['is_pool']);
-                    $conditions['Ttuj.is_pool'] = 1;
+                    $conditions['OR'][] = array(
+                        'Ttuj.is_pool' => 1,
+                    );
                     $this->request->data['Ttuj']['is_pool'] = $is_pool;
                 }
                 if(!empty($refine['is_sj_not_completed'])){
                     $is_sj_not_completed = urldecode($refine['is_sj_not_completed']);
-                    $conditions['Ttuj.is_sj_completed'] = 0;
+                    $conditions['OR'][] = array(
+                        'Ttuj.is_sj_completed' => 0,
+                    );
                     $this->request->data['Ttuj']['is_sj_not_completed'] = $is_sj_not_completed;
                 }
                 if(!empty($refine['is_sj_completed'])){
                     $is_sj_completed = urldecode($refine['is_sj_completed']);
-                    $conditions['Ttuj.is_sj_completed'] = 1;
+                    $conditions['OR'][] = array(
+                        'Ttuj.is_sj_completed' => 1,
+                    );
                     $this->request->data['Ttuj']['is_sj_completed'] = $is_sj_completed;
                 }
                 if(!empty($refine['is_revenue'])){
                     $is_revenue = urldecode($refine['is_revenue']);
-                    $conditions['Ttuj.is_revenue'] = 1;
+                    $conditions['OR'][] = array(
+                        'Ttuj.is_revenue' => 1,
+                    );
                     $this->request->data['Ttuj']['is_revenue'] = $is_revenue;
                 }
                 if(!empty($refine['is_not_revenue'])){
                     $is_not_revenue = urldecode($refine['is_not_revenue']);
-                    $conditions['Ttuj.is_revenue'] = 0;
+                    $conditions['OR'][] = array(
+                        'Ttuj.is_revenue' => 0,
+                    );
                     $this->request->data['Ttuj']['is_not_revenue'] = $is_not_revenue;
                 }
             }
@@ -949,36 +967,8 @@ class RevenuesController extends AppController {
             $customerConditions['Customer.customer_type_id'] = 1;
         }
 
-        $this->Truck->bindModel(array(
-            'hasOne' => array(
-                'Ttuj' => array(
-                    'className' => 'Ttuj',
-                    'foreignKey' => 'truck_id',
-                    'conditions' => array(
-                        'Ttuj.status' => 1,
-                        'Ttuj.is_pool' => 0,
-                        'Ttuj.id <>' => $id,
-                        'Ttuj.is_laka' => 0,
-                    ),
-                )
-            )
-        ), false);
-
-        $trucks = $this->Truck->getData('list', array(
-            'conditions' => array(
-                'Ttuj.id' => NULL,
-            ),
-            'fields' => array(
-                'Truck.id', 'Truck.nopol'
-            ),
-            'contain' => array(
-                'Ttuj'
-            ),
-            'order' => array(
-                'Truck.nopol'
-            ),
-        ));
-
+        $ttuj_truck_id = !empty($data_local['Ttuj']['truck_id'])?$data_local['Ttuj']['truck_id']:false;
+        $trucks = $this->Truck->getListTruck($ttuj_truck_id);
         $customers = $this->Ttuj->Customer->getData('list', array(
             'conditions' => $customerConditions,
             'fields' => array(
