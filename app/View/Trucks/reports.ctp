@@ -235,7 +235,7 @@
                 $content = $this->Common->_getDataColumn(str_pad($truck['Truck']['id'], 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
                     'style' => 'text-align: left;',
                 ));
-                $content .= $this->Common->_getDataColumn($truck['Truck']['nopol'], 'Truck', 'id', array(
+                $content .= $this->Common->_getDataColumn($truck['Truck']['nopol'], 'Truck', 'nopol', array(
                     'style' => 'text-align: left;',
                 ));
                 $content .= $this->Common->_getDataColumn($truck['TruckBrand']['name'], 'TruckBrand', 'name');
