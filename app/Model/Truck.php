@@ -359,7 +359,7 @@ class Truck extends AppModel {
         return $data;
     }
 
-    function getListTruck ( $include_this_truck_id = false ) {
+    function getListTruck ( $include_this_truck_id = false, $only_bind = false ) {
         $this->bindModel(array(
             'hasOne' => array(
                 'Ttuj' => array(
@@ -373,7 +373,7 @@ class Truck extends AppModel {
                 )
             )
         ), false);
-
+        
         if( !empty($include_this_truck_id) ) {
             // Ambil data truck berikut id ini
             $conditions = array(
@@ -388,20 +388,24 @@ class Truck extends AppModel {
             );
         }
 
-        $trucks = $this->getData('list', array(
-            'conditions' => $conditions,
-            'fields' => array(
-                'Truck.id', 'Truck.nopol'
-            ),
-            'contain' => array(
-                'Ttuj'
-            ),
-            'order' => array(
-                'Truck.nopol'
-            ),
-        ));
+        if( empty($only_bind) ) {
+            $trucks = $this->getData('list', array(
+                'conditions' => $conditions,
+                'fields' => array(
+                    'Truck.id', 'Truck.nopol'
+                ),
+                'contain' => array(
+                    'Ttuj'
+                ),
+                'order' => array(
+                    'Truck.nopol'
+                ),
+            ));
 
-        return $trucks;
+            return $trucks;
+        } else {
+            return $conditions;
+        }
     }
 }
 ?>

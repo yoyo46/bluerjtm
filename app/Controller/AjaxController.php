@@ -1116,19 +1116,16 @@ class AjaxController extends AppController {
         switch ($action_type) {
         	case 'ttuj':
 				$this->loadModel('Ttuj');
-        		$truck_id = $this->Ttuj->getData('list', array(
+        		$ttuj = $this->Ttuj->getData('first', array(
                     'conditions' => array(
-                        'Ttuj.status' => 1,
-                        'Ttuj.is_pool' => 0,
-                        'Ttuj.id <>' => $action_id,
-                        'Ttuj.is_laka' => 0,
+                        'Ttuj.id' => $action_id,
                     ),
-                    'fields' => array(
-                    	'Ttuj.id', 'Ttuj.truck_id',
-                	),
 		        ), false);
+        		$ttuj_truck_id = !empty($ttuj['Ttuj']['truck_id'])?$ttuj['Ttuj']['truck_id']:false;
+				$addConditions = $this->Truck->getListTruck( $ttuj_truck_id, true );
 
-                $options['conditions']['Truck.id NOT'] = $truck_id;
+                $options['contain'][] = 'Ttuj';
+                $options['conditions'] = array_merge($options['conditions'], $addConditions);
         		break;
         	case 'laka':
         		$data_change = 'laka-driver-change';
