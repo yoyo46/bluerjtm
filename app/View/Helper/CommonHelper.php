@@ -1019,6 +1019,10 @@ class CommonHelper extends AppHelper {
                 unset($options['style']);
             }
 
+            if( !empty($options['options']) ) {
+                $value = !empty($options['options'][$value])?$options['options'][$value]:$value;
+            }
+
             $result = $this->Html->tag('td', $value, $options);
         }
 

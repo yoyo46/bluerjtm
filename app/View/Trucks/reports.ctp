@@ -56,6 +56,36 @@
                 'field_model' => 'Truck.no_rangka',
                 'display' => false,
             ),
+            'no_machine' => array(
+                'name' => __('No Mesin'),
+                'field_model' => 'Truck.no_machine',
+                'display' => false,
+            ),
+            'bpkb' => array(
+                'name' => __('No BPKB'),
+                'field_model' => 'Truck.bpkb',
+                'display' => false,
+            ),
+            'no_stnk' => array(
+                'name' => __('No STNK'),
+                'field_model' => 'Truck.no_stnk',
+                'display' => false,
+            ),
+            'is_gps' => array(
+                'name' => __('GPS?'),
+                'field_model' => 'Truck.is_gps',
+                'display' => false,
+            ),
+            'emergency_name' => array(
+                'name' => __('Nama Panggilan'),
+                'field_model' => 'Truck.emergency_name',
+                'display' => false,
+            ),
+            'emergency_call' => array(
+                'name' => __('No Tlp'),
+                'field_model' => 'Truck.emergency_call',
+                'display' => false,
+            ),
         );
         $showHideColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'show-hide' );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table', $data_action );
@@ -173,6 +203,28 @@
                             $content .= $this->Common->_getDataColumn($truck['Truck']['no_rangka'], 'Truck', 'no_rangka', array(
                                 'class' => 'hide no_rangka',
                             ));
+                            $content .= $this->Common->_getDataColumn($truck['Truck']['no_machine'], 'Truck', 'no_machine', array(
+                                'class' => 'hide no_machine',
+                            ));
+                            $content .= $this->Common->_getDataColumn($truck['Truck']['bpkb'], 'Truck', 'bpkb', array(
+                                'class' => 'hide bpkb',
+                            ));
+                            $content .= $this->Common->_getDataColumn($truck['Truck']['no_stnk'], 'Truck', 'no_stnk', array(
+                                'class' => 'hide no_stnk',
+                            ));
+                            $content .= $this->Common->_getDataColumn($truck['Truck']['is_gps'], 'Truck', 'is_gps', array(
+                                'class' => 'hide is_gps',
+                                'options' => array(
+                                    0 => __('Tidak'),
+                                    1 => __('Ya'),
+                                ),
+                            ));
+                            $content .= $this->Common->_getDataColumn($truck['Truck']['emergency_name'], 'Truck', 'emergency_name', array(
+                                'class' => 'hide emergency_name',
+                            ));
+                            $content .= $this->Common->_getDataColumn($truck['Truck']['emergency_call'], 'Truck', 'emergency_call', array(
+                                'class' => 'hide emergency_call',
+                            ));
 
                             echo $this->Html->tag('tr', $content);
                         }
@@ -251,6 +303,17 @@
                 ));
                 $content .= $this->Common->_getDataColumn($truck_facility, 'TruckFacility', 'name');
                 $content .= $this->Common->_getDataColumn($truck['Truck']['no_rangka'], 'Truck', 'no_rangka');
+                $content .= $this->Common->_getDataColumn($truck['Truck']['no_machine'], 'Truck', 'no_machine');
+                $content .= $this->Common->_getDataColumn($truck['Truck']['bpkb'], 'Truck', 'bpkb');
+                $content .= $this->Common->_getDataColumn($truck['Truck']['no_stnk'], 'Truck', 'no_stnk');
+                $content .= $this->Common->_getDataColumn($truck['Truck']['is_gps'], 'Truck', 'is_gps', array(
+                    'options' => array(
+                        0 => __('Tidak'),
+                        1 => __('Ya'),
+                    ),
+                ));
+                $content .= $this->Common->_getDataColumn($truck['Truck']['emergency_name'], 'Truck', 'emergency_name');
+                $content .= $this->Common->_getDataColumn($truck['Truck']['emergency_call'], 'Truck', 'emergency_call');
 
                 $each_loop_message .= $this->Html->tag('tr', $content);
             endforeach;
