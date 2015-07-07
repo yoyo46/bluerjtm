@@ -785,16 +785,14 @@ class AjaxController extends AppController {
         // }
     }
 
-	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $city_id = false, $group_motor_id = false, $is_charge = false, $to_city_id = false, $qty = 0, $jenis_unit = '', $from_city_id = false, $truck_id = false, $from_ttuj = false ){
+	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $detail_city_id = false, $group_motor_id = false, $is_charge = false, $main_city_id = false, $qty = 0, $jenis_unit = '', $from_city_id = false, $truck_id = false, $from_ttuj = false ){
 		$this->loadModel('Ttuj');
 		$this->loadModel('GroupMotor');
 		$this->loadModel('TarifAngkutan');
-		$detail = array();
+
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
 				'Ttuj.id' => $ttuj_id,
-                // 'Ttuj.is_draft' => 0,
-                // 'Ttuj.status' => 1,
 			),
 		), false);
 		$from_city_id = !empty($data_ttuj['Ttuj']['from_city_id'])?$data_ttuj['Ttuj']['from_city_id']:$from_city_id;
@@ -829,22 +827,9 @@ class AjaxController extends AppController {
 			}
 		}
 
-		if(!empty($from_city_id)){
-			if( !empty($city_id) ) {
-				$mainTarif = $this->TarifAngkutan->findTarif($from_city_id, $city_id, $customer_id, $truck_capacity, $group_motor_id);
-			} else {
-				$mainTarif = $this->TarifAngkutan->findTarif($from_city_id, $to_city_id, $customer_id, $truck_capacity, $group_motor_id);
-			}
-
-			$detail = array(
-				'RevenueDetail' => array(
-					'price_unit' => $mainTarif,
-				)
-			);
-		}
-
+		$tarif = $this->TarifAngkutan->getTarifAngkut( $from_city_id, $main_city_id, $detail_city_id, $customer_id, $truck_capacity, $group_motor_id );
 		$this->set(compact(
-			'detail', 'is_charge', 'mainTarif',
+			'is_charge', 'tarif',
 			'qty', 'jenis_unit', 'truck',
 			'ttuj_id', 'from_ttuj'
 		));

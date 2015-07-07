@@ -260,7 +260,6 @@
             </tr>';
         }   
 
-$date_title = sprintf('Tanggal %s sampai %s', $this->Common->customDate($from_date), $this->Common->customDate($to_date));
 $total_trucks = count($trucks);
 $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $User['full_name'])), array(
     'style' => 'font-size: 24px;font-style: italic;margin-top: 10px;'
@@ -269,7 +268,6 @@ $tbl = <<<EOD
 
       <div class="clearfix container_16" id="content">
         <h2 class="grid_8" style="text-align: center;">Laporan Truk</h2>
-        <h3 style="text-align: center;">$date_title</h3><br>
         <h4>Total Truk : $total_trucks</h4>
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <tbody>
@@ -293,7 +291,7 @@ EOD;
         $tcpdf->SetFont($textfont,'B',10);
 
         $path = $this->Common->pathDirTcpdf();
-        $filename = 'Laporan_Truk_'.$date_title.'.pdf';
+        $filename = $sub_module_title.'.pdf';
         $tcpdf->Output($path.'/'.$filename, 'F'); 
 
         header('Content-type: application/pdf');

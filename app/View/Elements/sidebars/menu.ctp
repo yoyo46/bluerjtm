@@ -434,7 +434,6 @@
                             'ttuj', 'truk_tiba', 'bongkaran',
                             'balik', 'pool', 'uang_jalan',
                             'uang_kuli_muat', 'uang_kuli_bongkar',
-                            'uang_jalan_import'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $ttujMenu) ) {
@@ -457,16 +456,6 @@
                                     'escape' => false
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan' )?'active':'',
-                                ));
-                            }
-                            if( in_array('insert_uang_jalan', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Uang Jalan', array(
-                                    'controller' => 'settings',
-                                    'action' => 'uang_jalan_import',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan_import' )?'active':'',
                                 ));
                             }
 
@@ -564,7 +553,7 @@
                             'invoice_reports', 'revenues', 'ar_period_reports',
                             'list_kwitansi', 'report_customers',
                             'report_revenue_customers', 'report_monitoring_sj_revenue',
-                            'tarif_angkut_import', 'report_revenue_monthly'
+                            'report_revenue_monthly'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -587,16 +576,6 @@
                                     'escape' => false
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'tarif_angkutan' )?'active':'',
-                                ));
-                            }
-                            if( in_array('view_tarif_angkutan', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Tarif Angkut', array(
-                                    'controller' => 'settings',
-                                    'action' => 'tarif_angkut_import',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'tarif_angkut_import' )?'active':'',
                                 ));
                             }
 

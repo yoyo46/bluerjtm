@@ -1,6 +1,6 @@
 <?php
-        $tarif_angkutan_type = !empty($mainTarif['tarif_angkutan_type'])?$mainTarif['tarif_angkutan_type']:'angkut';
-        $jenis_unit_angkutan =!empty($mainTarif['jenis_unit']) ? $mainTarif['jenis_unit'] : 'per_unit';
+        $tarif_angkutan_type = !empty($tarif['tarif_angkutan_type'])?$tarif['tarif_angkutan_type']:'angkut';
+        $jenis_unit_angkutan =!empty($tarif['jenis_unit']) ? $tarif['jenis_unit'] : 'per_unit';
         $jenis_unit = !empty($jenis_unit)?$jenis_unit:$jenis_unit_angkutan;
         $from_ttuj = !empty($from_ttuj)?true:false;
 
@@ -12,11 +12,11 @@
         echo $this->Form->hidden('RevenueDetail.tarif_angkutan_id.', array(
             'id' => 'tarif_angkutan_id',
             'required' => false,
-            'value' => !empty($detail['RevenueDetail']['price_unit']['tarif_angkutan_id'])?$detail['RevenueDetail']['price_unit']['tarif_angkutan_id']:0,
+            'value' => !empty($tarif['tarif_angkutan_id'])?$tarif['tarif_angkutan_id']:0,
         ));
 
-        if(!empty($detail['RevenueDetail']['price_unit'])){
-            $price = $detail['RevenueDetail']['price_unit'];
+        if(!empty($tarif)){
+            $price = $tarif;
         }else{
             $link = $this->Html->link(__('disini'), 
                 array('controller' => 'settings', 'action' => 'tarif_angkutan_add'),

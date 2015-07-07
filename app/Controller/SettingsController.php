@@ -4250,95 +4250,6 @@ class SettingsController extends AppController {
         $this->redirect($this->referer());
     }
 
-    function getMimeType( $filename ) {
-        $mime_types = array(
-            'txt' => 'text/plain',
-            'htm' => 'text/html',
-            'html' => 'text/html',
-            'php' => 'text/html',
-            'css' => 'text/css',
-            'js' => 'application/javascript',
-            'json' => 'application/json',
-            'xml' => 'application/xml',
-            'swf' => 'application/x-shockwave-flash',
-            'flv' => 'video/x-flv',
-
-            // images
-            'png' => 'image/png',
-            'jpe' => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'jpg' => 'image/jpeg',
-            'gif' => 'image/gif',
-            'bmp' => 'image/bmp',
-            'ico' => 'image/vnd.microsoft.icon',
-            'tiff' => 'image/tiff',
-            'tif' => 'image/tiff',
-            'svg' => 'image/svg+xml',
-            'svgz' => 'image/svg+xml',
-
-            // archives
-            'zip' => 'application/zip',
-            'rar' => 'application/x-rar-compressed',
-            'exe' => 'application/x-msdownload',
-            'msi' => 'application/x-msdownload',
-            'cab' => 'application/vnd.ms-cab-compressed',
-
-            // audio/video
-            'mp3' => 'audio/mpeg',
-            'qt' => 'video/quicktime',
-            'mov' => 'video/quicktime',
-
-            // adobe
-            'pdf' => 'application/pdf',
-            'psd' => 'image/vnd.adobe.photoshop',
-            'ai' => 'application/postscript',
-            'eps' => 'application/postscript',
-            'ps' => 'application/postscript',
-
-            // ms office
-            'doc' => 'application/msword',
-            'rtf' => 'application/rtf',
-            'xls' => 'application/vnd.ms-excel',
-            'ppt' => 'application/vnd.ms-powerpoint',
-
-            // open office
-            'odt' => 'application/vnd.oasis.opendocument.text',
-            'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
-        );
-
-        $ext1 = explode('.',$filename);
-        $ext2 = strtolower(end($ext1));
-        $ext3 = end($ext1);
-        if (array_key_exists($ext2, $mime_types)) {
-            return $mime_types[$ext2];
-        }
-        elseif (function_exists('finfo_open')) {
-            $finfo = finfo_open(FILEINFO_MIME);
-            $mimetype = finfo_file($finfo, $filename);
-            finfo_close($finfo);
-        }
-        else {
-            return 'application/octet-stream';
-        }
-    }
-
-    function addToFiles($key, $url) {
-        $tempName = tempnam('C:/tmps', 'php_files');
-        $originalName = basename(parse_url($url, PHP_URL_PATH));
-
-        $imgRawData = file_get_contents($url);
-        file_put_contents($tempName, $imgRawData);
-
-        $_FILES[$key] = array(
-            'name' => $originalName,
-            'type' => $this->getMimeType($originalName),
-            'tmp_name' => $tempName,
-            'error' => 0,
-            'size' => strlen($imgRawData),
-        );
-        return $_FILES;
-    }
-
     public function uang_jalan_import( $download = false ) {
         if(!empty($download)){
             $link_url = FULL_BASE_URL . '/files/uang_jalan.xls';
@@ -4352,7 +4263,7 @@ class SettingsController extends AppController {
             App::import('Vendor', 'excelreader'.DS.'excel_reader2');
 
             $this->set('module_title', 'TTUJ');
-            $this->set('active_menu', 'uang_jalan_import');
+            $this->set('active_menu', 'uang_jalan');
             $this->set('sub_module_title', __('Import Uang Jalan'));
 
             if(!empty($this->request->data)) { 
@@ -4377,7 +4288,7 @@ class SettingsController extends AppController {
                     $continue = strtolower($name[1]) == 'xls' ? true : false;
 
                     if(!$continue) {
-                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file Zip.'), 'error');
+                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
                         $this->redirect(array('action'=>'uang_jalan_import'));
                     } else {
                         $path = APP.'webroot'.DS.'files'.DS;
@@ -4404,11 +4315,10 @@ class SettingsController extends AppController {
                 $xls_files = glob( $targetdir );
 
                 if(empty($xls_files)) {
-                    $this->rmdir_recursive ( $targetdir);
                     $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
                     $this->redirect(array('action'=>'uang_jalan_import'));
                 } else {
-                    $uploadedXls = $this->addToFiles('xls', $xls_files[0]);
+                    $uploadedXls = $this->MkCommon->addToFiles('xls', $xls_files[0]);
                     $uploaded_file = $uploadedXls['xls'];
                     $file = explode(".", $uploaded_file['name']);
                     $extension = array_pop($file);
@@ -4438,8 +4348,6 @@ class SettingsController extends AppController {
                                     }
                                     $i++;
                                 }
-
-                                $no_desc = __('Masukkan kata-kata marketing mengenai properti ini, seperti: 18 menit dari Toll Bandara (atau) 18 menit dari Universitas Tarumanegara (atau) Limited 18 unites');
 
                                 if(array_filter($datavar)) {
                                     $fromCity = $this->City->getData('first', array(
@@ -5009,7 +4917,7 @@ class SettingsController extends AppController {
             $this->loadModel('Customer');
             App::import('Vendor', 'excelreader'.DS.'excel_reader2');
 
-            $this->set('active_menu', 'tarif_angkut_import');
+            $this->set('active_menu', 'tarif_angkutan');
             $this->set('sub_module_title', __('Import Tarif Angkut'));
 
             if(!empty($this->request->data)) { 
@@ -5034,7 +4942,7 @@ class SettingsController extends AppController {
                     $continue = strtolower($name[1]) == 'xls' ? true : false;
 
                     if(!$continue) {
-                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file Zip.'), 'error');
+                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
                         $this->redirect(array('action'=>'tarif_angkut_import'));
                     } else {
                         $path = APP.'webroot'.DS.'files'.DS;
@@ -5061,11 +4969,10 @@ class SettingsController extends AppController {
                 $xls_files = glob( $targetdir );
 
                 if(empty($xls_files)) {
-                    $this->rmdir_recursive ( $targetdir);
                     $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
                     $this->redirect(array('action'=>'tarif_angkut_import'));
                 } else {
-                    $uploadedXls = $this->addToFiles('xls', $xls_files[0]);
+                    $uploadedXls = $this->MkCommon->addToFiles('xls', $xls_files[0]);
                     $uploaded_file = $uploadedXls['xls'];
                     $file = explode(".", $uploaded_file['name']);
                     $extension = array_pop($file);
@@ -5095,8 +5002,6 @@ class SettingsController extends AppController {
                                     }
                                     $i++;
                                 }
-
-                                $no_desc = __('Masukkan kata-kata marketing mengenai properti ini, seperti: 18 menit dari Toll Bandara (atau) 18 menit dari Universitas Tarumanegara (atau) Limited 18 unites');
 
                                 if(array_filter($datavar)) {
                                     $fromCity = $this->City->getData('first', array(

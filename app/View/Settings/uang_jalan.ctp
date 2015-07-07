@@ -9,15 +9,34 @@
                 if( in_array('insert_uang_jalan', $allowModule) ) {
         ?>
         <div class="box-tools">
-            <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Uang Jalan', array(
-                        'controller' => 'settings',
-                        'action' => 'uang_jalan_add'
-                    ), array(
-                        'escape' => false,
-                        'class' => 'btn btn-app pull-right'
-                    ));
-            ?>
+            <div class="btn-group pull-right">
+                <?php 
+                        echo $this->Html->tag('button', '<i class="fa fa-plus"></i> Tambah', array(
+                            'data-toggle' => 'dropdown',
+                            'class' => 'btn btn-app btn-success dropdown-toggle'
+                        ));
+                ?>
+                <ul class="dropdown-menu" role="menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link(__('Uang Jalan'), array(
+                                'controller' => 'settings',
+                                'action' => 'uang_jalan_add'
+                            ), array(
+                                'escape' => false,
+                            )));
+                            echo $this->Html->tag('li', '', array(
+                                'class' => 'divider',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(__('Import Excel'), array(
+                                'controller' => 'settings',
+                                'action' => 'uang_jalan_import'
+                            ), array(
+                                'escape' => false,
+                            )));
+                    ?>
+                </ul>
+            </div>
+            <div class="clear"></div>
         </div>
         <?php 
                 }

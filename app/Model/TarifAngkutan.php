@@ -245,5 +245,19 @@ class TarifAngkutan extends AppModel {
 
         return $result;
     }
+
+    function getTarifAngkut ( $from_city_id, $main_city_id, $detail_city_id, $customer_id, $truck_capacity, $group_motor_id ) {
+        $tarif = false;
+
+        if(!empty($from_city_id)){
+            if( !empty($detail_city_id) ) {
+                $tarif = $this->findTarif($from_city_id, $detail_city_id, $customer_id, $truck_capacity, $group_motor_id);
+            } else {
+                $tarif = $this->findTarif($from_city_id, $main_city_id, $customer_id, $truck_capacity, $group_motor_id);
+            }
+        }
+
+        return $tarif;
+    }
 }
 ?>

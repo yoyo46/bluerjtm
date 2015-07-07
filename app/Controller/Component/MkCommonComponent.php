@@ -350,5 +350,159 @@ class MkCommonComponent extends Component {
     function filterEmptyField ( $value, $modelName, $fieldName, $empty = false ) {
         return !empty($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
     }
+
+    function getMimeType( $filename ) {
+        $mime_types = array(
+            'txt' => 'text/plain',
+            'htm' => 'text/html',
+            'html' => 'text/html',
+            'php' => 'text/html',
+            'css' => 'text/css',
+            'js' => 'application/javascript',
+            'json' => 'application/json',
+            'xml' => 'application/xml',
+            'swf' => 'application/x-shockwave-flash',
+            'flv' => 'video/x-flv',
+
+            // images
+            'png' => 'image/png',
+            'jpe' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'jpg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'bmp' => 'image/bmp',
+            'ico' => 'image/vnd.microsoft.icon',
+            'tiff' => 'image/tiff',
+            'tif' => 'image/tiff',
+            'svg' => 'image/svg+xml',
+            'svgz' => 'image/svg+xml',
+
+            // archives
+            'zip' => 'application/zip',
+            'rar' => 'application/x-rar-compressed',
+            'exe' => 'application/x-msdownload',
+            'msi' => 'application/x-msdownload',
+            'cab' => 'application/vnd.ms-cab-compressed',
+
+            // audio/video
+            'mp3' => 'audio/mpeg',
+            'qt' => 'video/quicktime',
+            'mov' => 'video/quicktime',
+
+            // adobe
+            'pdf' => 'application/pdf',
+            'psd' => 'image/vnd.adobe.photoshop',
+            'ai' => 'application/postscript',
+            'eps' => 'application/postscript',
+            'ps' => 'application/postscript',
+
+            // ms office
+            'doc' => 'application/msword',
+            'rtf' => 'application/rtf',
+            'xls' => 'application/vnd.ms-excel',
+            'ppt' => 'application/vnd.ms-powerpoint',
+
+            // open office
+            'odt' => 'application/vnd.oasis.opendocument.text',
+            'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
+        );
+
+        $ext1 = explode('.',$filename);
+        $ext2 = strtolower(end($ext1));
+        $ext3 = end($ext1);
+        if (array_key_exists($ext2, $mime_types)) {
+            return $mime_types[$ext2];
+        }
+        elseif (function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_MIME);
+            $mimetype = finfo_file($finfo, $filename);
+            finfo_close($finfo);
+        }
+        else {
+            return 'application/octet-stream';
+        }
+    }
+
+    function addToFiles($key, $url) {
+        $tempName = tempnam('C:/tmps', 'php_files');
+        $originalName = basename(parse_url($url, PHP_URL_PATH));
+
+        $imgRawData = file_get_contents($url);
+        file_put_contents($tempName, $imgRawData);
+
+        $_FILES[$key] = array(
+            'name' => $originalName,
+            'type' => $this->getMimeType($originalName),
+            'tmp_name' => $tempName,
+            'error' => 0,
+            'size' => strlen($imgRawData),
+        );
+        return $_FILES;
+    }
+
+    function _import_excel ( $data ) {
+        $Zipped = $data['Import']['importdata'];
+        $targetdir = false;
+
+        if($Zipped["name"]) {
+            $filename = $Zipped["name"];
+            $source = $Zipped["tmp_name"];
+            $type = $Zipped["type"];
+            $name = explode(".", $filename);
+            $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
+
+            if(!empty($accepted_types)) {
+                foreach($accepted_types as $mime_type) {
+                    if($mime_type == $type) {
+                        $okay = true;
+                        break;
+                    }
+                }
+            }
+
+            $continue = strtolower($name[1]) == 'xls' ? true : false;
+
+            if(!$continue) {
+                $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
+                $this->redirect(array('action'=>'import'));
+            } else {
+                $path = APP.'webroot'.DS.'files'.DS;
+                $filenoext = basename ($filename, '.xls');
+                $filenoext = basename ($filenoext, '.XLS');
+                $fileunique = uniqid() . '_' . $filenoext;
+
+                $targetdir = $path . $fileunique . $filename;
+                 
+                ini_set('memory_limit', '96M');
+                ini_set('post_max_size', '64M');
+                ini_set('upload_max_filesize', '64M');
+
+                if(!move_uploaded_file($source, $targetdir)) {
+                    $targetdir = false;
+                }
+            }
+        }
+
+        return $targetdir;
+    }
+
+    function getChargeTotal ( $total, $tarif_per_truck, $jenis_tarif, $is_charge ) {
+        $totalResult = 0;
+        $additionalCharge = 0;
+
+        if( $jenis_tarif == 'per_truck' ) {
+            if( !empty($is_charge) ) {
+                $totalResult = $tarif_per_truck;
+                $additionalCharge = $tarif_per_truck;
+            }
+        } else {
+            $totalResult = $total;
+        }
+
+        return array(
+            'total_tarif' => $totalResult,
+            'additional_charge' => $additionalCharge,
+        );
+    }
 }
 ?>

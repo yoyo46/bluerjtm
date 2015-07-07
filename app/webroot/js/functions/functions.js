@@ -3843,8 +3843,9 @@ $(function() {
                         $('#grand-total-revenue').html( totalPriceFormat );
                         $('#total_retail_revenue').val( totalPrice );
                         $('.tarif_per_truck').val( totalPrice );
-                        grandTotalRevenue();
                     }
+                    
+                    grandTotalRevenue();
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
