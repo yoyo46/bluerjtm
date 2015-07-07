@@ -476,7 +476,7 @@ class UsersController extends AppController {
         $branch = $this->City->getData('list', array(
             'conditions' => array(
                 'City.status' => 1,
-                // 'City.is_branch' => 1,
+                'City.is_branch' => 1,
             ),
             'fields' => array(
                 'City.id', 'City.name'

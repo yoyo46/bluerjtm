@@ -82,6 +82,24 @@
                 </label>
             </div>
         </div> -->
+        <div class="form-group">
+	        <div class="checkbox-options">
+	        	<div class="checkbox">
+	                <label>
+	                	<?php echo $this->Form->checkbox('is_branch').' Cabang?';?>
+	                </label>
+	            </div>
+	        </div>
+	    </div>
+	    <div class="form-group">
+	        <div class="checkbox-options">
+	        	<div class="checkbox">
+	                <label>
+	                	<?php echo $this->Form->checkbox('is_pool').' Pool?';?>
+	                </label>
+	            </div>
+	        </div>
+	    </div>
     </div>
 
     <div class="box-footer text-center action">

@@ -17,15 +17,19 @@
                 'inputDefaults' => array('div' => false),
             ));
         ?>
-        <div class="form-group">
-            <?php 
-                echo $this->Form->input('name',array(
-                    'label'=> __('Nama Kota'),
-                    'class'=>'form-control',
-                    'required' => false,
-                    'placeholder' => __('Nama Kota')
-                ));
-            ?>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                        echo $this->Form->input('name',array(
+                            'label'=> __('Nama Kota'),
+                            'class'=>'form-control',
+                            'required' => false,
+                            'placeholder' => __('Nama Kota')
+                        ));
+                    ?>
+                </div>
+            </div>
         </div>
         <div class="form-group action">
             <?php

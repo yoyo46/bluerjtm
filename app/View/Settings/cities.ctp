@@ -29,6 +29,14 @@
                 <th>Kota</th>
                 <!-- <th>Asal</th>
                 <th>Tujuan</th> -->
+                <?php
+                        echo $this->Html->tag('th', $this->Paginator->sort('City.is_branch', __('Cabang'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('City.is_pool', __('Pool'), array(
+                            'escape' => false
+                        )));
+                ?>
                 <th>Dibuat</th>
                 <th>Action</th>
             </tr>
@@ -38,9 +46,25 @@
                         foreach ($cities as $key => $value) {
                             $value_data = $value['City'];
                             $id = $value_data['id'];
+
+                            $branch = $this->Common->safeTagPrint($value['City']['is_branch']);
+                            if($branch){
+                                $branch = '<span class="label label-success">Ya</span>';
+                            }else{
+                                $branch = '<span class="label label-danger">Tidak</span>';
+                            }
+
+                            $pool = $this->Common->safeTagPrint($value['City']['is_pool']);
+                            if($pool){
+                                $pool = '<span class="label label-success">Ya</span>';
+                            }else{
+                                $pool = '<span class="label label-danger">Tidak</span>';
+                            }
             ?>
             <tr>
                 <td><?php echo $value_data['name'];?></td>
+                <td><?php echo $branch;?></td>
+                <td><?php echo $pool;?></td>
                 <!-- <td>
                     <?php
                             // if( !empty($value_data['is_asal']) ) {

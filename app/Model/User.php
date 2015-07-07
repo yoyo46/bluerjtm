@@ -1,7 +1,7 @@
 <?php
 class User extends AppModel {
 	var $name = 'User';
-    var $actsAs = array('Acl' => array('type' => 'requester'));
+    // var $actsAs = array('Acl' => array('type' => 'requester'));
     var $belongsTo = array(
         'Group' => array(
             'className' => 'Group',
