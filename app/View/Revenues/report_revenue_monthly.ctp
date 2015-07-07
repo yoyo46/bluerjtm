@@ -171,12 +171,12 @@
                     }
             ?>
                     <?php
-                            echo $this->Html->tag('th', sprintf(__('SALDO %s'), 'Juni'), array(
+                            echo $this->Html->tag('th', sprintf(__('SALDO %s'), $this->Common->customDate($lastMonth, 'F')), array(
                                 'style' => 'text-align: center;width: 120px;vertical-align: middle;',
                                 'data-options' => 'field:\'saldo\',width:120',
                                 'align' => 'right',
                             ));
-                            echo $this->Html->tag('th', __('KW'), array(
+                            echo $this->Html->tag('th', sprintf(__('KW %s'), $this->Common->customDate($currMonth, 'F')), array(
                                 'style' => 'text-align: center;width: 120px;vertical-align: middle;',
                                 'data-options' => 'field:\'invoice\',width:120',
                                 'align' => 'right',
@@ -218,14 +218,15 @@
                 <?php
                         if(!empty($customers)){
                             foreach ($customers as $key => $customer) {
+                                $ARLastMonth = !empty($customer['ARLastMonth'][0]['total'])?$this->Number->format($customer['ARLastMonth'][0]['total'], '', array('places' => 0)):0;
                                 $invoiceTotal = !empty($customer['InvoiceTotal'][0]['total'])?$this->Number->format($customer['InvoiceTotal'][0]['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)):0;
                                 $invoiceVoidTotal = !empty($customer['InvoiceVoidTotal'][0]['total'])?$this->Number->format($customer['InvoiceVoidTotal'][0]['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)):0;
                                 $invoicePaymentTotal = !empty($customer['InvoicePaymentTotal'][0]['total'])?$this->Number->format($customer['InvoicePaymentTotal'][0]['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)):0;
                 ?>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('td', $customer['Customer']['name']);
-                            echo $this->Html->tag('td', 0, array(
+                            echo $this->Html->tag('td', $customer['Customer']['code']);
+                            echo $this->Html->tag('td', $ARLastMonth, array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', $invoiceTotal, array(

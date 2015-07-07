@@ -5930,9 +5930,7 @@ class RevenuesController extends AppController {
             $this->loadModel('Customer');
             $this->loadModel('Invoice');
             $this->loadModel('InvoicePayment');
-            $fromMonth = date('m');
-            $toMonth = 12;
-            $year = date('Y');
+            $currMonth = date('Y-m');
             $conditionsCustomer = array(
                 'Customer.status'=> 1,
             );
@@ -5957,13 +5955,12 @@ class RevenuesController extends AppController {
                 }
             }
 
+            $lastMonth = date('Y-m', strtotime($currMonth." -1 month"));
             $conditionsInvoice = array(
-                'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $year)),
-                'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $year)),
+                'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\')' => $currMonth,
             );
             $conditionsInvoicePayment = array(
-                'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $year)),
-                'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $year)),
+                'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\')' => $currMonth,
             );
             $customerList = $this->Customer->getData('list', array(
                 'fields' => array(
@@ -5987,6 +5984,25 @@ class RevenuesController extends AppController {
             if( !empty($customers) ) {
                 foreach ($customers as $key => $customer) {
                     $conditionsInvoice['Invoice.customer_id'] = $customer['Customer']['id'];
+
+                    $conditionsARLastMonth = array(
+                        'Invoice.customer_id' => $customer['Customer']['id'],
+                        'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\')' => $lastMonth,
+                        'Invoice.paid' => 0,
+                        'Invoice.complete_paid' => 0,
+                        'Invoice.is_canceled' => 0,
+                    );
+                    $customer['ARLastMonth'] = $this->Invoice->getData('first', array(
+                        'conditions' => $conditionsARLastMonth,
+                        'fields'=> array(
+                            'Invoice.customer_id', 
+                            'SUM(Invoice.total) as total',
+                        ),
+                        'group' => array(
+                            'Invoice.customer_id'
+                        ),
+                    ), false);
+
                     $conditionsInvoiceTotal = $conditionsInvoice;
                     $customer['InvoiceTotal'] = $this->Invoice->getData('first', array(
                         'conditions' => $conditionsInvoiceTotal,
@@ -6000,7 +6016,8 @@ class RevenuesController extends AppController {
                     ), false);
 
                     $conditionsInvoiceVoid = $conditionsInvoice;
-                    $conditionsInvoiceVoid['Invoice.status'] = 0;
+                    $conditionsInvoiceVoid['Invoice.status'] = 1;
+                    $conditionsInvoiceVoid['Invoice.is_canceled'] = 0;
                     $customer['InvoiceVoidTotal'] = $this->Invoice->getData('first', array(
                         'conditions' => $conditionsInvoiceVoid,
                         'fields'=> array(
@@ -6029,17 +6046,17 @@ class RevenuesController extends AppController {
             }
 
             $module_title = __('Laporan Piutang Per Bulan');
-            $period_text = sprintf('Periode %s %s - %s %s', date('F', mktime(0, 0, 0, $fromMonth, 10)), $year, date('F', mktime(0, 0, 0, $toMonth, 10)), $year);
+            $period_text = sprintf('Bulan %s', $this->MkCommon->customDate($currMonth, 'F Y'));
             $this->set('sub_module_title', $module_title);
             $this->set('period_text', $period_text);
             $this->set('active_menu', 'report_revenue_monthly');
-            $this->request->data['Ttuj']['from']['month'] = $fromMonth;
-            $this->request->data['Ttuj']['to']['month'] = $toMonth;
-            $this->request->data['Ttuj']['year'] = $year;
+            // $this->request->data['Ttuj']['from']['month'] = $fromMonth;
+            // $this->request->data['Ttuj']['to']['month'] = $toMonth;
+            // $this->request->data['Ttuj']['year'] = $year;
 
             $this->set(compact(
-                'data_action', 'customerList', 'fromMonth', 
-                'year', 'toMonth', 'customers'
+                'data_action', 'customerList', 'currMonth', 
+                'customers', 'lastMonth'
             ));
 
             if($data_action == 'pdf'){
@@ -6601,107 +6618,124 @@ class RevenuesController extends AppController {
                                         $pph = !empty($pph)?$pph:0;
                                         $dataRevenue = array();
 
-                                        if( $jenis_tarif == 'per_truck' && !empty($tarif['tarif']) ) {
-                                            $tarif_per_truck = $tarif['tarif'];
-                                        }
-
-                                        $i = 1;
-                                        $idx = 0;
-                                        $flag = true;
-                                        $additional_charge = 0;
-
-                                        while ($flag) {
-                                            $varGroup = sprintf('tujuan_%s', $i);
-
-                                            if( !empty($$varGroup) ) {
-                                                $tujuan_detail = $$varGroup;
-                                                $no_do_string = sprintf('no_do_%s', $i);
-                                                $no_do_detail = $$no_do_string;
-                                                $no_sj_string = sprintf('no_sj_%s', $i);
-                                                $no_sj_detail = $$no_sj_string;
-                                                $group_motor_string = sprintf('group_motor_%s', $i);
-                                                $group_motor_detail = $$group_motor_string;
-                                                $jml_unit_string = sprintf('jml_unit_%s', $i);
-                                                $jml_unit_detail = ( !empty($$jml_unit_string) && is_numeric($$jml_unit_string) )?$$jml_unit_string:0;
-                                                $is_charge_string = sprintf('is_charge_%s', $i);
-                                                $is_charge_detail = !empty($$is_charge_string)?$$is_charge_string:0;
-                                                $harga_unit_string = sprintf('harga_unit_%s', $i);
-                                                $harga_unit_detail = ( !empty($$harga_unit_string) && is_numeric($$harga_unit_string) )?$$harga_unit_string:0;
-                                                $toCityDetail = $this->City->getData('first', array(
-                                                    'conditions' => array(
-                                                        'City.name' => $tujuan_detail,
-                                                        'City.status' => 1,
-                                                    ),
-                                                ));
-                                                $groupMotor = $this->GroupMotor->getData('first', array(
-                                                    'conditions' => array(
-                                                        'GroupMotor.name' => $group_motor_detail,
-                                                        'GroupMotor.status' => 1,
-                                                    ),
-                                                ));
-
-                                                $to_city_id_detail = !empty($toCityDetail['City']['id'])?$toCityDetail['City']['id']:false;
-                                                $group_motor_id = !empty($groupMotor['GroupMotor']['id'])?$groupMotor['GroupMotor']['id']:false;
-                                                $total_price_unit = $harga_unit_detail * $jml_unit_detail;
-
-                                                $tarif_detail = $this->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, $to_city_id_detail, $customer_id, $truck_capacity, $group_motor_id );
-                                                $total_tarif_detail = !empty($tarif_detail['tarif'])?$tarif_detail['tarif']:0;
-                                                $tarif_angkutan_id = !empty($tarif_detail['tarif_angkutan_id'])?$tarif_detail['tarif_angkutan_id']:false;
-                                                $tarif_angkutan_type = !empty($tarif_detail['tarif_angkutan_type'])?$tarif_detail['tarif_angkutan_type']:false;
-                                                $jenis_tarif_detail = !empty($tarif_detail['jenis_unit'])?$tarif_detail['jenis_unit']:false;
-                                                $total_result = $this->MkCommon->getChargeTotal( $total_price_unit, $total_tarif_detail, $jenis_tarif_detail, $is_charge_detail );
-                                                $total_price_unit = !empty($total_result['total_tarif'])?$total_result['total_tarif']:0;
-                                                $additional_charge += !empty($total_result['additional_charge'])?$total_result['additional_charge']:0;
-
-                                                $dataRevenue['RevenueDetail']['city_id'][$idx] = $to_city_id_detail;
-                                                $dataRevenue['RevenueDetail']['tarif_angkutan_id'][$idx] = $tarif_angkutan_id;
-                                                $dataRevenue['RevenueDetail']['tarif_angkutan_type'][$idx] = $tarif_angkutan_type;
-                                                $dataRevenue['RevenueDetail']['no_do'][$idx] = $no_do_detail;
-                                                $dataRevenue['RevenueDetail']['no_sj'][$idx] = $no_sj_detail;
-                                                $dataRevenue['RevenueDetail']['group_motor_id'][$idx] = $group_motor_id;
-                                                $dataRevenue['RevenueDetail']['qty_unit'][$idx] = $jml_unit_detail;
-                                                $dataRevenue['RevenueDetail']['payment_type'][$idx] = $jenis_tarif_detail;
-                                                $dataRevenue['RevenueDetail']['is_charge'][$idx] = $is_charge_detail;
-                                                $dataRevenue['RevenueDetail']['price_unit'][$idx] = $harga_unit_detail;
-                                                $dataRevenue['RevenueDetail']['total_price_unit'][$idx] = $total_price_unit;
-
-                                                $idx++;
-                                            } else {
-                                                $flag = false;
+                                        if( !empty($tarif) ) {
+                                            if( $jenis_tarif == 'per_truck' && !empty($tarif['tarif']) ) {
+                                                $tarif_per_truck = $tarif['tarif'];
                                             }
-                                            $i++;
-                                        }
 
-                                        $dataRevenue['Revenue'] = array(
-                                            'no_doc' => $no_dokumen,
-                                            'transaction_status' => 'unposting',
-                                            'date_revenue' => $tanggal_revenue,
-                                            'customer_id' => $customer_id,
-                                            'truck_id' => $truck_id,
-                                            'truck_capacity' => $truck_capacity,
-                                            'from_city_id' => $from_city_id,
-                                            'to_city_id' => $to_city_id,
-                                            'tarif_per_truck' => $tarif_per_truck,
-                                            'ppn' => $ppn,
-                                            'pph' => $pph,
-                                            'revenue_tarif_type' => $jenis_tarif,
-                                            'additional_charge' => $additional_charge,
-                                        );
+                                            $i = 1;
+                                            $idx = 0;
+                                            $flag = true;
+                                            $additional_charge = 0;
 
-                                        if( !empty($dataRevenue['RevenueDetail']) ) {
-                                            $resultSave = $this->Revenue->saveRevenue(false, false, $dataRevenue);
-                                            $statusSave = !empty($resultSave['status'])?$resultSave['status']:false;
-                                            $msgSave = !empty($resultSave['msg'])?$resultSave['msg']:false;
-                                            $this->MkCommon->setCustomFlash($msgSave, $statusSave);
+                                            while ($flag) {
+                                                $varGroup = sprintf('tujuan_%s', $i);
 
-                                            if( $statusSave == 'success' ) {
-                                                $successfull_row++;
+                                                if( !empty($$varGroup) ) {
+                                                    $tujuan_detail = $$varGroup;
+                                                    $no_do_string = sprintf('no_do_%s', $i);
+                                                    $no_do_detail = $$no_do_string;
+                                                    $no_sj_string = sprintf('no_sj_%s', $i);
+                                                    $no_sj_detail = $$no_sj_string;
+                                                    $group_motor_string = sprintf('group_motor_%s', $i);
+                                                    $group_motor_detail = $$group_motor_string;
+                                                    $jml_unit_string = sprintf('jml_unit_%s', $i);
+                                                    $jml_unit_detail = ( !empty($$jml_unit_string) && is_numeric($$jml_unit_string) )?$$jml_unit_string:0;
+                                                    $is_charge_string = sprintf('is_charge_%s', $i);
+                                                    $is_charge_detail = !empty($$is_charge_string)?$$is_charge_string:0;
+                                                    $harga_unit_string = sprintf('harga_unit_%s', $i);
+                                                    $harga_unit_detail = ( !empty($$harga_unit_string) && is_numeric($$harga_unit_string) )?$$harga_unit_string:0;
+                                                    $toCityDetail = $this->City->getData('first', array(
+                                                        'conditions' => array(
+                                                            'City.name' => $tujuan_detail,
+                                                            'City.status' => 1,
+                                                        ),
+                                                    ));
+                                                    $groupMotor = $this->GroupMotor->getData('first', array(
+                                                        'conditions' => array(
+                                                            'GroupMotor.name' => $group_motor_detail,
+                                                            'GroupMotor.status' => 1,
+                                                        ),
+                                                    ));
+
+                                                    $to_city_id_detail = !empty($toCityDetail['City']['id'])?$toCityDetail['City']['id']:false;
+                                                    $group_motor_id = !empty($groupMotor['GroupMotor']['id'])?$groupMotor['GroupMotor']['id']:false;
+                                                    $total_price_unit = $harga_unit_detail * $jml_unit_detail;
+
+                                                    $tarif_detail = $this->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, $to_city_id_detail, $customer_id, $truck_capacity, $group_motor_id );
+                                                    $total_tarif_detail = !empty($tarif_detail['tarif'])?$tarif_detail['tarif']:0;
+                                                    $tarif_angkutan_id = !empty($tarif_detail['tarif_angkutan_id'])?$tarif_detail['tarif_angkutan_id']:false;
+                                                    $tarif_angkutan_type = !empty($tarif_detail['tarif_angkutan_type'])?$tarif_detail['tarif_angkutan_type']:false;
+                                                    $jenis_tarif_detail = !empty($tarif_detail['jenis_unit'])?$tarif_detail['jenis_unit']:false;
+                                                    $total_result = $this->MkCommon->getChargeTotal( $total_price_unit, $total_tarif_detail, $jenis_tarif_detail, $is_charge_detail );
+                                                    $total_price_unit = !empty($total_result['total_tarif'])?$total_result['total_tarif']:0;
+                                                    $additional_charge += !empty($total_result['additional_charge'])?$total_result['additional_charge']:0;
+
+                                                    $dataRevenue['RevenueDetail']['city_id'][$idx] = $to_city_id_detail;
+                                                    $dataRevenue['RevenueDetail']['tarif_angkutan_id'][$idx] = $tarif_angkutan_id;
+                                                    $dataRevenue['RevenueDetail']['tarif_angkutan_type'][$idx] = $tarif_angkutan_type;
+                                                    $dataRevenue['RevenueDetail']['no_do'][$idx] = $no_do_detail;
+                                                    $dataRevenue['RevenueDetail']['no_sj'][$idx] = $no_sj_detail;
+                                                    $dataRevenue['RevenueDetail']['group_motor_id'][$idx] = $group_motor_id;
+                                                    $dataRevenue['RevenueDetail']['qty_unit'][$idx] = $jml_unit_detail;
+                                                    $dataRevenue['RevenueDetail']['payment_type'][$idx] = $jenis_tarif_detail;
+                                                    $dataRevenue['RevenueDetail']['is_charge'][$idx] = $is_charge_detail;
+                                                    $dataRevenue['RevenueDetail']['price_unit'][$idx] = $harga_unit_detail;
+                                                    $dataRevenue['RevenueDetail']['total_price_unit'][$idx] = $total_price_unit;
+
+                                                    $idx++;
+                                                } else {
+                                                    $flag = false;
+                                                }
+                                                $i++;
+                                            }
+
+                                            $dataRevenue['Revenue'] = array(
+                                                'no_doc' => $no_dokumen,
+                                                'transaction_status' => 'unposting',
+                                                'date_revenue' => $tanggal_revenue,
+                                                'customer_id' => $customer_id,
+                                                'truck_id' => $truck_id,
+                                                'truck_capacity' => $truck_capacity,
+                                                'from_city_id' => $from_city_id,
+                                                'to_city_id' => $to_city_id,
+                                                'tarif_per_truck' => $tarif_per_truck,
+                                                'ppn' => $ppn,
+                                                'pph' => $pph,
+                                                'revenue_tarif_type' => $jenis_tarif,
+                                                'additional_charge' => $additional_charge,
+                                            );
+
+                                            if( !empty($dataRevenue['RevenueDetail']) ) {
+                                                $resultSave = $this->Revenue->saveRevenue(false, false, $dataRevenue);
+                                                $statusSave = !empty($resultSave['status'])?$resultSave['status']:false;
+                                                $msgSave = !empty($resultSave['msg'])?$resultSave['msg']:false;
+                                                $this->MkCommon->setCustomFlash($msgSave, $statusSave);
+
+                                                if( $statusSave == 'success' ) {
+                                                    $successfull_row++;
+                                                } else {
+                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : %s'), $row_submitted+1, $msgSave) . '<br>';
+                                                    $failed_row++;
+                                                }
                                             } else {
-                                                $error_message .= sprintf(__('Gagal pada baris ke %s : %s'), $row_submitted+1, $msgSave) . '<br>';
+                                                $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal menyimpan Revenue, mohon lengkapi field-field muatan'), $row_submitted+1) . '<br>';
                                                 $failed_row++;
                                             }
                                         } else {
-                                            $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal menyimpan Revenue, mohon lengkapi field-field muatan'), $row_submitted+1) . '<br>';
+                                            if( empty($from_city_id) || empty($to_city_id) || empty($customer_id) || empty($truck_capacity) ) {
+                                                if( empty($from_city_id) ) {
+                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Kota asal tidak salah'), $row_submitted+1) . '<br>';
+                                                } else if( empty($to_city_id) ) {
+                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Kota tujuan tidak salah'), $row_submitted+1) . '<br>';
+                                                } else if( empty($customer_id) ) {
+                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Kode Customer tidak salah'), $row_submitted+1) . '<br>';
+                                                } else if( empty($truck_capacity) ) {
+                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Nopol Truk tidak salah'), $row_submitted+1) . '<br>';
+                                                }
+                                            } else {
+                                                $error_message .= sprintf(__('Gagal pada baris ke %s : Tarif tidak ditemukan, silahkan buat tarif angkutan terlebih dahulu'), $row_submitted+1) . '<br>';
+                                            }
                                             $failed_row++;
                                         }
 
