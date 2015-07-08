@@ -1,4 +1,56 @@
 <?php 
+        $dataColumns = array(
+            'code' => array(
+                'name' => __('Customer'),
+                'style' => 'text-align: center;width: 150px;vertical-align: middle;',
+                'data-options' => 'field:\'code\',width:120',
+                'field_model' => 'Customer.code',
+                'display' => true,
+                'fix_column' => true
+            ),
+            'saldo' => array(
+                'name' => sprintf(__('SALDO %s'), $this->Common->customDate($lastMonth, 'M Y')),
+                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
+                'data-options' => 'field:\'saldo\',width:120',
+                'align' => 'right',
+                'field_model' => false,
+                'display' => true,
+            ),
+            'invoice' => array(
+                'name' => sprintf(__('KW. %s'), $this->Common->getCombineDate($fromMonthYear, $toMonthYear, 'short')),
+                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
+                'data-options' => 'field:\'invoice\',width:120',
+                'align' => 'right',
+                'field_model' => false,
+                'display' => true,
+            ),
+            'ar' => array(
+                'name' => __('A/R TERBAYAR'),
+                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
+                'data-options' => 'field:\'ar\',width:120',
+                'align' => 'right',
+                'field_model' => false,
+                'display' => true,
+            ),
+            'void' => array(
+                'name' => __('KW. Batal'),
+                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
+                'data-options' => 'field:\'void\',width:120',
+                'align' => 'right',
+                'field_model' => false,
+                'display' => true,
+            ),
+            'saldo_ar' => array(
+                'name' => __('SALDO A/R'),
+                'style' => 'text-align: center;width: 140px;vertical-align: middle;',
+                'data-options' => 'field:\'saldo_ar\',width:120',
+                'align' => 'right',
+                'field_model' => false,
+                'display' => true,
+            ),
+        );
+        $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table', $data_action );
+
         if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
             $this->Html->addCrumb($sub_module_title);
             $addStyle = 'width: 100%;height: 550px;';
@@ -19,134 +71,23 @@
             }
 
             if( $data_action != 'excel' ) {
+                echo $this->element('blocks/revenues/search_report_revenue_monthly');
 ?>
-<div class="box box-primary">
-    <div class="box-header">
-        <h3 class="box-title">Pencarian</h3>
-        <div class="box-tools pull-right">
-            <button class="btn btn-default btn-sm" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
-        </div>
-    </div>
-    <div class="box-body">
-        <?php 
-            echo $this->Form->create('Ttuj', array(
-                'url'=> $this->Html->url( array(
-                    'controller' => 'revenues',
-                    'action' => 'search',
-                    'report_revenue_customers'
-                )), 
-                'role' => 'form',
-                'inputDefaults' => array('div' => false),
-            ));
-        ?>
-        <div class="row">
-            <div class="col-sm-6">
-                <?php 
-                        echo $this->Form->label('fromMonth', __('Periode Bulan'));
-                ?>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <?php 
-                                    echo $this->Form->month('from', array(
-                                        'label'=> false, 
-                                        'class'=>'form-control',
-                                        'required' => false,
-                                        'empty' => false,
-                                    ));
-                            ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <?php 
-                                    echo $this->Form->month('to', array(
-                                        'label'=> false, 
-                                        'class'=>'form-control',
-                                        'required' => false,
-                                        'empty' => false,
-                                    ));
-                            ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->year('year', 1949, date('Y'), array(
-                                'label'=> false, 
-                                'class'=>'form-control',
-                                'empty' => false,
-                            ));
-                    ?>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->input('customer', array(
-                                'label'=> __('Customer'), 
-                                'class'=>'form-control',
-                                'empty' => __('Pilih Customer'),
-                                'options' => $customerList,
-                            ));
-                    ?>
-                </div>
-                <div class="form-group action">
-                    <?php
-                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
-                                'div' => false, 
-                                'class'=> 'btn btn-success btn-sm',
-                                'type' => 'submit',
-                            ));
-                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'report_revenue_customers', 
-                            ), array(
-                                'escape' => false, 
-                                'class'=> 'btn btn-default btn-sm',
-                            ));
-                    ?>
-                </div>
-            </div>
-        </div>
-        <?php 
-                echo $this->Form->end();
-        ?>
-    </div>
-</div>
 <section class="content invoice">
     <?php 
             }
     ?>
     <h2 class="page-header">
         <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
-        <small class="pull-right">
-            <?php
-                    echo $period_text;
-            ?>
-        </small>
     </h2>
     <?php 
             if( $data_action != 'excel' ) {
+                echo $this->Common->_getPrint(array(
+                    '_attr' => array(
+                        'escape' => false,
+                    ),
+                ));
     ?>
-    <div class="row no-print print-action">
-        <div class="col-xs-12 action">
-            <?php
-                    $urlExcel = $this->passedArgs;
-                    $urlExcel[] = 'excel';
-                    echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
-                        'escape' => false,
-                        'class' => 'btn btn-success pull-right'
-                    ));
-
-                    $urlPdf = $this->passedArgs;
-                    $urlPdf[] = 'pdf';
-                    echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
-                        'escape' => false,
-                        'class' => 'btn btn-primary pull-right'
-                    ));
-            ?>
-        </div>
-    </div>
     <div class="table-responsive">
         <?php 
                 }
@@ -154,100 +95,52 @@
         <table id="tt" class="table table-bordered <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true" border="<?php echo $border; ?>">
             <thead frozen="true">
                 <tr>
-                    <?php 
-                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Customer')), array(
-                                'style' => 'text-align: center;width: 150px;vertical-align: middle;',
-                                'data-options' => 'field:\'code\',width:120',
-                            ));
-                    ?>
-            <?php 
-                    if( $data_action != 'excel' ) {
-            ?>
-                </tr>
-            </thead>
-            <thead>
-                <tr>
-            <?php 
-                    }
-            ?>
                     <?php
-                            echo $this->Html->tag('th', sprintf(__('SALDO %s'), $this->Common->customDate($lastMonth, 'F')), array(
-                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
-                                'data-options' => 'field:\'saldo\',width:120',
-                                'align' => 'right',
-                            ));
-                            echo $this->Html->tag('th', sprintf(__('KW %s'), $this->Common->customDate($currMonth, 'F')), array(
-                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
-                                'data-options' => 'field:\'invoice\',width:120',
-                                'align' => 'right',
-                            ));
-                            echo $this->Html->tag('th', __('A/R TERBAYAR'), array(
-                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
-                                'data-options' => 'field:\'ar\',width:120',
-                                'align' => 'right',
-                            ));
-                            echo $this->Html->tag('th', __('B. KLAIM'), array(
-                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
-                                'data-options' => 'field:\'claim\',width:120',
-                                'align' => 'right',
-                            ));
-                            echo $this->Html->tag('th', __('B. TRANSFER'), array(
-                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
-                                'data-options' => 'field:\'tranfer\',width:120',
-                                'align' => 'right',
-                            ));
-                            echo $this->Html->tag('th', __('B. PAJAK'), array(
-                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
-                                'data-options' => 'field:\'pajak\',width:120',
-                                'align' => 'right',
-                            ));
-                            echo $this->Html->tag('th', __('kw. Batal'), array(
-                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
-                                'data-options' => 'field:\'invoice_void\',width:120',
-                                'align' => 'right',
-                            ));
-                            echo $this->Html->tag('th', __('SALDO A/R'), array(
-                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
-                                'data-options' => 'field:\'saldo_ar\',width:120',
-                                'align' => 'right',
-                            ));
+                            if( !empty($fieldColumn) ) {
+                                echo $fieldColumn;
+                            }
                     ?>
                 </tr>
             </thead>
             <tbody>
                 <?php
                         if(!empty($customers)){
+                            $totalSaldoLastMonth = 0;
+                            $totalKW = 0;
+                            $totalAR = 0;
+                            $totalKWVoid = 0;
+                            $totalSaldoAR = 0;
+
                             foreach ($customers as $key => $customer) {
-                                $ARLastMonth = !empty($customer['ARLastMonth'][0]['total'])?$this->Number->format($customer['ARLastMonth'][0]['total'], '', array('places' => 0)):0;
-                                $invoiceTotal = !empty($customer['InvoiceTotal'][0]['total'])?$this->Number->format($customer['InvoiceTotal'][0]['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)):0;
-                                $invoiceVoidTotal = !empty($customer['InvoiceVoidTotal'][0]['total'])?$this->Number->format($customer['InvoiceVoidTotal'][0]['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)):0;
-                                $invoicePaymentTotal = !empty($customer['InvoicePaymentTotal'][0]['total'])?$this->Number->format($customer['InvoicePaymentTotal'][0]['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)):0;
+                                $invLastMonth = !empty($customer['InvLastMonth'][0]['total'])?$customer['InvLastMonth'][0]['total']:0;
+                                $invVoidLastMonth = !empty($customer['InvVoidLastMonth'][0]['total'])?$customer['InvVoidLastMonth'][0]['total']:0;
+                                $invPaidLastMonth = !empty($customer['InvPaidLastMonth'][0]['total'])?$customer['InvPaidLastMonth'][0]['total']:0;
+                                $invoiceTotal = !empty($customer['InvoiceTotal'][0]['total'])?$customer['InvoiceTotal'][0]['total']:0;
+                                $invoicePaymentTotal = !empty($customer['InvoicePaymentTotal'][0]['total'])?$customer['InvoicePaymentTotal'][0]['total']:0;
+                                $invoiceVoidTotal = !empty($customer['InvoiceVoidTotal'][0]['total'])?$customer['InvoiceVoidTotal'][0]['total']:0;
+                                $total = $invLastMonth + $invPaidLastMonth - $invVoidLastMonth + $invoiceTotal + $invoicePaymentTotal - $invoiceVoidTotal;
+                                $totalSaldoLastMonth += $invLastMonth + $invPaidLastMonth - $invVoidLastMonth;
+                                $totalKW += $invoiceTotal;
+                                $totalAR += $invoicePaymentTotal;
+                                $totalKWVoid += $invoiceVoidTotal;
+                                $totalSaldoAR += $total;
                 ?>
                 <tr>
                     <?php 
                             echo $this->Html->tag('td', $customer['Customer']['code']);
-                            echo $this->Html->tag('td', $ARLastMonth, array(
+                            echo $this->Html->tag('td', $this->Number->format($invLastMonth+$invPaidLastMonth-$invVoidLastMonth, '', array('places' => 0)), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
-                            echo $this->Html->tag('td', $invoiceTotal, array(
+                            echo $this->Html->tag('td', $this->Number->format($invoiceTotal, '', array('places' => 0)), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
-                            echo $this->Html->tag('td', $invoicePaymentTotal, array(
+                            echo $this->Html->tag('td', $this->Number->format($invoicePaymentTotal, '', array('places' => 0)), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
-                            echo $this->Html->tag('td', 0, array(
+                            echo $this->Html->tag('td', $this->Number->format($invoiceVoidTotal, '', array('places' => 0)), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
-                            echo $this->Html->tag('td', 0, array(
-                                'style' => 'text-align: right;vertical-align: middle;',
-                            ));
-                            echo $this->Html->tag('td', 0, array(
-                                'style' => 'text-align: right;vertical-align: middle;',
-                            ));
-                            echo $this->Html->tag('td', $invoiceVoidTotal, array(
-                                'style' => 'text-align: right;vertical-align: middle;',
-                            ));
-                            echo $this->Html->tag('td', 0, array(
+                            echo $this->Html->tag('td', $this->Number->format($total, '', array('places' => 0)), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
                     ?>
@@ -258,32 +151,24 @@
 
                 <tr>
                     <?php 
-                            // $totalLeft = 0;
-                            // $totalLeft += $totalBottomYear;
-                            // echo $this->Html->tag('td', $this->Html->tag('strong', __('Total')), array(
-                            //     'style' => 'text-align: right;vertical-align: middle;',
-                            // ));
-                            // echo $this->Html->tag('td', $this->Html->tag('strong', !empty($totalBottomYear)?$this->Number->format($totalBottomYear, Configure::read('__Site.config_currency_code'), array('places' => 0)):0), array(
-                            //     'style' => 'text-align: right;vertical-align: middle;',
-                            // ));
-
-                            // if( !empty($totalCnt) ) {
-                            //     for ($i=0; $i <= $totalCnt; $i++) {
-                            //         $formatDate = date('F Y', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
-                            //         $nameSlug = sprintf('totalBottom%s', $this->Common->toSlug($formatDate, '_'));
-                            //         $totalLeft += $$nameSlug;
-                            //         $pencapaian = !empty($$nameSlug)?$this->Number->format($$nameSlug, Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
-
-                            //         echo $this->Html->tag('td', $this->Html->tag('strong', $pencapaian), array(
-                            //             'style' => 'text-align: right;vertical-align: middle;',
-                            //         ));
-                            //     }
-                            // }
-
-                            // $totalLeft = !empty($totalLeft)?$this->Number->format($totalLeft, Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
-                            // echo $this->Html->tag('td', $this->Html->tag('strong', $totalLeft), array(
-                            //     'style' => 'text-align: right;vertical-align: middle;',
-                            // ));
+                            echo $this->Html->tag('td', $this->Html->tag('strong', __('Total')), array(
+                                'style' => 'text-align: right;vertical-align: middle;',
+                            ));
+                            echo $this->Html->tag('td', $this->Html->tag('strong', $this->Number->format($totalSaldoLastMonth, '', array('places' => 0))), array(
+                                'style' => 'text-align: right;vertical-align: middle;font-weight:bold;',
+                            ));
+                            echo $this->Html->tag('td', $this->Html->tag('strong', $this->Number->format($totalKW, '', array('places' => 0))), array(
+                                'style' => 'text-align: right;vertical-align: middle;font-weight:bold;',
+                            ));
+                            echo $this->Html->tag('td', $this->Html->tag('strong', $this->Number->format($totalAR, '', array('places' => 0))), array(
+                                'style' => 'text-align: right;vertical-align: middle;font-weight:bold;',
+                            ));
+                            echo $this->Html->tag('td', $this->Html->tag('strong', $this->Number->format($totalKWVoid, '', array('places' => 0))), array(
+                                'style' => 'text-align: right;vertical-align: middle;font-weight:bold;',
+                            ));
+                            echo $this->Html->tag('td', $this->Html->tag('strong', $this->Number->format($totalSaldoAR, '', array('places' => 0))), array(
+                                'style' => 'text-align: right;vertical-align: middle;font-weight:bold;',
+                            ));
                     ?>
                 </tr>
                 <?php
@@ -332,104 +217,37 @@
             $table_th = 'padding-top: 3px';
             $table = 'width:100%;font-size: 24px; border: 1px solid #CCC; border-collapse: collapse; padding: 0; margin: 0;';
             $tdStyle = 'text-align: center;vertical-align: middle;';
-            $each_loop_message = '';
-
-            $contentHeader = $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Customer')), array(
-                'style' => $tdStyle,
-            ));
-            $contentHeader .= $this->Html->tag('th', sprintf(__('AVG %s'), $avgYear), array(
-                'style' => 'text-align: center;vertical-align: middle;',
-            ));
-
-            if( !empty($totalCnt) ) {
-                for ($i=0; $i <= $totalCnt; $i++) {
-                    $formatDate = 'F';
-
-                    if( $fromYear != $toYear ) {
-                        $formatDate = 'F Y';
-                    }
-
-                    $formatDate = date($formatDate, mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
-                    $formatMonth = date('F Y', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
-                    $slugFormatMonth = $this->Common->toSlug($formatMonth , '_');
-                    $nameSlug = sprintf('totalBottom%s', $slugFormatMonth);
-                    $$nameSlug = 0;
-
-                    $contentHeader .= $this->Html->tag('th', $formatDate, array(
-                        'style' => $tdStyle,
-                    ));
-                }
-            }
-
-            $contentHeader .= $this->Html->tag('th', $this->Html->tag('strong', __('Total')), array(
-                'style' => 'text-align: center;vertical-align: middle;',
-            ));
+            $contentTr = '';
 
             if(!empty($customers)){
-                $totalBottomYear = 0;
-
                 foreach ($customers as $key => $customer) {
-                    $totalBottomYear += $customer['RevenueYear'];
-                    $totalLeft = 0;
-                    $totalAvgYear = !empty($customer['RevenueYear'])?$customer['RevenueYear']:0;
-                    $totalFormatAgv = !empty($totalAvgYear)?$this->Number->format($totalAvgYear, Configure::read('__Site.config_currency_code'), array('places' => 0)):0;
-                    $totalLeft += $totalFormatAgv;
-                    $each_loop_message .= '<tr>';
-                    $each_loop_message .= $this->Html->tag('td', $customer['Customer']['name']);
-                    $each_loop_message .= $this->Html->tag('td', $totalFormatAgv, array(
+                    $invLastMonth = !empty($customer['InvLastMonth'][0]['total'])?$customer['InvLastMonth'][0]['total']:0;
+                    $invVoidLastMonth = !empty($customer['InvVoidLastMonth'][0]['total'])?$customer['InvVoidLastMonth'][0]['total']:0;
+                    $invPaidLastMonth = !empty($customer['InvPaidLastMonth'][0]['total'])?$customer['InvPaidLastMonth'][0]['total']:0;
+                    $invoiceTotal = !empty($customer['InvoiceTotal'][0]['total'])?$customer['InvoiceTotal'][0]['total']:0;
+                    $invoicePaymentTotal = !empty($customer['InvoicePaymentTotal'][0]['total'])?$customer['InvoicePaymentTotal'][0]['total']:0;
+                    $invoiceVoidTotal = !empty($customer['InvoiceVoidTotal'][0]['total'])?$customer['InvoiceVoidTotal'][0]['total']:0;
+                    $total = $invLastMonth + $invPaidLastMonth - $invVoidLastMonth + $invoiceTotal + $invoicePaymentTotal - $invoiceVoidTotal;
+
+                    $contentTd = $this->Html->tag('td', $customer['Customer']['code']);
+                    $contentTd .= $this->Html->tag('td', $this->Number->format($invLastMonth+$invPaidLastMonth-$invVoidLastMonth, '', array('places' => 0)), array(
+                        'style' => 'text-align: right;vertical-align: middle;',
+                    ));
+                    $contentTd .= $this->Html->tag('td', $this->Number->format($invoiceTotal, '', array('places' => 0)), array(
+                        'style' => 'text-align: right;vertical-align: middle;',
+                    ));
+                    $contentTd .= $this->Html->tag('td', $this->Number->format($invoicePaymentTotal, '', array('places' => 0)), array(
+                        'style' => 'text-align: right;vertical-align: middle;',
+                    ));
+                    $contentTd .= $this->Html->tag('td', $this->Number->format($invoiceVoidTotal, '', array('places' => 0)), array(
+                        'style' => 'text-align: right;vertical-align: middle;',
+                    ));
+                    $contentTd .= $this->Html->tag('td', $this->Number->format($total, '', array('places' => 0)), array(
                         'style' => 'text-align: right;vertical-align: middle;',
                     ));
 
-                    if( !empty($totalCnt) ) {
-                        for ($i=0; $i <= $totalCnt; $i++) {
-                            $currDate = date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
-                            $formatDate = date('F Y', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
-                            $nameSlug = sprintf('totalBottom%s', $this->Common->toSlug($formatDate, '_'));
-                            $pencapaian = !empty($customer['Customer'][$currDate]['total_revenue'])?$customer['Customer'][$currDate]['total_revenue']:'0';
-                            $$nameSlug += $pencapaian;
-                            $totalLeft += $pencapaian;
-                            $pencapaian = !empty($pencapaian)?$this->Number->format($pencapaian, Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
-                            $each_loop_message .= $this->Html->tag('td', $pencapaian, array(
-                                'style' => 'text-align: right;',
-                            ));
-                        }
-                    }
-
-                    $totalLeft = !empty($totalLeft)?$this->Number->format($totalLeft, Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
-                    $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', $totalLeft), array(
-                        'style' => 'text-align: right;vertical-align: middle;',
-                    ));
-                    $each_loop_message .= '</tr>';
+                    $contentTr .= $this->Html->tag('tr', $contentTd);
                 }
-
-                $each_loop_message .= '<tr>';
-                $totalLeft = 0;
-                $totalLeft += $totalBottomYear;
-                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', __('Total')), array(
-                    'style' => 'text-align: right;vertical-align: middle;',
-                ));
-                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', !empty($totalBottomYear)?$this->Number->format($totalBottomYear, Configure::read('__Site.config_currency_code'), array('places' => 0)):0), array(
-                    'style' => 'text-align: right;vertical-align: middle;',
-                ));
-
-                if( !empty($totalCnt) ) {
-                    for ($i=0; $i <= $totalCnt; $i++) {
-                        $formatDate = date('F Y', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
-                        $nameSlug = sprintf('totalBottom%s', $this->Common->toSlug($formatDate, '_'));
-                        $totalLeft += $$nameSlug;
-                        $pencapaian = !empty($$nameSlug)?$this->Number->format($$nameSlug, Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
-
-                        $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', $pencapaian), array(
-                            'style' => 'text-align: right;vertical-align: middle;',
-                        ));
-                    }
-                }
-
-                $totalLeft = !empty($totalLeft)?$this->Number->format($totalLeft, Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
-                $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', $totalLeft), array(
-                    'style' => 'text-align: right;vertical-align: middle;',
-                ));
-                $each_loop_message .= '</tr>';
             }
 
             $date_title = $sub_module_title;
@@ -440,17 +258,14 @@ $tbl = <<<EOD
 
       <div class="clearfix container_16" id="content">
         <h2 class="grid_8" style="text-align: center;">$date_title</h2>
-        <div style="text-align: right;display: block;">
-            $period_text
-        </div>
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table;display: block;">
             <thead>
                 <tr style="$table_tr_head">
-                    $contentHeader
+                    $fieldColumn
                 </tr>
             </thead>
             <tbody>
-                $each_loop_message
+                $contentTr
             </tbody>
         </table> 
         <br>

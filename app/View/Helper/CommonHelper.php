@@ -933,6 +933,9 @@ class CommonHelper extends AppHelper {
                 $child = !empty($dataColumn['child'])?$dataColumn['child']:false;
                 $rowspan = !empty($dataColumn['rowspan'])?$dataColumn['rowspan']:false;
                 $class = !empty($dataColumn['class'])?$dataColumn['class']:false;
+                $fix_column = !empty($dataColumn['fix_column'])?$dataColumn['fix_column']:false;
+                $data_options = !empty($dataColumn['data-options'])?$dataColumn['data-options']:false;
+                $align = !empty($dataColumn['align'])?$dataColumn['align']:false;
                 $content = false;
 
                 if( !empty($display) ) {
@@ -966,12 +969,22 @@ class CommonHelper extends AppHelper {
                                 $colspan = false;
                             }
 
+                            if( !empty($is_print) ) {
+                                $data_options = false;
+                            }
+
                             $content = $this->Html->tag('th', $this->getSorting($field_model, $name, $is_print), array(
                                 'class' => sprintf('%s %s %s %s', $addClass, $key_field, $class, $_class),
                                 'style' => $style,
                                 'colspan' => $colspan,
                                 'rowspan' => $rowspan,
+                                'data-options' => $data_options,
+                                'align' => $align,
                             ));
+
+                            if( $fix_column && empty($is_print) ) {
+                                $content .= '</tr></thead><thead><tr>';
+                            }
 
                             // Append Child
                             if( !empty($child) ) {
@@ -1104,11 +1117,12 @@ class CommonHelper extends AppHelper {
         }
     }
 
-    function _getPrint ( $options = false ) {
+    function _getPrint ( $options = false, $showHideColumn = false ) {
         $_excel = isset($options['_excel'])?$options['_excel']:true;
         $_pdf = isset($options['_pdf'])?$options['_pdf']:true;
         $_attr = isset($options['_attr'])?$options['_attr']:true;
         $result = false;
+        $resultContent = '';
         $default_attr = array(
             'escape' => false,
             'class' => false,
@@ -1130,8 +1144,23 @@ class CommonHelper extends AppHelper {
             $result .= $this->Html->link('<i class="fa fa-download"></i> Download PDF', $this->here.'/pdf', $_pdf_attr);
         }
 
-        return $this->Html->tag('div', $result, array(
+        if( !empty($showHideColumn) ) {
+            $resultContent .= $this->_getShowHideColumn('Truck', $showHideColumn, array(
+                'url'=> $this->Html->url( null, true ), 
+                'role' => 'form',
+                'inputDefaults' => array('div' => false),
+                'id' => 'truck-report',
+            ));
+        }
+
+        $resultContent .= $this->Html->tag('div', $result, array(
             'class' => 'action pull-right',
+        ));
+
+        return $this->Html->tag('div', $resultContent.$this->Html->tag('div', '', array(
+            'class' => 'clear',
+        )), array(
+            'class' => 'no-print print-action',
         ));
     }
 
@@ -1259,5 +1288,46 @@ class CommonHelper extends AppHelper {
                 return $this->Time->niceShort(strtotime($dateString));
             }
         }
+    }
+
+    /**
+    *
+    *   mengkombinasikan tanggal
+    *
+    *   @param string $startDate : tanggal awal
+    *   @param string $endDate : tanggal akhir
+    *   @return string
+    */
+    function getCombineDate ( $startDate, $endDate, $format = 'long' ) {
+        $startDate = strtotime($startDate);
+        $endDate = strtotime($endDate);
+
+        if( !empty($startDate) && !empty($endDate) ) {
+            switch ($format) {
+                case 'short':
+                    if( $startDate == $endDate ) {
+                        $customDate = date('M Y', $startDate);
+                    } else if( date('Y', $startDate) == date('Y', $endDate) ) {
+                        $customDate = sprintf('%s - %s', date('M', $startDate), date('M Y', $endDate));
+                    } else {
+                        $customDate = sprintf('%s - %s', date('M Y', $startDate), date('M Y', $endDate));
+                    }
+                    break;
+                
+                default:
+                    if( $startDate == $endDate ) {
+                        $customDate = date('d M Y', $startDate);
+                    } else if( date('M Y', $startDate) == date('M Y', $endDate) ) {
+                        $customDate = sprintf('%s - %s', date('d', $startDate), date('d M Y', $endDate));
+                    } else if( date('Y', $startDate) == date('Y', $endDate) ) {
+                        $customDate = sprintf('%s - %s', date('d M', $startDate), date('d M Y', $endDate));
+                    } else {
+                        $customDate = sprintf('%s - %s', date('d M Y', $startDate), date('d M Y', $endDate));
+                    }
+                    break;
+            }
+            return $customDate;
+        }
+        return false;
     }
 }

@@ -5930,7 +5930,11 @@ class RevenuesController extends AppController {
             $this->loadModel('Customer');
             $this->loadModel('Invoice');
             $this->loadModel('InvoicePayment');
-            $currMonth = date('Y-m');
+            $fromMonthYear = date('Y-m');
+            $toMonthYear = date('Y-m');
+            $fromMonth = date('m');
+            $toMonth = date('m');
+            $fromYear = date('Y');
             $conditionsCustomer = array(
                 'Customer.status'=> 1,
             );
@@ -5944,23 +5948,42 @@ class RevenuesController extends AppController {
                     $conditionsCustomer['Customer.id'] = $customer;
                 }
 
-                if( !empty($refine['fromMonth']) && !empty($refine['fromYear']) ){
+                if( !empty($refine['fromMonth']) ){
                     $fromMonth = urldecode($refine['fromMonth']);
+                }
+
+                if( !empty($refine['toMonth']) ){
+                    $toMonth = urldecode($refine['toMonth']);
+                }
+
+                if( !empty($refine['fromYear']) ){
                     $fromYear = urldecode($refine['fromYear']);
                 }
 
-                if( !empty($refine['toMonth']) && !empty($refine['toYear']) ){
-                    $toMonth = urldecode($refine['toMonth']);
-                    $toYear = urldecode($refine['toYear']);
+                if( !empty($fromYear) ) {
+                    if( !empty($fromMonth) ) {
+                        $fromMonthYear = sprintf('%s-%s', $fromYear, $fromMonth);
+                    }
+                    if( !empty($toMonth) ) {
+                        $toMonthYear = sprintf('%s-%s', $fromYear, $toMonth);
+                    }
                 }
             }
 
-            $lastMonth = date('Y-m', strtotime($currMonth." -1 month"));
+            $lastMonth = date('Y-m', strtotime($fromMonthYear." -1 month"));
+            $this->request->data['Ttuj']['from']['month'] = $fromMonth;
+            $this->request->data['Ttuj']['to']['month'] = $toMonth;
+            $this->request->data['Ttuj']['from']['year'] = $fromYear;
+
             $conditionsInvoice = array(
-                'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\')' => $currMonth,
+                'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') >=' => $fromMonthYear,
+                'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => $toMonthYear,
             );
             $conditionsInvoicePayment = array(
-                'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\')' => $currMonth,
+                'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') >=' => $fromMonthYear,
+                'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $toMonthYear,
+                'InvoicePayment.is_canceled' => 0,
+                'InvoicePayment.status' => 1,
             );
             $customerList = $this->Customer->getData('list', array(
                 'fields' => array(
@@ -5971,35 +5994,60 @@ class RevenuesController extends AppController {
             $options = $this->Customer->getData('paginate', array(
                 'conditions' => $conditionsCustomer,
             ));
-
-            if( !empty($data_action) ) {
-                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
-            } else {
-                $options['limit'] = 20;
-            }
-
             $this->paginate = $options;
-            $customers = $this->paginate('Customer');
+            $customers = $this->Customer->getData('all', $options, false);
 
             if( !empty($customers) ) {
                 foreach ($customers as $key => $customer) {
                     $conditionsInvoice['Invoice.customer_id'] = $customer['Customer']['id'];
 
-                    $conditionsARLastMonth = array(
+                    $conditionsInvLastMonth = array(
                         'Invoice.customer_id' => $customer['Customer']['id'],
-                        'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\')' => $lastMonth,
+                        'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => $lastMonth,
                         'Invoice.paid' => 0,
                         'Invoice.complete_paid' => 0,
-                        'Invoice.is_canceled' => 0,
                     );
-                    $customer['ARLastMonth'] = $this->Invoice->getData('first', array(
-                        'conditions' => $conditionsARLastMonth,
+                    $customer['InvLastMonth'] = $this->Invoice->getData('first', array(
+                        'conditions' => $conditionsInvLastMonth,
                         'fields'=> array(
                             'Invoice.customer_id', 
                             'SUM(Invoice.total) as total',
                         ),
                         'group' => array(
                             'Invoice.customer_id'
+                        ),
+                    ), false);
+
+                    $conditionsInvVoidLastMonth = array(
+                        'Invoice.customer_id' => $customer['Customer']['id'],
+                        'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') <=' => $lastMonth,
+                        'Invoice.is_canceled' => 1,
+                    );
+                    $customer['InvVoidLastMonth'] = $this->Invoice->getData('first', array(
+                        'conditions' => $conditionsInvVoidLastMonth,
+                        'fields'=> array(
+                            'Invoice.customer_id', 
+                            'SUM(Invoice.total) as total',
+                        ),
+                        'group' => array(
+                            'Invoice.customer_id'
+                        ),
+                    ), false);
+
+                    $conditionsInvPaidLastMonth = array(
+                        'InvoicePayment.customer_id' => $customer['Customer']['id'],
+                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $lastMonth,
+                        'InvoicePayment.is_canceled' => 0,
+                        'InvoicePayment.status' => 1,
+                    );
+                    $customer['InvPaidLastMonth'] = $this->InvoicePayment->getData('first', array(
+                        'conditions' => $conditionsInvPaidLastMonth,
+                        'fields'=> array(
+                            'InvoicePayment.customer_id', 
+                            'SUM(InvoicePayment.grand_total_payment) as total',
+                        ),
+                        'group' => array(
+                            'InvoicePayment.customer_id'
                         ),
                     ), false);
 
@@ -6015,9 +6063,12 @@ class RevenuesController extends AppController {
                         ),
                     ), false);
 
-                    $conditionsInvoiceVoid = $conditionsInvoice;
-                    $conditionsInvoiceVoid['Invoice.status'] = 1;
-                    $conditionsInvoiceVoid['Invoice.is_canceled'] = 0;
+                    $conditionsInvoiceVoid = array(
+                        'Invoice.customer_id' => $customer['Customer']['id'],
+                        'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') >=' => $fromMonthYear,
+                        'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') <=' => $toMonthYear,
+                        'Invoice.is_canceled' => 1,
+                    );
                     $customer['InvoiceVoidTotal'] = $this->Invoice->getData('first', array(
                         'conditions' => $conditionsInvoiceVoid,
                         'fields'=> array(
@@ -6045,18 +6096,17 @@ class RevenuesController extends AppController {
                 }
             }
 
-            $module_title = __('Laporan Piutang Per Bulan');
-            $period_text = sprintf('Bulan %s', $this->MkCommon->customDate($currMonth, 'F Y'));
+            $module_title = sprintf(__('Laporan Piutang Bulan %s'), $this->MkCommon->getCombineDate($fromMonthYear, $toMonthYear, 'short'));
             $this->set('sub_module_title', $module_title);
-            $this->set('period_text', $period_text);
             $this->set('active_menu', 'report_revenue_monthly');
             // $this->request->data['Ttuj']['from']['month'] = $fromMonth;
             // $this->request->data['Ttuj']['to']['month'] = $toMonth;
             // $this->request->data['Ttuj']['year'] = $year;
 
             $this->set(compact(
-                'data_action', 'customerList', 'currMonth', 
-                'customers', 'lastMonth'
+                'data_action', 'customerList', 
+                'customers', 'lastMonth', 'fromMonthYear',
+                'toMonthYear'
             ));
 
             if($data_action == 'pdf'){
@@ -6566,6 +6616,7 @@ class RevenuesController extends AppController {
                                     $datavar = array();
                                     $flag = true;
                                     $i = 1;
+                                    $tarifNotFound = false;
 
                                     while ($flag) {
                                         if( !empty($data->sheets[0]["cells"][1][$i]) ) {
@@ -6663,25 +6714,30 @@ class RevenuesController extends AppController {
                                                     $total_price_unit = $harga_unit_detail * $jml_unit_detail;
 
                                                     $tarif_detail = $this->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, $to_city_id_detail, $customer_id, $truck_capacity, $group_motor_id );
-                                                    $total_tarif_detail = !empty($tarif_detail['tarif'])?$tarif_detail['tarif']:0;
-                                                    $tarif_angkutan_id = !empty($tarif_detail['tarif_angkutan_id'])?$tarif_detail['tarif_angkutan_id']:false;
-                                                    $tarif_angkutan_type = !empty($tarif_detail['tarif_angkutan_type'])?$tarif_detail['tarif_angkutan_type']:false;
-                                                    $jenis_tarif_detail = !empty($tarif_detail['jenis_unit'])?$tarif_detail['jenis_unit']:false;
-                                                    $total_result = $this->MkCommon->getChargeTotal( $total_price_unit, $total_tarif_detail, $jenis_tarif_detail, $is_charge_detail );
-                                                    $total_price_unit = !empty($total_result['total_tarif'])?$total_result['total_tarif']:0;
-                                                    $additional_charge += !empty($total_result['additional_charge'])?$total_result['additional_charge']:0;
 
-                                                    $dataRevenue['RevenueDetail']['city_id'][$idx] = $to_city_id_detail;
-                                                    $dataRevenue['RevenueDetail']['tarif_angkutan_id'][$idx] = $tarif_angkutan_id;
-                                                    $dataRevenue['RevenueDetail']['tarif_angkutan_type'][$idx] = $tarif_angkutan_type;
-                                                    $dataRevenue['RevenueDetail']['no_do'][$idx] = $no_do_detail;
-                                                    $dataRevenue['RevenueDetail']['no_sj'][$idx] = $no_sj_detail;
-                                                    $dataRevenue['RevenueDetail']['group_motor_id'][$idx] = $group_motor_id;
-                                                    $dataRevenue['RevenueDetail']['qty_unit'][$idx] = $jml_unit_detail;
-                                                    $dataRevenue['RevenueDetail']['payment_type'][$idx] = $jenis_tarif_detail;
-                                                    $dataRevenue['RevenueDetail']['is_charge'][$idx] = $is_charge_detail;
-                                                    $dataRevenue['RevenueDetail']['price_unit'][$idx] = $harga_unit_detail;
-                                                    $dataRevenue['RevenueDetail']['total_price_unit'][$idx] = $total_price_unit;
+                                                    if( !empty($tarif_detail) ) {
+                                                        $total_tarif_detail = !empty($tarif_detail['tarif'])?$tarif_detail['tarif']:0;
+                                                        $tarif_angkutan_id = !empty($tarif_detail['tarif_angkutan_id'])?$tarif_detail['tarif_angkutan_id']:false;
+                                                        $tarif_angkutan_type = !empty($tarif_detail['tarif_angkutan_type'])?$tarif_detail['tarif_angkutan_type']:false;
+                                                        $jenis_tarif_detail = !empty($tarif_detail['jenis_unit'])?$tarif_detail['jenis_unit']:false;
+                                                        $total_result = $this->MkCommon->getChargeTotal( $total_price_unit, $total_tarif_detail, $jenis_tarif_detail, $is_charge_detail );
+                                                        $total_price_unit = !empty($total_result['total_tarif'])?$total_result['total_tarif']:0;
+                                                        $additional_charge += !empty($total_result['additional_charge'])?$total_result['additional_charge']:0;
+
+                                                        $dataRevenue['RevenueDetail']['city_id'][$idx] = $to_city_id_detail;
+                                                        $dataRevenue['RevenueDetail']['tarif_angkutan_id'][$idx] = $tarif_angkutan_id;
+                                                        $dataRevenue['RevenueDetail']['tarif_angkutan_type'][$idx] = $tarif_angkutan_type;
+                                                        $dataRevenue['RevenueDetail']['no_do'][$idx] = $no_do_detail;
+                                                        $dataRevenue['RevenueDetail']['no_sj'][$idx] = $no_sj_detail;
+                                                        $dataRevenue['RevenueDetail']['group_motor_id'][$idx] = $group_motor_id;
+                                                        $dataRevenue['RevenueDetail']['qty_unit'][$idx] = $jml_unit_detail;
+                                                        $dataRevenue['RevenueDetail']['payment_type'][$idx] = $jenis_tarif_detail;
+                                                        $dataRevenue['RevenueDetail']['is_charge'][$idx] = $is_charge_detail;
+                                                        $dataRevenue['RevenueDetail']['price_unit'][$idx] = $harga_unit_detail;
+                                                        $dataRevenue['RevenueDetail']['total_price_unit'][$idx] = $total_price_unit;
+                                                    } else {
+                                                        $tarifNotFound = true;
+                                                    }
 
                                                     $idx++;
                                                 } else {
@@ -6706,7 +6762,7 @@ class RevenuesController extends AppController {
                                                 'additional_charge' => $additional_charge,
                                             );
 
-                                            if( !empty($dataRevenue['RevenueDetail']) ) {
+                                            if( !empty($dataRevenue['RevenueDetail']) && empty($tarifNotFound) ) {
                                                 $resultSave = $this->Revenue->saveRevenue(false, false, $dataRevenue);
                                                 $statusSave = !empty($resultSave['status'])?$resultSave['status']:false;
                                                 $msgSave = !empty($resultSave['msg'])?$resultSave['msg']:false;
@@ -6719,19 +6775,24 @@ class RevenuesController extends AppController {
                                                     $failed_row++;
                                                 }
                                             } else {
-                                                $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal menyimpan Revenue, mohon lengkapi field-field muatan'), $row_submitted+1) . '<br>';
+                                                debug($tarifNotFound);die();
+                                                if( !empty($tarifNotFound) ) {
+                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Tarif tidak ditemukan, silahkan buat tarif angkutan terlebih dahulu'), $row_submitted+1) . '<br>';
+                                                } else {
+                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal menyimpan Revenue, mohon lengkapi field-field muatan'), $row_submitted+1) . '<br>';
+                                                }
                                                 $failed_row++;
                                             }
                                         } else {
                                             if( empty($from_city_id) || empty($to_city_id) || empty($customer_id) || empty($truck_capacity) ) {
                                                 if( empty($from_city_id) ) {
-                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Kota asal tidak salah'), $row_submitted+1) . '<br>';
+                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Kota asal tidak benar'), $row_submitted+1) . '<br>';
                                                 } else if( empty($to_city_id) ) {
-                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Kota tujuan tidak salah'), $row_submitted+1) . '<br>';
+                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Kota tujuan tidak benar'), $row_submitted+1) . '<br>';
                                                 } else if( empty($customer_id) ) {
-                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Kode Customer tidak salah'), $row_submitted+1) . '<br>';
+                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Kode Customer tidak benar'), $row_submitted+1) . '<br>';
                                                 } else if( empty($truck_capacity) ) {
-                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Nopol Truk tidak salah'), $row_submitted+1) . '<br>';
+                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Nopol Truk tidak benar'), $row_submitted+1) . '<br>';
                                                 }
                                             } else {
                                                 $error_message .= sprintf(__('Gagal pada baris ke %s : Tarif tidak ditemukan, silahkan buat tarif angkutan terlebih dahulu'), $row_submitted+1) . '<br>';

@@ -90,16 +90,13 @@
         ?>
         <div class="clear"></div>
     </h2>
-    <div class="no-print print-action">
-        <?php
-                echo $this->Common->_getPrint(array(
-                    '_attr' => array(
-                        'escape' => false,
-                    ),
-                ));
-        ?>
-        <div class="clear"></div>
-    </div>
+    <?php
+            echo $this->Common->_getPrint(array(
+                '_attr' => array(
+                    'escape' => false,
+                ),
+            ));
+    ?>
     <div class="table-responsive">
         <?php 
                 }

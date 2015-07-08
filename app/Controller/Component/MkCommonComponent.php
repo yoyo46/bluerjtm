@@ -504,5 +504,46 @@ class MkCommonComponent extends Component {
             'additional_charge' => $additionalCharge,
         );
     }
+
+    /**
+    *
+    *   mengkombinasikan tanggal
+    *
+    *   @param string $startDate : tanggal awal
+    *   @param string $endDate : tanggal akhir
+    *   @return string
+    */
+    function getCombineDate ( $startDate, $endDate, $format = 'long' ) {
+        $startDate = strtotime($startDate);
+        $endDate = strtotime($endDate);
+
+        if( !empty($startDate) && !empty($endDate) ) {
+            switch ($format) {
+                case 'short':
+                    if( $startDate == $endDate ) {
+                        $customDate = date('M Y', $startDate);
+                    } else if( date('Y', $startDate) == date('Y', $endDate) ) {
+                        $customDate = sprintf('%s - %s', date('M', $startDate), date('M Y', $endDate));
+                    } else {
+                        $customDate = sprintf('%s - %s', date('M Y', $startDate), date('M Y', $endDate));
+                    }
+                    break;
+                
+                default:
+                    if( $startDate == $endDate ) {
+                        $customDate = date('d M Y', $startDate);
+                    } else if( date('M Y', $startDate) == date('M Y', $endDate) ) {
+                        $customDate = sprintf('%s - %s', date('d', $startDate), date('d M Y', $endDate));
+                    } else if( date('Y', $startDate) == date('Y', $endDate) ) {
+                        $customDate = sprintf('%s - %s', date('d M', $startDate), date('d M Y', $endDate));
+                    } else {
+                        $customDate = sprintf('%s - %s', date('d M Y', $startDate), date('d M Y', $endDate));
+                    }
+                    break;
+            }
+            return $customDate;
+        }
+        return false;
+    }
 }
 ?>

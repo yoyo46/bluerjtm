@@ -126,26 +126,14 @@
             ?>
         </small>
     </h2>
-    <div class="no-print print-action">
-        <?php 
-                if( !empty($showHideColumn) ) {
-                    echo $this->Common->_getShowHideColumn('Truck', $showHideColumn, array(
-                        'url'=> $this->Html->url( null, true ), 
-                        'role' => 'form',
-                        'inputDefaults' => array('div' => false),
-                        'id' => 'truck-report',
-                    ));
-                }
-
-                echo $this->Common->_getPrint(array(
-                    '_attr' => array(
-                        'class' => 'ajaxLink',
-                        'data-request' => '#truck-report',
-                    ),
-                ));
-        ?>
-        <div class="clear"></div>
-    </div>
+    <?php 
+            echo $this->Common->_getPrint(array(
+                '_attr' => array(
+                    'class' => 'ajaxLink',
+                    'data-request' => '#truck-report',
+                ),
+            ), $showHideColumn);
+    ?>
     <div class="table-responsive center-table">
         <?php 
                 }
