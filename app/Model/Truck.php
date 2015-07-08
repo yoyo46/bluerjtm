@@ -359,7 +359,7 @@ class Truck extends AppModel {
         return $data;
     }
 
-    function getListTruck ( $include_this_truck_id = false, $only_bind = false ) {
+    function getListTruck ( $include_this_truck_id = false, $only_bind = false, $nopol = false ) {
         $this->bindModel(array(
             'hasOne' => array(
                 'Ttuj' => array(
@@ -401,6 +401,10 @@ class Truck extends AppModel {
                     'Truck.nopol'
                 ),
             ));
+
+            if( !empty($nopol) && !empty($trucks[$include_this_truck_id]) ) {
+                $trucks[$include_this_truck_id] = $nopol;
+            }
 
             return $trucks;
         } else {

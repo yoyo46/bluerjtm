@@ -968,7 +968,8 @@ class RevenuesController extends AppController {
         }
 
         $ttuj_truck_id = !empty($data_local['Ttuj']['truck_id'])?$data_local['Ttuj']['truck_id']:false;
-        $trucks = $this->Truck->getListTruck($ttuj_truck_id);
+        $ttuj_truck_nopol = !empty($data_local['Ttuj']['nopol'])?$data_local['Ttuj']['nopol']:false;
+        $trucks = $this->Truck->getListTruck($ttuj_truck_id, false, $ttuj_truck_nopol);
         $customers = $this->Ttuj->Customer->getData('list', array(
             'conditions' => $customerConditions,
             'fields' => array(

@@ -2,12 +2,6 @@
 class UangJalan extends AppModel {
 	var $name = 'UangJalan';
 	var $validate = array(
-        // 'customer_id' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'Customer harap dipilih'
-        //     ),
-        // ),
         'title' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -347,12 +341,10 @@ class UangJalan extends AppModel {
         }
     }
 
-    // function getKotaAsal ($customer_id) {
     function getKotaAsal () {
         $fromCity = $this->getData('all', array(
             'conditions' => array(
                 'UangJalan.status' => 1,
-                // 'UangJalan.customer_id' => $customer_id,
             ),
             'group' => array(
                 'UangJalan.from_city_id'
@@ -375,12 +367,10 @@ class UangJalan extends AppModel {
         return $resultCity;
     }
 
-    // function getKotaTujuan ($customer_id, $from_city_id) {
     function getKotaTujuan ( $from_city_id ) {
         $toCity = $this->getData('all', array(
             'conditions' => array(
                 'UangJalan.status' => 1,
-                // 'UangJalan.customer_id' => $customer_id,
                 'UangJalan.from_city_id' => $from_city_id,
             ),
             'group' => array(
