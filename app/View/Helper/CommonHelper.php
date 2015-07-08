@@ -50,7 +50,7 @@ class CommonHelper extends AppHelper {
 
         if( !empty($options['cache_view_path']) && !empty($options['thumbnail_view_path']) ) {
             $cache_view_path = $options['cache_view_path'];
-            $thumbnail_view_path = Configure::read('__Site.thumbnail_display_view_path');
+            $thumbnail_view_path = Configure::read('__Site.thumbnail_view_path');
         } else {
             $cache_view_path = Configure::read('__Site.cache_view_path');
             $thumbnail_view_path = Configure::read('__Site.thumbnail_view_path');

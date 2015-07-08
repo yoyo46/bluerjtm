@@ -67,8 +67,6 @@ class AppController extends Controller {
 		Configure::write('__Site.allowed_ext', array('jpg', 'jpeg', 'png', 'gif'));
 		Configure::write('__Site.type_lku', array('lku' => 'LKU', 'ksu' => 'KSU'));
 
-		$changePhoto = 'view';
-		Configure::write('__Site.thumbnail_display_view_path', sprintf(APP.'webroot'.DS.'images'.DS.'%s', $changePhoto));
 		Configure::write('__Site.thumbnail_view_path', APP.'webroot'.DS.'images'.DS.'view');
 
 		$dimensionProfile = array(
@@ -90,7 +88,6 @@ class AppController extends Controller {
 		Configure::write('__Site.dimension', $dimensionArr);
 
 	    $this->Auth->userModel = 'User';
-		// $this->Auth->authorize = 'Actions';
 	    $this->Auth->authorize = array(
 	        'Controller',
 	        'Actions' => array('actionPath' => 'controllers')
@@ -113,20 +110,6 @@ class AppController extends Controller {
 	        'admin' => false,
 	        'plugin' => false
 	    );
-	    $monthArr = array(
-	    	'01' => 'Januari',
-	    	'02' => 'Februari',
-	    	'03' => 'Maret',
-	    	'04' => 'April',
-	    	'05' => 'Mei',
-	    	'06' => 'Juni',
-	    	'07' => 'Juli',
-	    	'08' => 'Agustus',
-	    	'09' => 'September',
-	    	'10' => 'Oktober',
-	    	'11' => 'November',
-	    	'12' => 'Desember',
-    	);
 	    $invStatus = array(
             'paid' => __('Paid'),
             'unpaid' => __('Unpaid'),
@@ -286,7 +269,7 @@ class AppController extends Controller {
 
 	    $this->set(compact(
 	    	'logged_in', 'GroupId', 'User',
-	    	'monthArr', 'allowModule', 'invStatus'
+	    	'allowModule', 'invStatus'
     	));
 	}
 

@@ -3,13 +3,13 @@ App::uses('AppController', 'Controller');
 class UsersController extends AppController {
 
 	public $name = 'Users';
-    public $uses = array('Contact', 'User');
+    public $uses = array('User');
 	public $components = array('RjUser');
 	
 	function beforeFilter() {
 		parent::beforeFilter();
 		$this->Auth->allow(
-            'login', 'logout', 'forgot',
+            'login', 'logout',
             'add', 'edit', 'list_user'
         );
         $this->set('title_for_layout', __('ERP RJTM | Data User'));
@@ -32,7 +32,6 @@ class UsersController extends AppController {
     }
 
     function login() {
-        // debug($this->Auth->password('admin'));die();
         $this->layout = 'login';
     	if(!$this->MkCommon->loggedIn()){
 			if(!empty($this->request->data)){
@@ -44,25 +43,21 @@ class UsersController extends AppController {
                     $session_error = true;
                 }
 
-                // if( !$session_error ){
-                    if($this->Auth->login()){
-                        $this->redirect($this->Auth->redirect());   
-                    }else{
-                        $get_cookie_session = $this->Cookie->read('login_'.$emailCache);
-                        $get_cookie_session = !empty($get_cookie_session)?$get_cookie_session:0;
+                if($this->Auth->login()){
+                    $this->redirect($this->Auth->redirect());   
+                }else{
+                    $get_cookie_session = $this->Cookie->read('login_'.$emailCache);
+                    $get_cookie_session = !empty($get_cookie_session)?$get_cookie_session:0;
 
-                        if($get_cookie_session >= 3){
-                            $this->Cookie->write($session_name_ip, 1, '1 hour');
-                            $this->MkCommon->setCustomFlash(__('Gagal melakukan login, Anda sudah melakukan 3x percobaan login, silahkan tunggu 1 jam kemudian untuk melakukan login kembali.'), 'error');
-                        }else{
-                            $this->MkCommon->setCustomFlash(__('Gagal melakukan login, username atau password Anda tidak valid.'), 'error');
-                            $get_cookie_session++;
-                            $this->Cookie->write('login_'.$emailCache, $get_cookie_session);
-                        }
+                    if($get_cookie_session >= 3){
+                        $this->Cookie->write($session_name_ip, 1, '1 hour');
+                        $this->MkCommon->setCustomFlash(__('Gagal melakukan login, Anda sudah melakukan 3x percobaan login, silahkan tunggu 1 jam kemudian untuk melakukan login kembali.'), 'error');
+                    }else{
+                        $this->MkCommon->setCustomFlash(__('Gagal melakukan login, username atau password Anda tidak valid.'), 'error');
+                        $get_cookie_session++;
+                        $this->Cookie->write('login_'.$emailCache, $get_cookie_session);
                     }
-                // }else{
-                //     $this->MkCommon->setCustomFlash(__('Gagal melakukan login, Anda sudah melakukan 3x percobaan login, silahkan tunggu 1 jam kemudian untuk melakukan login kembali.'), 'error');
-                // }
+                }
 
                 if( !empty($this->request->data['User']['password']) ) {
                     unset($this->request->data['User']['password']);
