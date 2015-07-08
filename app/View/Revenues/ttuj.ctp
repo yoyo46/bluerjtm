@@ -350,7 +350,7 @@
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
 
-                                if( in_array('delete_ttuj', $allowModule) ) {
+                                if( in_array('delete_ttuj', $allowModule) && !empty($value['Ttuj']['status']) ) {
                                     echo $this->Html->link(__('Void'), array(
                                         'controller' => 'revenues',
                                         'action' => 'ttuj_toggle',

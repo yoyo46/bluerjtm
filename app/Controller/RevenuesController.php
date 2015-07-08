@@ -167,8 +167,13 @@ class RevenuesController extends AppController {
             }
 
             $this->paginate = $this->Ttuj->getData('paginate', array(
-                'conditions' => $conditions
-            ));
+                'conditions' => $conditions,
+                'order'=> array(
+                    'Ttuj.status' => 'DESC',
+                    'Ttuj.created' => 'DESC',
+                    'Ttuj.id' => 'DESC',
+                ),
+            ), false);
             $ttujs = $this->paginate('Ttuj');
 
             if( !empty($ttujs) ) {
@@ -200,8 +205,9 @@ class RevenuesController extends AppController {
             $this->loadModel('Revenue');
             $ttuj = $this->Ttuj->getData('first', array(
                 'conditions' => array(
-                    'Ttuj.id' => $id
-                )
+                    'Ttuj.id' => $id,
+                    'Ttuj.status' => array( 0, 1 ),
+                ),
             ));
 
             if(!empty($ttuj)){

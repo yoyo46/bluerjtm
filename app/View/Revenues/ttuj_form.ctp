@@ -671,13 +671,19 @@
 		</div>
 		<div class="box-footer text-center action">
 			<?php
+					$allowSave = true;
+
+					if( isset($data_local['Ttuj']['status']) && empty($data_local['Ttuj']['status']) ) {
+						$allowSave = false;
+					}
+
 					echo $this->Html->link(__('Kembali'), array(
 						'action' => 'ttuj', 
 					), array(
 						'class'=> 'btn btn-default',
 					));
 
-                    if( empty($data_local['Ttuj']['is_invoice']) ) {
+                    if( empty($data_local['Ttuj']['is_invoice']) && $allowSave ) {
 						if( !empty($data_local['Ttuj']['is_draft']) || empty($data_local) ) {
 				    		echo $this->Form->button(__('Commit'), array(
 								'class'=> 'btn btn-success submit-form btn-lg',
