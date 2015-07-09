@@ -150,7 +150,7 @@ class AppController extends Controller {
 
 	        $cacheName = sprintf('LeadTime-%s', $this->user_id);
 			$lead_time_notif = Cache::read($cacheName, 'short');
-
+			
 			if(empty($lead_time_notif)){
 				$this->loadModel('Ttuj');
 				$overlead_time_destination = $this->Ttuj->getData('list', array(
@@ -176,7 +176,7 @@ class AppController extends Controller {
 						'Ttuj.id', 'Ttuj.nopol', 'Ttuj.no_ttuj'
 					)
 				));
-
+				
 				if(!empty($overlead_time_destination) || !empty($overlead_time_pool)){
 					$this->loadModel('User');
 
@@ -192,7 +192,7 @@ class AppController extends Controller {
 
 					if(!empty($list_id_user_admin)){
 						if(!empty($overlead_time_destination)){
-							$ttuj_id = Set::extract('/Notification/id', $overlead_time_destination);
+							$ttuj_id = Set::extract('/Ttuj/id', $overlead_time_destination);
 
 							$check_notif = $this->Notification->getData('list', array(
 								'conditions' => array(
@@ -222,7 +222,7 @@ class AppController extends Controller {
 						}
 
 						if(!empty($overlead_time_pool)){
-							$ttuj_id = Set::extract('/Notification/id', $overlead_time_pool);
+							$ttuj_id = Set::extract('/Ttuj/id', $overlead_time_pool);
 
 							$check_notif = $this->Notification->getData('list', array(
 								'conditions' => array(
