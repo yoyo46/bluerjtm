@@ -668,7 +668,7 @@
                             // }
 
                             // if( in_array('view_list_kwitansi', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Piutang Per Bulan', array(
+                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Saldo Piutang Per Bulan', array(
                                     'controller' => 'revenues',
                                     'action' => 'report_revenue_monthly',
                                 ), array(

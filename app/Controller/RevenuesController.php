@@ -6103,7 +6103,7 @@ class RevenuesController extends AppController {
                 }
             }
 
-            $module_title = sprintf(__('Laporan Piutang Bulan %s'), $this->MkCommon->getCombineDate($fromMonthYear, $toMonthYear, 'short'));
+            $module_title = sprintf(__('Laporan Saldo Piutang Per Bulan %s'), $this->MkCommon->getCombineDate($fromMonthYear, $toMonthYear, 'short'));
             $this->set('sub_module_title', $module_title);
             $this->set('active_menu', 'report_revenue_monthly');
             // $this->request->data['Ttuj']['from']['month'] = $fromMonth;
