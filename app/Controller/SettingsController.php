@@ -1593,15 +1593,11 @@ class SettingsController extends AppController {
                     if( !empty($data['UangKuliGroupMotor']['group_motor_id']) ) {
                         $resultGroupMotor = $this->saveUangKuliGroupMotor($data);
                         $saveGroupMotor = !empty($resultGroupMotor['validates'])?$resultGroupMotor['validates']:false;
-                    } else {
-                        $saveGroupMotor = false;
                     }
                 } else if( !empty($data['UangKuli']['uang_kuli_type']) && $data['UangKuli']['uang_kuli_type'] == 'per_truck' ) {
                     if( !empty($data['UangKuliCapacity']['capacity']) ) {
                         $resultCapacity = $this->saveUangKuliCapacity($data);
                         $saveCapacity = !empty($resultCapacity['validates'])?$resultCapacity['validates']:false;
-                    } else {
-                        $saveCapacity = false;
                     }
                 }
 
