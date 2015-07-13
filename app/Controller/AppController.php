@@ -43,7 +43,7 @@ class AppController extends Controller {
 	);
 
 	var $uses = array(
-		'Log', 'Module', 'Notification'
+		'Log', 'Module', 'Notification', 'GroupBranch', 'BranchActionModule'
 	);
 
 	function beforeFilter() {
@@ -127,6 +127,59 @@ class AppController extends Controller {
 			$this->user_id = $this->Auth->user('id');
 			$GroupId = $this->Auth->user('group_id');
 			$User = $this->user_data = $User = $this->Auth->user();
+
+			/*Auth*/
+			$_branches = $this->GroupBranch->getData('all', array(
+				'conditions' => array(
+					'GroupBranch.group_id' => $GroupId
+				),
+				'contain' => array(
+					'City'
+				)
+			));
+
+			$list_branch = array();
+			$group_branch_id = '';
+			$is_allow = false;
+			if(!empty($_branches)){
+				foreach ($_branches as $key => $value) {
+					if($value['GroupBranch']['city_id'] == $User['branch_id']){
+						$group_branch_id = $value['GroupBranch']['id'];
+					}
+					$list_branch[$value['GroupBranch']['id']] = $value['City']['name'];
+				}
+
+				if(!empty($group_branch_id)){
+					$_branch_action_module = $this->BranchActionModule->getData('all', array(
+						'conditions' => array(
+							'BranchActionModule.group_branch_id' => $group_branch_id
+						),
+						'contain' => array(
+							'BranchModule'
+						)
+					));
+				}
+			}
+
+			if(!empty($_branch_action_module)){
+				foreach ($_branch_action_module as $key => $value) {
+					if($this->params['controller'] == $value['BranchModule']['controller'] && $this->params['action'] == $value['BranchModule']['action'] && $value['BranchActionModule']['is_allow']){
+						$is_allow = true;
+						break;
+					}
+				}
+			}
+			
+			if(!$is_allow){
+				$this->redirect($this->referer());
+			}
+
+			$this->set(compact('list_branch', '_branch_action_module'));
+
+			if($this->params['controller'] && $this->params['action']){
+
+			}
+			/*End Auth*/
 
 			$allowModule = $this->Module->ModuleAction->find('list', array(
 	            'conditions'=> array(

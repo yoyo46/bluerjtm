@@ -3,6 +3,13 @@ class BranchActionModule extends AppModel {
 	var $name = 'BranchActionModule';
 	var $validate = array();
 
+    var $belongsTo = array(
+        'BranchModule' => array(
+            'className' => 'BranchModule',
+            'foreignKey' => 'branch_module_id'
+        )
+    );
+
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(),

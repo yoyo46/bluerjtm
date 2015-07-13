@@ -39,7 +39,7 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
-                            if( in_array('view_list_user', $allowModule) ) {
+                            // if( in_array('view_list_user', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> list user', array(
                                     'controller' => 'users',
                                     'action' => 'list_user',
@@ -48,7 +48,7 @@
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'list_user' )?'active':'',
                                 ));
-                            }
+                            // }
 
                             if( in_array('view_group_user', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> group', array(

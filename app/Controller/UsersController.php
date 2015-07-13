@@ -315,7 +315,7 @@ class UsersController extends AppController {
     }
 
     function list_user(){
-        if( in_array('view_list_user', $this->allowModule) ) {
+        // if( in_array('view_list_user', $this->allowModule) ) {
             $this->loadModel('User');
             $default_options = array(
                 'conditions' => array(
@@ -348,9 +348,9 @@ class UsersController extends AppController {
             $this->set('active_menu', 'list_user');
             $this->set('sub_module_title', 'User');
             $this->set('list_user', $list_user);
-        } else {
-            $this->redirect($this->referer());
-        }
+        // } else {
+        //     $this->redirect($this->referer());
+        // }
     }
 
     function add(){
