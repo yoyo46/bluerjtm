@@ -410,6 +410,9 @@ class TrucksController extends AppController {
             );
         }
 
+        $this->loadModel('Customer');
+        $this->loadModel('City');
+
         $truck_brands = $this->Truck->TruckBrand->getData('list', array(
             'conditions' => array(
                 'TruckBrand.status' => 1
@@ -451,8 +454,8 @@ class TrucksController extends AppController {
                 'Truck'
             )
         ));
+        $branches = $this->City->branchCities();
 
-        $this->loadModel('Customer');
         $customers = $this->Customer->getData('list', array(
             'conditions' => array(
                 'Customer.status' => 1
@@ -474,7 +477,8 @@ class TrucksController extends AppController {
         $this->set(compact(
             'truck_brands', 'truck_categories', 'truck_brands', 
             'companies', 'drivers', 'years', 'customers',
-            'truck_facilities', 'data_local', 'id'
+            'truck_facilities', 'data_local', 'id',
+            'branches'
         ));
         $this->render('truck_form');
     }
@@ -962,7 +966,7 @@ class TrucksController extends AppController {
         }
 
         $this->loadModel('DriverRelation');
-        $this->loadModel('Branch');
+        $this->loadModel('City');
         $this->loadModel('JenisSim');
 
         $driverRelations = $this->DriverRelation->find('list', array(
@@ -973,14 +977,7 @@ class TrucksController extends AppController {
                 'DriverRelation.id', 'DriverRelation.name'
             )
         ));
-        $branches = $this->Branch->getData('list', array(
-            'conditions' => array(
-                'Branch.status' => 1
-            ),
-            'fields' => array(
-                'Branch.id', 'Branch.name'
-            )
-        ));
+        $branches = $this->City->branchCities();
         $jenisSims = $this->JenisSim->find('list', array(
             'conditions' => array(
                 'JenisSim.status' => 1
@@ -2309,7 +2306,10 @@ class TrucksController extends AppController {
 
             if(!empty($truck)){
                 $this->loadModel('TruckPerlengkapan');
-                
+                $this->loadModel('City');
+
+                $branch_id = !empty($truck['Truck']['branch_id'])?$truck['Truck']['branch_id']:false;
+                $truck = $this->City->getMerge($truck, $branch_id);
                 $truckPerlengkapans = $this->TruckPerlengkapan->getData('all', array(
                     'conditions' => array(
                         'TruckPerlengkapan.truck_id' => $truck_id

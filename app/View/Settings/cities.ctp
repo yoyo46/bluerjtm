@@ -27,15 +27,17 @@
         <table class="table table-hover">
             <tr>
                 <th>Kota</th>
-                <!-- <th>Asal</th>
-                <th>Tujuan</th> -->
                 <?php
                         echo $this->Html->tag('th', $this->Paginator->sort('City.is_branch', __('Cabang'), array(
-                            'escape' => false
-                        )));
+                            'escape' => false,
+                        )), array(
+                            'class' => 'text-center',
+                        ));
                         echo $this->Html->tag('th', $this->Paginator->sort('City.is_pool', __('Pool'), array(
-                            'escape' => false
-                        )));
+                            'escape' => false,
+                        )), array(
+                            'class' => 'text-center',
+                        ));
                 ?>
                 <th>Dibuat</th>
                 <th>Action</th>
@@ -49,16 +51,16 @@
 
                             $branch = $this->Common->safeTagPrint($value['City']['is_branch']);
                             if($branch){
-                                $branch = '<span class="label label-success">Ya</span>';
+                                $branch = '<span class="label label-success"><i class="fa fa-check"></i></span>';
                             }else{
-                                $branch = '<span class="label label-danger">Tidak</span>';
+                                $branch = '<span class="label label-danger"><i class="fa fa-times"></i></span>';
                             }
 
                             $pool = $this->Common->safeTagPrint($value['City']['is_pool']);
                             if($pool){
-                                $pool = '<span class="label label-success">Ya</span>';
+                                $pool = '<span class="label label-success"><i class="fa fa-check"></i></span>';
                             }else{
-                                $pool = '<span class="label label-danger">Tidak</span>';
+                                $pool = '<span class="label label-danger"><i class="fa fa-times"></i></span>';
                             }
             ?>
             <tr>
@@ -87,24 +89,6 @@
                         ));
                     ?>
                 </td>
-                <!-- <td>
-                    <?php
-                            // if( !empty($value_data['is_asal']) ) {
-                            //     echo '<i class="fa fa-check"></i>';
-                            // } else {
-                            //     echo '<i class="fa fa-times"></i>';
-                            // }
-                    ?>
-                </td> -->
-                <!-- <td>
-                    <?php
-                            // if( !empty($value_data['is_tujuan']) ) {
-                            //     echo '<i class="fa fa-check"></i>';
-                            // } else {
-                            //     echo '<i class="fa fa-times"></i>';
-                            // }
-                    ?>
-                </td> -->
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td class="action">
                     <?php 

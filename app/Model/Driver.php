@@ -10,6 +10,12 @@ class Driver extends AppModel {
         //         'message' => 'Foto harap diisi'
         //     ),
         // ),
+        'branch_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Cabang harap dipilih'
+            ),
+        ),
         'no_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -126,12 +132,6 @@ class Driver extends AppModel {
                 'message' => 'Tgl Penerimaan tidak benar'
             ),
         ),
-        'branch_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Cabang Penerimaan harap dipilih'
-            ),
-        ),
 	);
 
 	var $hasOne = array(
@@ -139,10 +139,6 @@ class Driver extends AppModel {
 			'className' => 'Truck',
 			'foreignKey' => 'driver_id',
 		),
-        'Branch' => array(
-            'className' => 'Branch',
-            'foreignKey' => 'branch_id',
-        ),
         'DriverRelation' => array(
             'className' => 'DriverRelation',
             'foreignKey' => 'driver_relation_id',

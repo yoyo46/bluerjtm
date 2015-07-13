@@ -29,7 +29,7 @@
 						'empty' => __('Pilih Cabang --'),
 						'required' => false,
 						'class' => 'form-control',
-						'options' => $branch
+						'options' => $branches
 					)); 
 			?>
 			</div>

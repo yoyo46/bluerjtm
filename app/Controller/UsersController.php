@@ -323,7 +323,7 @@ class UsersController extends AppController {
                 ),
                 'contain' => array(
                     'Group',
-                    'Branch',
+                    'City',
                 )
             );
 
@@ -454,31 +454,15 @@ class UsersController extends AppController {
         }
 
         $this->loadModel('Group');
-        $this->loadModel('Branch');
+        $this->loadModel('City');
+        $this->loadModel('Employe');
+
         $groups = $this->Group->find('list', array(
             'conditions' => array(
                 'id <>' => 3
             )
         ));
-        $branches = $this->Branch->find('list', array(
-            'conditions' => array(
-                'id <>' => 3
-            )
-        ));
-        $this->set('active_menu', 'list_user');
-        
-        $this->loadModel('City');
-        $branch = $this->City->getData('list', array(
-            'conditions' => array(
-                'City.status' => 1,
-                'City.is_branch' => 1,
-            ),
-            'fields' => array(
-                'City.id', 'City.name'
-            )
-        ));
-
-        $this->loadModel('Employe');
+        $branches = $this->City->branchCities();
         $employes = $this->Employe->getData('all', array(
             'conditions' => array(
                 'Employe.status' => 1,
@@ -506,8 +490,9 @@ class UsersController extends AppController {
             $employes = $arr_list;
         }
 
+        $this->set('active_menu', 'list_user');
         $this->set(compact(
-            'branches', 'groups', 'id', 'branch', 'employes'
+            'branches', 'groups', 'id', 'employes'
         ));
         $this->render('user_form');
     }

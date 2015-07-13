@@ -1,16 +1,16 @@
 <?php
-	$this->Html->addCrumb(__('Truk'), array(
-		'controller' => 'trucks',
-		'action' => 'index'
-	));
-	$this->Html->addCrumb($sub_module_title);
+		$this->Html->addCrumb(__('Truk'), array(
+			'controller' => 'trucks',
+			'action' => 'index'
+		));
+		$this->Html->addCrumb($sub_module_title);
 
-	echo $this->Form->create('Truck', array(
-		'url'=> $this->Html->url( null, true ), 
-		'role' => 'form',
-		'inputDefaults' => array('div' => false),
-		'type' => 'file'
-	));
+		echo $this->Form->create('Truck', array(
+			'url'=> $this->Html->url( null, true ), 
+			'role' => 'form',
+			'inputDefaults' => array('div' => false),
+			'type' => 'file'
+		));
 ?>
 <div class="row">
 	<div class="col-sm-6">
@@ -25,7 +25,7 @@
 		    	<div class="form-group">
 		        	<?php 
 							echo $this->Form->input('id',array(
-								'label'=> false, 
+								'label'=> __('Nomor ID'), 
 								'class'=>'form-control',
 								'required' => false,
 								'placeholder' => __('Nomor ID'),
@@ -38,6 +38,16 @@
 		        <?php 
 		        		}
 		        ?>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('branch_id',array(
+								'label'=> __('Cabang Penerimaan *'), 
+								'class'=>'form-control',
+								'required' => false,
+								'empty' => __('Pilih Cabang'),
+							));
+					?>
+		        </div>
 		    	<div class="form-group">
 		        	<?php 
 						echo $this->Form->label('nopol',__('Nopol *')); 

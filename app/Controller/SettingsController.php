@@ -1432,29 +1432,9 @@ class SettingsController extends AppController {
                 $this->request->data['UangJalan']['commission_min_qty'] = !empty($this->request->data['UangJalan']['commission_min_qty'])?$this->request->data['UangJalan']['commission_min_qty']:'';
             }
         }
-        // $customers = $this->UangJalan->Customer->getData('list', array(
-        //     'conditions' => array(
-        //         'Customer.status' => 1
-        //     ),
-        // ));
-        $fromCities = $this->City->getData('list', array(
-            'conditions' => array(
-                'City.status' => 1,
-                // 'City.is_asal' => 1
-            ),
-            'order' => array(
-                'City.name' => 'ASC',
-            ),
-        ), false);
-        $toCities = $this->City->getData('list', array(
-            'conditions' => array(
-                'City.status' => 1,
-                // 'City.is_tujuan' => 1
-            ),
-            'order' => array(
-                'City.name' => 'ASC',
-            ),
-        ), false);
+        
+        $fromCities = $this->City->getListCities();
+        $toCities = $fromCities;
         $this->loadModel('GroupClassification');
         $groupClassifications = $this->GroupClassification->find('list', array(
             'conditions' => array(
@@ -2539,140 +2519,140 @@ class SettingsController extends AppController {
         $this->redirect($this->referer());
     }
 
-    function branches(){
-        if( in_array('view_branches', $this->allowModule) ) {
-            $this->loadModel('Branch');
-            $options = array(
-                'order' => array(
-                    'Branch.id' => 'ASC',
-                ),
-            );
+    // function branches(){
+    //     if( in_array('view_branches', $this->allowModule) ) {
+    //         $this->loadModel('Branch');
+    //         $options = array(
+    //             'order' => array(
+    //                 'Branch.id' => 'ASC',
+    //             ),
+    //         );
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+    //         if(!empty($this->params['named'])){
+    //             $refine = $this->params['named'];
 
-                if(!empty($refine['name'])){
-                    $name = urldecode($refine['name']);
-                    $this->request->data['Branch']['name'] = $name;
-                    $options['conditions']['Branch.name LIKE '] = '%'.$name.'%';
-                }
-            }
+    //             if(!empty($refine['name'])){
+    //                 $name = urldecode($refine['name']);
+    //                 $this->request->data['Branch']['name'] = $name;
+    //                 $options['conditions']['Branch.name LIKE '] = '%'.$name.'%';
+    //             }
+    //         }
 
-            $this->paginate = $this->Branch->getData('paginate', $options);
-            $branches = $this->paginate('Branch');
+    //         $this->paginate = $this->Branch->getData('paginate', $options);
+    //         $branches = $this->paginate('Branch');
 
-            $this->set('active_menu', 'branches');
-            $this->set('sub_module_title', 'Cabang Perusahaan');
-            $this->set('branches', $branches);
-        } else {
-            $this->redirect($this->referer());
-        }
-    }
+    //         $this->set('active_menu', 'branches');
+    //         $this->set('sub_module_title', 'Cabang Perusahaan');
+    //         $this->set('branches', $branches);
+    //     } else {
+    //         $this->redirect($this->referer());
+    //     }
+    // }
 
-    function branch_add(){
-        if( in_array('insert_branches', $this->allowModule) ) {
-            $this->loadModel('Branch');
-            $this->set('sub_module_title', 'Tambah Cabang');
-            $this->doBranch();
-        } else {
-            $this->redirect($this->referer());
-        }
-    }
+    // function branch_add(){
+    //     if( in_array('insert_branches', $this->allowModule) ) {
+    //         $this->loadModel('Branch');
+    //         $this->set('sub_module_title', 'Tambah Cabang');
+    //         $this->doBranch();
+    //     } else {
+    //         $this->redirect($this->referer());
+    //     }
+    // }
 
-    function branch_edit($id){
-        if( in_array('update_branches', $this->allowModule) ) {
-            $this->loadModel('Branch');
-            $this->set('sub_module_title', 'Rubah Cabang');
-            $branch = $this->Branch->getData('first', array(
-                'conditions' => array(
-                    'Branch.id' => $id
-                )
-            ));
+    // function branch_edit($id){
+    //     if( in_array('update_branches', $this->allowModule) ) {
+    //         $this->loadModel('Branch');
+    //         $this->set('sub_module_title', 'Rubah Cabang');
+    //         $branch = $this->Branch->getData('first', array(
+    //             'conditions' => array(
+    //                 'Branch.id' => $id
+    //             )
+    //         ));
 
-            if(!empty($branch)){
-                $this->doBranch($id, $branch);
-            }else{
-                $this->MkCommon->setCustomFlash(__('Cabang tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'settings',
-                    'action' => 'branches'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
-        }
-    }
+    //         if(!empty($branch)){
+    //             $this->doBranch($id, $branch);
+    //         }else{
+    //             $this->MkCommon->setCustomFlash(__('Cabang tidak ditemukan'), 'error');  
+    //             $this->redirect(array(
+    //                 'controller' => 'settings',
+    //                 'action' => 'branches'
+    //             ));
+    //         }
+    //     } else {
+    //         $this->redirect($this->referer());
+    //     }
+    // }
 
-    function doBranch($id = false, $data_local = false){
-        if(!empty($this->request->data)){
-            $data = $this->request->data;
+    // function doBranch($id = false, $data_local = false){
+    //     if(!empty($this->request->data)){
+    //         $data = $this->request->data;
 
-            if($id && $data_local){
-                $this->Branch->id = $id;
-                $msg = 'merubah';
-            }else{
-                $this->Branch->create();
-                $msg = 'menambah';
-            }
-            $this->Branch->set($data);
+    //         if($id && $data_local){
+    //             $this->Branch->id = $id;
+    //             $msg = 'merubah';
+    //         }else{
+    //             $this->Branch->create();
+    //             $msg = 'menambah';
+    //         }
+    //         $this->Branch->set($data);
 
-            if($this->Branch->validates($data)){
-                if($this->Branch->save($data)){
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Cabang'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Cabang #%s'), $msg, $this->Branch->id), $this->user_data, $this->RequestHandler, $this->params );
-                    $this->redirect(array(
-                        'controller' => 'settings',
-                        'action' => 'branches'
-                    ));
-                }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Branch'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Cabang #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Branch'), $msg), 'error');
-            }
-        } else if($id && $data_local){
-            $this->request->data = $data_local;
-        }
+    //         if($this->Branch->validates($data)){
+    //             if($this->Branch->save($data)){
+    //                 $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Cabang'), $msg), 'success');
+    //                 $this->Log->logActivity( sprintf(__('Sukses %s Cabang #%s'), $msg, $this->Branch->id), $this->user_data, $this->RequestHandler, $this->params );
+    //                 $this->redirect(array(
+    //                     'controller' => 'settings',
+    //                     'action' => 'branches'
+    //                 ));
+    //             }else{
+    //                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Branch'), $msg), 'error'); 
+    //                 $this->Log->logActivity( sprintf(__('Gagal %s Cabang #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+    //             }
+    //         }else{
+    //             $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Branch'), $msg), 'error');
+    //         }
+    //     } else if($id && $data_local){
+    //         $this->request->data = $data_local;
+    //     }
 
-        $this->set('active_menu', 'branches');
-        $this->render('branch_form');
-    }
+    //     $this->set('active_menu', 'branches');
+    //     $this->render('branch_form');
+    // }
 
-    function branch_toggle($id){
-        if( in_array('delete_branches', $this->allowModule) ) {
-            $this->loadModel('Branch');
-            $locale = $this->Branch->getData('first', array(
-                'conditions' => array(
-                    'Branch.id' => $id
-                )
-            ));
+    // function branch_toggle($id){
+    //     if( in_array('delete_branches', $this->allowModule) ) {
+    //         $this->loadModel('Branch');
+    //         $locale = $this->Branch->getData('first', array(
+    //             'conditions' => array(
+    //                 'Branch.id' => $id
+    //             )
+    //         ));
 
-            if($locale){
-                $value = true;
-                if($locale['Branch']['status']){
-                    $value = false;
-                }
+    //         if($locale){
+    //             $value = true;
+    //             if($locale['Branch']['status']){
+    //                 $value = false;
+    //             }
 
-                $this->Branch->id = $id;
-                $this->Branch->set('status', 0);
+    //             $this->Branch->id = $id;
+    //             $this->Branch->set('status', 0);
 
-                if($this->Branch->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses menghapus data cabang.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses menghapus data cabang ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params );
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal menghapus data cabang.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal menghapus data cabang ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Cabang tidak ditemukan.'), 'error');
-            }
+    //             if($this->Branch->save()){
+    //                 $this->MkCommon->setCustomFlash(__('Sukses menghapus data cabang.'), 'success');
+    //                 $this->Log->logActivity( sprintf(__('Sukses menghapus data cabang ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params );
+    //             }else{
+    //                 $this->MkCommon->setCustomFlash(__('Gagal menghapus data cabang.'), 'error');
+    //                 $this->Log->logActivity( sprintf(__('Gagal menghapus data cabang ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+    //             }
+    //         }else{
+    //             $this->MkCommon->setCustomFlash(__('Cabang tidak ditemukan.'), 'error');
+    //         }
 
-            $this->redirect($this->referer());
-        } else {
-            $this->redirect($this->referer());
-        }
-    }
+    //         $this->redirect($this->referer());
+    //     } else {
+    //         $this->redirect($this->referer());
+    //     }
+    // }
 
     public function customer_groups () {
         if( in_array('view_group_customers', $this->allowModule) ) {
@@ -3419,8 +3399,8 @@ class SettingsController extends AppController {
             ),
         ));
         
-        $fromCities = $this->City->fromCities();
-        $toCities = $this->City->toCities();
+        $fromCities = $this->City->getListCities();
+        $toCities = $fromCities;
 
         $this->set(compact(
             'customers', 'group_motors', 'fromCities',

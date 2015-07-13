@@ -1032,16 +1032,16 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
-                            if( in_array('view_branches', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Cabang', array(
-                                    'controller' => 'settings',
-                                    'action' => 'branches',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'branches' )?'active':'',
-                                ));
-                            }
+                            // if( in_array('view_branches', $allowModule) ) {
+                            //     echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Cabang', array(
+                            //         'controller' => 'settings',
+                            //         'action' => 'branches',
+                            //     ), array(
+                            //         'escape' => false
+                            //     )), array(
+                            //         'class' => ( !empty($active_menu) && $active_menu == 'branches' )?'active':'',
+                            //     ));
+                            // }
 
                             if( in_array('view_perlengkapan', $allowModule) ) {
                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Perlengkapan', array(

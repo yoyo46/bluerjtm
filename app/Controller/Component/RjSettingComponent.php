@@ -63,9 +63,9 @@ class RjSettingComponent extends Component {
 					$refine_conditions['Perlengkapan']['name'] = $refine['Perlengkapan']['name'];
 				}
 			
-				if( !empty($refine['Branch']['name']) ) {
-					$refine_conditions['Branch']['name'] = $refine['Branch']['name'];
-				}
+				// if( !empty($refine['Branch']['name']) ) {
+				// 	$refine_conditions['Branch']['name'] = $refine['Branch']['name'];
+				// }
 			
 				if( !empty($refine['CustomerGroup']['name']) ) {
 					$refine_conditions['CustomerGroup']['name'] = $refine['CustomerGroup']['name'];
@@ -184,13 +184,13 @@ class RjSettingComponent extends Component {
 				}
 			}
 		}
-		if(isset($refine['Branch']) && !empty($refine['Branch'])) {
-			foreach($refine['Branch'] as $param => $value) {
-				if($value) {
-					$parameters[trim($param)] = rawurlencode($value);
-				}
-			}
-		}
+		// if(isset($refine['Branch']) && !empty($refine['Branch'])) {
+		// 	foreach($refine['Branch'] as $param => $value) {
+		// 		if($value) {
+		// 			$parameters[trim($param)] = rawurlencode($value);
+		// 		}
+		// 	}
+		// }
 		if(isset($refine['JenisSim']) && !empty($refine['JenisSim'])) {
 			foreach($refine['JenisSim'] as $param => $value) {
 				if($value) {

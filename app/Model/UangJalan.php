@@ -2,6 +2,12 @@
 class UangJalan extends AppModel {
 	var $name = 'UangJalan';
 	var $validate = array(
+        'branch_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Cabang harap dipilih'
+            ),
+        ),
         'title' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

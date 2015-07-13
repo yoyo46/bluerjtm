@@ -46,7 +46,7 @@
             ?>
             <tr>
                 <td><?php echo $name;?></td>
-                <td><?php echo $value['Branch']['name'];?></td>
+                <td><?php echo !empty($value['City']['name'])?$value['City']['name']:false;?></td>
                 <td><?php echo $value['Group']['name'];?></td>
                 <td><?php echo $value_data['email'];?></td>
                 <td><?php echo $value_data['phone'];;?></td>

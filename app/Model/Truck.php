@@ -12,6 +12,12 @@ class Truck extends AppModel {
                 'message' => 'Nopol telah terdaftar',
             ),
         ),
+        'branch_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Cabang harap dipilih'
+            ),
+        ),
         'truck_brand_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

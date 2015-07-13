@@ -1,15 +1,17 @@
 <?php
 class User extends AppModel {
 	var $name = 'User';
-    // var $actsAs = array('Acl' => array('type' => 'requester'));
     var $belongsTo = array(
         'Group' => array(
             'className' => 'Group',
             'foreignKey' => 'group_id',
         ),
-        'Branch' => array(
-            'className' => 'Branch',
+        'City' => array(
+            'className' => 'City',
             'foreignKey' => 'branch_id',
+            'conditions' => array(
+                'City.is_branch' => 1,
+            ),
         ),
     );
     

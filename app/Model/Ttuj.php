@@ -2,6 +2,12 @@
 class Ttuj extends AppModel {
 	var $name = 'Ttuj';
 	var $validate = array(
+        'branch_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Cabang harap dipilih'
+            ),
+        ),
         'no_ttuj' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

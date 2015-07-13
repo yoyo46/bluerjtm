@@ -25,6 +25,10 @@
                         }
                 ?>
                 <dl class="dl-horizontal">
+                    <dt><?php echo __('ID Truk')?></dt>
+                    <dd><?php echo $truck['Truck']['id'];?></dd>
+                    <dt><?php echo __('Cabang')?></dt>
+                    <dd><?php echo !empty($truck['City']['name'])?$truck['City']['name']:'-';?></dd>
                     <dt><?php echo __('Nopol')?></dt>
                     <dd><?php echo $truck['Truck']['nopol'];?></dd>
                     <dt><?php echo __('Merek')?></dt>

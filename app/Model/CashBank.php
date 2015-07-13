@@ -2,6 +2,12 @@
 class CashBank extends AppModel {
 	var $name = 'CashBank';
 	var $validate = array(
+        'branch_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Cabang harap dipilih'
+            ),
+        ),
         'nodoc' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
