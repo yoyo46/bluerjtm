@@ -1,6 +1,12 @@
 <?php 
+        $this->Html->addCrumb(__('Group'), array(
+            'controller' => 'users',
+            'action' => 'groups'
+        ));
+        
         $this->Html->addCrumb($sub_module_title);
-        echo $this->element('blocks/settings/search_branches');
+        
+        echo $this->element('blocks/users/search_action_module');
 ?>
 <div class="box">
     <div class="box-header">
@@ -10,9 +16,9 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Cabang', array(
-                        'controller' => 'settings',
-                        'action' => 'branch_add'
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Module', array(
+                        'controller' => 'users',
+                        'action' => 'action_module_add'
                     ), array(
                         'escape' => false,
                         'class' => 'btn btn-app pull-right'
@@ -27,35 +33,45 @@
         <table class="table table-hover">
             <tr>
                 <?php 
-                        echo $this->Html->tag('th', $this->Paginator->sort('Branch.id', __('ID'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('BranchModule.id', __('ID'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Branch.name', __('Cabang'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('BranchModule.name', __('Nama Module'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Branch.created', __('Dibuat'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('BranchModule.controller', __('Controller'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('BranchModule.action', __('Action'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('BranchModule.created', __('Dibuat'), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', __('Action'));
                 ?>
             </tr>
             <?php
-                    if(!empty($branches)){
-                        foreach ($branches as $key => $value) {
-                            $id = $this->Common->safeTagPrint($value['Branch']['id']);
-                            $name = $this->Common->safeTagPrint($value['Branch']['name']);
-                            $created = $this->Common->safeTagPrint($value['Branch']['created']);
+                    if(!empty($action_modules)){
+                        foreach ($action_modules as $key => $value) {
+                            $id = $this->Common->safeTagPrint($value['BranchModule']['id']);
+                            $name = $this->Common->safeTagPrint($value['BranchModule']['name']);
+                            $controller = !empty($value['BranchModule']['controller']) ? $this->Common->safeTagPrint($value['BranchModule']['controller']) : '-';
+                            $action = !empty($value['BranchModule']['action']) ? $this->Common->safeTagPrint($value['BranchModule']['action']) : '-';
+                            $created = $this->Common->safeTagPrint($value['BranchModule']['created']);
             ?>
             <tr>
                 <td><?php echo $id;?></td>
                 <td><?php echo $name;?></td>
+                <td><?php echo $controller;?></td>
+                <td><?php echo $action;?></td>
                 <td><?php echo $this->Common->customDate($created);?></td>
                 <td class="action">
                     <?php 
                             if( in_array('update_branches', $allowModule) ) {
                                 echo $this->Html->link(__('Edit'), array(
-                                    'controller' => 'settings',
-                                    'action' => 'branch_edit',
+                                    'controller' => 'users',
+                                    'action' => 'action_module_edit',
                                     $id
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs'
@@ -64,13 +80,13 @@
 
                             if( in_array('delete_branches', $allowModule) ) {
                                 echo $this->Html->link(__('Hapus'), array(
-                                    'controller' => 'settings',
-                                    'action' => 'branch_toggle',
+                                    'controller' => 'users',
+                                    'action' => 'action_module_toggle',
                                     $id
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs',
                                     'title' => 'disable status brand'
-                                ), __('Anda yakin ingin menghapus data cabang ini ?'));
+                                ), __('Anda yakin ingin menghapus data module ini ?'));
                             }
                     ?>
                 </td>
@@ -80,7 +96,7 @@
                     } else {
                          echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '4'
+                            'colspan' => '6'
                         )));
                     }
             ?>

@@ -5105,4 +5105,45 @@ class SettingsController extends AppController {
             }
         }
     }
+
+    function toggle_city($id, $type){
+        if(!empty($id) && !empty($type) && in_array($type, array('pool', 'branch'))){
+            $this->loadModel('City');
+
+            $city = $this->City->getData('first', array(
+                'conditions' => array(
+                    'City.id' => $id
+                )
+            ));
+
+            if(!empty($city)){
+                $field = 'is_'.$type;
+
+                $text = 'pool';
+                if($type == 'branch'){
+                    $text = 'cabang';
+                }
+
+                $value = 1;
+                if($city['City'][$field]){
+                    $value = 0;
+                }
+
+                $this->City->id = $id;
+                $this->City->set($field, $value);
+
+                if($this->City->save()){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Berhasil merubah status %s.'), $text), 'success');
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal merubah status %s.'), $text), 'error');
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('Kota tidak ditemukan.'), 'error');
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Kota tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
 }

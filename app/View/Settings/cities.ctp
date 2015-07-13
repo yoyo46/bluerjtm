@@ -63,8 +63,30 @@
             ?>
             <tr>
                 <td><?php echo $value_data['name'];?></td>
-                <td><?php echo $branch;?></td>
-                <td><?php echo $pool;?></td>
+                <td>
+                    <?php 
+                        echo $this->Html->link($branch, array(
+                            'controller' => 'settings',
+                            'action' => 'toggle_city',
+                            $id,
+                            'branch'
+                        ), array(
+                            'escape' => false
+                        ));
+                    ?>
+                </td>
+                <td>
+                    <?php 
+                        echo $this->Html->link($pool, array(
+                            'controller' => 'settings',
+                            'action' => 'toggle_city',
+                            $id,
+                            'pool'
+                        ), array(
+                            'escape' => false
+                        ));
+                    ?>
+                </td>
                 <!-- <td>
                     <?php
                             // if( !empty($value_data['is_asal']) ) {

@@ -822,5 +822,206 @@ class UsersController extends AppController {
 
         $this->redirect($this->referer());
     }
+
+    function action_modules(){
+            $this->loadModel('BranchModule');
+            $options = array(
+                'order' => array(
+                    'BranchModule.id' => 'ASC',
+                ),
+            );
+
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['name'])){
+                    $name = urldecode($refine['name']);
+                    $this->request->data['BranchModule']['name'] = $name;
+                    $options['conditions']['BranchModule.name LIKE '] = '%'.$name.'%';
+                }
+                if(!empty($refine['parent'])){
+                    $parent = urldecode($refine['parent']);
+                    $this->request->data['BranchModule']['parent_id'] = $parent;
+                    $options['conditions']['BranchModule.parent_id'] = $parent;
+                }
+            }
+
+            $this->paginate = $this->BranchModule->getData('paginate', $options);
+            $action_modules = $this->paginate('BranchModule');
+
+            $parent_group = $this->BranchModule->getParentModule();
+
+            $this->set('active_menu', 'action_modules');
+            $this->set('parent_group', $parent_group);
+            $this->set('sub_module_title', 'Action Module');
+            $this->set('action_modules', $action_modules);
+    }
+
+    function action_module_add(){
+        $this->loadModel('BranchModule');
+        $this->set('sub_module_title', 'Tambah Action Module');
+        $this->doBranchModule();
+    }
+
+    function action_module_edit($id){
+        $this->loadModel('BranchModule');
+        $this->set('sub_module_title', 'Rubah Action Module');
+        $branch = $this->BranchModule->getData('first', array(
+            'conditions' => array(
+                'BranchModule.id' => $id
+            )
+        ));
+
+        if(!empty($branch)){
+            $this->doBranchModule($id, $branch);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Action Module tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'users',
+                'action' => 'action_modules'
+            ));
+        }
+    }
+
+    function doBranchModule($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+
+            if($id && $data_local){
+                $this->BranchModule->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->BranchModule->create();
+                $msg = 'menambah';
+            }
+
+            $data['BranchModule']['parent_id'] = !empty($data['BranchModule']['parent_id']) ? $data['BranchModule']['parent_id'] : 0; 
+
+            $this->BranchModule->set($data);
+
+            if($this->BranchModule->validates($data)){
+                if($this->BranchModule->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Action Module'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Action Module #%s'), $msg, $this->BranchModule->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->redirect(array(
+                        'controller' => 'users',
+                        'action' => 'action_modules'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Action Module'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Action Module #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Action Module'), $msg), 'error');
+            }
+        } else if($id && $data_local){
+            $this->request->data = $data_local;
+        }
+
+        $parent_group = $this->BranchModule->getParentModule();
+
+        $this->set('active_menu', 'action_modules');
+        $this->set('parent_group', $parent_group);
+        $this->render('action_module_form');
+    }
+
+    function action_module_toggle($id){
+        $this->loadModel('BranchModule');
+        $locale = $this->BranchModule->getData('first', array(
+            'conditions' => array(
+                'BranchModule.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['BranchModule']['status']){
+                $value = false;
+            }
+
+            $this->BranchModule->id = $id;
+            $this->BranchModule->set('status', 0);
+
+            if($this->BranchModule->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses menghapus data action module.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses menghapus data action module ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params );
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal menghapus data action module.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal menghapus data action module ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Action Module tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
+
+    function authorization_privilage($group_id){
+        $this->loadModel('Group');
+
+        $group = $this->Group->getData('first', array(
+            'conditions' => array(
+                'Group.id' => $group_id
+            )
+        ));
+
+        if(!empty($group)){
+            $this->loadModel('City');
+            $this->loadModel('BranchModule');
+            $this->loadModel('GroupBranch');
+
+            $GroupBranches = $this->GroupBranch->find('all', array(
+                'conditions' => array(
+                    'GroupBranch.group_id' => $group_id,
+                ),
+                'contain' => array(
+                    'BranchActionModule',
+                    'City'
+                )
+            ));
+
+            if(!empty($GroupBranches)){
+                foreach ($GroupBranches as $key => $value_k) {
+                    if(!empty($value_k['BranchActionModule'])){
+                        $data_result_auth = array();
+                        foreach ($value_k['BranchActionModule'] as $key_k => $value) {
+                            $data_result_auth[$value['branch_module_id']] = $value['is_allow'];
+                        }
+                        
+                        $GroupBranches[$key]['BranchActionModule'] = $data_result_auth;
+                    }
+                }
+            }
+
+            /*supporting data*/
+            $branches = $this->City->getData('list', array(
+                'conditions' => array(
+                    'OR' => array(
+                        array('City.is_branch' => 1),
+                        array('City.is_pool' => 1)
+                    )
+                ),
+                'fields' => array(
+                    'City.id', 'City.name'
+                )
+            ));
+
+            $branch_modules = $this->BranchModule->getData('all', array(
+                'conditions' => array(
+                    'BranchModule.status' => 1,
+                    'BranchModule.parent_id' => 0
+                ),
+                'contain' => array(
+                    'BranchChild'
+                )
+            ));
+
+            $sub_module_title = sprintf('Otorisasi Group %s', $group['Group']['name']);
+            $this->set(compact('branches', 'sub_module_title', 'group_id', 'GroupBranches', 'branch_modules'));
+            /*End supporting data*/
+        }else{
+            $this->redirect($this->referer());
+        }
+    }
 }
 ?>

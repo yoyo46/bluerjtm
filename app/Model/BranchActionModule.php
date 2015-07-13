@@ -1,47 +1,24 @@
 <?php
-class Group extends AppModel {
-	var $actsAs = array('Acl' => array('type' => 'requester'));
+class BranchActionModule extends AppModel {
+	var $name = 'BranchActionModule';
+	var $validate = array();
 
-    function parentNode() {
-        return null;
-    }
-
-    var $validate = array(
-		'name' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-                'message' => 'Nama group harap diisi'
-			),
-		)
-	);
-
-	var $hasMany = array(
-		'GroupBranch' => array(
-			'className' => 'GroupBranch',
-			'foreignKey' => 'group_id',
-		)
-	);
-
-	function getData( $find, $options = false, $is_merge = true ){
+	function getData($find, $options = false){
         $default_options = array(
-            'conditions'=> array(
-            	'Group.status' => 1
-            ),
+            'conditions'=> array(),
             'order'=> array(
-                'Group.name' => 'ASC'
+                'BranchActionModule.id' => 'ASC'
             ),
-            'contain' => array(
-            	'GroupBranch'
-            ),
+            'contain' => array(),
             'fields' => array(),
         );
 
-        if( !empty($options) && $is_merge ){
+        if(!empty($options)){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
             if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
@@ -52,8 +29,6 @@ class Group extends AppModel {
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
             }
-        } else if( !empty($options) ) {
-            $default_options = $options;
         }
 
         if( $find == 'paginate' ) {

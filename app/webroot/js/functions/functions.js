@@ -1108,6 +1108,24 @@ var add_custom_field = function( obj ){
                     alert('Mohon pilih Customer, No. Pol dan Tujuan');
                 }
                 break;
+            case 'add_auth':
+                var content_select = $('#temp-auth').html();
+                var idx = $('.auth-form-open').length;
+                var content = '<div class="box-body" rel="'+idx+'">'+
+                    '<div class="form-group">'+
+                        '<label for="city_id">Cabang '+idx+'</label>'+
+                        '<a href="javascript:" class="delete-custom-field pull-right" action_type="delete-auth-branch" group-branch-id="0">'+
+                            '<i class="fa fa-times"></i>'+
+                        '</a>'+
+                        content_select+
+                    '</div>'+
+                '</div>';
+
+                $('#auth-box').append(content);
+
+                delete_custom_field( $('#auth-box div.box-body[rel="'+idx+'"] .delete-custom-field') );
+                auth_form_open($('#auth-box div.box-body[rel="'+idx+'"] .auth-form-open'));
+                break;
         }
     });
 }
@@ -1223,6 +1241,35 @@ var delete_custom_field = function( obj ) {
                 var rel = self.attr('rel');
                 $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').remove();
                 grandTotalRevenue();
+            } else if( action_type == 'delete-auth-branch'){
+                var group_branch_id = self.attr('group-branch-id');
+                
+                if(group_branch_id != 0){
+                    $.ajax({
+                        url: '/ajax/delete_branch_group/'+group_branch_id+'/',
+                        type: 'POST',
+                        success: function(response, status) {
+                            var status = $(response).filter('#status').text();
+                            
+                            if(status == 'success'){
+                                self.parents('.box-body').remove();
+                            }else{
+                                var msg = $(response).filter('#message').text();
+                                if(typeof msg != 'undefined' && msg != ''){
+                                    alert(msg);
+                                }
+                            }
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                            return false;
+                        }
+                    });
+                }else{
+                    self.parents('.box-body').remove();
+                }
+
+                return false;
             }
         }
 
@@ -2946,6 +2993,67 @@ var view_sj_list = function( obj ) {
     });
 }
 
+var auth_form_open = function(obj){
+    if( typeof obj == 'undefined' ) {
+        obj = $('.auth-form-open');
+    }
+
+    obj.change(function(){
+        var self = $(this);
+        var parent = self.parents('.box-body');
+        var val = self.val();
+        var group_id = $('#group-id').val();
+
+        if(val != ''){
+            $.ajax({
+                url: '/ajax/auth_action_module/'+group_id+'/'+val+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    if( $(response).filter('#box-action-auth').html() != null ) {
+                        parent.find('.auth-action-box').html($(response).filter('#box-action-auth').html());
+
+                        parent.find('.delete-custom-field').attr('group-branch-id', $(response).filter('#group_branch_id').html());
+                        action_child_module();
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        }else{
+            parent.find('.auth-action-box').html('');
+        }
+    });
+}
+
+var action_child_module = function(obj){
+    if( typeof obj == 'undefined' ) {
+        obj = $('.action-child-module');
+    }
+
+    obj.click(function(){
+        var self = $(this);
+        var parent = $(this).parents('.box-body');
+        var id = self.attr('action-id');
+        var branch_id = self.attr('branch-id');
+
+        $.ajax({
+            url: '/ajax/auth_action_child_module/'+branch_id+'/'+id+'/',
+            type: 'POST',
+            success: function(response, status) {
+                self.parents('li').html(response);
+
+                action_child_module($('.list-auth-action li[rel="'+id+'"] .action-child-module'));
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    });
+}
+
 $(function() {
     leasing_action();
     laka_ttuj_change();
@@ -2954,6 +3062,8 @@ $(function() {
     price_tipe_motor();
     price_perlengkapan();
     sisa_ttuj();
+    auth_form_open();
+    action_child_module();
 
     set_auth_cash_bank($('.cash-bank-auth-user'));
 
@@ -3889,6 +3999,14 @@ $(function() {
         
         if( target.parents('#columnDropdown').length == 0 ) {
             $('#columnDropdown').removeClass('open');
+        }
+    });
+
+    $('#handle-module input').click(function(){
+        if( $(this).is(':checked') ){
+            $('.box-action-module').hide();
+        }else{
+            $('.box-action-module').show();
         }
     });
 });

@@ -27,6 +27,12 @@ class RjUserComponent extends Component {
 				if( !empty($refine['Employe']['phone']) ) {
 					$refine_conditions['Employe']['phone'] = $refine['Employe']['phone'];
 				}
+				if( !empty($refine['BranchModule']['name']) ) {
+					$refine_conditions['BranchModule']['name'] = $refine['BranchModule']['name'];
+				}
+				if( !empty($refine['BranchModule']['parent_id']) ) {
+					$refine_conditions['BranchModule']['parent'] = $refine['BranchModule']['parent_id'];
+				}
 			}
 				
 			return $refine_conditions;
@@ -51,6 +57,13 @@ class RjUserComponent extends Component {
 		}
 		if(!empty($refine['Employe'])) {
 			foreach($refine['Employe'] as $param => $value) {
+				if($value) {
+					$parameters[trim($param)] = rawurlencode($value);
+				}
+			}
+		}
+		if(!empty($refine['BranchModule'])) {
+			foreach($refine['BranchModule'] as $param => $value) {
 				if($value) {
 					$parameters[trim($param)] = rawurlencode($value);
 				}

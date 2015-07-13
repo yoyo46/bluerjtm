@@ -4009,3 +4009,11 @@ table.sorting thead th a.desc {
 table.sorting thead th a {
   background: url('../img/sort_both.png') no-repeat center right;
 }
+.auth-action-box .list-auth-action li{
+  float: left;
+  width: 20%;
+  list-style: none;
+}
+.list-auth-action{
+  margin: 15px 0px;
+}

@@ -17,6 +17,14 @@
                         'escape' => false,
                         'class' => 'btn btn-app pull-right'
                     ));
+
+                    echo $this->Html->link('<i class="fa fa-archive"></i> Action Modules', array(
+                        'controller' => 'users',
+                        'action' => 'action_modules'
+                    ), array(
+                        'escape' => false,
+                        'class' => 'btn btn-app pull-right'
+                    ));
             ?>
         </div>
         <?php 
@@ -49,6 +57,14 @@
                                     $id
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs'
+                                ));
+
+                                echo $this->Html->link('Otorisasi', array(
+                                    'controller' => 'users',
+                                    'action' => 'authorization_privilage',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-warning btn-xs'
                                 ));
                             }
 

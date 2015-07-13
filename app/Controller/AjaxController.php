@@ -2545,5 +2545,158 @@ class AjaxController extends AppController {
 			'sjOutstanding', 'driver_id'
 		));
 	}
+
+	function auth_action_module($group_id = false, $city_id = false){
+		if( !empty($city_id) && !empty($group_id) ){
+			$this->loadModel('BranchModule');
+			$this->loadModel('BranchActionModule');
+			$this->loadModel('GroupBranch');
+
+			$GroupBranch = $this->GroupBranch->find('first', array(
+				'conditions' => array(
+					'GroupBranch.group_id' => $group_id,
+					'GroupBranch.city_id' => $city_id,
+				)
+			));
+
+			$group_branch_id = '';
+			if(!empty($GroupBranch)){
+				$group_branch_id = $GroupBranch['GroupBranch']['id'];
+			}else{
+				$this->GroupBranch->create();
+				$this->GroupBranch->set(array(
+					'group_id' => $group_id,
+					'city_id' => $city_id,
+				));
+				
+				if($this->GroupBranch->save()){
+					$group_branch_id = $this->GroupBranch->id;
+				}
+			}
+
+			$data_auth = $this->BranchActionModule->getData('all', array(
+                'conditions' => array(
+                    'BranchActionModule.group_branch_id' => $group_branch_id
+                ),
+                'fields' => array(
+                	'BranchActionModule.branch_module_id', 'BranchActionModule.is_allow'
+                )
+            ));
+
+            $data_result_auth = array();
+            if(!empty($data_auth)){
+            	foreach ($data_auth as $key => $value) {
+            		$data_result_auth[$value['BranchActionModule']['branch_module_id']] = $value['BranchActionModule']['is_allow'];
+            	}
+            	$data_auth = $data_result_auth;
+            }
+
+			$branch_modules = $this->BranchModule->getData('all', array(
+                'conditions' => array(
+                    'BranchModule.status' => 1,
+                    'BranchModule.parent_id' => 0
+                ),
+                'contain' => array(
+                    'BranchChild'
+                )
+            ));
+
+            $this->set(compact('branch_modules', 'data_auth', 'group_branch_id'));
+		}
+	}
+
+	function auth_action_child_module($group_branch_id = false, $branch_module_id = false){
+		if(!empty($group_branch_id) && !empty($branch_module_id)){
+			$this->loadModel('BranchActionModule');
+			$this->loadModel('BranchModule');
+
+			$branch_modules = $this->BranchModule->getData('first', array(
+                'conditions' => array(
+                    'BranchModule.status' => 1,
+                    'BranchModule.id' => $branch_module_id
+                )
+            ));
+
+			$save = false;
+			if(!empty($branch_modules)){
+				$data_auth = $this->BranchActionModule->getData('first', array(
+	                'conditions' => array(
+	                    'BranchActionModule.group_branch_id' => $group_branch_id,
+	                    'BranchActionModule.branch_module_id' => $branch_module_id,
+	                )
+	            ));
+
+	            if(!empty($data_auth)){
+	            	$this->BranchActionModule->id = $data_auth['BranchActionModule']['id'];
+
+	            	$is_allow = true;
+	            	if(!empty($data_auth['BranchActionModule']['is_allow'])){
+	            		$is_allow = false;
+	            	}
+
+	            	$this->BranchActionModule->set('is_allow', $is_allow);
+
+	            	if($this->BranchActionModule->save()){
+	            		$save = true;
+	            	}
+	            }else{
+	            	$this->BranchActionModule->create();
+	            	$this->BranchActionModule->set(array(
+	            		'group_branch_id' => $group_branch_id,
+	            		'branch_module_id' => $branch_module_id,
+	            		'is_allow' => 1,
+	            	));
+
+	            	if($this->BranchActionModule->save()){
+	            		$save = true;
+	            	}
+	            }
+
+	            $this->set('data_auth', $data_auth);
+			}
+
+			$this->set(compact('branch_modules', 'save'));
+		}
+	}
+
+	function delete_branch_group($id){
+		if(!empty($id)){
+			$this->loadModel('GroupBranch');
+
+			$group_branch = $this->GroupBranch->find('first', array(
+				'conditions' => array(
+					'GroupBranch.id' => $id
+				)
+			));
+
+			$msg = array(
+				'type' => 'error',
+				'msg' => 'Gagal menghapus cabang'
+			);
+			
+			if(!empty($group_branch)){
+				if($this->GroupBranch->delete($id)){
+					
+					$this->loadModel('BranchActionModule');
+
+					$this->BranchActionModule->deleteAll(array(
+						'group_branch_id' => $id
+					));
+
+					$msg = array(
+						'type' => 'success',
+						'msg' => 'Berhasil menghapus cabang'
+					);
+				}
+			}else{
+				$msg = array(
+					'type' => 'error',
+					'msg' => 'Cabang tidak ditemukan'
+				);
+			}
+
+			$this->set('msg', $msg);
+		}
+	}
 }
 ?>
