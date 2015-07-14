@@ -9,6 +9,25 @@
     <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar">
         <!-- /.search form -->
+        <?php
+                echo $this->Form->create('GroupBranch', array(
+                    'url' => array(
+                        'controller' => 'users',
+                        'action' => 'change_branch'
+                    ),
+                    'class' => 'sidebar-form'
+                ));
+                echo $this->Form->input('branch_id', array(
+                    'options' => $list_branch,
+                    'class' => 'form-control',
+                    'label' => false,
+                    'div' => false,
+                    'onchange' => 'submit()',
+                    'value' => $group_branch_id
+                ));
+
+                echo $this->Form->end();
+        ?>
         <!-- sidebar menu: : style can be found in sidebar.less -->
         <ul class="sidebar-menu">
             <?php 

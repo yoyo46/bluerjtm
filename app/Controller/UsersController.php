@@ -1008,5 +1008,13 @@ class UsersController extends AppController {
             $this->redirect($this->referer());
         }
     }
+
+    function change_branch(){
+        if(!empty($this->request->data['GroupBranch']['branch_id'])){
+            $this->Session->write('user_branch', $this->request->data['GroupBranch']['branch_id']);
+        }
+
+        $this->redirect($this->referer());
+    }
 }
 ?>

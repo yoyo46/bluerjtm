@@ -2,7 +2,7 @@
 		if(!empty($branch_modules)){
 			foreach ($branch_modules as $key => $value_module) {
 				$list = '';
-				$link = $this->Html->link($value_module['BranchModule']['name'], 'javascript:', array(
+				$link = $this->Html->tag('span', $value_module['BranchModule']['name'], array(
 					'parent-id' => $value_module['BranchModule']['name'],
 					'class' => 'parent-auth'
 				));
@@ -27,9 +27,15 @@
 					}
 				}
 
-				echo $link.$this->Html->tag('ul', $list, array(
+				$content_module = $this->Html->tag('div', $this->Html->tag('ul', $list.'<div class="clear"></div>', array(
 					'class' => 'list-auth-action'
-				)).'<div class="clear"></div>';
+				)),array(
+				'class' => 'box-act'
+				));
+
+				echo $this->Html->tag('div', $link.$content_module, array(
+					'class' => 'box-action-auth-module'
+				));
 			}
 		}
 ?>

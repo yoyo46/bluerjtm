@@ -4015,5 +4015,35 @@ table.sorting thead th a {
   list-style: none;
 }
 .list-auth-action{
+  padding-left: 0px;
+}
+#auth-box .box-title label{
+  float: left;
+}
+.auth-action-box{
+  max-height: 400px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.box-action-auth-module{
   margin: 15px 0px;
+}
+.parent-auth{
+  margin-bottom: 10px;
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+}
+.box-act{
+  border: 1px solid #ccc;
+  padding: 10px 10px 0px;
+}
+.box-act a{
+  color: #000;
+}
+.box-act a .fa-times{
+  color: #d9534f;
+}
+.box-act a .fa-check{
+  color: #5cb85c;
 }

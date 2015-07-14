@@ -129,6 +129,14 @@ class AppController extends Controller {
 			$User = $this->user_data = $User = $this->Auth->user();
 
 			/*Auth*/
+			$controller_allowed = array(
+				'users', 'pages', 'ajax'
+			);
+			$action_allowed = array(
+				'change_branch', 'search', 'logout', 'login', 'dashboard', 
+				'auth_action_module', 'delete_branch_group', 'auth_action_child_module'
+			);
+
 			$_branches = $this->GroupBranch->getData('all', array(
 				'conditions' => array(
 					'GroupBranch.group_id' => $GroupId
@@ -141,23 +149,28 @@ class AppController extends Controller {
 			$list_branch = array();
 			$group_branch_id = '';
 			$is_allow = false;
+			$_branch_action_module = array();
 			if(!empty($_branches)){
-				foreach ($_branches as $key => $value) {
-					if($value['GroupBranch']['city_id'] == $User['branch_id']){
-						$group_branch_id = $value['GroupBranch']['id'];
+				if(in_array($this->params['controller'], $controller_allowed) && in_array($this->params['action'], $action_allowed)){
+					$is_allow = true;
+				}else{
+					foreach ($_branches as $key => $value) {
+						if($value['GroupBranch']['city_id'] == $User['branch_id']){
+							$group_branch_id = $value['GroupBranch']['id'];
+						}
+						$list_branch[$value['GroupBranch']['id']] = $value['City']['name'];
 					}
-					$list_branch[$value['GroupBranch']['id']] = $value['City']['name'];
-				}
 
-				if(!empty($group_branch_id)){
-					$_branch_action_module = $this->BranchActionModule->getData('all', array(
-						'conditions' => array(
-							'BranchActionModule.group_branch_id' => $group_branch_id
-						),
-						'contain' => array(
-							'BranchModule'
-						)
-					));
+					if(!empty($group_branch_id)){
+						$_branch_action_module = $this->BranchActionModule->getData('all', array(
+							'conditions' => array(
+								'BranchActionModule.group_branch_id' => $group_branch_id
+							),
+							'contain' => array(
+								'BranchModule'
+							)
+						));
+					}
 				}
 			}
 
@@ -169,12 +182,14 @@ class AppController extends Controller {
 					}
 				}
 			}
+
+			$this->group_branch_id = $group_branch_id = !empty($this->Session->read('user_branch')) ? $this->Session->read('user_branch') : $group_branch_id;
 			
 			if(!$is_allow){
 				$this->redirect($this->referer());
 			}
 
-			$this->set(compact('list_branch', '_branch_action_module'));
+			$this->set(compact('list_branch', '_branch_action_module', 'group_branch_id'));
 
 			if($this->params['controller'] && $this->params['action']){
 

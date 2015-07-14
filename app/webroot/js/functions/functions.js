@@ -1111,20 +1111,34 @@ var add_custom_field = function( obj ){
             case 'add_auth':
                 var content_select = $('#temp-auth').html();
                 var idx = $('.auth-form-open').length;
-                var content = '<div class="box-body" rel="'+idx+'">'+
-                    '<div class="form-group">'+
-                        '<label for="city_id">Cabang '+idx+'</label>'+
-                        '<a href="javascript:" class="delete-custom-field pull-right" action_type="delete-auth-branch" group-branch-id="0">'+
-                            '<i class="fa fa-times"></i>'+
-                        '</a>'+
-                        content_select+
+                // var content = '<div class="box-body" rel="'+idx+'">'+
+                //     '<div class="form-group">'+
+                //         '<label for="city_id">Cabang '+idx+'</label>'+
+                //         '<a href="javascript:" class="delete-custom-field pull-right" action_type="delete-auth-branch" group-branch-id="0">'+
+                //             '<i class="fa fa-times"></i>'+
+                //         '</a>'+
+                //         content_select+
+                //     '</div>'+
+                // '</div>';
+
+                var content = '<div class="box collapsed-box" rel="'+idx+'">'+
+                    '<div class="box-header">'+
+                        '<div class="box-title">'+
+                            content_select+
+                        '</div>'+
+                        '<div class="box-tools pull-right">'+
+                            '<button class="btn btn-default btn-sm trigger-collapse" rel="plus"><i class="fa fa-plus"></i></button>'+
+                            '<a href="javascript:" class="btn btn-default btn-sm delete-custom-field" action_type="delete-auth-branch" group-branch-id="0"><i class="fa fa-times"></i></a>'+
+                        '</div>'+
                     '</div>'+
+                    '<div class="box-body auth-action-box" style="display: none;"></div>'+
                 '</div>';
 
                 $('#auth-box').append(content);
 
-                delete_custom_field( $('#auth-box div.box-body[rel="'+idx+'"] .delete-custom-field') );
-                auth_form_open($('#auth-box div.box-body[rel="'+idx+'"] .auth-form-open'));
+                delete_custom_field( $('#auth-box div.box[rel="'+idx+'"] .delete-custom-field') );
+                auth_form_open($('#auth-box div.box[rel="'+idx+'"] .auth-form-open'));
+                accordion_toggle($('#auth-box div.box[rel="'+idx+'"] .trigger-collapse'));
                 break;
         }
     });
@@ -1252,7 +1266,7 @@ var delete_custom_field = function( obj ) {
                             var status = $(response).filter('#status').text();
                             
                             if(status == 'success'){
-                                self.parents('.box-body').remove();
+                                self.parents('.box').remove();
                             }else{
                                 var msg = $(response).filter('#message').text();
                                 if(typeof msg != 'undefined' && msg != ''){
@@ -1266,7 +1280,7 @@ var delete_custom_field = function( obj ) {
                         }
                     });
                 }else{
-                    self.parents('.box-body').remove();
+                    self.parents('.box').remove();
                 }
 
                 return false;
@@ -3000,7 +3014,7 @@ var auth_form_open = function(obj){
 
     obj.change(function(){
         var self = $(this);
-        var parent = self.parents('.box-body');
+        var parent = self.parents('.box');
         var val = self.val();
         var group_id = $('#group-id').val();
 
@@ -3010,7 +3024,11 @@ var auth_form_open = function(obj){
                 type: 'POST',
                 success: function(response, status) {
                     if( $(response).filter('#box-action-auth').html() != null ) {
-                        parent.find('.auth-action-box').html($(response).filter('#box-action-auth').html());
+                        var target_box = parent.find('.auth-action-box');
+                        
+                        target_box.html($(response).filter('#box-action-auth').html()).show();                        
+                        
+                        parent.find('.trigger-collapse').click();
 
                         parent.find('.delete-custom-field').attr('group-branch-id', $(response).filter('#group_branch_id').html());
                         action_child_module();
@@ -3023,6 +3041,7 @@ var auth_form_open = function(obj){
             });
         }else{
             parent.find('.auth-action-box').html('');
+            parent.find('.trigger-collapse').html('<i class="fa fa-plus"></i>');            
         }
     });
 }
@@ -3054,6 +3073,28 @@ var action_child_module = function(obj){
     });
 }
 
+var accordion_toggle = function(obj){
+    if( typeof obj == 'undefined' ) {
+        obj = $('.trigger-collapse');
+    }
+
+    obj.click(function(){
+        var self = $(this);
+        var rel = self.attr('rel');
+        var parent = self.parents('.box');
+
+        if(rel == 'plus'){
+            self.html('<i class="fa fa-minus"></i>');
+            self.attr('rel', 'times');
+            parent.find('.auth-action-box').show();
+        }else{
+            self.html('<i class="fa fa-plus"></i>');
+            parent.find('.auth-action-box').hide();
+            self.attr('rel', 'plus');
+        }
+    });
+}
+
 $(function() {
     leasing_action();
     laka_ttuj_change();
@@ -3064,6 +3105,7 @@ $(function() {
     sisa_ttuj();
     auth_form_open();
     action_child_module();
+    accordion_toggle();
 
     set_auth_cash_bank($('.cash-bank-auth-user'));
 
