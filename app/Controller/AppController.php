@@ -190,10 +190,6 @@ class AppController extends Controller {
 			}
 
 			$this->set(compact('list_branch', '_branch_action_module', 'group_branch_id'));
-
-			if($this->params['controller'] && $this->params['action']){
-
-			}
 			/*End Auth*/
 
 			$allowModule = $this->Module->ModuleAction->find('list', array(
