@@ -10,7 +10,7 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Grup', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Grup', array(
                         'controller' => 'settings',
                         'action' => 'customer_group_add'
                     ), array(
@@ -48,7 +48,7 @@
                 <td class="action">
                     <?php 
                             if( in_array('update_group_customers', $allowModule) ) {
-                                echo $this->Common->rule_link('Edit', array(
+                                echo $this->Html->link('Edit', array(
                                     'controller' => 'settings',
                                     'action' => 'customer_group_edit',
                                     $id
@@ -58,7 +58,7 @@
                             }
 
                             if( in_array('delete_group_customers', $allowModule) ) {
-                                echo $this->Common->rule_link(__('Hapus'), array(
+                                echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'settings',
                                     'action' => 'customer_group_toggle',
                                     $id

@@ -10,7 +10,7 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah User', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah User', array(
                         'controller' => 'users',
                         'action' => 'add'
                     ), array(
@@ -64,7 +64,7 @@
                 <td class="action">
                     <?php 
                             if( in_array('update_list_user', $allowModule) ) {
-                                echo $this->Common->rule_link('Edit', array(
+                                echo $this->Html->link('Edit', array(
                                     'controller' => 'users',
                                     'action' => 'edit',
                                     $id
@@ -75,7 +75,7 @@
 
                             if( in_array('delete_list_user', $allowModule) ) {
                                 if(!empty($value_data['status'])){
-                                    echo $this->Common->rule_link('Disable', array(
+                                    echo $this->Html->link('Disable', array(
                                         'controller' => 'users',
                                         'action' => 'toggle',
                                         $id
@@ -84,7 +84,7 @@
                                         'title' => 'disable status user'
                                     ), sprintf(__('Apakah Anda yakin akan menon-aktifkan %s?'), $name));
                                 }else{
-                                    echo $this->Common->rule_link('Enable', array(
+                                    echo $this->Html->link('Enable', array(
                                         'controller' => 'users',
                                         'action' => 'toggle',
                                         $id

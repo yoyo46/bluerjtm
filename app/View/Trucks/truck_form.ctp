@@ -151,7 +151,7 @@
 								'action' => 'getDrivers',
 								!empty($data_local['Truck']['driver_id'])?$data_local['Truck']['driver_id']:false,
                             );
-							echo $this->Form->label('driver_id', __('Supir Truk ').$this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+							echo $this->Form->label('driver_id', __('Supir Truk ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 					?>
 		        	<div class="row">
 		        		<div class="col-sm-10">
@@ -169,7 +169,7 @@
         				<div class="col-sm-2 hidden-xs">
 	                        <?php 
         							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-	                                echo $this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+	                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
 	                        ?>
 	                    </div>
 		        	</div>
@@ -437,7 +437,7 @@
 		    <div class="box-body">
 		        <div class="form-group">
 		        	<?php
-			        		echo $this->Common->rule_link('<i class="fa fa-plus"></i> '.__('Tambah Alokasi'), 'javascript:', array(
+			        		echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah Alokasi'), 'javascript:', array(
 								'class' => 'add-custom-field btn btn-success btn-xs',
 								'action_type' => 'alocation',
 								'escape' => false,
@@ -467,7 +467,7 @@
 			        			</div>
 			        			<div class="col-sm-1 no-pleft">
 							        <?php
-											echo $this->Common->rule_link('<i class="fa fa-times"></i>', 'javascript:', array(
+											echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
 												'class' => 'delete-custom-field has-danger',
 												'action_type' => 'alocation',
 												'escape' => false
@@ -505,7 +505,7 @@
 		        			</div>
 		        			<div class="col-sm-1 no-pleft">
 						        <?php
-										echo $this->Common->rule_link('<i class="fa fa-times"></i>', 'javascript:', array(
+										echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
 											'class' => 'delete-custom-field has-danger',
 											'action_type' => 'alocation',
 											'escape' => false
@@ -577,7 +577,7 @@
 				'class'=> 'btn btn-success',
 				'type' => 'submit',
 			));
-    		echo $this->Common->rule_link(__('Kembali'), array(
+    		echo $this->Html->link(__('Kembali'), array(
 				'action' => 'index', 
 			), array(
 				'class'=> 'btn btn-default',

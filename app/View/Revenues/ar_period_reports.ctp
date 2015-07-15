@@ -63,7 +63,7 @@
                                         'class'=> 'btn btn-success btn-sm',
                                         'type' => 'submit',
                                     ));
-                                    echo $this->Common->rule_link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                    echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
                                         'action' => 'ar_period_reports', 
                                     ), array(
                                         'escape' => false, 
@@ -89,14 +89,14 @@
             <?php
                     $urlExcel = $this->passedArgs;
                     $urlExcel[] = 'excel';
-                    echo $this->Common->rule_link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
+                    echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
                         'escape' => false,
                         'class' => 'btn btn-success pull-right'
                     ));
 
                     $urlPdf = $this->passedArgs;
                     $urlPdf[] = 'pdf';
-                    echo $this->Common->rule_link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
+                    echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
                         'escape' => false,
                         'class' => 'btn btn-primary pull-right'
                     ));

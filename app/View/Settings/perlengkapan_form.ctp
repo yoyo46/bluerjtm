@@ -45,7 +45,7 @@
 					'class'=> 'btn btn-success',
 					'type' => 'submit',
 				));
-	    		echo $this->Common->rule_link(__('Kembali'), array(
+	    		echo $this->Html->link(__('Kembali'), array(
 					'action' => 'perlengkapan', 
 				), array(
 					'class'=> 'btn btn-default',

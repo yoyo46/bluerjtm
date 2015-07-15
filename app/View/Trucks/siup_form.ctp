@@ -35,7 +35,7 @@
 	                                'controller'=> 'ajax', 
 									'action' => 'getTrucks',
 	                            );
-								echo $this->Form->label('driver_id', __('Supir Truk ').$this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+								echo $this->Form->label('driver_id', __('Supir Truk ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 					?>
 		        	<div class="row">
 		        		<div class="col-sm-10">
@@ -55,7 +55,7 @@
         				<div class="col-sm-2 hidden-xs">
 	                        <?php 
         							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-	                                echo $this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+	                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
 	                        ?>
 	                    </div>
 		        	</div>
@@ -180,7 +180,7 @@
 		    	}
 		    }
 
-    		echo $this->Common->rule_link(__('Kembali'), array(
+    		echo $this->Html->link(__('Kembali'), array(
 				'action' => 'siup'
 			), array(
 				'class'=> 'btn btn-default',

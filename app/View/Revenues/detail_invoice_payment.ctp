@@ -97,7 +97,7 @@
 </div>
 <div class="box-footer text-center action">
 	<?php
-    		echo $this->Common->rule_link(__('Kembali'), array(
+    		echo $this->Html->link(__('Kembali'), array(
 				'action' => 'invoice_payments', 
 			), array(
 				'class'=> 'btn btn-default',

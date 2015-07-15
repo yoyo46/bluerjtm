@@ -18,7 +18,7 @@
                 ?>
                 <ul class="dropdown-menu" role="menu">
                     <?php 
-                            echo $this->Html->tag('li', $this->Common->rule_link(__('Invoice Biasa'), array(
+                            echo $this->Html->tag('li', $this->Html->link(__('Invoice Biasa'), array(
                                 'controller' => 'revenues',
                                 'action' => 'invoice_add'
                             ), array(
@@ -27,7 +27,7 @@
                             echo $this->Html->tag('li', '', array(
                                 'class' => 'divider',
                             ));
-                            echo $this->Html->tag('li', $this->Common->rule_link(__('Invoice Per Tarif'), array(
+                            echo $this->Html->tag('li', $this->Html->link(__('Invoice Per Tarif'), array(
                                 'controller' => 'revenues',
                                 'action' => 'invoice_add',
                                 'tarif',
@@ -107,12 +107,12 @@
                             <?php 
                                 // if(empty($value['Invoice']['is_canceled'])){
                                     if( $value['Invoice']['tarif_type'] == 'angkut' ) {
-                                        echo $this->Html->tag('li', $this->Common->rule_link(__('Print Detail per Kota'), array(
+                                        echo $this->Html->tag('li', $this->Html->link(__('Print Detail per Kota'), array(
                                             'controller' => 'revenues',
                                             'action' => 'invoice_print',
                                             $id
                                         )));
-                                        echo $this->Html->tag('li', $this->Common->rule_link(__('Print Detail'), array(
+                                        echo $this->Html->tag('li', $this->Html->link(__('Print Detail'), array(
                                             'controller' => 'revenues',
                                             'action' => 'invoice_print',
                                             $id,
@@ -120,14 +120,14 @@
                                         )));
                                     
                                         if( !empty($value['Invoice']['status']) ){
-                                            echo $this->Html->tag('li', $this->Common->rule_link(__('Print HSO'), array(
+                                            echo $this->Html->tag('li', $this->Html->link(__('Print HSO'), array(
                                                 'controller' => 'revenues',
                                                 'action' => 'invoice_hso_print',
                                                 $id,
                                                 'print' => 'header',
                                             )));
                                         
-                                            // echo $this->Html->tag('li', $this->Common->rule_link(__('Print HSO Non Header'), array(
+                                            // echo $this->Html->tag('li', $this->Html->link(__('Print HSO Non Header'), array(
                                             //     'controller' => 'revenues',
                                             //     'action' => 'invoice_hso_print',
                                             //     $id,
@@ -135,7 +135,7 @@
                                         }
                                     }
                                     
-                                    echo $this->Html->tag('li', $this->Common->rule_link(__('Print Header'), array(
+                                    echo $this->Html->tag('li', $this->Html->link(__('Print Header'), array(
                                         'controller' => 'revenues',
                                         'action' => 'invoice_print',
                                         $id,
@@ -148,7 +148,7 @@
                     <?php 
                             if( empty($value['Invoice']['complete_paid']) && empty($value['Invoice']['paid']) ){
                                 if( !empty($value['Invoice']['status']) ){
-                                    echo $this->Common->rule_link(__('Void'), array(
+                                    echo $this->Html->link(__('Void'), array(
                                         'controller' => 'revenues',
                                         'action' => 'invoice_delete',
                                         $id

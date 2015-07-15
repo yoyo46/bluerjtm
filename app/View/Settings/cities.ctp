@@ -10,7 +10,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Kota', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Kota', array(
                     'controller' => 'settings',
                     'action' => 'city_add'
                 ), array(
@@ -67,7 +67,7 @@
                 <td><?php echo $value_data['name'];?></td>
                 <td>
                     <?php 
-                        echo $this->Common->rule_link($branch, array(
+                        echo $this->Html->link($branch, array(
                             'controller' => 'settings',
                             'action' => 'toggle_city',
                             $id,
@@ -79,7 +79,7 @@
                 </td>
                 <td>
                     <?php 
-                        echo $this->Common->rule_link($pool, array(
+                        echo $this->Html->link($pool, array(
                             'controller' => 'settings',
                             'action' => 'toggle_city',
                             $id,
@@ -93,7 +93,7 @@
                 <td class="action">
                     <?php 
                             if( in_array('insert_cities', $allowModule) ) {
-                                echo $this->Common->rule_link('Edit', array(
+                                echo $this->Html->link('Edit', array(
                                     'controller' => 'settings',
                                     'action' => 'city_edit',
                                     $id
@@ -103,7 +103,7 @@
                             }
 
                             if( in_array('delete_cities', $allowModule) ) {
-                                echo $this->Common->rule_link(__('Hapus'), array(
+                                echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'settings',
                                     'action' => 'city_toggle',
                                     $id

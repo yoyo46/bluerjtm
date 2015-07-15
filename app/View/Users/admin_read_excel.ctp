@@ -28,7 +28,7 @@
 					'class'=> 'btn btn-success btn-lg',
 					'type' => 'submit',
 				)).'&nbsp;';
-				echo $this->Common->rule_link(__('Back'), array(
+				echo $this->Html->link(__('Back'), array(
 					'controller' => 'users', 
 					'action' => 'contacts',
 					'admin' => true

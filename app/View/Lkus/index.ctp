@@ -13,7 +13,7 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah LKU', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah LKU', array(
                         'controller' => 'lkus',
                         'action' => 'add'
                     ), array(
@@ -112,7 +112,7 @@
                 <td><?php echo $this->Common->customDate($value['Lku']['created']);?></td>
                 <td class="action">
                     <?php
-                        echo $this->Common->rule_link('Info', array(
+                        echo $this->Html->link('Info', array(
                             'controller' => 'lkus',
                             'action' => 'detail',
                             $id
@@ -122,7 +122,7 @@
 
                         if( $allowChange && !empty($value['Lku']['status']) ){
                             if( in_array('update_lkus', $allowModule) ) {
-                                echo $this->Common->rule_link('Rubah', array(
+                                echo $this->Html->link('Rubah', array(
                                     'controller' => 'lkus',
                                     'action' => 'edit',
                                     $id
@@ -132,7 +132,7 @@
                             }
 
                             if( in_array('delete_lkus', $allowModule) ) {
-                                echo $this->Common->rule_link(__('Void'), array(
+                                echo $this->Html->link(__('Void'), array(
                                     'controller' => 'lkus',
                                     'action' => 'toggle',
                                     $id
@@ -143,7 +143,7 @@
                             }
                         }else{
                             // if(in_array('delete_lkus', $allowModule) && empty($value['Lku']['status']) && empty($value['Lku']['paid'])){
-                            //     echo $this->Common->rule_link(__('Cancel Void'), array(
+                            //     echo $this->Html->link(__('Cancel Void'), array(
                             //         'controller' => 'lkus',
                             //         'action' => 'toggle',
                             //         $id,

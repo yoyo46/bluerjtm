@@ -7,7 +7,7 @@
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Tipe Customer', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Tipe Customer', array(
                     'controller' => 'settings',
                     'action' => 'customer_type_add'
                 ), array(
@@ -55,7 +55,7 @@
                 </td>
                 <td class="action">
                     <?php 
-                            echo $this->Common->rule_link('Edit', array(
+                            echo $this->Html->link('Edit', array(
                                 'controller' => 'settings',
                                 'action' => 'customer_type_edit',
                                 $id
@@ -63,7 +63,7 @@
                                 'class' => 'btn btn-primary btn-xs'
                             ));
 
-                            echo $this->Common->rule_link(__('Hapus'), array(
+                            echo $this->Html->link(__('Hapus'), array(
                                 'controller' => 'settings',
                                 'action' => 'customer_type_toggle',
                                 $id

@@ -65,7 +65,7 @@
 					'class'=> 'btn btn-success',
 					'type' => 'submit',
 				));
-	    		echo $this->Common->rule_link(__('Kembali'), array(
+	    		echo $this->Html->link(__('Kembali'), array(
 					'controller' => 'revenues',
 					'action' => 'surat_jalan',
 					$ttuj_id,

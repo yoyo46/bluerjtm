@@ -13,7 +13,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Perpanjang STNK', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Perpanjang STNK', array(
                     'controller' => 'trucks',
                     'action' => 'stnk_add'
                 ), array(
@@ -91,7 +91,7 @@
                             }
 
                             if( in_array('update_stnk', $allowModule) ) {
-                                echo $this->Common->rule_link($label, array(
+                                echo $this->Html->link($label, array(
                                     'controller' => 'trucks',
                                     'action' => 'stnk_edit',
                                     $id
@@ -102,7 +102,7 @@
 
                             if( in_array('delete_stnk', $allowModule) && !empty($value['Stnk']['status']) ) {
                                 if( empty($value['Stnk']['paid']) && empty($value['Stnk']['rejected']) ){
-                                    echo $this->Common->rule_link(__('Hapus'), array(
+                                    echo $this->Html->link(__('Hapus'), array(
                                         'controller' => 'trucks',
                                         'action' => 'stnk_delete',
                                         $id

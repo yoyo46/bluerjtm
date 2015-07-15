@@ -9,7 +9,7 @@
 <div class="form-group text-center action">
     <?php
             if( in_array('update_trucks', $allowModule) ) {
-                echo $this->Common->rule_link(__('Rubah'), array(
+                echo $this->Html->link(__('Rubah'), array(
                     'action' => 'edit', 
                     $truck['Truck']['id'],
                 ), array(
@@ -18,7 +18,7 @@
                 ));
             }
             
-            echo $this->Common->rule_link(__('Kembali'), array(
+            echo $this->Html->link(__('Kembali'), array(
                 'action' => 'index', 
             ), array(
                 'escape' => false, 

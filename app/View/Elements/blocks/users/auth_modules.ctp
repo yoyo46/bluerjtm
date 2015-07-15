@@ -14,7 +14,7 @@
 							$icon = '<i class="fa fa-check"></i>';
 						}
 
-						$link_action = $this->Common->rule_link(sprintf('%s %s', $icon, $value['name']), 'javascript:', array(
+						$link_action = $this->Html->link(sprintf('%s %s', $icon, $value['name']), 'javascript:', array(
 							'action-id' => $value['id'],
 							'branch-id' => $group_branch_id,
 							'class' => 'action-child-module',

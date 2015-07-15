@@ -81,7 +81,7 @@
 	</td>
     <td class="ttuj-payment-action hide">
         <?php
-                echo $this->Common->rule_link('<i class="fa fa-times"></i>', 'javascript:', array(
+                echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
                     'class' => 'delete-biaya btn btn-danger btn-xs',
                     'escape' => false,
                     'data-id' => sprintf('child-%s', $alias),

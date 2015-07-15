@@ -18,7 +18,7 @@
                 ?>
                 <ul class="dropdown-menu" role="menu">
                     <?php 
-                            echo $this->Html->tag('li', $this->Common->rule_link(__('Uang Jalan'), array(
+                            echo $this->Html->tag('li', $this->Html->link(__('Uang Jalan'), array(
                                 'controller' => 'settings',
                                 'action' => 'uang_jalan_add'
                             ), array(
@@ -27,7 +27,7 @@
                             echo $this->Html->tag('li', '', array(
                                 'class' => 'divider',
                             ));
-                            echo $this->Html->tag('li', $this->Common->rule_link(__('Import Excel'), array(
+                            echo $this->Html->tag('li', $this->Html->link(__('Import Excel'), array(
                                 'controller' => 'settings',
                                 'action' => 'uang_jalan_import'
                             ), array(
@@ -79,7 +79,7 @@
                 <td class="action">
                     <?php 
                             if( in_array('update_uang_jalan', $allowModule) ) {
-                                echo $this->Common->rule_link('Edit', array(
+                                echo $this->Html->link('Edit', array(
                                     'controller' => 'settings',
                                     'action' => 'uang_jalan_edit',
                                     $id
@@ -89,7 +89,7 @@
                             }
 
                             if( in_array('delete_uang_jalan', $allowModule) ) {
-                                echo $this->Common->rule_link(__('Hapus'), array(
+                                echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'settings',
                                     'action' => 'uang_jalan_toggle',
                                     $id

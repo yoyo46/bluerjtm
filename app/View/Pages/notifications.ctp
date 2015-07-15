@@ -45,7 +45,7 @@
                         $link = '';
                         if(!empty($notification['Notification']['url'])){
                             $url = unserialize($notification['Notification']['url']);
-                            $link = $this->Common->rule_link($notification['Notification']['link'], $url, array(
+                            $link = $this->Html->link($notification['Notification']['link'], $url, array(
                                 'class' => 'btn btn-primary btn-xs'
                             ));
                         }

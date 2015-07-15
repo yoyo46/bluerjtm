@@ -37,7 +37,7 @@
     </div>
     <div class="col-sm-2">
         <?php
-                echo $this->Common->rule_link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
+                echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
                     'class' => 'delete-custom-field btn btn-danger btn-xs',
                     'escape' => false,
                     'action_type' => 'uang_keamanan'

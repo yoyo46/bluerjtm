@@ -240,7 +240,7 @@
 		    		?>
 			        <div class="form-group">
 			            <?php
-			                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
 			                        'class' => 'add-custom-field btn btn-success btn-xs',
 			                        'action_type' => 'uang_jalan',
 			                        'escape' => false
@@ -329,7 +329,7 @@
 		    		?>
 			        <div class="form-group">
 			            <?php
-			                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
 			                        'class' => 'add-custom-field btn btn-success btn-xs',
 			                        'action_type' => 'uang_jalan_extra',
 			                        'escape' => false
@@ -393,7 +393,7 @@
 		    		?>
 			        <div class="form-group">
 			            <?php
-			                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
 			                        'class' => 'add-custom-field btn btn-success btn-xs',
 			                        'action_type' => 'commission',
 			                        'escape' => false
@@ -483,7 +483,7 @@
 		    		?>
 			        <div class="form-group">
 			            <?php
-			                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
 			                        'class' => 'add-custom-field btn btn-success btn-xs',
 			                        'action_type' => 'commission_extra',
 			                        'escape' => false
@@ -547,7 +547,7 @@
 		    		?>
 			        <div class="form-group">
 			            <?php
-			                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
 			                        'class' => 'add-custom-field btn btn-success btn-xs',
 			                        'action_type' => 'asdp',
 			                        'escape' => false
@@ -609,7 +609,7 @@
 		    		?>
 			        <div class="form-group">
 			            <?php
-			                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
 			                        'class' => 'add-custom-field btn btn-success btn-xs',
 			                        'action_type' => 'uang_kawal',
 			                        'escape' => false
@@ -671,7 +671,7 @@
 		    		?>
 			        <div class="form-group">
 			            <?php
-			                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
 			                        'class' => 'add-custom-field btn btn-success btn-xs',
 			                        'action_type' => 'uang_keamanan',
 			                        'escape' => false
@@ -702,7 +702,7 @@
 				'class'=> 'btn btn-success',
 				'type' => 'submit',
 			));
-    		echo $this->Common->rule_link(__('Kembali'), array(
+    		echo $this->Html->link(__('Kembali'), array(
 				'action' => 'uang_jalan', 
 			), array(
 				'class'=> 'btn btn-default',

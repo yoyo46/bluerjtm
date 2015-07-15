@@ -107,7 +107,7 @@
 	                                        'action' => 'getTtujs',
 	                                        $action_type,
 		                                );
-		                            	echo $this->Form->label('no_ttuj', __('No. TTUJ * ').$this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+		                            	echo $this->Form->label('no_ttuj', __('No. TTUJ * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 		                    ?>
 		                    <div class="row">
 		                        <div class="col-sm-10">
@@ -126,7 +126,7 @@
 		        				<div class="col-sm-2 hidden-xs">
 			                        <?php 
 		        							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-			                                echo $this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+			                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
 			                        ?>
 			                    </div>
 		                    </div>
@@ -713,7 +713,7 @@
 		</div>
 		<div class="box-footer text-center action">
 			<?php
-		    		echo $this->Common->rule_link(__('Kembali'), $backUrl, array(
+		    		echo $this->Html->link(__('Kembali'), $backUrl, array(
 						'class'=> 'btn btn-default',
 					));
 

@@ -7,7 +7,7 @@
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Jenis Perlengkapan', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Jenis Perlengkapan', array(
                     'controller' => 'settings',
                     'action' => 'jenis_perlengkapan_add'
                 ), array(
@@ -36,7 +36,7 @@
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td class="action">
                     <?php 
-                            echo $this->Common->rule_link('Edit', array(
+                            echo $this->Html->link('Edit', array(
                                 'controller' => 'settings',
                                 'action' => 'jenis_perlengkapan_edit',
                                 $id
@@ -44,7 +44,7 @@
                                 'class' => 'btn btn-primary btn-xs'
                             ));
 
-                            echo $this->Common->rule_link(__('Hapus'), array(
+                            echo $this->Html->link(__('Hapus'), array(
                                 'controller' => 'settings',
                                 'action' => 'jenis_perlengkapan_toggle',
                                 $id

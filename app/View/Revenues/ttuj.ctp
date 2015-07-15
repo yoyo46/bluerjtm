@@ -14,7 +14,7 @@
                     switch ($active_menu) {
                         case 'truk_tiba':
                             if( in_array('insert_truk_tiba', $allowModule) ) {
-                                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Truk Tiba', array(
+                                echo $this->Html->link('<i class="fa fa-plus"></i> Truk Tiba', array(
                                     'controller' => 'revenues',
                                     'action' => 'truk_tiba_add'
                                 ), array(
@@ -26,7 +26,7 @@
 
                         case 'bongkaran':
                             if( in_array('insert_bongkaran', $allowModule) ) {
-                                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Bongkaran Truk', array(
+                                echo $this->Html->link('<i class="fa fa-plus"></i> Bongkaran Truk', array(
                                     'controller' => 'revenues',
                                     'action' => 'bongkaran_add'
                                 ), array(
@@ -38,7 +38,7 @@
 
                         case 'balik':
                             if( in_array('insert_balik', $allowModule) ) {
-                                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Truk Balik', array(
+                                echo $this->Html->link('<i class="fa fa-plus"></i> Truk Balik', array(
                                     'controller' => 'revenues',
                                     'action' => 'balik_add'
                                 ), array(
@@ -50,7 +50,7 @@
 
                         case 'pool':
                             if( in_array('insert_pool', $allowModule) ) {
-                                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Sampai Pool', array(
+                                echo $this->Html->link('<i class="fa fa-plus"></i> Sampai Pool', array(
                                     'controller' => 'revenues',
                                     'action' => 'pool_add'
                                 ), array(
@@ -72,7 +72,7 @@
                 ?>
                 <ul class="dropdown-menu" role="menu">
                     <?php 
-                            echo $this->Html->tag('li', $this->Common->rule_link(__('TTUJ DEPO'), array(
+                            echo $this->Html->tag('li', $this->Html->link(__('TTUJ DEPO'), array(
                                 'controller' => 'revenues',
                                 'action' => 'ttuj_add',
                             ), array(
@@ -81,7 +81,7 @@
                             echo $this->Html->tag('li', '', array(
                                 'class' => 'divider',
                             ));
-                            echo $this->Html->tag('li', $this->Common->rule_link(__('TTUJ RETAIL'), array(
+                            echo $this->Html->tag('li', $this->Html->link(__('TTUJ RETAIL'), array(
                                 'controller' => 'revenues',
                                 'action' => 'ttuj_add',
                                 'retail',
@@ -294,7 +294,7 @@
                 <td class="action">
                     <?php
                             if( in_array($active_menu, array( 'truk_tiba', 'bongkaran', 'balik', 'pool' )) ) {
-                                echo $this->Common->rule_link('Info', array(
+                                echo $this->Html->link('Info', array(
                                     'controller' => 'revenues',
                                     'action' => 'info_truk',
                                     $active_menu,
@@ -304,7 +304,7 @@
                                 ));
 
                                 if( in_array(sprintf('update_%s', $active_menu), $allowModule) ) {
-                                    echo $this->Common->rule_link('Ubah', array(
+                                    echo $this->Html->link('Ubah', array(
                                         'controller' => 'revenues',
                                         'action' => 'ttuj_lanjutan_edit',
                                         $active_menu,
@@ -315,7 +315,7 @@
                                 }
 
                                 if( in_array(sprintf('delete_%s', $active_menu), $allowModule) ) {
-                                    echo $this->Common->rule_link(__('Hapus'), array(
+                                    echo $this->Html->link(__('Hapus'), array(
                                         'controller' => 'revenues',
                                         'action' => 'ttuj_toggle',
                                         $id,
@@ -333,7 +333,7 @@
                                 // }
                                     
                                 // if( in_array(sprintf('update_%s', $active_menu), $allowModule) ) {
-                                    echo $this->Common->rule_link(__('Surat Jalan'), array(
+                                    echo $this->Html->link(__('Surat Jalan'), array(
                                         'controller' => 'revenues',
                                         'action' => 'surat_jalan',
                                         $id
@@ -342,7 +342,7 @@
                                     ));
                                 // }
 
-                                echo $this->Common->rule_link($labelEdit, array(
+                                echo $this->Html->link($labelEdit, array(
                                     'controller' => 'revenues',
                                     'action' => 'ttuj_edit',
                                     $id
@@ -351,7 +351,7 @@
                                 ));
 
                                 if( in_array('delete_ttuj', $allowModule) && !empty($value['Ttuj']['status']) ) {
-                                    echo $this->Common->rule_link(__('Void'), array(
+                                    echo $this->Html->link(__('Void'), array(
                                         'controller' => 'revenues',
                                         'action' => 'ttuj_toggle',
                                         $id

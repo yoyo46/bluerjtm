@@ -13,28 +13,28 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Common->rule_link('<i class="fa fa-puzzle-piece"></i> Fasilitas Truk', array(
+                    echo $this->Html->link('<i class="fa fa-puzzle-piece"></i> Fasilitas Truk', array(
                         'controller' => 'trucks',
                         'action' => 'facilities'
                     ), array(
                         'escape' => false,
                         'class' => 'btn btn-app pull-right'
                     ));
-                    echo $this->Common->rule_link('<i class="fa fa-list-alt"></i> Jenis Truk', array(
+                    echo $this->Html->link('<i class="fa fa-list-alt"></i> Jenis Truk', array(
                         'controller' => 'trucks',
                         'action' => 'categories'
                     ), array(
                         'escape' => false,
                         'class' => 'btn btn-app pull-right'
                     ));
-                    echo $this->Common->rule_link('<i class="fa fa-truck"></i> Merek Truk', array(
+                    echo $this->Html->link('<i class="fa fa-truck"></i> Merek Truk', array(
                         'controller' => 'trucks',
                         'action' => 'brands'
                     ), array(
                         'escape' => false,
                         'class' => 'btn btn-app pull-right'
                     ));
-                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Truk', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Truk', array(
                         'controller' => 'trucks',
                         'action' => 'add'
                     ), array(
@@ -102,7 +102,7 @@
                 </td>
                 <td class="action">
                     <?php
-                            echo $this->Common->rule_link('Detail', array(
+                            echo $this->Html->link('Detail', array(
                                 'controller' => 'trucks',
                                 'action' => 'detail',
                                 $id
@@ -111,7 +111,7 @@
                             ));
 
                             if( in_array('update_trucks', $allowModule) ) {
-                                echo $this->Common->rule_link('Rubah', array(
+                                echo $this->Html->link('Rubah', array(
                                     'controller' => 'trucks',
                                     'action' => 'edit',
                                     $id
@@ -121,7 +121,7 @@
                             }
 
                             if( in_array('delete_trucks', $allowModule) ) {
-                                echo $this->Common->rule_link(__('Hapus'), array(
+                                echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'trucks',
                                     'action' => 'toggle',
                                     $id

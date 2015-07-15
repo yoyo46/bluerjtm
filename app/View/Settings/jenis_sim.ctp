@@ -10,7 +10,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Jenis SIM', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Jenis SIM', array(
                     'controller' => 'settings',
                     'action' => 'sim_add'
                 ), array(
@@ -45,7 +45,7 @@
                 <td class="action">
                     <?php 
                             if( in_array('update_jenis_sim', $allowModule) ) {
-                                echo $this->Common->rule_link('Edit', array(
+                                echo $this->Html->link('Edit', array(
                                     'controller' => 'settings',
                                     'action' => 'sim_edit',
                                     $id
@@ -55,7 +55,7 @@
                             }
 
                             if( in_array('delete_jenis_sim', $allowModule) ) {
-                                echo $this->Common->rule_link(__('Hapus'), array(
+                                echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'settings',
                                     'action' => 'sim_toggle',
                                     $id

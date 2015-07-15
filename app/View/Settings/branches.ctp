@@ -10,7 +10,7 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Cabang', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Cabang', array(
                         'controller' => 'settings',
                         'action' => 'branch_add'
                     ), array(
@@ -53,7 +53,7 @@
                 <td class="action">
                     <?php 
                             if( in_array('update_branches', $allowModule) ) {
-                                echo $this->Common->rule_link(__('Edit'), array(
+                                echo $this->Html->link(__('Edit'), array(
                                     'controller' => 'settings',
                                     'action' => 'branch_edit',
                                     $id
@@ -63,7 +63,7 @@
                             }
 
                             if( in_array('delete_branches', $allowModule) ) {
-                                echo $this->Common->rule_link(__('Hapus'), array(
+                                echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'settings',
                                     'action' => 'branch_toggle',
                                     $id

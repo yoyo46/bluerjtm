@@ -41,7 +41,7 @@
         </div>
         <!-- <div class="form-group">
         	<?php
-	    //     		echo $this->Common->rule_link('<i class="fa fa-plus"></i> '.__('Tambah Bulan'), 'javascript:', array(
+	    //     		echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah Bulan'), 'javascript:', array(
 					// 	'class' => 'add-custom-field btn btn-success btn-xs',
 					// 	'action_type' => 'target-unit',
 					// 	'escape' => false,
@@ -72,7 +72,7 @@
 					'class'=> 'btn btn-success',
 					'type' => 'submit',
 				));
-	    		echo $this->Common->rule_link(__('Kembali'), array(
+	    		echo $this->Html->link(__('Kembali'), array(
 					'action' => 'customer_target_unit', 
 				), array(
 					'class'=> 'btn btn-default',

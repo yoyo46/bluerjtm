@@ -80,7 +80,7 @@
                     <dd>
                         <?php
                                 echo $this->Common->customDate($truck['Truck']['tgl_stnk'], 'd M Y', '-');
-                                echo $this->Common->rule_link(__('&nbsp;&nbsp;Perpanjang STNK ?'), array(
+                                echo $this->Html->link(__('&nbsp;&nbsp;Perpanjang STNK ?'), array(
                                     'controller' => 'trucks',
                                     'action' => 'stnk',
                                 ), array(
@@ -92,7 +92,7 @@
                     <dd>
                         <?php
                                 echo $this->Common->customDate($truck['Truck']['tgl_stnk_plat'], 'd M Y', '-');
-                                echo $this->Common->rule_link(__('&nbsp;&nbsp;Perpanjang Plat ?'), array(
+                                echo $this->Html->link(__('&nbsp;&nbsp;Perpanjang Plat ?'), array(
                                     'controller' => 'trucks',
                                     'action' => 'stnk',
                                 ), array(
@@ -110,7 +110,7 @@
                     <dd>
                         <?php 
                                 echo $this->Common->customDate($truck['Truck']['tgl_kir'], 'd M Y', '-');
-                                echo $this->Common->rule_link(__('&nbsp;&nbsp;Perpanjang KIR ?'), array(
+                                echo $this->Html->link(__('&nbsp;&nbsp;Perpanjang KIR ?'), array(
                                     'controller' => 'trucks',
                                     'action' => 'kir',
                                 ), array(
@@ -124,7 +124,7 @@
                     <dd>
                         <?php 
                                 echo $this->Common->customDate($truck['Truck']['tgl_siup'], 'd M Y', '-');
-                                echo $this->Common->rule_link(__('&nbsp;&nbsp;Perpanjang Ijin Usaha ?'), array(
+                                echo $this->Html->link(__('&nbsp;&nbsp;Perpanjang Ijin Usaha ?'), array(
                                     'controller' => 'trucks',
                                     'action' => 'siup',
                                 ), array(

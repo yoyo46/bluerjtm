@@ -27,11 +27,11 @@
     	<div class="form-group">
 			<div class="action">
 				<?php 
-						echo $this->Common->rule_link('Tambah field', 'javascript:', array(
+						echo $this->Html->link('Tambah field', 'javascript:', array(
 							'class' => 'add-custom-field btn btn-success btn-xs',
 							'action_type' => 'perlengkapan'
 						));
-						echo $this->Common->rule_link('Hapus field', 'javascript:', array(
+						echo $this->Html->link('Hapus field', 'javascript:', array(
 							'class' => 'delete-custom-field btn btn-danger btn-xs',
 							'action_type' => 'perlengkapan'
 						));
@@ -186,7 +186,7 @@
 					'class'=> 'btn btn-success',
 					'type' => 'submit',
 				));
-	    		echo $this->Common->rule_link(__('Kembali'), array(
+	    		echo $this->Html->link(__('Kembali'), array(
 					'action' => 'index', 
 				), array(
 					'class'=> 'btn btn-default',

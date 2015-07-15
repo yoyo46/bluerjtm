@@ -32,7 +32,7 @@
         </div>
     	<div class="form-group action">
     		<?php 
-	                echo $this->Common->rule_link('<i class="fa fa-plus-square"></i> '.__('Tambah List Approval'), 'javascript:', array(
+	                echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Tambah List Approval'), 'javascript:', array(
 	                	'escape' => false,
 	                	'class' => 'btn btn-success add-custom-field btn-xs',
 	                	'action_type' => 'auth-cash-bank'
@@ -80,7 +80,7 @@
 	        </div>
 	    	<div class="form-group action">
 	    		<?php 
-		                echo $this->Common->rule_link('<i class="fa fa-plus-square"></i> '.__('Tambah Otorisasi'), 'javascript:', array(
+		                echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Tambah Otorisasi'), 'javascript:', array(
 		                	'escape' => false,
 		                	'class' => 'btn btn-success add-custom-field btn-xs',
 		                	'action_type' => 'auth-cash-bank-user-approval'
@@ -129,7 +129,7 @@
 			                                0,
 			                            );
 										$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-			                            echo $this->Common->rule_link('<i class="fa fa-search"></i>', $urlBrowse, $attrBrowse);
+			                            echo $this->Html->link('<i class="fa fa-search"></i>', $urlBrowse, $attrBrowse);
 			                    ?>
 	                		</div>
 	                		<div class="clear"></div>
@@ -146,7 +146,7 @@
 		                </td>
 		                <td class="action text-center">
 				    		<?php 
-					                echo $this->Common->rule_link('<i class="fa fa-times-circle"></i>', 'javascript:', array(
+					                echo $this->Html->link('<i class="fa fa-times-circle"></i>', 'javascript:', array(
 					                	'escape' => false,
 					                	'class' => 'btn btn-danger delete-custom-field btn-xs',
 		                				'action_type' => 'auth-cash-bank-user-approval',

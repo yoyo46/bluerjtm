@@ -108,7 +108,7 @@
                                         'ttuj',
                                         !empty($data_local['Ttuj']['id'])?$data_local['Ttuj']['id']:false,
 	                                );
-		                            echo $this->Form->label('truck_id', __('No. Pol * ').$this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+		                            echo $this->Form->label('truck_id', __('No. Pol * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 		                    ?>
 		                    <div class="row">
 		                        <div class="col-sm-10">
@@ -130,7 +130,7 @@
 		        				<div class="col-sm-2 hidden-xs">
 			                        <?php 
 		        							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-			                                echo $this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+			                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
 			                        ?>
 			                    </div>
 		                    </div>
@@ -297,7 +297,7 @@
 										$colSpan ++;
 									}
 
-									echo $this->Common->rule_link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+									echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
 										'class' => 'add-custom-field btn btn-success btn-xs',
 										'action_type' => 'ttuj',
 										'data-custom' => $dataCustom,
@@ -368,7 +368,7 @@
 												'value' => $qty,
 												'rel' => $key,
 											)));
-											echo $this->Html->tag('td', $this->Common->rule_link('<i class="fa fa-times"></i> '.__('Hapus'), 'javascript:', array(
+											echo $this->Html->tag('td', $this->Html->link('<i class="fa fa-times"></i> '.__('Hapus'), 'javascript:', array(
 												'class' => 'delete-custom-field btn btn-danger btn-xs',
 												'action_type' => 'ttuj',
 												'escape' => false
@@ -677,7 +677,7 @@
 						$allowSave = false;
 					}
 
-					echo $this->Common->rule_link(__('Kembali'), array(
+					echo $this->Html->link(__('Kembali'), array(
 						'action' => 'ttuj', 
 					), array(
 						'class'=> 'btn btn-default',

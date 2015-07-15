@@ -3,6 +3,7 @@ class CommonHelper extends AppHelper {
 	var $helpers = array(
         'Html', 'Number', 'Paginator', 'Form', 'Text'
     );
+
     /**
     *
     *   mengambil data photo
@@ -391,12 +392,12 @@ class CommonHelper extends AppHelper {
 				$dataTree .= $this->Html->tag('span', $coa_title, array(
                     'title' => $coa_title,
                 ));
-                // $dataTree .= $this->Html->link(($coa['Coa']['name'], 'javascript:', array(
+                // $dataTree .= $this->Html->link($coa['Coa']['name'], 'javascript:', array(
                 //     'escape' => false,
                 // ));
 
                 if( in_array('insert_coas', $allowModule) && $level <= 2 ) {
-                    $dataTree .= $this->Html->link(('<i class="fa fa-plus-circle"></i>', array(
+                    $dataTree .= $this->Html->link('<i class="fa fa-plus-circle"></i>', array(
                         'controller' => 'settings',
                         'action' => 'coa_add',
                         $coa['Coa']['id'],
@@ -407,7 +408,7 @@ class CommonHelper extends AppHelper {
                 }
 
                 if( in_array('update_coas', $allowModule) ) {
-                    $dataTree .= $this->Html->link(('<i class="fa fa-pencil-square-o"></i>', array(
+                    $dataTree .= $this->Html->link('<i class="fa fa-pencil-square-o"></i>', array(
                         'controller' => 'settings',
                         'action' => 'coa_edit',
                         $coa['Coa']['id'],
@@ -420,7 +421,7 @@ class CommonHelper extends AppHelper {
                 }
 
                 if( in_array('delete_coas', $allowModule) ) {
-                    $dataTree .= $this->Html->link(('<i class="fa fa-minus-circle"></i>', array(
+                    $dataTree .= $this->Html->link('<i class="fa fa-minus-circle"></i>', array(
                         'controller' => 'settings',
                         'action' => 'coa_toggle',
                         $coa['Coa']['id'],
@@ -570,7 +571,7 @@ class CommonHelper extends AppHelper {
                 return $value['Setting'][$index];
             }
         } else {
-            return sprintf(__('Klik %s untuk Pengaturan'), $this->Html->link((__('Disini'), array(
+            return sprintf(__('Klik %s untuk Pengaturan'), $this->Html->link(__('Disini'), array(
                 'controller' => "settings",
                 'action' => 'index',
             ), array(
@@ -720,7 +721,7 @@ class CommonHelper extends AppHelper {
                     'class' => 'action-search hide'
                 ));
 
-                $content .= $this->Html->tag('td', $this->Html->link(('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
+                $content .= $this->Html->tag('td', $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
                     'class' => 'delete-custom-field btn btn-danger btn-xs',
                     'escape' => false,
                     'action_type' => 'cashbank_first'
@@ -774,7 +775,7 @@ class CommonHelper extends AppHelper {
             'title' => $coa_title,
         ));
         if( in_array('insert_coas', $allowModule) && $level < 4) {
-            $dataTree .= $this->Html->link(('<i class="fa fa-plus-circle"></i>', array(
+            $dataTree .= $this->Html->link('<i class="fa fa-plus-circle"></i>', array(
                 'controller' => 'settings',
                 'action' => 'coa_add',
                 $coa_id,
@@ -785,7 +786,7 @@ class CommonHelper extends AppHelper {
         }
 
         if( in_array('update_coas', $allowModule) ) {
-            $dataTree .= $this->Html->link(('<i class="fa fa-pencil-square-o"></i>', array(
+            $dataTree .= $this->Html->link('<i class="fa fa-pencil-square-o"></i>', array(
                 'controller' => 'settings',
                 'action' => 'coa_edit',
                 $coa_id,
@@ -797,7 +798,7 @@ class CommonHelper extends AppHelper {
             ));
         }
         if( in_array('delete_coas', $allowModule) ) {
-            $dataTree .= $this->Html->link(('<i class="fa fa-minus-circle"></i>', array(
+            $dataTree .= $this->Html->link('<i class="fa fa-minus-circle"></i>', array(
                 'controller' => 'settings',
                 'action' => 'coa_toggle',
                 $coa_id,
@@ -1134,13 +1135,13 @@ class CommonHelper extends AppHelper {
         if( !empty($_excel) ) {
             $_excel_attr = $default_attr;
             $_excel_attr['class'] = $default_attr['class'].' btn btn-success pull-right';
-            $result .= $this->Html->link(('<i class="fa fa-download"></i> Download Excel', $this->here.'/excel', $_excel_attr);
+            $result .= $this->Html->link('<i class="fa fa-download"></i> Download Excel', $this->here.'/excel', $_excel_attr);
         }
 
         if( !empty($_pdf) ) {
             $_pdf_attr = $default_attr;
             $_pdf_attr['class'] = $default_attr['class'].' btn btn-primary pull-right';
-            $result .= $this->Html->link(('<i class="fa fa-download"></i> Download PDF', $this->here.'/pdf', $_pdf_attr);
+            $result .= $this->Html->link('<i class="fa fa-download"></i> Download PDF', $this->here.'/pdf', $_pdf_attr);
         }
 
         if( !empty($showHideColumn) ) {
@@ -1260,7 +1261,7 @@ class CommonHelper extends AppHelper {
             $type_notif = '';
         }
 
-        $content = $this->Html->link((sprintf('%s%s', $type_notif, $content_notif), $url, array(
+        $content = $this->Html->link(sprintf('%s%s', $type_notif, $content_notif), $url, array(
             'escape' => false
         ));
 

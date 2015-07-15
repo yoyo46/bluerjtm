@@ -10,7 +10,7 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Uang Kuli', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Uang Kuli', array(
                         'controller' => 'settings',
                         'action' => 'uang_kuli_add',
                         $data_action,
@@ -65,7 +65,7 @@
                 <td class="action">
                     <?php 
                             // if( in_array('update_uang_kuli', $allowModule) ) {
-                                echo $this->Common->rule_link('Edit', array(
+                                echo $this->Html->link('Edit', array(
                                     'controller' => 'settings',
                                     'action' => 'uang_kuli_edit',
                                     $data_action,
@@ -76,7 +76,7 @@
                             // }
 
                             // if( in_array('delete_uang_kuli', $allowModule) ) {
-                                echo $this->Common->rule_link(__('Hapus'), array(
+                                echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'settings',
                                     'action' => 'uang_kuli_toggle',
                                     $data_action,

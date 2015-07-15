@@ -13,7 +13,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
                     'controller' => 'spk',
                     'action' => 'internal_add'
                 ), array(
@@ -119,7 +119,7 @@
                 <td class="action">
                     <?php
                             // if( in_array(sprintf('update_%s', $active_menu), $allowModule) ) {
-                                echo $this->Common->rule_link('Ubah', array(
+                                echo $this->Html->link('Ubah', array(
                                     'controller' => 'spk',
                                     'action' => 'internal_edit',
                                     $id
@@ -129,7 +129,7 @@
                             // }
 
                             // if( in_array(sprintf('delete_%s', $active_menu), $allowModule) ) {
-                                echo $this->Common->rule_link(__('Batalkan'), array(
+                                echo $this->Html->link(__('Batalkan'), array(
                                     'controller' => 'spk',
                                     'action' => 'internal_delete',
                                     $id,

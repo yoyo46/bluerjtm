@@ -27,7 +27,7 @@
                         'data-change' => 'document-id',
                     );
 					$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                    echo $this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowseDocument, $attrBrowse);
+                    echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowseDocument, $attrBrowse);
             ?>
 		</div>
 	</div>

@@ -104,7 +104,7 @@
                                 $ajaxType,
                             );
 							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                            echo $this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+                            echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
                     ?>
 				</div>
 			</div>
@@ -148,7 +148,7 @@
                         'title' => $titleCrumb,
                     );
 					$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                    echo $this->Html->tag('div', $this->Common->rule_link('<i class="fa fa-plus-square"></i> '.$titleCrumb, 'javascript:', $attrBrowse), array(
+                    echo $this->Html->tag('div', $this->Html->link('<i class="fa fa-plus-square"></i> '.$titleCrumb, 'javascript:', $attrBrowse), array(
                     	'class' => "form-group",
                 	));
 				}
@@ -195,7 +195,7 @@
 </div>
 <div class="box-footer text-center action">
 	<?php
-    		echo $this->Common->rule_link(__('Kembali'), array(
+    		echo $this->Html->link(__('Kembali'), array(
 				'action' => 'ttuj_payments', 
 				$action_type,
 			), array(

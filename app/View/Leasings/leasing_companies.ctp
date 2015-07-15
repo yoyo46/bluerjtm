@@ -13,7 +13,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Perusahaan Leasing', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Perusahaan Leasing', array(
                     'controller' => 'leasings',
                     'action' => 'leasing_company_add'
                 ), array(
@@ -50,7 +50,7 @@
                 <td class="action">
                     <?php 
                             if( in_array('insert_leasing_companies', $allowModule) ) {
-                                echo $this->Common->rule_link('Edit', array(
+                                echo $this->Html->link('Edit', array(
                                     'controller' => 'leasings',
                                     'action' => 'leasing_company_edit',
                                     $id
@@ -60,7 +60,7 @@
                             }
 
                             if( in_array('delete_leasing_companies', $allowModule) ) {
-                                echo $this->Common->rule_link(__('Hapus'), array(
+                                echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'leasings',
                                     'action' => 'leasing_company_toggle',
                                     $id

@@ -10,7 +10,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Klasifikasi', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Klasifikasi', array(
                     'controller' => 'settings',
                     'action' => 'classification_add'
                 ), array(
@@ -49,7 +49,7 @@
                 <td class="action">
                     <?php 
                             if( in_array('update_classifications', $allowModule) ) {
-                                echo $this->Common->rule_link('Edit', array(
+                                echo $this->Html->link('Edit', array(
                                     'controller' => 'settings',
                                     'action' => 'classification_edit',
                                     $id
@@ -59,7 +59,7 @@
                             }
 
                             if( in_array('delete_classifications', $allowModule) ) {
-                                echo $this->Common->rule_link(__('Hapus'), array(
+                                echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'settings',
                                     'action' => 'classification_toggle',
                                     $id

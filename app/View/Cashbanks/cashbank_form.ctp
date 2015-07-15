@@ -138,7 +138,7 @@
                                 'action' => 'getUserCashBank'
                             );
 							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                            echo $this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+                            echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
                     ?>
 				</div>
 			</div>
@@ -168,7 +168,7 @@
                         ))
                     );
 					$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                    echo $this->Common->rule_link('<i class="fa fa-plus-square"></i> '.__('Pilih COA'), 'javascript:', $attrBrowse);
+                    echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Pilih COA'), 'javascript:', $attrBrowse);
             ?>
         </div>
     </div>
@@ -212,7 +212,7 @@
 				'class'=> 'btn btn-success',
 				'type' => 'submit',
 			));
-    		echo $this->Common->rule_link(__('Kembali'), array(
+    		echo $this->Html->link(__('Kembali'), array(
 				'action' => 'index', 
 			), array(
 				'class'=> 'btn btn-default',

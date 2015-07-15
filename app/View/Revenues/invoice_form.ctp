@@ -87,7 +87,7 @@
 	</div>
 	<div class="box-footer text-center action">
 			<?php
-		    		echo $this->Common->rule_link(__('Kembali'), array(
+		    		echo $this->Html->link(__('Kembali'), array(
 						'action' => 'invoices', 
 					), array(
 						'class'=> 'btn btn-default',
@@ -96,7 +96,7 @@
 		    			'type' => 'submit',
 						'class'=> 'btn btn-success btn-lg btn-invoice',
 					));
-		    		echo $this->Common->rule_link(__('Preview Invoice'), 'javascript:', array(
+		    		echo $this->Html->link(__('Preview Invoice'), 'javascript:', array(
 		    			'rel' => $action,
 		    			'class' => 'btn btn-primary',
 		    			'id' => 'preview-invoice'

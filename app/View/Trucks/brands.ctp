@@ -10,7 +10,7 @@
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Merek Truk', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Merek Truk', array(
                         'controller' => 'trucks',
                         'action' => 'brand_add'
                     ), array(
@@ -38,7 +38,7 @@
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td class="action">
                     <?php 
-                            echo $this->Common->rule_link('Edit', array(
+                            echo $this->Html->link('Edit', array(
                                 'controller' => 'trucks',
                                 'action' => 'brand_edit',
                                 $id
@@ -46,7 +46,7 @@
                                 'class' => 'btn btn-primary btn-xs'
                             ));
 
-                            echo $this->Common->rule_link('Hapus', array(
+                            echo $this->Html->link('Hapus', array(
                                 'controller' => 'trucks',
                                 'action' => 'brand_toggle',
                                 $id

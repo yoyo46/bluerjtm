@@ -10,7 +10,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Pembayaran Invoice', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Pembayaran Invoice', array(
                     'controller' => 'revenues',
                     'action' => 'invoice_payment_add'
                 ), array(
@@ -85,14 +85,14 @@
                 <td class="action">
                     <?php 
                         if(empty($value['InvoicePayment']['is_canceled'])){
-                            echo $this->Common->rule_link('Info', array(
+                            echo $this->Html->link('Info', array(
                                 'controller' => 'revenues',
                                 'action' => 'detail_invoice_payment',
                                 $id
                             ), array(
                                 'class' => 'btn btn-info btn-xs'
                             ));
-                            // echo $this->Common->rule_link('Edit', array(
+                            // echo $this->Html->link('Edit', array(
                             //     'controller' => 'revenues',
                             //     'action' => 'detail_invoice_payment',
                             //     $id
@@ -100,7 +100,7 @@
                             //     'class' => 'btn btn-primary btn-xs'
                             // ));
                             
-                            echo $this->Common->rule_link('Void', array(
+                            echo $this->Html->link('Void', array(
                                 'controller' => 'revenues',
                                 'action' => 'invoice_payment_delete',
                                 $id

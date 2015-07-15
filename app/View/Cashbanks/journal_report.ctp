@@ -16,11 +16,11 @@
     <!-- <div class="row no-print print-action">
         <div class="col-xs-12 action">
             <?php
-                    echo $this->Common->rule_link('<i class="fa fa-download"></i> Download Excel', $this->here.'/excel', array(
+                    echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $this->here.'/excel', array(
                         'escape' => false,
                         'class' => 'btn btn-success pull-right'
                     ));
-                    echo $this->Common->rule_link('<i class="fa fa-download"></i> Download PDF', $this->here.'/pdf', array(
+                    echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $this->here.'/pdf', array(
                         'escape' => false,
                         'class' => 'btn btn-primary pull-right'
                     ));

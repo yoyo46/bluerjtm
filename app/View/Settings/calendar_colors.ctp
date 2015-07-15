@@ -12,7 +12,7 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Warna Kalender', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Warna Kalender', array(
                         'controller' => 'settings',
                         'action' => 'calendar_color_add'
                     ), array(
@@ -61,7 +61,7 @@
                 <td class="action">
                     <?php 
                             if( in_array('update_calendar_colors', $allowModule) ) {
-                                echo $this->Common->rule_link('Edit', array(
+                                echo $this->Html->link('Edit', array(
                                     'controller' => 'settings',
                                     'action' => 'calendar_color_edit',
                                     $id
@@ -71,7 +71,7 @@
                             }
 
                             if( in_array('delete_calendar_colors', $allowModule) ) {
-                                echo $this->Common->rule_link('Hapus', array(
+                                echo $this->Html->link('Hapus', array(
                                     'controller' => 'settings',
                                     'action' => 'calendar_color_toggle',
                                     $id

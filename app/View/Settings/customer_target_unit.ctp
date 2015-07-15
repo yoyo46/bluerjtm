@@ -10,7 +10,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Target Unit', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Target Unit', array(
                     'controller' => 'settings',
                     'action' => 'customer_target_unit_add'
                 ), array(
@@ -47,7 +47,7 @@
                 <td class="action">
                     <?php 
                             if( in_array('update_customer_target_unit', $allowModule) ) {
-                                echo $this->Common->rule_link('Edit', array(
+                                echo $this->Html->link('Edit', array(
                                     'controller' => 'settings',
                                     'action' => 'customer_target_unit_edit',
                                     $id
@@ -57,7 +57,7 @@
                             }
 
                             if( in_array('delete_customer_target_unit', $allowModule) ) {
-                                echo $this->Common->rule_link(__('Hapus'), array(
+                                echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'settings',
                                     'action' => 'customer_target_unit_toggle',
                                     $id

@@ -13,7 +13,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Perpanjang KIR', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Perpanjang KIR', array(
                     'controller' => 'trucks',
                     'action' => 'kir_add'
                 ), array(
@@ -85,7 +85,7 @@
                             }
 
                             if( in_array('update_kirs', $allowModule) ) {
-                                echo $this->Common->rule_link($label, array(
+                                echo $this->Html->link($label, array(
                                     'controller' => 'trucks',
                                     'action' => 'kir_edit',
                                     $id
@@ -96,7 +96,7 @@
 
                             if( in_array('delete_kirs', $allowModule) && !empty($value['Kir']['status']) ) {
                                 if( empty($value['Kir']['paid']) && empty($value['Kir']['rejected']) ){
-                                    echo $this->Common->rule_link(__('Hapus'), array(
+                                    echo $this->Html->link(__('Hapus'), array(
                                         'controller' => 'trucks',
                                         'action' => 'kir_delete',
                                         $id

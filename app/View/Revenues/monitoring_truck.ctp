@@ -18,7 +18,7 @@
                 $prevMonthName = date('F Y', strtotime($prevMonth));
                 $urlPrev = $this->passedArgs;
                 $urlPrev['month'] = $this->Common->toSlug($prevMonthName);
-                echo $this->Html->tag('div', $this->Common->rule_link(sprintf('%s %s', $this->Html->tag('b', '', array(
+                echo $this->Html->tag('div', $this->Html->link(sprintf('%s %s', $this->Html->tag('b', '', array(
                     'class' => 'fa fa-angle-left'
                 )), $this->Html->tag('span', $prevMonthName, array(
                     'class' => 'month-name'
@@ -36,7 +36,7 @@
                 $nextMonthName = date('F Y', strtotime($nextMonth));
                 $urlNext = $this->passedArgs;
                 $urlNext['month'] = $this->Common->toSlug($nextMonthName);
-                echo $this->Html->tag('div', $this->Common->rule_link(sprintf('%s %s', $this->Html->tag('span', $nextMonthName, array(
+                echo $this->Html->tag('div', $this->Html->link(sprintf('%s %s', $this->Html->tag('span', $nextMonthName, array(
                     'class' => 'month-name'
                 )), $this->Html->tag('b', '', array(
                     'class' => 'fa fa-angle-right'
@@ -184,7 +184,7 @@
                                             }
 
                                             if( !empty($data['url']) ) {
-                                                $formTtuj .= $this->Html->tag('p', $this->Common->rule_link(__('Selengkapnya..'), $data['url'], array(
+                                                $formTtuj .= $this->Html->tag('p', $this->Html->link(__('Selengkapnya..'), $data['url'], array(
                                                     'escape' => false,
                                                     'target' => 'blank',
                                                 )));
@@ -236,7 +236,7 @@
                                             $point[] = $this->Html->tag('div', $this->Html->tag('div', $icon, array(
                                                 'title' => $title.' <span class="pull-right"><a href="javascript:"><i class="popover-close">Tutup</i></a></span>',
                                                 'class' => 'popover-hover-top-click',
-                                                'data-content' => $this->Html->tag('div', sprintf('%s%s%s%s%s', $this->Html->tag('p', $event['note']), $fromDateTime, $toDateTime, $this->Common->rule_link('<i class="fa fa-edit"></i> '.__('Ubah'), array(
+                                                'data-content' => $this->Html->tag('div', sprintf('%s%s%s%s%s', $this->Html->tag('p', $event['note']), $fromDateTime, $toDateTime, $this->Html->link('<i class="fa fa-edit"></i> '.__('Ubah'), array(
                                                     'controller' => 'ajax',
                                                     'action' => 'event_edit',
                                                     $event['id'],
@@ -245,7 +245,7 @@
                                                     'class' => 'text-green ajaxModal',
                                                     'data-action' => 'event',
                                                     'title' => __('Ubah Event'),
-                                                )), $this->Common->rule_link('<i class="fa fa-times"></i> '.__('Hapus'), array(
+                                                )), $this->Html->link('<i class="fa fa-times"></i> '.__('Hapus'), array(
                                                     'controller' => 'ajax',
                                                     'action' => 'event_delete',
                                                     $event['id'],
@@ -263,7 +263,7 @@
                                     }
 
                                     if( empty($point) ){
-                                        echo $this->Html->tag('td', $this->Common->rule_link('&nbsp;', array(
+                                        echo $this->Html->tag('td', $this->Html->link('&nbsp;', array(
                                             'controller' => 'ajax',
                                             'action' => 'event_add',
                                             $nopol,
@@ -284,7 +284,7 @@
                                             } else {
                                                 $iconPoint = str_replace('popover-hover-bottom-click', '', str_replace('popover-hover-top-click', '', $point[0]));
                                             }
-                                            echo $this->Html->tag('td', $this->Html->tag('div', $this->Common->rule_link($iconPoint, '#multiple-'.$i, array(
+                                            echo $this->Html->tag('td', $this->Html->tag('div', $this->Html->link($iconPoint, '#multiple-'.$i, array(
                                                 'escape' => false,
                                             )), array(
                                                 'class' => 'text-center staticModal',
