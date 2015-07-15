@@ -10,7 +10,7 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Group', array(
+                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Group', array(
                         'controller' => 'users',
                         'action' => 'group_add'
                     ), array(
@@ -18,7 +18,7 @@
                         'class' => 'btn btn-app pull-right'
                     ));
 
-                    echo $this->Html->link('<i class="fa fa-archive"></i> Action Modules', array(
+                    echo $this->Common->rule_link('<i class="fa fa-archive"></i> Action Modules', array(
                         'controller' => 'users',
                         'action' => 'action_modules'
                     ), array(
@@ -51,7 +51,7 @@
                 <td class="action">
                     <?php 
                             if( in_array('update_group_user', $allowModule) ) {
-                                echo $this->Html->link('Edit', array(
+                                echo $this->Common->rule_link('Edit', array(
                                     'controller' => 'users',
                                     'action' => 'group_edit',
                                     $id
@@ -59,7 +59,7 @@
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
 
-                                echo $this->Html->link('Otorisasi', array(
+                                echo $this->Common->rule_link('Otorisasi', array(
                                     'controller' => 'users',
                                     'action' => 'authorization_privilage',
                                     $id
@@ -70,7 +70,7 @@
 
                             if( in_array('delete_group_user', $allowModule) ) {
                                 if(!empty($value_data['status'])){
-                                    echo $this->Html->link('Disable', array(
+                                    echo $this->Common->rule_link('Disable', array(
                                         'controller' => 'users',
                                         'action' => 'group_toggle',
                                         $id
@@ -78,7 +78,7 @@
                                         'class' => 'btn btn-danger btn-xs',
                                     ), sprintf(__('Apakah Anda yakin akan menon-aktifkan %s?'), $value_data['name']));
                                 }else{
-                                    echo $this->Html->link('Enable', array(
+                                    echo $this->Common->rule_link('Enable', array(
                                         'controller' => 'users',
                                         'action' => 'group_toggle',
                                         $id

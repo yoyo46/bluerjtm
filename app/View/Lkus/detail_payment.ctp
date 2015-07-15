@@ -78,7 +78,7 @@
 							foreach ($LkuPayment['LkuPaymentDetail'] as $key => $value) {
 								$grandTotal += $value['total_biaya_klaim'];
 
-								$link_lku = $this->Html->link($value['Lku']['no_doc'], array(
+								$link_lku = $this->Common->rule_link($value['Lku']['no_doc'], array(
 									'controller' => 'lkus',
 									'action' => 'detail',
 									$value['Lku']['id']
@@ -132,7 +132,7 @@
 </div>
 <div class="box-footer text-center action">
 	<?php
-    		echo $this->Html->link(__('Kembali'), array(
+    		echo $this->Common->rule_link(__('Kembali'), array(
 				'action' => 'payments', 
 			), array(
 				'class'=> 'btn btn-default',

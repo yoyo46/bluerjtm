@@ -54,7 +54,7 @@
                             if( !empty($detail['RevenueDetail']['price_unit']) ){
                                 $price = $detail['RevenueDetail']['price_unit'];
                             } else if( empty($id) ) {
-                                $link = $this->Html->link(__('disini'), array(
+                                $link = $this->Common->rule_link(__('disini'), array(
                                     'controller' => 'settings', 
                                     'action' => 'tarif_angkutan_add'
                                 ), array(
@@ -275,13 +275,13 @@
                                     }
 
                                     if($open_duplicate){
-                                        echo $this->Html->link('<i class="fa fa-copy"></i>', 'javascript:', array(
+                                        echo $this->Common->rule_link('<i class="fa fa-copy"></i>', 'javascript:', array(
                                             'class' => 'duplicate-row btn btn-warning btn-xs',
                                             'escape' => false,
                                             'title' => 'Duplicate'
                                         ));
                                     }else{
-                                        echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
+                                        echo $this->Common->rule_link('<i class="fa fa-times"></i>', 'javascript:', array(
                                         'class' => 'delete-custom-field btn btn-danger btn-xs',
                                         'escape' => false,
                                         'action_type' => 'revenue_detail',
@@ -289,7 +289,7 @@
                                     ));
                                     }
                                 } else {
-                                    echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
+                                    echo $this->Common->rule_link('<i class="fa fa-times"></i>', 'javascript:', array(
                                         'class' => 'delete-custom-field btn btn-danger btn-xs',
                                         'action_type' => 'revenue-detail',
                                         'title' => __('Hapus Muatan'),

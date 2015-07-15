@@ -16,7 +16,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-truck"></i> Tambah Alokasi', array(
+                echo $this->Common->rule_link('<i class="fa fa-truck"></i> Tambah Alokasi', array(
                     'controller' => 'trucks',
                     'action' => 'alocation_add',
                     $id
@@ -47,7 +47,7 @@
                 <td><?php echo $value['City']['name'];?></td>
                 <td>
                     <?php
-                        echo $this->Html->link('Rubah', array(
+                        echo $this->Common->rule_link('Rubah', array(
                             'controller' => 'trucks',
                             'action' => 'alocation_edit',
                             $value_truck['truck_id'],

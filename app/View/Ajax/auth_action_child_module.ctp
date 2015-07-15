@@ -5,7 +5,7 @@
 				$icon = '<i class="fa fa-check"></i>';
 			}
 
-			echo $this->Html->link(sprintf('%s %s', $icon, $branch_modules['BranchModule']['name']), 'javascript:', array(
+			echo $this->Common->rule_link(sprintf('%s %s', $icon, $branch_modules['BranchModule']['name']), 'javascript:', array(
 				'action-id' => $branch_modules['BranchModule']['id'],
 				'parent-id' => $branch_modules['BranchModule']['parent_id'],
 				'class' => 'action-child-module',

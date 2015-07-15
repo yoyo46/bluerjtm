@@ -12,7 +12,7 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Icon Kalender', array(
+                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Icon Kalender', array(
                         'controller' => 'settings',
                         'action' => 'calendar_icon_add'
                     ), array(
@@ -68,7 +68,7 @@
                 <td class="action">
                     <?php 
                             if( in_array('update_calendar_icons', $allowModule) ) {
-                                echo $this->Html->link('Edit', array(
+                                echo $this->Common->rule_link('Edit', array(
                                     'controller' => 'settings',
                                     'action' => 'calendar_icon_edit',
                                     $id
@@ -78,7 +78,7 @@
                             }
 
                             if( in_array('delete_calendar_icons', $allowModule) ) {
-                                echo $this->Html->link('Hapus', array(
+                                echo $this->Common->rule_link('Hapus', array(
                                     'controller' => 'settings',
                                     'action' => 'calendar_icon_toggle',
                                     $id

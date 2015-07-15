@@ -33,7 +33,7 @@ A:HOVER { text-decoration: underline; color:#44E }
 </head>
 <body>
 <p>
-	<?php echo $this->Html->link($message, $url); ?>
+	<?php echo $this->Common->rule_link($message, $url); ?>
 </p>
 </body>
 </html>

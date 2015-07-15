@@ -103,7 +103,7 @@
 		    <div class="box-body">
 		        <div class="form-group">
 		            <?php
-		                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+		                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
 		                        'class' => 'add-custom-field btn btn-success btn-xs',
 		                        'action_type' => 'uang_kuli',
 		                        'escape' => false
@@ -140,7 +140,7 @@
 		    <div class="box-body">
 		        <div class="form-group">
 		            <?php
-		                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+		                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
 		                        'class' => 'add-custom-field btn btn-success btn-xs',
 		                        'action_type' => 'uang_kuli_capacity',
 		                        'escape' => false
@@ -171,7 +171,7 @@
 				'class'=> 'btn btn-success',
 				'type' => 'submit',
 			));
-    		echo $this->Html->link(__('Kembali'), array(
+    		echo $this->Common->rule_link(__('Kembali'), array(
 				'action' => 'uang_kuli', 
 				$data_action,
 			), array(

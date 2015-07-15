@@ -7,7 +7,7 @@
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Tipe Customer', array(
+                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Tipe Customer', array(
                     'controller' => 'settings',
                     'action' => 'company_type_add'
                 ), array(
@@ -58,7 +58,7 @@
                 </td>
                 <td class="action">
                     <?php 
-                            echo $this->Html->link('Edit', array(
+                            echo $this->Common->rule_link('Edit', array(
                                 'controller' => 'settings',
                                 'action' => 'company_type_edit',
                                 $id
@@ -67,7 +67,7 @@
                             ));
 
                             if(!empty($value_data['status'])){
-                                echo $this->Html->link('Disable', array(
+                                echo $this->Common->rule_link('Disable', array(
                                     'controller' => 'settings',
                                     'action' => 'company_type_toggle',
                                     $id
@@ -76,7 +76,7 @@
                                     'title' => 'disable status brand'
                                 ));
                             }else{
-                                echo $this->Html->link('Enable', array(
+                                echo $this->Common->rule_link('Enable', array(
                                     'controller' => 'settings',
                                     'action' => 'company_type_toggle',
                                     $id

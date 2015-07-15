@@ -13,7 +13,7 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah LKU Part', array(
+                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah LKU Part', array(
                         'controller' => 'lkus',
                         'action' => 'lku_part_add'
                     ), array(
@@ -70,7 +70,7 @@
                 <td class="action">
                     <?php
                             if( in_array('update_lkus', $allowModule) ) {
-                                echo $this->Html->link('Rubah', array(
+                                echo $this->Common->rule_link('Rubah', array(
                                     'controller' => 'lkus',
                                     'action' => 'lku_part_edit',
                                     $id
@@ -80,7 +80,7 @@
                             }
 
                             if( in_array('delete_lkus', $allowModule) ) {
-                                echo $this->Html->link(__('Hapus'), array(
+                                echo $this->Common->rule_link(__('Hapus'), array(
                                     'controller' => 'lkus',
                                     'action' => 'lku_part_toggle',
                                     $id

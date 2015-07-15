@@ -20,7 +20,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link(sprintf('<i class="fa fa-plus"></i> Tambah Pembayaran %s', $labelAdd), array(
+                echo $this->Common->rule_link(sprintf('<i class="fa fa-plus"></i> Tambah Pembayaran %s', $labelAdd), array(
                     'controller' => 'revenues',
                     'action' => 'ttuj_payment_add',
                     $action_type,
@@ -105,7 +105,7 @@
                         }
                         echo $this->Html->tag('td', $statusDoc);
 
-                        $actionDoc = $this->Html->link('Detail', array(
+                        $actionDoc = $this->Common->rule_link('Detail', array(
                             'controller' => 'revenues',
                             'action' => 'detail_ttuj_payment',
                             $id,
@@ -115,7 +115,7 @@
                         ));
                         
                         if(empty($value['TtujPayment']['is_canceled'])){
-                            $actionDoc .= $this->Html->link(__('Void'), array(
+                            $actionDoc .= $this->Common->rule_link(__('Void'), array(
                                 'controller' => 'revenues',
                                 'action' => 'ttuj_payment_delete',
                                 $id,

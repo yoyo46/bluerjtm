@@ -7,7 +7,7 @@
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Karyawan', array(
+                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Karyawan', array(
                         'controller' => 'users',
                         'action' => 'employe_add'
                     ), array(
@@ -15,7 +15,7 @@
                         'class' => 'btn btn-app pull-right'
                     ));
 
-                    echo $this->Html->link('<i class="fa fa-user"></i> Posisi Karyawan', array(
+                    echo $this->Common->rule_link('<i class="fa fa-user"></i> Posisi Karyawan', array(
                         'controller' => 'users',
                         'action' => 'employe_positions'
                     ), array(
@@ -76,7 +76,7 @@
                 </td>
                 <td class="action">
                     <?php 
-                            echo $this->Html->link('Edit', array(
+                            echo $this->Common->rule_link('Edit', array(
                                 'controller' => 'users',
                                 'action' => 'employe_edit',
                                 $id
@@ -84,7 +84,7 @@
                                 'class' => 'btn btn-primary btn-xs'
                             ));
 
-                            echo $this->Html->link('Hapus', array(
+                            echo $this->Common->rule_link('Hapus', array(
                                 'controller' => 'users',
                                 'action' => 'employe_toggle',
                                 $id

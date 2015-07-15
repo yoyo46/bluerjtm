@@ -172,7 +172,7 @@
 </div>
 <div class="box-footer text-center action">
 	<?php
-    		echo $this->Html->link(__('Kembali'), array(
+    		echo $this->Common->rule_link(__('Kembali'), array(
     			'controller' => 'lkus',
 				'action' => 'index', 
 			), array(

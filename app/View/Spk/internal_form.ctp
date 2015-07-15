@@ -82,7 +82,7 @@
                             'spk',
                             !empty($data_local['Spk']['id'])?$data_local['Spk']['id']:false,
                         );
-                        echo $this->Form->label('truck_id', __('No. Pol * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+                        echo $this->Form->label('truck_id', __('No. Pol * ').$this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
                 ?>
                 <div class="row">
                     <div class="col-sm-10">
@@ -102,7 +102,7 @@
     				<div class="col-sm-2 hidden-xs">
                         <?php 
     							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+                                echo $this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
                         ?>
                     </div>
                 </div>
@@ -123,7 +123,7 @@
                             'spk',
                             !empty($data_local['Spk']['id'])?$data_local['Spk']['id']:false,
                         );
-                        echo $this->Form->label('employe_id', __('Kepala Mekanik * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+                        echo $this->Form->label('employe_id', __('Kepala Mekanik * ').$this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
                 ?>
                 <div class="row">
                     <div class="col-sm-10">
@@ -143,7 +143,7 @@
     				<div class="col-sm-2 hidden-xs">
                         <?php 
     							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+                                echo $this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
                         ?>
                     </div>
                 </div>
@@ -193,7 +193,7 @@
 	    <div class="box-body table-responsive">
 	        <div class="form-group">
 	            <?php
-	                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+	                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
 	                        'class' => 'add-custom-field btn btn-success btn-xs',
 	                        'action_type' => 'spk_internal',
 	                        'escape' => false
@@ -327,7 +327,7 @@
 	                    </td>
 	                    <td>
 	                        <?php
-	                            echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
+	                            echo $this->Common->rule_link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
 	                                'class' => 'delete-custom-field btn btn-danger btn-xs',
 	                                'escape' => false,
 	                                'action_type' => 'lku_first'
@@ -354,7 +354,7 @@
 </div>
 <div class="box-footer text-center action">
 	<?php
-    		echo $this->Html->link(__('Kembali'), array(
+    		echo $this->Common->rule_link(__('Kembali'), array(
 				'action' => 'index', 
 			), array(
 				'class'=> 'btn btn-default',

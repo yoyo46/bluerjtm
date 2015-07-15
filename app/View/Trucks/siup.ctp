@@ -13,7 +13,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Perpanjang Ijin Usaha', array(
+                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Perpanjang Ijin Usaha', array(
                     'controller' => 'trucks',
                     'action' => 'siup_add'
                 ), array(
@@ -87,7 +87,7 @@
                             }
 
                             if( in_array('update_siup', $allowModule) ) {
-                                echo $this->Html->link($label, array(
+                                echo $this->Common->rule_link($label, array(
                                     'controller' => 'trucks',
                                     'action' => 'siup_edit',
                                     $id
@@ -98,7 +98,7 @@
 
                             if( in_array('delete_siup', $allowModule) && !empty($value['Siup']['status']) ) {
                                 if( empty($value['Siup']['paid']) && empty($value['Siup']['rejected']) ){
-                                    echo $this->Html->link(__('Hapus'), array(
+                                    echo $this->Common->rule_link(__('Hapus'), array(
                                         'controller' => 'trucks',
                                         'action' => 'siup_delete',
                                         $id

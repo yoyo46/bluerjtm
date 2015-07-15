@@ -10,7 +10,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
+                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah', array(
                     'controller' => 'products',
                     'action' => 'brand_add'
                 ), array(
@@ -50,7 +50,7 @@
                 <td class="action">
                     <?php 
                             // if( in_array('update_banks', $allowModule) ) {
-                                echo $this->Html->link('Ubah', array(
+                                echo $this->Common->rule_link('Ubah', array(
                                     'controller' => 'products',
                                     'action' => 'brand_edit',
                                     $id
@@ -60,7 +60,7 @@
                             // }
 
                             // if( in_array('delete_banks', $allowModule) ) {
-                                echo $this->Html->link(__('Hapus'), array(
+                                echo $this->Common->rule_link(__('Hapus'), array(
                                     'controller' => 'products',
                                     'action' => 'brand_toggle',
                                     $id

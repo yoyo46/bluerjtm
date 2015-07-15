@@ -5,7 +5,7 @@
     <div class="box-body table-responsive">
         <div class="form-group">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
+                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
                         'class' => 'add-custom-field btn btn-success btn-xs',
                         'action_type' => 'lku_tipe_motor',
                         'escape' => false
@@ -124,7 +124,7 @@
                     </td>
                     <td>
                         <?php
-                            echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
+                            echo $this->Common->rule_link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
                                 'class' => 'delete-custom-field btn btn-danger btn-xs',
                                 'escape' => false,
                                 'action_type' => 'lku_first'
@@ -225,7 +225,7 @@
                 <td class="total-price-claim" align="right"></td>
                 <td>
                     <?php
-                        echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
+                        echo $this->Common->rule_link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
                             'class' => 'delete-custom-field btn btn-danger btn-xs',
                             'escape' => false,
                             'action_type' => 'lku_first'

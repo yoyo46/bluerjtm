@@ -16,7 +16,7 @@
                         echo $this->Html->tag('div', '<i class="fa fa-file-o"></i>', array(
                             'class' => 'icon'
                         ));
-                        echo $this->Html->link(__('More info').' <i class="fa fa-arrow-circle-right"></i>', array(
+                        echo $this->Common->rule_link(__('More info').' <i class="fa fa-arrow-circle-right"></i>', array(
                             'controller' => 'revenues',
                             'action' => 'ttuj',
                             'is_sj_not_completed' => 1,
@@ -40,7 +40,7 @@
                         echo $this->Html->tag('div', '<i class="fa fa-tags"></i>', array(
                             'class' => 'icon'
                         ));
-                        echo $this->Html->link(__('More info').' <i class="fa fa-arrow-circle-right"></i>', array(
+                        echo $this->Common->rule_link(__('More info').' <i class="fa fa-arrow-circle-right"></i>', array(
                             'controller' => 'revenues',
                             'action' => 'invoices',
                             'status' => 'unpaid',
@@ -64,7 +64,7 @@
                         echo $this->Html->tag('div', '<i class="fa fa-truck"></i>', array(
                             'class' => 'icon'
                         ));
-                        echo $this->Html->link(__('More info').' <i class="fa fa-arrow-circle-right"></i>', array(
+                        echo $this->Common->rule_link(__('More info').' <i class="fa fa-arrow-circle-right"></i>', array(
                             'controller' => 'trucks',
                             'action' => 'index',
                             'status' => 'available',

@@ -4,7 +4,7 @@
 ?>
 <div id="button-head-nav">
 	<?php
-		echo $this->Html->link(__('Add Contact'), 
+		echo $this->Common->rule_link(__('Add Contact'), 
 			array(
 				'controller' => 'users',
 				'action' => 'add',
@@ -15,7 +15,7 @@
 			)
 		);
 		// echo '&nbsp;';
-		// echo $this->Html->link(__('Ministry'), 
+		// echo $this->Common->rule_link(__('Ministry'), 
 		// 	array(
 		// 		'controller' => 'users',
 		// 		'action' => 'ministry_add',
@@ -88,7 +88,7 @@
 				<td class="actions">
 					<?php 
 						$id = $value['Contact']['id'];
-						echo $this->Html->link('<span class="fa fa-pencil-square-o"></span>'.' Edit', 
+						echo $this->Common->rule_link('<span class="fa fa-pencil-square-o"></span>'.' Edit', 
 							array(
 								'controller' => 'users',
 								'action' => 'edit',
@@ -100,7 +100,7 @@
 								'escape' => false
 							)
 						);
-						echo $this->Html->link('<span class="fa fa-exclamation-circle"><span>'.' Delete', 
+						echo $this->Common->rule_link('<span class="fa fa-exclamation-circle"><span>'.' Delete', 
 							array(
 								'controller' => 'users',
 								'action' => 'delete',

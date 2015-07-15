@@ -1,6 +1,6 @@
 <header class="header">
     <?php 
-            echo $this->Html->link('RJTM ERP', '/', array(
+            echo $this->Common->rule_link('RJTM ERP', '/', array(
                 'class' => 'logo'
             ));
     ?>
@@ -45,7 +45,7 @@
                         <?php
                                 }
 
-                                echo $this->Html->tag('li', $this->Html->link(__('Selengkapnya'), array(
+                                echo $this->Html->tag('li', $this->Common->rule_link(__('Selengkapnya'), array(
                                     'controller' => 'pages',
                                     'action' => 'notifications',
                                 )), array(
@@ -81,7 +81,7 @@
                         <li class="user-body">
                             <div class="col-xs-4 text-center">
                                 <?php
-                                    echo $this->Html->link(__('Rubah Password'), array(
+                                    echo $this->Common->rule_link(__('Rubah Password'), array(
                                         'controller' => 'users',
                                         'action' => 'authorization'
                                     ));
@@ -89,7 +89,7 @@
                             </div>
                             <div class="col-xs-4 text-center">
                                 <?php
-                                    echo $this->Html->link(__('Rubah Profile'), array(
+                                    echo $this->Common->rule_link(__('Rubah Profile'), array(
                                         'controller' => 'users',
                                         'action' => 'profile'
                                     ));
@@ -97,7 +97,7 @@
                             </div>
                             <?php 
                                     if(in_array($GroupId, array(1))){
-                                        echo $this->Html->tag('div', $this->Html->link(__('User Permission'), array(
+                                        echo $this->Html->tag('div', $this->Common->rule_link(__('User Permission'), array(
                                             'controller'=>'user_permissions', 
                                             'action'=>'index',
                                         ), array(
@@ -112,7 +112,7 @@
                         <li class="user-footer">
                             <div class="pull-right">
                                 <?php
-                                    echo $this->Html->link(__('Sign out'), array(
+                                    echo $this->Common->rule_link(__('Sign out'), array(
                                         'controller' => 'users',
                                         'action' => 'logout'
                                     ), array(

@@ -79,7 +79,7 @@
 
 								$link_lku = '-';
 								if(!empty($value['Ksu']['no_doc'])){
-									$link_lku = $this->Html->link($value['Ksu']['no_doc'], array(
+									$link_lku = $this->Common->rule_link($value['Ksu']['no_doc'], array(
 										'controller' => 'lkus',
 										'action' => 'detail_ksu',
 										$value['Ksu']['id']
@@ -131,7 +131,7 @@
 </div>
 <div class="box-footer text-center action">
 	<?php
-    		echo $this->Html->link(__('Kembali'), array(
+    		echo $this->Common->rule_link(__('Kembali'), array(
 				'action' => 'ksu_payments', 
 			), array(
 				'class'=> 'btn btn-default',

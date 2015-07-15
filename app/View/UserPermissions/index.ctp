@@ -43,7 +43,7 @@
                         $icon = 'fa-times';
                     }
 
-                    echo $this->Html->link('<i class="fa '.$icon.'"></i> View', array(
+                    echo $this->Common->rule_link('<i class="fa '.$icon.'"></i> View', array(
                         'action' => 'generate_module',
                         $module['Module']['id'],
                         $group_id,
@@ -69,7 +69,7 @@
                         $icon = 'fa-times';
                     }
 
-                    echo $this->Html->link('<i class="fa '.$icon.'"></i> Insert', array(
+                    echo $this->Common->rule_link('<i class="fa '.$icon.'"></i> Insert', array(
                         'action' => 'generate_module',
                         $module['Module']['id'],
                         $group_id,
@@ -93,7 +93,7 @@
                         $icon = 'fa-times';
                     }
 
-                    echo $this->Html->link('<i class="fa '.$icon.'"></i> Update', array(
+                    echo $this->Common->rule_link('<i class="fa '.$icon.'"></i> Update', array(
                         'action' => 'generate_module',
                         $module['Module']['id'],
                         $group_id,
@@ -117,7 +117,7 @@
                         $icon = 'fa-times';
                     }
 
-                    echo $this->Html->link('<i class="fa '.$icon.'"></i> Delete', array(
+                    echo $this->Common->rule_link('<i class="fa '.$icon.'"></i> Delete', array(
                         'action' => 'generate_module',
                         $module['Module']['id'],
                         $group_id,

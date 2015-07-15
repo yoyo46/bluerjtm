@@ -16,7 +16,7 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Module', array(
+                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Module', array(
                         'controller' => 'users',
                         'action' => 'action_module_add'
                     ), array(
@@ -69,7 +69,7 @@
                 <td class="action">
                     <?php 
                             if( in_array('update_branches', $allowModule) ) {
-                                echo $this->Html->link(__('Edit'), array(
+                                echo $this->Common->rule_link(__('Edit'), array(
                                     'controller' => 'users',
                                     'action' => 'action_module_edit',
                                     $id
@@ -79,7 +79,7 @@
                             }
 
                             if( in_array('delete_branches', $allowModule) ) {
-                                echo $this->Html->link(__('Hapus'), array(
+                                echo $this->Common->rule_link(__('Hapus'), array(
                                     'controller' => 'users',
                                     'action' => 'action_module_toggle',
                                     $id

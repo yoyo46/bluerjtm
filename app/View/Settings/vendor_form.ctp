@@ -68,7 +68,7 @@
 					'class'=> 'btn btn-success',
 					'type' => 'submit',
 				));
-	    		echo $this->Html->link(__('Kembali'), array(
+	    		echo $this->Common->rule_link(__('Kembali'), array(
 					'action' => 'vendors', 
 				), array(
 					'class'=> 'btn btn-default',

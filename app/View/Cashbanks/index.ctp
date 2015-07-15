@@ -10,7 +10,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Transaksi Kas/Bank', array(
+                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Transaksi Kas/Bank', array(
                     'controller' => 'cashbanks',
                     'action' => 'cashbank_add'
                 ), array(
@@ -63,7 +63,7 @@
                         ));
 
                         if( !empty($value['CashBank']['is_revised']) ){
-                            $link = $this->Html->link(__('Ubah'), array(
+                            $link = $this->Common->rule_link(__('Ubah'), array(
                                 'controller' => 'cashbanks',
                                 'action' => 'cashbank_edit',
                                 $value['CashBank']['id'],
@@ -72,7 +72,7 @@
                                 'class' => 'btn btn-info btn-xs'
                             ));
                         } else {
-                            $link = $this->Html->link('Detail', array(
+                            $link = $this->Common->rule_link('Detail', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'detail',
                                 $value['CashBank']['id']
@@ -82,7 +82,7 @@
                             ));
                         }
 
-                        $link .= $this->Html->link('Hapus', array(
+                        $link .= $this->Common->rule_link('Hapus', array(
                             'controller' => 'cashbanks',
                             'action' => 'cashbank_delete',
                             $value['CashBank']['id']
@@ -92,7 +92,7 @@
                         ), __('Anda yakin ingin menghapus data ini?'));
 
                         if( in_array($User['id'], $cashbank_auth_id) && empty($value['CashBank']['is_rejected']) && empty($value['CashBank']['completed']) ){
-                            $link .= $this->Html->link('Approval', array(
+                            $link .= $this->Common->rule_link('Approval', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'detail',
                                 $value['CashBank']['id'],

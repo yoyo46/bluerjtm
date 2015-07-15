@@ -26,7 +26,7 @@
 		        <div class="box-tools pull-right">
 		            <button class="btn btn-default btn-sm trigger-collapse" rel="plus"><i class="fa fa-plus"></i></button>
 		            <?php
-		            	echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
+		            	echo $this->Common->rule_link('<i class="fa fa-times"></i>', 'javascript:', array(
 			    			'class' => 'btn btn-default btn-sm delete-custom-field',
 			    			'action_type' => 'delete-auth-branch',
 			    			'escape' => false,
@@ -62,7 +62,7 @@
 		        <div class="box-tools pull-right">
 		            <button class="btn btn-default btn-sm trigger-collapse" rel="plus"><i class="fa fa-plus"></i></button>
 		            <?php
-		            	echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
+		            	echo $this->Common->rule_link('<i class="fa fa-times"></i>', 'javascript:', array(
 			    			'class' => 'btn btn-default btn-sm delete-custom-field',
 			    			'action_type' => 'delete-auth-branch',
 			    			'escape' => false,
@@ -88,7 +88,7 @@
 	    ?>
 	</div>
 <?php
-	echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Tambah Otorisasi'), 'javascript:', array(
+	echo $this->Common->rule_link('<i class="fa fa-plus-square"></i> '.__('Tambah Otorisasi'), 'javascript:', array(
 		'class' => 'add-custom-field btn bg-maroon',
 		'action_type' => 'add_auth',
 		'escape' => false

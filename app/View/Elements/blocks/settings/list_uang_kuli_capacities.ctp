@@ -40,7 +40,7 @@
     </div>
     <div class="col-sm-1">
         <?php
-                echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
+                echo $this->Common->rule_link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
                     'class' => 'delete-custom-field btn btn-danger btn-xs',
                     'escape' => false,
                     'action_type' => 'uang_kuli_capacity'

@@ -6,7 +6,7 @@
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Rute', array(
+                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Rute', array(
                     'controller' => 'trucks',
                     'action' => 'direction_add'
                 ), array(
@@ -40,7 +40,7 @@
                 <td><?php echo $this->Common->customDate($value['Direction']['created']);?></td>
                 <td>
                     <?php 
-                        echo $this->Html->link('Edit', array(
+                        echo $this->Common->rule_link('Edit', array(
                             'controller' => 'trucks',
                             'action' => 'direction_edit',
                             $id
@@ -48,7 +48,7 @@
                             'class' => 'btn btn-primary btn-sm'
                         ));
 
-                        echo $this->Html->link(__('Hapus'), array(
+                        echo $this->Common->rule_link(__('Hapus'), array(
                             'controller' => 'trucks',
                             'action' => 'direction_toggle',
                             $id

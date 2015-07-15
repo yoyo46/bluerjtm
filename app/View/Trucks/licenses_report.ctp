@@ -21,11 +21,11 @@
         <div class="col-xs-6 action pull-right">
             <?php
                 if( $data_action != 'excel' ) {
-                    echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $this->here.'/excel', array(
+                    echo $this->Common->rule_link('<i class="fa fa-download"></i> Download Excel', $this->here.'/excel', array(
                         'escape' => false,
                         'class' => 'btn btn-success pull-right'
                     ));
-                    echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $this->here.'/pdf', array(
+                    echo $this->Common->rule_link('<i class="fa fa-download"></i> Download PDF', $this->here.'/pdf', array(
                         'escape' => false,
                         'class' => 'btn btn-primary pull-right'
                     ));

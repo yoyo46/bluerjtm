@@ -31,7 +31,7 @@
                                 'controller'=> 'ajax', 
                                 'action' => 'getSiups',
                             );
-                            echo $this->Form->label('siup_id', __('No. Pol * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+                            echo $this->Form->label('siup_id', __('No. Pol * ').$this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
                     ?>
                     <div class="row">
                         <div class="col-sm-10">
@@ -52,7 +52,7 @@
                         <div class="col-sm-2 hidden-xs">
                             <?php 
                                     $attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                                    echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+                                    echo $this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
                             ?>
                         </div>
                     </div>
@@ -188,7 +188,7 @@
                 'value'=> 0,
                 'id' => 'rejected'
             ));
-            echo $this->Html->link(__('Tolak'), 'javascript:', array(
+            echo $this->Common->rule_link(__('Tolak'), 'javascript:', array(
                 'class'=> 'btn btn-danger submit-link',
                 'alert' => __('Anda yakin ingin menolak pembayaran Ijin Usaha truk ini?'),
                 'action_type' => 'rejected',
@@ -198,7 +198,7 @@
                 'class'=> 'btn btn-success btn-lg',
                 'type' => 'submit',
             ));
-            echo $this->Html->link(__('Kembali'), array(
+            echo $this->Common->rule_link(__('Kembali'), array(
                 'controller' => 'trucks',
                 'action' => 'siup_payments'
             ), array(

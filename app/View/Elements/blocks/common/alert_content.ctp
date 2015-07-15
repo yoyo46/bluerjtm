@@ -14,18 +14,18 @@
 		<div class="row">
 			<?php 
 					if( $confirm && !empty($url) ) {
-						echo $this->Html->tag('div', $this->Html->link(__('NO'), '#', array(
+						echo $this->Html->tag('div', $this->Common->rule_link(__('NO'), '#', array(
 							'class' => 'btn btn-default rum-btn btn-grey close-modal',
 						)), array(
 							'class' => 'col-sm-2 pull-right'
 						));
-						echo $this->Html->tag('div', $this->Html->link(__('YES'), $url, array(
+						echo $this->Html->tag('div', $this->Common->rule_link(__('YES'), $url, array(
 							'class' => 'btn btn-warning rum-btn',
 						)), array(
 							'class' => 'col-sm-2 pull-right no-pright'
 						));
 					} else {
-						echo $this->Html->tag('div', $this->Html->link(__('Ok'), '#', array(
+						echo $this->Html->tag('div', $this->Common->rule_link(__('Ok'), '#', array(
 							'class' => 'btn btn-default rum-btn btn-grey close-modal',
 						)), array(
 							'class' => 'col-sm-3 pull-right'

@@ -82,7 +82,7 @@
                                 'class'=> 'btn btn-success btn-sm',
                                 'type' => 'submit',
                             ));
-                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                            echo $this->Common->rule_link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
                                 'action' => 'ritase_report', 
                                 $data_type,
                             ), array(
@@ -151,14 +151,14 @@
             ?>
             <div class="list-field">
                 <?php 
-                        echo $this->Html->link('<i class="fa fa-th-large"></i> Kolom Laporan', 'javascript:', array(
+                        echo $this->Common->rule_link('<i class="fa fa-th-large"></i> Kolom Laporan', 'javascript:', array(
                             'escape' => false,
                             'class' => 'show',
                         ));                        
                 ?>
                 <ul>
                     <?php 
-                            echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
+                            echo $this->Common->rule_link('<i class="fa fa-times"></i>', 'javascript:', array(
                                 'escape' => false,
                                 'class' => 'close'
                             ));
@@ -190,13 +190,13 @@
                     
                     $urlExcel = $this->passedArgs;
                     $urlExcel['data_action'] = 'excel';
-                    echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
+                    echo $this->Common->rule_link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
                         'escape' => false,
                         'class' => 'btn btn-success pull-right'
                     ));
                     $urlPdf = $this->passedArgs;
                     $urlPdf['data_action'] = 'pdf';
-                    echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
+                    echo $this->Common->rule_link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
                         'escape' => false,
                         'class' => 'btn btn-primary pull-right'
                     ));
@@ -327,7 +327,7 @@
                 ?>
                 <tr>
                     <?php 
-                            $link_truck = $this->Html->link($value['Truck']['nopol'], array(
+                            $link_truck = $this->Common->rule_link($value['Truck']['nopol'], array(
                                 'controller' => 'revenues',
                                 'action' => 'detail_ritase',
                                 $id

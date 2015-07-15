@@ -95,7 +95,7 @@
     </td>
     <td>
         <?php
-            echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
+            echo $this->Common->rule_link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
                 'class' => 'delete-custom-field btn btn-danger btn-xs',
                 'escape' => false,
                 'action_type' => 'lku_second'

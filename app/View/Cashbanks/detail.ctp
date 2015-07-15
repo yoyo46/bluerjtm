@@ -246,7 +246,7 @@
                                 'class'=> 'btn btn-success',
                                 'type' => 'submit',
                             ));
-                            echo $this->Html->link(__('Kembali'), array(
+                            echo $this->Common->rule_link(__('Kembali'), array(
                                 'action' => 'index', 
                             ), array(
                                 'class'=> 'btn btn-default',
@@ -267,7 +267,7 @@
 </div>
 <?php 
         if( empty($statusApproval) ){
-            echo $this->Html->tag('div', $this->Html->link(__('Kembali'), array(
+            echo $this->Html->tag('div', $this->Common->rule_link(__('Kembali'), array(
                 'action' => 'index', 
             ), array(
                 'class'=> 'btn btn-default',

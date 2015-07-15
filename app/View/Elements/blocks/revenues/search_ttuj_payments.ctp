@@ -82,7 +82,7 @@
                                 'class'=> 'btn btn-success btn-sm',
                                 'type' => 'submit',
                             ));
-                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                            echo $this->Common->rule_link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
                                 'action' => 'ttuj_payments', 
                                 $action_type,
                             ), array(

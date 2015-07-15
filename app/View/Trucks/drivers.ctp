@@ -13,7 +13,7 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Supir', array(
+                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Supir', array(
                         'controller' => 'trucks',
                         'action' => 'driver_add'
                     ), array(
@@ -97,7 +97,7 @@
                 <td class="action">
                     <?php 
                             if( in_array('update_drivers', $allowModule) ) {
-                                echo $this->Html->link('Edit', array(
+                                echo $this->Common->rule_link('Edit', array(
                                     'controller' => 'trucks',
                                     'action' => 'driver_edit',
                                     $id
@@ -117,7 +117,7 @@
                                     $class = 'warning';
                                 }
 
-                                echo $this->Html->link($title, array(
+                                echo $this->Common->rule_link($title, array(
                                     'controller' => 'trucks',
                                     'action' => 'driver_toggle',
                                     $id

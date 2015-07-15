@@ -10,7 +10,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Vendor', array(
+                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Vendor', array(
                     'controller' => 'settings',
                     'action' => 'vendor_add'
                 ), array(
@@ -60,7 +60,7 @@
                 <td class="action">
                     <?php 
                             if( in_array('update_vendors', $allowModule) ) {
-                                echo $this->Html->link('Edit', array(
+                                echo $this->Common->rule_link('Edit', array(
                                     'controller' => 'settings',
                                     'action' => 'vendor_edit',
                                     $id
@@ -70,7 +70,7 @@
                             }
 
                             if( in_array('delete_vendors', $allowModule) ) {
-                                echo $this->Html->link(__('Hapus'), array(
+                                echo $this->Common->rule_link(__('Hapus'), array(
                                     'controller' => 'settings',
                                     'action' => 'vendor_toggle',
                                     $id

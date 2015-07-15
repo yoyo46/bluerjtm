@@ -13,7 +13,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Bayar STNK', array(
+                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Bayar STNK', array(
                     'controller' => 'trucks',
                     'action' => 'stnk_payment_add'
                 ), array(
@@ -91,7 +91,7 @@
                 <td class="action">
                     <?php
                         if(empty($value['StnkPayment']['is_void'])){
-                            echo $this->Html->link(__('Detail'), array(
+                            echo $this->Common->rule_link(__('Detail'), array(
                                 'controller' => 'trucks',
                                 'action' => 'stnk_detail',
                                 $id
@@ -100,7 +100,7 @@
                             ));
 
                             if( in_array('delete_stnk', $allowModule) ) {
-                                echo $this->Html->link(__('Void'), array(
+                                echo $this->Common->rule_link(__('Void'), array(
                                     'controller' => 'trucks',
                                     'action' => 'stnk_payment_delete',
                                     $id

@@ -31,7 +31,7 @@
         <!-- sidebar menu: : style can be found in sidebar.less -->
         <ul class="sidebar-menu">
             <?php 
-                    echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-dashboard"></i> <span>Dashboard</span>', '/', array(
+                    echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-dashboard"></i> <span>Dashboard</span>', '/', array(
                         'escape' => false
                     )), array(
                         'class' => ( !empty($active_menu) && $active_menu == 'dashboard' )?'active':'',
@@ -59,7 +59,7 @@
                 <ul class="treeview-menu">
                     <?php 
                             // if( in_array('view_list_user', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> list user', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> list user', array(
                                     'controller' => 'users',
                                     'action' => 'list_user',
                                 ), array(
@@ -70,7 +70,7 @@
                             // }
 
                             if( in_array('view_group_user', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> group', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> group', array(
                                     'controller' => 'users',
                                     'action' => 'groups',
                                 ), array(
@@ -81,7 +81,7 @@
                             }
 
                             if( in_array('view_group_user', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Karyawan', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Karyawan', array(
                                     'controller' => 'users',
                                     'action' => 'employes',
                                 ), array(
@@ -120,7 +120,7 @@
                 <ul class="treeview-menu">
                     <?php 
                             if( in_array('view_group_customers', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Grup Customer', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Grup Customer', array(
                                     'controller' => 'settings',
                                     'action' => 'customer_groups',
                                 ), array(
@@ -131,7 +131,7 @@
                             }
 
                             if( in_array('view_customers', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Customer', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Customer', array(
                                     'controller' => 'settings',
                                     'action' => 'customers',
                                 ), array(
@@ -142,7 +142,7 @@
                             }
 
                             if( in_array('view_customer_target_unit', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Target Unit', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Target Unit', array(
                                     'controller' => 'settings',
                                     'action' => 'customer_target_unit',
                                 ), array(
@@ -180,7 +180,7 @@
                 <ul class="treeview-menu">
                     <?php 
                             if( in_array('view_colors', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Warna Motor', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Warna Motor', array(
                                     'controller' => 'settings',
                                     'action' => 'colors',
                                 ), array(
@@ -191,7 +191,7 @@
                             }
 
                             if( in_array('view_group_motors', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Grup Motor', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Grup Motor', array(
                                     'controller' => 'settings',
                                     'action' => 'group_motors',
                                 ), array(
@@ -202,7 +202,7 @@
                             }
                             
                             if( in_array('view_type_motors', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Tipe Motor', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Tipe Motor', array(
                                     'controller' => 'settings',
                                     'action' => 'type_motors',
                                 ), array(
@@ -213,7 +213,7 @@
                             }
 
                             // if( in_array('view_code_motors', $allowModule) ) {
-                            //     echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kode Motor', array(
+                            //     echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Kode Motor', array(
                             //         'controller' => 'settings',
                             //         'action' => 'code_motors',
                             //     ), array(
@@ -262,7 +262,7 @@
                 <ul class="treeview-menu">
                     <?php 
                             if( in_array('view_drivers', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Supir', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Supir', array(
                                     'controller' => 'trucks',
                                     'action' => 'drivers',
                                 ), array(
@@ -273,7 +273,7 @@
                             }
 
                             if( in_array('view_trucks', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Truk', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Truk', array(
                                     'controller' => 'trucks',
                                     'action' => 'index',
                                 ), array(
@@ -284,7 +284,7 @@
                             }
 
                             if( in_array('insert_trucks', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Truk', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Import Truk', array(
                                     'controller' => 'trucks',
                                     'action' => 'add_import',
                                 ), array(
@@ -295,7 +295,7 @@
                             }
 
                             // if( in_array('view_leasing', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Leasing', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Leasing', array(
                                     'controller' => 'leasings',
                                     'action' => 'index',
                                 ), array(
@@ -306,7 +306,7 @@
                             // }
 
                             if( in_array('view_kirs', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KIR - Perpanjang', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> KIR - Perpanjang', array(
                                     'controller' => 'trucks',
                                     'action' => 'kir',
                                 ), array(
@@ -317,7 +317,7 @@
                             }
 
                             if( in_array('view_stnk', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> STNK - Perpanjang', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> STNK - Perpanjang', array(
                                     'controller' => 'trucks',
                                     'action' => 'stnk',
                                 ), array(
@@ -328,7 +328,7 @@
                             }
 
                             if( in_array('view_siup', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Ijin Usaha - Perpanjang', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Ijin Usaha - Perpanjang', array(
                                     'controller' => 'trucks',
                                     'action' => 'siup',
                                 ), array(
@@ -339,7 +339,7 @@
                             }
 
                             if( in_array('view_truck_reports', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Truk', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Laporan Truk', array(
                                     'controller' => 'trucks',
                                     'action' => 'reports',
                                 ), array(
@@ -350,7 +350,7 @@
                             }
 
                             if( in_array('view_ritase_depo_report', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Ritase - DEPO', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Laporan Ritase - DEPO', array(
                                     'controller' => 'revenues',
                                     'action' => 'ritase_report',
                                 ), array(
@@ -361,7 +361,7 @@
                             }
 
                             if( in_array('view_ritase_retail_report', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Ritase - RETAIL', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Laporan Ritase - RETAIL', array(
                                     'controller' => 'revenues',
                                     'action' => 'ritase_report',
                                     'retail',
@@ -373,7 +373,7 @@
                             }
 
                             if( in_array('view_achievement_report', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian', array(
                                     'controller' => 'revenues',
                                     'action' => 'achievement_report',
                                 ), array(
@@ -384,7 +384,7 @@
                             }
 
                             if( in_array('view_monitoring_truck', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Monitoring Truk', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Monitoring Truk', array(
                                     'controller' => 'revenues',
                                     'action' => 'monitoring_truck',
                                 ), array(
@@ -395,7 +395,7 @@
                             }
 
                             if( in_array('view_capacity_report', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Truk Per Kapasitas', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Laporan Truk Per Kapasitas', array(
                                     'controller' => 'trucks',
                                     'action' => 'capacity_report',
                                 ), array(
@@ -406,7 +406,7 @@
                             }
 
                             if( in_array('view_point_perday_report', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Day', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Day', array(
                                     'controller' => 'trucks',
                                     'action' => 'point_perday_report',
                                 ), array(
@@ -417,7 +417,7 @@
                             }
 
                             if( in_array('view_point_perplant_report', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Plant - DEPO', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Plant - DEPO', array(
                                     'controller' => 'trucks',
                                     'action' => 'point_perplant_report',
                                 ), array(
@@ -428,7 +428,7 @@
                             }
 
                             // if( in_array('view_license_report', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Surat-surat Truk', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Laporan Surat-surat Truk', array(
                                     'controller' => 'trucks',
                                     'action' => 'licenses_report',
                                 ), array(
@@ -468,7 +468,7 @@
                 <ul class="treeview-menu">
                     <?php 
                             if( in_array('view_uang_jalan', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Jalan', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Uang Jalan', array(
                                     'controller' => 'settings',
                                     'action' => 'uang_jalan',
                                 ), array(
@@ -479,7 +479,7 @@
                             }
 
                             // if( in_array('view_uang_kuli_muat', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Kuli Muat', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Uang Kuli Muat', array(
                                     'controller' => 'settings',
                                     'action' => 'uang_kuli',
                                     'muat',
@@ -491,7 +491,7 @@
                             // }
 
                             // if( in_array('view_uang_kuli_bongkar', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Kuli Bongkar', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Uang Kuli Bongkar', array(
                                     'controller' => 'settings',
                                     'action' => 'uang_kuli',
                                     'bongkar',
@@ -503,7 +503,7 @@
                             // }
 
                             if( in_array('view_ttuj', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> TTUJ', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> TTUJ', array(
                                     'controller' => 'revenues',
                                     'action' => 'ttuj',
                                 ), array(
@@ -514,7 +514,7 @@
                             }
 
                             if( in_array('view_truk_tiba', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Truk Tiba', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Truk Tiba', array(
                                     'controller' => 'revenues',
                                     'action' => 'truk_tiba',
                                 ), array(
@@ -525,7 +525,7 @@
                             }
 
                             if( in_array('view_bongkaran', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Bongkaran', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Bongkaran', array(
                                     'controller' => 'revenues',
                                     'action' => 'bongkaran',
                                 ), array(
@@ -536,7 +536,7 @@
                             }
 
                             if( in_array('view_balik', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Balik', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Balik', array(
                                     'controller' => 'revenues',
                                     'action' => 'balik',
                                 ), array(
@@ -547,7 +547,7 @@
                             }
 
                             if( in_array('view_pool', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Sampai di Pool', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Sampai di Pool', array(
                                     'controller' => 'revenues',
                                     'action' => 'pool',
                                 ), array(
@@ -588,7 +588,7 @@
                 <ul class="treeview-menu">
                     <?php
                             if( in_array('view_tarif_angkutan', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Tarif Angkut', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Tarif Angkut', array(
                                     'controller' => 'settings',
                                     'action' => 'tarif_angkutan',
                                 ), array(
@@ -599,7 +599,7 @@
                             }
 
                             if( in_array('view_revenues', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Revenue', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Revenue', array(
                                     'controller' => 'revenues',
                                     'action' => 'index',
                                 ), array(
@@ -610,7 +610,7 @@
                             }
 
                             if( in_array('view_invoices', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Invoice', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Invoice', array(
                                     'controller' => 'revenues',
                                     'action' => 'invoices',
                                 ), array(
@@ -621,7 +621,7 @@
                             }
 
                             if( in_array('view_revenue_reports', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Account Receivable Aging Report', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Account Receivable Aging Report', array(
                                     'controller' => 'revenues',
                                     'action' => 'invoice_reports',
                                 ), array(
@@ -632,7 +632,7 @@
                             }
 
                             if( in_array('view_ar_period_reports', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan AR Per Period', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Laporan AR Per Period', array(
                                     'controller' => 'revenues',
                                     'action' => 'ar_period_reports',
                                 ), array(
@@ -643,7 +643,7 @@
                             }
 
                             // if( in_array('view_list_kwitansi', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> List Kwitansi', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> List Kwitansi', array(
                                     'controller' => 'revenues',
                                     'action' => 'list_kwitansi',
                                 ), array(
@@ -654,7 +654,7 @@
                             // }
 
                             // if( in_array('view_list_kwitansi', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Piutang Per Customer', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Laporan Piutang Per Customer', array(
                                     'controller' => 'revenues',
                                     'action' => 'report_customers',
                                 ), array(
@@ -665,7 +665,7 @@
                             // }
 
                             // if( in_array('view_list_kwitansi', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan pendapatan per customer per bulan', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Laporan pendapatan per customer per bulan', array(
                                     'controller' => 'revenues',
                                     'action' => 'report_revenue_customers',
                                 ), array(
@@ -676,7 +676,7 @@
                             // }
 
                             // if( in_array('view_list_kwitansi', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Monitoring Surat Jalan & Revenue', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Laporan Monitoring Surat Jalan & Revenue', array(
                                     'controller' => 'revenues',
                                     'action' => 'report_monitoring_sj_revenue',
                                 ), array(
@@ -687,7 +687,7 @@
                             // }
 
                             // if( in_array('view_list_kwitansi', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Saldo Piutang Per Bulan', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Laporan Saldo Piutang Per Bulan', array(
                                     'controller' => 'revenues',
                                     'action' => 'report_revenue_monthly',
                                 ), array(
@@ -723,7 +723,7 @@
                 <ul class="treeview-menu">
                     <?php 
                             if( in_array('view_lkus', $allowModule) ) {
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> LKU', array(
+                                 echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> LKU', array(
                                     'controller' => 'lkus',
                                     'action' => 'index',
                                 ), array(
@@ -732,7 +732,7 @@
                                     'class' => ( !empty($active_menu) && $active_menu == 'lkus' )?'active':'',
                                 ));
                              
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KSU', array(
+                                 echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> KSU', array(
                                     'controller' => 'lkus',
                                     'action' => 'ksus',
                                 ), array(
@@ -768,7 +768,7 @@
                 <ul class="treeview-menu">
                     <?php 
                             if( in_array('view_lakas', $allowModule) ) {
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> LAKA', array(
+                                 echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> LAKA', array(
                                     'controller' => 'lakas',
                                     'action' => 'index',
                                 ), array(
@@ -809,7 +809,7 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kas/Bank</span>', array(
+                            echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Kas/Bank</span>', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'index'
                             ), array(
@@ -817,7 +817,7 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'cash_bank' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Approval Setting</span>', array(
+                            echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Approval Setting</span>', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'approval_setting'
                             ), array(
@@ -825,7 +825,7 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'approval_setting' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pengaturan COA</span>', array(
+                            echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Pengaturan COA</span>', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'coa_setting'
                             ), array(
@@ -835,7 +835,7 @@
                             ));
 
                             // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Jalan/Komisi', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Jalan/Komisi', array(
                                     'controller' => 'revenues',
                                     'action' => 'ttuj_payments',
                                     'uang_jalan_commission',
@@ -847,7 +847,7 @@
                             // }
 
                             // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Biaya TTUJ', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Pembayaran Biaya TTUJ', array(
                                     'controller' => 'revenues',
                                     'action' => 'ttuj_payments',
                                     'biaya_ttuj',
@@ -859,7 +859,7 @@
                             // }
 
                             // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Invoice', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Pembayaran Invoice', array(
                                     'controller' => 'revenues',
                                     'action' => 'invoice_payments',
                                 ), array(
@@ -870,7 +870,7 @@
                             // }
 
                             if( in_array('view_lku_payments', $allowModule) ) {
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LKU', array(
+                                 echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Pembayaran LKU', array(
                                     'controller' => 'lkus',
                                     'action' => 'payments',
                                 ), array(
@@ -881,7 +881,7 @@
                              }
 
                              if( in_array('view_lku_payments', $allowModule) ) {
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran KSU', array(
+                                 echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Pembayaran KSU', array(
                                     'controller' => 'lkus',
                                     'action' => 'ksu_payments',
                                 ), array(
@@ -892,7 +892,7 @@
                              }
 
                             // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Asuransi', '#', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Pembayaran Asuransi', '#', array(
                                     'escape' => false
                                 )), array(
                                     // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
@@ -900,7 +900,7 @@
                             // }
 
                             // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Leasing', '#', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Pembayaran Leasing', '#', array(
                                     'escape' => false
                                 )), array(
                                     // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
@@ -908,7 +908,7 @@
                             // }
 
                             if( in_array('view_kir_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KIR - Pembayaran', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> KIR - Pembayaran', array(
                                     'controller' => 'trucks',
                                     'action' => 'kir_payments',
                                 ), array(
@@ -919,7 +919,7 @@
                             }
 
                             if( in_array('view_stnk_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> STNK - Pembayaran', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> STNK - Pembayaran', array(
                                     'controller' => 'trucks',
                                     'action' => 'stnk_payments',
                                 ), array(
@@ -930,7 +930,7 @@
                             }
 
                             if( in_array('view_siup_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Ijin Usaha - Pembayaran', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Ijin Usaha - Pembayaran', array(
                                     'controller' => 'trucks',
                                     'action' => 'siup_payments',
                                 ), array(
@@ -941,14 +941,14 @@
                             }
 
                             // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LAKA', '#', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Pembayaran LAKA', '#', array(
                                     'escape' => false
                                 )), array(
                                     // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
                                 ));
                             // }
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Prepayment</span>', array(
+                            echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Laporan Prepayment</span>', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'prepayment_report'
                             ), array(
@@ -958,7 +958,7 @@
                             ));
 
                             // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Jurnal', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Laporan Jurnal', array(
                                     'controller' => 'cashbanks',
                                     'action' => 'journal_report',
                                 ), array(
@@ -993,7 +993,7 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kategori Barang</span>', array(
+                            echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Kategori Barang</span>', array(
                                 'controller' => 'products',
                                 'action' => 'categories'
                             ), array(
@@ -1001,7 +1001,7 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'product_categories' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Merk Barang</span>', array(
+                            echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Merk Barang</span>', array(
                                 'controller' => 'products',
                                 'action' => 'brands'
                             ), array(
@@ -1010,7 +1010,7 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'product_brands' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> SPK Internal</span>', array(
+                            echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> SPK Internal</span>', array(
                                 'controller' => 'spk',
                                 'action' => 'internal'
                             ), array(
@@ -1052,7 +1052,7 @@
                 <ul class="treeview-menu">
                     <?php 
                             // if( in_array('view_branches', $allowModule) ) {
-                            //     echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Cabang', array(
+                            //     echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Cabang', array(
                             //         'controller' => 'settings',
                             //         'action' => 'branches',
                             //     ), array(
@@ -1063,7 +1063,7 @@
                             // }
 
                             if( in_array('view_perlengkapan', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Perlengkapan', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Perlengkapan', array(
                                     'controller' => 'settings',
                                     'action' => 'perlengkapan',
                                 ), array(
@@ -1074,7 +1074,7 @@
                             }
 
                             if( in_array('view_coas', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> COA', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> COA', array(
                                     'controller' => 'settings',
                                     'action' => 'coas',
                                 ), array(
@@ -1085,7 +1085,7 @@
                             }
 
                             if( in_array('view_banks', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Bank', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Bank', array(
                                     'controller' => 'settings',
                                     'action' => 'banks',
                                 ), array(
@@ -1096,7 +1096,7 @@
                             }
 
                             if( in_array('view_cities', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kota', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Kota', array(
                                     'controller' => 'settings',
                                     'action' => 'cities',
                                 ), array(
@@ -1107,7 +1107,7 @@
                             }
 
                             if( in_array('insert_cities', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Kota', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Import Kota', array(
                                     'controller' => 'settings',
                                     'action' => 'city_import',
                                 ), array(
@@ -1118,7 +1118,7 @@
                             }
 
                             if( in_array('view_companies', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Company', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Company', array(
                                     'controller' => 'settings',
                                     'action' => 'companies',
                                 ), array(
@@ -1129,7 +1129,7 @@
                             }
 
                             if( in_array('view_vendors', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Vendor', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Vendor', array(
                                     'controller' => 'settings',
                                     'action' => 'vendors',
                                 ), array(
@@ -1140,7 +1140,7 @@
                             }
 
                             if( in_array('view_jenis_sim', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Jenis SIM', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Jenis SIM', array(
                                     'controller' => 'settings',
                                     'action' => 'jenis_sim',
                                 ), array(
@@ -1151,7 +1151,7 @@
                             }
 
                             if( in_array('view_classifications', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> klasifikasi', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> klasifikasi', array(
                                     'controller' => 'settings',
                                     'action' => 'classifications',
                                 ), array(
@@ -1162,7 +1162,7 @@
                             }
 
                             if( in_array('view_calendar_colors', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Warna Kalender', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Warna Kalender', array(
                                     'controller' => 'settings',
                                     'action' => 'calendar_colors',
                                 ), array(
@@ -1173,7 +1173,7 @@
                             }
 
                             if( in_array('view_calendar_icons', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Icon Kalender', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Icon Kalender', array(
                                     'controller' => 'settings',
                                     'action' => 'calendar_icons',
                                 ), array(
@@ -1184,7 +1184,7 @@
                             }
 
                             // if( in_array('view_parts_motor', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Sparepart Motor', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-angle-double-right"></i> Sparepart Motor', array(
                                     'controller' => 'settings',
                                     'action' => 'parts_motor',
                                 ), array(
@@ -1195,7 +1195,7 @@
                             // }
 
                             // if( in_array('view_settings', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-wrench"></i> Pengaturan', array(
+                                echo $this->Html->tag('li', $this->Common->rule_link('<i class="fa fa-wrench"></i> Pengaturan', array(
                                     'controller' => 'settings',
                                     'action' => 'index',
                                 ), array(

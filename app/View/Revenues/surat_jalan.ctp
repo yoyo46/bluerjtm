@@ -19,7 +19,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Terima Surat Jalan', array(
+                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Terima Surat Jalan', array(
                     'controller' => 'revenues',
                     'action' => 'surat_jalan_add',
                     $ttuj_id,
@@ -61,7 +61,7 @@
                 <td class="action">
                     <?php
                             // if( in_array('delete_revenues', $allowModule) ) {
-                                echo $this->Html->link(__('Ubah'), array(
+                                echo $this->Common->rule_link(__('Ubah'), array(
                                     'controller' => 'revenues',
                                     'action' => 'surat_jalan_edit',
                                     $id
@@ -71,7 +71,7 @@
                                 ));
                             // }
                             // if( in_array('delete_revenues', $allowModule) ) {
-                                echo $this->Html->link(__('Hapus'), array(
+                                echo $this->Common->rule_link(__('Hapus'), array(
                                     'controller' => 'revenues',
                                     'action' => 'surat_jalan_delete',
                                     $id
@@ -104,7 +104,7 @@
 </div>
 <div class="box-footer text-center action">
 	<?php
-    		echo $this->Html->link(__('Kembali'), array(
+    		echo $this->Common->rule_link(__('Kembali'), array(
 				'controller' => 'revenues',
 				'action' => 'ttuj' 
 			), array(

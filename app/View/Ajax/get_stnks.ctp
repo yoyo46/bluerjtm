@@ -63,7 +63,7 @@
                 'data-parent' => true,
                 'title' => $title,
             ));
-            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+            echo $this->Common->rule_link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
                 'controller' => 'ajax',
                 'action' => 'getStnks',
             ), array(

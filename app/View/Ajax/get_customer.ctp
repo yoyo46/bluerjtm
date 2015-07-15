@@ -24,7 +24,7 @@
                     // )), array(
                     //     'class' => 'action-search',
                     // ));
-                    // $content .= $this->Html->tag('td', $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
+                    // $content .= $this->Html->tag('td', $this->Common->rule_link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
                     //     'class' => 'delete-custom-field btn btn-danger btn-xs',
                     //     'action_type' => 'cashbank_first',
                     // )), array(

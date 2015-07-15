@@ -13,7 +13,7 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Pembayaran LKU', array(
+                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Pembayaran LKU', array(
                         'controller' => 'lkus',
                         'action' => 'payment_add'
                     ), array(
@@ -85,7 +85,7 @@
                 <td class="action">
                     <?php
                             // if( in_array('update_lku_payments', $allowModule) ) {
-                            //     echo $this->Html->link('Rubah', array(
+                            //     echo $this->Common->rule_link('Rubah', array(
                             //         'controller' => 'lkus',
                             //         'action' => 'payment_edit',
                             //         $id
@@ -94,7 +94,7 @@
                             //     ));
                             // }
 
-                            echo $this->Html->link('Info', array(
+                            echo $this->Common->rule_link('Info', array(
                                 'controller' => 'lkus',
                                 'action' => 'detail_payment',
                                 $id
@@ -103,7 +103,7 @@
                             ));
 
                             if(empty($value['LkuPayment']['is_void'])){
-                                echo $this->Html->link('Void', array(
+                                echo $this->Common->rule_link('Void', array(
                                     'controller' => 'lkus',
                                     'action' => 'payment_delete',
                                     $id

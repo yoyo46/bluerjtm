@@ -9,7 +9,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah COA', array(
+                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah COA', array(
                     'controller' => 'settings',
                     'action' => 'coa_add'
                 ), array(

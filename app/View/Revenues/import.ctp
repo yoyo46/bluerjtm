@@ -16,7 +16,7 @@
     <div class="box-header">
         <h3 class="box-title">
         	<?php
-        			printf(__('Upload Revenue By Excel ( %s )'), $this->Html->link($this->Html->tag('small', __('Download Template')), array(
+        			printf(__('Upload Revenue By Excel ( %s )'), $this->Common->rule_link($this->Html->tag('small', __('Download Template')), array(
 						'controller' => 'revenues', 
 						'action' => 'import',
 						'download'

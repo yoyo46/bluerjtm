@@ -12,7 +12,7 @@
         <div class="box-tools">
             <?php
                     if( in_array('view_leasing', $allowModule) ) {
-                        echo $this->Html->link('<i class="fa fa-plus"></i> Perusahaan Leasing', array(
+                        echo $this->Common->rule_link('<i class="fa fa-plus"></i> Perusahaan Leasing', array(
                             'controller' => 'leasings',
                             'action' => 'leasing_companies'
                         ), array(
@@ -21,7 +21,7 @@
                         ));
                     }
                     
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Kontrak', array(
+                    echo $this->Common->rule_link('<i class="fa fa-plus"></i> Tambah Kontrak', array(
                         'controller' => 'leasings',
                         'action' => 'add'
                     ), array(
@@ -77,7 +77,7 @@
                 </td>
                 <td class="action">
                     <?php
-                            echo $this->Html->link('Rubah', array(
+                            echo $this->Common->rule_link('Rubah', array(
                                 'controller' => 'leasings',
                                 'action' => 'edit',
                                 $id
@@ -86,7 +86,7 @@
                             ));
 
                             if(!empty($value_leasing['status'])){
-                                echo $this->Html->link('Void', array(
+                                echo $this->Common->rule_link('Void', array(
                                     'controller' => 'leasings',
                                     'action' => 'toggle',
                                     $id
@@ -95,7 +95,7 @@
                                     'title' => 'disable status brand'
                                 ), __('Apakah Anda yakin akan menon-aktifkan kontrak ini?'));
                             }else{
-                                // echo $this->Html->link('Enable', array(
+                                // echo $this->Common->rule_link('Enable', array(
                                 //     'controller' => 'leasings',
                                 //     'action' => 'toggle',
                                 //     $id

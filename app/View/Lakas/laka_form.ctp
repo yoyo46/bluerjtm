@@ -45,7 +45,7 @@
 	                                    'action' => 'getTrucks',
 	                                    'laka',
 	                                );
-			                    	echo $this->Form->label('truck_id', __('Nopol Truk * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+			                    	echo $this->Form->label('truck_id', __('Nopol Truk * ').$this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 			                ?>
 			                <div class="row">
 			                    <div class="col-sm-10">
@@ -63,7 +63,7 @@
 		        				<div class="col-sm-2 hidden-xs">
 			                        <?php 
 		        							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-			                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+			                                echo $this->Common->rule_link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
 			                        ?>
 			                    </div>
 			                </div>
@@ -109,7 +109,7 @@
 	                                    'url' => $urlBrowse,
 	                                );
 
-			                    	echo $this->Form->label('ttuj_id', __('No. TTUJ').$this->Html->link('<i class="fa fa-plus-square"></i>', 'javascript:', $attrBrowse));
+			                    	echo $this->Form->label('ttuj_id', __('No. TTUJ').$this->Common->rule_link('<i class="fa fa-plus-square"></i>', 'javascript:', $attrBrowse));
 			                ?>
 				        	<div class="row">
 			                    <div class="col-sm-10" id="ttuj-form">
@@ -128,7 +128,7 @@
 		        				<div class="col-sm-2 hidden-xs" >
 			                        <?php 
 		        							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-			                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', 'javascript:', $attrBrowse);
+			                                echo $this->Common->rule_link('<i class="fa fa-plus-square"></i>', 'javascript:', $attrBrowse);
 			                        ?>
 			                    </div>
 			                </div>
@@ -409,12 +409,12 @@
 		</div>
 		<div class="box-footer text-center action">
 			<?php
-		    		echo $this->Html->link(__('Kembali'), array(
+		    		echo $this->Common->rule_link(__('Kembali'), array(
 						'action' => 'index', 
 					), array(
 						'class'=> 'btn btn-default',
 					));
-		    		echo $this->Html->link(__('Next'), '#step2', array(
+		    		echo $this->Common->rule_link(__('Next'), '#step2', array(
 						'class'=> 'btn btn-success',
 						'id' => 'nextLaka'
 					));
@@ -463,7 +463,7 @@
 												'size' => 'pm',
 												'thumb' => true,
 											));
-											$link = $this->Html->link('<i class="fa fa-times-circle"></i>', array(
+											$link = $this->Common->rule_link('<i class="fa fa-times-circle"></i>', array(
 												'controller' => 'ajax',
 												'action' => 'delete_laka_media',
 												!empty($value['id'])?$value['id']:false,
@@ -492,13 +492,13 @@
 				        	?>
 				        	<span class="action-media-laka pull-right text-right">
 				        		<?php
-					        			echo $this->Html->link('Tambah <i class="fa fa-plus"></i>', 'javascript:', array(
+					        			echo $this->Common->rule_link('Tambah <i class="fa fa-plus"></i>', 'javascript:', array(
 					        				'escape' => false,
 					        				'class' => 'add-custom-field btn btn-info btn-xs',
 					        				'action_type' => 'file-laka'
 					        			));
 
-					        			echo $this->Html->link('Hapus <i class="fa fa-times"></i>', 'javascript:', array(
+					        			echo $this->Common->rule_link('Hapus <i class="fa fa-times"></i>', 'javascript:', array(
 					        				'escape' => false,
 					        				'class' => 'delete-custom-field btn btn-danger btn-xs',
 					        				'action_type' => 'file-laka'
@@ -699,7 +699,7 @@
 		</div>
 		<div class="box-footer text-center action">
 			<?php
-		    		echo $this->Html->link(__('Kembali'), '#step1', array(
+		    		echo $this->Common->rule_link(__('Kembali'), '#step1', array(
 						'class'=> 'btn btn-default',
 						'id' => 'backLaka'
 					));

@@ -228,17 +228,17 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 ?>
 <div class="action-print pull-right">
 	<?php
-			echo $this->Html->link('<i class="fa fa-print"></i> print', 'javascript:', array(
+			echo $this->Common->rule_link('<i class="fa fa-print"></i> print', 'javascript:', array(
 				'class' => 'btn btn-primary hidden-print print-window',
 				'escape' => false
 			));
 
-			echo $this->Html->link('<i class="fa fa-download"></i> download Excel', $this->here.'/excel', array(
+			echo $this->Common->rule_link('<i class="fa fa-download"></i> download Excel', $this->here.'/excel', array(
 				'class' => 'btn btn-success hidden-print',
 				'escape' => false
 			));
 
-			echo $this->Html->link('<i class="fa fa-download"></i> download PDF', $this->here.'/pdf', array(
+			echo $this->Common->rule_link('<i class="fa fa-download"></i> download PDF', $this->here.'/pdf', array(
 				'class' => 'btn btn-danger hidden-print',
 				'escape' => false
 			));

@@ -18,7 +18,7 @@
         if(!empty($tarif)){
             $price = $tarif;
         }else{
-            $link = $this->Html->link(__('disini'), 
+            $link = $this->Common->rule_link(__('disini'), 
                 array('controller' => 'settings', 'action' => 'tarif_angkutan_add'),
                 array('target' => 'blank')
             );
@@ -165,7 +165,7 @@
 <div id="handle-row">
     <?php
             if( !empty($price['tarif']) && is_numeric($price['tarif'])){
-                echo $this->Html->link('<i class="fa fa-copy"></i>', 'javascript:', array(
+                echo $this->Common->rule_link('<i class="fa fa-copy"></i>', 'javascript:', array(
                     'class' => 'duplicate-row btn btn-warning btn-xs',
                     'escape' => false,
                     'title' => 'Duplicate'

@@ -21,7 +21,7 @@
                 ?>
                 <ul class="dropdown-menu" role="menu">
                     <?php 
-                            echo $this->Html->tag('li', $this->Html->link(__('Revenue'), array(
+                            echo $this->Html->tag('li', $this->Common->rule_link(__('Revenue'), array(
                                 'controller' => 'revenues',
                                 'action' => 'add'
                             ), array(
@@ -30,7 +30,7 @@
                             echo $this->Html->tag('li', '', array(
                                 'class' => 'divider',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link(__('Manual Revenue'), array(
+                            echo $this->Html->tag('li', $this->Common->rule_link(__('Manual Revenue'), array(
                                 'controller' => 'revenues',
                                 'action' => 'add',
                                 'manual',
@@ -40,7 +40,7 @@
                             echo $this->Html->tag('li', '', array(
                                 'class' => 'divider',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link(__('Import Excel'), array(
+                            echo $this->Html->tag('li', $this->Common->rule_link(__('Import Excel'), array(
                                 'controller' => 'revenues',
                                 'action' => 'import',
                             ), array(
@@ -199,14 +199,14 @@
                                     $urlEdit[] = 'manual';
                                 }
 
-                                echo $this->Html->link($labelEdit, $urlEdit, array(
+                                echo $this->Common->rule_link($labelEdit, $urlEdit, array(
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
                             }
                             
                             if( !in_array($value['Revenue']['transaction_status'], array( 'invoiced', 'half_invoiced' )) ){
                                 if( in_array('delete_revenues', $allowModule) ) {
-                                    echo $this->Html->link(__('Hapus'), array(
+                                    echo $this->Common->rule_link(__('Hapus'), array(
                                         'controller' => 'revenues',
                                         'action' => 'revenue_toggle',
                                         $id

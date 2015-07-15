@@ -95,7 +95,7 @@
 	                        ))
                         );
 						$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                        echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Ambil Tagihan'), 'javascript:', $attrBrowse);
+                        echo $this->Common->rule_link('<i class="fa fa-plus-square"></i> '.__('Ambil Tagihan'), 'javascript:', $attrBrowse);
                 ?>
 	        </div>
 	    </div>
@@ -129,7 +129,7 @@
     </div>
 	<div class="box-footer text-center action">
 		<?php
-	    		echo $this->Html->link(__('Kembali'), array(
+	    		echo $this->Common->rule_link(__('Kembali'), array(
 					'action' => 'invoice_payments', 
 				), array(
 					'class'=> 'btn btn-default',

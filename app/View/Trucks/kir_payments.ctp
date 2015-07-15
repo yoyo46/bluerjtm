@@ -13,7 +13,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Bayar KIR', array(
+                echo $this->Common->rule_link('<i class="fa fa-plus"></i> Bayar KIR', array(
                     'controller' => 'trucks',
                     'action' => 'kir_payment_add'
                 ), array(
@@ -83,7 +83,7 @@
                 <td class="action">
                     <?php
                         if(empty($value['KirPayment']['is_void'])){
-                            echo $this->Html->link(__('Detail'), array(
+                            echo $this->Common->rule_link(__('Detail'), array(
                                 'controller' => 'trucks',
                                 'action' => 'kir_detail',
                                 $id
@@ -92,7 +92,7 @@
                             ));
 
                             if( in_array('delete_kirs', $allowModule) ) {
-                                echo $this->Html->link(__('Void'), array(
+                                echo $this->Common->rule_link(__('Void'), array(
                                     'controller' => 'trucks',
                                     'action' => 'kir_payment_delete',
                                     $id
