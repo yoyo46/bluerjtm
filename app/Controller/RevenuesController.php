@@ -1031,6 +1031,8 @@ class RevenuesController extends AppController {
             ),
         ));
 
+        $branches = $this->City->branchCities();
+
         $this->set('module_title', __('TTUJ'));
         $this->set('active_menu', 'ttuj');
         $this->set(compact(
@@ -1039,7 +1041,7 @@ class RevenuesController extends AppController {
             'tipeMotors', 'perlengkapans',
             'truckInfo', 'data_local', 'data_action',
             'cities', 'colors', 'tipeMotorTemps',
-            'groupTipeMotors', 'uangKuli'
+            'groupTipeMotors', 'uangKuli', 'branches'
         ));
         $this->render('ttuj_form');
     }
@@ -3220,16 +3222,18 @@ class RevenuesController extends AppController {
         ));
         $this->set('customers', $customers);
 
-        $toCities = $this->City->toCities();
+        // $toCities = $this->City->toCities();
         $groupMotors = $this->GroupMotor->getData('list', array(
             'conditions' => array(
                 'GroupMotor.status' => 1
             )
         ));
 
+        $branches = $this->City->branchCities();
+
         $this->set(compact(
             'toCities', 'groupMotors', 'tarifTruck',
-            'id', 'data_local', 'trucks'
+            'id', 'data_local', 'trucks', 'branches'
         ));
         $this->set('active_menu', 'revenues');
 

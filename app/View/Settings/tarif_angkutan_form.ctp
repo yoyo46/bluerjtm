@@ -18,6 +18,8 @@
 		    </div>
 		    <div class="box-body">
 		    	<?php 
+		    			echo $this->Common->branchForm('TarifAngkutan', $branches);
+		    			
 						echo $this->Form->input('name_tarif',array(
 							'label'=> __('Nama *'), 
 							'class'=>'form-control',

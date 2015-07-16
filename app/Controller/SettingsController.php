@@ -1447,11 +1447,13 @@ class SettingsController extends AppController {
             ),
         ));
 
+        $branches = $this->City->branchCities();
+
         $this->set('active_menu', 'uang_jalan');
         $this->set('module_title', __('TTUJ'));
         $this->set(compact(
             'fromCities', 'groupClassifications', 'toCities',
-            'groupMotors'
+            'groupMotors', 'branches'
         ));
         $this->render('uang_jalan_form');
     }
@@ -3398,9 +3400,11 @@ class SettingsController extends AppController {
         $fromCities = $this->City->getListCities();
         $toCities = $fromCities;
 
+        $branches = $this->City->branchCities();
+
         $this->set(compact(
             'customers', 'group_motors', 'fromCities',
-            'toCities'
+            'toCities', 'branches'
         ));
 
         $this->set('active_menu', 'tarif_angkutan');

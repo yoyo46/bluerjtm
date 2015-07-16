@@ -1330,4 +1330,39 @@ class CommonHelper extends AppHelper {
         }
         return false;
     }
+
+    function branchForm($model, $branches, $type_position = 'vertical', $class_label = 'col-sm-2', $class_content = 'col-sm-8'){
+        $title = __('Cabang *');
+
+        if($type_position == 'vertical'){
+            $content = $this->Form->input($model.'.branch_id',array(
+                'label' => $title,
+                'empty' => __('Pilih Cabang --'),
+                'required' => false,
+                'class' => 'form-control',
+                'options' => $branches
+            ));
+
+            return $this->Html->tag('div', $content, array(
+                'class' => 'form-group'
+            ));
+        }else{
+            $label = $this->Form->label($model.'.branch_id', $title, array(
+                'class'=>'control-label '.$class_label
+            )); 
+
+            $content = $this->Html->tag('div', $this->Form->input('branch_id',array(
+                'label'=>false,
+                'empty' => __('Pilih Cabang --'),
+                'required' => false,
+                'class' => 'form-control',
+                'options' => $branches
+            )), array(
+                'class' => $class_content
+            ));
+            return $this->Html->tag('div', $label.$content, array(
+                'class' => 'form-group'
+            ));
+        }
+    }
 }

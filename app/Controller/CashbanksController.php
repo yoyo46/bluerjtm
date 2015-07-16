@@ -469,6 +469,10 @@ class CashbanksController extends AppController {
             'id', 'data_local'
         ));
 
+        $this->loadModel('City');
+        $branches = $this->City->branchCities();
+        $this->set('branches', $branches);
+        
         $this->set('active_menu', 'cash_bank');
         $this->set('module_title', 'Kas/Bank');
 

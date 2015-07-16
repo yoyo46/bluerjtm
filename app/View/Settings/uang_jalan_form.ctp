@@ -20,6 +20,8 @@
 		    </div>
 		    <div class="box-body">
 		    	<?php 
+		    			echo $this->Common->branchForm('UangJalan', $branches);
+		    			
 						echo $this->Html->tag('div', $this->Form->input('title',array(
 							'label'=> __('Nama *'), 
 							'class'=>'form-control',

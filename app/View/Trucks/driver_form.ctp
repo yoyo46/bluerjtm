@@ -23,6 +23,8 @@
 		    </div>
 		    <div class="box-body">
 		    	<?php
+		    			echo $this->Common->branchForm('Driver', $branches);
+		    			
 		    			if(!empty($this->request->data['Driver']['photo']) && !is_array($this->request->data['Driver']['photo'])){
 		    				$photo = $this->Common->photo_thumbnail(array(
 								'save_path' => Configure::read('__Site.profile_photo_folder'), 

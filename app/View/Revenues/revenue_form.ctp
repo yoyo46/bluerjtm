@@ -31,6 +31,8 @@
 			    </div>
 			    <div class="box-body">
 			    	<?php 
+			    			echo $this->Common->branchForm('Revenue', $branches);
+			    			
 			    			if( !empty($id) ) {
 			    	?>
 			        <div class="form-group">

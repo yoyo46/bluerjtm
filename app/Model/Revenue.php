@@ -446,6 +446,8 @@ class Revenue extends AppModel {
         $revenue_id = '';
 
         if( !empty($dataRevenue['Ttuj']) ) {
+            $this->TarifAngkutan = ClassRegistry::init('TarifAngkutan');
+
             $tarif = $this->TarifAngkutan->findTarif($dataRevenue['Ttuj']['from_city_id'], $dataRevenue['Ttuj']['to_city_id'], $dataRevenue['Revenue']['customer_id'], $dataRevenue['Ttuj']['truck_capacity']);
 
             if( !empty($tarif['jenis_unit']) && $tarif['jenis_unit'] == 'per_truck' ) {

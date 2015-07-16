@@ -15,25 +15,9 @@
 		));
 	?>
 	<div class="box-body">
-		<div class="form-group">
-			<?php 
-					$title = __('Cabang *');
-					echo $this->Form->label('branch_id', $title, array(
-						'class'=>'control-label col-sm-2'
-					)); 
-			?>
-			<div class="col-sm-8">
-			<?php 
-					echo $this->Form->input('branch_id',array(
-						'label'=>false,
-						'empty' => __('Pilih Cabang --'),
-						'required' => false,
-						'class' => 'form-control',
-						'options' => $branches
-					)); 
-			?>
-			</div>
-		</div>
+		
+		<?php echo $this->Common->branchForm('User', $branches, 'horizontal');?>
+
 		<div class="form-group">
 			<?php 
 					$title = __('Karyawan *');
