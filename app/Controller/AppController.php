@@ -133,11 +133,10 @@ class AppController extends Controller {
 				'users', 'pages', 'ajax'
 			);
 			$action_allowed = array(
-				'change_branch', 'search', 'logout', 'login', 'dashboard', 'display',
-				// 'auth_action_module', 'delete_branch_group', 'auth_action_child_module',
+				'change_branch', 'search', 'logout', 'login', 'dashboard', 'display', 'index',
 				'authorization'
 			);
-			
+
 			Configure::write('__Site.allowed_controller', $controller_allowed);
 			Configure::write('__Site.allowed_action', $action_allowed);
 
@@ -169,8 +168,15 @@ class AppController extends Controller {
 						'conditions' => array(
 							'BranchActionModule.group_branch_id' => $group_branch_id
 						),
+						'fields' => array(
+							'BranchActionModule.is_allow'
+						),
 						'contain' => array(
-							'BranchModule'
+							'BranchModule' => array(
+								'fields' => array(
+									'BranchModule.controller', 'BranchModule.action'
+								)
+							)
 						)
 					));
 				}

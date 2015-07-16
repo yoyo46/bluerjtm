@@ -346,7 +346,7 @@ class HtmlHelper extends AppHelper {
 		$action_allowed = Configure::read('__Site.allowed_action');
 
 		$is_show = false;
-		if($url == '/' || (in_array($url['controller'], $controller_allowed) && in_array($url['action'], $action_allowed))){
+		if($url == '/' || (!empty($url['action']) && in_array($url['action'], $action_allowed)) || (!empty($url['controller']) && in_array($url['controller'], $controller_allowed) && !empty($url['action']) && in_array($url['action'], $action_allowed))){
 			$is_show = true;
 		}else if(is_array($url) && !empty($url['controller']) && !empty($url['action'])){
 			foreach ($this->_rule_link as $key => $value) {
