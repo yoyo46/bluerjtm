@@ -141,6 +141,8 @@ class HtmlHelper extends AppHelper {
 		'xhtml11' => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">'
 	);
 
+	protected $_rule_link = array();
+
 /**
  * Constructor
  *
@@ -163,6 +165,13 @@ class HtmlHelper extends AppHelper {
 		} else {
 			$this->response = new CakeResponse();
 		}
+
+		/*custom*/
+		if(!empty($settings)){
+			$this->_rule_link = $settings;
+		}
+		/*custom*/
+		
 		if (!empty($settings['configFile'])) {
 			$this->loadConfig($settings['configFile']);
 		}
@@ -331,45 +340,65 @@ class HtmlHelper extends AppHelper {
  * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/html.html#HtmlHelper::link
  */
 	public function link($title, $url = null, $options = array(), $confirmMessage = false) {
-		$escapeTitle = true;
-		if ($url !== null) {
-			$url = $this->url($url);
-		} else {
-			$url = $this->url($title);
-			$title = htmlspecialchars_decode($url, ENT_QUOTES);
-			$title = h(urldecode($title));
-			$escapeTitle = false;
-		}
 
-		if (isset($options['escapeTitle'])) {
-			$escapeTitle = $options['escapeTitle'];
-			unset($options['escapeTitle']);
-		} elseif (isset($options['escape'])) {
-			$escapeTitle = $options['escape'];
-		}
+		/*custom*/
+		$controller_allowed = Configure::read('__Site.allowed_controller');
+		$action_allowed = Configure::read('__Site.allowed_action');
 
-		if ($escapeTitle === true) {
-			$title = h($title);
-		} elseif (is_string($escapeTitle)) {
-			$title = htmlentities($title, ENT_QUOTES, $escapeTitle);
-		}
-
-		if (!empty($options['confirm'])) {
-			$confirmMessage = $options['confirm'];
-			unset($options['confirm']);
-		}
-		if ($confirmMessage) {
-			$options['onclick'] = $this->_confirm($confirmMessage, 'return true;', 'return false;', $options);
-		} elseif (isset($options['default']) && !$options['default']) {
-			if (isset($options['onclick'])) {
-				$options['onclick'] .= ' ';
-			} else {
-				$options['onclick'] = '';
+		$is_show = false;
+		if($url == '/' || (in_array($url['controller'], $controller_allowed) && in_array($url['action'], $action_allowed))){
+			$is_show = true;
+		}else if(is_array($url) && !empty($url['controller']) && !empty($url['action'])){
+			foreach ($this->_rule_link as $key => $value) {
+				if($url['controller'] == $value['BranchModule']['controller'] && $url['action'] == $value['BranchModule']['action'] && $value['BranchActionModule']['is_allow']){
+					$is_show = true;
+					break;
+				}
 			}
-			$options['onclick'] .= 'event.returnValue = false; return false;';
-			unset($options['default']);
 		}
-		return sprintf($this->_tags['link'], $url, $this->_parseAttributes($options), $title);
+		/*end custom*/
+
+		if($is_show){
+			$escapeTitle = true;
+			if ($url !== null) {
+				$url = $this->url($url);
+			} else {
+				$url = $this->url($title);
+				$title = htmlspecialchars_decode($url, ENT_QUOTES);
+				$title = h(urldecode($title));
+				$escapeTitle = false;
+			}
+
+			if (isset($options['escapeTitle'])) {
+				$escapeTitle = $options['escapeTitle'];
+				unset($options['escapeTitle']);
+			} elseif (isset($options['escape'])) {
+				$escapeTitle = $options['escape'];
+			}
+
+			if ($escapeTitle === true) {
+				$title = h($title);
+			} elseif (is_string($escapeTitle)) {
+				$title = htmlentities($title, ENT_QUOTES, $escapeTitle);
+			}
+
+			if (!empty($options['confirm'])) {
+				$confirmMessage = $options['confirm'];
+				unset($options['confirm']);
+			}
+			if ($confirmMessage) {
+				$options['onclick'] = $this->_confirm($confirmMessage, 'return true;', 'return false;', $options);
+			} elseif (isset($options['default']) && !$options['default']) {
+				if (isset($options['onclick'])) {
+					$options['onclick'] .= ' ';
+				} else {
+					$options['onclick'] = '';
+				}
+				$options['onclick'] .= 'event.returnValue = false; return false;';
+				unset($options['default']);
+			}
+			return sprintf($this->_tags['link'], $url, $this->_parseAttributes($options), $title);
+		}
 	}
 
 /**
