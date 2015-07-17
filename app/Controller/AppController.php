@@ -161,7 +161,8 @@ class AppController extends Controller {
 					$list_branch[$value['GroupBranch']['id']] = $value['City']['name'];
 				}
 
-				$this->group_branch_id = $group_branch_id = !empty($this->Session->read('user_branch')) ? $this->Session->read('user_branch') : $group_branch_id;
+				$user_branch = $this->Session->read('user_branch');
+				$this->group_branch_id = $group_branch_id = !empty($user_branch)?$user_branch:$group_branch_id;
 
 				if(!empty($group_branch_id)){
 					$_branch_action_module = $this->BranchActionModule->getData('all', array(
