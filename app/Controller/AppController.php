@@ -130,7 +130,7 @@ class AppController extends Controller {
 
 			/*Auth*/
 			$controller_allowed = array(
-				'users', 'pages', 'ajax'
+				'users', 'pages'
 			);
 			$action_allowed = array(
 				'change_branch', 'search', 'logout', 'login', 'dashboard', 'display', 'index',
@@ -187,7 +187,7 @@ class AppController extends Controller {
 				$this->helpers['Html'] = $_branch_action_module;
 			}
 
-			if(in_array($this->params['controller'], $controller_allowed) && in_array($this->params['action'], $action_allowed)){
+			if(in_array($this->params['controller'], $controller_allowed) && in_array($this->params['action'], $action_allowed) || $this->params['controller'] == 'ajax'){
 				$is_allow = true;
 			}else if(!empty($_branch_action_module)){
 				foreach ($_branch_action_module as $key => $value) {
