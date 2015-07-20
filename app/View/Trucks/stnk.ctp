@@ -8,8 +8,6 @@
                 echo $this->Html->tag('h3', $sub_module_title, array(
                     'class' => 'box-title'
                 ));
-
-                if( in_array('insert_stnk', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -22,9 +20,6 @@
                 ));
             ?>
         </div>
-        <?php 
-                }
-        ?>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
@@ -90,17 +85,15 @@
                                 $label = __('Detail');
                             }
 
-                            if( in_array('update_stnk', $allowModule) ) {
-                                echo $this->Html->link($label, array(
-                                    'controller' => 'trucks',
-                                    'action' => 'stnk_edit',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs'
-                                ));
-                            }
+                            echo $this->Html->link($label, array(
+                                'controller' => 'trucks',
+                                'action' => 'stnk_edit',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-primary btn-xs'
+                            ));
 
-                            if( in_array('delete_stnk', $allowModule) && !empty($value['Stnk']['status']) ) {
+                            if( !empty($value['Stnk']['status']) ) {
                                 if( empty($value['Stnk']['paid']) && empty($value['Stnk']['rejected']) ){
                                     echo $this->Html->link(__('Hapus'), array(
                                         'controller' => 'trucks',

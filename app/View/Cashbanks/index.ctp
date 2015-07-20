@@ -5,9 +5,6 @@
 <div class="box">
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
-        <?php 
-                // if( in_array('insert_cash_bank', $allowModule) ) {
-        ?>
         <div class="box-tools">
             <?php
                 echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Transaksi Kas/Bank', array(
@@ -19,9 +16,6 @@
                 ));
             ?>
         </div>
-        <?php 
-                // }
-        ?>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
         <table class="table table-hover">

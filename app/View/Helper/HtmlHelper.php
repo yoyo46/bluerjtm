@@ -168,7 +168,8 @@ class HtmlHelper extends AppHelper {
 		}
 
 		/*custom*/
-		$this->group_id = $settings['group_id'];
+		$this->group_id = !empty($settings['group_id'])?$settings['group_id']:false;
+		
 		if(!empty($settings['rule_link'])){
 			$this->_rule_link = $settings['rule_link'];
 		}

@@ -11,8 +11,6 @@
                 echo $this->Html->tag('h3', $sub_module_title, array(
                     'class' => 'box-title'
                 ));
-
-                if( in_array('insert_lku_payments', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -26,9 +24,6 @@
             ?>
             <div class="clear"></div>
         </div>
-        <?php 
-                }
-        ?>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
@@ -87,16 +82,6 @@
                 <td><?php echo $this->Common->customDate($value['KsuPayment']['created']);?></td>
                 <td class="action">
                     <?php
-                            // if( in_array('update_lku_payments', $allowModule) ) {
-                            //     echo $this->Html->link('Rubah', array(
-                            //         'controller' => 'lkus',
-                            //         'action' => 'ksu_payment_edit',
-                            //         $id
-                            //     ), array(
-                            //         'class' => 'btn btn-primary btn-xs'
-                            //     ));
-                            // }
-
                             echo $this->Html->link('Info', array(
                                 'controller' => 'lkus',
                                 'action' => 'detail_ksu_payment',

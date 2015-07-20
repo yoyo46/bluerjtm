@@ -8,8 +8,6 @@
                 echo $this->Html->tag('h3', $sub_module_title, array(
                     'class' => 'box-title'
                 ));
-
-                // if( in_array('insert_lkus_part', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -23,9 +21,6 @@
             ?>
             <div class="clear"></div>
         </div>
-        <?php 
-                // }
-        ?>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
@@ -69,26 +64,22 @@
                 <td><?php echo $this->Common->customDate($value['Lku']['created']);?></td>
                 <td class="action">
                     <?php
-                            if( in_array('update_lkus', $allowModule) ) {
-                                echo $this->Html->link('Rubah', array(
-                                    'controller' => 'lkus',
-                                    'action' => 'lku_part_edit',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs'
-                                ));
-                            }
+                            echo $this->Html->link('Rubah', array(
+                                'controller' => 'lkus',
+                                'action' => 'lku_part_edit',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-primary btn-xs'
+                            ));
 
-                            if( in_array('delete_lkus', $allowModule) ) {
-                                echo $this->Html->link(__('Hapus'), array(
-                                    'controller' => 'lkus',
-                                    'action' => 'lku_part_toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs',
-                                    'title' => 'disable status brand'
-                                ), __('Apakah Anda yakin akan menghapus data ini?'));
-                            }
+                            echo $this->Html->link(__('Hapus'), array(
+                                'controller' => 'lkus',
+                                'action' => 'lku_part_toggle',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-danger btn-xs',
+                                'title' => 'disable status brand'
+                            ), __('Apakah Anda yakin akan menghapus data ini?'));
                     ?>
                 </td>
             </tr>

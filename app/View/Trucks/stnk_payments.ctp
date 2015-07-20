@@ -8,8 +8,6 @@
                 echo $this->Html->tag('h3', $sub_module_title, array(
                     'class' => 'box-title'
                 ));
-                
-                if( in_array('insert_stnk_payments', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -22,9 +20,6 @@
                 ));
             ?>
         </div>
-        <?php 
-                }
-        ?>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
@@ -99,15 +94,13 @@
                                 'class' => 'btn btn-primary btn-xs'
                             ));
 
-                            if( in_array('delete_stnk', $allowModule) ) {
-                                echo $this->Html->link(__('Void'), array(
-                                    'controller' => 'trucks',
-                                    'action' => 'stnk_payment_delete',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs'
-                                ), __('Anda yakin ingin membatalkan data pembayaran STNK ini?'));
-                            }
+                            echo $this->Html->link(__('Void'), array(
+                                'controller' => 'trucks',
+                                'action' => 'stnk_payment_delete',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-danger btn-xs'
+                            ), __('Anda yakin ingin membatalkan data pembayaran STNK ini?'));
                         }
                     ?>
                 </td>

@@ -8,8 +8,6 @@
                 echo $this->Html->tag('h3', $sub_module_title, array(
                     'class' => 'box-title'
                 ));
-
-                if( in_array('insert_revenues', $allowModule) ) {
         ?>
         <div class="box-tools">
             <div class="btn-group pull-right">
@@ -51,9 +49,6 @@
             </div>
             <div class="clear"></div>
         </div>
-        <?php 
-                }
-        ?>
     </div>
     <?php
             echo $this->Form->create('Revenue', array(
@@ -188,33 +183,29 @@
                 <td><?php echo $this->Common->customDate($value['Revenue']['created']);?></td>
                 <td class="action">
                     <?php
-                            if( in_array('update_revenues', $allowModule) ) {
-                                $urlEdit = array(
-                                    'controller' => 'revenues',
-                                    'action' => 'edit',
-                                    $id
-                                );
+                            $urlEdit = array(
+                                'controller' => 'revenues',
+                                'action' => 'edit',
+                                $id
+                            );
 
-                                if( empty($value['Ttuj']['id']) ) {
-                                    $urlEdit[] = 'manual';
-                                }
-
-                                echo $this->Html->link($labelEdit, $urlEdit, array(
-                                    'class' => 'btn btn-primary btn-xs'
-                                ));
+                            if( empty($value['Ttuj']['id']) ) {
+                                $urlEdit[] = 'manual';
                             }
+
+                            echo $this->Html->link($labelEdit, $urlEdit, array(
+                                'class' => 'btn btn-primary btn-xs'
+                            ));
                             
                             if( !in_array($value['Revenue']['transaction_status'], array( 'invoiced', 'half_invoiced' )) ){
-                                if( in_array('delete_revenues', $allowModule) ) {
-                                    echo $this->Html->link(__('Hapus'), array(
-                                        'controller' => 'revenues',
-                                        'action' => 'revenue_toggle',
-                                        $id
-                                    ), array(
-                                        'class' => 'btn btn-danger btn-xs',
-                                        'title' => 'disable status'
-                                    ), __('Anda yakin ingin menghapus revenue ini?'));
-                                }
+                                echo $this->Html->link(__('Hapus'), array(
+                                    'controller' => 'revenues',
+                                    'action' => 'revenue_toggle',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs',
+                                    'title' => 'disable status'
+                                ), __('Anda yakin ingin menghapus revenue ini?'));
                             }
                     ?>
                 </td>

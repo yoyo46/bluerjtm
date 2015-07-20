@@ -8,8 +8,6 @@
                 echo $this->Html->tag('h3', $sub_module_title, array(
                     'class' => 'box-title'
                 ));
-
-                if( in_array('insert_trucks', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -44,9 +42,6 @@
             ?>
             <div class="clear"></div>
         </div>
-        <?php 
-                }
-        ?>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
@@ -110,26 +105,22 @@
                                 'class' => 'btn btn-info btn-xs'
                             ));
 
-                            if( in_array('update_trucks', $allowModule) ) {
-                                echo $this->Html->link('Rubah', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'edit',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs'
-                                ));
-                            }
+                            echo $this->Html->link('Rubah', array(
+                                'controller' => 'trucks',
+                                'action' => 'edit',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-primary btn-xs'
+                            ));
 
-                            if( in_array('delete_trucks', $allowModule) ) {
-                                echo $this->Html->link(__('Hapus'), array(
-                                    'controller' => 'trucks',
-                                    'action' => 'toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs',
-                                    'title' => 'disable status brand'
-                                ), sprintf(__('Apakah Anda yakin akan menghapus truk dengan nopol %s?'), $value_truck['nopol']));
-                            }
+                            echo $this->Html->link(__('Hapus'), array(
+                                'controller' => 'trucks',
+                                'action' => 'toggle',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-danger btn-xs',
+                                'title' => 'disable status brand'
+                            ), sprintf(__('Apakah Anda yakin akan menghapus truk dengan nopol %s?'), $value_truck['nopol']));
                     ?>
                 </td>
             </tr>

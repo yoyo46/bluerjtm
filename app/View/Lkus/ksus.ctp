@@ -8,8 +8,6 @@
                 echo $this->Html->tag('h3', $sub_module_title, array(
                     'class' => 'box-title'
                 ));
-
-                if( in_array('insert_lkus', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -23,9 +21,6 @@
             ?>
             <div class="clear"></div>
         </div>
-        <?php 
-                }
-        ?>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
@@ -125,38 +120,22 @@
                         ));
 
                         if( $allowChange && !empty($value['Ksu']['status']) ){
-                            if( in_array('update_lkus', $allowModule) ) {
-                                echo $this->Html->link('Rubah', array(
-                                    'controller' => 'lkus',
-                                    'action' => 'ksu_edit',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs'
-                                ));
-                            }
+                            echo $this->Html->link('Rubah', array(
+                                'controller' => 'lkus',
+                                'action' => 'ksu_edit',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-primary btn-xs'
+                            ));
 
-                            if( in_array('delete_lkus', $allowModule) ) {
-                                echo $this->Html->link(__('Void'), array(
-                                    'controller' => 'lkus',
-                                    'action' => 'ksu_toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs',
-                                    'title' => 'disable status brand'
-                                ), __('Apakah Anda yakin akan mengbatalkan data ini?'));
-                            }
-                        }else{
-                            // if(in_array('delete_lkus', $allowModule) && empty($value['Ksu']['status']) && empty($value['Ksu']['paid'])){
-                            //     echo $this->Html->link(__('Cancel Void'), array(
-                            //         'controller' => 'lkus',
-                            //         'action' => 'ksu_toggle',
-                            //         $id,
-                            //         'activate'
-                            //     ), array(
-                            //         'class' => 'btn btn-warning btn-xs',
-                            //         'title' => 'disable status brand'
-                            //     ), __('Apakah Anda yakin akan mengaktifkan lagi data ini?'));
-                            // }
+                            echo $this->Html->link(__('Void'), array(
+                                'controller' => 'lkus',
+                                'action' => 'ksu_toggle',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-danger btn-xs',
+                                'title' => 'disable status brand'
+                            ), __('Apakah Anda yakin akan mengbatalkan data ini?'));
                         }
                     ?>
                 </td>

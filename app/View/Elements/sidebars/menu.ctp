@@ -39,16 +39,15 @@
 
                     $activeMenu = false;
                     $dataMenu = array(
-                        'list_user', 'groups', 'employes'
+                        'users' => array(
+                            'list_user', 'groups', 'employes',
+                        ),
                     );
 
-                    if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
-                        $activeMenu = 'active';
-                    }
-
-                    if( !empty($allowModule) && $this->Common->getModuleAllow( array(
-                            'view_list_user', 'view_group_user'
-                        ), $allowModule ) ) {
+                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
+                        if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
+                            $activeMenu = 'active';
+                        }
             ?>
             <li class="treeview <?php echo $activeMenu; ?>">
                 <a href="#">
@@ -58,56 +57,48 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
-                            // if( in_array('view_list_user', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> list user', array(
-                                    'controller' => 'users',
-                                    'action' => 'list_user',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'list_user' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> list user', array(
+                                'controller' => 'users',
+                                'action' => 'list_user',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'list_user' )?'active':'',
+                            ));
 
-                            if( in_array('view_group_user', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> group', array(
-                                    'controller' => 'users',
-                                    'action' => 'groups',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'groups' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> group', array(
+                                'controller' => 'users',
+                                'action' => 'groups',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'groups' )?'active':'',
+                            ));
 
-                            if( in_array('view_group_user', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Karyawan', array(
-                                    'controller' => 'users',
-                                    'action' => 'employes',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'employes' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Karyawan', array(
+                                'controller' => 'users',
+                                'action' => 'employes',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'employes' )?'active':'',
+                            ));
                     ?>
                 </ul>
-                <?php
-                    
-                ?>
             </li>
             <?php
                     }
 
-                    if( !empty($allowModule) && $this->Common->getModuleAllow( array(
-                            'view_customers', 'view_group_customers', 'view_customer_target_unit'
-                        ), $allowModule ) ) {
-                        $activeMenu = false;
-                        $dataMenu = array(
-                            'customers', 'customer_groups', 'customer_target_unit'
-                        );
+                    $dataMenu = array(
+                        'settings' => array(
+                            'customer_groups', 'customers', 'customer_target_unit',
+                        ),
+                    );
 
-                        if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
+                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
+                        $activeMenu = false;
+
+                        if( !empty($active_menu) && in_array($active_menu, $dataMenu['settings']) ) {
                             $activeMenu = 'active';
                         }
             ?>
@@ -119,55 +110,48 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
-                            if( in_array('view_group_customers', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Grup Customer', array(
-                                    'controller' => 'settings',
-                                    'action' => 'customer_groups',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'customer_groups' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Grup Customer', array(
+                                'controller' => 'settings',
+                                'action' => 'customer_groups',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'customer_groups' )?'active':'',
+                            ));
 
-                            if( in_array('view_customers', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Customer', array(
-                                    'controller' => 'settings',
-                                    'action' => 'customers',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'customers' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Customer', array(
+                                'controller' => 'settings',
+                                'action' => 'customers',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'customers' )?'active':'',
+                            ));
 
-                            if( in_array('view_customer_target_unit', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Target Unit', array(
-                                    'controller' => 'settings',
-                                    'action' => 'customer_target_unit',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'customer_target_unit' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Target Unit', array(
+                                'controller' => 'settings',
+                                'action' => 'customer_target_unit',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'customer_target_unit' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>
             <?php
                     }
 
-                    if( !empty($allowModule) && $this->Common->getModuleAllow( array(
-                            'view_type_motors', 'view_colors', 'view_group_motors',
-                            'view_code_motors'
-                        ), $allowModule ) ) {
-                        $activeMenu = false;
-                        $dataMenu = array(
-                            'type_motor', 'colors', 'group_motors',
-                            'code_motors'
-                        );
+                    $dataMenu = array(
+                        'settings' => array(
+                            'type_motors', 'colors', 'group_motors',
+                        ),
+                    );
 
-                        if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
+                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
+                        $activeMenu = false;
+
+                        if( !empty($active_menu) && in_array($active_menu, $dataMenu['settings']) ) {
                             $activeMenu = 'active';
                         }
             ?>
@@ -179,65 +163,55 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
-                            if( in_array('view_colors', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Warna Motor', array(
-                                    'controller' => 'settings',
-                                    'action' => 'colors',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'colors' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Warna Motor', array(
+                                'controller' => 'settings',
+                                'action' => 'colors',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'colors' )?'active':'',
+                            ));
 
-                            if( in_array('view_group_motors', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Grup Motor', array(
-                                    'controller' => 'settings',
-                                    'action' => 'group_motors',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'group_motors' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Grup Motor', array(
+                                'controller' => 'settings',
+                                'action' => 'group_motors',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'group_motors' )?'active':'',
+                            ));
                             
-                            if( in_array('view_type_motors', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Tipe Motor', array(
-                                    'controller' => 'settings',
-                                    'action' => 'type_motors',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'type_motor' )?'active':'',
-                                ));
-                            }
-
-                            // if( in_array('view_code_motors', $allowModule) ) {
-                            //     echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kode Motor', array(
-                            //         'controller' => 'settings',
-                            //         'action' => 'code_motors',
-                            //     ), array(
-                            //         'escape' => false
-                            //     )), array(
-                            //         'class' => ( !empty($active_menu) && $active_menu == 'code_motors' )?'active':'',
-                            //     ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Tipe Motor', array(
+                                'controller' => 'settings',
+                                'action' => 'type_motors',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'type_motors' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>
             <?php
                     }
 
-                    if( !empty($allowModule) && $this->Common->getModuleAllow( array(
-                            'view_drivers', 'view_trucks', 'view_directions',
-                            'view_truck_reports', 'view_ritase_report', 
-                            'view_ritase_report_retail',
-                            'view_siup', 'view_achievement_report',
-                            'view_monitoring_truck', 'view_capacity_report',
-                            'view_point_perday_report', 'view_point_perplant_report',
-                            'view_retail_point_perplant_report', 
-                            'view_stnk', 'view_kirs'
-                        ), $allowModule ) ) {
+                    $dataMenu = array(
+                        'trucks' => array(
+                            'drivers', 'index', 'add_import',
+                            'kir', 'stnk', 'siup', 'reports',
+                            'capacity_report', 'point_perday_report',
+                            'point_perplant_report', 'licenses_report'
+                        ),
+                        'leasings' => array(
+                            'index'
+                        ),
+                        'revenues' => array(
+                            'ritase_report', 'achievement_report',
+                            'monitoring_truck'
+                        ),
+                    );
+
+                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
                         $activeTruck = false;
                         $truckMenu = array(
                             'drivers', 'trucks', 'directions',
@@ -245,8 +219,7 @@
                             'siup', 'achievement_report',
                             'monitoring_truck', 'capacity_report',
                             'point_perday_report', 'point_perplant_report',
-                            'retail_point_perplant_report', 'view_leasing',
-                            'licenses_report', 'truck_import'
+                            'view_leasing', 'licenses_report', 'truck_import'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -261,193 +234,167 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
-                            if( in_array('view_drivers', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Supir', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'drivers',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'drivers' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Supir', array(
+                                'controller' => 'trucks',
+                                'action' => 'drivers',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'drivers' )?'active':'',
+                            ));
 
-                            if( in_array('view_trucks', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Truk', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'index',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Truk', array(
+                                'controller' => 'trucks',
+                                'action' => 'index',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
+                            ));
 
-                            if( in_array('insert_trucks', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Truk', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'add_import',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'truck_import' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Truk', array(
+                                'controller' => 'trucks',
+                                'action' => 'add_import',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'truck_import' )?'active':'',
+                            ));
 
-                            // if( in_array('view_leasing', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Leasing', array(
-                                    'controller' => 'leasings',
-                                    'action' => 'index',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'view_leasing' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Leasing', array(
+                                'controller' => 'leasings',
+                                'action' => 'index',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'view_leasing' )?'active':'',
+                            ));
 
-                            if( in_array('view_kirs', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KIR - Perpanjang', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'kir',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'kir' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KIR - Perpanjang', array(
+                                'controller' => 'trucks',
+                                'action' => 'kir',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'kir' )?'active':'',
+                            ));
 
-                            if( in_array('view_stnk', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> STNK - Perpanjang', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'stnk',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'stnk' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> STNK - Perpanjang', array(
+                                'controller' => 'trucks',
+                                'action' => 'stnk',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'stnk' )?'active':'',
+                            ));
 
-                            if( in_array('view_siup', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Ijin Usaha - Perpanjang', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'siup',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'siup' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Ijin Usaha - Perpanjang', array(
+                                'controller' => 'trucks',
+                                'action' => 'siup',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'siup' )?'active':'',
+                            ));
 
-                            if( in_array('view_truck_reports', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Truk', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'reports',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'reports' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Truk', array(
+                                'controller' => 'trucks',
+                                'action' => 'reports',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'reports' )?'active':'',
+                            ));
 
-                            if( in_array('view_ritase_depo_report', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Ritase - DEPO', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ritase_report',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'ritase_report' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Ritase - DEPO', array(
+                                'controller' => 'revenues',
+                                'action' => 'ritase_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'ritase_report' )?'active':'',
+                            ));
 
-                            if( in_array('view_ritase_retail_report', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Ritase - RETAIL', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ritase_report',
-                                    'retail',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'ritase_report_retail' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Ritase - RETAIL', array(
+                                'controller' => 'revenues',
+                                'action' => 'ritase_report',
+                                'retail',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'ritase_report_retail' )?'active':'',
+                            ));
 
-                            if( in_array('view_achievement_report', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'achievement_report',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'achievement_report' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian', array(
+                                'controller' => 'revenues',
+                                'action' => 'achievement_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'achievement_report' )?'active':'',
+                            ));
 
-                            if( in_array('view_monitoring_truck', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Monitoring Truk', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'monitoring_truck',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'monitoring_truck' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Monitoring Truk', array(
+                                'controller' => 'revenues',
+                                'action' => 'monitoring_truck',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'monitoring_truck' )?'active':'',
+                            ));
 
-                            if( in_array('view_capacity_report', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Truk Per Kapasitas', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'capacity_report',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'capacity_report' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Truk Per Kapasitas', array(
+                                'controller' => 'trucks',
+                                'action' => 'capacity_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'capacity_report' )?'active':'',
+                            ));
 
-                            if( in_array('view_point_perday_report', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Day', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'point_perday_report',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'point_perday_report' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Day', array(
+                                'controller' => 'trucks',
+                                'action' => 'point_perday_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'point_perday_report' )?'active':'',
+                            ));
 
-                            if( in_array('view_point_perplant_report', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Plant - DEPO', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'point_perplant_report',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'point_perplant_report' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Plant - DEPO', array(
+                                'controller' => 'trucks',
+                                'action' => 'point_perplant_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'point_perplant_report' )?'active':'',
+                            ));
 
-                            // if( in_array('view_license_report', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Surat-surat Truk', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'licenses_report',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'licenses_report' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Surat-surat Truk', array(
+                                'controller' => 'trucks',
+                                'action' => 'licenses_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'licenses_report' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>
             <?php
                     }
 
-                    if( !empty($allowModule) && $this->Common->getModuleAllow( array(
-                        'view_uang_jalan', 'view_ttuj', 'view_truk_tiba',
-                        'view_bongkaran', 'view_balik', 
-                        'view_pool'
-                    ), $allowModule ) ) {
+                    $dataMenu = array(
+                        'settings' => array(
+                            'uang_jalan', 'uang_kuli'
+                        ),
+                        'revenues' => array(
+                            'ttuj', 'truk_tiba', 'bongkaran',
+                            'balik', 'pool'
+                        ),
+                    );
+
+                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
                         $activeTtuj = false;
                         $ttujMenu = array(
                             'ttuj', 'truk_tiba', 'bongkaran',
@@ -467,105 +414,99 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
-                            if( in_array('view_uang_jalan', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Jalan', array(
-                                    'controller' => 'settings',
-                                    'action' => 'uang_jalan',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Jalan', array(
+                                'controller' => 'settings',
+                                'action' => 'uang_jalan',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan' )?'active':'',
+                            ));
 
-                            // if( in_array('view_uang_kuli_muat', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Kuli Muat', array(
-                                    'controller' => 'settings',
-                                    'action' => 'uang_kuli',
-                                    'muat',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_kuli_muat' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Kuli Muat', array(
+                                'controller' => 'settings',
+                                'action' => 'uang_kuli',
+                                'muat',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'uang_kuli_muat' )?'active':'',
+                            ));
 
-                            // if( in_array('view_uang_kuli_bongkar', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Kuli Bongkar', array(
-                                    'controller' => 'settings',
-                                    'action' => 'uang_kuli',
-                                    'bongkar',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_kuli_bongkar' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Uang Kuli Bongkar', array(
+                                'controller' => 'settings',
+                                'action' => 'uang_kuli',
+                                'bongkar',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'uang_kuli_bongkar' )?'active':'',
+                            ));
 
-                            if( in_array('view_ttuj', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> TTUJ', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ttuj',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'ttuj' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> TTUJ', array(
+                                'controller' => 'revenues',
+                                'action' => 'ttuj',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'ttuj' )?'active':'',
+                            ));
 
-                            if( in_array('view_truk_tiba', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Truk Tiba', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'truk_tiba',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'truk_tiba' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Truk Tiba', array(
+                                'controller' => 'revenues',
+                                'action' => 'truk_tiba',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'truk_tiba' )?'active':'',
+                            ));
 
-                            if( in_array('view_bongkaran', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Bongkaran', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'bongkaran',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'bongkaran' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Bongkaran', array(
+                                'controller' => 'revenues',
+                                'action' => 'bongkaran',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'bongkaran' )?'active':'',
+                            ));
 
-                            if( in_array('view_balik', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Balik', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'balik',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'balik' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Balik', array(
+                                'controller' => 'revenues',
+                                'action' => 'balik',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'balik' )?'active':'',
+                            ));
 
-                            if( in_array('view_pool', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Sampai di Pool', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'pool',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'pool' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Sampai di Pool', array(
+                                'controller' => 'revenues',
+                                'action' => 'pool',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'pool' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>
             <?php
                     }
 
-                    if( !empty($allowModule) && $this->Common->getModuleAllow( array(
-                        'view_tarif_angkutan', 'view_revenues', 'view_invoices',
-                        'view_list_kwitansi'
-                    ), $allowModule ) ) {
+                    $dataMenu = array(
+                        'settings' => array(
+                            'tarif_angkutan'
+                        ),
+                        'revenues' => array(
+                            'index', 'invoices', 'invoice_reports',
+                            'ar_period_reports', 'list_kwitansi',
+                            'report_customers', 'report_revenue_customers',
+                            'report_monitoring_sj_revenue',
+                            'report_revenue_monthly'
+                        ),
+                    );
+
+                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
                             'index', 'tarif_angkutan', 'invoices',
@@ -587,124 +528,111 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php
-                            if( in_array('view_tarif_angkutan', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Tarif Angkut', array(
-                                    'controller' => 'settings',
-                                    'action' => 'tarif_angkutan',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'tarif_angkutan' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Tarif Angkut', array(
+                                'controller' => 'settings',
+                                'action' => 'tarif_angkutan',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'tarif_angkutan' )?'active':'',
+                            ));
 
-                            if( in_array('view_revenues', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Revenue', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'index',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'revenues' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Revenue', array(
+                                'controller' => 'revenues',
+                                'action' => 'index',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'revenues' )?'active':'',
+                            ));
 
-                            if( in_array('view_invoices', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Invoice', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'invoices',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'invoices' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Invoice', array(
+                                'controller' => 'revenues',
+                                'action' => 'invoices',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'invoices' )?'active':'',
+                            ));
 
-                            if( in_array('view_revenue_reports', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Account Receivable Aging Report', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'invoice_reports',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'invoice_reports' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Account Receivable Aging Report', array(
+                                'controller' => 'revenues',
+                                'action' => 'invoice_reports',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'invoice_reports' )?'active':'',
+                            ));
 
-                            if( in_array('view_ar_period_reports', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan AR Per Period', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ar_period_reports',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'ar_period_reports' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan AR Per Period', array(
+                                'controller' => 'revenues',
+                                'action' => 'ar_period_reports',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'ar_period_reports' )?'active':'',
+                            ));
 
-                            // if( in_array('view_list_kwitansi', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> List Kwitansi', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'list_kwitansi',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'list_kwitansi' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> List Kwitansi', array(
+                                'controller' => 'revenues',
+                                'action' => 'list_kwitansi',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'list_kwitansi' )?'active':'',
+                            ));
 
-                            // if( in_array('view_list_kwitansi', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Piutang Per Customer', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'report_customers',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'report_customers' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Piutang Per Customer', array(
+                                'controller' => 'revenues',
+                                'action' => 'report_customers',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'report_customers' )?'active':'',
+                            ));
 
-                            // if( in_array('view_list_kwitansi', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan pendapatan per customer per bulan', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'report_revenue_customers',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'report_revenue_customers' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan pendapatan per customer per bulan', array(
+                                'controller' => 'revenues',
+                                'action' => 'report_revenue_customers',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'report_revenue_customers' )?'active':'',
+                            ));
 
-                            // if( in_array('view_list_kwitansi', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Monitoring Surat Jalan & Revenue', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'report_monitoring_sj_revenue',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'report_monitoring_sj_revenue' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Monitoring Surat Jalan & Revenue', array(
+                                'controller' => 'revenues',
+                                'action' => 'report_monitoring_sj_revenue',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'report_monitoring_sj_revenue' )?'active':'',
+                            ));
 
-                            // if( in_array('view_list_kwitansi', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Saldo Piutang Per Bulan', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'report_revenue_monthly',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'report_revenue_monthly' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Saldo Piutang Per Bulan', array(
+                                'controller' => 'revenues',
+                                'action' => 'report_revenue_monthly',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'report_revenue_monthly' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>
             <?php
                     }
 
-                    if( !empty($allowModule) && $this->Common->getModuleAllow( array(
-                        'view_lkus'
-                    ), $allowModule ) ) {
+                    $dataMenu = array(
+                        'lkus' => array(
+                            'index',
+                        ),
+                        'ksus' => array(
+                            'index',
+                        ),
+                    );
+
+                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId  ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
                             'lkus', 'ksus'
@@ -722,34 +650,36 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
-                            if( in_array('view_lkus', $allowModule) ) {
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> LKU', array(
-                                    'controller' => 'lkus',
-                                    'action' => 'index',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'lkus' )?'active':'',
-                                ));
-                             
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KSU', array(
-                                    'controller' => 'lkus',
-                                    'action' => 'ksus',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'ksus' )?'active':'',
-                                ));
-                             }
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> LKU', array(
+                                'controller' => 'lkus',
+                                'action' => 'index',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'lkus' )?'active':'',
+                            ));
+                         
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KSU', array(
+                                'controller' => 'lkus',
+                                'action' => 'ksus',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'ksus' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>
             <?php
                     }
 
-                    if( !empty($allowModule) && $this->Common->getModuleAllow( array(
-                        'view_lakas'
-                    ), $allowModule ) ) {
+                    $dataMenu = array(
+                        'lakas' => array(
+                            'index'
+                        ),
+                    );
+
+                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
                             'lakas'
@@ -767,36 +697,46 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
-                            if( in_array('view_lakas', $allowModule) ) {
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> LAKA', array(
-                                    'controller' => 'lakas',
-                                    'action' => 'index',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'lakas' )?'active':'',
-                                ));
-                             }
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> LAKA', array(
+                                'controller' => 'lakas',
+                                'action' => 'index',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'lakas' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>
             <?php 
                     }
 
-                    // if( !empty($allowModule) && $this->Common->getModuleAllow( array(
-                    //     'view_cash_bank', 'view_kir_payments', 'view_stnk_payments', 
-                    //     'view_siup_payments', 'view_lku_payments'
-                    // ), $allowModule ) ) {
-                        $activeSetting = false;
-                        $settingMenu = array(
-                            'cash_bank', 'approval_setting', 'kir_payments',
-                            'stnk_payments', 'siup_payments', 'invoice_payments', 
-                            'lku_payments', 'coa_setting', 'ksu_payments',
-                            'uang_jalan_commission_payments',
-                            'biaya_ttuj_payments', 'journal_report',
-                            'prepayment_report'
-                        );
+                    $activeSetting = false;
+                    $settingMenu = array(
+                        'cash_bank', 'approval_setting', 'kir_payments',
+                        'stnk_payments', 'siup_payments', 'invoice_payments', 
+                        'lku_payments', 'coa_setting', 'ksu_payments',
+                        'uang_jalan_commission_payments',
+                        'biaya_ttuj_payments', 'journal_report',
+                        'prepayment_report'
+                    );
+                    $dataMenu = array(
+                        'cashbanks' => array(
+                            'index', 'approval_setting', 'coa_setting',
+                            'journal_report', 'prepayment_report',
+                        ),
+                        'trucks' => array(
+                            'kir_payments', 'stnk_payments', 'siup_payments',
+                        ),
+                        'revenues' => array(
+                            'invoice_payments', 'ttuj_payments'
+                        ),
+                        'lkus' => array(
+                            'payments', 'ksu_payments',
+                        ),
+                    );
 
+                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId  ) ) {
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
                             $activeSetting = 'active';
                         }
@@ -834,119 +774,97 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'coa_setting' )?'active':'',
                             ));
 
-                            // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Jalan/Komisi', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ttuj_payments',
-                                    'uang_jalan_commission',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan_commission_payments' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Jalan/Komisi', array(
+                                'controller' => 'revenues',
+                                'action' => 'ttuj_payments',
+                                'uang_jalan_commission',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'uang_jalan_commission_payments' )?'active':'',
+                            ));
 
-                            // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Biaya TTUJ', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ttuj_payments',
-                                    'biaya_ttuj',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'biaya_ttuj_payments' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Biaya TTUJ', array(
+                                'controller' => 'revenues',
+                                'action' => 'ttuj_payments',
+                                'biaya_ttuj',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'biaya_ttuj_payments' )?'active':'',
+                            ));
 
-                            // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Invoice', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'invoice_payments',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Invoice', array(
+                                'controller' => 'revenues',
+                                'action' => 'invoice_payments',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
+                            ));
 
-                            if( in_array('view_lku_payments', $allowModule) ) {
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LKU', array(
-                                    'controller' => 'lkus',
-                                    'action' => 'payments',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'lku_payments' )?'active':'',
-                                ));
-                             }
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LKU', array(
+                                'controller' => 'lkus',
+                                'action' => 'payments',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'lku_payments' )?'active':'',
+                            ));
 
-                             if( in_array('view_lku_payments', $allowModule) ) {
-                                 echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran KSU', array(
-                                    'controller' => 'lkus',
-                                    'action' => 'ksu_payments',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'ksu_payments' )?'active':'',
-                                ));
-                             }
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran KSU', array(
+                                'controller' => 'lkus',
+                                'action' => 'ksu_payments',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'ksu_payments' )?'active':'',
+                            ));
 
-                            // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Asuransi', '#', array(
-                                    'escape' => false
-                                )), array(
-                                    // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Asuransi', '#', array(
+                                'escape' => false
+                            )), array(
+                                // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
+                            ));
 
-                            // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Leasing', '#', array(
-                                    'escape' => false
-                                )), array(
-                                    // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Leasing', '#', array(
+                                'escape' => false
+                            )), array(
+                                // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
+                            ));
 
-                            if( in_array('view_kir_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KIR - Pembayaran', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'kir_payments',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'kir_payments' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KIR - Pembayaran', array(
+                                'controller' => 'trucks',
+                                'action' => 'kir_payments',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'kir_payments' )?'active':'',
+                            ));
 
-                            if( in_array('view_stnk_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> STNK - Pembayaran', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'stnk_payments',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'stnk_payments' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> STNK - Pembayaran', array(
+                                'controller' => 'trucks',
+                                'action' => 'stnk_payments',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'stnk_payments' )?'active':'',
+                            ));
 
-                            if( in_array('view_siup_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Ijin Usaha - Pembayaran', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'siup_payments',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'siup_payments' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Ijin Usaha - Pembayaran', array(
+                                'controller' => 'trucks',
+                                'action' => 'siup_payments',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'siup_payments' )?'active':'',
+                            ));
 
-                            // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LAKA', '#', array(
-                                    'escape' => false
-                                )), array(
-                                    // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LAKA', '#', array(
+                                'escape' => false
+                            )), array(
+                                // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
+                            ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Prepayment</span>', array(
                                 'controller' => 'cashbanks',
@@ -957,25 +875,30 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'prepayment_report' )?'active':'',
                             ));
 
-                            // if( in_array('view_invoice_payments', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Jurnal', array(
-                                    'controller' => 'cashbanks',
-                                    'action' => 'journal_report',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'journal_report' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Jurnal', array(
+                                'controller' => 'cashbanks',
+                                'action' => 'journal_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'journal_report' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>
             <?php 
-                    // }
+                    }
 
-                    // if( !empty($allowModule) && $this->Common->getModuleAllow( array(
-                    //     'view_cash_bank'
-                    // ), $allowModule ) ) {
+                    $dataMenu = array(
+                        'products' => array(
+                            'categories', 'brands',
+                        ),
+                        'spk' => array(
+                            'internal',
+                        ),
+                    );
+
+                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
                         $activeSetting = false;
                         $settingMenu = array(
                             'internal', 'product_categories', 'product_brands'
@@ -1022,14 +945,19 @@
                 </ul>
             </li>
             <?php
-                    // }
+                    }
 
-                    if( !empty($allowModule) && $this->Common->getModuleAllow( array(
-                        'view_branches', 'view_perlengkapan', 'view_coas',
-                        'view_banks', 'view_cities', 'view_companies',
-                        'view_vendors', 'view_jenis_sim', 'view_classifications',
-                        'view_calendar_colors', 'view_calendar_icons', 'view_settings'
-                    ), $allowModule ) ) {
+                    $dataMenu = array(
+                        'settings' => array(
+                            'perlengkapan', 'coas', 'banks',
+                            'cities', 'companies', 'vendors',
+                            'jenis_sim', 'classifications',
+                            'calendar_colors', 'calendar_icons',
+                            'parts_motor', 'index'
+                        ),
+                    );
+
+                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
                         $activeSetting = false;
                         $settingMenu = array(
                             'cities', 'vendors', 'companies',
@@ -1051,159 +979,122 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
-                            // if( in_array('view_branches', $allowModule) ) {
-                            //     echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Cabang', array(
-                            //         'controller' => 'settings',
-                            //         'action' => 'branches',
-                            //     ), array(
-                            //         'escape' => false
-                            //     )), array(
-                            //         'class' => ( !empty($active_menu) && $active_menu == 'branches' )?'active':'',
-                            //     ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Perlengkapan', array(
+                                'controller' => 'settings',
+                                'action' => 'perlengkapan',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'perlengkapan' )?'active':'',
+                            ));
 
-                            if( in_array('view_perlengkapan', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Perlengkapan', array(
-                                    'controller' => 'settings',
-                                    'action' => 'perlengkapan',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'perlengkapan' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> COA', array(
+                                'controller' => 'settings',
+                                'action' => 'coas',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'coas' )?'active':'',
+                            ));
 
-                            if( in_array('view_coas', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> COA', array(
-                                    'controller' => 'settings',
-                                    'action' => 'coas',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'coas' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Bank', array(
+                                'controller' => 'settings',
+                                'action' => 'banks',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'banks' )?'active':'',
+                            ));
 
-                            if( in_array('view_banks', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Bank', array(
-                                    'controller' => 'settings',
-                                    'action' => 'banks',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'banks' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kota', array(
+                                'controller' => 'settings',
+                                'action' => 'cities',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'cities' )?'active':'',
+                            ));
 
-                            if( in_array('view_cities', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kota', array(
-                                    'controller' => 'settings',
-                                    'action' => 'cities',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'cities' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Kota', array(
+                                'controller' => 'settings',
+                                'action' => 'city_import',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'cities' )?'active':'',
+                            ));
 
-                            if( in_array('insert_cities', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Kota', array(
-                                    'controller' => 'settings',
-                                    'action' => 'city_import',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'cities' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Company', array(
+                                'controller' => 'settings',
+                                'action' => 'companies',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'companies' )?'active':'',
+                            ));
 
-                            if( in_array('view_companies', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Company', array(
-                                    'controller' => 'settings',
-                                    'action' => 'companies',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'companies' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Vendor', array(
+                                'controller' => 'settings',
+                                'action' => 'vendors',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'vendors' )?'active':'',
+                            ));
 
-                            if( in_array('view_vendors', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Vendor', array(
-                                    'controller' => 'settings',
-                                    'action' => 'vendors',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'vendors' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Jenis SIM', array(
+                                'controller' => 'settings',
+                                'action' => 'jenis_sim',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'jenis_sim' )?'active':'',
+                            ));
 
-                            if( in_array('view_jenis_sim', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Jenis SIM', array(
-                                    'controller' => 'settings',
-                                    'action' => 'jenis_sim',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'jenis_sim' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> klasifikasi', array(
+                                'controller' => 'settings',
+                                'action' => 'classifications',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'classifications' )?'active':'',
+                            ));
 
-                            if( in_array('view_classifications', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> klasifikasi', array(
-                                    'controller' => 'settings',
-                                    'action' => 'classifications',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'classifications' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Warna Kalender', array(
+                                'controller' => 'settings',
+                                'action' => 'calendar_colors',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'calendar_colors' )?'active':'',
+                            ));
 
-                            if( in_array('view_calendar_colors', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Warna Kalender', array(
-                                    'controller' => 'settings',
-                                    'action' => 'calendar_colors',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'calendar_colors' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Icon Kalender', array(
+                                'controller' => 'settings',
+                                'action' => 'calendar_icons',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'calendar_icons' )?'active':'',
+                            ));
 
-                            if( in_array('view_calendar_icons', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Icon Kalender', array(
-                                    'controller' => 'settings',
-                                    'action' => 'calendar_icons',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'calendar_icons' )?'active':'',
-                                ));
-                            }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Sparepart Motor', array(
+                                'controller' => 'settings',
+                                'action' => 'parts_motor',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'parts_motor' )?'active':'',
+                            ));
 
-                            // if( in_array('view_parts_motor', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Sparepart Motor', array(
-                                    'controller' => 'settings',
-                                    'action' => 'parts_motor',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'parts_motor' )?'active':'',
-                                ));
-                            // }
-
-                            // if( in_array('view_settings', $allowModule) ) {
-                                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-wrench"></i> Pengaturan', array(
-                                    'controller' => 'settings',
-                                    'action' => 'index',
-                                ), array(
-                                    'escape' => false
-                                )), array(
-                                    'class' => ( !empty($active_menu) && $active_menu == 'settings' )?'active':'',
-                                ));
-                            // }
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-wrench"></i> Pengaturan', array(
+                                'controller' => 'settings',
+                                'action' => 'index',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'settings' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>

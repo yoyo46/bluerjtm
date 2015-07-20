@@ -56,10 +56,11 @@
                 </li>
                 <!-- User Account: style can be found in dropdown.less -->
                 <?php
-                    $name = $User['first_name'];
-                    if(!empty($User['last_name'])){
-                        $name .= ' '.$User['last_name'];
-                    }
+                        $name = $User['first_name'];
+
+                        if(!empty($User['last_name'])){
+                            $name .= ' '.$User['last_name'];
+                        }
                 ?>
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -79,7 +80,7 @@
                         </li>
                         <!-- Menu Body -->
                         <li class="user-body">
-                            <div class="col-xs-4 text-center">
+                            <div class="col-xs-6 text-center">
                                 <?php
                                     echo $this->Html->link(__('Rubah Password'), array(
                                         'controller' => 'users',
@@ -87,7 +88,7 @@
                                     ));
                                 ?>
                             </div>
-                            <div class="col-xs-4 text-center">
+                            <div class="col-xs-6 text-center">
                                 <?php
                                     echo $this->Html->link(__('Rubah Profile'), array(
                                         'controller' => 'users',
@@ -96,16 +97,16 @@
                                 ?>
                             </div>
                             <?php 
-                                    if(in_array($GroupId, array(1))){
-                                        echo $this->Html->tag('div', $this->Html->link(__('User Permission'), array(
-                                            'controller'=>'user_permissions', 
-                                            'action'=>'index',
-                                        ), array(
-                                            'escape' => false
-                                        )), array(
-                                            'class' => 'col-xs-4 text-center'
-                                        ));
-                                    }
+                                    // if(in_array($GroupId, array(1))){
+                                    //     echo $this->Html->tag('div', $this->Html->link(__('User Permission'), array(
+                                    //         'controller'=>'user_permissions', 
+                                    //         'action'=>'index',
+                                    //     ), array(
+                                    //         'escape' => false
+                                    //     )), array(
+                                    //         'class' => 'col-xs-4 text-center'
+                                    //     ));
+                                    // }
                             ?>
                         </li>
                         <!-- Menu Footer-->

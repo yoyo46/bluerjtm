@@ -200,9 +200,6 @@
 						));
 					?>
 		        </div>
-		        <?php 
-                		if( ( empty($id) && in_array('insert_asset_truck', $allowModule) ) || ( !empty($id) && in_array('update_asset_truck', $allowModule) ) ) {
-		        ?>
 		        <div class="form-group">
 			        <div class="checkbox aset-handling">
 		                <label>
@@ -230,9 +227,6 @@
 						));
 					?>
 		        </div>
-		        <?php 
-		        		}
-		        ?>
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('description',array(

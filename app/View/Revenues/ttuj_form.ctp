@@ -696,7 +696,7 @@
 								'type' => 'submit',
 								'action_type' => 'draft'
 							));
-				    	} else if( in_array('update_ttuj_commit', $allowModule) ) {
+				    	} else {
 				    		echo $this->Form->button(__('Simpan'), array(
 								'class'=> 'btn btn-success submit-form btn-lg',
 								'type' => 'submit',

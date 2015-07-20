@@ -13,8 +13,7 @@
                 echo $this->Html->tag('h3', $sub_module_title, array(
                     'class' => 'box-title'
                 ));
-
-                // if( in_array('insert_revenues', $allowModule) ) {
+                
                 if( $flagAdd ) {
         ?>
         <div class="box-tools">
@@ -60,26 +59,22 @@
                 <td><?php echo $this->Common->customDate($value['SuratJalan']['created']);?></td>
                 <td class="action">
                     <?php
-                            // if( in_array('delete_revenues', $allowModule) ) {
-                                echo $this->Html->link(__('Ubah'), array(
-                                    'controller' => 'revenues',
-                                    'action' => 'surat_jalan_edit',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs',
-                                    'title' => 'disable status brand'
-                                ));
-                            // }
-                            // if( in_array('delete_revenues', $allowModule) ) {
-                                echo $this->Html->link(__('Hapus'), array(
-                                    'controller' => 'revenues',
-                                    'action' => 'surat_jalan_delete',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs',
-                                    'title' => 'disable status brand'
-                                ), __('Apakah Anda yakin akan membatalkan data ini?'));
-                            // }
+                            echo $this->Html->link(__('Ubah'), array(
+                                'controller' => 'revenues',
+                                'action' => 'surat_jalan_edit',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-primary btn-xs',
+                                'title' => 'disable status brand'
+                            ));
+                            echo $this->Html->link(__('Hapus'), array(
+                                'controller' => 'revenues',
+                                'action' => 'surat_jalan_delete',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-danger btn-xs',
+                                'title' => 'disable status brand'
+                            ), __('Apakah Anda yakin akan membatalkan data ini?'));
                     ?>
                 </td>
             </tr>

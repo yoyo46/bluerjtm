@@ -8,9 +8,6 @@
 <div class="box">
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
-        <?php 
-                if( in_array('insert_drivers', $allowModule) ) {
-        ?>
         <div class="box-tools">
             <?php
                     echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Supir', array(
@@ -22,9 +19,6 @@
                     ));
             ?>
         </div>
-        <?php 
-                }
-        ?>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
         <table class="table table-hover">
@@ -96,36 +90,32 @@
                 <td><?php echo $this->Time->niceShort($value['Driver']['created']);?></td>
                 <td class="action">
                     <?php 
-                            if( in_array('update_drivers', $allowModule) ) {
-                                echo $this->Html->link('Edit', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'driver_edit',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs'
-                                ));
+                            echo $this->Html->link('Edit', array(
+                                'controller' => 'trucks',
+                                'action' => 'driver_edit',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-primary btn-xs'
+                            ));
+
+                            if( !empty($value['Driver']['status']) ) {
+                                $title = __('Non-Aktifkan');
+                                $msg = sprintf(__('Anda yakin ingin Non-Aktifkan data supir %s?'), $value['Driver']['name']);
+                                $class = 'danger';
+                            } else {
+                                $title = __('Aktifkan');
+                                $msg = sprintf(__('Anda yakin ingin Aktifkan data supir %s?'), $value['Driver']['name']);
+                                $class = 'warning';
                             }
 
-                            if( in_array('delete_drivers', $allowModule) ) {
-                                if( !empty($value['Driver']['status']) ) {
-                                    $title = __('Non-Aktifkan');
-                                    $msg = sprintf(__('Anda yakin ingin Non-Aktifkan data supir %s?'), $value['Driver']['name']);
-                                    $class = 'danger';
-                                } else {
-                                    $title = __('Aktifkan');
-                                    $msg = sprintf(__('Anda yakin ingin Aktifkan data supir %s?'), $value['Driver']['name']);
-                                    $class = 'warning';
-                                }
-
-                                echo $this->Html->link($title, array(
-                                    'controller' => 'trucks',
-                                    'action' => 'driver_toggle',
-                                    $id
-                                ), array(
-                                    'class' => sprintf('btn btn-%s btn-xs', $class),
-                                    'title' => 'disable status brand'
-                                ), $msg);
-                            }
+                            echo $this->Html->link($title, array(
+                                'controller' => 'trucks',
+                                'action' => 'driver_toggle',
+                                $id
+                            ), array(
+                                'class' => sprintf('btn btn-%s btn-xs', $class),
+                                'title' => 'disable status brand'
+                            ), $msg);
                     ?>
                 </td>
             </tr>

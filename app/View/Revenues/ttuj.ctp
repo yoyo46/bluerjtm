@@ -13,55 +13,46 @@
             <?php
                     switch ($active_menu) {
                         case 'truk_tiba':
-                            if( in_array('insert_truk_tiba', $allowModule) ) {
-                                echo $this->Html->link('<i class="fa fa-plus"></i> Truk Tiba', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'truk_tiba_add'
-                                ), array(
-                                    'escape' => false,
-                                    'class' => 'btn btn-app btn-success pull-right'
-                                ));
-                            }
+                            echo $this->Html->link('<i class="fa fa-plus"></i> Truk Tiba', array(
+                                'controller' => 'revenues',
+                                'action' => 'truk_tiba_add'
+                            ), array(
+                                'escape' => false,
+                                'class' => 'btn btn-app btn-success pull-right'
+                            ));
                             break;
 
                         case 'bongkaran':
-                            if( in_array('insert_bongkaran', $allowModule) ) {
-                                echo $this->Html->link('<i class="fa fa-plus"></i> Bongkaran Truk', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'bongkaran_add'
-                                ), array(
-                                    'escape' => false,
-                                    'class' => 'btn btn-app btn-success pull-right'
-                                ));
-                            }
+                            echo $this->Html->link('<i class="fa fa-plus"></i> Bongkaran Truk', array(
+                                'controller' => 'revenues',
+                                'action' => 'bongkaran_add'
+                            ), array(
+                                'escape' => false,
+                                'class' => 'btn btn-app btn-success pull-right'
+                            ));
                             break;
 
                         case 'balik':
-                            if( in_array('insert_balik', $allowModule) ) {
-                                echo $this->Html->link('<i class="fa fa-plus"></i> Truk Balik', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'balik_add'
-                                ), array(
-                                    'escape' => false,
-                                    'class' => 'btn btn-app btn-success pull-right'
-                                ));
-                            }
+                            echo $this->Html->link('<i class="fa fa-plus"></i> Truk Balik', array(
+                                'controller' => 'revenues',
+                                'action' => 'balik_add'
+                            ), array(
+                                'escape' => false,
+                                'class' => 'btn btn-app btn-success pull-right'
+                            ));
                             break;
 
                         case 'pool':
-                            if( in_array('insert_pool', $allowModule) ) {
-                                echo $this->Html->link('<i class="fa fa-plus"></i> Sampai Pool', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'pool_add'
-                                ), array(
-                                    'escape' => false,
-                                    'class' => 'btn btn-app btn-success pull-right'
-                                ));
-                            }
+                            echo $this->Html->link('<i class="fa fa-plus"></i> Sampai Pool', array(
+                                'controller' => 'revenues',
+                                'action' => 'pool_add'
+                            ), array(
+                                'escape' => false,
+                                'class' => 'btn btn-app btn-success pull-right'
+                            ));
                             break;
                         
                         default:
-                            if( in_array('insert_ttuj', $allowModule) ) {
             ?>
             <div class="btn-group pull-right">
                 <?php 
@@ -92,7 +83,6 @@
                 </ul>
             </div>
             <?php
-                            }
                             break;
                     }
             ?>
@@ -303,44 +293,33 @@
                                     'class' => 'btn btn-info btn-xs'
                                 ));
 
-                                if( in_array(sprintf('update_%s', $active_menu), $allowModule) ) {
-                                    echo $this->Html->link('Ubah', array(
-                                        'controller' => 'revenues',
-                                        'action' => 'ttuj_lanjutan_edit',
-                                        $active_menu,
-                                        $id
-                                    ), array(
-                                        'class' => 'btn btn-primary btn-xs'
-                                    ));
-                                }
+                                echo $this->Html->link('Ubah', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'ttuj_lanjutan_edit',
+                                    $active_menu,
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
 
-                                if( in_array(sprintf('delete_%s', $active_menu), $allowModule) ) {
-                                    echo $this->Html->link(__('Hapus'), array(
-                                        'controller' => 'revenues',
-                                        'action' => 'ttuj_toggle',
-                                        $id,
-                                        $active_menu
-                                    ), array(
-                                        'class' => 'btn btn-danger btn-xs',
-                                        'title' => 'disable status brand'
-                                    ), __('Apakah Anda yakin akan menghapus data ini?'));
-                                }
+                                echo $this->Html->link(__('Hapus'), array(
+                                    'controller' => 'revenues',
+                                    'action' => 'ttuj_toggle',
+                                    $id,
+                                    $active_menu
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs',
+                                    'title' => 'disable status brand'
+                                ), __('Apakah Anda yakin akan menghapus data ini?'));
                             } else {
-                                // if( empty($value['Ttuj']['is_invoice']) && in_array('update_ttuj', $allowModule) ) {
-                                    $labelEdit = __('Ubah');
-                                // } else {
-                                //     $labelEdit = __('Lihat');
-                                // }
-                                    
-                                // if( in_array(sprintf('update_%s', $active_menu), $allowModule) ) {
-                                    echo $this->Html->link(__('Surat Jalan'), array(
-                                        'controller' => 'revenues',
-                                        'action' => 'surat_jalan',
-                                        $id
-                                    ), array(
-                                        'class' => 'btn bg-navy btn-xs'
-                                    ));
-                                // }
+                                $labelEdit = __('Ubah');
+                                echo $this->Html->link(__('Surat Jalan'), array(
+                                    'controller' => 'revenues',
+                                    'action' => 'surat_jalan',
+                                    $id
+                                ), array(
+                                    'class' => 'btn bg-navy btn-xs'
+                                ));
 
                                 echo $this->Html->link($labelEdit, array(
                                     'controller' => 'revenues',
@@ -350,7 +329,7 @@
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
 
-                                if( in_array('delete_ttuj', $allowModule) && !empty($value['Ttuj']['status']) ) {
+                                if( !empty($value['Ttuj']['status']) ) {
                                     echo $this->Html->link(__('Void'), array(
                                         'controller' => 'revenues',
                                         'action' => 'ttuj_toggle',

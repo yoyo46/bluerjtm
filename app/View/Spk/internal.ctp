@@ -8,8 +8,6 @@
                 echo $this->Html->tag('h3', $sub_module_title, array(
                     'class' => 'box-title'
                 ));
-
-                // if( in_array('insert_revenues', $allowModule) ) {
         ?>
         <div class="box-tools">
             <?php
@@ -23,9 +21,6 @@
             ?>
             <div class="clear"></div>
         </div>
-        <?php 
-                // }
-        ?>
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
@@ -118,25 +113,21 @@
                 <td><?php echo $this->Common->customDate($value['Spk']['created']);?></td>
                 <td class="action">
                     <?php
-                            // if( in_array(sprintf('update_%s', $active_menu), $allowModule) ) {
-                                echo $this->Html->link('Ubah', array(
-                                    'controller' => 'spk',
-                                    'action' => 'internal_edit',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs'
-                                ));
-                            // }
+                            echo $this->Html->link('Ubah', array(
+                                'controller' => 'spk',
+                                'action' => 'internal_edit',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-primary btn-xs'
+                            ));
 
-                            // if( in_array(sprintf('delete_%s', $active_menu), $allowModule) ) {
-                                echo $this->Html->link(__('Batalkan'), array(
-                                    'controller' => 'spk',
-                                    'action' => 'internal_delete',
-                                    $id,
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs',
-                                ), __('Apakah Anda yakin akan non-aktifkan data ini?'));
-                            // }
+                            echo $this->Html->link(__('Batalkan'), array(
+                                'controller' => 'spk',
+                                'action' => 'internal_delete',
+                                $id,
+                            ), array(
+                                'class' => 'btn btn-danger btn-xs',
+                            ), __('Apakah Anda yakin akan non-aktifkan data ini?'));
                     ?>
                 </td>
             </tr>

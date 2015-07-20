@@ -373,7 +373,7 @@ class CommonHelper extends AppHelper {
 		return strip_tags($string);
 	}
 
-	function generateCoaTree ( $coas, $allowModule, $level = false, $parent = false ) {
+	function generateCoaTree ( $coas, $level = false, $parent = false ) {
 		$dataTree = '<ul>';
         if( !empty($coas) ) {
             foreach ($coas as $key => $coa) {
@@ -392,50 +392,41 @@ class CommonHelper extends AppHelper {
 				$dataTree .= $this->Html->tag('span', $coa_title, array(
                     'title' => $coa_title,
                 ));
-                // $dataTree .= $this->Html->link($coa['Coa']['name'], 'javascript:', array(
-                //     'escape' => false,
-                // ));
 
-                if( in_array('insert_coas', $allowModule) && $level <= 2 ) {
-                    $dataTree .= $this->Html->link('<i class="fa fa-plus-circle"></i>', array(
-                        'controller' => 'settings',
-                        'action' => 'coa_add',
-                        $coa['Coa']['id'],
-                    ), array(
-                        'escape' => false,
-                        'class' => 'bg-green'
-                    ));
-                }
+                $dataTree .= $this->Html->link('<i class="fa fa-plus-circle"></i>', array(
+                    'controller' => 'settings',
+                    'action' => 'coa_add',
+                    $coa['Coa']['id'],
+                ), array(
+                    'escape' => false,
+                    'class' => 'bg-green'
+                ));
 
-                if( in_array('update_coas', $allowModule) ) {
-                    $dataTree .= $this->Html->link('<i class="fa fa-pencil-square-o"></i>', array(
-                        'controller' => 'settings',
-                        'action' => 'coa_edit',
-                        $coa['Coa']['id'],
-                        $coa['Coa']['parent_id'],
-                    ), array(
-                        'escape' => false,
-                        'class' => 'bg-primary',
-                        'title' => 'edit'
-                    ));
-                }
+                $dataTree .= $this->Html->link('<i class="fa fa-pencil-square-o"></i>', array(
+                    'controller' => 'settings',
+                    'action' => 'coa_edit',
+                    $coa['Coa']['id'],
+                    $coa['Coa']['parent_id'],
+                ), array(
+                    'escape' => false,
+                    'class' => 'bg-primary',
+                    'title' => 'edit'
+                ));
 
-                if( in_array('delete_coas', $allowModule) ) {
-                    $dataTree .= $this->Html->link('<i class="fa fa-minus-circle"></i>', array(
-                        'controller' => 'settings',
-                        'action' => 'coa_toggle',
-                        $coa['Coa']['id'],
-                    ), array(
-                        'escape' => false,
-                        'class' => 'bg-red'
-                    ), __('Anda yakin ingin menghapus COA ini ?'));
-                }
+                $dataTree .= $this->Html->link('<i class="fa fa-minus-circle"></i>', array(
+                    'controller' => 'settings',
+                    'action' => 'coa_toggle',
+                    $coa['Coa']['id'],
+                ), array(
+                    'escape' => false,
+                    'class' => 'bg-red'
+                ), __('Anda yakin ingin menghapus COA ini ?'));
 
                 if( !empty($coa['children']) ) {
                     $parent['Coa'] = $coa['Coa'];
                 	$child = $coa['children'];
                     $level = $coa['Coa']['level'];
-                	$dataTree .= $this->generateCoaTree($child, $allowModule, $level, $parent);
+                	$dataTree .= $this->generateCoaTree($child, $level, $parent);
                 }
 
 				$dataTree .= '</li>';
@@ -472,33 +463,9 @@ class CommonHelper extends AppHelper {
         }
     }
 
-    function getModuleAllow ( $listMenu = false, $allowModule = false ) {
-        $flagAllow = false;
-
-        if( !empty($listMenu) ) {
-            foreach ($listMenu as $key => $value) {
-                if( in_array($value, $allowModule) ) {
-                    $flagAllow = true;
-                }
-            }
-        }
-
-        return $flagAllow;
-    }
-
-
-
     function getSorting ( $model = false,  $label = false, $is_print = false ) {
         $named = $this->params['named'];
         
-        // if( !empty($named['sort']) && $named['sort'] == $model ) {
-        //     if( !empty($named['direction']) && strtolower($named['direction']) == 'desc' ) {
-        //         $label = sprintf('%s <i class="fa fa-sort-amount-desc"></i>', $label);
-        //     } else {
-        //         $label = sprintf('%s <i class="fa fa-sort-amount-asc"></i>', $label);
-        //     }
-        // }
-
         if( !empty($model) && $this->Paginator->hasPage() && empty($is_print) ) {
             return $this->Paginator->sort($model, $label, array(
                 'escape' => false
@@ -758,7 +725,7 @@ class CommonHelper extends AppHelper {
         return $receiver_type;
     }
 
-    function printDataTree($data, $allowModule, $level){
+    function printDataTree($data, $level){
         $coa_title = '';
         $coa_id = $data['Coa']['id'];
         if(!empty($data['Coa']['code'])){
@@ -774,39 +741,34 @@ class CommonHelper extends AppHelper {
         $dataTree = $this->Html->tag('span', $coa_title, array(
             'title' => $coa_title,
         ));
-        if( in_array('insert_coas', $allowModule) && $level < 4) {
-            $dataTree .= $this->Html->link('<i class="fa fa-plus-circle"></i>', array(
-                'controller' => 'settings',
-                'action' => 'coa_add',
-                $coa_id,
-            ), array(
-                'escape' => false,
-                'class' => 'bg-green'
-            ));
-        }
+        $dataTree .= $this->Html->link('<i class="fa fa-plus-circle"></i>', array(
+            'controller' => 'settings',
+            'action' => 'coa_add',
+            $coa_id,
+        ), array(
+            'escape' => false,
+            'class' => 'bg-green'
+        ));
 
-        if( in_array('update_coas', $allowModule) ) {
-            $dataTree .= $this->Html->link('<i class="fa fa-pencil-square-o"></i>', array(
-                'controller' => 'settings',
-                'action' => 'coa_edit',
-                $coa_id,
-                $data['Coa']['parent_id'],
-            ), array(
-                'escape' => false,
-                'class' => 'bg-primary',
-                'title' => 'edit'
-            ));
-        }
-        if( in_array('delete_coas', $allowModule) ) {
-            $dataTree .= $this->Html->link('<i class="fa fa-minus-circle"></i>', array(
-                'controller' => 'settings',
-                'action' => 'coa_toggle',
-                $coa_id,
-            ), array(
-                'escape' => false,
-                'class' => 'bg-red'
-            ), __('Anda yakin ingin menghapus COA ini ?'));
-        }
+        $dataTree .= $this->Html->link('<i class="fa fa-pencil-square-o"></i>', array(
+            'controller' => 'settings',
+            'action' => 'coa_edit',
+            $coa_id,
+            $data['Coa']['parent_id'],
+        ), array(
+            'escape' => false,
+            'class' => 'bg-primary',
+            'title' => 'edit'
+        ));
+        
+        $dataTree .= $this->Html->link('<i class="fa fa-minus-circle"></i>', array(
+            'controller' => 'settings',
+            'action' => 'coa_toggle',
+            $coa_id,
+        ), array(
+            'escape' => false,
+            'class' => 'bg-red'
+        ), __('Anda yakin ingin menghapus COA ini ?'));
 
         return $dataTree;
     }
@@ -1364,5 +1326,28 @@ class CommonHelper extends AppHelper {
                 'class' => 'form-group'
             ));
         }
+    }
+
+    function allowMenu ( $dataMenu, $_allowModule, $group_id ) {
+        $allow = false;
+
+        if( $group_id == 1 ) {
+            $allow = true;
+        } else if( !empty($dataMenu) ) {
+            foreach ($dataMenu as $controller => $action) {
+                $allowController = !empty($_allowModule['controller'])?$_allowModule['controller']:array();
+                $allowAction = !empty($_allowModule['action'])?$_allowModule['action']:array();
+
+                if( in_array($controller, $allowController) ) {
+                    $result = array_intersect($action, $allowAction);
+
+                    if( !empty($result) ) {
+                        $allow = true;
+                    }
+                }
+            }
+        }
+
+        return $allow;
     }
 }
