@@ -118,7 +118,7 @@
                                 $invoiceTotal = !empty($customer['InvoiceTotal'][0]['total'])?$customer['InvoiceTotal'][0]['total']:0;
                                 $invoicePaymentTotal = !empty($customer['InvoicePaymentTotal'][0]['total'])?$customer['InvoicePaymentTotal'][0]['total']:0;
                                 $invoiceVoidTotal = !empty($customer['InvoiceVoidTotal'][0]['total'])?$customer['InvoiceVoidTotal'][0]['total']:0;
-                                $total = $invLastMonth + $invPaidLastMonth - $invVoidLastMonth + $invoiceTotal + $invoicePaymentTotal - $invoiceVoidTotal;
+                                $total = $invLastMonth + $invPaidLastMonth - $invVoidLastMonth + $invoiceTotal - $invoicePaymentTotal - $invoiceVoidTotal;
                                 $totalSaldoLastMonth += $invLastMonth + $invPaidLastMonth - $invVoidLastMonth;
                                 $totalKW += $invoiceTotal;
                                 $totalAR += $invoicePaymentTotal;
