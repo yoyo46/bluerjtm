@@ -7,7 +7,7 @@
 ?>
 	<div id="auth-box">
 		<?php
-			if(empty($GroupBranches)){
+				if(empty($GroupBranches)){
 		?>
 		<div class="box" rel="1">
 		    <div class="box-header">
@@ -26,23 +26,22 @@
 		        <div class="box-tools pull-right">
 		            <button class="btn btn-default btn-sm trigger-collapse" rel="plus"><i class="fa fa-plus"></i></button>
 		            <?php
-		            	echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
-			    			'class' => 'btn btn-default btn-sm delete-custom-field',
-			    			'action_type' => 'delete-auth-branch',
-			    			'escape' => false,
-			    			'group-branch-id' => 0,
-			    		));
+			            	echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
+				    			'class' => 'btn btn-default btn-sm delete-custom-field',
+				    			'action_type' => 'delete-auth-branch',
+				    			'escape' => false,
+				    			'group-branch-id' => 0,
+				    		));
 		            ?>
 		        </div>
 		    </div>
 		    <div class="box-body auth-action-box" style="display: none;"></div>
 		</div>
 	    <?php
-	    	}else{
-	    		$i = 1;
-	    		foreach ($GroupBranches as $key => $value) {
-
-	    			$group_branch_id = $value['GroupBranch']['id'];
+		    	}else{
+		    		$i = 1;
+		    		foreach ($GroupBranches as $key => $value) {
+		    			$group_branch_id = $value['GroupBranch']['id'];
 	  	?>
 	  	<div class="box" rel="<?php echo $i;?>">
 		    <div class="box-header">
