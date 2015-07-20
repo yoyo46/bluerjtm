@@ -142,6 +142,7 @@ class HtmlHelper extends AppHelper {
 	);
 
 	protected $_rule_link = array();
+	protected $group_id = '';
 
 /**
  * Constructor
@@ -167,8 +168,9 @@ class HtmlHelper extends AppHelper {
 		}
 
 		/*custom*/
-		if(!empty($settings)){
-			$this->_rule_link = $settings;
+		$this->group_id = $settings['group_id'];
+		if(!empty($settings['rule_link'])){
+			$this->_rule_link = $settings['rule_link'];
 		}
 		/*custom*/
 		
@@ -346,7 +348,7 @@ class HtmlHelper extends AppHelper {
 		$action_allowed = Configure::read('__Site.allowed_action');
 
 		$is_show = false;
-		if( in_array($url, array('/', 'javascript:')) || (!empty($url['action']) && in_array($url['action'], $action_allowed)) || (!empty($url['controller']) && in_array($url['controller'], $controller_allowed) && !empty($url['action']) && in_array($url['action'], $action_allowed)) || (!empty($url['controller']) && $url['controller'] == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || !empty($url['page']) ){
+		if( in_array($url, array('/', 'javascript:')) || (!empty($url['action']) && in_array($url['action'], $action_allowed)) || (!empty($url['controller']) && in_array($url['controller'], $controller_allowed) && !empty($url['action']) && in_array($url['action'], $action_allowed)) || (!empty($url['controller']) && $url['controller'] == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || !empty($url['page']) || $this->group_id == 1 ){
 			$is_show = true;
 		}else if(is_array($url) && !empty($url['controller']) && !empty($url['action'])){
 			foreach ($this->_rule_link as $key => $value) {

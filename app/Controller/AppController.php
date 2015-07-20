@@ -183,11 +183,12 @@ class AppController extends Controller {
 				}
 			}
 
+			$this->helpers['Html']['group_id'] = $GroupId;
 			if(!empty($_branch_action_module)){
-				$this->helpers['Html'] = $_branch_action_module;
+				$this->helpers['Html']['rule_link'] = $_branch_action_module;
 			}
 
-			if(in_array($this->params['controller'], $controller_allowed) && in_array($this->params['action'], $action_allowed) || $this->params['controller'] == 'ajax'){
+			if(in_array($this->params['controller'], $controller_allowed) && in_array($this->params['action'], $action_allowed) || $this->params['controller'] == 'ajax' || $GroupId == 1){
 				$is_allow = true;
 			}else if(!empty($_branch_action_module)){
 				foreach ($_branch_action_module as $key => $value) {

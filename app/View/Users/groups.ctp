@@ -59,13 +59,15 @@
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
 
-                                echo $this->Html->link('Otorisasi', array(
-                                    'controller' => 'users',
-                                    'action' => 'authorization_privilage',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-warning btn-xs'
-                                ));
+                                if($GroupId != 1){
+                                    echo $this->Html->link('Otorisasi', array(
+                                        'controller' => 'users',
+                                        'action' => 'authorization_privilage',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-warning btn-xs'
+                                    ));
+                                }
                             }
 
                             if( in_array('delete_group_user', $allowModule) ) {
