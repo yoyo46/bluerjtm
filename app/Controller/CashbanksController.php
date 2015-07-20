@@ -31,170 +31,154 @@ class CashbanksController extends AppController {
     }
 
     function index(){
-        // if( in_array('view_cash_bank', $this->allowModule) ) {
-            $this->loadModel('CashBank');
-            $this->set('sub_module_title', 'index');
+        $this->loadModel('CashBank');
+        $this->set('sub_module_title', 'index');
 
-            $default_conditions = array(
-                'CashBank.status' => 1
-            );
+        $default_conditions = array(
+            'CashBank.status' => 1
+        );
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nodoc'])){
-                    $nodoc = urldecode($refine['nodoc']);
-                    $this->request->data['CashBank']['nodoc'] = $nodoc;
-                    $default_conditions['CashBank.nodoc LIKE '] = '%'.$nodoc.'%';
+            if(!empty($refine['nodoc'])){
+                $nodoc = urldecode($refine['nodoc']);
+                $this->request->data['CashBank']['nodoc'] = $nodoc;
+                $default_conditions['CashBank.nodoc LIKE '] = '%'.$nodoc.'%';
+            }
+            if(!empty($refine['cash'])){
+                $cash = urldecode($refine['cash']);
+                $this->request->data['CashBank']['receiving_cash_type'] = $cash;
+                $default_conditions['CashBank.receiving_cash_type'] = $cash;
+            }
+            if(!empty($refine['from'])){
+                $from = date('Y-m-d', urldecode($refine['from']));
+                $this->request->data['CashBank']['date_from'] = date('d/m/Y', urldecode($refine['from']));
+                $default_conditions['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') >='] = $from;
+            }
+            if(!empty($refine['to'])){
+                $to = date('Y-m-d', urldecode($refine['to']));
+                $this->request->data['CashBank']['date_to'] = date('d/m/Y', urldecode($refine['to']));
+                $default_conditions['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') <='] = $to;
+            }
+        }
+        
+        $this->paginate = $this->CashBank->getData('paginate', array(
+            'conditions' => $default_conditions,
+            'order' => array(
+                'CashBank.created' => 'DESC'
+            )
+        ));
+
+        $cash_banks = $this->paginate('CashBank');
+
+        if(!empty($cash_banks)){
+            $this->loadModel('Vendor');
+            $this->loadModel('Employe');
+            $this->loadModel('Customer');
+
+            foreach ($cash_banks as $key => $value) {
+                $model = $value['CashBank']['receiver_type'];
+
+                switch ($model) {
+                    case 'Vendor':
+                        $list_result = $this->Vendor->getData('first', array(
+                            'conditions' => array(
+                                'Vendor.status' => 1
+                            )
+                        ));
+                        break;
+                    case 'Employe':
+                        $list_result = $this->Employe->getData('first', array(
+                            'conditions' => array(
+                                'Employe.status' => 1
+                            )
+                        ));
+
+                        break;
+                    default:
+                        $list_result = $this->Customer->getData('first', array(
+                            'conditions' => array(
+                                'Customer.status' => 1
+                            )
+                        ));
+
+                        break;
                 }
-                if(!empty($refine['cash'])){
-                    $cash = urldecode($refine['cash']);
-                    $this->request->data['CashBank']['receiving_cash_type'] = $cash;
-                    $default_conditions['CashBank.receiving_cash_type'] = $cash;
-                }
-                if(!empty($refine['from'])){
-                    $from = date('Y-m-d', urldecode($refine['from']));
-                    $this->request->data['CashBank']['date_from'] = date('d/m/Y', urldecode($refine['from']));
-                    $default_conditions['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') >='] = $from;
-                }
-                if(!empty($refine['to'])){
-                    $to = date('Y-m-d', urldecode($refine['to']));
-                    $this->request->data['CashBank']['date_to'] = date('d/m/Y', urldecode($refine['to']));
-                    $default_conditions['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') <='] = $to;
+
+                if(!empty($list_result)){
+                    $cash_banks[$key]['name_cash'] = $list_result[$model]['name'];
                 }
             }
-            
-            $this->paginate = $this->CashBank->getData('paginate', array(
-                'conditions' => $default_conditions,
-                'order' => array(
-                    'CashBank.created' => 'DESC'
-                )
-            ));
+        }
+        $this->loadModel('CashBankAuthMaster');
+        $cash_bank_auth_master = $this->CashBankAuthMaster->getUserApproval();
+        $cashbank_auth_id = Set::extract('/CashBankAuthMaster/employe_id', $cash_bank_auth_master);
 
-            $cash_banks = $this->paginate('CashBank');
-
-            if(!empty($cash_banks)){
-                $this->loadModel('Vendor');
-                $this->loadModel('Employe');
-                $this->loadModel('Customer');
-
-                foreach ($cash_banks as $key => $value) {
-                    $model = $value['CashBank']['receiver_type'];
-
-                    switch ($model) {
-                        case 'Vendor':
-                            $list_result = $this->Vendor->getData('first', array(
-                                'conditions' => array(
-                                    'Vendor.status' => 1
-                                )
-                            ));
-                            break;
-                        case 'Employe':
-                            $list_result = $this->Employe->getData('first', array(
-                                'conditions' => array(
-                                    'Employe.status' => 1
-                                )
-                            ));
-
-                            break;
-                        default:
-                            $list_result = $this->Customer->getData('first', array(
-                                'conditions' => array(
-                                    'Customer.status' => 1
-                                )
-                            ));
-
-                            break;
-                    }
-
-                    if(!empty($list_result)){
-                        $cash_banks[$key]['name_cash'] = $list_result[$model]['name'];
-                    }
-                }
-            }
-            $this->loadModel('CashBankAuthMaster');
-            $cash_bank_auth_master = $this->CashBankAuthMaster->getUserApproval();
-            $cashbank_auth_id = Set::extract('/CashBankAuthMaster/employe_id', $cash_bank_auth_master);
-
-            $this->set('cashbank_auth_id', $cashbank_auth_id);
-            $this->set('cash_banks', $cash_banks);
-            $this->set('active_menu', 'cash_bank');
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->set('cashbank_auth_id', $cashbank_auth_id);
+        $this->set('cash_banks', $cash_banks);
+        $this->set('active_menu', 'cash_bank');
     }
 
     public function cashbank_add() {
-        // if( in_array('insert_cash_banks', $this->allowModule) ) {
-            $this->set('sub_module_title', 'Tambah transaksi Kas/Bank');
-            $this->doCashBank();
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->set('sub_module_title', 'Tambah transaksi Kas/Bank');
+        $this->doCashBank();
     }
 
     public function cashbank_edit( $id = false ) {
-        // if( in_array('update_cash_banks', $this->allowModule) ) {
-            $this->set('sub_module_title', 'Rubah transaksi Kas/Bank');
-            $coa = false;
+        $this->set('sub_module_title', 'Rubah transaksi Kas/Bank');
+        $coa = false;
 
-            if( !empty($id) ) {
-                $cashbank = $this->CashBank->getData('first', array(
-                    'conditions' => array(
-                        'CashBank.id' => $id,
-                        'CashBank.status' => 1,
-                    ),
-                    'contain' => array(
-                        'CashBankDetail',
-                        'CashBankAuth'
-                    )
-                ));
+        if( !empty($id) ) {
+            $cashbank = $this->CashBank->getData('first', array(
+                'conditions' => array(
+                    'CashBank.id' => $id,
+                    'CashBank.status' => 1,
+                ),
+                'contain' => array(
+                    'CashBankDetail',
+                    'CashBankAuth'
+                )
+            ));
 
-                if( !empty($cashbank) ) {
-                    $this->set('sub_module_title', 'Rubah Kas/Bank');
-                    $this->doCashBank( $id, $cashbank);
-                } else {
-                    $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
-                    $this->redirect($this->referer());
-                }
-            } 
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
-    }
-
-    public function cashbank_detail( $id = false ) {
-        // if( in_array('update_cash_banks', $this->allowModule) ) {
-            $this->set('sub_module_title', 'Detail Transaksi Kas/Bank');
-            $coa = false;
-
-            if( !empty($id) ) {
-                $cashbank = $this->CashBank->getData('first', array(
-                    'conditions' => array(
-                        'CashBank.id' => $id,
-                        'CashBank.status' => 1,
-                    ),
-                    'contain' => array(
-                        'CashBankDetail',
-                        'CashBankAuth',
-                        'Coa'
-                    )
-                ));
-
-                if( !empty($cashbank) ) {
-                    $this->set('sub_module_title', 'Rubah Kas/Bank');
-                    $this->doCashBank( $id, $cashbank);
-                } else {
-                    $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
-                    $this->redirect($this->referer());
-                }
-            }  else {
+            if( !empty($cashbank) ) {
+                $this->set('sub_module_title', 'Rubah Kas/Bank');
+                $this->doCashBank( $id, $cashbank);
+            } else {
                 $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
                 $this->redirect($this->referer());
             }
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        } 
+    }
+
+    public function cashbank_detail( $id = false ) {
+        $this->set('sub_module_title', 'Detail Transaksi Kas/Bank');
+        $coa = false;
+
+        if( !empty($id) ) {
+            $cashbank = $this->CashBank->getData('first', array(
+                'conditions' => array(
+                    'CashBank.id' => $id,
+                    'CashBank.status' => 1,
+                ),
+                'contain' => array(
+                    'CashBankDetail',
+                    'CashBankAuth',
+                    'Coa'
+                )
+            ));
+
+            if( !empty($cashbank) ) {
+                $this->set('sub_module_title', 'Rubah Kas/Bank');
+                $this->doCashBank( $id, $cashbank);
+            } else {
+                $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
+                $this->redirect($this->referer());
+            }
+        }  else {
+            $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
+            $this->redirect($this->referer());
+        }
     }
 
     function doCashBank($id = false, $data_local = false){
@@ -480,53 +464,49 @@ class CashbanksController extends AppController {
     }
 
     function cashbank_delete($id){
-        // if( in_array('delete_cash_bank', $this->allowModule) ) {
-            $locale = $this->CashBank->getData('first', array(
-                'conditions' => array(
-                    'CashBank.id' => $id
-                )
-            ));
+        $locale = $this->CashBank->getData('first', array(
+            'conditions' => array(
+                'CashBank.id' => $id
+            )
+        ));
 
-            if(!empty($locale)){
-                $value = true;
-                if($locale['CashBank']['status']){
-                    $value = false;
-                }
-
-                $this->CashBank->id = $id;
-                $this->CashBank->set('status', $value);
-                if($this->CashBank->save()){
-                    $document_id = !empty($locale['CashBank']['document_id'])?$locale['CashBank']['document_id']:false;
-                    $document_type = !empty($locale['CashBank']['document_type'])?$locale['CashBank']['document_type']:false;
-
-                    if( !empty($document_id) ) {
-                        switch ($document_type) {
-                            case 'revenue':
-                                $this->loadModel('Revenue');
-                                $this->Revenue->changeStatusPPNPaid( $document_id, 0 );
-                                break;
-                            case 'prepayment':
-                                $this->CashBank->id = $document_id;
-                                $this->CashBank->set('prepayment_status', $this->CashBank->getStatusPrepayment($document_id));
-                                $this->CashBank->save();
-                                break;
-                        }
-                    }
-
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Kas/Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status Kas/Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
+        if(!empty($locale)){
+            $value = true;
+            if($locale['CashBank']['status']){
+                $value = false;
             }
 
-            $this->redirect($this->referer());
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+            $this->CashBank->id = $id;
+            $this->CashBank->set('status', $value);
+            if($this->CashBank->save()){
+                $document_id = !empty($locale['CashBank']['document_id'])?$locale['CashBank']['document_id']:false;
+                $document_type = !empty($locale['CashBank']['document_type'])?$locale['CashBank']['document_type']:false;
+
+                if( !empty($document_id) ) {
+                    switch ($document_type) {
+                        case 'revenue':
+                            $this->loadModel('Revenue');
+                            $this->Revenue->changeStatusPPNPaid( $document_id, 0 );
+                            break;
+                        case 'prepayment':
+                            $this->CashBank->id = $document_id;
+                            $this->CashBank->set('prepayment_status', $this->CashBank->getStatusPrepayment($document_id));
+                            $this->CashBank->save();
+                            break;
+                    }
+                }
+
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Kas/Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Kas/Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
     }
 
     function detail($id = false){

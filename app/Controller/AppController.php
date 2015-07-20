@@ -105,8 +105,8 @@ class AppController extends Controller {
 	        'plugin' => false
 	    );
 	    $this->Auth->loginRedirect = array(
-	        'controller' => 'trucks',
-	        'action' => 'index',
+	        'controller' => 'pages',
+	        'action' => 'dashboard',
 	        'admin' => false,
 	        'plugin' => false
 	    );
@@ -121,7 +121,7 @@ class AppController extends Controller {
 	    $this->user_id = false;
 	    $GroupId = false;
 	    $User = array();
-	    $allowModule = array();
+		$_allowModule = array();
 
 	    if($logged_in){
 			$this->user_id = $this->Auth->user('id');
@@ -153,6 +153,7 @@ class AppController extends Controller {
 			$this->group_branch_id = $group_branch_id = '';
 			$is_allow = false;
 			$_branch_action_module = array();
+
 			if(!empty($_branches)){
 				foreach ($_branches as $key => $value) {
 					if($value['GroupBranch']['city_id'] == $User['branch_id']){
@@ -180,6 +181,14 @@ class AppController extends Controller {
 							)
 						)
 					));
+					$_allowController = Set::extract('/BranchModule/controller', $_branch_action_module);
+					$_allowAction = Set::extract('/BranchModule/action', $_branch_action_module);
+					$_allowController = array_unique($_allowController);
+					$_allowAction = array_unique($_allowAction);
+					$_allowModule = array(
+						'controller' => $_allowController,
+						'action' => $_allowAction,
+					);
 				}
 			}
 
@@ -206,22 +215,6 @@ class AppController extends Controller {
 
 			$this->set(compact('list_branch', '_branch_action_module', 'group_branch_id'));
 			/*End Auth*/
-
-			$allowModule = $this->Module->ModuleAction->find('list', array(
-	            'conditions'=> array(
-	                'Module.status'=> 1, 
-            		'ModuleAction.group_id' => $GroupId,
-	            ),
-	            'order' => array(
-	                'Module.order' => 'ASC'
-	            ),
-	            'contain' => array(
-	            	'Module'
-            	),
-            	'fields' => array(
-            		'ModuleAction.id', 'ModuleAction.action'
-        		),
-	        ));
 
 	        if(isset($this->params['named']['ntf']) && !empty($this->params['named']['ntf'])){
 	        	$this->Notification->notifCheck($this->user_id, $this->params['named']['ntf']);
@@ -344,11 +337,10 @@ class AppController extends Controller {
 
 			$this->set('notifications', $notifications);
 		}
-		$this->allowModule = $allowModule;
 
 	    $this->set(compact(
 	    	'logged_in', 'GroupId', 'User',
-	    	'allowModule', 'invStatus'
+	    	'invStatus', '_allowModule'
     	));
 	}
 

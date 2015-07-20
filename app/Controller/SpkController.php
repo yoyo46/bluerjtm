@@ -32,111 +32,103 @@ class SpkController extends AppController {
     }
 
     public function internal() {
-        // if( in_array('view_ttuj', $this->allowModule) ) {
-            $this->loadModel('Spk');
-            $this->set('active_menu', 'internal');
-            $this->set('sub_module_title', __('SPK Internal'));
-            $conditions = array();
+        $this->loadModel('Spk');
+        $this->set('active_menu', 'internal');
+        $this->set('sub_module_title', __('SPK Internal'));
+        $conditions = array();
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nottuj'])){
-                    $nottuj = urldecode($refine['nottuj']);
-                    $this->request->data['Ttuj']['nottuj'] = $nottuj;
-                    $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
-                }
-                if(!empty($refine['nopol'])){
-                    $nopol = urldecode($refine['nopol']);
-                    $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
-                }
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Ttuj']['customer'] = $customer;
-                    $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
-                }
-                if(!empty($refine['is_draft'])){
-                    $is_draft = urldecode($refine['is_draft']);
-                    $conditions['Ttuj.is_draft'] = 1;
-                    $this->request->data['Ttuj']['is_draft'] = $is_draft;
-                }
-                if(!empty($refine['is_commit'])){
-                    $is_commit = urldecode($refine['is_commit']);
-                    $conditions['Ttuj.is_draft'] = 0;
-                    $conditions['Ttuj.is_arrive'] = 0;
-                    $conditions['Ttuj.is_bongkaran'] = 0;
-                    $conditions['Ttuj.is_balik'] = 0;
-                    $conditions['Ttuj.is_pool'] = 0;
-                    $this->request->data['Ttuj']['is_commit'] = $is_commit;
-                }
-                if(!empty($refine['is_arrive'])){
-                    $is_arrive = urldecode($refine['is_arrive']);
-                    $conditions['Ttuj.is_arrive'] = 1;
-                    $conditions['Ttuj.is_bongkaran'] = 0;
-                    $conditions['Ttuj.is_balik'] = 0;
-                    $conditions['Ttuj.is_pool'] = 0;
-                    $this->request->data['Ttuj']['is_arrive'] = $is_arrive;
-                }
-                if(!empty($refine['is_bongkaran'])){
-                    $is_bongkaran = urldecode($refine['is_bongkaran']);
-                    $conditions['Ttuj.is_bongkaran'] = 1;
-                    $conditions['Ttuj.is_balik'] = 0;
-                    $conditions['Ttuj.is_pool'] = 0;
-                    $this->request->data['Ttuj']['is_bongkaran'] = $is_bongkaran;
-                }
-                if(!empty($refine['is_balik'])){
-                    $is_balik = urldecode($refine['is_balik']);
-                    $conditions['Ttuj.is_balik'] = 1;
-                    $conditions['Ttuj.is_pool'] = 0;
-                    $this->request->data['Ttuj']['is_balik'] = $is_balik;
-                }
-                if(!empty($refine['is_pool'])){
-                    $is_pool = urldecode($refine['is_pool']);
-                    $conditions['Ttuj.is_pool'] = 1;
-                    $this->request->data['Ttuj']['is_pool'] = $is_pool;
-                }
-                if(!empty($refine['is_sj_not_completed'])){
-                    $is_sj_not_completed = urldecode($refine['is_sj_not_completed']);
-                    $conditions['Ttuj.is_sj_completed'] = 0;
-                    $this->request->data['Ttuj']['is_sj_not_completed'] = $is_sj_not_completed;
-                }
-                if(!empty($refine['is_sj_completed'])){
-                    $is_sj_completed = urldecode($refine['is_sj_completed']);
-                    $conditions['Ttuj.is_sj_completed'] = 1;
-                    $this->request->data['Ttuj']['is_sj_completed'] = $is_sj_completed;
-                }
-                if(!empty($refine['is_revenue'])){
-                    $is_revenue = urldecode($refine['is_revenue']);
-                    $conditions['Ttuj.is_revenue'] = 1;
-                    $this->request->data['Ttuj']['is_revenue'] = $is_revenue;
-                }
-                if(!empty($refine['is_not_revenue'])){
-                    $is_not_revenue = urldecode($refine['is_not_revenue']);
-                    $conditions['Ttuj.is_revenue'] = 0;
-                    $this->request->data['Ttuj']['is_not_revenue'] = $is_not_revenue;
-                }
+            if(!empty($refine['nottuj'])){
+                $nottuj = urldecode($refine['nottuj']);
+                $this->request->data['Ttuj']['nottuj'] = $nottuj;
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
             }
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $this->request->data['Ttuj']['nopol'] = $nopol;
+                $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
+            }
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Ttuj']['customer'] = $customer;
+                $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
+            }
+            if(!empty($refine['is_draft'])){
+                $is_draft = urldecode($refine['is_draft']);
+                $conditions['Ttuj.is_draft'] = 1;
+                $this->request->data['Ttuj']['is_draft'] = $is_draft;
+            }
+            if(!empty($refine['is_commit'])){
+                $is_commit = urldecode($refine['is_commit']);
+                $conditions['Ttuj.is_draft'] = 0;
+                $conditions['Ttuj.is_arrive'] = 0;
+                $conditions['Ttuj.is_bongkaran'] = 0;
+                $conditions['Ttuj.is_balik'] = 0;
+                $conditions['Ttuj.is_pool'] = 0;
+                $this->request->data['Ttuj']['is_commit'] = $is_commit;
+            }
+            if(!empty($refine['is_arrive'])){
+                $is_arrive = urldecode($refine['is_arrive']);
+                $conditions['Ttuj.is_arrive'] = 1;
+                $conditions['Ttuj.is_bongkaran'] = 0;
+                $conditions['Ttuj.is_balik'] = 0;
+                $conditions['Ttuj.is_pool'] = 0;
+                $this->request->data['Ttuj']['is_arrive'] = $is_arrive;
+            }
+            if(!empty($refine['is_bongkaran'])){
+                $is_bongkaran = urldecode($refine['is_bongkaran']);
+                $conditions['Ttuj.is_bongkaran'] = 1;
+                $conditions['Ttuj.is_balik'] = 0;
+                $conditions['Ttuj.is_pool'] = 0;
+                $this->request->data['Ttuj']['is_bongkaran'] = $is_bongkaran;
+            }
+            if(!empty($refine['is_balik'])){
+                $is_balik = urldecode($refine['is_balik']);
+                $conditions['Ttuj.is_balik'] = 1;
+                $conditions['Ttuj.is_pool'] = 0;
+                $this->request->data['Ttuj']['is_balik'] = $is_balik;
+            }
+            if(!empty($refine['is_pool'])){
+                $is_pool = urldecode($refine['is_pool']);
+                $conditions['Ttuj.is_pool'] = 1;
+                $this->request->data['Ttuj']['is_pool'] = $is_pool;
+            }
+            if(!empty($refine['is_sj_not_completed'])){
+                $is_sj_not_completed = urldecode($refine['is_sj_not_completed']);
+                $conditions['Ttuj.is_sj_completed'] = 0;
+                $this->request->data['Ttuj']['is_sj_not_completed'] = $is_sj_not_completed;
+            }
+            if(!empty($refine['is_sj_completed'])){
+                $is_sj_completed = urldecode($refine['is_sj_completed']);
+                $conditions['Ttuj.is_sj_completed'] = 1;
+                $this->request->data['Ttuj']['is_sj_completed'] = $is_sj_completed;
+            }
+            if(!empty($refine['is_revenue'])){
+                $is_revenue = urldecode($refine['is_revenue']);
+                $conditions['Ttuj.is_revenue'] = 1;
+                $this->request->data['Ttuj']['is_revenue'] = $is_revenue;
+            }
+            if(!empty($refine['is_not_revenue'])){
+                $is_not_revenue = urldecode($refine['is_not_revenue']);
+                $conditions['Ttuj.is_revenue'] = 0;
+                $this->request->data['Ttuj']['is_not_revenue'] = $is_not_revenue;
+            }
+        }
 
-            $this->paginate = $this->Spk->getData('paginate', array(
-                'conditions' => $conditions
-            ));
-            $spks = $this->paginate('Spk');
+        $this->paginate = $this->Spk->getData('paginate', array(
+            'conditions' => $conditions
+        ));
+        $spks = $this->paginate('Spk');
 
-            $this->set('spks', $spks);
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->set('spks', $spks);
     }
 
     function internal_add(){
-        // if( in_array('insert_revenues', $this->allowModule) ) {
-            $module_title = __('Tambah Spk');
-            $this->set('sub_module_title', trim($module_title));
-            $this->doSpk();
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $module_title = __('Tambah Spk');
+        $this->set('sub_module_title', trim($module_title));
+        $this->doSpk();
     }
 
     function doSpk($id = false, $data_local = false){

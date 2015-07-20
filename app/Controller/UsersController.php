@@ -179,64 +179,52 @@ class UsersController extends AppController {
 	}
 
     function groups(){
-        if( in_array('view_group_user', $this->allowModule) ) {
-            $this->loadModel('Group');
-            $conditions = array(
-                'Group.status' => 1,
-            );
+        $this->loadModel('Group');
+        $conditions = array(
+            'Group.status' => 1,
+        );
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['name'])){
-                    $name = urldecode($refine['name']);
-                    $this->request->data['Group']['name'] = $name;
-                    $conditions['Group.name LIKE '] = '%'.$name.'%';
-                }
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['Group']['name'] = $name;
+                $conditions['Group.name LIKE '] = '%'.$name.'%';
             }
-
-            $groups = $this->Group->find('all', array(
-                'conditions' => $conditions,
-            ));
-
-            $this->set('active_menu', 'groups');
-            $this->set('sub_module_title', 'Group');
-            $this->set('groups', $groups);
-        } else {
-            $this->redirect($this->referer());
         }
+
+        $groups = $this->Group->find('all', array(
+            'conditions' => $conditions,
+        ));
+
+        $this->set('active_menu', 'groups');
+        $this->set('sub_module_title', 'Group');
+        $this->set('groups', $groups);
     }
 
     function group_add(){
-        if( in_array('insert_group_user', $this->allowModule) ) {
-            $this->set('sub_module_title', 'Tambah Group');
-            $this->doGroup();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->set('sub_module_title', 'Tambah Group');
+        $this->doGroup();
     }
 
     function group_edit($id){
-        if( in_array('update_group_user', $this->allowModule) ) {
-            $this->loadModel('Group');
-            $this->set('sub_module_title', 'Rubah Group');
-            $Group = $this->Group->find('first', array(
-                'conditions' => array(
-                    'Group.id' => $id
-                )
-            ));
+        $this->loadModel('Group');
+        $this->set('sub_module_title', 'Rubah Group');
+        $Group = $this->Group->find('first', array(
+            'conditions' => array(
+                'Group.id' => $id
+            )
+        ));
 
-            if(!empty($Group)){
-                $this->doGroup($id, $Group);
-            }else{
-                $this->MkCommon->setCustomFlash(__('Group tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'users',
-                    'action' => 'groups'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($Group)){
+            $this->doGroup($id, $Group);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Group tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'users',
+                'action' => 'groups'
+            ));
         }
     }
 
@@ -280,110 +268,94 @@ class UsersController extends AppController {
     }
 
     function group_toggle( $id = false ){
-        if( in_array('delete_group_user', $this->allowModule) ) {
-            $this->loadModel('Group');
-            $locale = $this->Group->find('first', array(
-                'conditions' => array(
-                    'Group.id' => $id,
-                    'Group.status' => 1,
-                )
-            ));
+        $this->loadModel('Group');
+        $locale = $this->Group->find('first', array(
+            'conditions' => array(
+                'Group.id' => $id,
+                'Group.status' => 1,
+            )
+        ));
 
-            if( !empty($locale) ){
-                $value = true;
-                if($locale['Group']['status']){
-                    $value = false;
-                }
-
-                $this->Group->id = $id;
-                $this->Group->set('status', $value);
-                if($this->Group->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Group tidak ditemukan.'), 'error');
+        if( !empty($locale) ){
+            $value = true;
+            if($locale['Group']['status']){
+                $value = false;
             }
 
-            $this->redirect($this->referer());
-        } else {
-            $this->redirect($this->referer());
+            $this->Group->id = $id;
+            $this->Group->set('status', $value);
+            if($this->Group->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Group tidak ditemukan.'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
     function list_user(){
-        // if( in_array('view_list_user', $this->allowModule) ) {
-            $this->loadModel('User');
-            $default_options = array(
-                'conditions' => array(
-                    'User.status' => 1
-                ),
-                'contain' => array(
-                    'Group',
-                    'City',
-                )
-            );
+        $this->loadModel('User');
+        $default_options = array(
+            'conditions' => array(
+                'User.status' => 1
+            ),
+            'contain' => array(
+                'Group',
+                'City',
+            )
+        );
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['name'])){
-                    $name = urldecode($refine['name']);
-                    $this->request->data['User']['name'] = $name;
-                    $default_options['conditions']['CONCAT(User.first_name,\' \',User.last_name) LIKE '] = '%'.$name.'%';
-                }
-                if(!empty($refine['email'])){
-                    $email = urldecode($refine['email']);
-                    $this->request->data['User']['email'] = $email;
-                    $default_options['conditions']['User.email LIKE '] = '%'.$email.'%';
-                }
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['User']['name'] = $name;
+                $default_options['conditions']['CONCAT(User.first_name,\' \',User.last_name) LIKE '] = '%'.$name.'%';
             }
+            if(!empty($refine['email'])){
+                $email = urldecode($refine['email']);
+                $this->request->data['User']['email'] = $email;
+                $default_options['conditions']['User.email LIKE '] = '%'.$email.'%';
+            }
+        }
 
-            $this->paginate = $this->User->getData('paginate', $default_options);
-            $list_user = $this->paginate('User');
+        $this->paginate = $this->User->getData('paginate', $default_options);
+        $list_user = $this->paginate('User');
 
-            $this->set('active_menu', 'list_user');
-            $this->set('sub_module_title', 'User');
-            $this->set('list_user', $list_user);
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->set('active_menu', 'list_user');
+        $this->set('sub_module_title', 'User');
+        $this->set('list_user', $list_user);
     }
 
     function add(){
-        if( in_array('insert_list_user', $this->allowModule) ) {
-            $this->loadModel('User');
-            $this->set('sub_module_title', 'Tambah User');
-            $this->doUser();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->loadModel('User');
+        $this->set('sub_module_title', 'Tambah User');
+        $this->doUser();
     }
 
     function edit($id){
-        if( in_array('update_list_user', $this->allowModule) ) {
-            $this->loadModel('User');
-            $this->set('sub_module_title', 'Rubah User');
-            $User = $this->User->getData('first', array(
-                'conditions' => array(
-                    'User.id' => $id
-                )
-            ));
+        $this->loadModel('User');
+        $this->set('sub_module_title', 'Rubah User');
+        $User = $this->User->getData('first', array(
+            'conditions' => array(
+                'User.id' => $id
+            )
+        ));
 
-            if(!empty($User)){
-                $this->doUser($id, $User);
-            }else{
-                $this->MkCommon->setCustomFlash(__('User tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'users',
-                    'action' => 'list_user'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($User)){
+            $this->doUser($id, $User);
+        }else{
+            $this->MkCommon->setCustomFlash(__('User tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'users',
+                'action' => 'list_user'
+            ));
         }
     }
 
@@ -498,37 +470,33 @@ class UsersController extends AppController {
     }
 
     function toggle($id){
-        if( in_array('view_user_toggle', $this->allowModule) ) {
-            $this->loadModel('User');
-            $locale = $this->User->getData('first', array(
-                'conditions' => array(
-                    'User.id' => $id
-                )
-            ));
+        $this->loadModel('User');
+        $locale = $this->User->getData('first', array(
+            'conditions' => array(
+                'User.id' => $id
+            )
+        ));
 
-            if($locale){
-                $value = true;
-                if($locale['User']['status']){
-                    $value = false;
-                }
-
-                $this->User->id = $id;
-                $this->User->set('status', $value);
-                if($this->User->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status user #%s'), $this->User->id), $this->user_data, $this->RequestHandler, $this->params );
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status user #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('User tidak ditemukan.'), 'error');
+        if($locale){
+            $value = true;
+            if($locale['User']['status']){
+                $value = false;
             }
 
-            $this->redirect($this->referer());
-        } else {
-            $this->redirect($this->referer());
+            $this->User->id = $id;
+            $this->User->set('status', $value);
+            if($this->User->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status user #%s'), $this->User->id), $this->user_data, $this->RequestHandler, $this->params );
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status user #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('User tidak ditemukan.'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
     function employe_positions(){

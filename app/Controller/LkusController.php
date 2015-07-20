@@ -26,172 +26,156 @@ class LkusController extends AppController {
     }
 
 	public function index() {
-        if( in_array('view_lkus', $this->allowModule) ) {
-            $this->loadModel('Lku');
-            $this->loadModel('Ttuj');
-            $this->loadModel('Customer');
+        $this->loadModel('Lku');
+        $this->loadModel('Ttuj');
+        $this->loadModel('Customer');
 
-    		$this->set('active_menu', 'lkus');
-    		$this->set('sub_module_title', __('Data LKU'));
-            $conditions = array(
-                'Lku.status' => array( 0, 1 ),
-            );
-            
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+		$this->set('active_menu', 'lkus');
+		$this->set('sub_module_title', __('Data LKU'));
+        $conditions = array(
+            'Lku.status' => array( 0, 1 ),
+        );
+        
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nodoc'])){
-                    $no_doc = urldecode($refine['nodoc']);
-                    $this->request->data['Lku']['no_doc'] = $no_doc;
-                    $conditions['Lku.no_doc LIKE '] = '%'.$no_doc.'%';
-                }
-
-                if(!empty($refine['from'])){
-                    $from = urldecode($refine['from']);
-                    $this->request->data['Lku']['from_date'] = $this->MkCommon->getDate($from, true);
-                    $conditions['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') >='] = $from;
-                }
-
-                if(!empty($refine['to'])){
-                    $to = urldecode($refine['to']);
-                    $this->request->data['Lku']['to_date'] = $this->MkCommon->getDate($to, true);
-                    $conditions['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') <='] = $to;
-                }
-
-                if(!empty($refine['no_ttuj'])){
-                    $no_ttuj = urldecode($refine['no_ttuj']);
-                    $this->request->data['Lku']['no_ttuj'] = $no_ttuj;
-                    $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
-                }
-
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Lku']['customer_id'] = $customer;
-                    $conditions['Ttuj.customer_id'] = $customer;
-                }
+            if(!empty($refine['nodoc'])){
+                $no_doc = urldecode($refine['nodoc']);
+                $this->request->data['Lku']['no_doc'] = $no_doc;
+                $conditions['Lku.no_doc LIKE '] = '%'.$no_doc.'%';
             }
 
-            $this->paginate = $this->Lku->getData('paginate', array(
-                'conditions' => $conditions,
-                'contain' => array(
-                    'Ttuj'
-                )
-            ));
-
-            $Lkus = $this->paginate('Lku');
-
-            if(!empty($Lkus)){
-                foreach ($Lkus as $key => $value) {
-                    $customer_data['Customer'] = array();
-                    
-                    if(!empty($value['Ttuj']['customer_id'])){
-                        $customer_data = $this->Customer->getData('first', array(
-                            'conditions' => array(
-                                'Customer.id' => $value['Ttuj']['customer_id']
-                            )
-                        ));
-                    }
-
-                    $Lkus[$key]['Customer'] = $customer_data['Customer'];
-                }
+            if(!empty($refine['from'])){
+                $from = urldecode($refine['from']);
+                $this->request->data['Lku']['from_date'] = $this->MkCommon->getDate($from, true);
+                $conditions['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') >='] = $from;
             }
 
-            $this->set('Lkus', $Lkus);
+            if(!empty($refine['to'])){
+                $to = urldecode($refine['to']);
+                $this->request->data['Lku']['to_date'] = $this->MkCommon->getDate($to, true);
+                $conditions['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') <='] = $to;
+            }
 
-            $customers = $this->Customer->getData('list', array(
-                'conditions' => array(
-                    'Customer.status' => 1
-                ),
-                'fields' => array(
-                    'Customer.id', 'Customer.customer_name_code'
-                ),
-            ));
-            $this->set('customers', $customers);
-        } else {
-            $this->redirect($this->referer());
+            if(!empty($refine['no_ttuj'])){
+                $no_ttuj = urldecode($refine['no_ttuj']);
+                $this->request->data['Lku']['no_ttuj'] = $no_ttuj;
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
+            }
+
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Lku']['customer_id'] = $customer;
+                $conditions['Ttuj.customer_id'] = $customer;
+            }
         }
+
+        $this->paginate = $this->Lku->getData('paginate', array(
+            'conditions' => $conditions,
+            'contain' => array(
+                'Ttuj'
+            )
+        ));
+
+        $Lkus = $this->paginate('Lku');
+
+        if(!empty($Lkus)){
+            foreach ($Lkus as $key => $value) {
+                $customer_data['Customer'] = array();
+                
+                if(!empty($value['Ttuj']['customer_id'])){
+                    $customer_data = $this->Customer->getData('first', array(
+                        'conditions' => array(
+                            'Customer.id' => $value['Ttuj']['customer_id']
+                        )
+                    ));
+                }
+
+                $Lkus[$key]['Customer'] = $customer_data['Customer'];
+            }
+        }
+
+        $this->set('Lkus', $Lkus);
+
+        $customers = $this->Customer->getData('list', array(
+            'conditions' => array(
+                'Customer.status' => 1
+            ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+        $this->set('customers', $customers);
 	}
 
     function detail($id = false){
-        if( in_array('view_lkus', $this->allowModule) ) {
-            if(!empty($id)){
-                $this->loadModel('Lku');
-                $Lku = $this->Lku->getLku($id);
-                
-                if(!empty($Lku)){
-                    if(!empty($Lku['LkuDetail'])){
-                        $this->loadModel('PartsMotor');
-                        $this->loadModel('TipeMotor');
+        if(!empty($id)){
+            $this->loadModel('Lku');
+            $Lku = $this->Lku->getLku($id);
+            
+            if(!empty($Lku)){
+                if(!empty($Lku['LkuDetail'])){
+                    $this->loadModel('PartsMotor');
+                    $this->loadModel('TipeMotor');
 
-                        foreach ($Lku['LkuDetail'] as $key => $value) {
-                            $tipe_motor = $this->TipeMotor->getData('first', array(
+                    foreach ($Lku['LkuDetail'] as $key => $value) {
+                        $tipe_motor = $this->TipeMotor->getData('first', array(
+                            'conditions' => array(
+                                'TipeMotor.id' => $value['tipe_motor_id']
+                            ),
+                            'contain' => array(
+                                'GroupMotor'
+                            )
+                        ));
+
+                        if(!empty($tipe_motor)){
+                            $part_motor = $this->PartsMotor->getData('first', array(
                                 'conditions' => array(
-                                    'TipeMotor.id' => $value['tipe_motor_id']
-                                ),
-                                'contain' => array(
-                                    'GroupMotor'
+                                    'PartsMotor.id' => $value['part_motor_id'],
                                 )
-                            ));
-
-                            if(!empty($tipe_motor)){
-                                $part_motor = $this->PartsMotor->getData('first', array(
-                                    'conditions' => array(
-                                        'PartsMotor.id' => $value['part_motor_id'],
-                                    )
-                                ), false);
-                                $Lku['LkuDetail'][$key]['TipeMotor'] = $tipe_motor['TipeMotor'];
-                                $Lku['LkuDetail'][$key]['GroupMotor'] = !empty($tipe_motor['GroupMotor']) ? $tipe_motor['GroupMotor'] : false;
-                                $Lku['LkuDetail'][$key]['PartsMotor'] = !empty($part_motor['PartsMotor'])?$part_motor['PartsMotor']:false;
-                            }
+                            ), false);
+                            $Lku['LkuDetail'][$key]['TipeMotor'] = $tipe_motor['TipeMotor'];
+                            $Lku['LkuDetail'][$key]['GroupMotor'] = !empty($tipe_motor['GroupMotor']) ? $tipe_motor['GroupMotor'] : false;
+                            $Lku['LkuDetail'][$key]['PartsMotor'] = !empty($part_motor['PartsMotor'])?$part_motor['PartsMotor']:false;
                         }
                     }
-
-                    $sub_module_title = __('Detail LKU');
-                    $this->set(compact('Lku', 'sub_module_title'));
-                    $this->set('active_menu', 'lkus');
-                }else{
-                    $this->MkCommon->setCustomFlash(__('LKU tidak ditemukan.'), 'error');
-                    $this->redirect($this->referer());
                 }
+
+                $sub_module_title = __('Detail LKU');
+                $this->set(compact('Lku', 'sub_module_title'));
+                $this->set('active_menu', 'lkus');
             }else{
                 $this->MkCommon->setCustomFlash(__('LKU tidak ditemukan.'), 'error');
                 $this->redirect($this->referer());
             }
-        } else {
+        }else{
+            $this->MkCommon->setCustomFlash(__('LKU tidak ditemukan.'), 'error');
             $this->redirect($this->referer());
         }
     }
 
     function add(){
-        if( in_array('insert_lkus', $this->allowModule) ) {
-            $this->set('sub_module_title', __('Tambah LKU'));
-            $this->DoLku();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->set('sub_module_title', __('Tambah LKU'));
+        $this->DoLku();
     }
 
     function edit($id){
-        if( in_array('update_lkus', $this->allowModule) ) {
-            $this->loadModel('Lku');
-            $this->set('sub_module_title', 'Rubah LKU');
-            $Lku = $this->Lku->getData('first', array(
-                'conditions' => array(
-                    'Lku.id' => $id
-                ),
-            ));
+        $this->loadModel('Lku');
+        $this->set('sub_module_title', 'Rubah LKU');
+        $Lku = $this->Lku->getData('first', array(
+            'conditions' => array(
+                'Lku.id' => $id
+            ),
+        ));
 
-            if(!empty($Lku)){
-                $this->DoLku($id, $Lku);
-            }else{
-                $this->MkCommon->setCustomFlash(__('LKU tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'Lkus',
-                    'action' => 'index'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($Lku)){
+            $this->DoLku($id, $Lku);
+        }else{
+            $this->MkCommon->setCustomFlash(__('LKU tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'Lkus',
+                'action' => 'index'
+            ));
         }
     }
 
@@ -431,137 +415,121 @@ class LkusController extends AppController {
     }
 
     function toggle($id, $action='inactive'){
-        if( in_array('delete_lkus', $this->allowModule) && in_array($action, array('inactive', 'activate')) ) {
-            $this->loadModel('Lku');
+        $this->loadModel('Lku');
 
-            $status = 1;
-            if($action == 'activate'){
-                $status = 0;
-            }
-
-            $locale = $this->Lku->getData('first', array(
-                'conditions' => array(
-                    'Lku.id' => $id,
-                    'Lku.status' => $status
-                ),
-            ));
-
-            if($locale){
-                $this->Lku->id = $id;
-
-                $value = 0;
-                if($status == 'activate'){
-                    $value = 1;
-                }
-                $this->Lku->set('status', $value);
-
-                if($this->Lku->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Lku tidak ditemukan.'), 'error');
-            }
-
-            $this->redirect($this->referer());
-        } else {
-            $this->redirect($this->referer());
+        $status = 1;
+        if($action == 'activate'){
+            $status = 0;
         }
+
+        $locale = $this->Lku->getData('first', array(
+            'conditions' => array(
+                'Lku.id' => $id,
+                'Lku.status' => $status
+            ),
+        ));
+
+        if($locale){
+            $this->Lku->id = $id;
+
+            $value = 0;
+            if($status == 'activate'){
+                $value = 1;
+            }
+            $this->Lku->set('status', $value);
+
+            if($this->Lku->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Lku tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
     }
 
     function payments() {
-        if( in_array('view_lku_payments', $this->allowModule) ) {
-            $this->loadModel('LkuPayment');
-            $this->loadModel('Customer');
+        $this->loadModel('LkuPayment');
+        $this->loadModel('Customer');
 
-            $this->set('active_menu', 'lku_payments');
-            $this->set('sub_module_title', __('Data Pembayaran LKU'));
-            $conditions = array();
-            
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        $this->set('active_menu', 'lku_payments');
+        $this->set('sub_module_title', __('Data Pembayaran LKU'));
+        $conditions = array();
+        
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nodoc'])){
-                    $no_doc = urldecode($refine['nodoc']);
-                    $this->request->data['LkuPayment']['no_doc'] = $no_doc;
-                    $conditions['LkuPayment.no_doc LIKE '] = '%'.$no_doc.'%';
-                }
-
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Lku']['customer_id'] = $customer;
-                    $conditions['LkuPayment.customer_id'] = $customer;
-                }
+            if(!empty($refine['nodoc'])){
+                $no_doc = urldecode($refine['nodoc']);
+                $this->request->data['LkuPayment']['no_doc'] = $no_doc;
+                $conditions['LkuPayment.no_doc LIKE '] = '%'.$no_doc.'%';
             }
 
-            $this->paginate = $this->LkuPayment->getData('paginate', array(
-                'conditions' => $conditions,
-                'order' => array(
-                    'LkuPayment.created' => 'DESC'
-                )
-            ), false);
-            $payments = $this->paginate('LkuPayment');
-
-            if( !empty($payments) ) {
-                $this->loadModel('Customer');
-                foreach ($payments as $key => $payment) {
-                    $payment = $this->Customer->getMerge($payment, $payment['LkuPayment']['customer_id']);
-                    $payments[$key] = $payment;
-                }
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Lku']['customer_id'] = $customer;
+                $conditions['LkuPayment.customer_id'] = $customer;
             }
-
-            $this->set('payments', $payments);
-
-            $customers = $this->Customer->getData('list', array(
-                'conditions' => array(
-                    'Customer.status' => 1
-                ),
-                'fields' => array(
-                    'Customer.id', 'Customer.customer_name_code'
-                ),
-            ));
-            $this->set('customers', $customers);
-        } else {
-            $this->redirect($this->referer());
         }
+
+        $this->paginate = $this->LkuPayment->getData('paginate', array(
+            'conditions' => $conditions,
+            'order' => array(
+                'LkuPayment.created' => 'DESC'
+            )
+        ), false);
+        $payments = $this->paginate('LkuPayment');
+
+        if( !empty($payments) ) {
+            $this->loadModel('Customer');
+            foreach ($payments as $key => $payment) {
+                $payment = $this->Customer->getMerge($payment, $payment['LkuPayment']['customer_id']);
+                $payments[$key] = $payment;
+            }
+        }
+
+        $this->set('payments', $payments);
+
+        $customers = $this->Customer->getData('list', array(
+            'conditions' => array(
+                'Customer.status' => 1
+            ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+        $this->set('customers', $customers);
     }
 
     function payment_add(){
-        if( in_array('insert_lku_payments', $this->allowModule) ) {
-            $this->set('sub_module_title', __('Tambah Pembayaran LKU'));
-            $this->DoLkuPayment();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->set('sub_module_title', __('Tambah Pembayaran LKU'));
+        $this->DoLkuPayment();
     }
 
     function payment_edit($id){
-        if( in_array('update_lku_payments', $this->allowModule) ) {
-            $this->loadModel('LkuPayment');
-            $this->set('sub_module_title', 'Rubah Pembayaran LKU');
-            $Lku = $this->LkuPayment->getData('first', array(
-                'conditions' => array(
-                    'LkuPayment.id' => $id
-                ),
-                'contain' => array(
-                    'LkuPaymentDetail'
-                )
-            ));
+        $this->loadModel('LkuPayment');
+        $this->set('sub_module_title', 'Rubah Pembayaran LKU');
+        $Lku = $this->LkuPayment->getData('first', array(
+            'conditions' => array(
+                'LkuPayment.id' => $id
+            ),
+            'contain' => array(
+                'LkuPaymentDetail'
+            )
+        ));
 
-            if(!empty($Lku)){
-                $this->DoLkuPayment($id, $Lku);
-            }else{
-                $this->MkCommon->setCustomFlash(__('ID Pembayaran LKU tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'Lkus',
-                    'action' => 'payments'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($Lku)){
+            $this->DoLkuPayment($id, $Lku);
+        }else{
+            $this->MkCommon->setCustomFlash(__('ID Pembayaran LKU tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'Lkus',
+                'action' => 'payments'
+            ));
         }
     }
 
@@ -980,84 +948,68 @@ class LkusController extends AppController {
     }
 
     public function lku_parts() {
-        // if( in_array('view_lku_parts', $this->allowModule) ) {
-            $this->loadModel('LkuPart');
-            $this->set('active_menu', 'lku_parts');
-            $this->set('sub_module_title', __('Data LKU Parts'));
-            $conditions = array();
-            
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        $this->loadModel('LkuPart');
+        $this->set('active_menu', 'lku_parts');
+        $this->set('sub_module_title', __('Data LKU Parts'));
+        $conditions = array();
+        
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nodoc'])){
-                    $no_doc = urldecode($refine['nodoc']);
-                    $this->request->data['LkuPart']['no_doc'] = $no_doc;
-                    $conditions['LkuPart.no_doc LIKE '] = '%'.$no_doc.'%';
-                }
+            if(!empty($refine['nodoc'])){
+                $no_doc = urldecode($refine['nodoc']);
+                $this->request->data['LkuPart']['no_doc'] = $no_doc;
+                $conditions['LkuPart.no_doc LIKE '] = '%'.$no_doc.'%';
             }
+        }
 
-            $this->paginate = $this->LkuPart->getData('paginate', array(
-                'conditions' => $conditions
-            ));
-            $LkuParts = $this->paginate('LkuPart');
+        $this->paginate = $this->LkuPart->getData('paginate', array(
+            'conditions' => $conditions
+        ));
+        $LkuParts = $this->paginate('LkuPart');
 
-            $this->set('LkuParts', $LkuParts);
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->set('LkuParts', $LkuParts);
     }
 
     function lku_part_detail($id = false){
-        if( in_array('view_lku_parts', $this->allowModule) ) {
-            if(!empty($id)){
-                $LkuPart = $this->LkuPart->getLkuPart($id);
+        if(!empty($id)){
+            $LkuPart = $this->LkuPart->getLkuPart($id);
 
-                if(!empty($LkuPart)){
-                    $sub_module_title = __('Detail LKU Part');
-                    $this->set(compact('LkuPart', 'sub_module_title'));
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Lku Part tidak ditemukan.'), 'error');
-                    $this->redirect($this->referer());
-                }
+            if(!empty($LkuPart)){
+                $sub_module_title = __('Detail LKU Part');
+                $this->set(compact('LkuPart', 'sub_module_title'));
             }else{
                 $this->MkCommon->setCustomFlash(__('Lku Part tidak ditemukan.'), 'error');
                 $this->redirect($this->referer());
             }
-        } else {
+        }else{
+            $this->MkCommon->setCustomFlash(__('Lku Part tidak ditemukan.'), 'error');
             $this->redirect($this->referer());
         }
     }
 
     function lku_part_add(){
-        // if( in_array('insert_lku_parts', $this->allowModule) ) {
-            $this->set('sub_module_title', __('Tambah LKU Part'));
-            $this->DoLkuPart();
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->set('sub_module_title', __('Tambah LKU Part'));
+        $this->DoLkuPart();
     }
 
     function lku_part_edit($id){
-        if( in_array('update_lku_parts', $this->allowModule) ) {
-            $this->loadModel('LkuPart');
-            $this->set('sub_module_title', 'Rubah LKU Part');
-            $LkuPart = $this->LkuPart->getData('first', array(
-                'conditions' => array(
-                    'LkuPart.id' => $id
-                ),
-            ));
+        $this->loadModel('LkuPart');
+        $this->set('sub_module_title', 'Rubah LKU Part');
+        $LkuPart = $this->LkuPart->getData('first', array(
+            'conditions' => array(
+                'LkuPart.id' => $id
+            ),
+        ));
 
-            if(!empty($LkuPart)){
-                $this->DoLkuPart($id, $LkuPart);
-            }else{
-                $this->MkCommon->setCustomFlash(__('LKU Part tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'lkus',
-                    'action' => 'lku_parts'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($LkuPart)){
+            $this->DoLkuPart($id, $LkuPart);
+        }else{
+            $this->MkCommon->setCustomFlash(__('LKU Part tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'lkus',
+                'action' => 'lku_parts'
+            ));
         }
     }
 
@@ -1242,196 +1194,176 @@ class LkusController extends AppController {
     }
 
     function lku_part_toggle($id){
-        if( in_array('delete_lku_parts', $this->allowModule) ) {
-            $this->loadModel('LkuPart');
-            $locale = $this->LkuPart->getData('first', array(
-                'conditions' => array(
-                    'LkuPart.id' => $id
-                )
-            ));
+        $this->loadModel('LkuPart');
+        $locale = $this->LkuPart->getData('first', array(
+            'conditions' => array(
+                'LkuPart.id' => $id
+            )
+        ));
 
-            if($locale){
-                $value = true;
-                if($locale['LkuPart']['status']){
-                    $value = false;
-                }
-
-                $this->LkuPart->id = $id;
-                $this->LkuPart->set('status', 0);
-
-                if($this->LkuPart->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status LKU Part ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status LKU Part ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('LKU Part tidak ditemukan.'), 'error');
+        if($locale){
+            $value = true;
+            if($locale['LkuPart']['status']){
+                $value = false;
             }
 
-            $this->redirect($this->referer());
-        } else {
-            $this->redirect($this->referer());
+            $this->LkuPart->id = $id;
+            $this->LkuPart->set('status', 0);
+
+            if($this->LkuPart->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status LKU Part ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status LKU Part ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('LKU Part tidak ditemukan.'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
     public function ksus() {
-        if( in_array('view_lkus', $this->allowModule) ) {
-            $this->loadModel('Ksu');
-            $this->loadModel('Customer');
+        $this->loadModel('Ksu');
+        $this->loadModel('Customer');
 
-            $this->set('active_menu', 'ksus');
-            $this->set('sub_module_title', __('Data KSU'));
-            $conditions = array(
-                'Ksu.status' => array( 0, 1 ),
-            );
-            
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        $this->set('active_menu', 'ksus');
+        $this->set('sub_module_title', __('Data KSU'));
+        $conditions = array(
+            'Ksu.status' => array( 0, 1 ),
+        );
+        
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nodoc'])){
-                    $no_doc = urldecode($refine['nodoc']);
-                    $this->request->data['Ksu']['no_doc'] = $no_doc;
-                    $conditions['Ksu.no_doc LIKE '] = '%'.$no_doc.'%';
-                }
-
-                if(!empty($refine['from'])){
-                    $from = urldecode($refine['from']);
-                    $this->request->data['Ksu']['from_date'] = $this->MkCommon->getDate($from, true);
-                    $conditions['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') >='] = $from;
-                }
-
-                if(!empty($refine['to'])){
-                    $to = urldecode($refine['to']);
-                    $this->request->data['Ksu']['to_date'] = $this->MkCommon->getDate($to, true);
-                    $conditions['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') <='] = $to;
-                }
-
-                if(!empty($refine['no_ttuj'])){
-                    $no_ttuj = urldecode($refine['no_ttuj']);
-                    $this->request->data['Ksu']['no_ttuj'] = $no_ttuj;
-                    $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
-                }
-
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Ksu']['customer_id'] = $customer;
-                    $conditions['Ttuj.customer_id'] = $customer;
-                }
+            if(!empty($refine['nodoc'])){
+                $no_doc = urldecode($refine['nodoc']);
+                $this->request->data['Ksu']['no_doc'] = $no_doc;
+                $conditions['Ksu.no_doc LIKE '] = '%'.$no_doc.'%';
             }
 
-            $this->paginate = $this->Ksu->getData('paginate', array(
-                'conditions' => $conditions,
-                'contain' => array(
-                    'Ttuj'
-                )
-            ));
-            $Ksus = $this->paginate('Ksu');
-
-            if(!empty($Ksus)){
-                foreach ($Ksus as $key => $value) {
-                    $customer_data['Customer'] = array();
-                    
-                    if(!empty($value['Ttuj']['customer_id'])){
-                        $customer_data = $this->Customer->getData('first', array(
-                            'conditions' => array(
-                                'Customer.id' => $value['Ttuj']['customer_id']
-                            )
-                        ));
-                    }
-
-                    $Ksus[$key]['Customer'] = $customer_data['Customer'];
-                }
+            if(!empty($refine['from'])){
+                $from = urldecode($refine['from']);
+                $this->request->data['Ksu']['from_date'] = $this->MkCommon->getDate($from, true);
+                $conditions['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') >='] = $from;
             }
 
-            $this->set('Ksus', $Ksus);
+            if(!empty($refine['to'])){
+                $to = urldecode($refine['to']);
+                $this->request->data['Ksu']['to_date'] = $this->MkCommon->getDate($to, true);
+                $conditions['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') <='] = $to;
+            }
 
-            $customers = $this->Customer->getData('list', array(
-                'conditions' => array(
-                    'Customer.status' => 1
-                ),
-                'fields' => array(
-                    'Customer.id', 'Customer.customer_name_code'
-                ),
-            ));
-            $this->set('customers', $customers);
-        } else {
-            $this->redirect($this->referer());
+            if(!empty($refine['no_ttuj'])){
+                $no_ttuj = urldecode($refine['no_ttuj']);
+                $this->request->data['Ksu']['no_ttuj'] = $no_ttuj;
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
+            }
+
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Ksu']['customer_id'] = $customer;
+                $conditions['Ttuj.customer_id'] = $customer;
+            }
         }
+
+        $this->paginate = $this->Ksu->getData('paginate', array(
+            'conditions' => $conditions,
+            'contain' => array(
+                'Ttuj'
+            )
+        ));
+        $Ksus = $this->paginate('Ksu');
+
+        if(!empty($Ksus)){
+            foreach ($Ksus as $key => $value) {
+                $customer_data['Customer'] = array();
+                
+                if(!empty($value['Ttuj']['customer_id'])){
+                    $customer_data = $this->Customer->getData('first', array(
+                        'conditions' => array(
+                            'Customer.id' => $value['Ttuj']['customer_id']
+                        )
+                    ));
+                }
+
+                $Ksus[$key]['Customer'] = $customer_data['Customer'];
+            }
+        }
+
+        $this->set('Ksus', $Ksus);
+
+        $customers = $this->Customer->getData('list', array(
+            'conditions' => array(
+                'Customer.status' => 1
+            ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+        $this->set('customers', $customers);
     }
 
     function detail_ksu($id = false){
-        if( in_array('view_lkus', $this->allowModule) ) {
-            if(!empty($id)){
-                $this->loadModel('Ksu');
-                $Ksu = $this->Ksu->getKsu($id);
+        if(!empty($id)){
+            $this->loadModel('Ksu');
+            $Ksu = $this->Ksu->getKsu($id);
 
-                if(!empty($Ksu)){
-                    if(!empty($Ksu['KsuDetail'])){
-                        $this->loadModel('Perlengkapan');
-                        foreach ($Ksu['KsuDetail'] as $key => $value) {
-                            $Perlengkapan = $this->Perlengkapan->getData('first', array(
-                                'conditions' => array(
-                                    'Perlengkapan.id' => $value['perlengkapan_id']
-                                ),
-                            ));
+            if(!empty($Ksu)){
+                if(!empty($Ksu['KsuDetail'])){
+                    $this->loadModel('Perlengkapan');
+                    foreach ($Ksu['KsuDetail'] as $key => $value) {
+                        $Perlengkapan = $this->Perlengkapan->getData('first', array(
+                            'conditions' => array(
+                                'Perlengkapan.id' => $value['perlengkapan_id']
+                            ),
+                        ));
 
-                            if(!empty($Perlengkapan)){
-                                $Ksu['KsuDetail'][$key]['Perlengkapan'] = $Perlengkapan['Perlengkapan'];
-                            }
+                        if(!empty($Perlengkapan)){
+                            $Ksu['KsuDetail'][$key]['Perlengkapan'] = $Perlengkapan['Perlengkapan'];
                         }
                     }
-
-                    $sub_module_title = __('Detail KSU');
-                    $this->set(compact('Ksu', 'sub_module_title'));
-                    $this->set('active_menu', 'ksus');
-                }else{
-                    $this->MkCommon->setCustomFlash(__('KSU tidak ditemukan.'), 'error');
-                    $this->redirect($this->referer());
                 }
+
+                $sub_module_title = __('Detail KSU');
+                $this->set(compact('Ksu', 'sub_module_title'));
+                $this->set('active_menu', 'ksus');
             }else{
                 $this->MkCommon->setCustomFlash(__('KSU tidak ditemukan.'), 'error');
                 $this->redirect($this->referer());
             }
-        } else {
+        }else{
+            $this->MkCommon->setCustomFlash(__('KSU tidak ditemukan.'), 'error');
             $this->redirect($this->referer());
         }
     }
 
     function ksu_add(){
-        if( in_array('insert_lkus', $this->allowModule) ) {
-            $this->set('sub_module_title', __('Tambah KSU'));
-            $this->DoKsu();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->set('sub_module_title', __('Tambah KSU'));
+        $this->DoKsu();
     }
 
     function ksu_edit($id){
-        if( in_array('update_lkus', $this->allowModule) ) {
-            $this->loadModel('Ksu');
-            $this->set('sub_module_title', 'Rubah KSU');
-            $Ksu = $this->Ksu->getData('first', array(
-                'conditions' => array(
-                    'Ksu.id' => $id
-                ),
-                'contain' => array(
-                    'KsuDetail'
-                )
-            ));
+        $this->loadModel('Ksu');
+        $this->set('sub_module_title', 'Rubah KSU');
+        $Ksu = $this->Ksu->getData('first', array(
+            'conditions' => array(
+                'Ksu.id' => $id
+            ),
+            'contain' => array(
+                'KsuDetail'
+            )
+        ));
 
-            if(!empty($Ksu)){
-                $this->DoKsu($id, $Ksu);
-            }else{
-                $this->MkCommon->setCustomFlash(__('KSU tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'Ksus',
-                    'action' => 'ksus'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($Ksu)){
+            $this->DoKsu($id, $Ksu);
+        }else{
+            $this->MkCommon->setCustomFlash(__('KSU tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'Ksus',
+                'action' => 'ksus'
+            ));
         }
     }
 
@@ -1667,138 +1599,124 @@ class LkusController extends AppController {
     }
 
     function ksu_toggle($id, $action = 'inactive'){
-        if( in_array('delete_lkus', $this->allowModule) && in_array($action, array('inactive', 'activate')) ) {
-            $this->loadModel('Ksu');
+        $this->loadModel('Ksu');
 
-            $status = 1;
-            if($action == 'activate'){
-                $status = 0;
+        $status = 1;
+        if($action == 'activate'){
+            $status = 0;
+        }
+        $locale = $this->Ksu->getData('first', array(
+            'conditions' => array(
+                'Ksu.id' => $id,
+                'Ksu.status' => $status
+            )
+        ));
+
+        if($locale){
+            $value = 0;
+            if($status == 'activate'){
+                $value = 1;
             }
-            $locale = $this->Ksu->getData('first', array(
-                'conditions' => array(
-                    'Ksu.id' => $id,
-                    'Ksu.status' => $status
-                )
-            ));
 
-            if($locale){
-                $value = 0;
-                if($status == 'activate'){
-                    $value = 1;
-                }
+            $this->Ksu->id = $id;
+            $this->Ksu->set('status', $value);
 
-                $this->Ksu->id = $id;
-                $this->Ksu->set('status', $value);
+            if($this->Ksu->save()){
+                // if( !empty($locale['Ksu']['total_price']) ) {
+                //     $this->loadModel('Journal');
+                //     $document_no = !empty($locale['Ksu']['no_doc'])?$locale['Ksu']['no_doc']:false;
+                //     $this->Journal->setJournal( $id, $document_no, 'ksu_void_coa_debit_id', $locale['Ksu']['total_price'], 0, 'ksu_void' );
+                //     $this->Journal->setJournal( $id, $document_no, 'ksu_void_coa_credit_id', 0, $locale['Ksu']['total_price'], 'ksu_void' );
+                // }
 
-                if($this->Ksu->save()){
-                    // if( !empty($locale['Ksu']['total_price']) ) {
-                    //     $this->loadModel('Journal');
-                    //     $document_no = !empty($locale['Ksu']['no_doc'])?$locale['Ksu']['no_doc']:false;
-                    //     $this->Journal->setJournal( $id, $document_no, 'ksu_void_coa_debit_id', $locale['Ksu']['total_price'], 0, 'ksu_void' );
-                    //     $this->Journal->setJournal( $id, $document_no, 'ksu_void_coa_credit_id', 0, $locale['Ksu']['total_price'], 'ksu_void' );
-                    // }
-
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                }
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
             }else{
-                $this->MkCommon->setCustomFlash(__('Ksu tidak ditemukan.'), 'error');
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
             }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Ksu tidak ditemukan.'), 'error');
         }
 
         $this->redirect($this->referer());
     }
 
     function ksu_payments() {
-        if( in_array('view_lku_payments', $this->allowModule) ) {
-            $this->loadModel('KsuPayment');
-            $this->loadModel('Customer');
+        $this->loadModel('KsuPayment');
+        $this->loadModel('Customer');
 
-            $this->set('active_menu', 'ksu_payments');
-            $this->set('sub_module_title', __('Data Pembayaran KSU'));
-            $conditions = array();
-            
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        $this->set('active_menu', 'ksu_payments');
+        $this->set('sub_module_title', __('Data Pembayaran KSU'));
+        $conditions = array();
+        
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nodoc'])){
-                    $no_doc = urldecode($refine['nodoc']);
-                    $this->request->data['KsuPayment']['no_doc'] = $no_doc;
-                    $conditions['KsuPayment.no_doc LIKE '] = '%'.$no_doc.'%';
-                }
-
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Lku']['customer_id'] = $customer;
-                    $conditions['KsuPayment.customer_id'] = $customer;
-                }
+            if(!empty($refine['nodoc'])){
+                $no_doc = urldecode($refine['nodoc']);
+                $this->request->data['KsuPayment']['no_doc'] = $no_doc;
+                $conditions['KsuPayment.no_doc LIKE '] = '%'.$no_doc.'%';
             }
 
-            $this->paginate = $this->KsuPayment->getData('paginate', array(
-                'conditions' => $conditions,
-            ), false);
-            $payments = $this->paginate('KsuPayment');
-
-            if( !empty($payments) ) {
-                $this->loadModel('Customer');
-                foreach ($payments as $key => $payment) {
-                    $payment = $this->Customer->getMerge($payment, $payment['KsuPayment']['customer_id']);
-                    $payments[$key] = $payment;
-                }
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Lku']['customer_id'] = $customer;
+                $conditions['KsuPayment.customer_id'] = $customer;
             }
-
-            $this->set('payments', $payments);
-
-            $customers = $this->Customer->getData('list', array(
-                'conditions' => array(
-                    'Customer.status' => 1
-                ),
-                'fields' => array(
-                    'Customer.id', 'Customer.customer_name_code'
-                ),
-            ));
-            $this->set('customers', $customers);
-        } else {
-            $this->redirect($this->referer());
         }
+
+        $this->paginate = $this->KsuPayment->getData('paginate', array(
+            'conditions' => $conditions,
+        ), false);
+        $payments = $this->paginate('KsuPayment');
+
+        if( !empty($payments) ) {
+            $this->loadModel('Customer');
+            foreach ($payments as $key => $payment) {
+                $payment = $this->Customer->getMerge($payment, $payment['KsuPayment']['customer_id']);
+                $payments[$key] = $payment;
+            }
+        }
+
+        $this->set('payments', $payments);
+
+        $customers = $this->Customer->getData('list', array(
+            'conditions' => array(
+                'Customer.status' => 1
+            ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+        $this->set('customers', $customers);
     }
 
     function ksu_payment_add(){
-        if( in_array('insert_lku_payments', $this->allowModule) ) {
-            $this->set('sub_module_title', __('Tambah Pembayaran KSU'));
-            $this->DoKsuPayment();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->set('sub_module_title', __('Tambah Pembayaran KSU'));
+        $this->DoKsuPayment();
     }
 
     function ksu_payment_edit($id){
-        if( in_array('update_lku_payments', $this->allowModule) ) {
-            $this->loadModel('KsuPayment');
-            $this->set('sub_module_title', 'Rubah Pembayaran KSU');
-            $Ksu = $this->KsuPayment->getData('first', array(
-                'conditions' => array(
-                    'KsuPayment.id' => $id
-                ),
-                'contain' => array(
-                    'KsuPaymentDetail'
-                )
-            ));
+        $this->loadModel('KsuPayment');
+        $this->set('sub_module_title', 'Rubah Pembayaran KSU');
+        $Ksu = $this->KsuPayment->getData('first', array(
+            'conditions' => array(
+                'KsuPayment.id' => $id
+            ),
+            'contain' => array(
+                'KsuPaymentDetail'
+            )
+        ));
 
-            if(!empty($Ksu)){
-                $this->DoKsuPayment($id, $Ksu);
-            }else{
-                $this->MkCommon->setCustomFlash(__('ID Pembayaran KSU tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'lkus',
-                    'action' => 'ksu_payments'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($Ksu)){
+            $this->DoKsuPayment($id, $Ksu);
+        }else{
+            $this->MkCommon->setCustomFlash(__('ID Pembayaran KSU tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'lkus',
+                'action' => 'ksu_payments'
+            ));
         }
     }
 
@@ -2378,117 +2296,109 @@ class LkusController extends AppController {
     }
 
     function detail_payment($id = false){
-        if( in_array('view_lkus', $this->allowModule) ) {
-            if(!empty($id)){
-                $this->loadModel('LkuPayment');
-                $this->loadModel('PartsMotor');
-                $this->loadModel('TipeMotor');
+        if(!empty($id)){
+            $this->loadModel('LkuPayment');
+            $this->loadModel('PartsMotor');
+            $this->loadModel('TipeMotor');
 
-                $LkuPayment = $this->LkuPayment->getLkuPayment($id);
-                
-                if(!empty($LkuPayment)){
-                    if(!empty($LkuPayment['LkuPaymentDetail'])){
-                        foreach ($LkuPayment['LkuPaymentDetail'] as $key => $value) {
-                            $lku = $this->LkuPayment->LkuPaymentDetail->LkuDetail->getData('first', array(
-                                'conditions' => array(
-                                    'LkuDetail.id' => $value['lku_detail_id']
-                                ),
-                                'contain' => array(
-                                    'Lku'
-                                )
-                            ));
+            $LkuPayment = $this->LkuPayment->getLkuPayment($id);
+            
+            if(!empty($LkuPayment)){
+                if(!empty($LkuPayment['LkuPaymentDetail'])){
+                    foreach ($LkuPayment['LkuPaymentDetail'] as $key => $value) {
+                        $lku = $this->LkuPayment->LkuPaymentDetail->LkuDetail->getData('first', array(
+                            'conditions' => array(
+                                'LkuDetail.id' => $value['lku_detail_id']
+                            ),
+                            'contain' => array(
+                                'Lku'
+                            )
+                        ));
 
-                            if(!empty($lku)){
-                                $part_motor = array();
-                                if(!empty($lku['LkuDetail']['part_motor_id'])){
-                                    $part_motor = $this->PartsMotor->getData('first', array(
-                                        'conditions' => array(
-                                            'PartsMotor.id' => $lku['LkuDetail']['part_motor_id']
-                                        )
-                                    ));
-                                }
-                                $LkuPayment['LkuPaymentDetail'][$key]['PartsMotor'] = !empty($part_motor['PartsMotor']) ? $part_motor['PartsMotor'] : array();
-
-                                $tipe_motor = array();
-                                if(!empty($lku['LkuDetail']['tipe_motor_id'])){
-                                    $tipe_motor = $this->TipeMotor->getData('first', array(
-                                        'conditions' => array(
-                                            'TipeMotor.id' => $lku['LkuDetail']['tipe_motor_id']
-                                        )
-                                    ));
-                                }
-                                $LkuPayment['LkuPaymentDetail'][$key]['TipeMotor'] = !empty($tipe_motor['TipeMotor']) ? $tipe_motor['TipeMotor'] : array();
-
-                                $LkuPayment['LkuPaymentDetail'][$key]['LkuDetail'] = $lku['LkuDetail'];
-                                $LkuPayment['LkuPaymentDetail'][$key]['Lku'] = $lku['Lku'];
+                        if(!empty($lku)){
+                            $part_motor = array();
+                            if(!empty($lku['LkuDetail']['part_motor_id'])){
+                                $part_motor = $this->PartsMotor->getData('first', array(
+                                    'conditions' => array(
+                                        'PartsMotor.id' => $lku['LkuDetail']['part_motor_id']
+                                    )
+                                ));
                             }
+                            $LkuPayment['LkuPaymentDetail'][$key]['PartsMotor'] = !empty($part_motor['PartsMotor']) ? $part_motor['PartsMotor'] : array();
+
+                            $tipe_motor = array();
+                            if(!empty($lku['LkuDetail']['tipe_motor_id'])){
+                                $tipe_motor = $this->TipeMotor->getData('first', array(
+                                    'conditions' => array(
+                                        'TipeMotor.id' => $lku['LkuDetail']['tipe_motor_id']
+                                    )
+                                ));
+                            }
+                            $LkuPayment['LkuPaymentDetail'][$key]['TipeMotor'] = !empty($tipe_motor['TipeMotor']) ? $tipe_motor['TipeMotor'] : array();
+
+                            $LkuPayment['LkuPaymentDetail'][$key]['LkuDetail'] = $lku['LkuDetail'];
+                            $LkuPayment['LkuPaymentDetail'][$key]['Lku'] = $lku['Lku'];
                         }
                     }
-                    
-                    $sub_module_title = __('Detail Pembayaran LKU');
-                    $this->set(compact('LkuPayment', 'sub_module_title'));
-                    $this->set('active_menu', 'lku_payments');
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Pembayaran LKU tidak ditemukan.'), 'error');
-                    $this->redirect($this->referer());
                 }
+                
+                $sub_module_title = __('Detail Pembayaran LKU');
+                $this->set(compact('LkuPayment', 'sub_module_title'));
+                $this->set('active_menu', 'lku_payments');
             }else{
                 $this->MkCommon->setCustomFlash(__('Pembayaran LKU tidak ditemukan.'), 'error');
                 $this->redirect($this->referer());
             }
-        } else {
+        }else{
+            $this->MkCommon->setCustomFlash(__('Pembayaran LKU tidak ditemukan.'), 'error');
             $this->redirect($this->referer());
         }
     }
 
     function detail_ksu_payment($id = false){
-        if( in_array('view_lkus', $this->allowModule) ) {
-            if(!empty($id)){
-                $this->loadModel('KsuPayment');
-                $this->loadModel('Perlengkapan');
+        if(!empty($id)){
+            $this->loadModel('KsuPayment');
+            $this->loadModel('Perlengkapan');
 
-                $KsuPayment = $this->KsuPayment->getKsuPayment($id);
-                
-                if(!empty($KsuPayment)){
-                    if(!empty($KsuPayment['KsuPaymentDetail'])){
-                        foreach ($KsuPayment['KsuPaymentDetail'] as $key => $value) {
-                            $ksu = $this->KsuPayment->KsuPaymentDetail->KsuDetail->getData('first', array(
-                                'conditions' => array(
-                                    'KsuDetail.id' => $value['ksu_detail_id']
-                                ),
-                                'contain' => array(
-                                    'Ksu'
-                                )
-                            ));
+            $KsuPayment = $this->KsuPayment->getKsuPayment($id);
+            
+            if(!empty($KsuPayment)){
+                if(!empty($KsuPayment['KsuPaymentDetail'])){
+                    foreach ($KsuPayment['KsuPaymentDetail'] as $key => $value) {
+                        $ksu = $this->KsuPayment->KsuPaymentDetail->KsuDetail->getData('first', array(
+                            'conditions' => array(
+                                'KsuDetail.id' => $value['ksu_detail_id']
+                            ),
+                            'contain' => array(
+                                'Ksu'
+                            )
+                        ));
 
-                            if(!empty($ksu)){
-                                $Perlengkapan = array();
-                                if(!empty($ksu['KsuDetail']['perlengkapan_id'])){
-                                    $Perlengkapan = $this->Perlengkapan->getData('first', array(
-                                        'conditions' => array(
-                                            'Perlengkapan.id' => $ksu['KsuDetail']['perlengkapan_id']
-                                        )
-                                    ));
-                                }
-                                $KsuPayment['KsuPaymentDetail'][$key]['Perlengkapan'] = !empty($Perlengkapan['Perlengkapan']) ? $Perlengkapan['Perlengkapan'] : array();
-                                $KsuPayment['KsuPaymentDetail'][$key]['KsuDetail'] = $ksu['KsuDetail'];
-                                $KsuPayment['KsuPaymentDetail'][$key]['Ksu'] = $ksu['Ksu'];
+                        if(!empty($ksu)){
+                            $Perlengkapan = array();
+                            if(!empty($ksu['KsuDetail']['perlengkapan_id'])){
+                                $Perlengkapan = $this->Perlengkapan->getData('first', array(
+                                    'conditions' => array(
+                                        'Perlengkapan.id' => $ksu['KsuDetail']['perlengkapan_id']
+                                    )
+                                ));
                             }
+                            $KsuPayment['KsuPaymentDetail'][$key]['Perlengkapan'] = !empty($Perlengkapan['Perlengkapan']) ? $Perlengkapan['Perlengkapan'] : array();
+                            $KsuPayment['KsuPaymentDetail'][$key]['KsuDetail'] = $ksu['KsuDetail'];
+                            $KsuPayment['KsuPaymentDetail'][$key]['Ksu'] = $ksu['Ksu'];
                         }
                     }
-                    
-                    $sub_module_title = __('Detail Pembayaran KSU');
-                    $this->set(compact('KsuPayment', 'sub_module_title'));
-                    $this->set('active_menu', 'lku_payments');
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Pembayaran KSU tidak ditemukan.'), 'error');
-                    $this->redirect($this->referer());
                 }
+                
+                $sub_module_title = __('Detail Pembayaran KSU');
+                $this->set(compact('KsuPayment', 'sub_module_title'));
+                $this->set('active_menu', 'lku_payments');
             }else{
                 $this->MkCommon->setCustomFlash(__('Pembayaran KSU tidak ditemukan.'), 'error');
                 $this->redirect($this->referer());
             }
-        } else {
+        }else{
+            $this->MkCommon->setCustomFlash(__('Pembayaran KSU tidak ditemukan.'), 'error');
             $this->redirect($this->referer());
         }
     }

@@ -3,7 +3,7 @@ App::uses('AppController', 'Controller');
 class PagesController extends AppController {
 	public $uses = array();
 	
-	public function display() {
+	public function dashboard() {
 		$this->set('active_menu', 'dashboard');
 		$this->set('title_for_layout', __('ERP RJTM | Dashboard'));
 		$this->set('module_title', __('Dashboard'));

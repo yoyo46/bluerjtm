@@ -26,133 +26,117 @@ class LakasController extends AppController {
     }
 
 	public function index() {
-        if( in_array('view_lakas', $this->allowModule) ) {
-            $this->loadModel('Laka');
-    		$this->set('active_menu', 'lakas');
-    		$this->set('sub_module_title', __('Data LAKA'));
-            $conditions = array();
-            
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        $this->loadModel('Laka');
+		$this->set('active_menu', 'lakas');
+		$this->set('sub_module_title', __('Data LAKA'));
+        $conditions = array();
+        
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nopol'])){
-                    $this->loadModel('Truck');
-                    $nopol = urldecode($refine['nopol']);
-                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
+            if(!empty($refine['nopol'])){
+                $this->loadModel('Truck');
+                $nopol = urldecode($refine['nopol']);
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
 
-                    if( $typeTruck == 2 ) {
-                        $conditionsNopol = array(
-                            'Truck.id' => $nopol,
-                        );
-                    } else {
-                        $conditionsNopol = array(
-                            'Truck.nopol LIKE' => '%'.$nopol.'%',
-                        );
-                    }
-                    
-                    $truckSearch = $this->Truck->getData('list', array(
-                        'conditions' => $conditionsNopol,
-                        'fields' => array(
-                            'Truck.id', 'Truck.id',
-                        ),
-                    ));
-                    $this->request->data['Laka']['type'] = $typeTruck;
-                    $this->request->data['Laka']['nopol'] = $nopol;
-                    $conditions['Laka.truck_id'] = $truckSearch;
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $nopol,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$nopol.'%',
+                    );
                 }
-
-                if(!empty($refine['date'])){
-                    $dateStr = urldecode($refine['date']);
-                    $date = explode('-', $dateStr);
-
-                    if( !empty($date) ) {
-                        $date[0] = urldecode($date[0]);
-                        $date[1] = urldecode($date[1]);
-                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                        $dateFrom = $this->MkCommon->getDate($date[0]);
-                        $dateTo = $this->MkCommon->getDate($date[1]);
-                        $conditions['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') >='] = $dateFrom;
-                        $conditions['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') <='] = $dateTo;
-                    }
-                    $this->request->data['Laka']['date'] = $dateStr;
-                }
-
-                if(!empty($refine['no_ttuj'])){
-                    $no_ttuj = urldecode($refine['no_ttuj']);
-                    $this->request->data['Ttuj']['no_ttuj'] = $no_ttuj;
-                    $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
-                }
+                
+                $truckSearch = $this->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.id',
+                    ),
+                ));
+                $this->request->data['Laka']['type'] = $typeTruck;
+                $this->request->data['Laka']['nopol'] = $nopol;
+                $conditions['Laka.truck_id'] = $truckSearch;
             }
 
-            $this->paginate = $this->Laka->getData('paginate', array(
-                'conditions' => $conditions,
-                'contain' => array(
-                    'Ttuj'
-                )
-            ));
-            $Lakas = $this->paginate('Laka');
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
 
-            $this->set('Lakas', $Lakas);
-        } else {
-            $this->redirect($this->referer());
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                    $conditions['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') >='] = $dateFrom;
+                    $conditions['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') <='] = $dateTo;
+                }
+                $this->request->data['Laka']['date'] = $dateStr;
+            }
+
+            if(!empty($refine['no_ttuj'])){
+                $no_ttuj = urldecode($refine['no_ttuj']);
+                $this->request->data['Ttuj']['no_ttuj'] = $no_ttuj;
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
+            }
         }
+
+        $this->paginate = $this->Laka->getData('paginate', array(
+            'conditions' => $conditions,
+            'contain' => array(
+                'Ttuj'
+            )
+        ));
+        $Lakas = $this->paginate('Laka');
+
+        $this->set('Lakas', $Lakas);
 	}
 
     function detail($id = false){
-        if( in_array('view_lakas', $this->allowModule) ) {
-            if(!empty($id)){
-                $Laka = $this->Laka->getLaka($id);
+        if(!empty($id)){
+            $Laka = $this->Laka->getLaka($id);
 
-                if(!empty($Laka)){
-                    $sub_module_title = __('Detail LAKA');
-                    $this->set(compact('Laka', 'sub_module_title'));
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Laka tidak ditemukan.'), 'error');
-                    $this->redirect($this->referer());
-                }
+            if(!empty($Laka)){
+                $sub_module_title = __('Detail LAKA');
+                $this->set(compact('Laka', 'sub_module_title'));
             }else{
                 $this->MkCommon->setCustomFlash(__('Laka tidak ditemukan.'), 'error');
                 $this->redirect($this->referer());
             }
-        } else {
+        }else{
+            $this->MkCommon->setCustomFlash(__('Laka tidak ditemukan.'), 'error');
             $this->redirect($this->referer());
         }
     }
 
     function add(){
-        if( in_array('insert_lakas', $this->allowModule) ) {
-            $this->set('sub_module_title', __('Tambah LAKA'));
-            $this->DoLaka();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->set('sub_module_title', __('Tambah LAKA'));
+        $this->DoLaka();
     }
 
     function edit($id){
-        if( in_array('update_lakas', $this->allowModule) ) {
-            $this->loadModel('Laka');
-            $this->set('sub_module_title', 'Rubah LAKA');
-            $Laka = $this->Laka->getData('first', array(
-                'conditions' => array(
-                    'Laka.id' => $id
-                ),
-                'contain' => array(
-                    'LakaDetail',
-                    'LakaMedias'
-                )
-            ));
+        $this->loadModel('Laka');
+        $this->set('sub_module_title', 'Rubah LAKA');
+        $Laka = $this->Laka->getData('first', array(
+            'conditions' => array(
+                'Laka.id' => $id
+            ),
+            'contain' => array(
+                'LakaDetail',
+                'LakaMedias'
+            )
+        ));
 
-            if(!empty($Laka)){
-                $this->DoLaka($id, $Laka);
-            }else{
-                $this->MkCommon->setCustomFlash(__('LAKA tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'Lakas',
-                    'action' => 'index'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($Laka)){
+            $this->DoLaka($id, $Laka);
+        }else{
+            $this->MkCommon->setCustomFlash(__('LAKA tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'Lakas',
+                'action' => 'index'
+            ));
         }
     }
 
@@ -462,44 +446,40 @@ class LakasController extends AppController {
     }
 
     function toggle($id){
-        if( in_array('delete_lakas', $this->allowModule) ) {
-            $this->loadModel('Laka');
-            $locale = $this->Laka->getData('first', array(
-                'conditions' => array(
-                    'Laka.id' => $id
-                )
-            ));
+        $this->loadModel('Laka');
+        $locale = $this->Laka->getData('first', array(
+            'conditions' => array(
+                'Laka.id' => $id
+            )
+        ));
 
-            if($locale){
-                $value = true;
-                if($locale['Laka']['status']){
-                    $value = false;
-                }
-
-                $this->Laka->id = $id;
-                $this->Laka->set('status', 0);
-
-                if($this->Laka->save()){
-                    if( !empty($locale['Laka']['ttuj_id']) ){
-                        $this->loadModel('Ttuj');
-                        $this->Ttuj->id = $locale['Laka']['ttuj_id'];
-                        $this->Ttuj->set('is_laka', 0);
-                        $this->Ttuj->save();
-                    }
-
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params );
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Laka tidak ditemukan.'), 'error');
+        if($locale){
+            $value = true;
+            if($locale['Laka']['status']){
+                $value = false;
             }
 
-            $this->redirect($this->referer());
-        } else {
-            $this->redirect($this->referer());
+            $this->Laka->id = $id;
+            $this->Laka->set('status', 0);
+
+            if($this->Laka->save()){
+                if( !empty($locale['Laka']['ttuj_id']) ){
+                    $this->loadModel('Ttuj');
+                    $this->Ttuj->id = $locale['Laka']['ttuj_id'];
+                    $this->Ttuj->set('is_laka', 0);
+                    $this->Ttuj->save();
+                }
+
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params );
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Laka tidak ditemukan.'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 }

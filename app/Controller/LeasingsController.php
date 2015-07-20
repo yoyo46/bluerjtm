@@ -26,91 +26,75 @@ class LeasingsController extends AppController {
     }
 
 	public function index() {
-        if( in_array('view_leasing', $this->allowModule) ) {
-            $this->loadModel('Leasing');
-            $this->loadModel('Leasing');
-    		$this->set('active_menu', 'view_leasing');
-    		$this->set('sub_module_title', __('Leasing'));
+        $this->loadModel('Leasing');
+        $this->loadModel('Leasing');
+		$this->set('active_menu', 'view_leasing');
+		$this->set('sub_module_title', __('Leasing'));
 
-            $conditions = array();
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        $conditions = array();
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nocontract'])){
-                    $no_contract = urldecode($refine['nocontract']);
-                    $this->request->data['Leasing']['no_contract'] = $no_contract;
-                    $conditions['Leasing.no_contract LIKE '] = '%'.$no_contract.'%';
-                }
+            if(!empty($refine['nocontract'])){
+                $no_contract = urldecode($refine['nocontract']);
+                $this->request->data['Leasing']['no_contract'] = $no_contract;
+                $conditions['Leasing.no_contract LIKE '] = '%'.$no_contract.'%';
             }
-
-            $this->paginate = $this->Leasing->getData('paginate', array(
-                'conditions' => $conditions,
-                'contain' => array(
-                    'LeasingCompany'
-                )
-            ));
-            $leasings = $this->paginate('Leasing');
-
-            $this->set('leasings', $leasings);
-        } else {
-            $this->redirect($this->referer());
         }
+
+        $this->paginate = $this->Leasing->getData('paginate', array(
+            'conditions' => $conditions,
+            'contain' => array(
+                'LeasingCompany'
+            )
+        ));
+        $leasings = $this->paginate('Leasing');
+
+        $this->set('leasings', $leasings);
 	}
 
     function detail($id = false){
-        if( in_array('view_leasing', $this->allowModule) ) {
-            if(!empty($id)){
-                $truck = $this->Leasing->getLeasing($id);
+        if(!empty($id)){
+            $truck = $this->Leasing->getLeasing($id);
 
-                if(!empty($truck)){
-                    $sub_module_title = __('Detail Leasing');
-                    $this->set(compact('truck', 'sub_module_title'));
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Leasing tidak ditemukan.'), 'error');
-                    $this->redirect($this->referer());
-                }
+            if(!empty($truck)){
+                $sub_module_title = __('Detail Leasing');
+                $this->set(compact('truck', 'sub_module_title'));
             }else{
                 $this->MkCommon->setCustomFlash(__('Leasing tidak ditemukan.'), 'error');
                 $this->redirect($this->referer());
             }
-        } else {
+        }else{
+            $this->MkCommon->setCustomFlash(__('Leasing tidak ditemukan.'), 'error');
             $this->redirect($this->referer());
         }
     }
 
     function add(){
-        if( in_array('insert_leasing', $this->allowModule) ) {
-            $this->set('sub_module_title', __('Tambah Leasing'));
-            $this->doLeasing();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->set('sub_module_title', __('Tambah Leasing'));
+        $this->doLeasing();
     }
 
     function edit($id){
-        if( in_array('update_leasing', $this->allowModule) ) {
-            $this->loadModel('Leasing');
-            $this->set('sub_module_title', 'Rubah Leasing');
-            $truck = $this->Leasing->getData('first', array(
-                'conditions' => array(
-                    'Leasing.id' => $id
-                ),
-                'contain' => array(
-                    'LeasingDetail'
-                )
-            ));
+        $this->loadModel('Leasing');
+        $this->set('sub_module_title', 'Rubah Leasing');
+        $truck = $this->Leasing->getData('first', array(
+            'conditions' => array(
+                'Leasing.id' => $id
+            ),
+            'contain' => array(
+                'LeasingDetail'
+            )
+        ));
 
-            if(!empty($truck)){
-                $this->doLeasing($id, $truck);
-            }else{
-                $this->MkCommon->setCustomFlash(__('Leasing tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'trucks',
-                    'action' => 'index'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($truck)){
+            $this->doLeasing($id, $truck);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Leasing tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'trucks',
+                'action' => 'index'
+            ));
         }
     }
 
@@ -298,61 +282,49 @@ class LeasingsController extends AppController {
     }
 
     function leasing_companies(){
-        if( in_array('view_leasing', $this->allowModule) ) {
-            $this->loadModel('LeasingCompany');
-            $options = array();
+        $this->loadModel('LeasingCompany');
+        $options = array();
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['name'])){
-                    $name = urldecode($refine['name']);
-                    $this->request->data['LeasingCompany']['name'] = $name;
-                    $options['conditions']['LeasingCompany.name LIKE '] = '%'.$name.'%';
-                }
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['LeasingCompany']['name'] = $name;
+                $options['conditions']['LeasingCompany.name LIKE '] = '%'.$name.'%';
             }
-
-            $this->paginate = $this->LeasingCompany->getData('paginate', $options);
-            $leasing_companies = $this->paginate('LeasingCompany');
-
-            $this->set('active_menu', 'view_leasing');
-            $this->set('sub_module_title', 'Perusahaan Leasing');
-            $this->set('leasing_companies', $leasing_companies);
-        } else {
-            $this->redirect($this->referer());
         }
+
+        $this->paginate = $this->LeasingCompany->getData('paginate', $options);
+        $leasing_companies = $this->paginate('LeasingCompany');
+
+        $this->set('active_menu', 'view_leasing');
+        $this->set('sub_module_title', 'Perusahaan Leasing');
+        $this->set('leasing_companies', $leasing_companies);
     }
 
     function leasing_company_add(){
-        if( in_array('insert_leasing', $this->allowModule) ) {
-            $this->set('sub_module_title', 'Tambah Perusahaan Leasing');
-            $this->doLeasingCompany();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->set('sub_module_title', 'Tambah Perusahaan Leasing');
+        $this->doLeasingCompany();
     }
 
     function leasing_company_edit($id){
-        if( in_array('update_leasing', $this->allowModule) ) {
-            $this->loadModel('LeasingCompany');
-            $this->set('sub_module_title', 'Rubah Perusahaan Leasing');
-            $type_property = $this->LeasingCompany->getData('first', array(
-                'conditions' => array(
-                    'LeasingCompany.id' => $id
-                )
-            ));
+        $this->loadModel('LeasingCompany');
+        $this->set('sub_module_title', 'Rubah Perusahaan Leasing');
+        $type_property = $this->LeasingCompany->getData('first', array(
+            'conditions' => array(
+                'LeasingCompany.id' => $id
+            )
+        ));
 
-            if(!empty($type_property)){
-                $this->doLeasingCompany($id, $type_property);
-            }else{
-                $this->MkCommon->setCustomFlash(__('Perusahaan Leasing tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'settings',
-                    'action' => 'citys'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($type_property)){
+            $this->doLeasingCompany($id, $type_property);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Perusahaan Leasing tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'citys'
+            ));
         }
     }
 
@@ -397,64 +369,60 @@ class LeasingsController extends AppController {
     }
 
     function toggle($id){
-        if( in_array('delete_leasing', $this->allowModule) ) {
-            $this->loadModel('Leasing');
-            $locale = $this->Leasing->getData('first', array(
-                'conditions' => array(
-                    'Leasing.id' => $id
-                )
-            ));
+        $this->loadModel('Leasing');
+        $locale = $this->Leasing->getData('first', array(
+            'conditions' => array(
+                'Leasing.id' => $id
+            )
+        ));
 
-            if($locale){
-                $value = true;
-                if($locale['Leasing']['status']){
-                    $value = false;
-                }
-
-                $this->Leasing->id = $id;
-                $this->Leasing->set('status', $value);
-                if($this->Leasing->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Leasing tidak ditemukan.'), 'error');
+        if($locale){
+            $value = true;
+            if($locale['Leasing']['status']){
+                $value = false;
             }
-        }
 
+            $this->Leasing->id = $id;
+            $this->Leasing->set('status', $value);
+            if($this->Leasing->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Leasing tidak ditemukan.'), 'error');
+        }
+        
         $this->redirect($this->referer());
     }
 
     function leasing_company_toggle($id){
-        if( in_array('delete_leasing', $this->allowModule) ) {
-            $this->loadModel('LeasingCompany');
-            $locale = $this->LeasingCompany->getData('first', array(
-                'conditions' => array(
-                    'LeasingCompany.id' => $id
-                )
-            ));
+        $this->loadModel('LeasingCompany');
+        $locale = $this->LeasingCompany->getData('first', array(
+            'conditions' => array(
+                'LeasingCompany.id' => $id
+            )
+        ));
 
-            if($locale){
-                $value = true;
-                if($locale['LeasingCompany']['status']){
-                    $value = false;
-                }
-
-                $this->LeasingCompany->id = $id;
-                $this->LeasingCompany->set('status', $value);
-                if($this->LeasingCompany->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Perusahaan Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status Perusahaan Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Perusahaan Leasing tidak ditemukan.'), 'error');
+        if($locale){
+            $value = true;
+            if($locale['LeasingCompany']['status']){
+                $value = false;
             }
+
+            $this->LeasingCompany->id = $id;
+            $this->LeasingCompany->set('status', $value);
+            if($this->LeasingCompany->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Perusahaan Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Perusahaan Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Perusahaan Leasing tidak ditemukan.'), 'error');
         }
 
         $this->redirect($this->referer());

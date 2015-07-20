@@ -737,33 +737,29 @@ class AjaxController extends AppController {
 	}
 
     function event_delete( $id = false ){
-        // if( in_array('delete_cities', $this->allowModule) ) {
-            $this->loadModel('CalendarEvent');
-            $locale = $this->CalendarEvent->getData('first', array(
-                'conditions' => array(
-                    'CalendarEvent.id' => $id
-                )
-            ), false);
+        $this->loadModel('CalendarEvent');
+        $locale = $this->CalendarEvent->getData('first', array(
+            'conditions' => array(
+                'CalendarEvent.id' => $id
+            )
+        ), false);
 
-            if($locale){
-                $this->CalendarEvent->id = $id;
-                $this->CalendarEvent->set('status', 0);
+        if($locale){
+            $this->CalendarEvent->id = $id;
+            $this->CalendarEvent->set('status', 0);
 
-                if($this->CalendarEvent->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses menghapus event.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses menghapus event ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal menghapus cevent.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal menghapus cevent ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                }
+            if($this->CalendarEvent->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses menghapus event.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses menghapus event ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
             }else{
-                $this->MkCommon->setCustomFlash(__('Event tidak ditemukan.'), 'error');
+                $this->MkCommon->setCustomFlash(__('Gagal menghapus cevent.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal menghapus cevent ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
             }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Event tidak ditemukan.'), 'error');
+        }
 
-            $this->redirect($this->referer());
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->redirect($this->referer());
     }
 
 	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $detail_city_id = false, $group_motor_id = false, $is_charge = false, $main_city_id = false, $qty = 0, $jenis_unit = '', $from_city_id = false, $truck_id = false, $from_ttuj = false ){
@@ -2655,7 +2651,10 @@ class AjaxController extends AppController {
 	            $this->set('data_auth', $data_auth);
 			}
 
-			$this->set(compact('branch_modules', 'save'));
+			$this->set(compact(
+				'branch_modules', 'save',
+				'group_branch_id'
+			));
 		}
 	}
 

@@ -26,65 +26,53 @@ class ProductsController extends AppController {
     }
 
 	public function categories() {
-        // if( in_array('view_leasing', $this->allowModule) ) {
-            $this->loadModel('ProductCategory');
-    		$this->set('active_menu', 'product_categories');
-    		$this->set('sub_module_title', __('Kategori Barang'));
-            $conditions = array();
+        $this->loadModel('ProductCategory');
+		$this->set('active_menu', 'product_categories');
+		$this->set('sub_module_title', __('Kategori Barang'));
+        $conditions = array();
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['category'])){
-                    $value = urldecode($refine['category']);
-                    $this->request->data['ProductCategory']['name'] = $value;
-                    $conditions['ProductCategory.name LIKE'] = '%'.$value.'%';
-                }
+            if(!empty($refine['category'])){
+                $value = urldecode($refine['category']);
+                $this->request->data['ProductCategory']['name'] = $value;
+                $conditions['ProductCategory.name LIKE'] = '%'.$value.'%';
             }
+        }
 
-            $this->paginate = $this->ProductCategory->getData('paginate', array(
-                'conditions' => $conditions,
-            ));
-            $productCategories = $this->paginate('ProductCategory');
+        $this->paginate = $this->ProductCategory->getData('paginate', array(
+            'conditions' => $conditions,
+        ));
+        $productCategories = $this->paginate('ProductCategory');
 
-            $this->set('productCategories', $productCategories);
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->set('productCategories', $productCategories);
 	}
 
     function category_add(){
-        // if( in_array('insert_leasing', $this->allowModule) ) {
-            $this->loadModel('ProductCategory');
-            $this->set('sub_module_title', __('Tambah Kategori Barang'));
-            $this->doProductCategory();
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->loadModel('ProductCategory');
+        $this->set('sub_module_title', __('Tambah Kategori Barang'));
+        $this->doProductCategory();
     }
 
     function category_edit($id){
-        // if( in_array('update_leasing', $this->allowModule) ) {
-            $this->loadModel('ProductCategory');
-            $this->set('sub_module_title', 'Ubah Kategori Barang');
-            $productCategory = $this->ProductCategory->getData('first', array(
-                'conditions' => array(
-                    'ProductCategory.id' => $id
-                ),
-            ));
+        $this->loadModel('ProductCategory');
+        $this->set('sub_module_title', 'Ubah Kategori Barang');
+        $productCategory = $this->ProductCategory->getData('first', array(
+            'conditions' => array(
+                'ProductCategory.id' => $id
+            ),
+        ));
 
-            if(!empty($productCategory)){
-                $this->doProductCategory($id, $productCategory);
-            }else{
-                $this->MkCommon->setCustomFlash(__('Kategori Barang tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'products',
-                    'action' => 'categories'
-                ));
-            }
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        if(!empty($productCategory)){
+            $this->doProductCategory($id, $productCategory);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Kategori Barang tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'products',
+                'action' => 'categories'
+            ));
+        }
     }
 
     function doProductCategory($id = false, $data_local = false){
@@ -128,96 +116,82 @@ class ProductsController extends AppController {
     }
 
     function category_toggle($id){
-        // if( in_array('delete_leasing', $this->allowModule) ) {
-            $this->loadModel('ProductCategory');
-            $locale = $this->ProductCategory->getData('first', array(
-                'conditions' => array(
-                    'ProductCategory.id' => $id
-                )
-            ));
+        $this->loadModel('ProductCategory');
+        $locale = $this->ProductCategory->getData('first', array(
+            'conditions' => array(
+                'ProductCategory.id' => $id
+            )
+        ));
 
-            if($locale){
-                $value = true;
-                if($locale['ProductCategory']['status']){
-                    $value = false;
-                }
-
-                $this->ProductCategory->id = $id;
-                $this->ProductCategory->set('status', $value);
-
-                if($this->ProductCategory->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Kategori Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status Kategori Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Kategori Barang tidak ditemukan.'), 'error');
+        if($locale){
+            $value = true;
+            if($locale['ProductCategory']['status']){
+                $value = false;
             }
-        // }
+
+            $this->ProductCategory->id = $id;
+            $this->ProductCategory->set('status', $value);
+
+            if($this->ProductCategory->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Kategori Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Kategori Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Kategori Barang tidak ditemukan.'), 'error');
+        }
 
         $this->redirect($this->referer());
     }
 
     function brands(){
-        // if( in_array('view_leasing', $this->allowModule) ) {
-            $this->loadModel('ProductBrand');
-            $options = array();
+        $this->loadModel('ProductBrand');
+        $options = array();
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['name'])){
-                    $name = urldecode($refine['name']);
-                    $this->request->data['ProductBrand']['name'] = $name;
-                    $options['conditions']['ProductBrand.name LIKE '] = '%'.$name.'%';
-                }
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['ProductBrand']['name'] = $name;
+                $options['conditions']['ProductBrand.name LIKE '] = '%'.$name.'%';
             }
+        }
 
-            $this->paginate = $this->ProductBrand->getData('paginate', $options);
-            $productBrands = $this->paginate('ProductBrand');
+        $this->paginate = $this->ProductBrand->getData('paginate', $options);
+        $productBrands = $this->paginate('ProductBrand');
 
-            $this->set('active_menu', 'product_brands');
-            $this->set('sub_module_title', __('Merk Barang'));
-            $this->set('productBrands', $productBrands);
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->set('active_menu', 'product_brands');
+        $this->set('sub_module_title', __('Merk Barang'));
+        $this->set('productBrands', $productBrands);
     }
 
     function brand_add(){
-        // if( in_array('insert_leasing', $this->allowModule) ) {
-            $this->loadModel('ProductBrand');
-            $this->set('sub_module_title', __('Tambah Merk Barang'));
-            $this->doProductBrand();
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->loadModel('ProductBrand');
+        $this->set('sub_module_title', __('Tambah Merk Barang'));
+        $this->doProductBrand();
     }
 
     function brand_edit($id){
-        // if( in_array('update_leasing', $this->allowModule) ) {
-            $this->loadModel('ProductBrand');
-            $this->set('sub_module_title', 'Ubah Merk Barang');
-            $productBrand = $this->ProductBrand->getData('first', array(
-                'conditions' => array(
-                    'ProductBrand.id' => $id
-                ),
-            ));
+        $this->loadModel('ProductBrand');
+        $this->set('sub_module_title', 'Ubah Merk Barang');
+        $productBrand = $this->ProductBrand->getData('first', array(
+            'conditions' => array(
+                'ProductBrand.id' => $id
+            ),
+        ));
 
-            if(!empty($productBrand)){
-                $this->doProductBrand($id, $productBrand);
-            }else{
-                $this->MkCommon->setCustomFlash(__('Merk Barang tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'products',
-                    'action' => 'brands'
-                ));
-            }
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        if(!empty($productBrand)){
+            $this->doProductBrand($id, $productBrand);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Merk Barang tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'products',
+                'action' => 'brands'
+            ));
+        }
     }
 
     function doProductBrand($id = false, $data_local = false){
@@ -261,96 +235,82 @@ class ProductsController extends AppController {
     }
 
     function brand_toggle($id){
-        // if( in_array('delete_leasing', $this->allowModule) ) {
-            $this->loadModel('ProductBrand');
-            $locale = $this->ProductBrand->getData('first', array(
-                'conditions' => array(
-                    'ProductBrand.id' => $id
-                )
-            ));
+        $this->loadModel('ProductBrand');
+        $locale = $this->ProductBrand->getData('first', array(
+            'conditions' => array(
+                'ProductBrand.id' => $id
+            )
+        ));
 
-            if($locale){
-                $value = true;
-                if($locale['ProductBrand']['status']){
-                    $value = false;
-                }
-
-                $this->ProductBrand->id = $id;
-                $this->ProductBrand->set('status', $value);
-
-                if($this->ProductBrand->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Merk Barang tidak ditemukan.'), 'error');
+        if($locale){
+            $value = true;
+            if($locale['ProductBrand']['status']){
+                $value = false;
             }
-        // }
+
+            $this->ProductBrand->id = $id;
+            $this->ProductBrand->set('status', $value);
+
+            if($this->ProductBrand->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Merk Barang tidak ditemukan.'), 'error');
+        }
 
         $this->redirect($this->referer());
     }
 
     function index(){
-        // if( in_array('view_leasing', $this->allowModule) ) {
-            $this->loadModel('Product');
-            $options = array();
+        $this->loadModel('Product');
+        $options = array();
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['name'])){
-                    $name = urldecode($refine['name']);
-                    $this->request->data['ProductBrand']['name'] = $name;
-                    $options['conditions']['ProductBrand.name LIKE '] = '%'.$name.'%';
-                }
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['ProductBrand']['name'] = $name;
+                $options['conditions']['ProductBrand.name LIKE '] = '%'.$name.'%';
             }
+        }
 
-            $this->paginate = $this->ProductBrand->getData('paginate', $options);
-            $productBrands = $this->paginate('ProductBrand');
+        $this->paginate = $this->ProductBrand->getData('paginate', $options);
+        $productBrands = $this->paginate('ProductBrand');
 
-            $this->set('active_menu', 'product_brands');
-            $this->set('sub_module_title', __('Merk Barang'));
-            $this->set('productBrands', $productBrands);
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->set('active_menu', 'product_brands');
+        $this->set('sub_module_title', __('Merk Barang'));
+        $this->set('productBrands', $productBrands);
     }
 
     function add(){
-        // if( in_array('insert_leasing', $this->allowModule) ) {
-            $this->loadModel('ProductBrand');
-            $this->set('sub_module_title', __('Tambah Merk Barang'));
-            $this->doProductBrand();
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->loadModel('ProductBrand');
+        $this->set('sub_module_title', __('Tambah Merk Barang'));
+        $this->doProductBrand();
     }
 
     function edit($id){
-        // if( in_array('update_leasing', $this->allowModule) ) {
-            $this->loadModel('ProductBrand');
-            $this->set('sub_module_title', 'Ubah Merk Barang');
-            $productBrand = $this->ProductBrand->getData('first', array(
-                'conditions' => array(
-                    'ProductBrand.id' => $id
-                ),
-            ));
+        $this->loadModel('ProductBrand');
+        $this->set('sub_module_title', 'Ubah Merk Barang');
+        $productBrand = $this->ProductBrand->getData('first', array(
+            'conditions' => array(
+                'ProductBrand.id' => $id
+            ),
+        ));
 
-            if(!empty($productBrand)){
-                $this->doProductBrand($id, $productBrand);
-            }else{
-                $this->MkCommon->setCustomFlash(__('Merk Barang tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'products',
-                    'action' => 'brands'
-                ));
-            }
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        if(!empty($productBrand)){
+            $this->doProductBrand($id, $productBrand);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Merk Barang tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'products',
+                'action' => 'brands'
+            ));
+        }
     }
 
     function doProduct($id = false, $data_local = false){
@@ -394,34 +354,32 @@ class ProductsController extends AppController {
     }
 
     function toggle($id){
-        // if( in_array('delete_leasing', $this->allowModule) ) {
-            $this->loadModel('ProductBrand');
-            $locale = $this->ProductBrand->getData('first', array(
-                'conditions' => array(
-                    'ProductBrand.id' => $id
-                )
-            ));
+        $this->loadModel('ProductBrand');
+        $locale = $this->ProductBrand->getData('first', array(
+            'conditions' => array(
+                'ProductBrand.id' => $id
+            )
+        ));
 
-            if($locale){
-                $value = true;
-                if($locale['ProductBrand']['status']){
-                    $value = false;
-                }
-
-                $this->ProductBrand->id = $id;
-                $this->ProductBrand->set('status', $value);
-
-                if($this->ProductBrand->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Merk Barang tidak ditemukan.'), 'error');
+        if($locale){
+            $value = true;
+            if($locale['ProductBrand']['status']){
+                $value = false;
             }
-        // }
+
+            $this->ProductBrand->id = $id;
+            $this->ProductBrand->set('status', $value);
+
+            if($this->ProductBrand->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Merk Barang tidak ditemukan.'), 'error');
+        }
 
         $this->redirect($this->referer());
     }

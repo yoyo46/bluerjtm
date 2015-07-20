@@ -30,138 +30,134 @@ class TrucksController extends AppController {
     }
 
 	public function index() {
-        if( in_array('view_trucks', $this->allowModule) ) {
-            $this->loadModel('Laka');
-            $this->loadModel('Ttuj');
-    		$this->set('active_menu', 'trucks');
-    		$this->set('sub_module_title', __('Data Truk'));
-            $conditions = array();
-            $contain = array(
-                'Driver'
-            );
-            
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        $this->loadModel('Laka');
+        $this->loadModel('Ttuj');
+		$this->set('active_menu', 'trucks');
+		$this->set('sub_module_title', __('Data Truk'));
+        $conditions = array();
+        $contain = array(
+            'Driver'
+        );
+        
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nopol'])){
-                    $nopol = urldecode($refine['nopol']);
-                    $this->request->data['Truck']['nopol'] = $nopol;
-                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                    $this->request->data['Truck']['type'] = $typeTruck;
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $this->request->data['Truck']['nopol'] = $nopol;
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                $this->request->data['Truck']['type'] = $typeTruck;
 
-                    if( $typeTruck == 2 ) {
-                        $conditionsNopol = array(
-                            'Truck.id' => $nopol,
-                        );
-                    } else {
-                        $conditionsNopol = array(
-                            'Truck.nopol LIKE' => '%'.$nopol.'%',
-                        );
-                    }
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $nopol,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$nopol.'%',
+                    );
+                }
+                
+                $truckSearch = $this->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.id',
+                    ),
+                ));
+                $conditions['Truck.id'] = $truckSearch;
+            }
+            if(!empty($refine['name'])){
+                $data = urldecode($refine['name']);
+                $conditions['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$data.'%';
+                $this->request->data['Driver']['name'] = $data;
+            }
+            if(!empty($refine['status'])){
+                $data = urldecode($refine['status']);
+
+                if( in_array($data, array( 'laka', 'away', 'available' )) ) {
+                    $this->Truck->bindModel(array(
+                        'hasOne' => array(
+                            'Laka' => array(
+                                'className' => 'Laka',
+                                'foreignKey' => 'truck_id',
+                                'conditions' => array(
+                                    'Laka.status' => 1,
+                                    'Laka.completed' => 0,
+                                ),
+                            ),
+                            'Ttuj' => array(
+                                'className' => 'Ttuj',
+                                'foreignKey' => 'truck_id',
+                                'conditions' => array(
+                                    'Ttuj.status' => 1,
+                                    'Ttuj.is_pool' => 0,
+                                ),
+                            ),
+                        )
+                    ), false);
                     
-                    $truckSearch = $this->Truck->getData('list', array(
-                        'conditions' => $conditionsNopol,
-                        'fields' => array(
-                            'Truck.id', 'Truck.id',
-                        ),
-                    ));
-                    $conditions['Truck.id'] = $truckSearch;
+                    $contain[] = 'Laka';
+                    $contain[] = 'Ttuj';
                 }
-                if(!empty($refine['name'])){
-                    $data = urldecode($refine['name']);
-                    $conditions['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$data.'%';
-                    $this->request->data['Driver']['name'] = $data;
-                }
-                if(!empty($refine['status'])){
-                    $data = urldecode($refine['status']);
 
-                    if( in_array($data, array( 'laka', 'away', 'available' )) ) {
-                        $this->Truck->bindModel(array(
-                            'hasOne' => array(
-                                'Laka' => array(
-                                    'className' => 'Laka',
-                                    'foreignKey' => 'truck_id',
-                                    'conditions' => array(
-                                        'Laka.status' => 1,
-                                        'Laka.completed' => 0,
-                                    ),
-                                ),
-                                'Ttuj' => array(
-                                    'className' => 'Ttuj',
-                                    'foreignKey' => 'truck_id',
-                                    'conditions' => array(
-                                        'Ttuj.status' => 1,
-                                        'Ttuj.is_pool' => 0,
-                                    ),
-                                ),
-                            )
-                        ), false);
-                        
-                        $contain[] = 'Laka';
-                        $contain[] = 'Ttuj';
-                    }
+                switch ($data) {
+                    case 'sold':
+                        $conditions['Truck.sold'] = 1;
+                        break;
 
-                    switch ($data) {
-                        case 'sold':
-                            $conditions['Truck.sold'] = 1;
-                            break;
+                    case 'laka':
+                        $conditions['Truck.sold'] = 0;
+                        $conditions['Laka.id <>'] = NULL;
+                        break;
 
-                        case 'laka':
-                            $conditions['Truck.sold'] = 0;
-                            $conditions['Laka.id <>'] = NULL;
-                            break;
-
-                        case 'away':
-                            $conditions['Truck.sold'] = 0;
-                            $conditions['Laka.id'] = NULL;
-                            $conditions['Ttuj.id <>'] = NULL;
-                            break;
-                        
-                        case 'available':
-                            $conditions['Truck.sold'] = 0;
-                            $conditions['Laka.id'] = NULL;
-                            $conditions['Ttuj.id'] = NULL;
-                            break;
-                    }
-                    $this->request->data['Truck']['status'] = $data;
+                    case 'away':
+                        $conditions['Truck.sold'] = 0;
+                        $conditions['Laka.id'] = NULL;
+                        $conditions['Ttuj.id <>'] = NULL;
+                        break;
+                    
+                    case 'available':
+                        $conditions['Truck.sold'] = 0;
+                        $conditions['Laka.id'] = NULL;
+                        $conditions['Ttuj.id'] = NULL;
+                        break;
                 }
-                if(!empty($refine['capacity'])){
-                    $data = urldecode($refine['capacity']);
-                    $conditions['Truck.capacity LIKE'] = '%'.$data.'%';
-                    $this->request->data['Truck']['capacity'] = $data;
-                }
-                if(!empty($refine['category'])){
-                    $data = urldecode($refine['category']);
-                    $conditions['TruckCategory.name LIKE'] = '%'.$data.'%';
-                    $this->request->data['Truck']['category'] = $data;
-                    $contain[] = 'TruckCategory';
-                }
+                $this->request->data['Truck']['status'] = $data;
             }
-
-            $this->paginate = $this->Truck->getData('paginate', array(
-                'conditions' => $conditions,
-                'contain' => $contain,
-            ));
-            $trucks = $this->paginate('Truck');
-
-            if(!empty($trucks)){
-                foreach ($trucks as $key => $truck) {
-                    $data = $truck['Truck'];
-
-                    $truck = $this->Truck->TruckCategory->getMerge($truck, $data['truck_category_id']);
-                    $truck = $this->Truck->TruckBrand->getMerge($truck, $data['truck_brand_id']);
-                    $truck = $this->Truck->Company->getMerge($truck, $data['company_id']);
-                    $truck = $this->Laka->getMerge($data['id'], $truck);
-                    $truck = $this->Ttuj->getTruckStatus($truck, $data['id']);
-
-                    $trucks[$key] = $truck;
-                }
+            if(!empty($refine['capacity'])){
+                $data = urldecode($refine['capacity']);
+                $conditions['Truck.capacity LIKE'] = '%'.$data.'%';
+                $this->request->data['Truck']['capacity'] = $data;
             }
-
-            $this->set('trucks', $trucks);
-        } else {
-            $this->redirect($this->referer());
+            if(!empty($refine['category'])){
+                $data = urldecode($refine['category']);
+                $conditions['TruckCategory.name LIKE'] = '%'.$data.'%';
+                $this->request->data['Truck']['category'] = $data;
+                $contain[] = 'TruckCategory';
+            }
         }
+
+        $this->paginate = $this->Truck->getData('paginate', array(
+            'conditions' => $conditions,
+            'contain' => $contain,
+        ));
+        $trucks = $this->paginate('Truck');
+
+        if(!empty($trucks)){
+            foreach ($trucks as $key => $truck) {
+                $data = $truck['Truck'];
+
+                $truck = $this->Truck->TruckCategory->getMerge($truck, $data['truck_category_id']);
+                $truck = $this->Truck->TruckBrand->getMerge($truck, $data['truck_brand_id']);
+                $truck = $this->Truck->Company->getMerge($truck, $data['company_id']);
+                $truck = $this->Laka->getMerge($data['id'], $truck);
+                $truck = $this->Ttuj->getTruckStatus($truck, $data['id']);
+
+                $trucks[$key] = $truck;
+            }
+        }
+
+        $this->set('trucks', $trucks);
 	}
 
     function detail($id = false){
@@ -209,35 +205,27 @@ class TrucksController extends AppController {
     }
 
     function add(){
-        if( in_array('insert_trucks', $this->allowModule) ) {
-            $this->set('sub_module_title', __('Tambah Truk'));
-            $this->doTruck();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->set('sub_module_title', __('Tambah Truk'));
+        $this->doTruck();
     }
 
     function edit($id){
-        if( in_array('update_trucks', $this->allowModule) ) {
-            $this->set('sub_module_title', 'Rubah truk');
-            $truck = $this->Truck->getData('first', array(
-                'conditions' => array(
-                    'Truck.id' => $id
-                ),
-            ));
+        $this->set('sub_module_title', 'Rubah truk');
+        $truck = $this->Truck->getData('first', array(
+            'conditions' => array(
+                'Truck.id' => $id
+            ),
+        ));
 
-            if(!empty($truck)){
-                $truck = $this->Truck->TruckCustomer->getMergeTruckCustomer($truck);
-                $this->doTruck($id, $truck);
-            }else{
-                $this->MkCommon->setCustomFlash(__('truk tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'trucks',
-                    'action' => 'index'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($truck)){
+            $truck = $this->Truck->TruckCustomer->getMergeTruckCustomer($truck);
+            $this->doTruck($id, $truck);
+        }else{
+            $this->MkCommon->setCustomFlash(__('truk tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'trucks',
+                'action' => 'index'
+            ));
         }
     }
 
@@ -484,100 +472,83 @@ class TrucksController extends AppController {
     }
 
     function toggle($id){
-        if( in_array('delete_trucks', $this->allowModule) ) {
-            $locale = $this->Truck->getData('first', array(
-                'conditions' => array(
-                    'Truck.id' => $id
-                )
-            ));
+        $locale = $this->Truck->getData('first', array(
+            'conditions' => array(
+                'Truck.id' => $id
+            )
+        ));
 
-            if($locale){
-                $value = true;
-                if($locale['Truck']['status']){
-                    $value = false;
-                }
-
-                $this->Truck->id = $id;
-                $this->Truck->set('status', 0);
-                // $this->Truck->set('status', $value);
-
-                if($this->Truck->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Truk ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params );
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status Truk ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('truk tidak ditemukan.'), 'error');
+        if($locale){
+            $value = true;
+            if($locale['Truck']['status']){
+                $value = false;
             }
 
-            $this->redirect($this->referer());
-        } else {
-            $this->redirect($this->referer());
+            $this->Truck->id = $id;
+            $this->Truck->set('status', 0);
+
+            if($this->Truck->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Truk ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params );
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Truk ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('truk tidak ditemukan.'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
 	function brands(){
-        if( in_array('insert_trucks', $this->allowModule) ) {
-    		$this->loadModel('TruckBrand');
-            $options = array(
-                'conditions' => array(
-                    'TruckBrand.status' => 1
-                )
-            );
+		$this->loadModel('TruckBrand');
+        $options = array(
+            'conditions' => array(
+                'TruckBrand.status' => 1
+            )
+        );
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['name'])){
-                    $name = urldecode($refine['name']);
-                    $this->request->data['TruckBrand']['name'] = $name;
-                    $options['conditions']['TruckBrand.name LIKE '] = '%'.$name.'%';
-                }
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['TruckBrand']['name'] = $name;
+                $options['conditions']['TruckBrand.name LIKE '] = '%'.$name.'%';
             }
-
-    		$this->paginate = $this->TruckBrand->getData('paginate', $options);
-    		$truck_brands = $this->paginate('TruckBrand');
-
-            $this->set('active_menu', 'trucks');
-    		$this->set('sub_module_title', 'Merek Truk');
-    		$this->set('truck_brands', $truck_brands);
-        } else {
-            $this->redirect($this->referer());
         }
+
+		$this->paginate = $this->TruckBrand->getData('paginate', $options);
+		$truck_brands = $this->paginate('TruckBrand');
+
+        $this->set('active_menu', 'trucks');
+		$this->set('sub_module_title', 'Merek Truk');
+		$this->set('truck_brands', $truck_brands);
 	}
 
 	function brand_add(){
-        if( in_array('insert_trucks', $this->allowModule) ) {
-            $this->set('sub_module_title', 'Tambah Merek Truk');
-            $this->doBrand();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->set('sub_module_title', 'Tambah Merek Truk');
+        $this->doBrand();
     }
 
     function brand_edit($id){
-        if( in_array('insert_trucks', $this->allowModule) ) {
-        	$this->loadModel('TruckBrand');
-            $this->set('sub_module_title', 'Rubah Merek Truk');
-            $TruckBrand = $this->TruckBrand->getData('first', array(
-                'conditions' => array(
-                    'TruckBrand.id' => $id
-                )
-            ));
+    	$this->loadModel('TruckBrand');
+        $this->set('sub_module_title', 'Rubah Merek Truk');
+        $TruckBrand = $this->TruckBrand->getData('first', array(
+            'conditions' => array(
+                'TruckBrand.id' => $id
+            )
+        ));
 
-            if(!empty($TruckBrand)){
-                $this->doBrand($id, $TruckBrand);
-            }else{
-                $this->MkCommon->setCustomFlash(__('Merek Truk tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'trucks',
-                    'action' => 'brands'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($TruckBrand)){
+            $this->doBrand($id, $TruckBrand);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Merek Truk tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'trucks',
+                'action' => 'brands'
+            ));
         }
     }
 
@@ -622,98 +593,82 @@ class TrucksController extends AppController {
     }
 
     function brand_toggle($id){
-        if( in_array('insert_trucks', $this->allowModule) ) {
-        	$this->loadModel('TruckBrand');
-            $locale = $this->TruckBrand->getData('first', array(
-                'conditions' => array(
-                    'TruckBrand.id' => $id
-                )
-            ));
+    	$this->loadModel('TruckBrand');
+        $locale = $this->TruckBrand->getData('first', array(
+            'conditions' => array(
+                'TruckBrand.id' => $id
+            )
+        ));
 
-            if($locale){
-                $value = true;
-                if($locale['TruckBrand']['status']){
-                    $value = false;
-                }
-
-                $this->TruckBrand->id = $id;
-                $this->TruckBrand->set('status', $value);
-                if($this->TruckBrand->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status merek truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status merek truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Merek Truk tidak ditemukan.'), 'error');
+        if($locale){
+            $value = true;
+            if($locale['TruckBrand']['status']){
+                $value = false;
             }
 
-            $this->redirect($this->referer());
-        } else {
-            $this->redirect($this->referer());
+            $this->TruckBrand->id = $id;
+            $this->TruckBrand->set('status', $value);
+            if($this->TruckBrand->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status merek truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status merek truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Merek Truk tidak ditemukan.'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
     function categories(){
-        if( in_array('insert_trucks', $this->allowModule) ) {
-    		$this->loadModel('TruckCategory');
-            $options = array(
-                'conditions' => array(
-                    'TruckCategory.status' => 1
-                )
-            );
+		$this->loadModel('TruckCategory');
+        $options = array(
+            'conditions' => array(
+                'TruckCategory.status' => 1
+            )
+        );
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['name'])){
-                    $name = urldecode($refine['name']);
-                    $this->request->data['TruckCategory']['name'] = $name;
-                    $options['conditions']['TruckCategory.name LIKE '] = '%'.$name.'%';
-                }
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['TruckCategory']['name'] = $name;
+                $options['conditions']['TruckCategory.name LIKE '] = '%'.$name.'%';
             }
-    		$this->paginate = $this->TruckCategory->getData('paginate', $options);
-    		$truck_categories = $this->paginate('TruckCategory');
-
-            $this->set('active_menu', 'trucks');
-    		$this->set('sub_module_title', 'Jenis Truk');
-    		$this->set('truck_categories', $truck_categories);
-        } else {
-            $this->redirect($this->referer());
         }
+		$this->paginate = $this->TruckCategory->getData('paginate', $options);
+		$truck_categories = $this->paginate('TruckCategory');
+
+        $this->set('active_menu', 'trucks');
+		$this->set('sub_module_title', 'Jenis Truk');
+		$this->set('truck_categories', $truck_categories);
 	}
 
 	function category_add(){
-        if( in_array('insert_trucks', $this->allowModule) ) {
-            $this->set('sub_module_title', 'Tambah Jenis Truk');
-            $this->doCategory();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->set('sub_module_title', 'Tambah Jenis Truk');
+        $this->doCategory();
     }
 
     function category_edit($id){
-        if( in_array('insert_trucks', $this->allowModule) ) {
-        	$this->loadModel('TruckCategory');
-            $this->set('sub_module_title', 'Rubah Jenis Truk');
-            $type_property = $this->TruckCategory->getData('first', array(
-                'conditions' => array(
-                    'TruckCategory.id' => $id
-                )
-            ));
+    	$this->loadModel('TruckCategory');
+        $this->set('sub_module_title', 'Rubah Jenis Truk');
+        $type_property = $this->TruckCategory->getData('first', array(
+            'conditions' => array(
+                'TruckCategory.id' => $id
+            )
+        ));
 
-            if(!empty($type_property)){
-                $this->doCategory($id, $type_property);
-            }else{
-                $this->MkCommon->setCustomFlash(__('Jenis Truk tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'trucks',
-                    'action' => 'categories'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($type_property)){
+            $this->doCategory($id, $type_property);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Jenis Truk tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'trucks',
+                'action' => 'categories'
+            ));
         }
     }
 
@@ -758,105 +713,89 @@ class TrucksController extends AppController {
     }
 
     function category_toggle($id){
-        if( in_array('insert_trucks', $this->allowModule) ) {
-        	$this->loadModel('TruckCategory');
-            $locale = $this->TruckCategory->getData('first', array(
-                'conditions' => array(
-                    'TruckCategory.id' => $id
-                )
-            ));
+    	$this->loadModel('TruckCategory');
+        $locale = $this->TruckCategory->getData('first', array(
+            'conditions' => array(
+                'TruckCategory.id' => $id
+            )
+        ));
 
-            if($locale){
-                $value = true;
-                if($locale['TruckCategory']['status']){
-                    $value = false;
-                }
-
-                $this->TruckCategory->id = $id;
-                $this->TruckCategory->set('status', $value);
-                if($this->TruckCategory->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Jenis Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );  
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status Jenis Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Jenis Truk tidak ditemukan.'), 'error');
+        if($locale){
+            $value = true;
+            if($locale['TruckCategory']['status']){
+                $value = false;
             }
 
-            $this->redirect($this->referer());
-        } else {
-            $this->redirect($this->referer());
+            $this->TruckCategory->id = $id;
+            $this->TruckCategory->set('status', $value);
+            if($this->TruckCategory->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Jenis Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );  
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Jenis Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Jenis Truk tidak ditemukan.'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
     function drivers(){
-        if( in_array('view_drivers', $this->allowModule) ) {
-            $this->loadModel('Driver');
+        $this->loadModel('Driver');
 
-            $conditions = array(
-                'Driver.status' => array( 0, 1 )
-            );
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        $conditions = array(
+            'Driver.status' => array( 0, 1 )
+        );
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['name'])){
-                    $name = urldecode($refine['name']);
-                    $this->request->data['Driver']['name'] = $name;
-                    $conditions['Driver.name LIKE '] = '%'.$name.'%';
-                }
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['Driver']['name'] = $name;
+                $conditions['Driver.name LIKE '] = '%'.$name.'%';
             }
-
-            $this->paginate = $this->Driver->getData('paginate', array(
-                'conditions' => $conditions,
-                'order' => array(
-                    'Driver.status' => 'DESC',
-                    'Driver.name' => 'ASC',
-                ),
-            ), false);
-            $truck_drivers = $this->paginate('Driver');
-
-            $this->set('active_menu', 'drivers');
-            $this->set('sub_module_title', 'Supir Truk');
-            $this->set('truck_drivers', $truck_drivers);
-        } else {
-            $this->redirect($this->referer());
         }
+
+        $this->paginate = $this->Driver->getData('paginate', array(
+            'conditions' => $conditions,
+            'order' => array(
+                'Driver.status' => 'DESC',
+                'Driver.name' => 'ASC',
+            ),
+        ), false);
+        $truck_drivers = $this->paginate('Driver');
+
+        $this->set('active_menu', 'drivers');
+        $this->set('sub_module_title', 'Supir Truk');
+        $this->set('truck_drivers', $truck_drivers);
     }
 
     function driver_add(){
-        if( in_array('insert_drivers', $this->allowModule) ) {
-            $this->loadModel('Driver');
-            $this->set('sub_module_title', 'Tambah Supir Truk');
-            $this->doDriver();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->loadModel('Driver');
+        $this->set('sub_module_title', 'Tambah Supir Truk');
+        $this->doDriver();
     }
 
     function driver_edit($id){
-        if( in_array('update_drivers', $this->allowModule) ) {
-            $this->loadModel('Driver');
-            $this->set('sub_module_title', 'Rubah Supir Truk');
-            $driver = $this->Driver->getData('first', array(
-                'conditions' => array(
-                    'Driver.id' => $id,
-                    'Driver.status' => array( 0, 1 ),
-                )
-            ));
+        $this->loadModel('Driver');
+        $this->set('sub_module_title', 'Rubah Supir Truk');
+        $driver = $this->Driver->getData('first', array(
+            'conditions' => array(
+                'Driver.id' => $id,
+                'Driver.status' => array( 0, 1 ),
+            )
+        ));
 
-            if(!empty($driver)){
-                $this->doDriver($id, $driver);
-            }else{
-                $this->MkCommon->setCustomFlash(__('Supir Truk tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'trucks',
-                    'action' => 'drivers'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($driver)){
+            $this->doDriver($id, $driver);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Supir Truk tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'trucks',
+                'action' => 'drivers'
+            ));
         }
     }
 
@@ -870,7 +809,6 @@ class TrucksController extends AppController {
             $data['Driver']['birth_date'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_lahir']);
             $data['Driver']['join_date'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_penerimaan']);
             $data['Driver']['expired_date_sim'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_expire_sim']);
-            // $data['Driver']['photo'] = $this->MkCommon->getFilePhoto($data['Driver']['photo']);
             
             if(!empty($data['Driver']['photo']['name']) && is_array($data['Driver']['photo'])){
                 $temp_image = $data['Driver']['photo'];
@@ -995,128 +933,112 @@ class TrucksController extends AppController {
     }
 
     function driver_toggle($id){
-        if( in_array('delete_drivers', $this->allowModule) ) {
-            $this->loadModel('Driver');
-            $locale = $this->Driver->getData('first', array(
-                'conditions' => array(
-                    'Driver.id' => $id,
-                    'Driver.status' => array( 0, 1 ),
-                )
-            ));
+        $this->loadModel('Driver');
+        $locale = $this->Driver->getData('first', array(
+            'conditions' => array(
+                'Driver.id' => $id,
+                'Driver.status' => array( 0, 1 ),
+            )
+        ));
 
-            if($locale){
-                $value = true;
-                if($locale['Driver']['status']){
-                    $value = false;
-                }
-
-                $this->Driver->id = $id;
-                $this->Driver->set('status', $value);
-                if($this->Driver->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Supir Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );   
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status Supir Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Supir Truk tidak ditemukan.'), 'error');
+        if($locale){
+            $value = true;
+            if($locale['Driver']['status']){
+                $value = false;
             }
 
-            $this->redirect($this->referer());
-        } else {
-            $this->redirect($this->referer());
+            $this->Driver->id = $id;
+            $this->Driver->set('status', $value);
+            if($this->Driver->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Supir Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );   
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Supir Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Supir Truk tidak ditemukan.'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
     function kir($id = false){
-        if( in_array('view_kirs', $this->allowModule) ) {
-            $this->loadModel('Kir');
-            $conditions = array();
+        $this->loadModel('Kir');
+        $conditions = array();
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nopol'])){
-                    $name = urldecode($refine['nopol']);
-                    $this->request->data['Truck']['nopol'] = $name;
-                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                    $this->request->data['Truck']['type'] = $typeTruck;
+            if(!empty($refine['nopol'])){
+                $name = urldecode($refine['nopol']);
+                $this->request->data['Truck']['nopol'] = $name;
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                $this->request->data['Truck']['type'] = $typeTruck;
 
-                    if( $typeTruck == 2 ) {
-                        $conditionsNopol = array(
-                            'Truck.id' => $name,
-                        );
-                    } else {
-                        $conditionsNopol = array(
-                            'Truck.nopol LIKE' => '%'.$name.'%',
-                        );
-                    }
-
-                    $truckSearch = $this->Kir->Truck->getData('list', array(
-                        'conditions' => $conditionsNopol,
-                        'fields' => array(
-                            'Truck.id', 'Truck.id',
-                        ),
-                    ));
-                    $conditions['Kir.truck_id'] = $truckSearch;
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $name,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$name.'%',
+                    );
                 }
+
+                $truckSearch = $this->Kir->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.id',
+                    ),
+                ));
+                $conditions['Kir.truck_id'] = $truckSearch;
             }
-            $this->paginate = $this->Kir->getData('paginate', array(
-                'conditions' => $conditions,
-                'contain' => array(
-                    'Truck'
-                ),
-                'order'=> array(
-                    'Kir.status' => 'DESC',
-                    'Kir.rejected' => 'ASC',
-                    'Kir.paid' => 'ASC',
-                    'Kir.tgl_kir' => 'DESC',
-                ),
-            ));
-            $kir = $this->paginate('Kir');
-            
-            $this->set('active_menu', 'kir');
-            $sub_module_title = __('KIR');
-            $this->set(compact('kir', 'sub_module_title'));
-        } else {
-            $this->redirect($this->referer());
         }
+        $this->paginate = $this->Kir->getData('paginate', array(
+            'conditions' => $conditions,
+            'contain' => array(
+                'Truck'
+            ),
+            'order'=> array(
+                'Kir.status' => 'DESC',
+                'Kir.rejected' => 'ASC',
+                'Kir.paid' => 'ASC',
+                'Kir.tgl_kir' => 'DESC',
+            ),
+        ));
+        $kir = $this->paginate('Kir');
+        
+        $this->set('active_menu', 'kir');
+        $sub_module_title = __('KIR');
+        $this->set(compact('kir', 'sub_module_title'));
     }
 
     function kir_add(){
-        if( in_array('insert_kirs', $this->allowModule) ) {
-            $this->loadModel('Kir');
-            $this->set('active_menu', 'kir');
-            $this->set('sub_module_title', 'Tambah KIR');
-            $this->doKir();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->loadModel('Kir');
+        $this->set('active_menu', 'kir');
+        $this->set('sub_module_title', 'Tambah KIR');
+        $this->doKir();
     }
 
     function kir_edit($id){
-        if( in_array('update_kirs', $this->allowModule) ) {
-            $this->loadModel('Kir');
-            $this->set('sub_module_title', 'Rubah KIR Truk');
-            $kir = $this->Kir->getData('first', array(
-                'conditions' => array(
-                    'Kir.id' => $id,
-                )
-            ));
+        $this->loadModel('Kir');
+        $this->set('sub_module_title', 'Rubah KIR Truk');
+        $kir = $this->Kir->getData('first', array(
+            'conditions' => array(
+                'Kir.id' => $id,
+            )
+        ));
 
-            if(!empty($kir)){
-                $this->doKir($id, $kir);
-                $this->set(compact('truck', 'kir'));
-            }else{
-                $this->MkCommon->setCustomFlash(__('KIR Truk tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'trucks',
-                    'action' => 'kir'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($kir)){
+            $this->doKir($id, $kir);
+            $this->set(compact('truck', 'kir'));
+        }else{
+            $this->MkCommon->setCustomFlash(__('KIR Truk tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'trucks',
+                'action' => 'kir'
+            ));
         }
     }
 
@@ -1226,97 +1148,84 @@ class TrucksController extends AppController {
     }
 
     function kir_payments(){
-        if( in_array('view_kir_payments', $this->allowModule) ) {
-            $this->loadModel('KirPayment');
-            $conditions = array(
-                'OR' => array(
-                    // 'Kir.paid' => 1,
-                    // 'Kir.rejected' => 1,
-                ),
-            );
+        $this->loadModel('KirPayment');
+        $conditions = array();
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nopol'])){
-                    $this->loadModel('Truck');
-                    $name = urldecode($refine['nopol']);
-                    $this->request->data['Truck']['nopol'] = $name;
-                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                    $this->request->data['Truck']['type'] = $typeTruck;
+            if(!empty($refine['nopol'])){
+                $this->loadModel('Truck');
+                $name = urldecode($refine['nopol']);
+                $this->request->data['Truck']['nopol'] = $name;
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                $this->request->data['Truck']['type'] = $typeTruck;
 
-                    if( $typeTruck == 2 ) {
-                        $conditionsNopol = array(
-                            'Truck.id' => $name,
-                        );
-                    } else {
-                        $conditionsNopol = array(
-                            'Truck.nopol LIKE' => '%'.$name.'%',
-                        );
-                    }
-
-                    $truckSearch = $this->Truck->getData('list', array(
-                        'conditions' => $conditionsNopol,
-                        'fields' => array(
-                            'Truck.id', 'Truck.id',
-                        ),
-                    ));
-                    $conditions['Kir.truck_id'] = $truckSearch;
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $name,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$name.'%',
+                    );
                 }
+
+                $truckSearch = $this->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.id',
+                    ),
+                ));
+                $conditions['Kir.truck_id'] = $truckSearch;
             }
-            $this->paginate = $this->KirPayment->getData('paginate', array(
-                'conditions' => $conditions,
-                'limit' => Configure::read('__Site.config_pagination'),
-                'contain' => array(
-                    'Kir'
-                )
-            ), date('Y-m-d'));
-
-            $kirPayments = $this->paginate('KirPayment');
-
-            $this->set('active_menu', 'kir_payments');
-            $sub_module_title = __('Pembayaran KIR');
-            $this->set(compact('kirPayments', 'sub_module_title'));
-        } else {
-            $this->redirect($this->referer());
         }
+        $this->paginate = $this->KirPayment->getData('paginate', array(
+            'conditions' => $conditions,
+            'limit' => Configure::read('__Site.config_pagination'),
+            'contain' => array(
+                'Kir'
+            )
+        ), date('Y-m-d'));
+
+        $kirPayments = $this->paginate('KirPayment');
+
+        $this->set('active_menu', 'kir_payments');
+        $sub_module_title = __('Pembayaran KIR');
+        $this->set(compact('kirPayments', 'sub_module_title'));
     }
 
     function kir_payment_add( $kir_id = false ){
-        if( in_array('insert_kir_payments', $this->allowModule) ) {
-            $this->loadModel('Kir');
-            $kir = false;
-            
-            if( !empty($kir_id) ) {
-                $kir = $this->Kir->getData('first', array(
-                    'conditions' => array(
-                        'Kir.rejected' => 0,
-                        'Kir.paid' => 0,
-                        'Kir.id' => $kir_id,
-                    ),
-                ));
-            }
-
-            $this->doKirPayment($kir_id, $kir);
-            $kirs = $this->Kir->getData('list', array(
+        $this->loadModel('Kir');
+        $kir = false;
+        
+        if( !empty($kir_id) ) {
+            $kir = $this->Kir->getData('first', array(
                 'conditions' => array(
-                    'Kir.status' => 1,
-                    'Kir.paid' => 0,
                     'Kir.rejected' => 0,
+                    'Kir.paid' => 0,
+                    'Kir.id' => $kir_id,
                 ),
-                'fields' => array(
-                    'Kir.id', 'Kir.no_pol'
-                )
             ));
-
-            $sub_module_title = __('Pembayaran KIR');
-            $this->set(compact(
-                'kirs', 'sub_module_title'
-            ));
-            $this->render('kir_payment_form');
-        } else {
-            $this->redirect($this->referer());
         }
+
+        $this->doKirPayment($kir_id, $kir);
+        $kirs = $this->Kir->getData('list', array(
+            'conditions' => array(
+                'Kir.status' => 1,
+                'Kir.paid' => 0,
+                'Kir.rejected' => 0,
+            ),
+            'fields' => array(
+                'Kir.id', 'Kir.no_pol'
+            )
+        ));
+
+        $sub_module_title = __('Pembayaran KIR');
+        $this->set(compact(
+            'kirs', 'sub_module_title'
+        ));
+        $this->render('kir_payment_form');
     }
 
     public function kir_detail( $id = false ) {
@@ -1415,169 +1324,149 @@ class TrucksController extends AppController {
     }
 
     public function kir_delete( $id ) {
-        if( in_array('delete_kirs', $this->allowModule) ) {
-            $this->loadModel('Kir');
-            $kir = $this->Kir->getData('first', array(
-                'conditions' => array(
-                    'Kir.paid' => 0,
-                    'Kir.rejected' => 0,
-                    'Kir.id' => $id,
-                ),
-            ));
+        $this->loadModel('Kir');
+        $kir = $this->Kir->getData('first', array(
+            'conditions' => array(
+                'Kir.paid' => 0,
+                'Kir.rejected' => 0,
+                'Kir.id' => $id,
+            ),
+        ));
 
-            if( !empty($kir) ) {
-                $this->Kir->id = $id;
-                $this->Kir->set('status', 0);
+        if( !empty($kir) ) {
+            $this->Kir->id = $id;
+            $this->Kir->set('status', 0);
 
-                if($this->Kir->save()){
-                    $this->MkCommon->setCustomFlash(sprintf(__('KIR Truk %s telah berhasil dihapus'), $kir['Kir']['no_pol']), 'success');
-                    $this->Log->logActivity( sprintf(__('KIR Truk %s telah berhasil dihapus'), $kir['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
-                } else {
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal menghapus KIR Truk %s'), $kir['Kir']['no_pol']), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal menghapus KIR Truk %s'), $kir['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );      
-                }
+            if($this->Kir->save()){
+                $this->MkCommon->setCustomFlash(sprintf(__('KIR Truk %s telah berhasil dihapus'), $kir['Kir']['no_pol']), 'success');
+                $this->Log->logActivity( sprintf(__('KIR Truk %s telah berhasil dihapus'), $kir['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
             } else {
-                $this->MkCommon->setCustomFlash(__('Data KIR tidak ditemukan'), 'error');
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal menghapus KIR Truk %s'), $kir['Kir']['no_pol']), 'error'); 
+                $this->Log->logActivity( sprintf(__('Gagal menghapus KIR Truk %s'), $kir['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );      
             }
-
-            $this->redirect($this->referer());
         } else {
-            $this->redirect($this->referer());
+            $this->MkCommon->setCustomFlash(__('Data KIR tidak ditemukan'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
     public function kir_payment_delete( $id ) {
-        if( in_array('delete_kirs', $this->allowModule) ) {
-            $this->loadModel('KirPayment');
-            $this->loadModel('Kir');
+        $this->loadModel('KirPayment');
+        $this->loadModel('Kir');
 
-            $KirPayment = $this->KirPayment->getData('first', array(
-                'conditions' => array(
-                    'KirPayment.id' => $id,
-                ),
-                'contain' => array(
-                    'Kir'
-                )
-            ), false);
+        $KirPayment = $this->KirPayment->getData('first', array(
+            'conditions' => array(
+                'KirPayment.id' => $id,
+            ),
+            'contain' => array(
+                'Kir'
+            )
+        ), false);
 
-            if( !empty($KirPayment) ) {
-                $this->KirPayment->id = $id;
-                $this->KirPayment->set('is_void', 1);
-                $this->KirPayment->set('status', 0);
+        if( !empty($KirPayment) ) {
+            $this->KirPayment->id = $id;
+            $this->KirPayment->set('is_void', 1);
+            $this->KirPayment->set('status', 0);
 
-                if($this->KirPayment->save()){
-                    $this->Kir->id = $KirPayment['Kir']['id'];
-                    $this->Kir->set('paid', 0);
-                    $this->Kir->save();
+            if($this->KirPayment->save()){
+                $this->Kir->id = $KirPayment['Kir']['id'];
+                $this->Kir->set('paid', 0);
+                $this->Kir->save();
 
-                    if(!empty($KirPayment['Kir']['from_date'])){
-                        $this->Truck->id = $KirPayment['Kir']['truck_id'];
-                        $this->Truck->set('tgl_kir', $KirPayment['Kir']['from_date']);
-                        $this->Truck->save();
-                    }
-
-                    $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $KirPayment['Kir']['no_pol']), 'success');
-                    $this->Log->logActivity( sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $KirPayment['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
-                } else {
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran KIR Truk %s'), $KirPayment['Kir']['no_pol']), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran KIR Truk %s'), $KirPayment['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                if(!empty($KirPayment['Kir']['from_date'])){
+                    $this->Truck->id = $KirPayment['Kir']['truck_id'];
+                    $this->Truck->set('tgl_kir', $KirPayment['Kir']['from_date']);
+                    $this->Truck->save();
                 }
-            } else {
-                $this->MkCommon->setCustomFlash(__('Data pembayaran KIR tidak ditemukan'), 'error');
-            }
 
-            $this->redirect($this->referer());
+                $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $KirPayment['Kir']['no_pol']), 'success');
+                $this->Log->logActivity( sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $KirPayment['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
+            } else {
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran KIR Truk %s'), $KirPayment['Kir']['no_pol']), 'error'); 
+                $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran KIR Truk %s'), $KirPayment['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+            }
         } else {
-            $this->redirect($this->referer());
+            $this->MkCommon->setCustomFlash(__('Data pembayaran KIR tidak ditemukan'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
     function siup($id = false){
-        if( in_array('view_siup', $this->allowModule) ) {
-            $this->loadModel('Siup');
-            $conditions = array();
+        $this->loadModel('Siup');
+        $conditions = array();
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nopol'])){
-                    $name = urldecode($refine['nopol']);
-                    $this->request->data['Truck']['nopol'] = $name;
-                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                    $this->request->data['Truck']['type'] = $typeTruck;
+            if(!empty($refine['nopol'])){
+                $name = urldecode($refine['nopol']);
+                $this->request->data['Truck']['nopol'] = $name;
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                $this->request->data['Truck']['type'] = $typeTruck;
 
-                    if( $typeTruck == 2 ) {
-                        $conditionsNopol = array(
-                            'Truck.id' => $name,
-                        );
-                    } else {
-                        $conditionsNopol = array(
-                            'Truck.nopol LIKE' => '%'.$name.'%',
-                        );
-                    }
-
-                    $truckSearch = $this->Siup->Truck->getData('list', array(
-                        'conditions' => $conditionsNopol,
-                        'fields' => array(
-                            'Truck.id', 'Truck.id',
-                        ),
-                    ));
-                    $conditions['Siup.truck_id'] = $truckSearch;
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $name,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$name.'%',
+                    );
                 }
-            }
-            $this->paginate = $this->Siup->getData('paginate', array(
-                'conditions' => $conditions,
-                'contain' => array(
-                    'Truck'
-                ),
-                'order'=> array(
-                    'Siup.status' => 'DESC',
-                    'Siup.tgl_kir' => 'DESC',
-                ),
-            ), false);
-            $siup = $this->paginate('Siup');
 
-            $this->set('active_menu', 'siup');
-            $sub_module_title = __('Ijin Usaha');
-            $this->set(compact('siup', 'sub_module_title'));
-        } else {
-            $this->redirect($this->referer());
+                $truckSearch = $this->Siup->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.id',
+                    ),
+                ));
+                $conditions['Siup.truck_id'] = $truckSearch;
+            }
         }
+        $this->paginate = $this->Siup->getData('paginate', array(
+            'conditions' => $conditions,
+            'contain' => array(
+                'Truck'
+            ),
+            'order'=> array(
+                'Siup.status' => 'DESC',
+                'Siup.tgl_kir' => 'DESC',
+            ),
+        ), false);
+        $siup = $this->paginate('Siup');
+
+        $this->set('active_menu', 'siup');
+        $sub_module_title = __('Ijin Usaha');
+        $this->set(compact('siup', 'sub_module_title'));
     }
 
     function siup_add(){
-        if( in_array('insert_siup', $this->allowModule) ) {
-            $this->loadModel('Siup');
-            $this->set('active_menu', 'siup');
-            $this->set('sub_module_title', 'Tambah Ijin Usaha');
-            $this->doSiup();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->loadModel('Siup');
+        $this->set('active_menu', 'siup');
+        $this->set('sub_module_title', 'Tambah Ijin Usaha');
+        $this->doSiup();
     }
 
     function siup_edit($id){
-        if( in_array('update_siup', $this->allowModule) ) {
-            $this->loadModel('Siup');
-            $this->set('sub_module_title', 'Rubah Ijin Usaha Truk');
-            $siup = $this->Siup->getData('first', array(
-                'conditions' => array(
-                    'Siup.id' => $id,
-                )
-            ), false);
+        $this->loadModel('Siup');
+        $this->set('sub_module_title', 'Rubah Ijin Usaha Truk');
+        $siup = $this->Siup->getData('first', array(
+            'conditions' => array(
+                'Siup.id' => $id,
+            )
+        ), false);
 
-            if(!empty($siup)){
-                $this->doSiup($id, $siup);
-                $this->set(compact('truck', 'siup'));
-            }else{
-                $this->MkCommon->setCustomFlash(__('Ijin Usaha Truk tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'trucks',
-                    'action' => 'siup'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($siup)){
+            $this->doSiup($id, $siup);
+            $this->set(compact('truck', 'siup'));
+        }else{
+            $this->MkCommon->setCustomFlash(__('Ijin Usaha Truk tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'trucks',
+                'action' => 'siup'
+            ));
         }
     }
 
@@ -1681,118 +1570,101 @@ class TrucksController extends AppController {
     }
 
     function siup_payments(){
-        if( in_array('view_siup_payments', $this->allowModule) ) {
-            $this->loadModel('SiupPayment');
-            $conditions = array(
-                'OR' => array(
-                    // 'Siup.paid' => 1,
-                    // 'Siup.rejected' => 1,
-                ),
-            );
+        $this->loadModel('SiupPayment');
+        $conditions = array();
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nopol'])){
-                    $this->loadModel('Truck');
-                    $name = urldecode($refine['nopol']);
-                    $this->request->data['Truck']['nopol'] = $name;
-                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                    $this->request->data['Truck']['type'] = $typeTruck;
+            if(!empty($refine['nopol'])){
+                $this->loadModel('Truck');
+                $name = urldecode($refine['nopol']);
+                $this->request->data['Truck']['nopol'] = $name;
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                $this->request->data['Truck']['type'] = $typeTruck;
 
-                    if( $typeTruck == 2 ) {
-                        $conditionsNopol = array(
-                            'Truck.id' => $name,
-                        );
-                    } else {
-                        $conditionsNopol = array(
-                            'Truck.nopol LIKE' => '%'.$name.'%',
-                        );
-                    }
-
-                    $truckSearch = $this->Truck->getData('list', array(
-                        'conditions' => $conditionsNopol,
-                        'fields' => array(
-                            'Truck.id', 'Truck.id',
-                        ),
-                    ));
-                    $conditions['Siup.truck_id'] = $truckSearch;
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $name,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$name.'%',
+                    );
                 }
-            }
-            $this->paginate = $this->SiupPayment->getData('paginate', array(
-                'conditions' => $conditions,
-                'limit' => Configure::read('__Site.config_pagination'),
-                'contain' => array(
-                    'Siup'
-                )
-            ), false);
-            $siupPayments = $this->paginate('SiupPayment');
 
-            $this->set('active_menu', 'siup_payments');
-            $sub_module_title = __('Pembayaran Ijin Usaha');
-            $this->set(compact('siupPayments', 'sub_module_title'));
-        } else {
-            $this->redirect($this->referer());
+                $truckSearch = $this->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.id',
+                    ),
+                ));
+                $conditions['Siup.truck_id'] = $truckSearch;
+            }
         }
+        $this->paginate = $this->SiupPayment->getData('paginate', array(
+            'conditions' => $conditions,
+            'limit' => Configure::read('__Site.config_pagination'),
+            'contain' => array(
+                'Siup'
+            )
+        ), false);
+        $siupPayments = $this->paginate('SiupPayment');
+
+        $this->set('active_menu', 'siup_payments');
+        $sub_module_title = __('Pembayaran Ijin Usaha');
+        $this->set(compact('siupPayments', 'sub_module_title'));
     }
 
     function siup_payment_add( $siup_id = false ){
-        if( in_array('insert_siup_payments', $this->allowModule) ) {
-            $this->loadModel('Siup');
-            $siup = false;
-            
-            if( !empty($siup_id) ) {
-                $siup = $this->Siup->getData('first', array(
-                    'conditions' => array(
-                        'Siup.rejected' => 0,
-                        'Siup.paid' => 0,
-                        'Siup.id' => $siup_id,
-                    ),
-                ));
-            }
-
-            $this->doSiupPayment($siup_id, $siup);
-            $siups = $this->Siup->getData('list', array(
+        $this->loadModel('Siup');
+        $siup = false;
+        
+        if( !empty($siup_id) ) {
+            $siup = $this->Siup->getData('first', array(
                 'conditions' => array(
-                    'Siup.status' => 1,
-                    'Siup.paid' => 0,
                     'Siup.rejected' => 0,
+                    'Siup.paid' => 0,
+                    'Siup.id' => $siup_id,
                 ),
-                'fields' => array(
-                    'Siup.id', 'Siup.no_pol'
-                )
             ));
-
-            $sub_module_title = __('Pembayaran Ijin Usaha');
-            $this->set(compact(
-                'siups', 'sub_module_title'
-            ));
-            $this->render('siup_payment_form');
-        } else {
-            $this->redirect($this->referer());
         }
+
+        $this->doSiupPayment($siup_id, $siup);
+        $siups = $this->Siup->getData('list', array(
+            'conditions' => array(
+                'Siup.status' => 1,
+                'Siup.paid' => 0,
+                'Siup.rejected' => 0,
+            ),
+            'fields' => array(
+                'Siup.id', 'Siup.no_pol'
+            )
+        ));
+
+        $sub_module_title = __('Pembayaran Ijin Usaha');
+        $this->set(compact(
+            'siups', 'sub_module_title'
+        ));
+        $this->render('siup_payment_form');
     }
 
     public function siup_detail( $id = false ) {
-        if( in_array('view_siup_payments', $this->allowModule) ) {
-            $this->loadModel('SiupPayment');
-            $siup = $this->SiupPayment->getData('first', array(
-                'conditions' => array(
-                    'SiupPayment.id' => $id,
-                ),
-                'contain' => array(
-                    'Siup'
-                )
-            ));
+        $this->loadModel('SiupPayment');
+        $siup = $this->SiupPayment->getData('first', array(
+            'conditions' => array(
+                'SiupPayment.id' => $id,
+            ),
+            'contain' => array(
+                'Siup'
+            )
+        ));
 
-            if( !empty($siup) ) {
-                $this->doSiupPayment($id, $siup);
-                $this->set('sub_module_title', __('Detail Pembayaran Ijin Usaha'));
-            } else {
-                $this->MkCommon->setCustomFlash(__('Data Pembayaran Ijin Usaha tidak ditemukan'), 'error');
-                $this->redirect($this->referer());
-            }
+        if( !empty($siup) ) {
+            $this->doSiupPayment($id, $siup);
+            $this->set('sub_module_title', __('Detail Pembayaran Ijin Usaha'));
         } else {
+            $this->MkCommon->setCustomFlash(__('Data Pembayaran Ijin Usaha tidak ditemukan'), 'error');
             $this->redirect($this->referer());
         }
     }
@@ -1873,81 +1745,73 @@ class TrucksController extends AppController {
     }
 
     public function siup_delete( $id ) {
-        if( in_array('delete_siup', $this->allowModule) ) {
-            $this->loadModel('Siup');
-            $siup = $this->Siup->getData('first', array(
-                'conditions' => array(
-                    'Siup.paid' => 0,
-                    'Siup.rejected' => 0,
-                    'Siup.id' => $id,
-                ),
-            ));
+        $this->loadModel('Siup');
+        $siup = $this->Siup->getData('first', array(
+            'conditions' => array(
+                'Siup.paid' => 0,
+                'Siup.rejected' => 0,
+                'Siup.id' => $id,
+            ),
+        ));
 
-            if( !empty($siup) ) {
-                $this->Siup->id = $id;
-                $this->Siup->set('status', 0);
+        if( !empty($siup) ) {
+            $this->Siup->id = $id;
+            $this->Siup->set('status', 0);
 
-                if($this->Siup->save()){
-                    $this->MkCommon->setCustomFlash(sprintf(__('Ijin Usaha Truk %s telah berhasil dihapus'), $siup['Siup']['no_pol']), 'success');
-                    $this->Log->logActivity( sprintf(__('Ijin Usaha Truk %s telah berhasil dihapus'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
-                } else {
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal menghapus Ijin Usaha Truk %s'), $siup['Siup']['no_pol']), 'error');  
-                    $this->Log->logActivity( sprintf(__('Gagal menghapus Ijin Usaha Truk %s'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                }
+            if($this->Siup->save()){
+                $this->MkCommon->setCustomFlash(sprintf(__('Ijin Usaha Truk %s telah berhasil dihapus'), $siup['Siup']['no_pol']), 'success');
+                $this->Log->logActivity( sprintf(__('Ijin Usaha Truk %s telah berhasil dihapus'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
             } else {
-                $this->MkCommon->setCustomFlash(__('Data Ijin Usaha tidak ditemukan'), 'error');
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal menghapus Ijin Usaha Truk %s'), $siup['Siup']['no_pol']), 'error');  
+                $this->Log->logActivity( sprintf(__('Gagal menghapus Ijin Usaha Truk %s'), $siup['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );
             }
-
-            $this->redirect($this->referer());
         } else {
-            $this->redirect($this->referer());
+            $this->MkCommon->setCustomFlash(__('Data Ijin Usaha tidak ditemukan'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
     public function siup_payment_delete( $id ) {
-        if( in_array('delete_siup', $this->allowModule) ) {
-            $this->loadModel('SiupPayment');
-            $this->loadModel('Siup');
+        $this->loadModel('SiupPayment');
+        $this->loadModel('Siup');
 
-            $SiupPayment = $this->SiupPayment->getData('first', array(
-                'conditions' => array(
-                    'SiupPayment.id' => $id,
-                ),
-                'contain' => array(
-                    'Siup'
-                )
-            ), false);
+        $SiupPayment = $this->SiupPayment->getData('first', array(
+            'conditions' => array(
+                'SiupPayment.id' => $id,
+            ),
+            'contain' => array(
+                'Siup'
+            )
+        ), false);
 
-            if( !empty($SiupPayment) ) {
-                $this->SiupPayment->id = $id;
-                $this->SiupPayment->set('is_void', 1);
-                $this->SiupPayment->set('status', 0);
+        if( !empty($SiupPayment) ) {
+            $this->SiupPayment->id = $id;
+            $this->SiupPayment->set('is_void', 1);
+            $this->SiupPayment->set('status', 0);
 
-                if($this->SiupPayment->save()){
-                    $this->Siup->id = $SiupPayment['Siup']['id'];
-                    $this->Siup->set('paid', 0);
-                    $this->Siup->save();
+            if($this->SiupPayment->save()){
+                $this->Siup->id = $SiupPayment['Siup']['id'];
+                $this->Siup->set('paid', 0);
+                $this->Siup->save();
 
-                    if(!empty($SiupPayment['Siup']['from_date'])){
-                        $this->Truck->id = $SiupPayment['Siup']['truck_id'];
-                        $this->Truck->set('tgl_siup', $SiupPayment['Siup']['from_date']);
-                        $this->Truck->save();
-                    }
-
-                    $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $SiupPayment['Siup']['no_pol']), 'success');
-                    $this->Log->logActivity( sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $SiupPayment['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
-                } else {
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran Ijin usaha Truk %s'), $SiupPayment['Siup']['no_pol']), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran Ijin usaha Truk %s'), $SiupPayment['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                if(!empty($SiupPayment['Siup']['from_date'])){
+                    $this->Truck->id = $SiupPayment['Siup']['truck_id'];
+                    $this->Truck->set('tgl_siup', $SiupPayment['Siup']['from_date']);
+                    $this->Truck->save();
                 }
-            } else {
-                $this->MkCommon->setCustomFlash(__('Data pembayaran Ijin usaha tidak ditemukan'), 'error');
-            }
 
-            $this->redirect($this->referer());
+                $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $SiupPayment['Siup']['no_pol']), 'success');
+                $this->Log->logActivity( sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $SiupPayment['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
+            } else {
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran Ijin usaha Truk %s'), $SiupPayment['Siup']['no_pol']), 'error'); 
+                $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran Ijin usaha Truk %s'), $SiupPayment['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+            }
         } else {
-            $this->redirect($this->referer());
+            $this->MkCommon->setCustomFlash(__('Data pembayaran Ijin usaha tidak ditemukan'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
     function alocations($id = false){
@@ -2406,91 +2270,79 @@ class TrucksController extends AppController {
     
 
     function stnk( $id = false ) {
-        if( in_array('view_stnk', $this->allowModule) ) {
-            $this->loadModel('Stnk');
-            $conditions = array();
+        $this->loadModel('Stnk');
+        $conditions = array();
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nopol'])){
-                    $name = urldecode($refine['nopol']);
-                    $this->request->data['Truck']['nopol'] = $name;
-                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                    $this->request->data['Truck']['type'] = $typeTruck;
+            if(!empty($refine['nopol'])){
+                $name = urldecode($refine['nopol']);
+                $this->request->data['Truck']['nopol'] = $name;
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                $this->request->data['Truck']['type'] = $typeTruck;
 
-                    if( $typeTruck == 2 ) {
-                        $conditionsNopol = array(
-                            'Truck.id' => $name,
-                        );
-                    } else {
-                        $conditionsNopol = array(
-                            'Truck.nopol LIKE' => '%'.$name.'%',
-                        );
-                    }
-
-                    $truckSearch = $this->Stnk->Truck->getData('list', array(
-                        'conditions' => $conditionsNopol,
-                        'fields' => array(
-                            'Truck.id', 'Truck.id',
-                        ),
-                    ));
-                    $conditions['Stnk.truck_id'] = $truckSearch;
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $name,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$name.'%',
+                    );
                 }
-            }
-            $this->paginate = $this->Stnk->getData('paginate', array(
-                'conditions' => $conditions,
-                'order'=> array(
-                    'Stnk.status' => 'DESC',
-                    'Stnk.tgl_stnk' => 'DESC',
-                ),
-            ), false);
-            $stnks = $this->paginate('Stnk');
 
-            $this->set('active_menu', 'stnk');
-            $sub_module_title = __('STNK');
-            $this->set(compact('stnks', 'sub_module_title'));
-        } else {
-            $this->redirect($this->referer());
+                $truckSearch = $this->Stnk->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.id',
+                    ),
+                ));
+                $conditions['Stnk.truck_id'] = $truckSearch;
+            }
         }
+        $this->paginate = $this->Stnk->getData('paginate', array(
+            'conditions' => $conditions,
+            'order'=> array(
+                'Stnk.status' => 'DESC',
+                'Stnk.tgl_stnk' => 'DESC',
+            ),
+        ), false);
+        $stnks = $this->paginate('Stnk');
+
+        $this->set('active_menu', 'stnk');
+        $sub_module_title = __('STNK');
+        $this->set(compact('stnks', 'sub_module_title'));
     }
 
     function stnk_add(){
-        if( in_array('insert_stnk', $this->allowModule) ) {
-            $this->loadModel('Stnk');
-            $this->set('active_menu', 'stnk');
-            $this->set('sub_module_title', 'Tambah STNK');
-            $this->doStnk();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->loadModel('Stnk');
+        $this->set('active_menu', 'stnk');
+        $this->set('sub_module_title', 'Tambah STNK');
+        $this->doStnk();
     }
 
     function stnk_edit($id){
-        if( in_array('update_stnk', $this->allowModule) ) {
-            $this->loadModel('Stnk');
-            $this->set('sub_module_title', 'Rubah Perpanjang STNK');
-            $Stnk = $this->Stnk->getData('first', array(
-                'conditions' => array(
-                    'Stnk.id' => $id,
-                ),
-                'contain' => array(
-                    'Truck'
-                ),
-            ), false);
+        $this->loadModel('Stnk');
+        $this->set('sub_module_title', 'Rubah Perpanjang STNK');
+        $Stnk = $this->Stnk->getData('first', array(
+            'conditions' => array(
+                'Stnk.id' => $id,
+            ),
+            'contain' => array(
+                'Truck'
+            ),
+        ), false);
 
-            if(!empty($Stnk)){
-                $this->doStnk($id, $Stnk);
-                $this->set(compact('truck'));
-            }else{
-                $this->MkCommon->setCustomFlash(__('STNK Truk tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'trucks',
-                    'action' => 'stnk'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($Stnk)){
+            $this->doStnk($id, $Stnk);
+            $this->set(compact('truck'));
+        }else{
+            $this->MkCommon->setCustomFlash(__('STNK Truk tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'trucks',
+                'action' => 'stnk'
+            ));
         }
     }
 
@@ -2625,207 +2477,182 @@ class TrucksController extends AppController {
     }
 
     public function stnk_delete( $id ) {
-        if( in_array('delete_stnk', $this->allowModule) ) {
-            $this->loadModel('Stnk');
-            $stnk = $this->Stnk->getData('first', array(
-                'conditions' => array(
-                    'Stnk.paid' => 0,
-                    'Stnk.rejected' => 0,
-                    'Stnk.id' => $id,
-                ),
-            ));
+        $this->loadModel('Stnk');
+        $stnk = $this->Stnk->getData('first', array(
+            'conditions' => array(
+                'Stnk.paid' => 0,
+                'Stnk.rejected' => 0,
+                'Stnk.id' => $id,
+            ),
+        ));
 
-            if( !empty($stnk) && empty($stnk['Stnk']['paid']) && empty($stnk['Stnk']['rejected']) ) {
-                $this->Stnk->id = $id;
-                $this->Stnk->set('status', 0);
+        if( !empty($stnk) && empty($stnk['Stnk']['paid']) && empty($stnk['Stnk']['rejected']) ) {
+            $this->Stnk->id = $id;
+            $this->Stnk->set('status', 0);
 
-                if($this->Stnk->save()){
-                    $this->MkCommon->setCustomFlash(sprintf(__('STNK Truk %s telah berhasil dihapus'), $stnk['Stnk']['no_pol']), 'success');
-                    $this->Log->logActivity(sprintf(__('STNK Truk %s telah berhasil dihapus #%s'), $stnk['Stnk']['no_pol'], $this->Stnk->id), $this->user_data, $this->RequestHandler, $this->params );   
-                } else {
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal menghapus STNK Truk %s'), $stnk['Stnk']['no_pol']), 'error');  
-                    $this->Log->logActivity(sprintf(__('Gagal menghapus STNK Truk %s #%s'), $stnk['Stnk']['no_pol'], $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
-                }
+            if($this->Stnk->save()){
+                $this->MkCommon->setCustomFlash(sprintf(__('STNK Truk %s telah berhasil dihapus'), $stnk['Stnk']['no_pol']), 'success');
+                $this->Log->logActivity(sprintf(__('STNK Truk %s telah berhasil dihapus #%s'), $stnk['Stnk']['no_pol'], $this->Stnk->id), $this->user_data, $this->RequestHandler, $this->params );   
             } else {
-                $this->MkCommon->setCustomFlash(__('Data STNK tidak ditemukan'), 'error');
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal menghapus STNK Truk %s'), $stnk['Stnk']['no_pol']), 'error');  
+                $this->Log->logActivity(sprintf(__('Gagal menghapus STNK Truk %s #%s'), $stnk['Stnk']['no_pol'], $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
             }
-
-            $this->redirect($this->referer());
         } else {
-            $this->redirect($this->referer());
+            $this->MkCommon->setCustomFlash(__('Data STNK tidak ditemukan'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
     public function stnk_payment_delete( $id ) {
-        if( in_array('delete_stnk', $this->allowModule) ) {
-            $this->loadModel('StnkPayment');
-            $this->loadModel('Stnk');
+        $this->loadModel('StnkPayment');
+        $this->loadModel('Stnk');
 
-            $StnkPayment = $this->StnkPayment->getData('first', array(
-                'conditions' => array(
-                    'StnkPayment.id' => $id,
-                ),
-                'contain' => array(
-                    'Stnk'
-                )
-            ), false);
+        $StnkPayment = $this->StnkPayment->getData('first', array(
+            'conditions' => array(
+                'StnkPayment.id' => $id,
+            ),
+            'contain' => array(
+                'Stnk'
+            )
+        ), false);
 
-            if( !empty($StnkPayment) ) {
-                $this->StnkPayment->id = $id;
-                $this->StnkPayment->set('is_void', 1);
-                $this->StnkPayment->set('status', 0);
+        if( !empty($StnkPayment) ) {
+            $this->StnkPayment->id = $id;
+            $this->StnkPayment->set('is_void', 1);
+            $this->StnkPayment->set('status', 0);
 
-                if($this->StnkPayment->save()){
-                    $this->Stnk->id = $StnkPayment['Stnk']['id'];
-                    $this->Stnk->set('paid', 0);
-                    $this->Stnk->save();
+            if($this->StnkPayment->save()){
+                $this->Stnk->id = $StnkPayment['Stnk']['id'];
+                $this->Stnk->set('paid', 0);
+                $this->Stnk->save();
 
-                    if(!empty($StnkPayment['Stnk']['from_date'])){
-                        $this->Truck->id = $StnkPayment['Stnk']['truck_id'];
-                        $this->Truck->set('tgl_stnk', $StnkPayment['Stnk']['from_date']);
-                        $this->Truck->save();
-                    }
-
-                    if(!empty($StnkPayment['Stnk']['plat_from_date']) && $StnkPayment['Stnk']['plat_from_date'] != '0000-00-00' && !empty($StnkPayment['Stnk']['is_change_plat'])){
-                        $this->Truck->id = $StnkPayment['Stnk']['truck_id'];
-                        $this->Truck->set('tgl_stnk_plat', $StnkPayment['Stnk']['plat_from_date']);
-                        $this->Truck->save();
-                    }
-
-                    $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $StnkPayment['Stnk']['no_pol']), 'success');
-                    $this->Log->logActivity( sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $StnkPayment['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
-                } else {
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran STNK Truk %s'), $StnkPayment['Stnk']['no_pol']), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran STNK Truk %s'), $StnkPayment['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                if(!empty($StnkPayment['Stnk']['from_date'])){
+                    $this->Truck->id = $StnkPayment['Stnk']['truck_id'];
+                    $this->Truck->set('tgl_stnk', $StnkPayment['Stnk']['from_date']);
+                    $this->Truck->save();
                 }
-            } else {
-                $this->MkCommon->setCustomFlash(__('Data pembayaran STNK tidak ditemukan'), 'error');
-            }
 
-            $this->redirect($this->referer());
+                if(!empty($StnkPayment['Stnk']['plat_from_date']) && $StnkPayment['Stnk']['plat_from_date'] != '0000-00-00' && !empty($StnkPayment['Stnk']['is_change_plat'])){
+                    $this->Truck->id = $StnkPayment['Stnk']['truck_id'];
+                    $this->Truck->set('tgl_stnk_plat', $StnkPayment['Stnk']['plat_from_date']);
+                    $this->Truck->save();
+                }
+
+                $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $StnkPayment['Stnk']['no_pol']), 'success');
+                $this->Log->logActivity( sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $StnkPayment['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params );
+            } else {
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran STNK Truk %s'), $StnkPayment['Stnk']['no_pol']), 'error'); 
+                $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran STNK Truk %s'), $StnkPayment['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+            }
         } else {
-            $this->redirect($this->referer());
+            $this->MkCommon->setCustomFlash(__('Data pembayaran STNK tidak ditemukan'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
     function stnk_payments(){
-        if( in_array('view_stnk_payments', $this->allowModule) ) {
-            $this->loadModel('StnkPayment');
-            $conditions = array(
-                'OR' => array(
-                    // 'Stnk.paid' => 1,
-                    // 'Stnk.rejected' => 1,
-                ),
-            );
+        $this->loadModel('StnkPayment');
+        $conditions = array();
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nopol'])){
-                    $this->loadModel('Truck');
-                    $name = urldecode($refine['nopol']);
-                    $this->request->data['Truck']['nopol'] = $name;
-                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                    $this->request->data['Truck']['type'] = $typeTruck;
+            if(!empty($refine['nopol'])){
+                $this->loadModel('Truck');
+                $name = urldecode($refine['nopol']);
+                $this->request->data['Truck']['nopol'] = $name;
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                $this->request->data['Truck']['type'] = $typeTruck;
 
-                    if( $typeTruck == 2 ) {
-                        $conditionsNopol = array(
-                            'Truck.id' => $name,
-                        );
-                    } else {
-                        $conditionsNopol = array(
-                            'Truck.nopol LIKE' => '%'.$name.'%',
-                        );
-                    }
-
-                    $truckSearch = $this->Truck->getData('list', array(
-                        'conditions' => $conditionsNopol,
-                        'fields' => array(
-                            'Truck.id', 'Truck.id',
-                        ),
-                    ));
-                    $conditions['Stnk.truck_id'] = $truckSearch;
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $name,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$name.'%',
+                    );
                 }
+
+                $truckSearch = $this->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.id',
+                    ),
+                ));
+                $conditions['Stnk.truck_id'] = $truckSearch;
             }
-            $this->paginate = $this->StnkPayment->getData('paginate', array(
-                'conditions' => $conditions,
-                'limit' => Configure::read('__Site.config_pagination'),
-                'contain' => array(
-                    'Stnk'
-                ),
-                'order'=> array(
-                    'StnkPayment.created' => 'DESC',
-                    'StnkPayment.id' => 'DESC',
-                ),
-            ), false);
-
-            $stnkPayments = $this->paginate('StnkPayment');
-
-            $this->set('active_menu', 'stnk_payments');
-            $sub_module_title = __('Pembayaran STNK');
-            $this->set(compact('stnkPayments', 'sub_module_title'));
-        } else {
-            $this->redirect($this->referer());
         }
+        $this->paginate = $this->StnkPayment->getData('paginate', array(
+            'conditions' => $conditions,
+            'limit' => Configure::read('__Site.config_pagination'),
+            'contain' => array(
+                'Stnk'
+            ),
+            'order'=> array(
+                'StnkPayment.created' => 'DESC',
+                'StnkPayment.id' => 'DESC',
+            ),
+        ), false);
+
+        $stnkPayments = $this->paginate('StnkPayment');
+
+        $this->set('active_menu', 'stnk_payments');
+        $sub_module_title = __('Pembayaran STNK');
+        $this->set(compact('stnkPayments', 'sub_module_title'));
     }
 
     function stnk_payment_add( $stnk_id = false ){
-        if( in_array('insert_stnk_payments', $this->allowModule) ) {
-            $this->loadModel('Stnk');
-            $stnk = false;
-            
-            if( !empty($stnk_id) ) {
-                $stnk = $this->Stnk->getData('first', array(
-                    'conditions' => array(
-                        'Stnk.rejected' => 0,
-                        'Stnk.paid' => 0,
-                        'Stnk.id' => $stnk_id,
-                    ),
-                ));
-            }
-
-            $this->doStnkPayment($stnk_id, $stnk);
-            $stnks = $this->Stnk->getData('list', array(
+        $this->loadModel('Stnk');
+        $stnk = false;
+        
+        if( !empty($stnk_id) ) {
+            $stnk = $this->Stnk->getData('first', array(
                 'conditions' => array(
-                    'Stnk.status' => 1,
-                    'Stnk.paid' => 0,
                     'Stnk.rejected' => 0,
+                    'Stnk.paid' => 0,
+                    'Stnk.id' => $stnk_id,
                 ),
-                'fields' => array(
-                    'Stnk.id', 'Stnk.no_pol'
-                )
             ));
-
-            $sub_module_title = __('Pembayaran STNK');
-            $this->set(compact(
-                'stnks', 'sub_module_title'
-            ));
-            $this->render('stnk_payment_form');
-        } else {
-            $this->redirect($this->referer());
         }
+
+        $this->doStnkPayment($stnk_id, $stnk);
+        $stnks = $this->Stnk->getData('list', array(
+            'conditions' => array(
+                'Stnk.status' => 1,
+                'Stnk.paid' => 0,
+                'Stnk.rejected' => 0,
+            ),
+            'fields' => array(
+                'Stnk.id', 'Stnk.no_pol'
+            )
+        ));
+
+        $sub_module_title = __('Pembayaran STNK');
+        $this->set(compact(
+            'stnks', 'sub_module_title'
+        ));
+        $this->render('stnk_payment_form');
     }
 
     public function stnk_detail( $id = false ) {
-        if( in_array('view_stnk_payments', $this->allowModule) ) {
-            $this->loadModel('StnkPayment');
-            $stnk = $this->StnkPayment->getData('first', array(
-                'conditions' => array(
-                    'StnkPayment.id' => $id,
-                ),
-                'contain' => array(
-                    'Stnk'
-                )
-            ));
+        $this->loadModel('StnkPayment');
+        $stnk = $this->StnkPayment->getData('first', array(
+            'conditions' => array(
+                'StnkPayment.id' => $id,
+            ),
+            'contain' => array(
+                'Stnk'
+            )
+        ));
 
-            if( !empty($stnk) ) {
-                $this->doStnkPayment($id, $stnk);
-                $this->set('sub_module_title', __('Detail Pembayaran STNK'));
-            } else {
-                $this->MkCommon->setCustomFlash(__('Data Pembayaran STNK tidak ditemukan'), 'error');
-                $this->redirect($this->referer());
-            }
+        if( !empty($stnk) ) {
+            $this->doStnkPayment($id, $stnk);
+            $this->set('sub_module_title', __('Detail Pembayaran STNK'));
         } else {
+            $this->MkCommon->setCustomFlash(__('Data Pembayaran STNK tidak ditemukan'), 'error');
             $this->redirect($this->referer());
         }
     }
@@ -2915,208 +2742,192 @@ class TrucksController extends AppController {
     }
 
     function reports($data_action = false) {
-        // if( in_array('view_truck_reports', $this->allowModule) ) {
-            $this->set('active_menu', 'reports');
-            $this->set('sub_module_title', __('Laporan Truk'));
-            
-            $defaul_condition = array();
-            $from_date = '';
-            $to_date = '';
+        $this->set('active_menu', 'reports');
+        $this->set('sub_module_title', __('Laporan Truk'));
+        
+        $defaul_condition = array();
+        $from_date = '';
+        $to_date = '';
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
-                if(!empty($refine['from'])){
-                    $data = date('Y-m-d', urldecode($refine['from']));
-                    $from_date = $data;
-                    $this->request->data['Truck']['from_date'] = $data;
-                }
-                if(!empty($refine['to'])){
-                    $data = date('Y-m-d', urldecode($refine['to']));
-                    $to_date = $data;
-                    $this->request->data['Truck']['to_date'] = $data;
-                }
-                if(!empty($refine['nopol'])){
-                    $data = urldecode($refine['nopol']);
-                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
-
-                    if( $typeTruck == 2 ) {
-                        $conditionsNopol = array(
-                            'Truck.id' => $data,
-                        );
-                    } else {
-                        $conditionsNopol = array(
-                            'Truck.nopol LIKE' => '%'.$data.'%',
-                        );
-                    }
-
-                    $truckSearch = $this->Truck->getData('list', array(
-                        'conditions' => $conditionsNopol,
-                        'fields' => array(
-                            'Truck.id', 'Truck.id',
-                        ),
-                    ));
-                    $defaul_condition['Truck.id'] = $truckSearch;
-                    $this->request->data['Truck']['nopol'] = $data;
-                    $this->request->data['Truck']['type'] = $typeTruck;
-                }
-                if(!empty($refine['name'])){
-                    $data = urldecode($refine['name']);
-                    $defaul_condition['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$data.'%';
-                    $this->request->data['Driver']['name'] = $data;
-                }
-                if(!empty($refine['capacity'])){
-                    $data = urldecode($refine['capacity']);
-                    $defaul_condition['Truck.capacity LIKE'] = '%'.$data.'%';
-                    $this->request->data['Truck']['capacity'] = $data;
-                }
-                if(!empty($refine['category'])){
-                    $data = urldecode($refine['category']);
-                    $defaul_condition['TruckCategory.name LIKE'] = '%'.$data.'%';
-                    $this->request->data['Truck']['category'] = $data;
-                }
-                if(!empty($refine['year'])){
-                    $data = urldecode($refine['year']);
-                    $defaul_condition['Truck.tahun LIKE'] = '%'.$data.'%';
-                    $this->request->data['Truck']['year'] = $data;
-                }
-                if(!empty($refine['alokasi'])){
-                    $data = urldecode($refine['alokasi']);
-                    $defaul_condition['CustomerNoType.code LIKE'] = '%'.$data.'%';
-                    $this->request->data['Truck']['alokasi'] = $data;
-                }
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+            if(!empty($refine['from'])){
+                $data = date('Y-m-d', urldecode($refine['from']));
+                $from_date = $data;
+                $this->request->data['Truck']['from_date'] = $data;
             }
-
-            if(!empty($from_date)){
-                $defaul_condition['DATE_FORMAT(Truck.created, \'%Y-%m-%d\') >= '] = $from_date;
+            if(!empty($refine['to'])){
+                $data = date('Y-m-d', urldecode($refine['to']));
+                $to_date = $data;
+                $this->request->data['Truck']['to_date'] = $data;
             }
-            if(!empty($to_date)){
-                $defaul_condition['DATE_FORMAT(Truck.created, \'%Y-%m-%d\') <= '] = $to_date;
-            }
+            if(!empty($refine['nopol'])){
+                $data = urldecode($refine['nopol']);
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
 
-            $this->Truck->unBindModel(array(
-                'hasMany' => array(
-                    'TruckCustomer'
-                )
-            ));
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $data,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$data.'%',
+                    );
+                }
 
-            $this->Truck->bindModel(array(
-                'hasOne' => array(
-                    'TruckCustomer' => array(
-                        'className' => 'TruckCustomer',
-                        'foreignKey' => 'truck_id',
-                        'conditions' => array(
-                            'TruckCustomer.primary' => 1
-                        )
+                $truckSearch = $this->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.id',
                     ),
-                    'CustomerNoType' => array(
-                        'className' => 'CustomerNoType',
-                        'foreignKey' => false,
-                        'conditions' => array(
-                            'TruckCustomer.customer_id = CustomerNoType.id',
-                        )
+                ));
+                $defaul_condition['Truck.id'] = $truckSearch;
+                $this->request->data['Truck']['nopol'] = $data;
+                $this->request->data['Truck']['type'] = $typeTruck;
+            }
+            if(!empty($refine['name'])){
+                $data = urldecode($refine['name']);
+                $defaul_condition['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$data.'%';
+                $this->request->data['Driver']['name'] = $data;
+            }
+            if(!empty($refine['capacity'])){
+                $data = urldecode($refine['capacity']);
+                $defaul_condition['Truck.capacity LIKE'] = '%'.$data.'%';
+                $this->request->data['Truck']['capacity'] = $data;
+            }
+            if(!empty($refine['category'])){
+                $data = urldecode($refine['category']);
+                $defaul_condition['TruckCategory.name LIKE'] = '%'.$data.'%';
+                $this->request->data['Truck']['category'] = $data;
+            }
+            if(!empty($refine['year'])){
+                $data = urldecode($refine['year']);
+                $defaul_condition['Truck.tahun LIKE'] = '%'.$data.'%';
+                $this->request->data['Truck']['year'] = $data;
+            }
+            if(!empty($refine['alokasi'])){
+                $data = urldecode($refine['alokasi']);
+                $defaul_condition['CustomerNoType.code LIKE'] = '%'.$data.'%';
+                $this->request->data['Truck']['alokasi'] = $data;
+            }
+        }
+
+        if(!empty($from_date)){
+            $defaul_condition['DATE_FORMAT(Truck.created, \'%Y-%m-%d\') >= '] = $from_date;
+        }
+        if(!empty($to_date)){
+            $defaul_condition['DATE_FORMAT(Truck.created, \'%Y-%m-%d\') <= '] = $to_date;
+        }
+
+        $this->Truck->unBindModel(array(
+            'hasMany' => array(
+                'TruckCustomer'
+            )
+        ));
+
+        $this->Truck->bindModel(array(
+            'hasOne' => array(
+                'TruckCustomer' => array(
+                    'className' => 'TruckCustomer',
+                    'foreignKey' => 'truck_id',
+                    'conditions' => array(
+                        'TruckCustomer.primary' => 1
+                    )
+                ),
+                'CustomerNoType' => array(
+                    'className' => 'CustomerNoType',
+                    'foreignKey' => false,
+                    'conditions' => array(
+                        'TruckCustomer.customer_id = CustomerNoType.id',
                     )
                 )
-            ), false);
+            )
+        ), false);
 
-            $options = $this->Truck->getData('paginate', array(
-                'conditions' => $defaul_condition,
-                'contain' => array(
-                    'TruckBrand', 
-                    'TruckCategory',
-                    'TruckFacility',
-                    'TruckCustomer',
-                    'CustomerNoType',
-                )
-            ));
+        $options = $this->Truck->getData('paginate', array(
+            'conditions' => $defaul_condition,
+            'contain' => array(
+                'TruckBrand', 
+                'TruckCategory',
+                'TruckFacility',
+                'TruckCustomer',
+                'CustomerNoType',
+            )
+        ));
 
-            if( !empty($data_action) ) {
-                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
-            } else {
-                $options['limit'] = 20;
+        if( !empty($data_action) ) {
+            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+        } else {
+            $options['limit'] = 20;
+        }
+
+        $this->paginate = $options;
+        $trucks = $this->paginate('Truck');
+
+        if( !empty($trucks) ) {
+            foreach ($trucks as $key => $truck) {
+                $truck = $this->Truck->Driver->getMerge( $truck, $truck['Truck']['driver_id'] );
+                $trucks[$key] = $truck;
             }
+        }
 
-            $this->paginate = $options;
-            $trucks = $this->paginate('Truck');
+        $this->set(compact('trucks', 'from_date', 'to_date', 'data_action'));
 
-            if( !empty($trucks) ) {
-                foreach ($trucks as $key => $truck) {
-                    $truck = $this->Truck->Driver->getMerge( $truck, $truck['Truck']['driver_id'] );
-                    $trucks[$key] = $truck;
-                }
-            }
-
-            $this->set(compact('trucks', 'from_date', 'to_date', 'data_action'));
-
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
-            }
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
     }
 
     function facilities(){
-        if( in_array('insert_trucks', $this->allowModule) ) {
-            $this->loadModel('TruckFacility');
-            $options = array(
-                'conditions' => array(
-                    'TruckFacility.status' => 1
-                )
-            );
+        $this->loadModel('TruckFacility');
+        $options = array(
+            'conditions' => array(
+                'TruckFacility.status' => 1
+            )
+        );
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['name'])){
-                    $name = urldecode($refine['name']);
-                    $this->request->data['TruckFacility']['name'] = $name;
-                    $options['conditions']['TruckFacility.name LIKE '] = '%'.$name.'%';
-                }
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['TruckFacility']['name'] = $name;
+                $options['conditions']['TruckFacility.name LIKE '] = '%'.$name.'%';
             }
-            $this->paginate = $this->TruckFacility->getData('paginate', $options);
-            $truckFacilities = $this->paginate('TruckFacility');
-
-            $this->set('active_menu', 'trucks');
-            $this->set('sub_module_title', 'Fasilitas Truk');
-            $this->set('truckFacilities', $truckFacilities);
-        } else {
-            $this->redirect($this->referer());
         }
+        $this->paginate = $this->TruckFacility->getData('paginate', $options);
+        $truckFacilities = $this->paginate('TruckFacility');
+
+        $this->set('active_menu', 'trucks');
+        $this->set('sub_module_title', 'Fasilitas Truk');
+        $this->set('truckFacilities', $truckFacilities);
     }
 
     function facility_add(){
-        if( in_array('insert_trucks', $this->allowModule) ) {
-            $this->loadModel('TruckFacility');
-            $this->set('sub_module_title', 'Tambah Fasilitas Truk');
-            $this->doFacility();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->loadModel('TruckFacility');
+        $this->set('sub_module_title', 'Tambah Fasilitas Truk');
+        $this->doFacility();
     }
 
     function facility_edit($id){
-        if( in_array('insert_trucks', $this->allowModule) ) {
-            $this->loadModel('TruckFacility');
-            $this->set('sub_module_title', 'Rubah Fasilitas Truk');
-            $truckFacility = $this->TruckFacility->getData('first', array(
-                'conditions' => array(
-                    'TruckFacility.id' => $id
-                )
-            ));
+        $this->loadModel('TruckFacility');
+        $this->set('sub_module_title', 'Rubah Fasilitas Truk');
+        $truckFacility = $this->TruckFacility->getData('first', array(
+            'conditions' => array(
+                'TruckFacility.id' => $id
+            )
+        ));
 
-            if(!empty($truckFacility)){
-                $this->doFacility($id, $truckFacility);
-            }else{
-                $this->MkCommon->setCustomFlash(__('Fasilitas Truk tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'trucks',
-                    'action' => 'facilities'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($truckFacility)){
+            $this->doFacility($id, $truckFacility);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Fasilitas Truk tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'trucks',
+                'action' => 'facilities'
+            ));
         }
     }
 
@@ -3161,622 +2972,579 @@ class TrucksController extends AppController {
     }
 
     function facility_toggle($id){
-        if( in_array('insert_trucks', $this->allowModule) ) {
-            $this->loadModel('TruckFacility');
-            $locale = $this->TruckFacility->getData('first', array(
-                'conditions' => array(
-                    'TruckFacility.id' => $id
-                )
-            ));
+        $this->loadModel('TruckFacility');
+        $locale = $this->TruckFacility->getData('first', array(
+            'conditions' => array(
+                'TruckFacility.id' => $id
+            )
+        ));
 
-            if($locale){
-                $value = true;
-                if($locale['TruckFacility']['status']){
-                    $value = false;
-                }
-
-                $this->TruckFacility->id = $id;
-                $this->TruckFacility->set('status', $value);
-                if($this->TruckFacility->save()){
-                    $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah status Fasilitas Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );  
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah status Fasilitas Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Fasilitas Truk tidak ditemukan.'), 'error');
+        if($locale){
+            $value = true;
+            if($locale['TruckFacility']['status']){
+                $value = false;
             }
 
-            $this->redirect($this->referer());
-        } else {
-            $this->redirect($this->referer());
+            $this->TruckFacility->id = $id;
+            $this->TruckFacility->set('status', $value);
+            if($this->TruckFacility->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Fasilitas Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );  
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Fasilitas Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Fasilitas Truk tidak ditemukan.'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
     public function capacity_report( $data_action = false ) {
-        if( in_array('view_capacity_report', $this->allowModule) ) {
-            $this->loadModel('TruckCustomer');
-            $this->loadModel('Customer');
-            $this->set('active_menu', 'capacity_report');
-            $this->set('sub_module_title', __('Laporan Truk Per Kapasitas'));
-            
-            $options = $this->Customer->getData('paginate', array(
-                'conditions' => array(
-                    'Customer.status' => 1,
-                ),
-                'limit' => 20,
-            ));
+        $this->loadModel('TruckCustomer');
+        $this->loadModel('Customer');
+        $this->set('active_menu', 'capacity_report');
+        $this->set('sub_module_title', __('Laporan Truk Per Kapasitas'));
+        
+        $options = $this->Customer->getData('paginate', array(
+            'conditions' => array(
+                'Customer.status' => 1,
+            ),
+            'limit' => 20,
+        ));
 
-            $options = $this->Customer->getData('paginate', array(
-                'conditions' => array(
-                    'Customer.status' => 1,
-                ),
-            ));
+        $options = $this->Customer->getData('paginate', array(
+            'conditions' => array(
+                'Customer.status' => 1,
+            ),
+        ));
 
-            if( !empty($data_action) ) {
-                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
-            } else {
-                $options['limit'] = 50;
-            }
+        if( !empty($data_action) ) {
+            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+        } else {
+            $options['limit'] = 50;
+        }
 
-            $this->paginate = $options;
-            $customers = $this->paginate('Customer');
+        $this->paginate = $options;
+        $customers = $this->paginate('Customer');
 
-            $capacities = $this->Truck->getData('list', array(
-                'conditions' => array(
-                    'Truck.status' => 1,
-                ),
-                'group' => array(
-                    'Truck.capacity',
-                ),
-                'fields' => array(
-                    'Truck.id',
-                    'Truck.capacity',
-                ),
-                'order' => array(
-                    'Truck.capacity*1' => 'ASC',
-                ),
-            ), false);
-            $truckArr = array();
+        $capacities = $this->Truck->getData('list', array(
+            'conditions' => array(
+                'Truck.status' => 1,
+            ),
+            'group' => array(
+                'Truck.capacity',
+            ),
+            'fields' => array(
+                'Truck.id',
+                'Truck.capacity',
+            ),
+            'order' => array(
+                'Truck.capacity*1' => 'ASC',
+            ),
+        ), false);
+        $truckArr = array();
 
-            if( !empty($customers) ) {
-                $customerArr = Set::extract('/Customer/id', $customers);
-                $trucks = $this->TruckCustomer->getData('all', array(
-                    'conditions' => array(
-                        'Truck.status' => 1,
-                        'TruckCustomer.customer_id' => $customerArr,
-                        'TruckCustomer.primary' => $customerArr,
-                    ),
-                    'contain' => array(
-                        'Truck',
-                    ),
-                    'group' => array(
-                        'Truck.capacity',
-                        'TruckCustomer.customer_id',
-                    ),
-                    'fields' => array(
-                        'Truck.id',
-                        'Truck.capacity',
-                        'TruckCustomer.customer_id',
-                        'COUNT(Truck.id) AS cnt',
-                    ),
-                ));
-
-                if( !empty($trucks) ) {
-                    foreach ($trucks as $key => $truck) {
-                        if( !empty($truck[0]['cnt']) ) {
-                            $customer_id = $truck['TruckCustomer']['customer_id'];
-                            $capacity = $truck['Truck']['capacity'];
-                            $truckArr[$customer_id][$capacity] = $truck[0]['cnt'];
-                        }
-                    }
-                }
-            }
-
-            $this->Truck->unBindModel(array(
-                'hasMany' => array(
-                    'TruckCustomer'
-                )
-            ));
-
-            $this->Truck->bindModel(array(
-                'hasOne' => array(
-                    'TruckCustomer' => array(
-                        'className' => 'TruckCustomer',
-                        'foreignKey' => 'truck_id',
-                        'conditions' => array(
-                            'TruckCustomer.primary' => 1
-                        )
-                    )
-                )
-            ), false);
-            $truckWithoutAlocations = $this->Truck->getData('all', array(
+        if( !empty($customers) ) {
+            $customerArr = Set::extract('/Customer/id', $customers);
+            $trucks = $this->TruckCustomer->getData('all', array(
                 'conditions' => array(
                     'Truck.status' => 1,
-                    'TruckCustomer.id' => NULL,
+                    'TruckCustomer.customer_id' => $customerArr,
+                    'TruckCustomer.primary' => $customerArr,
                 ),
                 'contain' => array(
-                    'TruckCustomer',
+                    'Truck',
                 ),
                 'group' => array(
                     'Truck.capacity',
+                    'TruckCustomer.customer_id',
                 ),
                 'fields' => array(
                     'Truck.id',
                     'Truck.capacity',
+                    'TruckCustomer.customer_id',
                     'COUNT(Truck.id) AS cnt',
                 ),
             ));
-            if( !empty($truckWithoutAlocations) ) {
-                foreach ($truckWithoutAlocations as $key => $truck) {
+
+            if( !empty($trucks) ) {
+                foreach ($trucks as $key => $truck) {
                     if( !empty($truck[0]['cnt']) ) {
-                        $customer_id = 0;
+                        $customer_id = $truck['TruckCustomer']['customer_id'];
                         $capacity = $truck['Truck']['capacity'];
                         $truckArr[$customer_id][$capacity] = $truck[0]['cnt'];
                     }
                 }
             }
+        }
 
-            $this->set(compact(
-                'data_action', 'customers', 'capacities',
-                'truckArr', 'truckWithoutAlocations'
-            ));
+        $this->Truck->unBindModel(array(
+            'hasMany' => array(
+                'TruckCustomer'
+            )
+        ));
 
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
+        $this->Truck->bindModel(array(
+            'hasOne' => array(
+                'TruckCustomer' => array(
+                    'className' => 'TruckCustomer',
+                    'foreignKey' => 'truck_id',
+                    'conditions' => array(
+                        'TruckCustomer.primary' => 1
+                    )
+                )
+            )
+        ), false);
+        $truckWithoutAlocations = $this->Truck->getData('all', array(
+            'conditions' => array(
+                'Truck.status' => 1,
+                'TruckCustomer.id' => NULL,
+            ),
+            'contain' => array(
+                'TruckCustomer',
+            ),
+            'group' => array(
+                'Truck.capacity',
+            ),
+            'fields' => array(
+                'Truck.id',
+                'Truck.capacity',
+                'COUNT(Truck.id) AS cnt',
+            ),
+        ));
+        if( !empty($truckWithoutAlocations) ) {
+            foreach ($truckWithoutAlocations as $key => $truck) {
+                if( !empty($truck[0]['cnt']) ) {
+                    $customer_id = 0;
+                    $capacity = $truck['Truck']['capacity'];
+                    $truckArr[$customer_id][$capacity] = $truck[0]['cnt'];
+                }
             }
-        } else {
-            $this->redirect($this->referer());
+        }
+
+        $this->set(compact(
+            'data_action', 'customers', 'capacities',
+            'truckArr', 'truckWithoutAlocations'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
         }
     }
 
     public function point_perday_report( $data_action = false ) {
-        if( in_array('view_point_perday_report', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $this->loadModel('TtujTipeMotor');
-            $this->loadModel('Customer');
-            $this->loadModel('CustomerTargetUnitDetail');
-            $this->set('active_menu', 'point_perday_report');
-            $this->set('sub_module_title', __('Laporan Pencapaian Per Point Per Day'));
-            
-            if( !empty($this->params['named']) ) {
-                $refine = $this->params['named'];
+        $this->loadModel('Ttuj');
+        $this->loadModel('TtujTipeMotor');
+        $this->loadModel('Customer');
+        $this->loadModel('CustomerTargetUnitDetail');
+        $this->set('active_menu', 'point_perday_report');
+        $this->set('sub_module_title', __('Laporan Pencapaian Per Point Per Day'));
+        
+        if( !empty($this->params['named']) ) {
+            $refine = $this->params['named'];
 
-                if( !empty($refine['month']) && !empty($refine['year']) ) {
-                    $monthArr[0] = $refine['month'];
-                    $monthArr[1] = $refine['year'];
+            if( !empty($refine['month']) && !empty($refine['year']) ) {
+                $monthArr[0] = $refine['month'];
+                $monthArr[1] = $refine['year'];
 
-                    if( !empty($monthArr[0]) && !empty($monthArr[1]) ) {
-                        $monthNumber = $monthArr[0];
+                if( !empty($monthArr[0]) && !empty($monthArr[1]) ) {
+                    $monthNumber = $monthArr[0];
 
-                        if( !empty($monthArr[1]) && !empty($monthNumber) ) {
-                            $currentMonth = sprintf("%s-%s", $monthArr[1], $monthNumber);
-                        }
+                    if( !empty($monthArr[1]) && !empty($monthNumber) ) {
+                        $currentMonth = sprintf("%s-%s", $monthArr[1], $monthNumber);
                     }
                 }
             }
+        }
 
-            $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
-            $lastDay = date('t', strtotime($currentMonth));
-            $options = $this->Customer->getData('paginate', array(
-                'conditions' => array(
-                    'Customer.status' => 1,
-                ),
-            ));
+        $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
+        $lastDay = date('t', strtotime($currentMonth));
+        $options = $this->Customer->getData('paginate', array(
+            'conditions' => array(
+                'Customer.status' => 1,
+            ),
+        ));
 
-            if( !empty($data_action) ) {
-                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
-            } else {
-                $options['limit'] = 20;
+        if( !empty($data_action) ) {
+            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+        } else {
+            $options['limit'] = 20;
+        }
+
+        $this->paginate = $options;
+        $customers = $this->paginate('Customer');
+
+        $customerArr = Set::extract('/Customer/id', $customers);
+        $ttujs = $this->TtujTipeMotor->getData('all', array(
+            'conditions' => array(
+                'TtujTipeMotor.status'=> 1,
+                'Ttuj.status'=> 1,
+                'Ttuj.is_draft'=> 0,
+                'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')' => $currentMonth,
+                'Ttuj.customer_id' => $customerArr,
+            ),
+            'contain' => array(
+                'Ttuj',
+            ),
+            'order' => array(
+                'Ttuj.customer_name' => 'ASC', 
+            ),
+            'fields' => array(
+                'Ttuj.id', 'Ttuj.ttuj_date',
+                'Ttuj.customer_id', 'SUM(TtujTipeMotor.qty) cnt'
+            ),
+            'group' => array(
+                'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\')',
+                'Ttuj.customer_id',
+            ),
+        ), false);
+        $dataTtuj = array();
+        $targetUnit = array();
+        $customerTargetUnits = $this->CustomerTargetUnitDetail->find('all', array(
+            'conditions' => array(
+                'CustomerTargetUnit.status' => 1,
+                'CustomerTargetUnit.customer_id' => $customerArr,
+                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\')' => $currentMonth,
+            ),
+            'order' => array(
+                'CustomerTargetUnit.customer_id' => 'ASC', 
+            ),
+            'contain' => array(
+                'CustomerTargetUnit'
+            ),
+        ));
+
+        if( !empty($customerTargetUnits) ) {
+            foreach ($customerTargetUnits as $key => $customerTargetUnit) {
+                $idx = sprintf('%s-%s', $customerTargetUnit['CustomerTargetUnit']['year'], date('m', mktime(0, 0, 0, $customerTargetUnit['CustomerTargetUnitDetail']['month'], 10)));
+                $targetUnit[$customerTargetUnit['CustomerTargetUnit']['customer_id']][$idx] = $customerTargetUnit['CustomerTargetUnitDetail']['unit'];
             }
+        }
 
-            $this->paginate = $options;
-            $customers = $this->paginate('Customer');
+        if( !empty($ttujs) ) {
+            foreach ($ttujs as $key => $value) {
+                $totalMuatan = 0;
+                $dayBerangkat = date('d', strtotime($value['Ttuj']['ttuj_date']));
+                $customer_id = $value['Ttuj']['customer_id'];
 
-            $customerArr = Set::extract('/Customer/id', $customers);
-            $ttujs = $this->TtujTipeMotor->getData('all', array(
-                'conditions' => array(
-                    'TtujTipeMotor.status'=> 1,
-                    'Ttuj.status'=> 1,
-                    'Ttuj.is_draft'=> 0,
-                    'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')' => $currentMonth,
-                    'Ttuj.customer_id' => $customerArr,
-                ),
-                'contain' => array(
-                    'Ttuj',
-                ),
-                'order' => array(
-                    'Ttuj.customer_name' => 'ASC', 
-                ),
-                'fields' => array(
-                    'Ttuj.id', 'Ttuj.ttuj_date',
-                    'Ttuj.customer_id', 'SUM(TtujTipeMotor.qty) cnt'
-                ),
-                'group' => array(
-                    'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\')',
-                    'Ttuj.customer_id',
-                ),
-            ), false);
-            $dataTtuj = array();
-            $targetUnit = array();
-            $customerTargetUnits = $this->CustomerTargetUnitDetail->find('all', array(
-                'conditions' => array(
-                    'CustomerTargetUnit.status' => 1,
-                    'CustomerTargetUnit.customer_id' => $customerArr,
-                    'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\')' => $currentMonth,
-                ),
-                'order' => array(
-                    'CustomerTargetUnit.customer_id' => 'ASC', 
-                ),
-                'contain' => array(
-                    'CustomerTargetUnit'
-                ),
-            ));
-
-            if( !empty($customerTargetUnits) ) {
-                foreach ($customerTargetUnits as $key => $customerTargetUnit) {
-                    $idx = sprintf('%s-%s', $customerTargetUnit['CustomerTargetUnit']['year'], date('m', mktime(0, 0, 0, $customerTargetUnit['CustomerTargetUnitDetail']['month'], 10)));
-                    $targetUnit[$customerTargetUnit['CustomerTargetUnit']['customer_id']][$idx] = $customerTargetUnit['CustomerTargetUnitDetail']['unit'];
+                if( !empty($value[0]['cnt']) ) {
+                    $totalMuatan = $value[0]['cnt'];
                 }
+
+                $dataTtuj[$customer_id][$dayBerangkat] = $totalMuatan;
             }
+        }
 
-            if( !empty($ttujs) ) {
-                foreach ($ttujs as $key => $value) {
-                    $totalMuatan = 0;
-                    $dayBerangkat = date('d', strtotime($value['Ttuj']['ttuj_date']));
-                    $customer_id = $value['Ttuj']['customer_id'];
+        if( !empty($currentMonth) ) {
+            $this->request->data['Truck']['month'] = date('m', strtotime($currentMonth));
+            $this->request->data['Truck']['year'] = date('Y', strtotime($currentMonth));
+        }
 
-                    if( !empty($value[0]['cnt']) ) {
-                        $totalMuatan = $value[0]['cnt'];
-                    }
+        $this->set(compact(
+            'customers', 'data_action',
+            'lastDay', 'currentMonth', 'dataTtuj',
+            'targetUnit'
+        ));
 
-                    $dataTtuj[$customer_id][$dayBerangkat] = $totalMuatan;
-                }
-            }
-
-            if( !empty($currentMonth) ) {
-                $this->request->data['Truck']['month'] = date('m', strtotime($currentMonth));
-                $this->request->data['Truck']['year'] = date('Y', strtotime($currentMonth));
-            }
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $layout_js = array(
+                'freeze',
+            );
+            $layout_css = array(
+                'freeze',
+            );
 
             $this->set(compact(
-                'customers', 'data_action',
-                'lastDay', 'currentMonth', 'dataTtuj',
-                'targetUnit'
+                'layout_css', 'layout_js'
             ));
-
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
-            } else {
-                $layout_js = array(
-                    'freeze',
-                );
-                $layout_css = array(
-                    'freeze',
-                );
-
-                $this->set(compact(
-                    'layout_css', 'layout_js'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
         }
     }
 
     public function point_perplant_report( $data_type = 'depo', $data_action = false ) {
-        if( in_array('view_point_perplant_report', $this->allowModule) ) {
-            // $this->loadModel('UangJalan');
-            $this->loadModel('City');
-            $this->loadModel('Ttuj');
-            $this->loadModel('TtujTipeMotor');
-            $this->loadModel('Customer');
-            $this->loadModel('CustomerTargetUnitDetail');
-            $this->set('sub_module_title', __('Laporan Pencapaian Per Point Per Plant'));
-            
-            if( !empty($this->params['named']) ) {
-                $refine = $this->params['named'];
+        $this->loadModel('City');
+        $this->loadModel('Ttuj');
+        $this->loadModel('TtujTipeMotor');
+        $this->loadModel('Customer');
+        $this->loadModel('CustomerTargetUnitDetail');
+        $this->set('sub_module_title', __('Laporan Pencapaian Per Point Per Plant'));
+        
+        if( !empty($this->params['named']) ) {
+            $refine = $this->params['named'];
 
-                if( !empty($refine['month']) && !empty($refine['year']) ) {
-                    $monthArr[0] = $refine['month'];
-                    $monthArr[1] = $refine['year'];
+            if( !empty($refine['month']) && !empty($refine['year']) ) {
+                $monthArr[0] = $refine['month'];
+                $monthArr[1] = $refine['year'];
 
-                    if( !empty($monthArr[0]) && !empty($monthArr[1]) ) {
-                        $monthNumber = $monthArr[0];
+                if( !empty($monthArr[0]) && !empty($monthArr[1]) ) {
+                    $monthNumber = $monthArr[0];
 
-                        if( !empty($monthArr[1]) && !empty($monthNumber) ) {
-                            $currentMonth = sprintf("%s-%s", $monthArr[1], $monthNumber);
-                        }
+                    if( !empty($monthArr[1]) && !empty($monthNumber) ) {
+                        $currentMonth = sprintf("%s-%s", $monthArr[1], $monthNumber);
                     }
                 }
             }
+        }
 
-            $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
-            $lastDay = date('t', strtotime($currentMonth));
-            $conditionsCustomer = array(
-                'Customer.status' => 1,
-                'Customer.customer_type_id' => 2,
-            );
+        $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
+        $lastDay = date('t', strtotime($currentMonth));
+        $conditionsCustomer = array(
+            'Customer.status' => 1,
+            'Customer.customer_type_id' => 2,
+        );
 
-            if( $data_type == 'retail' ) {
-                $conditionsCustomer['Customer.customer_type_id'] = 1;
-            } else {
-                $conditionsCustomer['Customer.customer_type_id'] = 2;
-            }
-
-            $options = array(
-                'conditions' => $conditionsCustomer,
-            );
-
-            if( !empty($data_action) ) {
-                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
-            } else {
-                $options['limit'] = 20;
-            }
-
-            $this->paginate = $this->Customer->getData('paginate', $options);
-            $customers = $this->paginate('Customer');
-            
-            $customerArr = Set::extract('/Customer/id', $customers);
-            $group = array(
-                'Ttuj.from_city_id',
-                'Ttuj.customer_id',
-            );
-
-            if( $data_type == 'retail' ) {
-                unset($group['Ttuj.from_city_id']);
-                $this->set('active_menu', 'retail_point_perplant_report');
-            } else {
-                // $cities = $this->UangJalan->getData('list', array(
-                //     'conditions' => array(
-                //         'UangJalan.status' => 1,
-                //     ),
-                //     'fields' => array(
-                //         'FromCity.id', 'FromCity.name'
-                //     ),
-                //     'contain' => array(
-                //         'FromCity'
-                //     ),
-                //     'order' => array(
-                //         'FromCity.name' => 'ASC',
-                //     ),
-                //     'group' => array(
-                //         'FromCity.id',
-                //     )
-                // ), false);
-                $this->set('active_menu', 'point_perplant_report');
-            }
-
-            $ttujs = $this->TtujTipeMotor->getData('all', array(
-                'conditions' => array(
-                    'TtujTipeMotor.status'=> 1,
-                    'Ttuj.status'=> 1,
-                    'Ttuj.is_draft'=> 0,
-                    'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')' => $currentMonth,
-                    'Ttuj.customer_id' => $customerArr,
-                    'Ttuj.is_retail' => 0,
-                ),
-                'contain' => array(
-                    'Ttuj',
-                ),
-                'order' => array(
-                    'Ttuj.customer_name' => 'ASC', 
-                ),
-                'fields' => array(
-                    'Ttuj.id', 'Ttuj.from_city_id',
-                    'Ttuj.customer_id', 'SUM(TtujTipeMotor.qty) cnt'
-                ),
-                'group' => $group,
-            ), false);
-            $dataTtuj = array();
-            $targetUnit = array();
-            $cities = array();
-            $customerTargetUnits = $this->CustomerTargetUnitDetail->find('all', array(
-                'conditions' => array(
-                    'CustomerTargetUnit.status' => 1,
-                    'CustomerTargetUnit.customer_id' => $customerArr,
-                    'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\')' => $currentMonth,
-                ),
-                'order' => array(
-                    'CustomerTargetUnit.customer_id' => 'ASC', 
-                ),
-                'contain' => array(
-                    'CustomerTargetUnit'
-                ),
-            ));
-
-            if( !empty($customerTargetUnits) ) {
-                foreach ($customerTargetUnits as $key => $customerTargetUnit) {
-                    $idx = sprintf('%s-%s', $customerTargetUnit['CustomerTargetUnit']['year'], date('m', mktime(0, 0, 0, $customerTargetUnit['CustomerTargetUnitDetail']['month'], 10)));
-                    $targetUnit[$customerTargetUnit['CustomerTargetUnit']['customer_id']][$idx] = $customerTargetUnit['CustomerTargetUnitDetail']['unit'];
-                }
-            }
-
-            if( !empty($ttujs) ) {
-                foreach ($ttujs as $key => $value) {
-                    $totalMuatan = 0;
-                    $customer_id = $value['Ttuj']['customer_id'];
-                    $from_city_id = $value['Ttuj']['from_city_id'];
-
-                    if( empty($cities[$from_city_id]) ) {
-                        $value = $this->City->getMerge( $value, $from_city_id );
-
-                        if( !empty($value['City']['name']) ) {
-                            $cities[$from_city_id] = $value['City']['name'];
-                        }
-                    }
-
-                    if( !empty($value[0]['cnt']) ) {
-                        $totalMuatan = $value[0]['cnt'];
-                    }
-
-                    if( $data_type == 'retail' ) {
-                        $dataTtuj[$customer_id] = $totalMuatan;
-                    } else {
-                        $dataTtuj[$customer_id][$from_city_id] = $totalMuatan;
-                    }
-                }
-            }
-
-            if( !empty($currentMonth) ) {
-                $this->request->data['Truck']['month'] = date('m', strtotime($currentMonth));
-                $this->request->data['Truck']['year'] = date('Y', strtotime($currentMonth));
-            }
-
-            $this->set(compact(
-                'customers', 'data_action',
-                'lastDay', 'currentMonth', 'dataTtuj',
-                'targetUnit', 'cities', 'data_type'
-            ));
-
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
-            }
+        if( $data_type == 'retail' ) {
+            $conditionsCustomer['Customer.customer_type_id'] = 1;
         } else {
-            $this->redirect($this->referer());
+            $conditionsCustomer['Customer.customer_type_id'] = 2;
+        }
+
+        $options = array(
+            'conditions' => $conditionsCustomer,
+        );
+
+        if( !empty($data_action) ) {
+            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+        } else {
+            $options['limit'] = 20;
+        }
+
+        $this->paginate = $this->Customer->getData('paginate', $options);
+        $customers = $this->paginate('Customer');
+        
+        $customerArr = Set::extract('/Customer/id', $customers);
+        $group = array(
+            'Ttuj.from_city_id',
+            'Ttuj.customer_id',
+        );
+
+        if( $data_type == 'retail' ) {
+            unset($group['Ttuj.from_city_id']);
+            $this->set('active_menu', 'retail_point_perplant_report');
+        } else {
+            $this->set('active_menu', 'point_perplant_report');
+        }
+
+        $ttujs = $this->TtujTipeMotor->getData('all', array(
+            'conditions' => array(
+                'TtujTipeMotor.status'=> 1,
+                'Ttuj.status'=> 1,
+                'Ttuj.is_draft'=> 0,
+                'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')' => $currentMonth,
+                'Ttuj.customer_id' => $customerArr,
+                'Ttuj.is_retail' => 0,
+            ),
+            'contain' => array(
+                'Ttuj',
+            ),
+            'order' => array(
+                'Ttuj.customer_name' => 'ASC', 
+            ),
+            'fields' => array(
+                'Ttuj.id', 'Ttuj.from_city_id',
+                'Ttuj.customer_id', 'SUM(TtujTipeMotor.qty) cnt'
+            ),
+            'group' => $group,
+        ), false);
+        $dataTtuj = array();
+        $targetUnit = array();
+        $cities = array();
+        $customerTargetUnits = $this->CustomerTargetUnitDetail->find('all', array(
+            'conditions' => array(
+                'CustomerTargetUnit.status' => 1,
+                'CustomerTargetUnit.customer_id' => $customerArr,
+                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\')' => $currentMonth,
+            ),
+            'order' => array(
+                'CustomerTargetUnit.customer_id' => 'ASC', 
+            ),
+            'contain' => array(
+                'CustomerTargetUnit'
+            ),
+        ));
+
+        if( !empty($customerTargetUnits) ) {
+            foreach ($customerTargetUnits as $key => $customerTargetUnit) {
+                $idx = sprintf('%s-%s', $customerTargetUnit['CustomerTargetUnit']['year'], date('m', mktime(0, 0, 0, $customerTargetUnit['CustomerTargetUnitDetail']['month'], 10)));
+                $targetUnit[$customerTargetUnit['CustomerTargetUnit']['customer_id']][$idx] = $customerTargetUnit['CustomerTargetUnitDetail']['unit'];
+            }
+        }
+
+        if( !empty($ttujs) ) {
+            foreach ($ttujs as $key => $value) {
+                $totalMuatan = 0;
+                $customer_id = $value['Ttuj']['customer_id'];
+                $from_city_id = $value['Ttuj']['from_city_id'];
+
+                if( empty($cities[$from_city_id]) ) {
+                    $value = $this->City->getMerge( $value, $from_city_id );
+
+                    if( !empty($value['City']['name']) ) {
+                        $cities[$from_city_id] = $value['City']['name'];
+                    }
+                }
+
+                if( !empty($value[0]['cnt']) ) {
+                    $totalMuatan = $value[0]['cnt'];
+                }
+
+                if( $data_type == 'retail' ) {
+                    $dataTtuj[$customer_id] = $totalMuatan;
+                } else {
+                    $dataTtuj[$customer_id][$from_city_id] = $totalMuatan;
+                }
+            }
+        }
+
+        if( !empty($currentMonth) ) {
+            $this->request->data['Truck']['month'] = date('m', strtotime($currentMonth));
+            $this->request->data['Truck']['year'] = date('Y', strtotime($currentMonth));
+        }
+
+        $this->set(compact(
+            'customers', 'data_action',
+            'lastDay', 'currentMonth', 'dataTtuj',
+            'targetUnit', 'cities', 'data_type'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
         }
     }
 
     function licenses_report($data_action = false){
-        // if( in_array('view_license_report', $this->allowModule) ) {
-            $this->loadModel('Truck');
-            $this->loadModel('Customer');
+        $this->loadModel('Truck');
+        $this->loadModel('Customer');
 
-            $conditions = array();
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        $conditions = array();
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nopol'])){
-                    $data = urldecode($refine['nopol']);
-                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
+            if(!empty($refine['nopol'])){
+                $data = urldecode($refine['nopol']);
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
 
-                    if( $typeTruck == 2 ) {
-                        $conditionsNopol = array(
-                            'Truck.id' => $data,
-                        );
-                    } else {
-                        $conditionsNopol = array(
-                            'Truck.nopol LIKE' => '%'.$data.'%',
-                        );
-                    }
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $data,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$data.'%',
+                    );
+                }
 
-                    $truckSearch = $this->Truck->getData('list', array(
-                        'conditions' => $conditionsNopol,
-                        'fields' => array(
-                            'Truck.id', 'Truck.id',
+                $truckSearch = $this->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.id',
+                    ),
+                ));
+                $conditions['Truck.id'] = $truckSearch;
+                $this->request->data['Truck']['nopol'] = $data;
+                $this->request->data['Truck']['type'] = $typeTruck;
+            }
+            if(!empty($refine['license_stat'])){
+                $data = urldecode($refine['license_stat']);
+                $now_date = date('Y-m-d');
+                if($data == 'expired'){
+                    $conditions['OR']['DATE_FORMAT(Truck.tgl_stnk, \'%Y-%m-%d\') <= '] = $now_date;
+                    $conditions['OR']['DATE_FORMAT(Truck.tgl_stnk_plat, \'%Y-%m-%d\') <= '] = $now_date;
+                    $conditions['OR']['DATE_FORMAT(Truck.tgl_kir, \'%Y-%m-%d\') <= '] = $now_date;
+                    $conditions['OR']['DATE_FORMAT(Truck.tgl_siup, \'%Y-%m-%d\') <= '] = $now_date;
+                }else if($data == 'expired_soon'){
+                    $conditions['OR'] = array(
+                        array(
+                            'DATE_ADD(Truck.tgl_stnk, INTERVAL -30 DAY) <=  NOW()',
+                            'DATE_FORMAT(Truck.tgl_stnk, \'%Y-%m-%d\') >= NOW()'
                         ),
-                    ));
-                    $conditions['Truck.id'] = $truckSearch;
-                    $this->request->data['Truck']['nopol'] = $data;
-                    $this->request->data['Truck']['type'] = $typeTruck;
+                        array(
+                            'DATE_ADD(Truck.tgl_stnk_plat, INTERVAL -30 DAY) <= NOW()',
+                            'DATE_FORMAT(Truck.tgl_stnk_plat, \'%Y-%m-%d\') >= NOW()'
+                        ),
+                        array(
+                            'DATE_ADD(Truck.tgl_kir, INTERVAL -30 DAY) <= NOW()',
+                            'DATE_FORMAT(Truck.tgl_kir, \'%Y-%m-%d\') >= NOW()'
+                        ),
+                        array(
+                            'DATE_ADD(Truck.tgl_siup, INTERVAL -30 DAY) <= NOW()',
+                            'DATE_FORMAT(Truck.tgl_siup, \'%Y-%m-%d\') >= NOW()'
+                        ),
+                    );
+                }else if($data == 'active'){
+                    $conditions['OR'] = array(
+                        array('DATE_FORMAT(Truck.tgl_stnk, \'%Y-%m-%d\') >= NOW()'),
+                        array('DATE_FORMAT(Truck.tgl_stnk_plat, \'%Y-%m-%d\') >= NOW()'),
+                        array('DATE_FORMAT(Truck.tgl_kir, \'%Y-%m-%d\') >= NOW()'),
+                        array('DATE_FORMAT(Truck.tgl_siup, \'%Y-%m-%d\') >= NOW()'),
+                    );
                 }
-                if(!empty($refine['license_stat'])){
-                    $data = urldecode($refine['license_stat']);
-                    $now_date = date('Y-m-d');
-                    if($data == 'expired'){
-                        $conditions['OR']['DATE_FORMAT(Truck.tgl_stnk, \'%Y-%m-%d\') <= '] = $now_date;
-                        $conditions['OR']['DATE_FORMAT(Truck.tgl_stnk_plat, \'%Y-%m-%d\') <= '] = $now_date;
-                        $conditions['OR']['DATE_FORMAT(Truck.tgl_kir, \'%Y-%m-%d\') <= '] = $now_date;
-                        $conditions['OR']['DATE_FORMAT(Truck.tgl_siup, \'%Y-%m-%d\') <= '] = $now_date;
-                    }else if($data == 'expired_soon'){
-                        // $conditions['OR']['DATE_ADD(Truck.tgl_stnk, INTERVAL -30 DAY) <= '] = $now_date;
-                        // $conditions['OR']['DATE_ADD(Truck.tgl_stnk_plat, INTERVAL -30 DAY) <= '] = $now_date;
-                        // $conditions['OR']['DATE_ADD(Truck.tgl_kir, INTERVAL -30 DAY) <= '] = $now_date;
-                        // $conditions['OR']['DATE_ADD(Truck.tgl_siup, INTERVAL -30 DAY) <= '] = $now_date;
-
-                        $conditions['OR'] = array(
-                            array(
-                                'DATE_ADD(Truck.tgl_stnk, INTERVAL -30 DAY) <=  NOW()',
-                                'DATE_FORMAT(Truck.tgl_stnk, \'%Y-%m-%d\') >= NOW()'
-                            ),
-                            array(
-                                'DATE_ADD(Truck.tgl_stnk_plat, INTERVAL -30 DAY) <= NOW()',
-                                'DATE_FORMAT(Truck.tgl_stnk_plat, \'%Y-%m-%d\') >= NOW()'
-                            ),
-                            array(
-                                'DATE_ADD(Truck.tgl_kir, INTERVAL -30 DAY) <= NOW()',
-                                'DATE_FORMAT(Truck.tgl_kir, \'%Y-%m-%d\') >= NOW()'
-                            ),
-                            array(
-                                'DATE_ADD(Truck.tgl_siup, INTERVAL -30 DAY) <= NOW()',
-                                'DATE_FORMAT(Truck.tgl_siup, \'%Y-%m-%d\') >= NOW()'
-                            ),
-                        );
-                    }else if($data == 'active'){
-                        $conditions['OR'] = array(
-                            array('DATE_FORMAT(Truck.tgl_stnk, \'%Y-%m-%d\') >= NOW()'),
-                            array('DATE_FORMAT(Truck.tgl_stnk_plat, \'%Y-%m-%d\') >= NOW()'),
-                            array('DATE_FORMAT(Truck.tgl_kir, \'%Y-%m-%d\') >= NOW()'),
-                            array('DATE_FORMAT(Truck.tgl_siup, \'%Y-%m-%d\') >= NOW()'),
-                        );
-                    }
-                    $this->request->data['Truck']['status_expired'] = $data;
-                }
-                if(!empty($refine['alocation'])){
-                    $data = urldecode($refine['alocation']);
-                    $conditions['TruckCustomer.customer_id'] = $data;
-                    $this->request->data['TruckCustomer']['customer_id'] = $data;
-                }
+                $this->request->data['Truck']['status_expired'] = $data;
             }
-// debug($conditions);die();
-            $this->Truck->unBindModel(array(
-                'hasMany' => array(
-                    'TruckCustomer'
-                )
-            ));
+            if(!empty($refine['alocation'])){
+                $data = urldecode($refine['alocation']);
+                $conditions['TruckCustomer.customer_id'] = $data;
+                $this->request->data['TruckCustomer']['customer_id'] = $data;
+            }
+        }
+        
+        $this->Truck->unBindModel(array(
+            'hasMany' => array(
+                'TruckCustomer'
+            )
+        ));
 
-            $this->Truck->bindModel(array(
-                'hasOne' => array(
-                    'TruckCustomer' => array(
-                        'className' => 'TruckCustomer',
-                        'foreignKey' => 'truck_id',
-                        'conditions' => array(
-                            'TruckCustomer.primary' => 1
-                        )
+        $this->Truck->bindModel(array(
+            'hasOne' => array(
+                'TruckCustomer' => array(
+                    'className' => 'TruckCustomer',
+                    'foreignKey' => 'truck_id',
+                    'conditions' => array(
+                        'TruckCustomer.primary' => 1
                     )
                 )
-            ), false);
+            )
+        ), false);
 
-            $this->paginate = $this->Truck->getData('paginate', array(
-                'conditions' => $conditions,
-                'contain' => array(
-                    'TruckCustomer' => array(
-                        'CustomerNoType'
-                    )
-                ),
-                'limit' => 10
-            ));
+        $this->paginate = $this->Truck->getData('paginate', array(
+            'conditions' => $conditions,
+            'contain' => array(
+                'TruckCustomer' => array(
+                    'CustomerNoType'
+                )
+            ),
+            'limit' => 10
+        ));
 
-            $trucks = $this->paginate('Truck');
+        $trucks = $this->paginate('Truck');
 
-            $this->loadModel('Customer');
-            $customers = $this->Customer->getData('list', array(
-                'conditions' => array(
-                    'Customer.status' => 1
-                ),
-                'fields' => array(
-                    'Customer.id', 'Customer.customer_name_code'
-                ),
-            ));
-            $this->set('active_menu', 'licenses_report');
-            $sub_module_title = __('Laporan Surat-surat Truk');
-            $this->set(compact('trucks', 'customers', 'sub_module_title', 'data_action'));
+        $this->loadModel('Customer');
+        $customers = $this->Customer->getData('list', array(
+            'conditions' => array(
+                'Customer.status' => 1
+            ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+        $this->set('active_menu', 'licenses_report');
+        $sub_module_title = __('Laporan Surat-surat Truk');
+        $this->set(compact('trucks', 'customers', 'sub_module_title', 'data_action'));
 
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
-            }
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
     }
 
     function getMimeType( $filename ) {

@@ -37,199 +37,187 @@ class RevenuesController extends AppController {
     }
 
     public function ttuj() {
-        if( in_array('view_ttuj', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $this->loadModel('SuratJalan');
-            $this->set('module_title', __('TTUJ'));
-            $this->set('active_menu', 'ttuj');
-            $this->set('sub_module_title', __('TTUJ'));
-            $this->set('label_tgl', __('Tanggal Berangkat'));
+        $this->loadModel('Ttuj');
+        $this->loadModel('SuratJalan');
+        $this->set('module_title', __('TTUJ'));
+        $this->set('active_menu', 'ttuj');
+        $this->set('sub_module_title', __('TTUJ'));
+        $this->set('label_tgl', __('Tanggal Berangkat'));
 
-            $conditions = array(
-                'Ttuj.status' => array( 0, 1 ),
-            );
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        $conditions = array(
+            'Ttuj.status' => array( 0, 1 ),
+        );
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nottuj'])){
-                    $nottuj = urldecode($refine['nottuj']);
-                    $nottuj = $this->MkCommon->replaceSlash($nottuj);
-                    $this->request->data['Ttuj']['nottuj'] = $nottuj;
-                    $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
-                }
-                if(!empty($refine['nopol'])){
-                    $nopol = urldecode($refine['nopol']);
-                    $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                    $this->request->data['Ttuj']['type'] = $typeTruck;
-
-                    if( $typeTruck == 2 ) {
-                        $conditionsNopol = array(
-                            'Truck.id' => $nopol,
-                        );
-                    } else {
-                        $conditionsNopol = array(
-                            'Truck.nopol LIKE' => '%'.$nopol.'%',
-                        );
-                    }
-
-                    $truckSearch = $this->Ttuj->Truck->getData('list', array(
-                        'conditions' => $conditionsNopol,
-                        'fields' => array(
-                            'Truck.id', 'Truck.id',
-                        ),
-                    ));
-                    $conditions['Ttuj.truck_id'] = $truckSearch;
-                }
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Ttuj']['customer'] = $customer;
-                    $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
-                }
-                if(!empty($refine['is_draft'])){
-                    $is_draft = urldecode($refine['is_draft']);
-                    $conditions['Ttuj.is_draft'] = 1;
-                    $this->request->data['Ttuj']['is_draft'] = $is_draft;
-                }
-                if(!empty($refine['is_commit'])){
-                    $is_commit = urldecode($refine['is_commit']);
-                    $conditions['OR'][]= array(
-                        'Ttuj.is_draft' => 0,
-                        'Ttuj.is_arrive' => 0,
-                        'Ttuj.is_bongkaran' => 0,
-                        'Ttuj.is_balik' => 0,
-                        'Ttuj.is_pool' => 0,
-                    );
-                    $this->request->data['Ttuj']['is_commit'] = $is_commit;
-                }
-                if(!empty($refine['is_arrive'])){
-                    $is_arrive = urldecode($refine['is_arrive']);
-                    $conditions['OR'][] = array(
-                        'Ttuj.is_arrive' => 1,
-                        'Ttuj.is_bongkaran' => 0,
-                        'Ttuj.is_balik' => 0,
-                        'Ttuj.is_pool' => 0,
-                    );
-                    $this->request->data['Ttuj']['is_arrive'] = $is_arrive;
-                }
-                if(!empty($refine['is_bongkaran'])){
-                    $is_bongkaran = urldecode($refine['is_bongkaran']);
-                    $conditions['OR'][] = array(
-                        'Ttuj.is_bongkaran' => 1,
-                        'Ttuj.is_balik' => 0,
-                        'Ttuj.is_pool' => 0,
-                    );
-                    $this->request->data['Ttuj']['is_bongkaran'] = $is_bongkaran;
-                }
-                if(!empty($refine['is_balik'])){
-                    $is_balik = urldecode($refine['is_balik']);
-                    $conditions['OR'][] = array(
-                        'Ttuj.is_balik' => 1,
-                        'Ttuj.is_pool' => 0,
-                    );
-                    $this->request->data['Ttuj']['is_balik'] = $is_balik;
-                }
-                if(!empty($refine['is_pool'])){
-                    $is_pool = urldecode($refine['is_pool']);
-                    $conditions['OR'][] = array(
-                        'Ttuj.is_pool' => 1,
-                    );
-                    $this->request->data['Ttuj']['is_pool'] = $is_pool;
-                }
-                if(!empty($refine['is_sj_not_completed'])){
-                    $is_sj_not_completed = urldecode($refine['is_sj_not_completed']);
-                    $conditions['OR'][] = array(
-                        'Ttuj.is_sj_completed' => 0,
-                    );
-                    $this->request->data['Ttuj']['is_sj_not_completed'] = $is_sj_not_completed;
-                }
-                if(!empty($refine['is_sj_completed'])){
-                    $is_sj_completed = urldecode($refine['is_sj_completed']);
-                    $conditions['OR'][] = array(
-                        'Ttuj.is_sj_completed' => 1,
-                    );
-                    $this->request->data['Ttuj']['is_sj_completed'] = $is_sj_completed;
-                }
-                if(!empty($refine['is_revenue'])){
-                    $is_revenue = urldecode($refine['is_revenue']);
-                    $conditions['OR'][] = array(
-                        'Ttuj.is_revenue' => 1,
-                    );
-                    $this->request->data['Ttuj']['is_revenue'] = $is_revenue;
-                }
-                if(!empty($refine['is_not_revenue'])){
-                    $is_not_revenue = urldecode($refine['is_not_revenue']);
-                    $conditions['OR'][] = array(
-                        'Ttuj.is_revenue' => 0,
-                    );
-                    $this->request->data['Ttuj']['is_not_revenue'] = $is_not_revenue;
-                }
+            if(!empty($refine['nottuj'])){
+                $nottuj = urldecode($refine['nottuj']);
+                $nottuj = $this->MkCommon->replaceSlash($nottuj);
+                $this->request->data['Ttuj']['nottuj'] = $nottuj;
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
             }
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $this->request->data['Ttuj']['nopol'] = $nopol;
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                $this->request->data['Ttuj']['type'] = $typeTruck;
 
-            $this->paginate = $this->Ttuj->getData('paginate', array(
-                'conditions' => $conditions,
-                'order'=> array(
-                    'Ttuj.status' => 'DESC',
-                    'Ttuj.created' => 'DESC',
-                    'Ttuj.id' => 'DESC',
-                ),
-            ), false);
-            $ttujs = $this->paginate('Ttuj');
-
-            if( !empty($ttujs) ) {
-                foreach ($ttujs as $key => $ttuj) {
-                    $ttujs[$key] = $this->SuratJalan->getSJ( $ttuj, $ttuj['Ttuj']['id'] );
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $nopol,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$nopol.'%',
+                    );
                 }
-            }
 
-            $this->set('ttujs', $ttujs);
-        } else {
-            $this->redirect($this->referer());
+                $truckSearch = $this->Ttuj->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.id',
+                    ),
+                ));
+                $conditions['Ttuj.truck_id'] = $truckSearch;
+            }
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Ttuj']['customer'] = $customer;
+                $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
+            }
+            if(!empty($refine['is_draft'])){
+                $is_draft = urldecode($refine['is_draft']);
+                $conditions['Ttuj.is_draft'] = 1;
+                $this->request->data['Ttuj']['is_draft'] = $is_draft;
+            }
+            if(!empty($refine['is_commit'])){
+                $is_commit = urldecode($refine['is_commit']);
+                $conditions['OR'][]= array(
+                    'Ttuj.is_draft' => 0,
+                    'Ttuj.is_arrive' => 0,
+                    'Ttuj.is_bongkaran' => 0,
+                    'Ttuj.is_balik' => 0,
+                    'Ttuj.is_pool' => 0,
+                );
+                $this->request->data['Ttuj']['is_commit'] = $is_commit;
+            }
+            if(!empty($refine['is_arrive'])){
+                $is_arrive = urldecode($refine['is_arrive']);
+                $conditions['OR'][] = array(
+                    'Ttuj.is_arrive' => 1,
+                    'Ttuj.is_bongkaran' => 0,
+                    'Ttuj.is_balik' => 0,
+                    'Ttuj.is_pool' => 0,
+                );
+                $this->request->data['Ttuj']['is_arrive'] = $is_arrive;
+            }
+            if(!empty($refine['is_bongkaran'])){
+                $is_bongkaran = urldecode($refine['is_bongkaran']);
+                $conditions['OR'][] = array(
+                    'Ttuj.is_bongkaran' => 1,
+                    'Ttuj.is_balik' => 0,
+                    'Ttuj.is_pool' => 0,
+                );
+                $this->request->data['Ttuj']['is_bongkaran'] = $is_bongkaran;
+            }
+            if(!empty($refine['is_balik'])){
+                $is_balik = urldecode($refine['is_balik']);
+                $conditions['OR'][] = array(
+                    'Ttuj.is_balik' => 1,
+                    'Ttuj.is_pool' => 0,
+                );
+                $this->request->data['Ttuj']['is_balik'] = $is_balik;
+            }
+            if(!empty($refine['is_pool'])){
+                $is_pool = urldecode($refine['is_pool']);
+                $conditions['OR'][] = array(
+                    'Ttuj.is_pool' => 1,
+                );
+                $this->request->data['Ttuj']['is_pool'] = $is_pool;
+            }
+            if(!empty($refine['is_sj_not_completed'])){
+                $is_sj_not_completed = urldecode($refine['is_sj_not_completed']);
+                $conditions['OR'][] = array(
+                    'Ttuj.is_sj_completed' => 0,
+                );
+                $this->request->data['Ttuj']['is_sj_not_completed'] = $is_sj_not_completed;
+            }
+            if(!empty($refine['is_sj_completed'])){
+                $is_sj_completed = urldecode($refine['is_sj_completed']);
+                $conditions['OR'][] = array(
+                    'Ttuj.is_sj_completed' => 1,
+                );
+                $this->request->data['Ttuj']['is_sj_completed'] = $is_sj_completed;
+            }
+            if(!empty($refine['is_revenue'])){
+                $is_revenue = urldecode($refine['is_revenue']);
+                $conditions['OR'][] = array(
+                    'Ttuj.is_revenue' => 1,
+                );
+                $this->request->data['Ttuj']['is_revenue'] = $is_revenue;
+            }
+            if(!empty($refine['is_not_revenue'])){
+                $is_not_revenue = urldecode($refine['is_not_revenue']);
+                $conditions['OR'][] = array(
+                    'Ttuj.is_revenue' => 0,
+                );
+                $this->request->data['Ttuj']['is_not_revenue'] = $is_not_revenue;
+            }
         }
+
+        $this->paginate = $this->Ttuj->getData('paginate', array(
+            'conditions' => $conditions,
+            'order'=> array(
+                'Ttuj.status' => 'DESC',
+                'Ttuj.created' => 'DESC',
+                'Ttuj.id' => 'DESC',
+            ),
+        ), false);
+        $ttujs = $this->paginate('Ttuj');
+
+        if( !empty($ttujs) ) {
+            foreach ($ttujs as $key => $ttuj) {
+                $ttujs[$key] = $this->SuratJalan->getSJ( $ttuj, $ttuj['Ttuj']['id'] );
+            }
+        }
+
+        $this->set('ttujs', $ttujs);
     }
 
     function ttuj_add( $data_action = 'depo' ){
-        if( in_array('insert_ttuj', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $module_title = sprintf(__('Tambah TTUJ - %s'), strtoupper($data_action));
-            $this->set('sub_module_title', trim($module_title));
-            $this->doTTUJ( $data_action );
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->loadModel('Ttuj');
+        $module_title = sprintf(__('Tambah TTUJ - %s'), strtoupper($data_action));
+        $this->set('sub_module_title', trim($module_title));
+        $this->doTTUJ( $data_action );
     }
 
     function ttuj_edit( $id ){
-        if( in_array('update_ttuj', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $this->loadModel('Revenue');
-            $ttuj = $this->Ttuj->getData('first', array(
-                'conditions' => array(
-                    'Ttuj.id' => $id,
-                    'Ttuj.status' => array( 0, 1 ),
-                ),
-            ));
+        $this->loadModel('Ttuj');
+        $this->loadModel('Revenue');
+        $ttuj = $this->Ttuj->getData('first', array(
+            'conditions' => array(
+                'Ttuj.id' => $id,
+                'Ttuj.status' => array( 0, 1 ),
+            ),
+        ));
 
-            if(!empty($ttuj)){
-                $ttuj = $this->Revenue->getPaid( $ttuj, $ttuj['Ttuj']['id'] );
-                $data_action = false;
+        if(!empty($ttuj)){
+            $ttuj = $this->Revenue->getPaid( $ttuj, $ttuj['Ttuj']['id'] );
+            $data_action = false;
 
-                if( !empty($ttuj['Ttuj']['is_retail']) ) {
-                    $data_action = 'retail';
-                }
-
-                $module_title = sprintf(__('Rubah TTUJ %s'), ucwords($data_action));
-                $this->set('sub_module_title', trim($module_title));
-                $this->doTTUJ($data_action, $id, $ttuj);
-            }else{
-                $this->MkCommon->setCustomFlash(__('TTUJ tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'revenues',
-                    'action' => 'ttuj'
-                ));
+            if( !empty($ttuj['Ttuj']['is_retail']) ) {
+                $data_action = 'retail';
             }
-        } else {
-            $this->redirect($this->referer());
+
+            $module_title = sprintf(__('Rubah TTUJ %s'), ucwords($data_action));
+            $this->set('sub_module_title', trim($module_title));
+            $this->doTTUJ($data_action, $id, $ttuj);
+        }else{
+            $this->MkCommon->setCustomFlash(__('TTUJ tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'revenues',
+                'action' => 'ttuj'
+            ));
         }
     }
 
@@ -395,7 +383,7 @@ class RevenuesController extends AppController {
         $is_draft = isset($data_local['Ttuj']['is_draft'])?$data_local['Ttuj']['is_draft']:true;
         $allowUpdate = false;
 
-        if( !empty($this->request->data) && in_array('update_ttuj_commit', $this->allowModule) ) {
+        if( !empty($this->request->data) ) {
             $is_draft = true;
             $allowUpdate = true;
         }
@@ -1047,198 +1035,182 @@ class RevenuesController extends AppController {
     }
 
     function ttuj_toggle( $id, $action_type = 'status' ){
-        if( in_array('delete_ttuj', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $locale = $this->Ttuj->getData('first', array(
-                'conditions' => array(
-                    'Ttuj.id' => $id
-                )
-            ));
+        $this->loadModel('Ttuj');
+        $locale = $this->Ttuj->getData('first', array(
+            'conditions' => array(
+                'Ttuj.id' => $id
+            )
+        ));
 
-            if($locale){
-                $value = true;
-                if($locale['Ttuj']['status']){
-                    $value = false;
-                }
-
-                $this->Ttuj->id = $id;
-                $deleteJournal = false;
-
-                switch ($action_type) {
-                    case 'truk_tiba':
-                        $this->Ttuj->set('is_arrive', 0);
-                        break;
-
-                    case 'bongkaran':
-                        $this->Ttuj->set('is_bongkaran', 0);
-                        break;
-
-                    case 'balik':
-                        $this->Ttuj->set('is_balik', 0);
-                        break;
-                    
-                    default:
-                        $this->Ttuj->set('status', 0);
-                        $deleteJournal = true;
-                        break;
-                }
-
-                if($this->Ttuj->save()){
-                    $this->loadModel('Journal');
-                    $document_no = !empty($locale['Ttuj']['no_ttuj'])?$locale['Ttuj']['no_ttuj']:false;
-
-                    if( $deleteJournal && empty($locale['Ttuj']['is_draft']) ) {
-                        if( !empty($locale['Ttuj']['commission']) ) {
-                            $commissionJournal = $locale['Ttuj']['commission'];
-
-                            if( !empty($locale['Ttuj']['commission_extra']) ) {
-                                $commissionJournal += $locale['Ttuj']['commission_extra'];
-                            }
-
-                            $this->Journal->setJournal( $id, $document_no, 'commission_coa_credit_id', $commissionJournal, 0, 'commission_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'commission_coa_debit_id', 0, $commissionJournal, 'commission_void' );
-                        }
-
-                        if( !empty($locale['Ttuj']['uang_jalan_1']) ) {
-                            $uangJalanJournal = $locale['Ttuj']['uang_jalan_1'];
-
-                            if( !empty($locale['Ttuj']['uang_jalan_2']) ) {
-                                $uangJalanJournal += $locale['Ttuj']['uang_jalan_2'];
-                            }
-
-                            if( !empty($locale['Ttuj']['uang_jalan_extra']) ) {
-                                $uangJalanJournal += $locale['Ttuj']['uang_jalan_extra'];
-                            }
-
-                            $this->Journal->setJournal( $id, $document_no, 'uang_jalan_coa_credit_id', $uangJalanJournal, 0, 'uang_jalan_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'uang_jalan_coa_debit_id', 0, $uangJalanJournal, 'uang_jalan_void' );
-                        }
-
-                        if( !empty($locale['Ttuj']['uang_kuli_muat']) ) {
-                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_muat_coa_credit_id', $locale['Ttuj']['uang_kuli_muat'], 0, 'uang_kuli_muat_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_muat_coa_debit_id', 0, $locale['Ttuj']['uang_kuli_muat'], 'uang_kuli_muat_void' );
-                        }
-
-                        if( !empty($locale['Ttuj']['uang_kuli_bongkar']) ) {
-                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_bongkar_coa_credit_id', $locale['Ttuj']['uang_kuli_bongkar'], 0, 'uang_kuli_bongkar_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'uang_kuli_bongkar_coa_debit_id', 0, $locale['Ttuj']['uang_kuli_bongkar'], 'uang_kuli_bongkar_void' );
-                        }
-
-                        if( !empty($locale['Ttuj']['asdp']) ) {
-                            $this->Journal->setJournal( $id, $document_no, 'asdp_coa_credit_id', $locale['Ttuj']['asdp'], 0, 'asdp_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'asdp_coa_debit_id', 0, $locale['Ttuj']['asdp'], 'asdp_void' );
-                        }
-
-                        if( !empty($locale['Ttuj']['uang_kawal']) ) {
-                            $this->Journal->setJournal( $id, $document_no, 'uang_kawal_coa_credit_id', $locale['Ttuj']['uang_kawal'], 0, 'uang_kawal_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'uang_kawal_coa_debit_id', 0, $locale['Ttuj']['uang_kawal'], 'uang_kawal_void' );
-                        }
-
-                        if( !empty($locale['Ttuj']['uang_keamanan']) ) {
-                            $this->Journal->setJournal( $id, $document_no, 'uang_keamanan_coa_credit_id', $locale['Ttuj']['uang_keamanan'], 0, 'uang_keamanan_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'uang_keamanan_coa_debit_id', 0, $locale['Ttuj']['uang_keamanan'], 'uang_keamanan_void' );
-                        }
-                    }
-
-                    $this->MkCommon->setCustomFlash(__('TTUJ berhasil dibatalkan.'), 'success');
-                    $this->Log->logActivity( sprintf(__('TTUJ ID #%s berhasil dibatalkan.'), $id), $this->user_data, $this->RequestHandler, $this->params );
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal membatalkan TTUJ.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal membatalkan TTUJ ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('TTUJ tidak ditemukan.'), 'error');
+        if($locale){
+            $value = true;
+            if($locale['Ttuj']['status']){
+                $value = false;
             }
 
-            $this->redirect($this->referer());
-        } else {
-            $this->redirect($this->referer());
+            $this->Ttuj->id = $id;
+            $deleteJournal = false;
+
+            switch ($action_type) {
+                case 'truk_tiba':
+                    $this->Ttuj->set('is_arrive', 0);
+                    break;
+
+                case 'bongkaran':
+                    $this->Ttuj->set('is_bongkaran', 0);
+                    break;
+
+                case 'balik':
+                    $this->Ttuj->set('is_balik', 0);
+                    break;
+                
+                default:
+                    $this->Ttuj->set('status', 0);
+                    $deleteJournal = true;
+                    break;
+            }
+
+            if($this->Ttuj->save()){
+                $this->loadModel('Journal');
+                $document_no = !empty($locale['Ttuj']['no_ttuj'])?$locale['Ttuj']['no_ttuj']:false;
+
+                if( $deleteJournal && empty($locale['Ttuj']['is_draft']) ) {
+                    if( !empty($locale['Ttuj']['commission']) ) {
+                        $commissionJournal = $locale['Ttuj']['commission'];
+
+                        if( !empty($locale['Ttuj']['commission_extra']) ) {
+                            $commissionJournal += $locale['Ttuj']['commission_extra'];
+                        }
+
+                        $this->Journal->setJournal( $id, $document_no, 'commission_coa_credit_id', $commissionJournal, 0, 'commission_void' );
+                        $this->Journal->setJournal( $id, $document_no, 'commission_coa_debit_id', 0, $commissionJournal, 'commission_void' );
+                    }
+
+                    if( !empty($locale['Ttuj']['uang_jalan_1']) ) {
+                        $uangJalanJournal = $locale['Ttuj']['uang_jalan_1'];
+
+                        if( !empty($locale['Ttuj']['uang_jalan_2']) ) {
+                            $uangJalanJournal += $locale['Ttuj']['uang_jalan_2'];
+                        }
+
+                        if( !empty($locale['Ttuj']['uang_jalan_extra']) ) {
+                            $uangJalanJournal += $locale['Ttuj']['uang_jalan_extra'];
+                        }
+
+                        $this->Journal->setJournal( $id, $document_no, 'uang_jalan_coa_credit_id', $uangJalanJournal, 0, 'uang_jalan_void' );
+                        $this->Journal->setJournal( $id, $document_no, 'uang_jalan_coa_debit_id', 0, $uangJalanJournal, 'uang_jalan_void' );
+                    }
+
+                    if( !empty($locale['Ttuj']['uang_kuli_muat']) ) {
+                        $this->Journal->setJournal( $id, $document_no, 'uang_kuli_muat_coa_credit_id', $locale['Ttuj']['uang_kuli_muat'], 0, 'uang_kuli_muat_void' );
+                        $this->Journal->setJournal( $id, $document_no, 'uang_kuli_muat_coa_debit_id', 0, $locale['Ttuj']['uang_kuli_muat'], 'uang_kuli_muat_void' );
+                    }
+
+                    if( !empty($locale['Ttuj']['uang_kuli_bongkar']) ) {
+                        $this->Journal->setJournal( $id, $document_no, 'uang_kuli_bongkar_coa_credit_id', $locale['Ttuj']['uang_kuli_bongkar'], 0, 'uang_kuli_bongkar_void' );
+                        $this->Journal->setJournal( $id, $document_no, 'uang_kuli_bongkar_coa_debit_id', 0, $locale['Ttuj']['uang_kuli_bongkar'], 'uang_kuli_bongkar_void' );
+                    }
+
+                    if( !empty($locale['Ttuj']['asdp']) ) {
+                        $this->Journal->setJournal( $id, $document_no, 'asdp_coa_credit_id', $locale['Ttuj']['asdp'], 0, 'asdp_void' );
+                        $this->Journal->setJournal( $id, $document_no, 'asdp_coa_debit_id', 0, $locale['Ttuj']['asdp'], 'asdp_void' );
+                    }
+
+                    if( !empty($locale['Ttuj']['uang_kawal']) ) {
+                        $this->Journal->setJournal( $id, $document_no, 'uang_kawal_coa_credit_id', $locale['Ttuj']['uang_kawal'], 0, 'uang_kawal_void' );
+                        $this->Journal->setJournal( $id, $document_no, 'uang_kawal_coa_debit_id', 0, $locale['Ttuj']['uang_kawal'], 'uang_kawal_void' );
+                    }
+
+                    if( !empty($locale['Ttuj']['uang_keamanan']) ) {
+                        $this->Journal->setJournal( $id, $document_no, 'uang_keamanan_coa_credit_id', $locale['Ttuj']['uang_keamanan'], 0, 'uang_keamanan_void' );
+                        $this->Journal->setJournal( $id, $document_no, 'uang_keamanan_coa_debit_id', 0, $locale['Ttuj']['uang_keamanan'], 'uang_keamanan_void' );
+                    }
+                }
+
+                $this->MkCommon->setCustomFlash(__('TTUJ berhasil dibatalkan.'), 'success');
+                $this->Log->logActivity( sprintf(__('TTUJ ID #%s berhasil dibatalkan.'), $id), $this->user_data, $this->RequestHandler, $this->params );
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal membatalkan TTUJ.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal membatalkan TTUJ ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('TTUJ tidak ditemukan.'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
     public function truk_tiba() {
-        if( in_array('view_truk_tiba', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $this->set('module_title', __('TTUJ'));
-            $this->set('active_menu', 'truk_tiba');
-            $this->set('sub_module_title', __('Truk Tiba'));
-            $this->set('label_tgl', __('Tanggal Tiba'));
-            $conditions = array(
-                'Ttuj.is_arrive' => 1,
-            );
+        $this->loadModel('Ttuj');
+        $this->set('module_title', __('TTUJ'));
+        $this->set('active_menu', 'truk_tiba');
+        $this->set('sub_module_title', __('Truk Tiba'));
+        $this->set('label_tgl', __('Tanggal Tiba'));
+        $conditions = array(
+            'Ttuj.is_arrive' => 1,
+        );
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nottuj'])){
-                    $nottuj = urldecode($refine['nottuj']);
-                    $this->request->data['Ttuj']['nottuj'] = $nottuj;
-                    $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
-                }
-                if(!empty($refine['nopol'])){
-                    $nopol = urldecode($refine['nopol']);
-                    $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
-                }
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Ttuj']['customer'] = $customer;
-                    $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
-                }
-
-                if(!empty($refine['date'])){
-                    $dateStr = urldecode($refine['date']);
-                    $date = explode('-', $dateStr);
-
-                    if( !empty($date) ) {
-                        $date[0] = urldecode($date[0]);
-                        $date[1] = urldecode($date[1]);
-                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                        $dateFrom = $this->MkCommon->getDate($date[0]);
-                        $dateTo = $this->MkCommon->getDate($date[1]);
-                        $conditions['DATE_FORMAT(Ttuj.tgljam_tiba, \'%Y-%m-%d\') >='] = $dateFrom;
-                        $conditions['DATE_FORMAT(Ttuj.tgljam_tiba, \'%Y-%m-%d\') <='] = $dateTo;
-                    }
-                    $this->request->data['Ttuj']['date'] = $dateStr;
-                }
+            if(!empty($refine['nottuj'])){
+                $nottuj = urldecode($refine['nottuj']);
+                $this->request->data['Ttuj']['nottuj'] = $nottuj;
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
+            }
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $this->request->data['Ttuj']['nopol'] = $nopol;
+                $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
+            }
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Ttuj']['customer'] = $customer;
+                $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
             }
 
-            $this->paginate = $this->Ttuj->getData('paginate', array(
-                'conditions' => $conditions
-            ));
-            $ttujs = $this->paginate('Ttuj');
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
 
-            $this->set('ttujs', $ttujs);
-            $this->render('ttuj');
-        } else {
-            $this->redirect($this->referer());
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                    $conditions['DATE_FORMAT(Ttuj.tgljam_tiba, \'%Y-%m-%d\') >='] = $dateFrom;
+                    $conditions['DATE_FORMAT(Ttuj.tgljam_tiba, \'%Y-%m-%d\') <='] = $dateTo;
+                }
+                $this->request->data['Ttuj']['date'] = $dateStr;
+            }
         }
+
+        $this->paginate = $this->Ttuj->getData('paginate', array(
+            'conditions' => $conditions
+        ));
+        $ttujs = $this->paginate('Ttuj');
+
+        $this->set('ttujs', $ttujs);
+        $this->render('ttuj');
     }
 
     public function truk_tiba_add() {
-        if( in_array('insert_truk_tiba', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $this->set('active_menu', 'truk_tiba');
-            $this->doTTUJLanjutan();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->loadModel('Ttuj');
+        $this->set('active_menu', 'truk_tiba');
+        $this->doTTUJLanjutan();
     }
 
     public function ttuj_lanjutan_edit( $action_type = 'truk_tiba', $id = false ) {
-        if( in_array(sprintf('update_%s', $action_type), $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $this->set('active_menu', 'truk_tiba');
+        $this->loadModel('Ttuj');
+        $this->set('active_menu', 'truk_tiba');
 
-            $ttuj = $this->Ttuj->getData('first', array(
-                'conditions' => array(
-                    'Ttuj.id' => $id
-                )
-            ));
-            $this->doTTUJLanjutan( $action_type, $id, $ttuj );
-        } else {
-            $this->redirect($this->referer());
-        }
+        $ttuj = $this->Ttuj->getData('first', array(
+            'conditions' => array(
+                'Ttuj.id' => $id
+            )
+        ));
+        $this->doTTUJLanjutan( $action_type, $id, $ttuj );
     }
 
     function doTTUJLanjutan( $action_type = 'truk_tiba', $id = false, $ttuj = false ){
@@ -1653,1345 +1625,1283 @@ class RevenuesController extends AppController {
     }
 
     public function bongkaran() {
-        if( in_array('view_bongkaran', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $this->set('module_title', __('TTUJ'));
-            $this->set('active_menu', 'bongkaran');
-            $this->set('sub_module_title', __('Bongkaran'));
-            $this->set('label_tgl', __('Tanggal Bongkaran'));
-            $conditions = array(
-                'Ttuj.is_arrive' => 1,
-                'Ttuj.is_bongkaran' => 1,
-            );
+        $this->loadModel('Ttuj');
+        $this->set('module_title', __('TTUJ'));
+        $this->set('active_menu', 'bongkaran');
+        $this->set('sub_module_title', __('Bongkaran'));
+        $this->set('label_tgl', __('Tanggal Bongkaran'));
+        $conditions = array(
+            'Ttuj.is_arrive' => 1,
+            'Ttuj.is_bongkaran' => 1,
+        );
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nottuj'])){
-                    $nottuj = urldecode($refine['nottuj']);
-                    $this->request->data['Ttuj']['nottuj'] = $nottuj;
-                    $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
-                }
-                if(!empty($refine['nopol'])){
-                    $nopol = urldecode($refine['nopol']);
-                    $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
-                }
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Ttuj']['customer'] = $customer;
-                    $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
-                }
-
-                if(!empty($refine['date'])){
-                    $dateStr = urldecode($refine['date']);
-                    $date = explode('-', $dateStr);
-
-                    if( !empty($date) ) {
-                        $date[0] = urldecode($date[0]);
-                        $date[1] = urldecode($date[1]);
-                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                        $dateFrom = $this->MkCommon->getDate($date[0]);
-                        $dateTo = $this->MkCommon->getDate($date[1]);
-                        $conditions['DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m-%d\') >='] = $dateFrom;
-                        $conditions['DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m-%d\') <='] = $dateTo;
-                    }
-                    $this->request->data['Ttuj']['date'] = $dateStr;
-                }
+            if(!empty($refine['nottuj'])){
+                $nottuj = urldecode($refine['nottuj']);
+                $this->request->data['Ttuj']['nottuj'] = $nottuj;
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
+            }
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $this->request->data['Ttuj']['nopol'] = $nopol;
+                $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
+            }
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Ttuj']['customer'] = $customer;
+                $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
             }
 
-            $this->paginate = $this->Ttuj->getData('paginate', array(
-                'conditions' => $conditions
-            ));
-            $ttujs = $this->paginate('Ttuj');
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
 
-            $this->set('ttujs', $ttujs);
-            $this->render('ttuj');
-        } else {
-            $this->redirect($this->referer());
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                    $conditions['DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m-%d\') >='] = $dateFrom;
+                    $conditions['DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m-%d\') <='] = $dateTo;
+                }
+                $this->request->data['Ttuj']['date'] = $dateStr;
+            }
         }
+
+        $this->paginate = $this->Ttuj->getData('paginate', array(
+            'conditions' => $conditions
+        ));
+        $ttujs = $this->paginate('Ttuj');
+
+        $this->set('ttujs', $ttujs);
+        $this->render('ttuj');
     }
 
     public function bongkaran_add() {
-        if( in_array('insert_bongkaran', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $this->set('sub_module_title', __('Bongkaran'));
-            $this->set('active_menu', 'bongkaran');
-            $this->doTTUJLanjutan( 'bongkaran' );
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->loadModel('Ttuj');
+        $this->set('sub_module_title', __('Bongkaran'));
+        $this->set('active_menu', 'bongkaran');
+        $this->doTTUJLanjutan( 'bongkaran' );
     }
 
     public function balik() {
-        if( in_array('view_balik', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $this->set('module_title', __('TTUJ'));
-            $this->set('active_menu', 'balik');
-            $this->set('sub_module_title', __('Balik'));
-            $this->set('label_tgl', __('Tanggal Balik'));
-            $conditions = array(
-                'Ttuj.is_balik' => 1,
-                'Ttuj.is_bongkaran' => 1,
-            );
+        $this->loadModel('Ttuj');
+        $this->set('module_title', __('TTUJ'));
+        $this->set('active_menu', 'balik');
+        $this->set('sub_module_title', __('Balik'));
+        $this->set('label_tgl', __('Tanggal Balik'));
+        $conditions = array(
+            'Ttuj.is_balik' => 1,
+            'Ttuj.is_bongkaran' => 1,
+        );
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nottuj'])){
-                    $nottuj = urldecode($refine['nottuj']);
-                    $this->request->data['Ttuj']['nottuj'] = $nottuj;
-                    $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
-                }
-                if(!empty($refine['nopol'])){
-                    $nopol = urldecode($refine['nopol']);
-                    $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
-                }
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Ttuj']['customer'] = $customer;
-                    $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
-                }
-
-                if(!empty($refine['date'])){
-                    $dateStr = urldecode($refine['date']);
-                    $date = explode('-', $dateStr);
-
-                    if( !empty($date) ) {
-                        $date[0] = urldecode($date[0]);
-                        $date[1] = urldecode($date[1]);
-                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                        $dateFrom = $this->MkCommon->getDate($date[0]);
-                        $dateTo = $this->MkCommon->getDate($date[1]);
-                        $conditions['DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m-%d\') >='] = $dateFrom;
-                        $conditions['DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m-%d\') <='] = $dateTo;
-                    }
-                    $this->request->data['Ttuj']['date'] = $dateStr;
-                }
+            if(!empty($refine['nottuj'])){
+                $nottuj = urldecode($refine['nottuj']);
+                $this->request->data['Ttuj']['nottuj'] = $nottuj;
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
+            }
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $this->request->data['Ttuj']['nopol'] = $nopol;
+                $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
+            }
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Ttuj']['customer'] = $customer;
+                $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
             }
 
-            $this->paginate = $this->Ttuj->getData('paginate', array(
-                'conditions' => $conditions
-            ));
-            $ttujs = $this->paginate('Ttuj');
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
 
-            $this->set('ttujs', $ttujs);
-            $this->render('ttuj');
-        } else {
-            $this->redirect($this->referer());
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                    $conditions['DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m-%d\') >='] = $dateFrom;
+                    $conditions['DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m-%d\') <='] = $dateTo;
+                }
+                $this->request->data['Ttuj']['date'] = $dateStr;
+            }
         }
+
+        $this->paginate = $this->Ttuj->getData('paginate', array(
+            'conditions' => $conditions
+        ));
+        $ttujs = $this->paginate('Ttuj');
+
+        $this->set('ttujs', $ttujs);
+        $this->render('ttuj');
     }
 
     public function balik_add() {
-        if( in_array('insert_balik', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $this->set('sub_module_title', __('Tambah TTUJ Balik'));
-            $this->set('active_menu', 'balik');
-            $this->doTTUJLanjutan( 'balik' );
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->loadModel('Ttuj');
+        $this->set('sub_module_title', __('Tambah TTUJ Balik'));
+        $this->set('active_menu', 'balik');
+        $this->doTTUJLanjutan( 'balik' );
     }
 
     public function pool() {
-        if( in_array('view_pool', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $this->set('module_title', __('TTUJ'));
-            $this->set('active_menu', 'pool');
-            $this->set('sub_module_title', __('Sampai di Pool'));
-            $this->set('label_tgl', __('Tanggal Sampai Pool'));
-            $conditions = array(
-                'Ttuj.is_balik' => 1,
-                'Ttuj.is_bongkaran' => 1,
-                'Ttuj.is_balik' => 1,
-                'Ttuj.is_pool' => 1,
-            );
+        $this->loadModel('Ttuj');
+        $this->set('module_title', __('TTUJ'));
+        $this->set('active_menu', 'pool');
+        $this->set('sub_module_title', __('Sampai di Pool'));
+        $this->set('label_tgl', __('Tanggal Sampai Pool'));
+        $conditions = array(
+            'Ttuj.is_balik' => 1,
+            'Ttuj.is_bongkaran' => 1,
+            'Ttuj.is_balik' => 1,
+            'Ttuj.is_pool' => 1,
+        );
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nottuj'])){
-                    $nottuj = urldecode($refine['nottuj']);
-                    $this->request->data['Ttuj']['nottuj'] = $nottuj;
-                    $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
-                }
-                if(!empty($refine['nopol'])){
-                    $nopol = urldecode($refine['nopol']);
-                    $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
-                }
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Ttuj']['customer'] = $customer;
-                    $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
-                }
-
-                if(!empty($refine['date'])){
-                    $dateStr = urldecode($refine['date']);
-                    $date = explode('-', $dateStr);
-
-                    if( !empty($date) ) {
-                        $date[0] = urldecode($date[0]);
-                        $date[1] = urldecode($date[1]);
-                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                        $dateFrom = $this->MkCommon->getDate($date[0]);
-                        $dateTo = $this->MkCommon->getDate($date[1]);
-                        $conditions['DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='] = $dateFrom;
-                        $conditions['DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <='] = $dateTo;
-                    }
-                    $this->request->data['Ttuj']['date'] = $dateStr;
-                }
+            if(!empty($refine['nottuj'])){
+                $nottuj = urldecode($refine['nottuj']);
+                $this->request->data['Ttuj']['nottuj'] = $nottuj;
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
+            }
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $this->request->data['Ttuj']['nopol'] = $nopol;
+                $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
+            }
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Ttuj']['customer'] = $customer;
+                $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
             }
 
-            $this->paginate = $this->Ttuj->getData('paginate', array(
-                'conditions' => $conditions
-            ));
-            $ttujs = $this->paginate('Ttuj');
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
 
-            $this->set('ttujs', $ttujs);
-            $this->render('ttuj');
-        } else {
-            $this->redirect($this->referer());
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                    $conditions['DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='] = $dateFrom;
+                    $conditions['DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <='] = $dateTo;
+                }
+                $this->request->data['Ttuj']['date'] = $dateStr;
+            }
         }
+
+        $this->paginate = $this->Ttuj->getData('paginate', array(
+            'conditions' => $conditions
+        ));
+        $ttujs = $this->paginate('Ttuj');
+
+        $this->set('ttujs', $ttujs);
+        $this->render('ttuj');
     }
 
     public function pool_add() {
-        if( in_array('insert_pool', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $this->set('sub_module_title', __('TTUJ Sampai Pool'));
-            $this->set('active_menu', 'pool');
-            $this->doTTUJLanjutan( 'pool' );
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->loadModel('Ttuj');
+        $this->set('sub_module_title', __('TTUJ Sampai Pool'));
+        $this->set('active_menu', 'pool');
+        $this->doTTUJLanjutan( 'pool' );
     }
 
     public function ritase_report( $data_type = 'depo' ) {
-        if( $data_type == 'retail' ) {
-            $module_name = 'view_ritase_retail_report';
-        } else {
-            $module_name = 'view_ritase_depo_report';
+        $this->loadModel('Truck');
+        $this->loadModel('TruckCustomer');
+        $this->loadModel('Ttuj');
+        $this->loadModel('Ttuj');
+        $this->loadModel('CustomerNoType');
+        $dateFrom = date('Y-m-d', strtotime('-1 month'));
+        $dateTo = date('Y-m-d');
+        $conditions = array(
+            'Truck.status'=> 1,
+            'TruckCustomer.primary'=> 1,
+        );
+        $data_action = false;
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $this->request->data['Ttuj']['nopol'] = $nopol;
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                $this->request->data['Ttuj']['type'] = $typeTruck;
+
+                if( $typeTruck == 2 ) {
+                    $conditions ['Truck.id'] = $nopol;
+                } else {
+                    $conditions ['Truck.nopol LIKE'] = '%'.$nopol.'%';
+                }
+            }
+
+            if(!empty($refine['driver_name'])){
+                $driver_name = urldecode($refine['driver_name']);
+                $this->request->data['Ttuj']['driver_name'] = $driver_name;
+                $conditions['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$driver_name.'%';
+            }
+
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Ttuj']['customer'] = $customer;
+                $conditions['CustomerNoType.code LIKE '] = '%'.$customer.'%';
+            }
+
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
+
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                }
+                $this->request->data['Ttuj']['date'] = $dateStr;
+            }
+
+            if(!empty($refine['data_action'])){
+                $data_action = $refine['data_action'];
+            }
         }
 
-        if( in_array($module_name, $this->allowModule) ) {
-            $this->loadModel('Truck');
-            $this->loadModel('TruckCustomer');
-            $this->loadModel('Ttuj');
-            $this->loadModel('Ttuj');
-            $this->loadModel('CustomerNoType');
-            $dateFrom = date('Y-m-d', strtotime('-1 month'));
-            $dateTo = date('Y-m-d');
-            $conditions = array(
-                'Truck.status'=> 1,
-                'TruckCustomer.primary'=> 1,
-            );
-            $data_action = false;
+        $conditionCustomers = array(
+            'CustomerNoType.status' => 1,
+        );
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if( $data_type == 'retail' ) {
+            $conditionCustomers['CustomerNoType.customer_type_id'] = 1;
+        } else {
+            $conditionCustomers['CustomerNoType.customer_type_id'] = 2;
+        }
 
-                if(!empty($refine['nopol'])){
-                    $nopol = urldecode($refine['nopol']);
-                    $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                    $this->request->data['Ttuj']['type'] = $typeTruck;
+        $customer_id = $this->CustomerNoType->find('list', array(
+            'conditions' => $conditionCustomers,
+            'fields' => array(
+                'CustomerNoType.id', 'CustomerNoType.id'
+            ),
+        ));
+        $conditions['TruckCustomer.customer_id'] = $customer_id;
+        $options = $this->TruckCustomer->getData('paginate', array(
+            'conditions' => $conditions,
+            'order' => array(
+                'CustomerNoType.order_sort' => 'ASC', 
+                'Truck.nopol' => 'ASC', 
+            ),
+            'contain' => array(
+                'Truck',
+                'CustomerNoType',
+            ),
+        ));
 
-                    if( $typeTruck == 2 ) {
-                        $conditions ['Truck.id'] = $nopol;
-                    } else {
-                        $conditions ['Truck.nopol LIKE'] = '%'.$nopol.'%';
-                    }
+        if( !empty($data_action) ) {
+            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+        } else {
+            $options['limit'] = 20;
+        }
+        $this->paginate = $options;
+        $trucks = $this->paginate('TruckCustomer');
+
+        if( !empty($trucks) ) {
+            foreach ($trucks as $key => $truck) {
+                $conditionCustomers = array(
+                    'TruckCustomer.truck_id'=> $truck['Truck']['id'],
+                );
+
+                $truck = $this->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
+                $conditionsTtuj = array(
+                    'Ttuj.is_pool'=> 1,
+                    'Ttuj.status'=> 1,
+                    'Ttuj.truck_id'=> $truck['Truck']['id'],
+                    'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='=> $dateFrom,
+                    'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <=' => $dateTo,
+                );
+
+                // if( $data_type == 'retail' ) {
+                //     $conditionsTtuj['Ttuj.is_retail'] = 1;
+                // } else {
+                //     $conditionsTtuj['Ttuj.is_retail'] = 0;
+                // }
+
+                $total = $this->Ttuj->getData('count', array(
+                    'conditions' => $conditionsTtuj
+                ));
+                $truck['Total'] = $total;
+
+                $overTimeOptions = $conditionsTtuj;
+                $overTimeOptions['Ttuj.arrive_over_time <>'] = 0;
+                $overTime = $this->Ttuj->getData('count', array(
+                    'conditions' => $overTimeOptions
+                ));
+                $truck['OverTime'] = $overTime;
+
+                if( $data_type != 'retail' ) {
+                    $cities = $this->Ttuj->getData('all', array(
+                        'conditions' => $conditionsTtuj,
+                        'group' => array(
+                            'Ttuj.to_city_id'
+                        ),
+                        'fields'=> array(
+                            'Ttuj.to_city_id', 
+                            'COUNT(Ttuj.id) as cnt',
+                            'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') as dt',
+                        ),
+                    ), false);
+                    $truck['City'] = $cities;
                 }
 
-                if(!empty($refine['driver_name'])){
-                    $driver_name = urldecode($refine['driver_name']);
-                    $this->request->data['Ttuj']['driver_name'] = $driver_name;
-                    $conditions['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$driver_name.'%';
-                }
-
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Ttuj']['customer'] = $customer;
-                    $conditions['CustomerNoType.code LIKE '] = '%'.$customer.'%';
-                }
-
-                if(!empty($refine['date'])){
-                    $dateStr = urldecode($refine['date']);
-                    $date = explode('-', $dateStr);
-
-                    if( !empty($date) ) {
-                        $date[0] = urldecode($date[0]);
-                        $date[1] = urldecode($date[1]);
-                        $dateFrom = $this->MkCommon->getDate($date[0]);
-                        $dateTo = $this->MkCommon->getDate($date[1]);
-                    }
-                    $this->request->data['Ttuj']['date'] = $dateStr;
-                }
-
-                if(!empty($refine['data_action'])){
-                    $data_action = $refine['data_action'];
-                }
+                $trucks[$key] = $truck;
             }
+        }
 
-            $conditionCustomers = array(
-                'CustomerNoType.status' => 1,
-            );
+        $module_title = __('Laporan Ritase Truk');
 
-            if( $data_type == 'retail' ) {
-                $conditionCustomers['CustomerNoType.customer_type_id'] = 1;
-            } else {
-                $conditionCustomers['CustomerNoType.customer_type_id'] = 2;
-            }
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $this->request->data['Ttuj']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
+            $module_title .= sprintf(' Periode %s - %s', date('d M Y', strtotime($dateFrom)), date('d M Y', strtotime($dateTo)));
+        }
 
-            $customer_id = $this->CustomerNoType->find('list', array(
-                'conditions' => $conditionCustomers,
-                'fields' => array(
-                    'CustomerNoType.id', 'CustomerNoType.id'
+        $this->set('sub_module_title', $module_title);
+
+        if( $data_type == 'retail' ) {
+            $this->set('active_menu', 'ritase_report_retail');
+        } else {
+            $this->set('active_menu', 'ritase_report');
+            $cities = $this->Ttuj->getData('list', array(
+                'conditions' => array(
+                    'Ttuj.status' => 1,
+                    // 'City.is_tujuan' => 1,
                 ),
-            ));
-            $conditions['TruckCustomer.customer_id'] = $customer_id;
-            $options = $this->TruckCustomer->getData('paginate', array(
-                'conditions' => $conditions,
-                'order' => array(
-                    'CustomerNoType.order_sort' => 'ASC', 
-                    'Truck.nopol' => 'ASC', 
+                'fields' => array(
+                    'ToCity.id', 'ToCity.name'
                 ),
                 'contain' => array(
-                    'Truck',
-                    'CustomerNoType',
+                    'ToCity'
                 ),
-            ));
+                'order' => array(
+                    'ToCity.name' => 'ASC',
+                ),
+                'group' => array(
+                    'ToCity.id',
+                )
+            ), false);
+        }
 
-            if( !empty($data_action) ) {
-                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
-            } else {
-                $options['limit'] = 20;
-            }
-            $this->paginate = $options;
-            $trucks = $this->paginate('TruckCustomer');
+        $this->set(compact(
+            'trucks', 'cities', 'data_action',
+            'data_type'
+        ));
 
-            if( !empty($trucks) ) {
-                foreach ($trucks as $key => $truck) {
-                    $conditionCustomers = array(
-                        'TruckCustomer.truck_id'=> $truck['Truck']['id'],
-                    );
-
-                    $truck = $this->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
-                    $conditionsTtuj = array(
-                        'Ttuj.is_pool'=> 1,
-                        'Ttuj.status'=> 1,
-                        'Ttuj.truck_id'=> $truck['Truck']['id'],
-                        'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='=> $dateFrom,
-                        'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <=' => $dateTo,
-                    );
-
-                    // if( $data_type == 'retail' ) {
-                    //     $conditionsTtuj['Ttuj.is_retail'] = 1;
-                    // } else {
-                    //     $conditionsTtuj['Ttuj.is_retail'] = 0;
-                    // }
-
-                    $total = $this->Ttuj->getData('count', array(
-                        'conditions' => $conditionsTtuj
-                    ));
-                    $truck['Total'] = $total;
-
-                    $overTimeOptions = $conditionsTtuj;
-                    $overTimeOptions['Ttuj.arrive_over_time <>'] = 0;
-                    $overTime = $this->Ttuj->getData('count', array(
-                        'conditions' => $overTimeOptions
-                    ));
-                    $truck['OverTime'] = $overTime;
-
-                    if( $data_type != 'retail' ) {
-                        $cities = $this->Ttuj->getData('all', array(
-                            'conditions' => $conditionsTtuj,
-                            'group' => array(
-                                'Ttuj.to_city_id'
-                            ),
-                            'fields'=> array(
-                                'Ttuj.to_city_id', 
-                                'COUNT(Ttuj.id) as cnt',
-                                'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') as dt',
-                            ),
-                        ), false);
-                        $truck['City'] = $cities;
-                    }
-
-                    $trucks[$key] = $truck;
-                }
-            }
-
-            $module_title = __('Laporan Ritase Truk');
-
-            if( !empty($dateFrom) && !empty($dateTo) ) {
-                $this->request->data['Ttuj']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
-                $module_title .= sprintf(' Periode %s - %s', date('d M Y', strtotime($dateFrom)), date('d M Y', strtotime($dateTo)));
-            }
-
-            $this->set('sub_module_title', $module_title);
-
-            if( $data_type == 'retail' ) {
-                $this->set('active_menu', 'ritase_report_retail');
-            } else {
-                $this->set('active_menu', 'ritase_report');
-                $cities = $this->Ttuj->getData('list', array(
-                    'conditions' => array(
-                        'Ttuj.status' => 1,
-                        // 'City.is_tujuan' => 1,
-                    ),
-                    'fields' => array(
-                        'ToCity.id', 'ToCity.name'
-                    ),
-                    'contain' => array(
-                        'ToCity'
-                    ),
-                    'order' => array(
-                        'ToCity.name' => 'ASC',
-                    ),
-                    'group' => array(
-                        'ToCity.id',
-                    )
-                ), false);
-            }
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $layout_js = array(
+                'freeze',
+            );
+            $layout_css = array(
+                'freeze',
+            );
 
             $this->set(compact(
-                'trucks', 'cities', 'data_action',
-                'data_type'
+                'layout_css', 'layout_js'
             ));
-
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
-            } else {
-                $layout_js = array(
-                    'freeze',
-                );
-                $layout_css = array(
-                    'freeze',
-                );
-
-                $this->set(compact(
-                    'layout_css', 'layout_js'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
         }
     }
 
     public function achievement_report( $data_action = false ) {
-        if( in_array('view_achievement_report', $this->allowModule) ) {
-            $this->loadModel('CustomerTargetUnitDetail');
-            $this->loadModel('Ttuj');
-            $this->loadModel('TtujTipeMotor');
-            $this->loadModel('CustomerNoType');
-            $this->set('active_menu', 'achievement_report');
-            $fromMonth = date('m');
-            $fromYear = date('Y');
-            $toMonth = 12;
-            $toYear = date('Y');
-            $conditions = array(
-                'TtujTipeMotor.status'=> 1,
-                'Ttuj.status'=> 1,
-                'Ttuj.is_draft'=> 0,
-            );
-            $options = array(
-                'conditions' => array(
-                    'CustomerNoType.status' => 1,
-                ),
-            );
+        $this->loadModel('CustomerTargetUnitDetail');
+        $this->loadModel('Ttuj');
+        $this->loadModel('TtujTipeMotor');
+        $this->loadModel('CustomerNoType');
+        $this->set('active_menu', 'achievement_report');
+        $fromMonth = date('m');
+        $fromYear = date('Y');
+        $toMonth = 12;
+        $toYear = date('Y');
+        $conditions = array(
+            'TtujTipeMotor.status'=> 1,
+            'Ttuj.status'=> 1,
+            'Ttuj.is_draft'=> 0,
+        );
+        $options = array(
+            'conditions' => array(
+                'CustomerNoType.status' => 1,
+            ),
+        );
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Ttuj']['customer'] = $customer;
-                    $options['conditions']['CustomerNoType.code LIKE '] = '%'.$customer.'%';
-                }
-
-                if( !empty($refine['fromMonth']) && !empty($refine['fromYear']) ){
-                    $fromMonth = urldecode($refine['fromMonth']);
-                    $fromYear = urldecode($refine['fromYear']);
-                }
-
-                if( !empty($refine['toMonth']) && !empty($refine['toYear']) ){
-                    $toMonth = urldecode($refine['toMonth']);
-                    $toYear = urldecode($refine['toYear']);
-                }
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Ttuj']['customer'] = $customer;
+                $options['conditions']['CustomerNoType.code LIKE '] = '%'.$customer.'%';
             }
 
-            $conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') >='] = date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear));
-            $conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') <='] = date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear));
-
-            $customerTargetUnits = $this->CustomerTargetUnitDetail->find('all', array(
-                'conditions' => array(
-                    'CustomerTargetUnit.status' => 1,
-                    'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\') >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear)),
-                    'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear)),
-                ),
-                'order' => array(
-                    'CustomerTargetUnit.customer_id' => 'ASC', 
-                ),
-                'contain' => array(
-                    'CustomerTargetUnit'
-                ),
-            ));
-
-            if( !empty($data_action) ) {
-                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
-            } else {
-                $options['limit'] = 20;
+            if( !empty($refine['fromMonth']) && !empty($refine['fromYear']) ){
+                $fromMonth = urldecode($refine['fromMonth']);
+                $fromYear = urldecode($refine['fromYear']);
             }
 
-            $this->paginate = $options;
-            $ttujs = $this->paginate('CustomerNoType');
-            $cntPencapaian = array();
-            $targetUnit = array();
+            if( !empty($refine['toMonth']) && !empty($refine['toYear']) ){
+                $toMonth = urldecode($refine['toMonth']);
+                $toYear = urldecode($refine['toYear']);
+            }
+        }
 
-            if( !empty($ttujs) ) {
-                foreach ($ttujs as $key => $ttuj) {
-                    $conditions['Ttuj.customer_id'] = $ttuj['CustomerNoType']['id'];
-                    $ttujTipeMotor = $this->TtujTipeMotor->find('first', array(
-                        'conditions' => $conditions,
-                        'contain' => array(
-                            'Ttuj',
-                        ),
-                        'order' => array(
-                            'Ttuj.customer_name' => 'ASC', 
-                        ),
-                        'group' => array(
-                            'Ttuj.customer_id'
-                        ),
-                        'fields'=> array(
-                            'Ttuj.id', 
-                            'Ttuj.customer_id', 
-                            'SUM(TtujTipeMotor.qty) as cnt',
-                            'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') as dt',
-                        ),
-                    ), false);
+        $conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') >='] = date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear));
+        $conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') <='] = date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear));
 
+        $customerTargetUnits = $this->CustomerTargetUnitDetail->find('all', array(
+            'conditions' => array(
+                'CustomerTargetUnit.status' => 1,
+                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\') >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear)),
+                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear)),
+            ),
+            'order' => array(
+                'CustomerTargetUnit.customer_id' => 'ASC', 
+            ),
+            'contain' => array(
+                'CustomerTargetUnit'
+            ),
+        ));
+
+        if( !empty($data_action) ) {
+            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+        } else {
+            $options['limit'] = 20;
+        }
+
+        $this->paginate = $options;
+        $ttujs = $this->paginate('CustomerNoType');
+        $cntPencapaian = array();
+        $targetUnit = array();
+
+        if( !empty($ttujs) ) {
+            foreach ($ttujs as $key => $ttuj) {
+                $conditions['Ttuj.customer_id'] = $ttuj['CustomerNoType']['id'];
+                $ttujTipeMotor = $this->TtujTipeMotor->find('first', array(
+                    'conditions' => $conditions,
+                    'contain' => array(
+                        'Ttuj',
+                    ),
+                    'order' => array(
+                        'Ttuj.customer_name' => 'ASC', 
+                    ),
+                    'group' => array(
+                        'Ttuj.customer_id'
+                    ),
+                    'fields'=> array(
+                        'Ttuj.id', 
+                        'Ttuj.customer_id', 
+                        'SUM(TtujTipeMotor.qty) as cnt',
+                        'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') as dt',
+                    ),
+                ), false);
+
+                if( !empty($ttujTipeMotor) ) {
                     if( !empty($ttujTipeMotor) ) {
-                        if( !empty($ttujTipeMotor) ) {
-                            $cntPencapaian[$ttujTipeMotor['Ttuj']['customer_id']][$ttujTipeMotor[0]['dt']] = $ttujTipeMotor[0]['cnt'];
-                        }
+                        $cntPencapaian[$ttujTipeMotor['Ttuj']['customer_id']][$ttujTipeMotor[0]['dt']] = $ttujTipeMotor[0]['cnt'];
                     }
-
-                    $ttujs[$key] = $ttuj;
                 }
+
+                $ttujs[$key] = $ttuj;
             }
+        }
 
-            if( !empty($customerTargetUnits) ) {
-                foreach ($customerTargetUnits as $key => $customerTargetUnit) {
-                    $idx = sprintf('%s-%s', $customerTargetUnit['CustomerTargetUnit']['year'], date('m', mktime(0, 0, 0, $customerTargetUnit['CustomerTargetUnitDetail']['month'], 10)));
-                    $targetUnit[$customerTargetUnit['CustomerTargetUnit']['customer_id']][$idx] = $customerTargetUnit['CustomerTargetUnitDetail']['unit'];
-                }
+        if( !empty($customerTargetUnits) ) {
+            foreach ($customerTargetUnits as $key => $customerTargetUnit) {
+                $idx = sprintf('%s-%s', $customerTargetUnit['CustomerTargetUnit']['year'], date('m', mktime(0, 0, 0, $customerTargetUnit['CustomerTargetUnitDetail']['month'], 10)));
+                $targetUnit[$customerTargetUnit['CustomerTargetUnit']['customer_id']][$idx] = $customerTargetUnit['CustomerTargetUnitDetail']['unit'];
             }
+        }
 
-            $module_title = __('Laporan Pencapaian');
+        $module_title = __('Laporan Pencapaian');
 
-            $this->request->data['Ttuj']['from']['month'] = $fromMonth;
-            $this->request->data['Ttuj']['from']['year'] = $fromYear;
-            $this->request->data['Ttuj']['to']['month'] = $toMonth;
-            $this->request->data['Ttuj']['to']['year'] = $toYear;
-            $module_title .= sprintf(' Periode %s %s - %s %s', date('F', mktime(0, 0, 0, $fromMonth, 10)), $fromYear, date('F', mktime(0, 0, 0, $toMonth, 10)), $toYear);
-            $totalCnt = $toMonth - $fromMonth;
-            $totalYear = $toYear - $fromYear;
+        $this->request->data['Ttuj']['from']['month'] = $fromMonth;
+        $this->request->data['Ttuj']['from']['year'] = $fromYear;
+        $this->request->data['Ttuj']['to']['month'] = $toMonth;
+        $this->request->data['Ttuj']['to']['year'] = $toYear;
+        $module_title .= sprintf(' Periode %s %s - %s %s', date('F', mktime(0, 0, 0, $fromMonth, 10)), $fromYear, date('F', mktime(0, 0, 0, $toMonth, 10)), $toYear);
+        $totalCnt = $toMonth - $fromMonth;
+        $totalYear = $toYear - $fromYear;
 
-            if( !empty($totalYear) && $totalYear > 0 ) {
-                $totalYear = 12 * $totalYear;
-                $totalCnt += $totalYear;
-            }
+        if( !empty($totalYear) && $totalYear > 0 ) {
+            $totalYear = 12 * $totalYear;
+            $totalCnt += $totalYear;
+        }
 
-            $this->set('sub_module_title', $module_title);
+        $this->set('sub_module_title', $module_title);
+
+        $this->set(compact(
+            'ttujs', 'data_action', 'totalCnt',
+            'fromMonth', 'fromYear', 'cntPencapaian',
+            'toYear', 'toMonth', 'customerTargetUnit',
+            'targetUnit'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $layout_js = array(
+                'freeze',
+            );
+            $layout_css = array(
+                'freeze',
+            );
 
             $this->set(compact(
-                'ttujs', 'data_action', 'totalCnt',
-                'fromMonth', 'fromYear', 'cntPencapaian',
-                'toYear', 'toMonth', 'customerTargetUnit',
-                'targetUnit'
+                'layout_css', 'layout_js'
             ));
-
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
-            } else {
-                $layout_js = array(
-                    'freeze',
-                );
-                $layout_css = array(
-                    'freeze',
-                );
-
-                $this->set(compact(
-                    'layout_css', 'layout_js'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
         }
     }
 
     public function monitoring_truck( $data_action = false ) {
-        if( in_array('view_monitoring_truck', $this->allowModule) ) {
-            $this->loadModel('Customer');
-            $this->loadModel('TruckCustomer');
-            $this->loadModel('Truck');
-            $this->loadModel('Ttuj');
-            $this->loadModel('TtujTipeMotor');
-            $this->loadModel('CalendarEvent');
-            $this->loadModel('Laka');
-            $this->loadModel('Setting');
-            $this->set('active_menu', 'monitoring_truck');
-            $this->set('sub_module_title', __('Monitoring Truk'));
-            $default_conditions = array();
-            $default_conditionsLaka = array();
-            $default_conditionsTruck = array();
-            $default_conditionsEvent = array();
+        $this->loadModel('Customer');
+        $this->loadModel('TruckCustomer');
+        $this->loadModel('Truck');
+        $this->loadModel('Ttuj');
+        $this->loadModel('TtujTipeMotor');
+        $this->loadModel('CalendarEvent');
+        $this->loadModel('Laka');
+        $this->loadModel('Setting');
+        $this->set('active_menu', 'monitoring_truck');
+        $this->set('sub_module_title', __('Monitoring Truk'));
+        $default_conditions = array();
+        $default_conditionsLaka = array();
+        $default_conditionsTruck = array();
+        $default_conditionsEvent = array();
 
-            if( !empty($this->params['named']) ) {
-                $refine = $this->params['named'];
+        if( !empty($this->params['named']) ) {
+            $refine = $this->params['named'];
 
-                if( !empty($refine['month']) ) {
-                    $refine['month'] = urldecode($refine['month']);
-                    $monthArr = explode('-', $refine['month']);
+            if( !empty($refine['month']) ) {
+                $refine['month'] = urldecode($refine['month']);
+                $monthArr = explode('-', $refine['month']);
 
-                    if( !empty($monthArr[0]) && !empty($monthArr[1]) ) {
-                        $monthNumber = date_parse($monthArr[0]);
+                if( !empty($monthArr[0]) && !empty($monthArr[1]) ) {
+                    $monthNumber = date_parse($monthArr[0]);
 
-                        if( !empty($monthArr[0]) ) {
-                            $thisMonth = sprintf("%02s", $monthNumber['month']);
-                        }
-
-                        if( !empty($monthArr[1]) && !empty($thisMonth) ) {
-                            $currentMonth = sprintf("%s-%s", $monthArr[1], $thisMonth);
-                        }
-                    }
-                }
-
-                if( !empty($refine['nopol']) ) {
-                    $nopol = urldecode($refine['nopol']);
-                    $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                    $this->request->data['Ttuj']['type'] = $typeTruck;
-
-                    if( $typeTruck == 2 ) {
-                        $conditionsNopol = array(
-                            'Truck.id' => $nopol,
-                        );
-                    } else {
-                        $conditionsNopol = array(
-                            'Truck.nopol LIKE' => '%'.$nopol.'%',
-                        );
+                    if( !empty($monthArr[0]) ) {
+                        $thisMonth = sprintf("%02s", $monthNumber['month']);
                     }
 
-                    $truckSearch = $this->Ttuj->Truck->getData('list', array(
-                        'conditions' => $conditionsNopol,
-                        'fields' => array(
-                            'Truck.id', 'Truck.id',
-                        ),
-                    ));
-                    $default_conditionsLaka['Laka.truck_id'] = $truckSearch;
-                    $default_conditions['Ttuj.truck_id'] = $truckSearch;
-                    $default_conditionsTruck['Truck.id'] = $truckSearch;
-                    $default_conditionsEvent['CalendarEvent.truck_id'] = $truckSearch;
+                    if( !empty($monthArr[1]) && !empty($thisMonth) ) {
+                        $currentMonth = sprintf("%s-%s", $monthArr[1], $thisMonth);
+                    }
                 }
             }
 
-            $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
-            $thisMonth = !empty($thisMonth)?$thisMonth:date('m');
-            $prevMonth = date('Y-m', mktime(0, 0, 0, date("m", strtotime($currentMonth))-1 , 1, date("Y", strtotime($currentMonth))));
-            $nextMonth = date('Y-m', mktime(0, 0, 0, date("m", strtotime($currentMonth))+1 , 1, date("Y", strtotime($currentMonth))));
-            $leftDay = date('N', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , 0, date("Y", strtotime($currentMonth))));
-            $lastDay = date('t', strtotime($currentMonth));
-            $customerId = array();
-            $conditionsLaka = array(
-                'Laka.status'=> 1,
-                'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\') <=' => $currentMonth,
-                'OR' => array(
-                    'DATE_FORMAT(Laka.completed_date, \'%Y-%m\') >=' => $currentMonth,
-                    'Laka.completed_date' => NULL,
-                ),
-            );
-            $conditionsLaka = array_merge($conditionsLaka, $default_conditionsLaka);
-            $lakas = $this->Laka->getData('list', array(
-                'conditions' => $conditionsLaka,
-                'order' => array(
-                    'Laka.tgl_laka' => 'ASC', 
-                ),
-                'fields' => array(
-                    'Laka.id', 'Laka.ttuj_id'
-                ),
-            ));
-            $lakas = array_values($lakas);
-            $lakas = array_unique($lakas);
-            $conditions = array(
-                'Ttuj.status'=> 1,
-                'Ttuj.is_draft'=> 0,
-                'OR' => array(
-                    'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m\')' => $currentMonth,
-                    'DATE_FORMAT(Ttuj.tgljam_tiba, \'%Y-%m\')' => $currentMonth,
-                    'DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m\')' => $currentMonth,
-                    'DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m\')' => $currentMonth,
-                    'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\')' => $currentMonth,
-                    'Ttuj.id' => $lakas,
-                ),
-            );
-            $conditions = array_merge($conditions, $default_conditions);
-            $conditionEvents = array(
-                'CalendarEvent.status'=> 1,
-                'DATE_FORMAT(CalendarEvent.from_date, \'%Y-%m\')' => $currentMonth,
-            );
-            $conditionEvents = array_merge($conditionEvents, $default_conditionsEvent);
-            $conditionTrucks = array(
-                'Truck.status' => 1
-            );
-            $conditionTrucks = array_merge($conditionTrucks, $default_conditionsTruck);
-            $setting = $this->Setting->find('first');
+            if( !empty($refine['nopol']) ) {
+                $nopol = urldecode($refine['nopol']);
+                $this->request->data['Ttuj']['nopol'] = $nopol;
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                $this->request->data['Ttuj']['type'] = $typeTruck;
 
-            if( !empty($this->params['named']) ) {
-                $refine = $this->params['named'];
-
-                if( !empty($refine['monitoring_customer_id']) ) {
-                    $refine['monitoring_customer_id'] = urldecode($refine['monitoring_customer_id']);
-                    $customerId = explode(',', $refine['monitoring_customer_id']);
-                    // $conditions['Ttuj.customer_id'] = $customerId;
-                    $conditionTrucks['TruckCustomerWithOrder.customer_id'] = $customerId;
-                }
-            }
-
-            $this->Truck->bindModel(array(
-                'hasOne' => array(
-                    'TruckCustomerWithOrder' => array(
-                        'className' => 'TruckCustomerWithOrder',
-                        'foreignKey' => 'truck_id',
-                        'conditions' => array(
-                            'TruckCustomerWithOrder.primary'=> 1,
-                        ),
-                        'order' => array(
-                            'TruckCustomerWithOrder.primary' => 'DESC'
-                        ),
-                    ),
-                    'CustomerNoType'=>array(
-                        'foreignKey'=> false,
-                        'type'=>'INNER',
-                        'conditions'=>array(
-                            'CustomerNoType.id = TruckCustomerWithOrder.customer_id',
-                            'CustomerNoType.status'=> 1,
-                        ),
-                    ),
-                )
-            ), false);
-
-            $this->paginate = $this->Truck->getData('paginate', array(
-                'conditions' => $conditionTrucks,
-                'contain' => array(
-                    'TruckCustomerWithOrder',
-                    'CustomerNoType',
-                ),
-                'order' => array(
-                    'CustomerNoType.order_sort' => 'ASC',
-                    'CustomerNoType.order' => 'ASC',
-                    'Truck.nopol' => 'ASC',
-                ),
-                'limit' => 20,
-            ));
-            $trucks = $this->paginate('Truck');
-            $truckList = Set::extract('/Truck/id', $trucks);
-            $conditions['Ttuj.truck_id'] = $truckList;
-
-            $ttujs = $this->Ttuj->getData('all', array(
-                'conditions' => $conditions,
-                'order' => array(
-                    'Ttuj.customer_name' => 'ASC', 
-                ),
-                'group' => array(
-                    'Ttuj.customer_id'
-                ),
-            ));
-            $events = $this->CalendarEvent->getData('all', array(
-                'conditions' => $conditionEvents,
-                'order' => array(
-                    'CalendarEvent.from_date' => 'ASC', 
-                ),
-            ));
-            $dataTtuj = array();
-            $dataEvent = array();
-            $dataRit = array();
-
-            if( !empty($ttujs) ) {
-                foreach ($ttujs as $key => $value) {
-                    $inArr = array();
-                    $value = $this->Laka->getMergeTtuj($value['Ttuj']['id'], $value, array(
-                        'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\')' => $currentMonth,
-                    ));
-                    $truck_id = $value['Ttuj']['truck_id'];
-                    $nopol = $value['Ttuj']['nopol'];
-                    $ttujTipeMotor = $this->TtujTipeMotor->find('first', array(
-                        'conditions' => array(
-                            'TtujTipeMotor.status' => 1,
-                            'TtujTipeMotor.ttuj_id' => $value['Ttuj']['id'],
-                        ),
-                        'fields' => array(
-                            'SUM(TtujTipeMotor.qty) cnt'
-                        ),
-                    ));
-                    $totalMuatan = 0;
-
-                    if( !empty($ttujTipeMotor[0]['cnt']) ) {
-                        $totalMuatan = $ttujTipeMotor[0]['cnt'];
-                    }
-
-                    $dataTmp = array(
-                        'Tujuan' => $value['Ttuj']['to_city_name'],
-                        'Driver' => $value['Ttuj']['driver_name'],
-                        'DriverChange' => !empty($value['DriverPenganti']['name'])?$value['DriverPenganti']['name']:false,
-                        'Muatan' => $totalMuatan,
-                        'NoPol' => $nopol,
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $nopol,
                     );
-                    $date = date('Y-m-d', strtotime($value['Ttuj']['tgljam_berangkat']));
-                    $tglBerangkat = $this->MkCommon->customDate($value['Ttuj']['tgljam_berangkat'], 'Y-m-d H:i:s');
-                    $tglTiba = $this->MkCommon->customDate($value['Ttuj']['tgljam_tiba'], 'Y-m-d H:i:s');
-                    $tglBongkaran = $this->MkCommon->customDate($value['Ttuj']['tgljam_bongkaran'], 'Y-m-d H:i:s');
-                    $tglBalik = $this->MkCommon->customDate($value['Ttuj']['tgljam_balik'], 'Y-m-d H:i:s');
-                    $tglPool = $this->MkCommon->customDate($value['Ttuj']['tgljam_pool'], 'Y-m-d H:i:s');
-                    $lakaDate = false;
-                    $i = 0;
-                    $differentTtuj = false;
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$nopol.'%',
+                    );
+                }
+
+                $truckSearch = $this->Ttuj->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.id',
+                    ),
+                ));
+                $default_conditionsLaka['Laka.truck_id'] = $truckSearch;
+                $default_conditions['Ttuj.truck_id'] = $truckSearch;
+                $default_conditionsTruck['Truck.id'] = $truckSearch;
+                $default_conditionsEvent['CalendarEvent.truck_id'] = $truckSearch;
+            }
+        }
+
+        $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
+        $thisMonth = !empty($thisMonth)?$thisMonth:date('m');
+        $prevMonth = date('Y-m', mktime(0, 0, 0, date("m", strtotime($currentMonth))-1 , 1, date("Y", strtotime($currentMonth))));
+        $nextMonth = date('Y-m', mktime(0, 0, 0, date("m", strtotime($currentMonth))+1 , 1, date("Y", strtotime($currentMonth))));
+        $leftDay = date('N', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , 0, date("Y", strtotime($currentMonth))));
+        $lastDay = date('t', strtotime($currentMonth));
+        $customerId = array();
+        $conditionsLaka = array(
+            'Laka.status'=> 1,
+            'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\') <=' => $currentMonth,
+            'OR' => array(
+                'DATE_FORMAT(Laka.completed_date, \'%Y-%m\') >=' => $currentMonth,
+                'Laka.completed_date' => NULL,
+            ),
+        );
+        $conditionsLaka = array_merge($conditionsLaka, $default_conditionsLaka);
+        $lakas = $this->Laka->getData('list', array(
+            'conditions' => $conditionsLaka,
+            'order' => array(
+                'Laka.tgl_laka' => 'ASC', 
+            ),
+            'fields' => array(
+                'Laka.id', 'Laka.ttuj_id'
+            ),
+        ));
+        $lakas = array_values($lakas);
+        $lakas = array_unique($lakas);
+        $conditions = array(
+            'Ttuj.status'=> 1,
+            'Ttuj.is_draft'=> 0,
+            'OR' => array(
+                'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m\')' => $currentMonth,
+                'DATE_FORMAT(Ttuj.tgljam_tiba, \'%Y-%m\')' => $currentMonth,
+                'DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m\')' => $currentMonth,
+                'DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m\')' => $currentMonth,
+                'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\')' => $currentMonth,
+                'Ttuj.id' => $lakas,
+            ),
+        );
+        $conditions = array_merge($conditions, $default_conditions);
+        $conditionEvents = array(
+            'CalendarEvent.status'=> 1,
+            'DATE_FORMAT(CalendarEvent.from_date, \'%Y-%m\')' => $currentMonth,
+        );
+        $conditionEvents = array_merge($conditionEvents, $default_conditionsEvent);
+        $conditionTrucks = array(
+            'Truck.status' => 1
+        );
+        $conditionTrucks = array_merge($conditionTrucks, $default_conditionsTruck);
+        $setting = $this->Setting->find('first');
+
+        if( !empty($this->params['named']) ) {
+            $refine = $this->params['named'];
+
+            if( !empty($refine['monitoring_customer_id']) ) {
+                $refine['monitoring_customer_id'] = urldecode($refine['monitoring_customer_id']);
+                $customerId = explode(',', $refine['monitoring_customer_id']);
+                // $conditions['Ttuj.customer_id'] = $customerId;
+                $conditionTrucks['TruckCustomerWithOrder.customer_id'] = $customerId;
+            }
+        }
+
+        $this->Truck->bindModel(array(
+            'hasOne' => array(
+                'TruckCustomerWithOrder' => array(
+                    'className' => 'TruckCustomerWithOrder',
+                    'foreignKey' => 'truck_id',
+                    'conditions' => array(
+                        'TruckCustomerWithOrder.primary'=> 1,
+                    ),
+                    'order' => array(
+                        'TruckCustomerWithOrder.primary' => 'DESC'
+                    ),
+                ),
+                'CustomerNoType'=>array(
+                    'foreignKey'=> false,
+                    'type'=>'INNER',
+                    'conditions'=>array(
+                        'CustomerNoType.id = TruckCustomerWithOrder.customer_id',
+                        'CustomerNoType.status'=> 1,
+                    ),
+                ),
+            )
+        ), false);
+
+        $this->paginate = $this->Truck->getData('paginate', array(
+            'conditions' => $conditionTrucks,
+            'contain' => array(
+                'TruckCustomerWithOrder',
+                'CustomerNoType',
+            ),
+            'order' => array(
+                'CustomerNoType.order_sort' => 'ASC',
+                'CustomerNoType.order' => 'ASC',
+                'Truck.nopol' => 'ASC',
+            ),
+            'limit' => 20,
+        ));
+        $trucks = $this->paginate('Truck');
+        $truckList = Set::extract('/Truck/id', $trucks);
+        $conditions['Ttuj.truck_id'] = $truckList;
+
+        $ttujs = $this->Ttuj->getData('all', array(
+            'conditions' => $conditions,
+            'order' => array(
+                'Ttuj.customer_name' => 'ASC', 
+            ),
+            'group' => array(
+                'Ttuj.customer_id'
+            ),
+        ));
+        $events = $this->CalendarEvent->getData('all', array(
+            'conditions' => $conditionEvents,
+            'order' => array(
+                'CalendarEvent.from_date' => 'ASC', 
+            ),
+        ));
+        $dataTtuj = array();
+        $dataEvent = array();
+        $dataRit = array();
+
+        if( !empty($ttujs) ) {
+            foreach ($ttujs as $key => $value) {
+                $inArr = array();
+                $value = $this->Laka->getMergeTtuj($value['Ttuj']['id'], $value, array(
+                    'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\')' => $currentMonth,
+                ));
+                $truck_id = $value['Ttuj']['truck_id'];
+                $nopol = $value['Ttuj']['nopol'];
+                $ttujTipeMotor = $this->TtujTipeMotor->find('first', array(
+                    'conditions' => array(
+                        'TtujTipeMotor.status' => 1,
+                        'TtujTipeMotor.ttuj_id' => $value['Ttuj']['id'],
+                    ),
+                    'fields' => array(
+                        'SUM(TtujTipeMotor.qty) cnt'
+                    ),
+                ));
+                $totalMuatan = 0;
+
+                if( !empty($ttujTipeMotor[0]['cnt']) ) {
+                    $totalMuatan = $ttujTipeMotor[0]['cnt'];
+                }
+
+                $dataTmp = array(
+                    'Tujuan' => $value['Ttuj']['to_city_name'],
+                    'Driver' => $value['Ttuj']['driver_name'],
+                    'DriverChange' => !empty($value['DriverPenganti']['name'])?$value['DriverPenganti']['name']:false,
+                    'Muatan' => $totalMuatan,
+                    'NoPol' => $nopol,
+                );
+                $date = date('Y-m-d', strtotime($value['Ttuj']['tgljam_berangkat']));
+                $tglBerangkat = $this->MkCommon->customDate($value['Ttuj']['tgljam_berangkat'], 'Y-m-d H:i:s');
+                $tglTiba = $this->MkCommon->customDate($value['Ttuj']['tgljam_tiba'], 'Y-m-d H:i:s');
+                $tglBongkaran = $this->MkCommon->customDate($value['Ttuj']['tgljam_bongkaran'], 'Y-m-d H:i:s');
+                $tglBalik = $this->MkCommon->customDate($value['Ttuj']['tgljam_balik'], 'Y-m-d H:i:s');
+                $tglPool = $this->MkCommon->customDate($value['Ttuj']['tgljam_pool'], 'Y-m-d H:i:s');
+                $lakaDate = false;
+                $i = 0;
+                $differentTtuj = false;
+                $currMonth = date('Y-m', strtotime($date));
+
+                if( !empty($value['Laka']['id']) ) {
+                    $lakaDate = date('Y-m-d', strtotime($value['Laka']['tgl_laka']));
+                    $addClass = 'pool';
+                    $urlTtuj = array(
+                        'controller' => 'lakas',
+                        'action' => 'edit',
+                        $value['Laka']['id'],
+                    );
+
+                    if( !empty($value['Laka']['completed']) ) {
+                        $end_date = date('Y-m-d', strtotime($value['Laka']['completed_date']));
+                    } else if( date('Y-m-d') >= $lakaDate ) {
+                        $end_date = date('Y-m-d', strtotime("-1 day"));
+                    } else {
+                        $end_date = $lakaDate;
+                    }
+                } else if( !empty($value['Ttuj']['is_pool']) ) {
+                    $titleTtuj = __('Sampai Pool');
+                    $toDate = $value['Ttuj']['tgljam_pool'];
+                    $end_date = date('Y-m-d', strtotime($toDate));
+                    $addClass = 'pool';
+                    $urlTtuj = array(
+                        'controller' => 'revenues',
+                        'action' => 'info_truk',
+                        'pool',
+                        $value['Ttuj']['id'],
+                    );
+                } else if( !empty($value['Ttuj']['is_balik']) ) {
+                    $titleTtuj = __('Balik');
+                    $addClass = 'balik';
+                    $urlTtuj = array(
+                        'controller' => 'revenues',
+                        'action' => 'info_truk',
+                        'balik',
+                        $value['Ttuj']['id'],
+                    );
+                } else if( !empty($value['Ttuj']['is_bongkaran']) ) {
+                    $titleTtuj = __('Bongkaran');
+                    $urlTtuj = array(
+                        'controller' => 'revenues',
+                        'action' => 'info_truk',
+                        'bongkaran',
+                        $value['Ttuj']['id'],
+                    );
+                } else if( !empty($value['Ttuj']['is_arrive']) ) {
+                    $titleTtuj = __('Berangkat');
+                    $urlTtuj = array(
+                        'controller' => 'revenues',
+                        'action' => 'info_truk',
+                        'truk_tiba',
+                        $value['Ttuj']['id'],
+                    );
+                } else if( empty($value['Ttuj']['is_draft']) ) {
+                    $urlTtuj = array(
+                        'controller' => 'revenues',
+                        'action' => 'ttuj_edit',
+                        $value['Ttuj']['id'],
+                    );
+                }
+
+                if( empty($value['Laka']['id']) && empty($value['Ttuj']['is_pool']) ) {
+                    if( date('Y-m-d') > $date ) {
+                        $end_date = date('Y-m-d', strtotime("-1 day"));
+                    } else {
+                        $end_date = $date;
+                    }
+                }
+
+                $dataTtujCalendar = array_merge($dataTmp, array(
+                    'id' => $value['Ttuj']['id'],
+                    'title' => __('Berangkat'),
+                    'from_date' => $this->MkCommon->customDate($tglBerangkat, 'd/m/Y - H:i'),
+                    'to_date' => !empty($tglPool)?$this->MkCommon->customDate($tglPool, 'd/m/Y - H:i'):'-',
+                    'url' => $urlTtuj,
+                ));
+
+                if( !empty($value['Laka']['id']) ) {
+                    $dataTtujCalendar = array_merge($dataTtujCalendar, array(
+                        'is_laka' => true,
+                        'laka_date' => $this->MkCommon->customDate($value['Laka']['tgl_laka'], 'd/m/Y'),
+                        'laka_completed_date' => !empty($value['Laka']['completed_date'])?$this->MkCommon->customDate($value['Laka']['completed_date'], 'd/m/Y'):false,
+                        'driver_name' => $value['Laka']['driver_name'],
+                        'lokasi_laka' => $value['Laka']['lokasi_laka'],
+                        'truck_condition' => $value['Laka']['truck_condition'],
+                        'driver_pengganti_name' => !empty($value['DriverPenganti']['name'])?$value['DriverPenganti']['name']:false,
+                    ));
+                }
+                if( !empty($tglTiba) ) {
+                    $dataTtujCalendar['tglTiba'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_tiba'], 'd/m/Y - H:i');
+                }
+                if( !empty($tglBongkaran) ) {
+                    $dataTtujCalendar['tglBongkaran'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_bongkaran'], 'd/m/Y - H:i');
+                }
+                if( !empty($tglBalik) ) {
+                    $dataTtujCalendar['tglBalik'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_balik'], 'd/m/Y - H:i');
+                }
+
+                if( !empty($lakaDate) && $this->MkCommon->customDate($lakaDate, 'Y-m') == $currMonth && $this->MkCommon->customDate($lakaDate, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($lakaDate, 'd'), $inArr) ) {
+                    $dataTtujCalendar['title'] = __('LAKA');
+                    $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_laka'])?$setting['Setting']['icon_laka']:'';
+                    $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
+                    $dataTtujCalendar['color'] = '#dd545f';
+                    $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($lakaDate, 'm')][$this->MkCommon->customDate($lakaDate, 'd')][] = $dataTtujCalendar;
+                    $differentTtuj = true;
+                    $inArr[] = $this->MkCommon->customDate($lakaDate, 'd');
+                }
+                if( !empty($tglPool) && $this->MkCommon->customDate($tglPool, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglPool, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglPool, 'd'), $inArr) ) {
+                    $dataTtujCalendar['title'] = __('Sampai Pool');
+                    $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_pool'])?$setting['Setting']['icon_pool']:'';
+                    $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
+                    $dataTtujCalendar['color'] = '#00a65a';
+                    $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglPool, 'm')][$this->MkCommon->customDate($tglPool, 'd')][] = $dataTtujCalendar;
+                    $differentTtuj = true;
+                    $inArr[] = $this->MkCommon->customDate($tglPool, 'd');
+                    $dataRit['Truck-'.$truck_id]['rit'][$this->MkCommon->customDate($tglPool, 'm')][$this->MkCommon->customDate($tglPool, 'd')][] = $tglPool;
+                }
+                if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglBalik, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglBalik, 'd'), $inArr) ) {
+                    $dataTtujCalendar['title'] = __('Balik');
+                    $dataTtujCalendar['icon'] = '/img/on-the-way.gif';
+                    $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
+                    $dataTtujCalendar['color'] = '#3d9970';
+                    $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglBalik, 'm')][$this->MkCommon->customDate($tglBalik, 'd')][] = $dataTtujCalendar;
+                    $differentTtuj = true;
+                    $inArr[] = $this->MkCommon->customDate($tglBalik, 'd');
+                }
+                if( !empty($tglBongkaran) && $this->MkCommon->customDate($tglBongkaran, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglBongkaran, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglBongkaran, 'd'), $inArr) ) {
+                    $dataTtujCalendar['title'] = __('Bongkaran');
+                    $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_bongkaran'])?$setting['Setting']['icon_bongkaran']:'';
+                    $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
+                    $dataTtujCalendar['color'] = '#d3e3d4';
+                    $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglBongkaran, 'm')][$this->MkCommon->customDate($tglBongkaran, 'd')][] = $dataTtujCalendar;
+                    $differentTtuj = true;
+                    $inArr[] = $this->MkCommon->customDate($tglBongkaran, 'd');
+                }
+                if( !empty($tglTiba) && $this->MkCommon->customDate($tglTiba, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglTiba, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglTiba, 'd'), $inArr) ) {
+                    $dataTtujCalendar['title'] = __('Tiba');
+                    $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_tiba'])?$setting['Setting']['icon_tiba']:'';
+                    $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
+                    $dataTtujCalendar['color'] = '#f39c12';
+                    $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglTiba, 'm')][$this->MkCommon->customDate($tglTiba, 'd')][] = $dataTtujCalendar;
+                    $differentTtuj = true;
+                    $inArr[] = $this->MkCommon->customDate($tglTiba, 'd');
+                }
+
+                while (strtotime($date) <= strtotime($end_date)) {
                     $currMonth = date('Y-m', strtotime($date));
 
-                    if( !empty($value['Laka']['id']) ) {
-                        $lakaDate = date('Y-m-d', strtotime($value['Laka']['tgl_laka']));
-                        $addClass = 'pool';
-                        $urlTtuj = array(
-                            'controller' => 'lakas',
-                            'action' => 'edit',
-                            $value['Laka']['id'],
-                        );
+                    // if( $currMonth == $currentMonth ) {
+                        $currDay = date('d', strtotime($date));
+                        $currMonthly = date('m', strtotime($date));
+                        
+                        // if( !empty($value['Laka']['id']) ) {
+                        //     $dataTtuj['Truck-'.$truck_id][$currDay][] = array(
+                        //         'is_laka' => true,
+                        //         'from_date' => $this->MkCommon->customDate($value['Laka']['tgl_laka'], 'd/m/Y - H:i'),
+                        //         'to_date' => !empty($value['Laka']['completed_date'])?$this->MkCommon->customDate($value['Laka']['completed_date'], 'd/m/Y - H:i'):'-',
+                        //         'driver_name' => $value['Laka']['driver_name'],
+                        //         'lokasi_laka' => $value['Laka']['lokasi_laka'],
+                        //         'truck_condition' => $value['Laka']['truck_condition'],
+                        //         'icon' => ( empty($i) || ( $date == $end_date && !empty($value['Laka']['completed']) ) )?'/img/accident.png':false,
+                        //         'iconPopup' => '/img/accident.png',
+                        //         'color' => $color,
+                        //         'url' => array(
+                        //             'controller' => 'lakas',
+                        //             'action' => 'edit',
+                        //             $value['Laka']['id'],
+                        //         ),
+                        //     );
+                        // }
+                        if( !in_array($currDay, $inArr) ) {
+                            $popIcon = false;
 
-                        if( !empty($value['Laka']['completed']) ) {
-                            $end_date = date('Y-m-d', strtotime($value['Laka']['completed_date']));
-                        } else if( date('Y-m-d') >= $lakaDate ) {
-                            $end_date = date('Y-m-d', strtotime("-1 day"));
-                        } else {
-                            $end_date = $lakaDate;
-                        }
-                    } else if( !empty($value['Ttuj']['is_pool']) ) {
-                        $titleTtuj = __('Sampai Pool');
-                        $toDate = $value['Ttuj']['tgljam_pool'];
-                        $end_date = date('Y-m-d', strtotime($toDate));
-                        $addClass = 'pool';
-                        $urlTtuj = array(
-                            'controller' => 'revenues',
-                            'action' => 'info_truk',
-                            'pool',
-                            $value['Ttuj']['id'],
-                        );
-                    } else if( !empty($value['Ttuj']['is_balik']) ) {
-                        $titleTtuj = __('Balik');
-                        $addClass = 'balik';
-                        $urlTtuj = array(
-                            'controller' => 'revenues',
-                            'action' => 'info_truk',
-                            'balik',
-                            $value['Ttuj']['id'],
-                        );
-                    } else if( !empty($value['Ttuj']['is_bongkaran']) ) {
-                        $titleTtuj = __('Bongkaran');
-                        $urlTtuj = array(
-                            'controller' => 'revenues',
-                            'action' => 'info_truk',
-                            'bongkaran',
-                            $value['Ttuj']['id'],
-                        );
-                    } else if( !empty($value['Ttuj']['is_arrive']) ) {
-                        $titleTtuj = __('Berangkat');
-                        $urlTtuj = array(
-                            'controller' => 'revenues',
-                            'action' => 'info_truk',
-                            'truk_tiba',
-                            $value['Ttuj']['id'],
-                        );
-                    } else if( empty($value['Ttuj']['is_draft']) ) {
-                        $urlTtuj = array(
-                            'controller' => 'revenues',
-                            'action' => 'ttuj_edit',
-                            $value['Ttuj']['id'],
-                        );
-                    }
-
-                    if( empty($value['Laka']['id']) && empty($value['Ttuj']['is_pool']) ) {
-                        if( date('Y-m-d') > $date ) {
-                            $end_date = date('Y-m-d', strtotime("-1 day"));
-                        } else {
-                            $end_date = $date;
-                        }
-                    }
-
-                    $dataTtujCalendar = array_merge($dataTmp, array(
-                        'id' => $value['Ttuj']['id'],
-                        'title' => __('Berangkat'),
-                        'from_date' => $this->MkCommon->customDate($tglBerangkat, 'd/m/Y - H:i'),
-                        'to_date' => !empty($tglPool)?$this->MkCommon->customDate($tglPool, 'd/m/Y - H:i'):'-',
-                        'url' => $urlTtuj,
-                    ));
-
-                    if( !empty($value['Laka']['id']) ) {
-                        $dataTtujCalendar = array_merge($dataTtujCalendar, array(
-                            'is_laka' => true,
-                            'laka_date' => $this->MkCommon->customDate($value['Laka']['tgl_laka'], 'd/m/Y'),
-                            'laka_completed_date' => !empty($value['Laka']['completed_date'])?$this->MkCommon->customDate($value['Laka']['completed_date'], 'd/m/Y'):false,
-                            'driver_name' => $value['Laka']['driver_name'],
-                            'lokasi_laka' => $value['Laka']['lokasi_laka'],
-                            'truck_condition' => $value['Laka']['truck_condition'],
-                            'driver_pengganti_name' => !empty($value['DriverPenganti']['name'])?$value['DriverPenganti']['name']:false,
-                        ));
-                    }
-                    if( !empty($tglTiba) ) {
-                        $dataTtujCalendar['tglTiba'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_tiba'], 'd/m/Y - H:i');
-                    }
-                    if( !empty($tglBongkaran) ) {
-                        $dataTtujCalendar['tglBongkaran'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_bongkaran'], 'd/m/Y - H:i');
-                    }
-                    if( !empty($tglBalik) ) {
-                        $dataTtujCalendar['tglBalik'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_balik'], 'd/m/Y - H:i');
-                    }
-
-                    if( !empty($lakaDate) && $this->MkCommon->customDate($lakaDate, 'Y-m') == $currMonth && $this->MkCommon->customDate($lakaDate, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($lakaDate, 'd'), $inArr) ) {
-                        $dataTtujCalendar['title'] = __('LAKA');
-                        $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_laka'])?$setting['Setting']['icon_laka']:'';
-                        $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
-                        $dataTtujCalendar['color'] = '#dd545f';
-                        $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($lakaDate, 'm')][$this->MkCommon->customDate($lakaDate, 'd')][] = $dataTtujCalendar;
-                        $differentTtuj = true;
-                        $inArr[] = $this->MkCommon->customDate($lakaDate, 'd');
-                    }
-                    if( !empty($tglPool) && $this->MkCommon->customDate($tglPool, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglPool, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglPool, 'd'), $inArr) ) {
-                        $dataTtujCalendar['title'] = __('Sampai Pool');
-                        $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_pool'])?$setting['Setting']['icon_pool']:'';
-                        $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
-                        $dataTtujCalendar['color'] = '#00a65a';
-                        $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglPool, 'm')][$this->MkCommon->customDate($tglPool, 'd')][] = $dataTtujCalendar;
-                        $differentTtuj = true;
-                        $inArr[] = $this->MkCommon->customDate($tglPool, 'd');
-                        $dataRit['Truck-'.$truck_id]['rit'][$this->MkCommon->customDate($tglPool, 'm')][$this->MkCommon->customDate($tglPool, 'd')][] = $tglPool;
-                    }
-                    if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglBalik, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglBalik, 'd'), $inArr) ) {
-                        $dataTtujCalendar['title'] = __('Balik');
-                        $dataTtujCalendar['icon'] = '/img/on-the-way.gif';
-                        $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
-                        $dataTtujCalendar['color'] = '#3d9970';
-                        $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglBalik, 'm')][$this->MkCommon->customDate($tglBalik, 'd')][] = $dataTtujCalendar;
-                        $differentTtuj = true;
-                        $inArr[] = $this->MkCommon->customDate($tglBalik, 'd');
-                    }
-                    if( !empty($tglBongkaran) && $this->MkCommon->customDate($tglBongkaran, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglBongkaran, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglBongkaran, 'd'), $inArr) ) {
-                        $dataTtujCalendar['title'] = __('Bongkaran');
-                        $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_bongkaran'])?$setting['Setting']['icon_bongkaran']:'';
-                        $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
-                        $dataTtujCalendar['color'] = '#d3e3d4';
-                        $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglBongkaran, 'm')][$this->MkCommon->customDate($tglBongkaran, 'd')][] = $dataTtujCalendar;
-                        $differentTtuj = true;
-                        $inArr[] = $this->MkCommon->customDate($tglBongkaran, 'd');
-                    }
-                    if( !empty($tglTiba) && $this->MkCommon->customDate($tglTiba, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglTiba, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglTiba, 'd'), $inArr) ) {
-                        $dataTtujCalendar['title'] = __('Tiba');
-                        $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_tiba'])?$setting['Setting']['icon_tiba']:'';
-                        $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
-                        $dataTtujCalendar['color'] = '#f39c12';
-                        $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglTiba, 'm')][$this->MkCommon->customDate($tglTiba, 'd')][] = $dataTtujCalendar;
-                        $differentTtuj = true;
-                        $inArr[] = $this->MkCommon->customDate($tglTiba, 'd');
-                    }
-
-                    while (strtotime($date) <= strtotime($end_date)) {
-                        $currMonth = date('Y-m', strtotime($date));
-
-                        // if( $currMonth == $currentMonth ) {
-                            $currDay = date('d', strtotime($date));
-                            $currMonthly = date('m', strtotime($date));
-                            
-                            // if( !empty($value['Laka']['id']) ) {
-                            //     $dataTtuj['Truck-'.$truck_id][$currDay][] = array(
-                            //         'is_laka' => true,
-                            //         'from_date' => $this->MkCommon->customDate($value['Laka']['tgl_laka'], 'd/m/Y - H:i'),
-                            //         'to_date' => !empty($value['Laka']['completed_date'])?$this->MkCommon->customDate($value['Laka']['completed_date'], 'd/m/Y - H:i'):'-',
-                            //         'driver_name' => $value['Laka']['driver_name'],
-                            //         'lokasi_laka' => $value['Laka']['lokasi_laka'],
-                            //         'truck_condition' => $value['Laka']['truck_condition'],
-                            //         'icon' => ( empty($i) || ( $date == $end_date && !empty($value['Laka']['completed']) ) )?'/img/accident.png':false,
-                            //         'iconPopup' => '/img/accident.png',
-                            //         'color' => $color,
-                            //         'url' => array(
-                            //             'controller' => 'lakas',
-                            //             'action' => 'edit',
-                            //             $value['Laka']['id'],
-                            //         ),
-                            //     );
-                            // }
-                            if( !in_array($currDay, $inArr) ) {
-                                $popIcon = false;
-
-                                if( !empty($lakaDate) && $this->MkCommon->customDate($lakaDate, 'Y-m-d') <= $date ) {
-                                    $dataTtujCalendar['color'] = '#dd545f';
-                                    $icon = !empty($setting['Setting']['icon_laka'])?$setting['Setting']['icon_laka']:'';
-                                } else if( !empty($tglPool) && $this->MkCommon->customDate($tglPool, 'Y-m-d') <= $date ) {
-                                    $dataTtujCalendar['color'] = '#00a65a';
-                                    $icon = !empty($setting['Setting']['icon_pool'])?$setting['Setting']['icon_pool']:'';
-                                    $dataRit['Truck-'.$truck_id]['rit'][$currMonthly][$currDay][] = $tglPool;
-                                } else if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m-d') <= $date ) {
-                                    $dataTtujCalendar['color'] = '#3d9970';
-                                    $icon = !empty($setting['Setting']['icon_balik'])?$setting['Setting']['icon_balik']:'';
-                                } else if( !empty($tglBongkaran) && $this->MkCommon->customDate($tglBongkaran, 'Y-m-d') <= $date ) {
-                                    $dataTtujCalendar['color'] = '#d3e3d4';
-                                    $icon = !empty($setting['Setting']['icon_bongkaran'])?$setting['Setting']['icon_bongkaran']:'';
-                                } else if( !empty($tglTiba) && $this->MkCommon->customDate($tglTiba, 'Y-m-d') <= $date ) {
-                                    $dataTtujCalendar['color'] = '#f39c12';
-                                    $icon = !empty($setting['Setting']['icon_tiba'])?$setting['Setting']['icon_tiba']:'';
-                                } else {
-                                    $dataTtujCalendar['color'] = '#4389fe';
-                                    $icon = !empty($setting['Setting']['icon_berangkat'])?$setting['Setting']['icon_berangkat']:'';
-                                }
-
-                                if( $differentTtuj ) {
-                                    if( empty($i) || ( $date == $end_date && !empty($toDate) ) ) {
-                                        $dataTtujCalendar['icon'] = $icon;
-                                        $popIcon = $dataTtujCalendar['icon'];
-                                    } else {
-                                        $popIcon = $icon;
-                                        $dataTtujCalendar['icon'] = false;
-                                    }
-                                } else {
-                                    if( empty($i) || ( $date == $end_date && !empty($toDate) ) ) {
-                                        $popIcon = $icon;
-                                        $dataTtujCalendar['icon'] = $icon;
-                                    } else {
-                                        $popIcon = $icon;
-                                        $dataTtujCalendar['icon'] = false;
-                                    }
-                                }
-
-                                $dataTtujCalendar['iconPopup'] = $popIcon;
-                                $dataTtuj['Truck-'.$truck_id][$currMonthly][$currDay][] = $dataTtujCalendar;
+                            if( !empty($lakaDate) && $this->MkCommon->customDate($lakaDate, 'Y-m-d') <= $date ) {
+                                $dataTtujCalendar['color'] = '#dd545f';
+                                $icon = !empty($setting['Setting']['icon_laka'])?$setting['Setting']['icon_laka']:'';
+                            } else if( !empty($tglPool) && $this->MkCommon->customDate($tglPool, 'Y-m-d') <= $date ) {
+                                $dataTtujCalendar['color'] = '#00a65a';
+                                $icon = !empty($setting['Setting']['icon_pool'])?$setting['Setting']['icon_pool']:'';
+                                $dataRit['Truck-'.$truck_id]['rit'][$currMonthly][$currDay][] = $tglPool;
+                            } else if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m-d') <= $date ) {
+                                $dataTtujCalendar['color'] = '#3d9970';
+                                $icon = !empty($setting['Setting']['icon_balik'])?$setting['Setting']['icon_balik']:'';
+                            } else if( !empty($tglBongkaran) && $this->MkCommon->customDate($tglBongkaran, 'Y-m-d') <= $date ) {
+                                $dataTtujCalendar['color'] = '#d3e3d4';
+                                $icon = !empty($setting['Setting']['icon_bongkaran'])?$setting['Setting']['icon_bongkaran']:'';
+                            } else if( !empty($tglTiba) && $this->MkCommon->customDate($tglTiba, 'Y-m-d') <= $date ) {
+                                $dataTtujCalendar['color'] = '#f39c12';
+                                $icon = !empty($setting['Setting']['icon_tiba'])?$setting['Setting']['icon_tiba']:'';
+                            } else {
+                                $dataTtujCalendar['color'] = '#4389fe';
+                                $icon = !empty($setting['Setting']['icon_berangkat'])?$setting['Setting']['icon_berangkat']:'';
                             }
 
-                            $date = date ("Y-m-d", strtotime("+1 day", strtotime($date)));
-                            $i++;
-                        // } else {
-                        //     break;
-                        // }
-                    }
-                }
-            }
+                            if( $differentTtuj ) {
+                                if( empty($i) || ( $date == $end_date && !empty($toDate) ) ) {
+                                    $dataTtujCalendar['icon'] = $icon;
+                                    $popIcon = $dataTtujCalendar['icon'];
+                                } else {
+                                    $popIcon = $icon;
+                                    $dataTtujCalendar['icon'] = false;
+                                }
+                            } else {
+                                if( empty($i) || ( $date == $end_date && !empty($toDate) ) ) {
+                                    $popIcon = $icon;
+                                    $dataTtujCalendar['icon'] = $icon;
+                                } else {
+                                    $popIcon = $icon;
+                                    $dataTtujCalendar['icon'] = false;
+                                }
+                            }
 
-            if( !empty($events) ) {
-                foreach ($events as $key => $event) {
-                    $date = date('Y-m-d', strtotime($event['CalendarEvent']['from_date']));
-                    $end_date = date('Y-m-d', strtotime($event['CalendarEvent']['to_date']));
-                    $i = 0;
-                     
-                    while (strtotime($date) <= strtotime($end_date)) {
-                        if( date('Y-m', strtotime($date)) == $currentMonth ) {
-                            $toDate = date('Y-m-d', strtotime($event['CalendarEvent']['to_date']));
-                            $truck_id = $event['CalendarEvent']['truck_id'];
-
-                            $dataEvent['Truck-'.$truck_id][date('m', strtotime($date))][date('d', strtotime($date))][] = array(
-                                'id' => $event['CalendarEvent']['id'],
-                                'from_date' => $this->MkCommon->customDate($event['CalendarEvent']['from_date'], 'd/m/Y - H:i'),
-                                'to_date' => $this->MkCommon->customDate($event['CalendarEvent']['to_date'], 'd/m/Y - H:i'),
-                                'title' => $event['CalendarEvent']['name'],
-                                'note' => $event['CalendarEvent']['note'],
-                                'color' => !empty($event['CalendarColor']['hex'])?$event['CalendarColor']['hex']:false,
-                                'icon' => (!empty($event['CalendarIcon']['photo']) && ( empty($i) || $date == $toDate ))?$event['CalendarIcon']['photo']:false,
-                                'iconPopup' => ( !empty($event['CalendarIcon']['photo']) )?$event['CalendarIcon']['photo']:false,
-                            );
-
-                            $date = date ("Y-m-d", strtotime("+1 day", strtotime($date)));
-                            $i++;
-                        } else {
-                            break;
+                            $dataTtujCalendar['iconPopup'] = $popIcon;
+                            $dataTtuj['Truck-'.$truck_id][$currMonthly][$currDay][] = $dataTtujCalendar;
                         }
+
+                        $date = date ("Y-m-d", strtotime("+1 day", strtotime($date)));
+                        $i++;
+                    // } else {
+                    //     break;
+                    // }
+                }
+            }
+        }
+
+        if( !empty($events) ) {
+            foreach ($events as $key => $event) {
+                $date = date('Y-m-d', strtotime($event['CalendarEvent']['from_date']));
+                $end_date = date('Y-m-d', strtotime($event['CalendarEvent']['to_date']));
+                $i = 0;
+                 
+                while (strtotime($date) <= strtotime($end_date)) {
+                    if( date('Y-m', strtotime($date)) == $currentMonth ) {
+                        $toDate = date('Y-m-d', strtotime($event['CalendarEvent']['to_date']));
+                        $truck_id = $event['CalendarEvent']['truck_id'];
+
+                        $dataEvent['Truck-'.$truck_id][date('m', strtotime($date))][date('d', strtotime($date))][] = array(
+                            'id' => $event['CalendarEvent']['id'],
+                            'from_date' => $this->MkCommon->customDate($event['CalendarEvent']['from_date'], 'd/m/Y - H:i'),
+                            'to_date' => $this->MkCommon->customDate($event['CalendarEvent']['to_date'], 'd/m/Y - H:i'),
+                            'title' => $event['CalendarEvent']['name'],
+                            'note' => $event['CalendarEvent']['note'],
+                            'color' => !empty($event['CalendarColor']['hex'])?$event['CalendarColor']['hex']:false,
+                            'icon' => (!empty($event['CalendarIcon']['photo']) && ( empty($i) || $date == $toDate ))?$event['CalendarIcon']['photo']:false,
+                            'iconPopup' => ( !empty($event['CalendarIcon']['photo']) )?$event['CalendarIcon']['photo']:false,
+                        );
+
+                        $date = date ("Y-m-d", strtotime("+1 day", strtotime($date)));
+                        $i++;
+                    } else {
+                        break;
                     }
                 }
             }
-            $customers = array();
-            $customers = $this->TruckCustomer->getData('list', array(
-                'conditions' => array(
-                    'Truck.status' => 1,
-                    'TruckCustomer.primary' => 1,
-                ),
-                'fields' => array(
-                    'CustomerNoType.id', 'CustomerNoType.code'
-                ),
-                'contain' => array(
-                    'Truck',
-                    'CustomerNoType',
-                ),
-            ));
+        }
+        $customers = array();
+        $customers = $this->TruckCustomer->getData('list', array(
+            'conditions' => array(
+                'Truck.status' => 1,
+                'TruckCustomer.primary' => 1,
+            ),
+            'fields' => array(
+                'CustomerNoType.id', 'CustomerNoType.code'
+            ),
+            'contain' => array(
+                'Truck',
+                'CustomerNoType',
+            ),
+        ));
+
+        $this->set(compact(
+            'data_action', 'lastDay', 'currentMonth',
+            'trucks', 'prevMonth', 'nextMonth',
+            'dataTtuj', 'dataEvent', 'customers',
+            'customerId', 'dataRit', 'thisMonth'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $layout_js = array(
+                'freeze',
+            );
+            $layout_css = array(
+                'freeze',
+            );
 
             $this->set(compact(
-                'data_action', 'lastDay', 'currentMonth',
-                'trucks', 'prevMonth', 'nextMonth',
-                'dataTtuj', 'dataEvent', 'customers',
-                'customerId', 'dataRit', 'thisMonth'
+                'layout_css', 'layout_js'
             ));
-
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
-            } else {
-                $layout_js = array(
-                    'freeze',
-                );
-                $layout_css = array(
-                    'freeze',
-                );
-
-                $this->set(compact(
-                    'layout_css', 'layout_js'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
         }
     }
 
     function index(){
-        if( in_array('view_revenues', $this->allowModule) ) {
-            $this->loadModel('Revenue');
-            $this->loadModel('Ttuj');
-            $this->set('active_menu', 'revenues');
-            $this->set('sub_module_title', __('Revenue'));
+        $this->loadModel('Revenue');
+        $this->loadModel('Ttuj');
+        $this->set('active_menu', 'revenues');
+        $this->set('sub_module_title', __('Revenue'));
 
-            $from_date = '';
-            $to_date = '';
-            $conditions = array();
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        $from_date = '';
+        $to_date = '';
+        $conditions = array();
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['nodoc'])){
-                    $nodoc = urldecode($refine['nodoc']);
-                    $nodoc = $this->MkCommon->replaceSlash($nodoc);
-                    $this->request->data['Revenue']['nodoc'] = $nodoc;
-                    $conditions['Revenue.nodoc LIKE '] = '%'.$nodoc.'%';
-                }
-                if(!empty($refine['no_ttuj'])){
-                    $no_ttuj = urldecode($refine['no_ttuj']);
-                    $this->request->data['Ttuj']['no_ttuj'] = $no_ttuj;
-                    $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
-                }
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Revenue']['customer_id'] = $customer;
-                    $conditions['Revenue.customer_id'] = $customer;
-                }
-                if(!empty($refine['no_ref'])){
-                    $no_ref = urldecode($refine['no_ref']);
-                    $this->request->data['RevenueDetail']['no_reference'] = $no_ref;
+            if(!empty($refine['nodoc'])){
+                $nodoc = urldecode($refine['nodoc']);
+                $nodoc = $this->MkCommon->replaceSlash($nodoc);
+                $this->request->data['Revenue']['nodoc'] = $nodoc;
+                $conditions['Revenue.nodoc LIKE '] = '%'.$nodoc.'%';
+            }
+            if(!empty($refine['no_ttuj'])){
+                $no_ttuj = urldecode($refine['no_ttuj']);
+                $this->request->data['Ttuj']['no_ttuj'] = $no_ttuj;
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
+            }
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Revenue']['customer_id'] = $customer;
+                $conditions['Revenue.customer_id'] = $customer;
+            }
+            if(!empty($refine['no_ref'])){
+                $no_ref = urldecode($refine['no_ref']);
+                $this->request->data['RevenueDetail']['no_reference'] = $no_ref;
 
-                    if( is_numeric($no_ref) ) {
-                        $no_ref = intval($no_ref);
-                    }
-
-                    $conditions['LPAD(Revenue.id, 5, 0) LIKE'] = '%'.$no_ref.'%';
+                if( is_numeric($no_ref) ) {
+                    $no_ref = intval($no_ref);
                 }
 
-                if(!empty($refine['date'])){
-                    $dateStr = urldecode($refine['date']);
-                    $date = explode('-', $dateStr);
+                $conditions['LPAD(Revenue.id, 5, 0) LIKE'] = '%'.$no_ref.'%';
+            }
 
-                    if( !empty($date) ) {
-                        $date[0] = urldecode($date[0]);
-                        $date[1] = urldecode($date[1]);
-                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                        $dateFrom = $this->MkCommon->getDate($date[0]);
-                        $dateTo = $this->MkCommon->getDate($date[1]);
-                        $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') >='] = $dateFrom;
-                        $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') <='] = $dateTo;
-                    }
-                    $this->request->data['Revenue']['date'] = $dateStr;
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
+
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                    $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') >='] = $dateFrom;
+                    $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') <='] = $dateTo;
+                }
+                $this->request->data['Revenue']['date'] = $dateStr;
+            }
+
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $this->request->data['Ttuj']['nopol'] = $nopol;
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                $this->request->data['Ttuj']['type'] = $typeTruck;
+
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $nopol,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$nopol.'%',
+                    );
                 }
 
-                if(!empty($refine['nopol'])){
-                    $nopol = urldecode($refine['nopol']);
-                    $this->request->data['Ttuj']['nopol'] = $nopol;
-                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                    $this->request->data['Ttuj']['type'] = $typeTruck;
+                $truckSearch = $this->Ttuj->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.id',
+                    ),
+                ));
+                $conditions['Ttuj.truck_id'] = $truckSearch;
+            }
 
-                    if( $typeTruck == 2 ) {
-                        $conditionsNopol = array(
-                            'Truck.id' => $nopol,
-                        );
-                    } else {
-                        $conditionsNopol = array(
-                            'Truck.nopol LIKE' => '%'.$nopol.'%',
-                        );
-                    }
+            if(!empty($refine['status'])){
+                $status = urldecode($refine['status']);
 
-                    $truckSearch = $this->Ttuj->Truck->getData('list', array(
-                        'conditions' => $conditionsNopol,
+                if( $status == 'paid' ) {
+                    $this->request->data['Revenue']['transaction_status'] = $status;
+
+                    $revenueList = $this->Revenue->getData('list', array(
+                        'conditions' => $conditions,
+                        'contain' => array(
+                            'Ttuj',
+                        ),
                         'fields' => array(
-                            'Truck.id', 'Truck.id',
+                            'Revenue.id', 'Revenue.id'
                         ),
                     ));
-                    $conditions['Ttuj.truck_id'] = $truckSearch;
-                }
-
-                if(!empty($refine['status'])){
-                    $status = urldecode($refine['status']);
-
-                    if( $status == 'paid' ) {
-                        $this->request->data['Revenue']['transaction_status'] = $status;
-
-                        $revenueList = $this->Revenue->getData('list', array(
-                            'conditions' => $conditions,
-                            'contain' => array(
-                                'Ttuj',
-                            ),
-                            'fields' => array(
-                                'Revenue.id', 'Revenue.id'
-                            ),
-                        ));
-                        $paidList = $this->Revenue->InvoiceDetail->getInvoicedRevenueList($revenueList);
-                        $conditions['Revenue.id'] = $paidList;
-                    } else {
-                        $this->request->data['Revenue']['transaction_status'] = $status;
-                        $conditions['Revenue.transaction_status'] = $status;
-                    }
+                    $paidList = $this->Revenue->InvoiceDetail->getInvoicedRevenueList($revenueList);
+                    $conditions['Revenue.id'] = $paidList;
+                } else {
+                    $this->request->data['Revenue']['transaction_status'] = $status;
+                    $conditions['Revenue.transaction_status'] = $status;
                 }
             }
-
-            $this->paginate = $this->Revenue->getData('paginate', array(
-                'conditions' => $conditions,
-                'contain' => array(
-                    'Ttuj',
-                )
-            ));
-            $revenues = $this->paginate('Revenue');
-
-            if(!empty($revenues)){
-                $this->loadModel('City');
-                $this->loadModel('Truck');
-
-                foreach ($revenues as $key => $value) {
-                    $value = $this->Revenue->InvoiceDetail->getInvoicedRevenue($value, $value['Revenue']['id']);
-
-                    if( empty($value['Revenue']['ttuj_id']) ) {
-                        $valueFromCity = $this->City->getMerge($value, $value['Revenue']['from_city_id']);
-                        $value['FromCity'] = !empty($valueFromCity['City'])?$valueFromCity['City']:false;
-
-                        $valueToCity = $this->City->getMerge($value, $value['Revenue']['to_city_id']);
-                        $value['ToCity'] = !empty($valueToCity['City'])?$valueToCity['City']:false;
-                        $value = $this->Truck->getMerge($value, $value['Revenue']['truck_id']);
-                        $value = $this->Ttuj->Customer->getMerge($value, $value['Revenue']['customer_id']);
-                    } else {
-                        $value = $this->Ttuj->Customer->getMerge($value, $value['Ttuj']['customer_id']);
-                    }
-
-                    $revenues[$key] = $this->Ttuj->Customer->getMerge($value, $value['Ttuj']['customer_id']);
-                }
-            }
-            $this->set('revenues', $revenues); 
-
-            $this->loadModel('Customer');
-            $customers = $this->Customer->getData('list', array(
-                'conditions' => array(
-                    'Customer.status' => 1
-                ),
-                'fields' => array(
-                    'Customer.id', 'Customer.customer_name_code'
-                ),
-            ));
-            $this->set('customers', $customers);
-        } else {
-            $this->redirect($this->referer());
         }
+
+        $this->paginate = $this->Revenue->getData('paginate', array(
+            'conditions' => $conditions,
+            'contain' => array(
+                'Ttuj',
+            )
+        ));
+        $revenues = $this->paginate('Revenue');
+
+        if(!empty($revenues)){
+            $this->loadModel('City');
+            $this->loadModel('Truck');
+
+            foreach ($revenues as $key => $value) {
+                $value = $this->Revenue->InvoiceDetail->getInvoicedRevenue($value, $value['Revenue']['id']);
+
+                if( empty($value['Revenue']['ttuj_id']) ) {
+                    $valueFromCity = $this->City->getMerge($value, $value['Revenue']['from_city_id']);
+                    $value['FromCity'] = !empty($valueFromCity['City'])?$valueFromCity['City']:false;
+
+                    $valueToCity = $this->City->getMerge($value, $value['Revenue']['to_city_id']);
+                    $value['ToCity'] = !empty($valueToCity['City'])?$valueToCity['City']:false;
+                    $value = $this->Truck->getMerge($value, $value['Revenue']['truck_id']);
+                    $value = $this->Ttuj->Customer->getMerge($value, $value['Revenue']['customer_id']);
+                } else {
+                    $value = $this->Ttuj->Customer->getMerge($value, $value['Ttuj']['customer_id']);
+                }
+
+                $revenues[$key] = $this->Ttuj->Customer->getMerge($value, $value['Ttuj']['customer_id']);
+            }
+        }
+        $this->set('revenues', $revenues); 
+
+        $this->loadModel('Customer');
+        $customers = $this->Customer->getData('list', array(
+            'conditions' => array(
+                'Customer.status' => 1
+            ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+        $this->set('customers', $customers);
     }
 
     function revenue_add(){
-        if( in_array('insert_revenues', $this->allowModule) ) {
-            $this->loadModel('Revenue');
-            $module_title = __('Tambah Revenue');
-            $this->set('sub_module_title', trim($module_title));
-            $this->doTTUJ();
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->loadModel('Revenue');
+        $module_title = __('Tambah Revenue');
+        $this->set('sub_module_title', trim($module_title));
+        $this->doTTUJ();
     }
 
     function revenue_edit( $id ){
-        if( in_array('update_revenues', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $ttuj = $this->Ttuj->getData('first', array(
-                'conditions' => array(
-                    'Ttuj.id' => $id
-                )
-            ));
+        $this->loadModel('Ttuj');
+        $ttuj = $this->Ttuj->getData('first', array(
+            'conditions' => array(
+                'Ttuj.id' => $id
+            )
+        ));
 
-            if(!empty($ttuj)){
-                $data_action = false;
+        if(!empty($ttuj)){
+            $data_action = false;
 
-                if( !empty($ttuj['Ttuj']['is_retail']) ) {
-                    $data_action = 'retail';
-                }
-
-                $module_title = sprintf(__('Rubah TTUJ %s'), ucwords($data_action));
-                $this->set('sub_module_title', trim($module_title));
-                $this->doTTUJ($data_action, $id, $ttuj);
-            }else{
-                $this->MkCommon->setCustomFlash(__('TTUJ tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'revenues',
-                    'action' => 'ttuj'
-                ));
+            if( !empty($ttuj['Ttuj']['is_retail']) ) {
+                $data_action = 'retail';
             }
-        } else {
-            $this->redirect($this->referer());
+
+            $module_title = sprintf(__('Rubah TTUJ %s'), ucwords($data_action));
+            $this->set('sub_module_title', trim($module_title));
+            $this->doTTUJ($data_action, $id, $ttuj);
+        }else{
+            $this->MkCommon->setCustomFlash(__('TTUJ tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'revenues',
+                'action' => 'ttuj'
+            ));
         }
     }
 
     function add( $action_type = false ){
-        if( in_array('insert_revenues', $this->allowModule) ) {
-            $this->loadModel('Revenue');
-            $module_title = __('Tambah Revenue');
-            $this->set('sub_module_title', trim($module_title));
-            $this->doRevenue( false, false, $action_type );
-        } else {
-            $this->redirect($this->referer());
-        }
+        $this->loadModel('Revenue');
+        $module_title = __('Tambah Revenue');
+        $this->set('sub_module_title', trim($module_title));
+        $this->doRevenue( false, false, $action_type );
     }
 
     function edit( $id, $action_type = false ){
-        if( in_array('update_revenues', $this->allowModule) ) {
-            $this->loadModel('Revenue');
-            $revenue = $this->Revenue->getData('first', array(
-                'conditions' => array(
-                    'Revenue.id' => $id
-                ),
-                'contain' => array(
-                    'Ttuj'
-                )
-            ));
+        $this->loadModel('Revenue');
+        $revenue = $this->Revenue->getData('first', array(
+            'conditions' => array(
+                'Revenue.id' => $id
+            ),
+            'contain' => array(
+                'Ttuj'
+            )
+        ));
 
-            if(!empty($revenue)){
-                $revenue = $this->Revenue->RevenueDetail->getMergeAll( $revenue, $revenue['Revenue']['id'] );
-                $module_title = __('Rubah Revenue');
-                $this->set('sub_module_title', trim($module_title));
-                $this->doRevenue($id, $revenue, $action_type);
-            }else{
-                $this->MkCommon->setCustomFlash(__('Revenue tidak ditemukan'), 'error');  
-                $this->redirect(array(
-                    'controller' => 'revenues',
-                    'action' => 'index'
-                ));
-            }
-        } else {
-            $this->redirect($this->referer());
+        if(!empty($revenue)){
+            $revenue = $this->Revenue->RevenueDetail->getMergeAll( $revenue, $revenue['Revenue']['id'] );
+            $module_title = __('Rubah Revenue');
+            $this->set('sub_module_title', trim($module_title));
+            $this->doRevenue($id, $revenue, $action_type);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Revenue tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'revenues',
+                'action' => 'index'
+            ));
         }
     }
 
@@ -3280,43 +3190,39 @@ class RevenuesController extends AppController {
     }
 
     function revenue_toggle( $id ){
-        if( in_array('delete_revenues', $this->allowModule) ) {
-            $this->loadModel('Revenue');
-            $this->loadModel('Ttuj');
-            $locale = $this->Revenue->getData('first', array(
-                'conditions' => array(
-                    'Revenue.id' => $id
-                )
-            ));
+        $this->loadModel('Revenue');
+        $this->loadModel('Ttuj');
+        $locale = $this->Revenue->getData('first', array(
+            'conditions' => array(
+                'Revenue.id' => $id
+            )
+        ));
 
-            if($locale){
-                $value = true;
-                if($locale['Revenue']['status']){
-                    $value = false;
-                }
-
-                $this->Revenue->set('status', $value);
-                $this->Revenue->id = $id;
-
-                if($this->Revenue->save()){
-                    $this->Ttuj->set('is_revenue', 0);
-                    $this->Ttuj->id = $locale['Revenue']['ttuj_id'];
-                    $this->Ttuj->save();
-
-                    $this->MkCommon->setCustomFlash(__('Revenue berhasil dibatalkan.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Revenue ID #%s berhasil dibatalkan.'), $id), $this->user_data, $this->RequestHandler, $this->params );
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Revenue membatalkan TTUJ.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Revenue membatalkan TTUJ ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(__('Revenue tidak ditemukan.'), 'error');
+        if($locale){
+            $value = true;
+            if($locale['Revenue']['status']){
+                $value = false;
             }
 
-            $this->redirect($this->referer());
-        } else {
-            $this->redirect($this->referer());
+            $this->Revenue->set('status', $value);
+            $this->Revenue->id = $id;
+
+            if($this->Revenue->save()){
+                $this->Ttuj->set('is_revenue', 0);
+                $this->Ttuj->id = $locale['Revenue']['ttuj_id'];
+                $this->Ttuj->save();
+
+                $this->MkCommon->setCustomFlash(__('Revenue berhasil dibatalkan.'), 'success');
+                $this->Log->logActivity( sprintf(__('Revenue ID #%s berhasil dibatalkan.'), $id), $this->user_data, $this->RequestHandler, $this->params );
+            }else{
+                $this->MkCommon->setCustomFlash(__('Revenue membatalkan TTUJ.'), 'error');
+                $this->Log->logActivity( sprintf(__('Revenue membatalkan TTUJ ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Revenue tidak ditemukan.'), 'error');
         }
+
+        $this->redirect($this->referer());
     }
 
     function detail_ritase($id){
@@ -3510,117 +3416,84 @@ class RevenuesController extends AppController {
     }
 
     function invoices(){
-        if( in_array('view_revenues', $this->allowModule) ) {
-            $this->loadModel('Invoice');
-            $this->set('active_menu', 'invoices');
-            $this->set('sub_module_title', __('Invoice'));
+        $this->loadModel('Invoice');
+        $this->set('active_menu', 'invoices');
+        $this->set('sub_module_title', __('Invoice'));
 
-            $conditions = array();
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        $conditions = array();
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['no_invoice'])){
-                    $nodoc = urldecode($refine['no_invoice']);
-                    $nodoc = $this->MkCommon->replaceSlash($nodoc);
-                    $this->request->data['Invoice']['no_invoice'] = $nodoc;
-                    $conditions['Invoice.no_invoice LIKE '] = '%'.$nodoc.'%';
-                }
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Invoice']['customer_id'] = $customer;
-                    $conditions['Invoice.customer_id LIKE '] = '%'.$customer.'%';
-                }
-                if(!empty($refine['status'])){
-                    $status = urldecode($refine['status']);
-                    $this->request->data['Invoice']['status'] = $status;
+            if(!empty($refine['no_invoice'])){
+                $nodoc = urldecode($refine['no_invoice']);
+                $nodoc = $this->MkCommon->replaceSlash($nodoc);
+                $this->request->data['Invoice']['no_invoice'] = $nodoc;
+                $conditions['Invoice.no_invoice LIKE '] = '%'.$nodoc.'%';
+            }
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Invoice']['customer_id'] = $customer;
+                $conditions['Invoice.customer_id LIKE '] = '%'.$customer.'%';
+            }
+            if(!empty($refine['status'])){
+                $status = urldecode($refine['status']);
+                $this->request->data['Invoice']['status'] = $status;
 
-                    switch ($status) {
-                        case 'paid':
-                            $conditions['Invoice.complete_paid '] = 1;
-                            break;
+                switch ($status) {
+                    case 'paid':
+                        $conditions['Invoice.complete_paid '] = 1;
+                        break;
 
-                        case 'halfpaid':
-                            $conditions['Invoice.complete_paid '] = 0;
-                            $conditions['Invoice.paid '] = 1;
-                            break;
+                    case 'halfpaid':
+                        $conditions['Invoice.complete_paid '] = 0;
+                        $conditions['Invoice.paid '] = 1;
+                        break;
 
-                        case 'void':
-                            $conditions['Invoice.is_canceled '] = 1;
-                            break;
-                        
-                        default:
-                            $conditions['Invoice.complete_paid'] = 0;
-                            $conditions['Invoice.paid'] = 0;
-                            $conditions['Invoice.is_canceled'] = 0;
-                            break;
-                    }
+                    case 'void':
+                        $conditions['Invoice.is_canceled '] = 1;
+                        break;
+                    
+                    default:
+                        $conditions['Invoice.complete_paid'] = 0;
+                        $conditions['Invoice.paid'] = 0;
+                        $conditions['Invoice.is_canceled'] = 0;
+                        break;
                 }
             }
-
-            $this->paginate = $this->Invoice->getData('paginate', array(
-                'conditions' => $conditions,
-                'order' => array(
-                    'Invoice.id' => 'DESC'
-                )
-            ), false);
-            $invoices = $this->paginate('Invoice');
-
-            if(!empty($invoices)){
-                foreach ($invoices as $key => $value) {
-                    $invoices[$key] = $this->Invoice->Customer->getMerge($value, $value['Invoice']['customer_id']);
-                }
-            }
-            $this->set('invoices', $invoices); 
-
-            $this->loadModel('Customer');
-            $customers = $this->Customer->getData('list', array(
-                'conditions' => array(
-                    'Customer.status' => 1
-                ),
-                'fields' => array(
-                    'Customer.id', 'Customer.customer_name_code'
-                ),
-            ));
-            $this->set('customers', $customers);
-        } else {
-            $this->redirect($this->referer());
         }
+
+        $this->paginate = $this->Invoice->getData('paginate', array(
+            'conditions' => $conditions,
+            'order' => array(
+                'Invoice.id' => 'DESC'
+            )
+        ), false);
+        $invoices = $this->paginate('Invoice');
+
+        if(!empty($invoices)){
+            foreach ($invoices as $key => $value) {
+                $invoices[$key] = $this->Invoice->Customer->getMerge($value, $value['Invoice']['customer_id']);
+            }
+        }
+        $this->set('invoices', $invoices); 
+
+        $this->loadModel('Customer');
+        $customers = $this->Customer->getData('list', array(
+            'conditions' => array(
+                'Customer.status' => 1
+            ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+        $this->set('customers', $customers);
     }
 
     function invoice_add($action = false){
-        if( in_array('insert_invoices', $this->allowModule) ) {
-            $module_title = __('Tambah Invoice');
-            $this->set('sub_module_title', trim($module_title));
-            $this->doInvoice($action);
-        } else {
-            $this->redirect($this->referer());
-        }
+        $module_title = __('Tambah Invoice');
+        $this->set('sub_module_title', trim($module_title));
+        $this->doInvoice($action);
     }
-
-    // function invoice_edit( $id ){
-    //     if( in_array('update_invoices', $this->allowModule) ) {
-    //         $this->loadModel('Invoice');
-    //         $revenue = $this->Invoice->getData('first', array(
-    //             'conditions' => array(
-    //                 'Invoice.id' => $id
-    //             )
-    //         ));
-
-     //        if(!empty($revenue)){
-     //            $module_title = __('Rubah Invoice');
-     //            $this->set('sub_module_title', trim($module_title));
-     //            $this->doInvoice($id, $revenue);
-     //        }else{
-     //            $this->MkCommon->setCustomFlash(__('Invoice tidak ditemukan'), 'error');  
-     //            $this->redirect(array(
-     //                'controller' => 'revenues',
-     //                'action' => 'invoices'
-     //            ));
-     //        }
-     //    } else {
-     //        $this->redirect($this->referer());
-     //    }
-    // }
 
     function doInvoice($action, $id = false, $data_local = false){
         $this->loadModel('Revenue');
@@ -3904,394 +3777,380 @@ class RevenuesController extends AppController {
     }
 
     function invoice_reports( $data_action = false ){
-        if( in_array('view_revenue_reports', $this->allowModule) ) {
-            $this->loadModel('Invoice');
-            $this->loadModel('Customer');
+        $this->loadModel('Invoice');
+        $this->loadModel('Customer');
 
-            $this->set('active_menu', 'revenue');
-            $this->set('sub_module_title', __('Account Receivable Aging Report'));
+        $this->set('active_menu', 'revenue');
+        $this->set('sub_module_title', __('Account Receivable Aging Report'));
 
-            $default_conditions = array(
-                 'Customer.status' => 1
-            );
-            $invoice_conditions = array();
+        $default_conditions = array(
+             'Customer.status' => 1
+        );
+        $invoice_conditions = array();
 
-            $customer_id = '';
-            $customer_collect_id = array();
-            $due_30= false;
-            $due_15= false;
-            $due_above_30= false;
-            if( !empty($this->params['named']) ){
-                $refine = $this->params['named'];
+        $customer_id = '';
+        $customer_collect_id = array();
+        $due_30= false;
+        $due_15= false;
+        $due_above_30= false;
+        if( !empty($this->params['named']) ){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['customer'])){
-                    $keyword = urldecode($refine['customer']);
-                    $this->request->data['Invoice']['customer_id'] = $keyword;
-                    $customer_id = $keyword;
+            if(!empty($refine['customer'])){
+                $keyword = urldecode($refine['customer']);
+                $this->request->data['Invoice']['customer_id'] = $keyword;
+                $customer_id = $keyword;
 
-                    $default_conditions['Customer.id'] = $customer_id;
-                }
-
-                if(!empty($refine['due_15'])){
-                    $inv_conditions = array(
-                        'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >=' => 1,
-                        'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 15,
-                        'Invoice.paid' => 0,
-                    );
-
-                    if(!empty($customer_id)){
-                        $inv_conditions['Invoice.customer_id'] = $customer_id;
-                    }
-
-                    $customer_id_temp = $this->Invoice->getData('list', array(
-                        'conditions' => $inv_conditions,
-                        'fields' => array(
-                            'Invoice.customer_id'
-                        ),
-                        'group' => array(
-                            'Invoice.customer_id'  
-                        )
-                    ));
-                    
-                    if(!empty($customer_id_temp)){
-                        $customer_collect_id = array_merge($customer_collect_id, $customer_id_temp);
-                    }
-
-                    $this->request->data['Invoice']['due_15'] = 1;
-                    $due_15= true;
-                }
-                if(!empty($refine['due_30'])){
-                    $inv_conditions = array(
-                        'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >=' => 16,
-                        'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 30,
-                        'Invoice.paid' => 0,
-                    );
-
-                    if(!empty($customer_id)){
-                        $inv_conditions['Invoice.customer_id'] = $customer_id;
-                    }
-
-                    $customer_id_temp = $this->Invoice->getData('list', array(
-                        'conditions' => $inv_conditions,
-                        'fields' => array(
-                            'Invoice.customer_id'
-                        ),
-                        'group' => array(
-                            'Invoice.customer_id'  
-                        )
-                    ));
-                    
-                    if(!empty($customer_id_temp)){
-                        $customer_collect_id = array_merge($customer_collect_id, $customer_id_temp);
-                    }
-
-                    $this->request->data['Invoice']['due_30'] = 1;
-                    $due_30= true;
-                }
-                if(!empty($refine['due_above_30'])){
-                    $inv_conditions = array(
-                        'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >' => 30,
-                        'Invoice.paid' => 0,
-                    );
-
-                    if(!empty($customer_id)){
-                        $inv_conditions['Invoice.customer_id'] = $customer_id;
-                    }
-
-                    $customer_id_temp = $this->Invoice->getData('list', array(
-                        'conditions' => $inv_conditions,
-                        'fields' => array(
-                            'Invoice.customer_id'
-                        ),
-                        'group' => array(
-                            'Invoice.customer_id'  
-                        )
-                    ));
-                    
-                    if(!empty($customer_id_temp)){
-                        $customer_collect_id = array_merge($customer_collect_id, $customer_id_temp);
-                    }
-                    
-                    $this->request->data['Invoice']['due_above_30'] = 1;
-                    $due_above_30 = true;
-                }
-
-                if(!empty($refine['date'])){
-                    $dateStr = urldecode($refine['date']);
-                    $date = explode('-', $dateStr);
-
-                    if( !empty($date) ) {
-                        $date[0] = urldecode($date[0]);
-                        $date[1] = urldecode($date[1]);
-                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                        $dateFrom = $this->MkCommon->getDate($date[0]);
-                        $dateTo = $this->MkCommon->getDate($date[1]);
-                        $invoice_conditions['DATE_FORMAT(Invoice.period_from, \'%Y-%m-%d\') >='] = $dateFrom;
-                        $invoice_conditions['DATE_FORMAT(Invoice.period_to, \'%Y-%m-%d\') <='] = $dateTo;
-                    }
-                    $this->request->data['Invoice']['date'] = $dateStr;
-                }
+                $default_conditions['Customer.id'] = $customer_id;
             }
 
-            if(!empty($customer_collect_id)){
-                $default_conditions['Customer.id'] = $customer_collect_id;
-            }else if(empty($customer_collect_id) && ($due_30 || $due_15 || $due_above_30) ){
-                $default_conditions['Customer.id'] = false;
-            }
-
-            if(empty($data_action)){
-                $this->paginate = $this->Customer->getData('paginate', array(
-                    'conditions' => $default_conditions,
-                    'order' => array(
-                        'Customer.order_sort' => 'ASC',
-                    ),
-                ));
-
-                $customers = $this->paginate('Customer');
-            }else{
-                $customers = $this->Customer->getData('all', array(
-                    'conditions' => $default_conditions,
-                    'order' => array(
-                        'Customer.order_sort' => 'ASC',
-                    ),
-                ));
-            }
-
-            $list_customer = array();
-            foreach ($customers as $key => $value) {
-                $default_conditions = array(
-                    'Invoice.paid' => 0,
-                    'Invoice.customer_id' => $value['Customer']['id'],
-                );
-                if(!empty($invoice_conditions)){
-                    $default_conditions = array_merge($default_conditions, $invoice_conditions);
-                }
-
-                $customers[$key]['piutang'] = $this->Invoice->getData('all', array(
-                    'conditions' => $default_conditions,
-                    'fields' => array(
-                        'SUM(Invoice.total) as total_pituang'
-                    )
-                ));
-
-                $default_conditions = array(
-                    'Invoice.paid' => 0,
+            if(!empty($refine['due_15'])){
+                $inv_conditions = array(
                     'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >=' => 1,
                     'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 15,
-                    'Invoice.customer_id' => $value['Customer']['id'],
+                    'Invoice.paid' => 0,
                 );
-                if(!empty($invoice_conditions)){
-                    $default_conditions = array_merge($default_conditions, $invoice_conditions);
+
+                if(!empty($customer_id)){
+                    $inv_conditions['Invoice.customer_id'] = $customer_id;
                 }
-                $customers[$key]['current_rev1to15'] = $this->Invoice->getData('all', array(
-                    'conditions' => $default_conditions,
+
+                $customer_id_temp = $this->Invoice->getData('list', array(
+                    'conditions' => $inv_conditions,
                     'fields' => array(
-                        'SUM(Invoice.total) as current_rev1to15'
+                        'Invoice.customer_id'
+                    ),
+                    'group' => array(
+                        'Invoice.customer_id'  
                     )
                 ));
-                $default_conditions = array(
-                    'Invoice.paid' => 0,
+                
+                if(!empty($customer_id_temp)){
+                    $customer_collect_id = array_merge($customer_collect_id, $customer_id_temp);
+                }
+
+                $this->request->data['Invoice']['due_15'] = 1;
+                $due_15= true;
+            }
+            if(!empty($refine['due_30'])){
+                $inv_conditions = array(
                     'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >=' => 16,
                     'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 30,
-                    'Invoice.customer_id' => $value['Customer']['id'],
-                );
-                if(!empty($invoice_conditions)){
-                    $default_conditions = array_merge($default_conditions, $invoice_conditions);
-                }
-                $customers[$key]['current_rev16to30'] = $this->Invoice->getData('all', array(
-                    'conditions' => $default_conditions,
-                    'fields' => array(
-                        'SUM(Invoice.total) as current_rev16to30'
-                    )
-                ));
-
-                $default_conditions = array(
                     'Invoice.paid' => 0,
-                    'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >' => 30,
-                    'Invoice.customer_id' => $value['Customer']['id'],
                 );
-                if(!empty($invoice_conditions)){
-                    $default_conditions = array_merge($default_conditions, $invoice_conditions);
+
+                if(!empty($customer_id)){
+                    $inv_conditions['Invoice.customer_id'] = $customer_id;
                 }
-                $customers[$key]['current_rev30'] = $this->Invoice->getData('all', array(
-                    'conditions' => $default_conditions,
+
+                $customer_id_temp = $this->Invoice->getData('list', array(
+                    'conditions' => $inv_conditions,
                     'fields' => array(
-                        'SUM(Invoice.total) as current_rev30'
+                        'Invoice.customer_id'
+                    ),
+                    'group' => array(
+                        'Invoice.customer_id'  
                     )
                 ));
+                
+                if(!empty($customer_id_temp)){
+                    $customer_collect_id = array_merge($customer_collect_id, $customer_id_temp);
+                }
+
+                $this->request->data['Invoice']['due_30'] = 1;
+                $due_30= true;
             }
-            $this->set('active_menu', 'invoice_reports');
+            if(!empty($refine['due_above_30'])){
+                $inv_conditions = array(
+                    'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >' => 30,
+                    'Invoice.paid' => 0,
+                );
 
-            $list_customer = $this->Customer->getData('list', array(
-                'conditions' => array(
-                    'Customer.status' => 1
-                ),
-                'fields' => array(
-                    'Customer.id', 'Customer.customer_name_code'
-                ),
-            ));
+                if(!empty($customer_id)){
+                    $inv_conditions['Invoice.customer_id'] = $customer_id;
+                }
 
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
+                $customer_id_temp = $this->Invoice->getData('list', array(
+                    'conditions' => $inv_conditions,
+                    'fields' => array(
+                        'Invoice.customer_id'
+                    ),
+                    'group' => array(
+                        'Invoice.customer_id'  
+                    )
+                ));
+                
+                if(!empty($customer_id_temp)){
+                    $customer_collect_id = array_merge($customer_collect_id, $customer_id_temp);
+                }
+                
+                $this->request->data['Invoice']['due_above_30'] = 1;
+                $due_above_30 = true;
             }
 
-            $this->set(compact(
-                'customers', 'list_customer', 'data_action'
-            ));
-        } else {
-            $this->redirect($this->referer());
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
+
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                    $invoice_conditions['DATE_FORMAT(Invoice.period_from, \'%Y-%m-%d\') >='] = $dateFrom;
+                    $invoice_conditions['DATE_FORMAT(Invoice.period_to, \'%Y-%m-%d\') <='] = $dateTo;
+                }
+                $this->request->data['Invoice']['date'] = $dateStr;
+            }
         }
+
+        if(!empty($customer_collect_id)){
+            $default_conditions['Customer.id'] = $customer_collect_id;
+        }else if(empty($customer_collect_id) && ($due_30 || $due_15 || $due_above_30) ){
+            $default_conditions['Customer.id'] = false;
+        }
+
+        if(empty($data_action)){
+            $this->paginate = $this->Customer->getData('paginate', array(
+                'conditions' => $default_conditions,
+                'order' => array(
+                    'Customer.order_sort' => 'ASC',
+                ),
+            ));
+
+            $customers = $this->paginate('Customer');
+        }else{
+            $customers = $this->Customer->getData('all', array(
+                'conditions' => $default_conditions,
+                'order' => array(
+                    'Customer.order_sort' => 'ASC',
+                ),
+            ));
+        }
+
+        $list_customer = array();
+        foreach ($customers as $key => $value) {
+            $default_conditions = array(
+                'Invoice.paid' => 0,
+                'Invoice.customer_id' => $value['Customer']['id'],
+            );
+            if(!empty($invoice_conditions)){
+                $default_conditions = array_merge($default_conditions, $invoice_conditions);
+            }
+
+            $customers[$key]['piutang'] = $this->Invoice->getData('all', array(
+                'conditions' => $default_conditions,
+                'fields' => array(
+                    'SUM(Invoice.total) as total_pituang'
+                )
+            ));
+
+            $default_conditions = array(
+                'Invoice.paid' => 0,
+                'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >=' => 1,
+                'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 15,
+                'Invoice.customer_id' => $value['Customer']['id'],
+            );
+            if(!empty($invoice_conditions)){
+                $default_conditions = array_merge($default_conditions, $invoice_conditions);
+            }
+            $customers[$key]['current_rev1to15'] = $this->Invoice->getData('all', array(
+                'conditions' => $default_conditions,
+                'fields' => array(
+                    'SUM(Invoice.total) as current_rev1to15'
+                )
+            ));
+            $default_conditions = array(
+                'Invoice.paid' => 0,
+                'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >=' => 16,
+                'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) <=' => 30,
+                'Invoice.customer_id' => $value['Customer']['id'],
+            );
+            if(!empty($invoice_conditions)){
+                $default_conditions = array_merge($default_conditions, $invoice_conditions);
+            }
+            $customers[$key]['current_rev16to30'] = $this->Invoice->getData('all', array(
+                'conditions' => $default_conditions,
+                'fields' => array(
+                    'SUM(Invoice.total) as current_rev16to30'
+                )
+            ));
+
+            $default_conditions = array(
+                'Invoice.paid' => 0,
+                'DATEDIFF(DATE_FORMAT(NOW(), \'%Y-%m-%d\'), Invoice.invoice_date) >' => 30,
+                'Invoice.customer_id' => $value['Customer']['id'],
+            );
+            if(!empty($invoice_conditions)){
+                $default_conditions = array_merge($default_conditions, $invoice_conditions);
+            }
+            $customers[$key]['current_rev30'] = $this->Invoice->getData('all', array(
+                'conditions' => $default_conditions,
+                'fields' => array(
+                    'SUM(Invoice.total) as current_rev30'
+                )
+            ));
+        }
+        $this->set('active_menu', 'invoice_reports');
+
+        $list_customer = $this->Customer->getData('list', array(
+            'conditions' => array(
+                'Customer.status' => 1
+            ),
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
+
+        $this->set(compact(
+            'customers', 'list_customer', 'data_action'
+        ));
     }
 
     public function ar_period_reports( $data_action = false ) {
-        if( in_array('view_ar_period_reports', $this->allowModule) ) {
-            $this->loadModel('Revenue');
-            $this->loadModel('Invoice');
-            $fromYear = date('Y');
-            $toMonth = 12;
+        $this->loadModel('Revenue');
+        $this->loadModel('Invoice');
+        $fromYear = date('Y');
+        $toMonth = 12;
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if( !empty($refine['fromYear']) ){
-                    $fromYear = urldecode($refine['fromYear']);
-                    $this->request->data['Ttuj']['from']['year'] = $fromYear;
-                }
+            if( !empty($refine['fromYear']) ){
+                $fromYear = urldecode($refine['fromYear']);
+                $this->request->data['Ttuj']['from']['year'] = $fromYear;
             }
+        }
 
-            $conditions = array(
-                'Revenue.status'=> 1,
-                'Revenue.transaction_status <>' => 'invoiced',
-            );
-            $defaultConditionsInvoice = array(
-                'Invoice.status'=> 1,
-                'Invoice.paid'=> 0,
-            );
-            $totalAr = array();
+        $conditions = array(
+            'Revenue.status'=> 1,
+            'Revenue.transaction_status <>' => 'invoiced',
+        );
+        $defaultConditionsInvoice = array(
+            'Invoice.status'=> 1,
+            'Invoice.paid'=> 0,
+        );
+        $totalAr = array();
 
-            for ($i=1; $i <= $toMonth; $i++) {
-                $month = date('Y-m', mktime(0, 0, 0, $i, 1, $fromYear));
+        for ($i=1; $i <= $toMonth; $i++) {
+            $month = date('Y-m', mktime(0, 0, 0, $i, 1, $fromYear));
 
-                $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\')'] = $month;
-                $revenues = $this->Revenue->getData('first', array(
-                    'conditions' => $conditions,
-                    'fields' => array(
-                        'SUM(Revenue.total) total'
-                    ),
-                ), false);
-                $totalAr['AR'][$month] = !empty($revenues[0]['total'])?$revenues[0]['total']:0;
+            $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\')'] = $month;
+            $revenues = $this->Revenue->getData('first', array(
+                'conditions' => $conditions,
+                'fields' => array(
+                    'SUM(Revenue.total) total'
+                ),
+            ), false);
+            $totalAr['AR'][$month] = !empty($revenues[0]['total'])?$revenues[0]['total']:0;
 
+            $conditionsInvoice = $defaultConditionsInvoice;
+            $conditionsInvoice['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\')'] = $month;
+            $invoice = $this->Invoice->getData('first', array(
+                'conditions' => $conditionsInvoice,
+                'fields' => array(
+                    'SUM(Invoice.total) total'
+                ),
+            ), false);
+            $totalAr['Invoice'][$month] = !empty($invoice[0]['total'])?$invoice[0]['total']:0;
+
+            if( $month <= date('Y-m') ) {
                 $conditionsInvoice = $defaultConditionsInvoice;
-                $conditionsInvoice['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\')'] = $month;
+                $conditionsInvoice['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <'] = $month;
                 $invoice = $this->Invoice->getData('first', array(
                     'conditions' => $conditionsInvoice,
                     'fields' => array(
                         'SUM(Invoice.total) total'
                     ),
                 ), false);
-                $totalAr['Invoice'][$month] = !empty($invoice[0]['total'])?$invoice[0]['total']:0;
-
-                if( $month <= date('Y-m') ) {
-                    $conditionsInvoice = $defaultConditionsInvoice;
-                    $conditionsInvoice['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <'] = $month;
-                    $invoice = $this->Invoice->getData('first', array(
-                        'conditions' => $conditionsInvoice,
-                        'fields' => array(
-                            'SUM(Invoice.total) total'
-                        ),
-                    ), false);
-                    $totalAr['LastInvoice'][$month] = !empty($invoice[0]['total'])?$invoice[0]['total']:0;
-                }
+                $totalAr['LastInvoice'][$month] = !empty($invoice[0]['total'])?$invoice[0]['total']:0;
             }
-
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
-            }
-
-            $this->set('sub_module_title', sprintf(__('Laporan AR Per Period %s'), $fromYear));
-            $this->set('active_menu', 'ar_period_reports');
-
-            $this->set(compact(
-                'toMonth', 'fromYear', 'totalCnt',
-                'totalAr', 'data_action'
-            ));
         }
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
+
+        $this->set('sub_module_title', sprintf(__('Laporan AR Per Period %s'), $fromYear));
+        $this->set('active_menu', 'ar_period_reports');
+
+        $this->set(compact(
+            'toMonth', 'fromYear', 'totalCnt',
+            'totalAr', 'data_action'
+        ));
     }
 
     function invoice_payments(){
-        // if( in_array('view_invoice_payments', $this->allowModule) ) {
-            $this->loadModel('Invoice');
-            $this->loadModel('InvoicePayment');
-            $this->loadModel('Customer');
-            
-            $this->set('active_menu', 'invoice_payments');
-            $this->set('sub_module_title', __('Pembayaran Invoice'));
+        $this->loadModel('Invoice');
+        $this->loadModel('InvoicePayment');
+        $this->loadModel('Customer');
+        
+        $this->set('active_menu', 'invoice_payments');
+        $this->set('sub_module_title', __('Pembayaran Invoice'));
 
-            $conditions = array();
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        $conditions = array();
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['from'])){
-                    $from = urldecode(rawurldecode($refine['from']));
-                    $this->request->data['InvoicePayment']['date_from'] = $from;
-                    $conditions['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') >= '] = $this->MkCommon->getDate($from);
-                }
-                if(!empty($refine['to'])){
-                    $to = urldecode(rawurldecode($refine['to']));
-                    $this->request->data['InvoicePayment']['date_to'] = $to;
-                    $conditions['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') <= '] = $this->MkCommon->getDate($to);
-                }
-                if(!empty($refine['nodoc'])){
-                    $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));
-                    $this->request->data['InvoicePayment']['nodoc'] = $to;
-                    $conditions['InvoicePayment.nodoc LIKE'] = '%'.$to.'%';
-                }
+            if(!empty($refine['from'])){
+                $from = urldecode(rawurldecode($refine['from']));
+                $this->request->data['InvoicePayment']['date_from'] = $from;
+                $conditions['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') >= '] = $this->MkCommon->getDate($from);
             }
-
-            $this->paginate = $this->InvoicePayment->getData('paginate', array(
-                'conditions' => $conditions,
-                'contain' => array(
-                    'Coa'
-                ),
-                'order' => array(
-                    'InvoicePayment.created' => 'DESC',
-                    'InvoicePayment.id' => 'DESC',
-                ),
-            ), false);
-            $invoices = $this->paginate('InvoicePayment');
-
-            if(!empty($invoices)){
-                foreach ($invoices as $key => $value) {
-                    $invoices[$key] = $this->InvoicePayment->Customer->getMerge($value, $value['InvoicePayment']['customer_id']);
-                }
+            if(!empty($refine['to'])){
+                $to = urldecode(rawurldecode($refine['to']));
+                $this->request->data['InvoicePayment']['date_to'] = $to;
+                $conditions['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') <= '] = $this->MkCommon->getDate($to);
             }
-            
-            $this->set('invoices', $invoices); 
+            if(!empty($refine['nodoc'])){
+                $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));
+                $this->request->data['InvoicePayment']['nodoc'] = $to;
+                $conditions['InvoicePayment.nodoc LIKE'] = '%'.$to.'%';
+            }
+        }
 
-            $customers = $this->Invoice->Customer->getData('list', array(
-                'fields' => array(
-                    'Customer.id', 'Customer.customer_name_code'
-                ),
-            ));
-            $this->set('customers', $customers);
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->paginate = $this->InvoicePayment->getData('paginate', array(
+            'conditions' => $conditions,
+            'contain' => array(
+                'Coa'
+            ),
+            'order' => array(
+                'InvoicePayment.created' => 'DESC',
+                'InvoicePayment.id' => 'DESC',
+            ),
+        ), false);
+        $invoices = $this->paginate('InvoicePayment');
+
+        if(!empty($invoices)){
+            foreach ($invoices as $key => $value) {
+                $invoices[$key] = $this->InvoicePayment->Customer->getMerge($value, $value['InvoicePayment']['customer_id']);
+            }
+        }
+        
+        $this->set('invoices', $invoices); 
+
+        $customers = $this->Invoice->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+        $this->set('customers', $customers);
     }
 
     function invoice_payment_add(){
-        // if( in_array('insert_invoice_payments', $this->allowModule) ) {
-            $this->loadModel('Invoice');
-            $module_title = __('Tambah Pembayaran Invoice');
-            $this->set('sub_module_title', trim($module_title));
-            $this->doInvoicePayment();
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->loadModel('Invoice');
+        $module_title = __('Tambah Pembayaran Invoice');
+        $this->set('sub_module_title', trim($module_title));
+        $this->doInvoicePayment();
     }
 
     function doInvoicePayment($id = false, $data_local = false){
@@ -4704,166 +4563,164 @@ class RevenuesController extends AppController {
     }
 
     public function list_kwitansi( $data_action = false ) {
-        // if( in_array('view_list_kwitansi', $this->allowModule) ) {
-            $this->loadModel('Invoice');
-            $this->loadModel('Revenue');
-            $invoice_conditions = array();
-            $start = 1;
-            $limit = 30;
+        $this->loadModel('Invoice');
+        $this->loadModel('Revenue');
+        $invoice_conditions = array();
+        $start = 1;
+        $limit = 30;
 
-            if( !empty($this->params['named']) ){
-                $refine = $this->params['named'];
+        if( !empty($this->params['named']) ){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['date'])){
-                    $dateStr = urldecode($refine['date']);
-                    $date = explode('-', $dateStr);
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
 
-                    if( !empty($date) ) {
-                        $date[0] = urldecode($date[0]);
-                        $date[1] = urldecode($date[1]);
-                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                        $dateFrom = $this->MkCommon->getDate($date[0]);
-                        $dateTo = $this->MkCommon->getDate($date[1]);
-                        $invoice_conditions['DATE_FORMAT(Invoice.period_from, \'%Y-%m-%d\') >='] = $dateFrom;
-                        $invoice_conditions['DATE_FORMAT(Invoice.period_to, \'%Y-%m-%d\') <='] = $dateTo;
-                    }
-                    $this->request->data['Invoice']['date'] = $dateStr;
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                    $invoice_conditions['DATE_FORMAT(Invoice.period_from, \'%Y-%m-%d\') >='] = $dateFrom;
+                    $invoice_conditions['DATE_FORMAT(Invoice.period_to, \'%Y-%m-%d\') <='] = $dateTo;
                 }
+                $this->request->data['Invoice']['date'] = $dateStr;
+            }
 
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Ttuj']['customer'] = $customer;
-                    $invoice_conditions['CustomerNoType.id'] = $customer;
-                }
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Ttuj']['customer'] = $customer;
+                $invoice_conditions['CustomerNoType.id'] = $customer;
+            }
 
-                if(!empty($refine['no_invoice'])){
-                    $no_invoice = urldecode($refine['no_invoice']);
-                    $this->request->data['Invoice']['no_invoice'] = $no_invoice;
-                    $invoice_conditions['Invoice.no_invoice LIKE'] = '%'.$no_invoice.'%';
-                }
+            if(!empty($refine['no_invoice'])){
+                $no_invoice = urldecode($refine['no_invoice']);
+                $this->request->data['Invoice']['no_invoice'] = $no_invoice;
+                $invoice_conditions['Invoice.no_invoice LIKE'] = '%'.$no_invoice.'%';
+            }
 
-                if(!empty($refine['status'])){
-                    $status = urldecode($refine['status']);
-                    $this->request->data['Invoice']['status'] = $status;
+            if(!empty($refine['status'])){
+                $status = urldecode($refine['status']);
+                $this->request->data['Invoice']['status'] = $status;
 
-                    switch ($status) {
-                        case 'paid':
-                            $invoice_conditions['Invoice.complete_paid '] = 1;
-                            break;
+                switch ($status) {
+                    case 'paid':
+                        $invoice_conditions['Invoice.complete_paid '] = 1;
+                        break;
 
-                        case 'halfpaid':
-                            $invoice_conditions['Invoice.complete_paid '] = 0;
-                            $invoice_conditions['Invoice.paid '] = 1;
-                            break;
+                    case 'halfpaid':
+                        $invoice_conditions['Invoice.complete_paid '] = 0;
+                        $invoice_conditions['Invoice.paid '] = 1;
+                        break;
 
-                        case 'void':
-                            $invoice_conditions['Invoice.is_canceled '] = 1;
-                            break;
-                        
-                        default:
-                            $invoice_conditions['Invoice.complete_paid '] = 0;
-                            $invoice_conditions['Invoice.paid '] = 0;
-                            $invoice_conditions['Invoice.is_canceled '] = 0;
-                            break;
-                    }
-                }
-
-                if(!empty($refine['page'])){
-                    $start = (($refine['page']-1)*$limit)+1;
+                    case 'void':
+                        $invoice_conditions['Invoice.is_canceled '] = 1;
+                        break;
+                    
+                    default:
+                        $invoice_conditions['Invoice.complete_paid '] = 0;
+                        $invoice_conditions['Invoice.paid '] = 0;
+                        $invoice_conditions['Invoice.is_canceled '] = 0;
+                        break;
                 }
             }
 
-            $options = array(
-                'conditions' => $invoice_conditions,
-                'order' => array(
-                    'Invoice.modified' => 'DESC',
-                    'Invoice.id' => 'DESC',
-                ),
-                'contain' => array(
-                    'CustomerNoType'
-                ),
-            );
-
-            if( !empty($data_action) ) {
-                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
-            } else {
-                $options['limit'] = $limit;
+            if(!empty($refine['page'])){
+                $start = (($refine['page']-1)*$limit)+1;
             }
+        }
 
-            $this->paginate = $options;
-            $invoices = $this->paginate('Invoice');
-            $invoiceUnpaidOption = array(
-                'Invoice.is_canceled' => 0,
-                'Invoice.complete_paid' => 0,
-                'Invoice.paid' => 0,
-                'Invoice.status' => 1,
-            );
-            $invoicePaidOption = array(
-                'Invoice.is_canceled' => 0,
-                'Invoice.complete_paid' => 1,
-                'Invoice.status' => 1,
-            );
-            $invoiceHalfPaidOption = array(
-                'Invoice.is_canceled' => 0,
-                'Invoice.complete_paid' => 0,
-                'Invoice.paid' => 1,
-                'Invoice.status' => 1,
-            );
-            $invoiceVoidOption = array(
-                'Invoice.is_canceled' => 1,
-            );
-            $dataStatus['InvoiceUnpaid'] = $this->Invoice->getData('count', array(
-                'conditions' => $invoiceUnpaidOption,
-            ));
-            $dataStatus['InvoicePaid'] = $this->Invoice->getData('count', array(
-                'conditions' => $invoicePaidOption,
-            ));
-            $dataStatus['InvoiceHalfPaid'] = $this->Invoice->getData('count', array(
-                'conditions' => $invoiceHalfPaidOption,
-            ));
-            $dataStatus['InvoiceVoid'] = $this->Invoice->getData('count', array(
-                'conditions' => $invoiceVoidOption,
-            ), false);
+        $options = array(
+            'conditions' => $invoice_conditions,
+            'order' => array(
+                'Invoice.modified' => 'DESC',
+                'Invoice.id' => 'DESC',
+            ),
+            'contain' => array(
+                'CustomerNoType'
+            ),
+        );
 
-            if( !empty($invoices) ) {
-                foreach ($invoices as $key => $invoice) {
-                    $invoice = $this->Revenue->RevenueDetail->getSumUnit($invoice, $invoice['Invoice']['id']);
-                    $invoice = $this->Invoice->getMergePayment($invoice, $invoice['Invoice']['id'] );
-                    $invoices[$key] = $invoice;
-                }
+        if( !empty($data_action) ) {
+            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+        } else {
+            $options['limit'] = $limit;
+        }
+
+        $this->paginate = $options;
+        $invoices = $this->paginate('Invoice');
+        $invoiceUnpaidOption = array(
+            'Invoice.is_canceled' => 0,
+            'Invoice.complete_paid' => 0,
+            'Invoice.paid' => 0,
+            'Invoice.status' => 1,
+        );
+        $invoicePaidOption = array(
+            'Invoice.is_canceled' => 0,
+            'Invoice.complete_paid' => 1,
+            'Invoice.status' => 1,
+        );
+        $invoiceHalfPaidOption = array(
+            'Invoice.is_canceled' => 0,
+            'Invoice.complete_paid' => 0,
+            'Invoice.paid' => 1,
+            'Invoice.status' => 1,
+        );
+        $invoiceVoidOption = array(
+            'Invoice.is_canceled' => 1,
+        );
+        $dataStatus['InvoiceUnpaid'] = $this->Invoice->getData('count', array(
+            'conditions' => $invoiceUnpaidOption,
+        ));
+        $dataStatus['InvoicePaid'] = $this->Invoice->getData('count', array(
+            'conditions' => $invoicePaidOption,
+        ));
+        $dataStatus['InvoiceHalfPaid'] = $this->Invoice->getData('count', array(
+            'conditions' => $invoiceHalfPaidOption,
+        ));
+        $dataStatus['InvoiceVoid'] = $this->Invoice->getData('count', array(
+            'conditions' => $invoiceVoidOption,
+        ), false);
+
+        if( !empty($invoices) ) {
+            foreach ($invoices as $key => $invoice) {
+                $invoice = $this->Revenue->RevenueDetail->getSumUnit($invoice, $invoice['Invoice']['id']);
+                $invoice = $this->Invoice->getMergePayment($invoice, $invoice['Invoice']['id'] );
+                $invoices[$key] = $invoice;
             }
+        }
 
-            $customers = $this->Invoice->Customer->getData('list', array(
-                'fields' => array(
-                    'Customer.id', 'Customer.customer_name_code'
-                ),
-            ));
-            $this->set('customers', $customers);
-            $this->set('sub_module_title', __('List Kwitansi'));
-            $this->set('active_menu', 'list_kwitansi');
+        $customers = $this->Invoice->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+        $this->set('customers', $customers);
+        $this->set('sub_module_title', __('List Kwitansi'));
+        $this->set('active_menu', 'list_kwitansi');
 
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
-            } else {
-                $layout_js = array(
-                    'freeze',
-                );
-                $layout_css = array(
-                    'freeze',
-                );
-
-                $this->set(compact(
-                    'layout_css', 'layout_js'
-                ));
-            }
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $layout_js = array(
+                'freeze',
+            );
+            $layout_css = array(
+                'freeze',
+            );
 
             $this->set(compact(
-                'invoices', 'data_action', 'start',
-                'dataStatus'
+                'layout_css', 'layout_js'
             ));
-        // }
+        }
+
+        $this->set(compact(
+            'invoices', 'data_action', 'start',
+            'dataStatus'
+        ));
     }
 
     function invoice_delete($id){
@@ -5259,88 +5116,76 @@ class RevenuesController extends AppController {
     }
 
     public function surat_jalan( $ttuj_id = false ) {
-        // if( in_array('view_ttuj', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $this->loadModel('SuratJalan');
+        $this->loadModel('Ttuj');
+        $this->loadModel('SuratJalan');
 
-            $ttuj = $this->Ttuj->getData('first', array(
+        $ttuj = $this->Ttuj->getData('first', array(
+            'conditions' => array(
+                'Ttuj.id' => $ttuj_id
+            )
+        ));
+
+        if( !empty($ttuj) ) {
+            $ttuj = $this->Ttuj->getSumUnit( $ttuj, $ttuj_id );
+            $qtySJNow = !empty($ttuj['QtySJ'])?$ttuj['QtySJ']:0;
+            $qtyTipeMotor = !empty($ttuj['Qty'])?$ttuj['Qty']:0;
+            $flagAdd = false;
+            $this->set('active_menu', 'surat_jalan');
+            $this->set('sub_module_title', __('Surat Jalan'));
+
+            if( $qtySJNow < $qtyTipeMotor ) {
+                $flagAdd = true;
+            }
+
+            $suratJalans = $this->SuratJalan->getData('all', array(
                 'conditions' => array(
-                    'Ttuj.id' => $ttuj_id
-                )
+                    'SuratJalan.status' => 1,
+                    'SuratJalan.ttuj_id' => $ttuj_id,
+                ),
             ));
 
-            if( !empty($ttuj) ) {
-                $ttuj = $this->Ttuj->getSumUnit( $ttuj, $ttuj_id );
-                $qtySJNow = !empty($ttuj['QtySJ'])?$ttuj['QtySJ']:0;
-                $qtyTipeMotor = !empty($ttuj['Qty'])?$ttuj['Qty']:0;
-                $flagAdd = false;
-                $this->set('active_menu', 'surat_jalan');
-                $this->set('sub_module_title', __('Surat Jalan'));
-
-                if( $qtySJNow < $qtyTipeMotor ) {
-                    $flagAdd = true;
-                }
-
-                $suratJalans = $this->SuratJalan->getData('all', array(
-                    'conditions' => array(
-                        'SuratJalan.status' => 1,
-                        'SuratJalan.ttuj_id' => $ttuj_id,
-                    ),
-                ));
-
-                $this->set('active_menu', 'ttuj');
-                $this->set('suratJalans', $suratJalans);
-                $this->set('ttuj_id', $ttuj_id);
-                $this->set('ttuj', $ttuj);
-                $this->set('flagAdd', $flagAdd);
-            } else {
-                $this->redirect($this->referer());
-            }
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+            $this->set('active_menu', 'ttuj');
+            $this->set('suratJalans', $suratJalans);
+            $this->set('ttuj_id', $ttuj_id);
+            $this->set('ttuj', $ttuj);
+            $this->set('flagAdd', $flagAdd);
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function surat_jalan_add( $id = false ){
-        // if( in_array('insert_surat_jalan', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $ttuj = $this->Ttuj->getData('first', array(
-                'conditions' => array(
-                    'Ttuj.id' => $id
-                )
-            ));
+        $this->loadModel('Ttuj');
+        $ttuj = $this->Ttuj->getData('first', array(
+            'conditions' => array(
+                'Ttuj.id' => $id
+            )
+        ));
 
-            if( !empty($ttuj) ) {
-                $ttuj = $this->Ttuj->getSumUnit( $ttuj, $id );
-                $this->set('sub_module_title', __('Terima Surat Jalan'));
-                $this->doSuratJalan($id, $ttuj);
-            } else {
-                $this->redirect($this->referer());
-            }
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        if( !empty($ttuj) ) {
+            $ttuj = $this->Ttuj->getSumUnit( $ttuj, $id );
+            $this->set('sub_module_title', __('Terima Surat Jalan'));
+            $this->doSuratJalan($id, $ttuj);
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     public function surat_jalan_edit($id = false) {
-        // if( in_array('update_surat_jalan', $this->allowModule) ) {
-            $this->loadModel('SuratJalan');
-            $suratJalan = $this->SuratJalan->getData('first', array(
-                'conditions' => array(
-                    'SuratJalan.id' => $id,
-                )
-            ));
+        $this->loadModel('SuratJalan');
+        $suratJalan = $this->SuratJalan->getData('first', array(
+            'conditions' => array(
+                'SuratJalan.id' => $id,
+            )
+        ));
 
-            if( !empty($suratJalan['Ttuj']) ) {
-                $suratJalan = $this->SuratJalan->Ttuj->getSumUnit( $suratJalan, $suratJalan['SuratJalan']['ttuj_id'], $suratJalan['SuratJalan']['id'] );
-                $this->set('sub_module_title', __('Terima Surat Jalan'));
-                $this->doSuratJalan($suratJalan['Ttuj']['id'], $suratJalan);
-            } else {
-                $this->redirect($this->referer());
-            }
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        if( !empty($suratJalan['Ttuj']) ) {
+            $suratJalan = $this->SuratJalan->Ttuj->getSumUnit( $suratJalan, $suratJalan['SuratJalan']['ttuj_id'], $suratJalan['SuratJalan']['id'] );
+            $this->set('sub_module_title', __('Terima Surat Jalan'));
+            $this->doSuratJalan($suratJalan['Ttuj']['id'], $suratJalan);
+        } else {
+            $this->redirect($this->referer());
+        }
     }
 
     function doSuratJalan( $ttuj_id = false, $ttuj = false ){
@@ -5407,456 +5252,383 @@ class RevenuesController extends AppController {
     }
 
     function surat_jalan_delete( $id = false ){
-        // if( in_array('delete_cities', $this->allowModule) ) {
-            $this->loadModel('SuratJalan');
-            $this->loadModel('Ttuj');
-            $locale = $this->SuratJalan->getData('first', array(
-                'conditions' => array(
-                    'SuratJalan.id' => $id
-                )
-            ));
+        $this->loadModel('SuratJalan');
+        $this->loadModel('Ttuj');
+        $locale = $this->SuratJalan->getData('first', array(
+            'conditions' => array(
+                'SuratJalan.id' => $id
+            )
+        ));
 
-            if( !empty($locale) && !empty($locale['Ttuj']['id']) ){
-                $this->SuratJalan->id = $id;
-                $this->SuratJalan->set('status', 0);
+        if( !empty($locale) && !empty($locale['Ttuj']['id']) ){
+            $this->SuratJalan->id = $id;
+            $this->SuratJalan->set('status', 0);
 
-                if($this->SuratJalan->save()){
-                    $this->Ttuj->id = $locale['Ttuj']['id'];
-                    $this->Ttuj->set('is_sj_completed', 0);
-                    $this->Ttuj->save();
+            if($this->SuratJalan->save()){
+                $this->Ttuj->id = $locale['Ttuj']['id'];
+                $this->Ttuj->set('is_sj_completed', 0);
+                $this->Ttuj->save();
 
-                    $this->MkCommon->setCustomFlash(__('Sukses membatalkan SJ.'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses membatalkan SJ ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal membatalkan SJ.'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal membatalkan SJ ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
-                }
+                $this->MkCommon->setCustomFlash(__('Sukses membatalkan SJ.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses membatalkan SJ ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
             }else{
-                $this->MkCommon->setCustomFlash(__('SJ tidak ditemukan.'), 'error');
+                $this->MkCommon->setCustomFlash(__('Gagal membatalkan SJ.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal membatalkan SJ ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
             }
+        }else{
+            $this->MkCommon->setCustomFlash(__('SJ tidak ditemukan.'), 'error');
+        }
 
-            $this->redirect($this->referer());
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->redirect($this->referer());
     }
 
     public function surat_jalan_outstanding( $driver_id = false, $pengganti = false ) {
-        // if( in_array('delete_cities', $this->allowModule) ) {
-            $this->loadModel('Ttuj');
-            $this->loadModel('Revenue');
-            $this->loadModel('Driver');
-            $driver = $this->Driver->getData('first', array(
+        $this->loadModel('Ttuj');
+        $this->loadModel('Revenue');
+        $this->loadModel('Driver');
+        $driver = $this->Driver->getData('first', array(
+            'conditions' => array(
+                'Driver.id' => $driver_id,
+            )
+        ), false);
+
+        if( !empty($driver) ) {
+            $ttujs = $this->Ttuj->getData('all', array(
                 'conditions' => array(
-                    'Driver.id' => $driver_id,
-                )
-            ), false);
-
-            if( !empty($driver) ) {
-                $ttujs = $this->Ttuj->getData('all', array(
-                    'conditions' => array(
-                        'OR' => array(
-                            'Ttuj.driver_id' => $driver_id,
-                            'Ttuj.driver_penganti_id' => $driver_id,
-                        ),
-                        'Ttuj.is_sj_completed' => 0,
-                        'Ttuj.status' => 1,
+                    'OR' => array(
+                        'Ttuj.driver_id' => $driver_id,
+                        'Ttuj.driver_penganti_id' => $driver_id,
                     ),
-                    'order' => array(
-                        'Ttuj.created' => 'DESC',
-                        'Ttuj.id' => 'DESC',
-                    ),
-                ), false);
-
-                if( !empty($ttujs) ) {
-                    foreach ($ttujs as $key => $ttuj) {
-                        $ttuj['SjKembali'] = $this->Ttuj->SuratJalan->getSJKembali( $ttuj['Ttuj']['id'] );
-                        $ttuj['TotalMuatan'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj['Ttuj']['id'] );
-                        $ttujs[$key] = $ttuj;
-                    }
-
-                    $this->set('sub_module_title', __('Surat Jalan Belum Kembali'));
-                    $this->set('active_menu', 'ttuj');
-                    $this->set('ttujs', $ttujs);
-                    $this->set('driver', $driver);
-                } else {
-                    $this->MkCommon->setCustomFlash(__('SJ tidak ditemukan.'), 'error');
-                    $this->redirect($this->referer());
-                }
-            } else {
-                $this->MkCommon->setCustomFlash(__('Supir tidak ditemukan.'), 'error');
-                $this->redirect($this->referer());
-            }
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
-    }
-
-    function report_invoice_payments(){
-        // if( in_array('view_invoice_payments', $this->allowModule) ) {
-            // $this->loadModel('Invoice');
-            // $this->loadModel('InvoicePayment');
-            // $this->loadModel('Customer');
-            
-            // $this->set('active_menu', 'invoice_payments');
-            // $this->set('sub_module_title', __('Pembayaran Invoice'));
-
-            // $conditions = array();
-            // if(!empty($this->params['named'])){
-            //     $refine = $this->params['named'];
-
-            //     if(!empty($refine['from'])){
-            //         $from = urldecode(rawurldecode($refine['from']));
-            //         $this->request->data['InvoicePayment']['date_from'] = $from;
-            //         $conditions['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') >= '] = $this->MkCommon->getDate($from);
-            //     }
-            //     if(!empty($refine['to'])){
-            //         $to = urldecode(rawurldecode($refine['to']));
-            //         $this->request->data['InvoicePayment']['date_to'] = $to;
-            //         $conditions['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') <= '] = $this->MkCommon->getDate($to);
-            //     }
-            //     if(!empty($refine['nodoc'])){
-            //         $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));
-            //         $this->request->data['InvoicePayment']['nodoc'] = $to;
-            //         $conditions['InvoicePayment.nodoc LIKE'] = '%'.$to.'%';
-            //     }
-            // }
-
-            // $this->paginate = $this->InvoicePayment->getData('paginate', array(
-            //     'conditions' => $conditions,
-            //     'contain' => array(
-            //         'Bank'
-            //     ),
-            // ), false);
-            // $invoices = $this->paginate('InvoicePayment');
-
-            // if(!empty($invoices)){
-            //     foreach ($invoices as $key => $value) {
-            //         $invoices[$key] = $this->InvoicePayment->Customer->getMerge($value, $value['InvoicePayment']['customer_id']);
-            //     }
-            // }
-            
-            // $this->set('invoices', $invoices); 
-
-            // $customers = $this->Invoice->Customer->getData('list', array(
-            //     'fields' => array(
-            //         'Customer.id', 'Customer.customer_name_code'
-            //     )
-            // ));
-            // $this->set('customers', $customers);
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
-    }
-
-    public function report_revenue_customers( $data_action = false ) {
-        // if( in_array('view_achievement_report', $this->allowModule) ) {
-            $this->loadModel('Customer');
-            $this->loadModel('Revenue');
-            $fromMonth = '01';
-            $fromYear = date('Y');
-            $toMonth = date('m');
-            $toYear = date('Y');
-            $conditions = array(
-                'Revenue.status'=> 1,
-            );
-            $conditionsCustomer = array(
-                'Customer.status'=> 1,
-            );
-
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
-
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Ttuj']['customer'] = $customer;
-                    $conditionsCustomer['Customer.id'] = $customer;
-                }
-
-                if( !empty($refine['fromMonth']) && !empty($refine['fromYear']) ){
-                    $fromMonth = urldecode($refine['fromMonth']);
-                    $fromYear = urldecode($refine['fromYear']);
-                }
-
-                if( !empty($refine['toMonth']) && !empty($refine['toYear']) ){
-                    $toMonth = urldecode($refine['toMonth']);
-                    $toYear = urldecode($refine['toYear']);
-                }
-            }
-
-            $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') >='] = date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear));
-            $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') <='] = date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear));
-
-
-            $customerList = $this->Customer->getData('list', array(
-                'fields' => array(
-                    'Customer.id', 'Customer.customer_name_code'
-                )
-            ));
-
-            $options = $this->Customer->getData('paginate', array(
-                'conditions' => $conditionsCustomer,
-            ));
-
-            if( !empty($data_action) ) {
-                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
-            } else {
-                $options['limit'] = 20;
-            }
-
-            $this->paginate = $options;
-            $customers = $this->paginate('Customer');
-            $avgYear = $fromYear - 1;
-
-            if( !empty($customers) ) {
-                foreach ($customers as $key => $customer) {
-                    $conditions['Revenue.customer_id'] = $customer['Customer']['id'];
-                    $revenues = $this->Revenue->getData('all', array(
-                        'conditions' => $conditions,
-                        'contain' => array(
-                            'CustomerNoType',
-                        ),
-                        'order' => array(
-                            'CustomerNoType.name' => 'ASC', 
-                        ),
-                        'group' => array(
-                            'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\')'
-                        ),
-                        'fields'=> array(
-                            'Revenue.customer_id', 
-                            'SUM(Revenue.total) as total',
-                            'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') as dt',
-                        ),
-                    ), false);
-
-                    $conditionsYear = array(
-                        'DATE_FORMAT(Revenue.date_revenue, \'%Y\')' => $avgYear,
-                        'Revenue.customer_id' => $customer['Customer']['id'],
-                        'Revenue.status' => 1,
-                    );
-                    $revenueYear = $this->Revenue->getData('first', array(
-                        'conditions' => $conditionsYear,
-                        'group' => array(
-                            'DATE_FORMAT(Revenue.date_revenue, \'%Y\')'
-                        ),
-                        'fields'=> array(
-                            'Revenue.customer_id', 
-                            'SUM(Revenue.total) as total',
-                        ),
-                    ), false);
-                    $customer['RevenueYear'] = !empty($revenueYear[0]['total'])?$revenueYear[0]['total']/12:0;
-
-                    if( !empty($revenues) ) {
-                        foreach ($revenues as $keyRevenue => $revenue) {
-                            $customer['Customer'][$revenue[0]['dt']]['total_revenue'] = !empty($revenue[0]['total'])?$revenue[0]['total']:0;
-                        }
-                    }
-                    $customers[$key] = $customer;
-                }
-            }
-
-            $module_title = __('Laporan Pendapatan Per Customer Per Bulan');
-            $period_text = sprintf('Periode %s %s - %s %s', date('F', mktime(0, 0, 0, $fromMonth, 10)), $fromYear, date('F', mktime(0, 0, 0, $toMonth, 10)), $toYear);
-            $this->set('sub_module_title', $module_title);
-            $this->set('period_text', $period_text);
-            $this->set('active_menu', 'report_revenue_customers');
-            $totalCnt = $toMonth - $fromMonth;
-            $totalYear = $toYear - $fromYear;
-            $this->request->data['Ttuj']['from']['month'] = $fromMonth;
-            $this->request->data['Ttuj']['from']['year'] = $fromYear;
-            $this->request->data['Ttuj']['to']['month'] = $toMonth;
-            $this->request->data['Ttuj']['to']['year'] = $toYear;
-
-            if( !empty($totalYear) && $totalYear > 0 ) {
-                $totalYear = 12 * $totalYear;
-                $totalCnt += $totalYear;
-            }
-
-            $this->set(compact(
-                'data_action', 'totalCnt',
-                'customerList', 'fromMonth', 'fromYear',
-                'toYear', 'toMonth', 'customers',
-                'avgYear'
-            ));
-
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
-            } else {
-                $layout_js = array(
-                    'freeze',
-                );
-                $layout_css = array(
-                    'freeze',
-                );
-
-                $this->set(compact(
-                    'layout_css', 'layout_js'
-                ));
-            }
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
-    }
-
-    public function report_monitoring_sj_revenue( $data_action = false ) {
-        // if( in_array('view_achievement_report', $this->allowModule) ) {
-            $this->loadModel('Customer');
-            $this->loadModel('Revenue');
-            $this->loadModel('Ttuj');
-            $dateFrom = date('Y-m-01');
-            $dateTo = date('Y-m-t');
-            $options = array(
-                'conditions' => array(
-                    'Ttuj.is_revenue' => 1,
+                    'Ttuj.is_sj_completed' => 0,
                     'Ttuj.status' => 1,
-                    'Ttuj.is_draft' => 0,
-                    'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >=' => $dateFrom,
-                    'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <=' => $dateTo,
                 ),
-                'contain' => false,
-                'order'=> array(
+                'order' => array(
                     'Ttuj.created' => 'DESC',
                     'Ttuj.id' => 'DESC',
                 ),
-                'group' => array(
-                    'Ttuj.id'
-                ),
-            );
-            $this->request->data['Ttuj']['date'] = sprintf('%s - %s', date('d/m/Y',strtotime($dateFrom)), date('d/m/Y',strtotime($dateTo)));
-
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
-
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Ttuj']['customer'] = $customer;
-                    $options['conditions']['Ttuj.customer_id '] = $customer;
-                }
-
-                if(!empty($refine['date'])){
-                    $dateStr = urldecode($refine['date']);
-                    $date = explode('-', $dateStr);
-
-                    if( !empty($date) ) {
-                        $date[0] = urldecode($date[0]);
-                        $date[1] = urldecode($date[1]);
-                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                        $dateFrom = $this->MkCommon->getDate($date[0]);
-                        $dateTo = $this->MkCommon->getDate($date[1]);
-                        $options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $dateFrom;
-                        $options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $dateTo;
-                    }
-                    $this->request->data['Ttuj']['date'] = $dateStr;
-                }
-
-                if(!empty($refine['status'])){
-                    $status = urldecode($refine['status']);
-                    $this->request->data['Ttuj']['status'] = $status;
-                    $options['contain'][] = 'SuratJalan';
-
-                    $this->Ttuj->bindModel(array(
-                        'hasOne' => array(
-                            'SuratJalan' => array(
-                                'className' => 'SuratJalan',
-                                'foreignKey' => 'ttuj_id',
-                                'conditions' => array(
-                                    'SuratJalan.status' => 1,
-                                ),
-                            )
-                        )
-                    ), false);
-
-                    switch ($status) {
-                        case 'pending':
-                            $options['conditions']['Ttuj.is_sj_completed'] = 0;
-                            $options['conditions']['SuratJalan.id'] = NULL;
-                            break;
-
-                        case 'hal_receipt':
-                            $options['conditions']['Ttuj.is_sj_completed'] = 0;
-                            $options['conditions']['SuratJalan.id <>'] = NULL;
-                            break;
-
-                        case 'receipt':
-                            $options['conditions']['Ttuj.is_sj_completed'] = 1;
-                            break;
-
-                        case 'receipt_unpaid':
-                            $options['conditions']['Ttuj.is_sj_completed'] = 1;
-                            $revenueConditions = !empty($options['conditions'])?$options['conditions']:false;
-                            $revenueConditions['Revenue.transaction_status <>'] = 'invoiced';
-                            $revenues = $this->Revenue->getData('list', array(
-                                'conditions' => $revenueConditions,
-                                'contain' => array(
-                                    'Ttuj'
-                                ),
-                                'fields' => array(
-                                    'Revenue.id', 'Revenue.ttuj_id'
-                                ),
-                            ), false);
-
-                            $options['conditions']['Ttuj.id'] = $revenues;
-                            break;
-                    }
-                }
-            }
-
-            if( !empty($data_action) ) {
-                $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
-            } else {
-                $options['limit'] = 20;
-            }
-
-            $this->paginate = $options;
-            $ttujs = $this->paginate('Ttuj');
-            // $ttujs = $this->Ttuj->find('all', $options);
+            ), false);
 
             if( !empty($ttujs) ) {
                 foreach ($ttujs as $key => $ttuj) {
-                    $ttuj = $this->Ttuj->getSumUnit($ttuj, $ttuj['Ttuj']['id'], false, 'tgl_surat_jalan');
-                    $ttuj = $this->Revenue->getPaid($ttuj, $ttuj['Ttuj']['id'], 'unit');
-                    $ttuj = $this->Revenue->getPaid($ttuj, $ttuj['Ttuj']['id'], 'invoiced');
-                    $ttuj = $this->Revenue->RevenueDetail->getToCity($ttuj, $ttuj['Ttuj']['id']);
+                    $ttuj['SjKembali'] = $this->Ttuj->SuratJalan->getSJKembali( $ttuj['Ttuj']['id'] );
+                    $ttuj['TotalMuatan'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj['Ttuj']['id'] );
                     $ttujs[$key] = $ttuj;
                 }
+
+                $this->set('sub_module_title', __('Surat Jalan Belum Kembali'));
+                $this->set('active_menu', 'ttuj');
+                $this->set('ttujs', $ttujs);
+                $this->set('driver', $driver);
+            } else {
+                $this->MkCommon->setCustomFlash(__('SJ tidak ditemukan.'), 'error');
+                $this->redirect($this->referer());
+            }
+        } else {
+            $this->MkCommon->setCustomFlash(__('Supir tidak ditemukan.'), 'error');
+            $this->redirect($this->referer());
+        }
+    }
+
+    public function report_revenue_customers( $data_action = false ) {
+        $this->loadModel('Customer');
+        $this->loadModel('Revenue');
+        $fromMonth = '01';
+        $fromYear = date('Y');
+        $toMonth = date('m');
+        $toYear = date('Y');
+        $conditions = array(
+            'Revenue.status'=> 1,
+        );
+        $conditionsCustomer = array(
+            'Customer.status'=> 1,
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Ttuj']['customer'] = $customer;
+                $conditionsCustomer['Customer.id'] = $customer;
             }
 
-            $customerList = $this->Customer->getData('list', array(
-                'fields' => array(
-                    'Customer.id', 'Customer.customer_name_code'
-                )
-            ));
+            if( !empty($refine['fromMonth']) && !empty($refine['fromYear']) ){
+                $fromMonth = urldecode($refine['fromMonth']);
+                $fromYear = urldecode($refine['fromYear']);
+            }
 
-            $this->set('sub_module_title', __('Laporan Monitoring Surat Jalan & Revenue'));
-            $this->set('active_menu', 'report_monitoring_sj_revenue');
-            $period_text = sprintf('Periode %s - %s', date('d M Y',strtotime($dateFrom)), date('d M Y',strtotime($dateTo)));
-            $this->set('period_text', $period_text);
+            if( !empty($refine['toMonth']) && !empty($refine['toYear']) ){
+                $toMonth = urldecode($refine['toMonth']);
+                $toYear = urldecode($refine['toYear']);
+            }
+        }
+
+        $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') >='] = date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear));
+        $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') <='] = date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear));
+
+
+        $customerList = $this->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            )
+        ));
+
+        $options = $this->Customer->getData('paginate', array(
+            'conditions' => $conditionsCustomer,
+        ));
+
+        if( !empty($data_action) ) {
+            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+        } else {
+            $options['limit'] = 20;
+        }
+
+        $this->paginate = $options;
+        $customers = $this->paginate('Customer');
+        $avgYear = $fromYear - 1;
+
+        if( !empty($customers) ) {
+            foreach ($customers as $key => $customer) {
+                $conditions['Revenue.customer_id'] = $customer['Customer']['id'];
+                $revenues = $this->Revenue->getData('all', array(
+                    'conditions' => $conditions,
+                    'contain' => array(
+                        'CustomerNoType',
+                    ),
+                    'order' => array(
+                        'CustomerNoType.name' => 'ASC', 
+                    ),
+                    'group' => array(
+                        'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\')'
+                    ),
+                    'fields'=> array(
+                        'Revenue.customer_id', 
+                        'SUM(Revenue.total) as total',
+                        'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') as dt',
+                    ),
+                ), false);
+
+                $conditionsYear = array(
+                    'DATE_FORMAT(Revenue.date_revenue, \'%Y\')' => $avgYear,
+                    'Revenue.customer_id' => $customer['Customer']['id'],
+                    'Revenue.status' => 1,
+                );
+                $revenueYear = $this->Revenue->getData('first', array(
+                    'conditions' => $conditionsYear,
+                    'group' => array(
+                        'DATE_FORMAT(Revenue.date_revenue, \'%Y\')'
+                    ),
+                    'fields'=> array(
+                        'Revenue.customer_id', 
+                        'SUM(Revenue.total) as total',
+                    ),
+                ), false);
+                $customer['RevenueYear'] = !empty($revenueYear[0]['total'])?$revenueYear[0]['total']/12:0;
+
+                if( !empty($revenues) ) {
+                    foreach ($revenues as $keyRevenue => $revenue) {
+                        $customer['Customer'][$revenue[0]['dt']]['total_revenue'] = !empty($revenue[0]['total'])?$revenue[0]['total']:0;
+                    }
+                }
+                $customers[$key] = $customer;
+            }
+        }
+
+        $module_title = __('Laporan Pendapatan Per Customer Per Bulan');
+        $period_text = sprintf('Periode %s %s - %s %s', date('F', mktime(0, 0, 0, $fromMonth, 10)), $fromYear, date('F', mktime(0, 0, 0, $toMonth, 10)), $toYear);
+        $this->set('sub_module_title', $module_title);
+        $this->set('period_text', $period_text);
+        $this->set('active_menu', 'report_revenue_customers');
+        $totalCnt = $toMonth - $fromMonth;
+        $totalYear = $toYear - $fromYear;
+        $this->request->data['Ttuj']['from']['month'] = $fromMonth;
+        $this->request->data['Ttuj']['from']['year'] = $fromYear;
+        $this->request->data['Ttuj']['to']['month'] = $toMonth;
+        $this->request->data['Ttuj']['to']['year'] = $toYear;
+
+        if( !empty($totalYear) && $totalYear > 0 ) {
+            $totalYear = 12 * $totalYear;
+            $totalCnt += $totalYear;
+        }
+
+        $this->set(compact(
+            'data_action', 'totalCnt',
+            'customerList', 'fromMonth', 'fromYear',
+            'toYear', 'toMonth', 'customers',
+            'avgYear'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $layout_js = array(
+                'freeze',
+            );
+            $layout_css = array(
+                'freeze',
+            );
 
             $this->set(compact(
-                'ttujs', 'data_action', 'customerList'
+                'layout_css', 'layout_js'
             ));
+        }
+    }
 
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
-            } else {
-                $layout_js = array(
-                    'freeze',
-                );
-                $layout_css = array(
-                    'freeze',
-                );
+    public function report_monitoring_sj_revenue( $data_action = false ) {
+        $this->loadModel('Customer');
+        $this->loadModel('Revenue');
+        $this->loadModel('Ttuj');
+        $dateFrom = date('Y-m-01');
+        $dateTo = date('Y-m-t');
+        $options = array(
+            'conditions' => array(
+                'Ttuj.is_revenue' => 1,
+                'Ttuj.status' => 1,
+                'Ttuj.is_draft' => 0,
+                'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >=' => $dateFrom,
+                'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <=' => $dateTo,
+            ),
+            'contain' => false,
+            'order'=> array(
+                'Ttuj.created' => 'DESC',
+                'Ttuj.id' => 'DESC',
+            ),
+            'group' => array(
+                'Ttuj.id'
+            ),
+        );
+        $this->request->data['Ttuj']['date'] = sprintf('%s - %s', date('d/m/Y',strtotime($dateFrom)), date('d/m/Y',strtotime($dateTo)));
 
-                $this->set(compact(
-                    'layout_css', 'layout_js'
-                ));
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Ttuj']['customer'] = $customer;
+                $options['conditions']['Ttuj.customer_id '] = $customer;
             }
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
+
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                    $options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $dateFrom;
+                    $options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $dateTo;
+                }
+                $this->request->data['Ttuj']['date'] = $dateStr;
+            }
+
+            if(!empty($refine['status'])){
+                $status = urldecode($refine['status']);
+                $this->request->data['Ttuj']['status'] = $status;
+                $options['contain'][] = 'SuratJalan';
+
+                $this->Ttuj->bindModel(array(
+                    'hasOne' => array(
+                        'SuratJalan' => array(
+                            'className' => 'SuratJalan',
+                            'foreignKey' => 'ttuj_id',
+                            'conditions' => array(
+                                'SuratJalan.status' => 1,
+                            ),
+                        )
+                    )
+                ), false);
+
+                switch ($status) {
+                    case 'pending':
+                        $options['conditions']['Ttuj.is_sj_completed'] = 0;
+                        $options['conditions']['SuratJalan.id'] = NULL;
+                        break;
+
+                    case 'hal_receipt':
+                        $options['conditions']['Ttuj.is_sj_completed'] = 0;
+                        $options['conditions']['SuratJalan.id <>'] = NULL;
+                        break;
+
+                    case 'receipt':
+                        $options['conditions']['Ttuj.is_sj_completed'] = 1;
+                        break;
+
+                    case 'receipt_unpaid':
+                        $options['conditions']['Ttuj.is_sj_completed'] = 1;
+                        $revenueConditions = !empty($options['conditions'])?$options['conditions']:false;
+                        $revenueConditions['Revenue.transaction_status <>'] = 'invoiced';
+                        $revenues = $this->Revenue->getData('list', array(
+                            'conditions' => $revenueConditions,
+                            'contain' => array(
+                                'Ttuj'
+                            ),
+                            'fields' => array(
+                                'Revenue.id', 'Revenue.ttuj_id'
+                            ),
+                        ), false);
+
+                        $options['conditions']['Ttuj.id'] = $revenues;
+                        break;
+                }
+            }
+        }
+
+        if( !empty($data_action) ) {
+            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+        } else {
+            $options['limit'] = 20;
+        }
+
+        $this->paginate = $options;
+        $ttujs = $this->paginate('Ttuj');
+        // $ttujs = $this->Ttuj->find('all', $options);
+
+        if( !empty($ttujs) ) {
+            foreach ($ttujs as $key => $ttuj) {
+                $ttuj = $this->Ttuj->getSumUnit($ttuj, $ttuj['Ttuj']['id'], false, 'tgl_surat_jalan');
+                $ttuj = $this->Revenue->getPaid($ttuj, $ttuj['Ttuj']['id'], 'unit');
+                $ttuj = $this->Revenue->getPaid($ttuj, $ttuj['Ttuj']['id'], 'invoiced');
+                $ttuj = $this->Revenue->RevenueDetail->getToCity($ttuj, $ttuj['Ttuj']['id']);
+                $ttujs[$key] = $ttuj;
+            }
+        }
+
+        $customerList = $this->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            )
+        ));
+
+        $this->set('sub_module_title', __('Laporan Monitoring Surat Jalan & Revenue'));
+        $this->set('active_menu', 'report_monitoring_sj_revenue');
+        $period_text = sprintf('Periode %s - %s', date('d M Y',strtotime($dateFrom)), date('d M Y',strtotime($dateTo)));
+        $this->set('period_text', $period_text);
+
+        $this->set(compact(
+            'ttujs', 'data_action', 'customerList'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $layout_js = array(
+                'freeze',
+            );
+            $layout_css = array(
+                'freeze',
+            );
+
+            $this->set(compact(
+                'layout_css', 'layout_js'
+            ));
+        }
     }
 
 
@@ -5937,301 +5709,286 @@ class RevenuesController extends AppController {
     }
 
     public function report_revenue_monthly( $data_action = false ) {
-        // if( in_array('view_achievement_report', $this->allowModule) ) {
-            $this->loadModel('Customer');
-            $this->loadModel('Invoice');
-            $this->loadModel('InvoicePayment');
-            $fromMonthYear = date('Y-m');
-            $toMonthYear = date('Y-m');
-            $fromMonth = date('m');
-            $toMonth = date('m');
-            $fromYear = date('Y');
-            $conditionsCustomer = array(
-                'Customer.status'=> 1,
-            );
+        $this->loadModel('Customer');
+        $this->loadModel('Invoice');
+        $this->loadModel('InvoicePayment');
+        $fromMonthYear = date('Y-m');
+        $toMonthYear = date('Y-m');
+        $fromMonth = date('m');
+        $toMonth = date('m');
+        $fromYear = date('Y');
+        $conditionsCustomer = array(
+            'Customer.status'=> 1,
+        );
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-                if(!empty($refine['customer'])){
-                    $customer = urldecode($refine['customer']);
-                    $this->request->data['Ttuj']['customer'] = $customer;
-                    $conditionsCustomer['Customer.id'] = $customer;
-                }
-
-                if( !empty($refine['fromMonth']) ){
-                    $fromMonth = urldecode($refine['fromMonth']);
-                }
-
-                if( !empty($refine['toMonth']) ){
-                    $toMonth = urldecode($refine['toMonth']);
-                }
-
-                if( !empty($refine['fromYear']) ){
-                    $fromYear = urldecode($refine['fromYear']);
-                }
-
-                if( !empty($fromYear) ) {
-                    if( !empty($fromMonth) ) {
-                        $fromMonthYear = sprintf('%s-%s', $fromYear, $fromMonth);
-                    }
-                    if( !empty($toMonth) ) {
-                        $toMonthYear = sprintf('%s-%s', $fromYear, $toMonth);
-                    }
-                }
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Ttuj']['customer'] = $customer;
+                $conditionsCustomer['Customer.id'] = $customer;
             }
 
-            $lastMonth = date('Y-m', strtotime($fromMonthYear." -1 month"));
-            $this->request->data['Ttuj']['from']['month'] = $fromMonth;
-            $this->request->data['Ttuj']['to']['month'] = $toMonth;
-            $this->request->data['Ttuj']['from']['year'] = $fromYear;
-
-            $conditionsInvoice = array(
-                'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') >=' => $fromMonthYear,
-                'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => $toMonthYear,
-            );
-            $conditionsInvoicePayment = array(
-                'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') >=' => $fromMonthYear,
-                'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $toMonthYear,
-                'InvoicePayment.is_canceled' => 0,
-                'InvoicePayment.status' => 1,
-            );
-            $customerList = $this->Customer->getData('list', array(
-                'fields' => array(
-                    'Customer.id', 'Customer.customer_name_code'
-                )
-            ));
-
-            $options = $this->Customer->getData('paginate', array(
-                'conditions' => $conditionsCustomer,
-            ));
-            $this->paginate = $options;
-            $customers = $this->Customer->getData('all', $options, false);
-
-            if( !empty($customers) ) {
-                foreach ($customers as $key => $customer) {
-                    $conditionsInvoice['Invoice.customer_id'] = $customer['Customer']['id'];
-
-                    $conditionsInvLastMonth = array(
-                        'Invoice.customer_id' => $customer['Customer']['id'],
-                        'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => $lastMonth,
-                        'Invoice.paid' => 0,
-                        'Invoice.complete_paid' => 0,
-                    );
-                    $customer['InvLastMonth'] = $this->Invoice->getData('first', array(
-                        'conditions' => $conditionsInvLastMonth,
-                        'fields'=> array(
-                            'Invoice.customer_id', 
-                            'SUM(Invoice.total) as total',
-                        ),
-                        'group' => array(
-                            'Invoice.customer_id'
-                        ),
-                    ), false);
-
-                    $conditionsInvVoidLastMonth = array(
-                        'Invoice.customer_id' => $customer['Customer']['id'],
-                        'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') <=' => $lastMonth,
-                        'Invoice.is_canceled' => 1,
-                    );
-                    $customer['InvVoidLastMonth'] = $this->Invoice->getData('first', array(
-                        'conditions' => $conditionsInvVoidLastMonth,
-                        'fields'=> array(
-                            'Invoice.customer_id', 
-                            'SUM(Invoice.total) as total',
-                        ),
-                        'group' => array(
-                            'Invoice.customer_id'
-                        ),
-                    ), false);
-
-                    $conditionsInvPaidLastMonth = array(
-                        'InvoicePayment.customer_id' => $customer['Customer']['id'],
-                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $lastMonth,
-                        'InvoicePayment.is_canceled' => 0,
-                        'InvoicePayment.status' => 1,
-                    );
-                    $customer['InvPaidLastMonth'] = $this->InvoicePayment->getData('first', array(
-                        'conditions' => $conditionsInvPaidLastMonth,
-                        'fields'=> array(
-                            'InvoicePayment.customer_id', 
-                            'SUM(InvoicePayment.grand_total_payment) as total',
-                        ),
-                        'group' => array(
-                            'InvoicePayment.customer_id'
-                        ),
-                    ), false);
-
-                    $conditionsInvoiceTotal = $conditionsInvoice;
-                    $customer['InvoiceTotal'] = $this->Invoice->getData('first', array(
-                        'conditions' => $conditionsInvoiceTotal,
-                        'fields'=> array(
-                            'Invoice.customer_id', 
-                            'SUM(Invoice.total) as total',
-                        ),
-                        'group' => array(
-                            'Invoice.customer_id'
-                        ),
-                    ), false);
-
-                    $conditionsInvoiceVoid = array(
-                        'Invoice.customer_id' => $customer['Customer']['id'],
-                        'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') >=' => $fromMonthYear,
-                        'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') <=' => $toMonthYear,
-                        'Invoice.is_canceled' => 1,
-                    );
-                    $customer['InvoiceVoidTotal'] = $this->Invoice->getData('first', array(
-                        'conditions' => $conditionsInvoiceVoid,
-                        'fields'=> array(
-                            'Invoice.customer_id', 
-                            'SUM(Invoice.total) as total',
-                        ),
-                        'group' => array(
-                            'Invoice.customer_id'
-                        ),
-                    ), false);
-
-                    $conditionsInvoicePayment['InvoicePayment.customer_id'] = $customer['Customer']['id'];
-                    $customer['InvoicePaymentTotal'] = $this->InvoicePayment->getData('first', array(
-                        'conditions' => $conditionsInvoicePayment,
-                        'fields'=> array(
-                            'InvoicePayment.customer_id', 
-                            'SUM(InvoicePayment.grand_total_payment) as total',
-                        ),
-                        'group' => array(
-                            'InvoicePayment.customer_id'
-                        ),
-                    ), false);
-
-                    $customers[$key] = $customer;
-                }
+            if( !empty($refine['fromMonth']) ){
+                $fromMonth = urldecode($refine['fromMonth']);
             }
 
-            $module_title = sprintf(__('Laporan Saldo Piutang Per Bulan %s'), $this->MkCommon->getCombineDate($fromMonthYear, $toMonthYear, 'short'));
-            $this->set('sub_module_title', $module_title);
-            $this->set('active_menu', 'report_revenue_monthly');
-            // $this->request->data['Ttuj']['from']['month'] = $fromMonth;
-            // $this->request->data['Ttuj']['to']['month'] = $toMonth;
-            // $this->request->data['Ttuj']['year'] = $year;
+            if( !empty($refine['toMonth']) ){
+                $toMonth = urldecode($refine['toMonth']);
+            }
+
+            if( !empty($refine['fromYear']) ){
+                $fromYear = urldecode($refine['fromYear']);
+            }
+
+            if( !empty($fromYear) ) {
+                if( !empty($fromMonth) ) {
+                    $fromMonthYear = sprintf('%s-%s', $fromYear, $fromMonth);
+                }
+                if( !empty($toMonth) ) {
+                    $toMonthYear = sprintf('%s-%s', $fromYear, $toMonth);
+                }
+            }
+        }
+
+        $lastMonth = date('Y-m', strtotime($fromMonthYear." -1 month"));
+        $this->request->data['Ttuj']['from']['month'] = $fromMonth;
+        $this->request->data['Ttuj']['to']['month'] = $toMonth;
+        $this->request->data['Ttuj']['from']['year'] = $fromYear;
+
+        $conditionsInvoice = array(
+            'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') >=' => $fromMonthYear,
+            'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => $toMonthYear,
+        );
+        $conditionsInvoicePayment = array(
+            'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') >=' => $fromMonthYear,
+            'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $toMonthYear,
+            'InvoicePayment.is_canceled' => 0,
+            'InvoicePayment.status' => 1,
+        );
+        $customerList = $this->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            )
+        ));
+
+        $options = $this->Customer->getData('paginate', array(
+            'conditions' => $conditionsCustomer,
+        ));
+        $this->paginate = $options;
+        $customers = $this->Customer->getData('all', $options, false);
+
+        if( !empty($customers) ) {
+            foreach ($customers as $key => $customer) {
+                $conditionsInvoice['Invoice.customer_id'] = $customer['Customer']['id'];
+
+                $conditionsInvLastMonth = array(
+                    'Invoice.customer_id' => $customer['Customer']['id'],
+                    'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => $lastMonth,
+                    'Invoice.paid' => 0,
+                    'Invoice.complete_paid' => 0,
+                );
+                $customer['InvLastMonth'] = $this->Invoice->getData('first', array(
+                    'conditions' => $conditionsInvLastMonth,
+                    'fields'=> array(
+                        'Invoice.customer_id', 
+                        'SUM(Invoice.total) as total',
+                    ),
+                    'group' => array(
+                        'Invoice.customer_id'
+                    ),
+                ), false);
+
+                $conditionsInvVoidLastMonth = array(
+                    'Invoice.customer_id' => $customer['Customer']['id'],
+                    'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') <=' => $lastMonth,
+                    'Invoice.is_canceled' => 1,
+                );
+                $customer['InvVoidLastMonth'] = $this->Invoice->getData('first', array(
+                    'conditions' => $conditionsInvVoidLastMonth,
+                    'fields'=> array(
+                        'Invoice.customer_id', 
+                        'SUM(Invoice.total) as total',
+                    ),
+                    'group' => array(
+                        'Invoice.customer_id'
+                    ),
+                ), false);
+
+                $conditionsInvPaidLastMonth = array(
+                    'InvoicePayment.customer_id' => $customer['Customer']['id'],
+                    'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $lastMonth,
+                    'InvoicePayment.is_canceled' => 0,
+                    'InvoicePayment.status' => 1,
+                );
+                $customer['InvPaidLastMonth'] = $this->InvoicePayment->getData('first', array(
+                    'conditions' => $conditionsInvPaidLastMonth,
+                    'fields'=> array(
+                        'InvoicePayment.customer_id', 
+                        'SUM(InvoicePayment.grand_total_payment) as total',
+                    ),
+                    'group' => array(
+                        'InvoicePayment.customer_id'
+                    ),
+                ), false);
+
+                $conditionsInvoiceTotal = $conditionsInvoice;
+                $customer['InvoiceTotal'] = $this->Invoice->getData('first', array(
+                    'conditions' => $conditionsInvoiceTotal,
+                    'fields'=> array(
+                        'Invoice.customer_id', 
+                        'SUM(Invoice.total) as total',
+                    ),
+                    'group' => array(
+                        'Invoice.customer_id'
+                    ),
+                ), false);
+
+                $conditionsInvoiceVoid = array(
+                    'Invoice.customer_id' => $customer['Customer']['id'],
+                    'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') >=' => $fromMonthYear,
+                    'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') <=' => $toMonthYear,
+                    'Invoice.is_canceled' => 1,
+                );
+                $customer['InvoiceVoidTotal'] = $this->Invoice->getData('first', array(
+                    'conditions' => $conditionsInvoiceVoid,
+                    'fields'=> array(
+                        'Invoice.customer_id', 
+                        'SUM(Invoice.total) as total',
+                    ),
+                    'group' => array(
+                        'Invoice.customer_id'
+                    ),
+                ), false);
+
+                $conditionsInvoicePayment['InvoicePayment.customer_id'] = $customer['Customer']['id'];
+                $customer['InvoicePaymentTotal'] = $this->InvoicePayment->getData('first', array(
+                    'conditions' => $conditionsInvoicePayment,
+                    'fields'=> array(
+                        'InvoicePayment.customer_id', 
+                        'SUM(InvoicePayment.grand_total_payment) as total',
+                    ),
+                    'group' => array(
+                        'InvoicePayment.customer_id'
+                    ),
+                ), false);
+
+                $customers[$key] = $customer;
+            }
+        }
+
+        $module_title = sprintf(__('Laporan Saldo Piutang Per Bulan %s'), $this->MkCommon->getCombineDate($fromMonthYear, $toMonthYear, 'short'));
+        $this->set('sub_module_title', $module_title);
+        $this->set('active_menu', 'report_revenue_monthly');
+
+        $this->set(compact(
+            'data_action', 'customerList', 
+            'customers', 'lastMonth', 'fromMonthYear',
+            'toMonthYear'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $layout_js = array(
+                'freeze',
+            );
+            $layout_css = array(
+                'freeze',
+            );
 
             $this->set(compact(
-                'data_action', 'customerList', 
-                'customers', 'lastMonth', 'fromMonthYear',
-                'toMonthYear'
+                'layout_css', 'layout_js'
             ));
-
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
-            } else {
-                $layout_js = array(
-                    'freeze',
-                );
-                $layout_css = array(
-                    'freeze',
-                );
-
-                $this->set(compact(
-                    'layout_css', 'layout_js'
-                ));
-            }
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        }
     }
 
     function ttuj_payments( $action_type = 'uang_jalan_commission' ){
-        // if( in_array('view_invoice_payments', $this->allowModule) ) {
-            $this->loadModel('TtujPayment');
-            $conditions = array(
-                'TtujPayment.type' => $action_type,
-            );
+        $this->loadModel('TtujPayment');
+        $conditions = array(
+            'TtujPayment.type' => $action_type,
+        );
 
-            switch ($action_type) {
-                case 'biaya_ttuj':
-                    $this->set('active_menu', 'biaya_ttuj_payments');
-                    $this->set('sub_module_title', __('Pembayaran Biaya TTUJ'));
-                    break;
-                
-                default:
-                    $this->set('active_menu', 'uang_jalan_commission_payments');
-                    $this->set('sub_module_title', __('Pembayaran Uang Jalan/Komisi'));
-                    break;
+        switch ($action_type) {
+            case 'biaya_ttuj':
+                $this->set('active_menu', 'biaya_ttuj_payments');
+                $this->set('sub_module_title', __('Pembayaran Biaya TTUJ'));
+                break;
+            
+            default:
+                $this->set('active_menu', 'uang_jalan_commission_payments');
+                $this->set('sub_module_title', __('Pembayaran Uang Jalan/Komisi'));
+                break;
+        }
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['nodoc'])){
+                $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));
+                $this->request->data['InvoicePayment']['nodoc'] = $to;
+                $conditions['TtujPayment.nodoc LIKE'] = '%'.$to.'%';
+            }
+            
+            if(!empty($refine['no_ttuj'])){
+                $no_ttuj = urldecode($refine['no_ttuj']);
+                $this->request->data['Ttuj']['no_ttuj'] = $no_ttuj;
+                $conditions['Ttuj.no_ttuj LIKE'] = '%'.$no_ttuj.'%';
             }
 
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
 
-                if(!empty($refine['nodoc'])){
-                    $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));
-                    $this->request->data['InvoicePayment']['nodoc'] = $to;
-                    $conditions['TtujPayment.nodoc LIKE'] = '%'.$to.'%';
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                    $conditions['DATE_FORMAT(TtujPayment.date_payment, \'%Y-%m-%d\') >='] = $dateFrom;
+                    $conditions['DATE_FORMAT(TtujPayment.date_payment, \'%Y-%m-%d\') <='] = $dateTo;
                 }
-                
-                if(!empty($refine['no_ttuj'])){
-                    $no_ttuj = urldecode($refine['no_ttuj']);
-                    $this->request->data['Ttuj']['no_ttuj'] = $no_ttuj;
-                    $conditions['Ttuj.no_ttuj LIKE'] = '%'.$no_ttuj.'%';
-                }
-
-                if(!empty($refine['date'])){
-                    $dateStr = urldecode($refine['date']);
-                    $date = explode('-', $dateStr);
-
-                    if( !empty($date) ) {
-                        $date[0] = urldecode($date[0]);
-                        $date[1] = urldecode($date[1]);
-                        $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                        $dateFrom = $this->MkCommon->getDate($date[0]);
-                        $dateTo = $this->MkCommon->getDate($date[1]);
-                        $conditions['DATE_FORMAT(TtujPayment.date_payment, \'%Y-%m-%d\') >='] = $dateFrom;
-                        $conditions['DATE_FORMAT(TtujPayment.date_payment, \'%Y-%m-%d\') <='] = $dateTo;
-                    }
-                    $this->request->data['Ttuj']['date'] = $dateStr;
-                }
-                
-                if(!empty($refine['receiver_name'])){
-                    $receiver_name = urldecode($refine['receiver_name']);
-                    $this->request->data['Ttuj']['receiver_name'] = $receiver_name;
-                    $conditions['TtujPayment.receiver_name LIKE'] = '%'.$receiver_name.'%';
-                }
+                $this->request->data['Ttuj']['date'] = $dateStr;
             }
+            
+            if(!empty($refine['receiver_name'])){
+                $receiver_name = urldecode($refine['receiver_name']);
+                $this->request->data['Ttuj']['receiver_name'] = $receiver_name;
+                $conditions['TtujPayment.receiver_name LIKE'] = '%'.$receiver_name.'%';
+            }
+        }
 
-            $this->paginate = $this->TtujPayment->getData('paginate', array(
-                'conditions' => $conditions,
-                'order' => array(
-                    'TtujPayment.created' => 'DESC',
-                    'TtujPayment.id' => 'DESC',
-                ),
-            ));
-            $invoices = $this->paginate('TtujPayment');
+        $this->paginate = $this->TtujPayment->getData('paginate', array(
+            'conditions' => $conditions,
+            'order' => array(
+                'TtujPayment.created' => 'DESC',
+                'TtujPayment.id' => 'DESC',
+            ),
+        ));
+        $invoices = $this->paginate('TtujPayment');
 
-            $this->set(compact(
-                'invoices', 'action_type'
-            )); 
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->set(compact(
+            'invoices', 'action_type'
+        )); 
     }
 
     function ttuj_payment_add( $action_type = 'uang_jalan_commission' ){
-        // if( in_array('insert_invoice_payments', $this->allowModule) ) {
-            switch ($action_type) {
-                case 'biaya_ttuj':
-                    $module_title = __('Tambah Pembayaran TTUJ');
-                    break;
-                
-                default:
-                    $module_title = __('Tambah Pembayaran Uang Jalan/Komisi');
-                    break;
-            }
+        switch ($action_type) {
+            case 'biaya_ttuj':
+                $module_title = __('Tambah Pembayaran TTUJ');
+                break;
+            
+            default:
+                $module_title = __('Tambah Pembayaran Uang Jalan/Komisi');
+                break;
+        }
 
-            $this->set('sub_module_title', trim($module_title));
-            $this->doTtujPayment( $action_type );
-        // } else {
-        //     $this->redirect($this->referer());
-        // }
+        $this->set('sub_module_title', trim($module_title));
+        $this->doTtujPayment( $action_type );
     }
 
     function detail_ttuj_payment($id = false, $action_type = 'uang_jalan_commission'){
