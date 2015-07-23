@@ -22,7 +22,6 @@
 				        <h3 class="box-title"><?php echo __('Informasi TTUJ'); ?></h3>
 				    </div>
 				    <div class="box-body">
-				    	<?php echo $this->Common->branchForm('Ttuj', $branches);?>
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('no_ttuj',array(

@@ -710,12 +710,11 @@ class CashbanksController extends AppController {
                             'conditions' => array(
                                 'Revenue.id' => $document_id,
                             ),
-                        ), false);
+                        ), true, 'all');
                         $cashbank = array_merge($cashbank, $revenue);
                         break;
                 }
                 
-                // debug($cashbank);die();
                 $this->set('active_menu', 'cash_bank');
                 $this->set('cashBankAuth', $cashBankAuth);                
                 $this->set('cashbank', $cashbank);                

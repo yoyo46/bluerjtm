@@ -2,7 +2,7 @@
 class Revenue extends AppModel {
 	var $name = 'Revenue';
 	var $validate = array(
-        'branch_id' => array(
+        'group_branch_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Cabang harap dipilih'
@@ -78,27 +78,40 @@ class Revenue extends AppModel {
         ),
     );
 
-	function getData($find, $options = false, $is_merge = true){
+	function getData( $find, $options = false, $is_merge = true, $status = 'active' ){
         $default_options = array(
             'conditions'=> array(
-                'Revenue.status' => 1,
+                'Revenue.group_branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'Revenue.created' => 'DESC',
                 'Revenue.id' => 'DESC',
             ),
-            'contain' => array(
-                'Ttuj'
-            ),
+            'contain' => array(),
             'fields' => array(),
+            'group' => array(),
         );
+
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['Revenue.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['Revenue.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['Revenue.status'] = 1;
+                break;
+        }
 
         if(!empty($options) && $is_merge){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
             if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
@@ -108,6 +121,9 @@ class Revenue extends AppModel {
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         } else if( !empty($options) ) {
             $default_options = $options;
@@ -145,11 +161,11 @@ class Revenue extends AppModel {
                     break;
                 
                 default:
-                    $data_merge = $this->find('first', array(
+                    $data_merge = $this->getData('first', array(
                         'conditions' => array(
                             'Revenue.id' => $id
-                        )
-                    ));
+                        ),
+                    ), true, 'all');
 
                     if(!empty($data_merge)){
                         $data = array_merge($data, $data_merge);
@@ -161,8 +177,7 @@ class Revenue extends AppModel {
         return $data;
     }
 
-    function checkQtyUsed ( $ttuj_id = false, $id = false ) {
-        // $this->TtujTipeMotorUse = ClassRegistry::init('TtujTipeMotorUse');
+    function checkQtyUsed ( $ttuj_id = false, $id = false, $group_motor_id = false, $with_qty_ttuj = true ) {
         $this->Ttuj = ClassRegistry::init('Ttuj');
 
         $revenue_id = $this->find('list', array(
@@ -171,34 +186,35 @@ class Revenue extends AppModel {
                 'Revenue.status' => 1,
             ),
         ));
-        // $qtyUsed = $this->TtujTipeMotorUse->find('first', array(
-        //     'conditions' => array(
-        //         'TtujTipeMotorUse.revenue_id' => $revenue_id,
-        //         'TtujTipeMotorUse.revenue_id <>' => $id,
-        //     ),
-        //     'fields' => array(
-        //         'SUM(TtujTipeMotorUse.qty) as count_qty'
-        //     )
-        // ));
+        $conditions = array(
+            'RevenueDetail.revenue_id' => $revenue_id,
+            'RevenueDetail.revenue_id NOT' => $id,
+            'RevenueDetail.tarif_angkutan_type' => 'angkut',
+            'Revenue.status' => 1,
+        );
+
+        if( !empty($group_motor_id) ) {
+            $conditions['RevenueDetail.group_motor_id'] = $group_motor_id;
+        }
+
         $qtyUsed = $this->RevenueDetail->getData('first', array(
-            'conditions' => array(
-                'RevenueDetail.revenue_id' => $revenue_id,
-                'RevenueDetail.revenue_id <>' => $id,
-                'Revenue.status' => 1,
-            ),
+            'conditions' => $conditions,
             'fields' => array(
                 'SUM(RevenueDetail.qty_unit) as count_qty'
             )
         ));
-        $qtyTtuj = $this->Ttuj->TtujTipeMotor->find('first', array(
-            'conditions' => array(
-                'TtujTipeMotor.ttuj_id' => $ttuj_id,
-                'TtujTipeMotor.status' => 1,
-            ),
-            'fields' => array(
-                'SUM(TtujTipeMotor.qty) as count_qty'
-            )
-        ));
+
+        if( !empty($with_qty_ttuj) ) {
+            $qtyTtuj = $this->Ttuj->TtujTipeMotor->find('first', array(
+                'conditions' => array(
+                    'TtujTipeMotor.ttuj_id' => $ttuj_id,
+                    'TtujTipeMotor.status' => 1,
+                ),
+                'fields' => array(
+                    'SUM(TtujTipeMotor.qty) as count_qty'
+                )
+            ));
+        }
 
         if( !empty($qtyUsed[0]['count_qty']) ) {
             $qtyUsed = $qtyUsed[0]['count_qty'];
@@ -220,8 +236,7 @@ class Revenue extends AppModel {
     function getPaid ( $data, $ttuj_id, $data_type = false ) {
         $conditions = array(
             'Revenue.ttuj_id' => $ttuj_id,
-            'Revenue.status' => 1,
-            'Revenue.transaction_status' => 'invoiced',
+            'Revenue.transaction_status' => array( 'invoiced', 'half_invoiced' ),
         );
 
         if( in_array($data_type, array( 'unit', 'invoiced' )) ) {
@@ -292,16 +307,15 @@ class Revenue extends AppModel {
     }
 
     function getDocumentCashBank () {
+        $docs = array();
         $result = array(
             'docs' => array(),
             'docs_type' => false,
         );
-
         $docTmps = $this->getData('all', array(
             'conditions' => array(
                 'Revenue.paid_ppn' => 0,
                 'Revenue.transaction_status <>' => 'unposting',
-                'Revenue.status' => 1,
             ),
             'order' => array(
                 'Revenue.id' => 'ASC'
@@ -309,8 +323,7 @@ class Revenue extends AppModel {
             'contain' => array(
                 'CustomerNoType',
             ),
-        ), false);
-        $docs = array();
+        ));
         
         if( !empty($docTmps) ) {
             foreach ($docTmps as $key => $docTmp) {
@@ -334,39 +347,57 @@ class Revenue extends AppModel {
         return $this->save();
     }
 
-    function getProsesInvoice ( $customer_id, $invoice_id, $tarif_type ) {
-        $revenueDetails = $this->RevenueDetail->getData('list', array(
-            'conditions' => array(
-                'Revenue.customer_id' => $customer_id,
-                'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
-                'RevenueDetail.tarif_angkutan_type' => $tarif_type,
-                'RevenueDetail.invoice_id' => NULL,
-                'Revenue.status' => 1,
-            ),
-            'contain' => array(
-                'Revenue'
-            ),
-            'fields' => array(
-                'RevenueDetail.id', 'Revenue.id'
-            ),
-        ));
+    function getProsesInvoice ( $customer_id, $invoice_id, $action, $tarif_type, $data = false ) {
         $revenueId = array();
 
-        if(!empty($revenueDetails)){
-            foreach ($revenueDetails as $revenue_detail_id => $revenue_id) {
-                $this->InvoiceDetail->create();
-                $this->InvoiceDetail->set(array(
-                    'invoice_id' => $invoice_id,
-                    'revenue_id' => $revenue_id,
-                    'revenue_detail_id' => $revenue_detail_id,
+        switch ($action) {
+            case 'tarif':
+                if( !empty($data) ) {
+                    foreach ($data as $key => $value_detail) {
+                        if( !empty($value_detail['RevenueDetail']['id']) ) {
+                            $this->RevenueDetail->id = $value_detail['RevenueDetail']['id'];
+                            $this->RevenueDetail->set('invoice_id', $invoice_id);
+                            $this->RevenueDetail->save();
+                            $revenueId[] = !empty($value_detail['Revenue']['id'])?$value_detail['Revenue']['id']:false;
+                        }
+                    }
+                }
+                break;
+            
+            default:
+                $revenueDetails = $this->RevenueDetail->getData('list', array(
+                    'conditions' => array(
+                        'Revenue.customer_id' => $customer_id,
+                        'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
+                        'RevenueDetail.tarif_angkutan_type' => $tarif_type,
+                        'RevenueDetail.invoice_id' => NULL,
+                        'Revenue.status' => 1,
+                    ),
+                    'contain' => array(
+                        'Revenue'
+                    ),
+                    'fields' => array(
+                        'RevenueDetail.id', 'Revenue.id'
+                    ),
                 ));
-                $this->InvoiceDetail->save();
 
-                $this->RevenueDetail->id = $revenue_detail_id;
-                $this->RevenueDetail->set('invoice_id', $invoice_id);
-                $this->RevenueDetail->save();
-                $revenueId[] = $revenue_id;
-            }
+                if(!empty($revenueDetails)){
+                    foreach ($revenueDetails as $revenue_detail_id => $revenue_id) {
+                        $this->InvoiceDetail->create();
+                        $this->InvoiceDetail->set(array(
+                            'invoice_id' => $invoice_id,
+                            'revenue_id' => $revenue_id,
+                            'revenue_detail_id' => $revenue_detail_id,
+                        ));
+                        $this->InvoiceDetail->save();
+
+                        $this->RevenueDetail->id = $revenue_detail_id;
+                        $this->RevenueDetail->set('invoice_id', $invoice_id);
+                        $this->RevenueDetail->save();
+                        $revenueId[] = $revenue_id;
+                    }
+                }
+                break;
         }
 
         $revenueId = array_unique($revenueId);
@@ -531,6 +562,7 @@ class Revenue extends AppModel {
 
         $dataRevenue['Revenue']['total'] = $total_revenue;
         $dataRevenue['Revenue']['total_without_tax'] = $totalWithoutTax;
+        $dataRevenue['Revenue']['group_branch_id'] = Configure::read('__Site.config_branch_id');
 
         $this->set($dataRevenue);
         $validate_qty = true;

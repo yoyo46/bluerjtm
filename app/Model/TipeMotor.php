@@ -86,10 +86,5 @@ class TipeMotor extends AppModel {
 
         return $data;
     }
-
-    // function __construct($id = false, $table = null, $ds = null) {
-    //     parent::__construct($id, $table, $ds);
-    //     $this->virtualFields['tipe_motor_color'] = sprintf('CONCAT(%s.name, " - ", ColorMotor.name)', $this->alias);
-    // }
 }
 ?>

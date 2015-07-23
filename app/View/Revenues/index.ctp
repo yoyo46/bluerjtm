@@ -162,7 +162,11 @@
                             $statusRevenue = ucfirst($value['Revenue']['transaction_status']);
                             $labelEdit = __('Ubah');
 
-                            if(!empty($value['Invoice']['complete_paid'])){
+                            if(empty($value['Revenue']['status'])){
+                                $class_status = 'label label-danger';
+                                $statusRevenue = __('Non-Aktif');
+                                $labelEdit = __('Detail');
+                            } else if(!empty($value['Invoice']['complete_paid'])){
                                 $class_status = 'label label-success';
                                 $statusRevenue = __('Paid');
                                 $labelEdit = __('Detail');
@@ -197,7 +201,7 @@
                                 'class' => 'btn btn-primary btn-xs'
                             ));
                             
-                            if( !in_array($value['Revenue']['transaction_status'], array( 'invoiced', 'half_invoiced' )) ){
+                            if( !in_array($value['Revenue']['transaction_status'], array( 'invoiced', 'half_invoiced' )) && !empty($value['Revenue']['status']) ){
                                 echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'revenues',
                                     'action' => 'revenue_toggle',

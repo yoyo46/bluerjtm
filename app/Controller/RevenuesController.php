@@ -197,9 +197,8 @@ class RevenuesController extends AppController {
         $ttuj = $this->Ttuj->getData('first', array(
             'conditions' => array(
                 'Ttuj.id' => $id,
-                'Ttuj.status' => array( 0, 1 ),
             ),
-        ));
+        ), true, 'all');
 
         if(!empty($ttuj)){
             $ttuj = $this->Revenue->getPaid( $ttuj, $ttuj['Ttuj']['id'] );
@@ -581,7 +580,6 @@ class RevenuesController extends AppController {
                                     $revenue = $this->Revenue->getData('first', array(
                                         'conditions' => array(
                                             'Revenue.ttuj_id' => $this->Ttuj->id,
-                                            'Revenue.status' => 1,
                                         ),
                                     ));
 
@@ -596,6 +594,7 @@ class RevenuesController extends AppController {
                                             'ppn' => 0,
                                             'pph' => 0,
                                             'revenue_tarif_type' => !empty($tarifDefault['jenis_unit'])?$tarifDefault['jenis_unit']:'per_unit',
+                                            'group_branch_id' => Configure::read('__Site.config_branch_id'),
                                         );
 
                                         if( !empty($tarifDefault['jenis_unit']) && $tarifDefault['jenis_unit'] == 'per_truck' ) {
@@ -639,240 +638,237 @@ class RevenuesController extends AppController {
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj'), $msg), 'error');
             }
 
-            // if( !empty($data['Ttuj']['customer_id']) ) {
-            //     $fromCities = $this->UangJalan->getKotaAsal($data['Ttuj']['customer_id']);
-                $fromCities = $this->UangJalan->getKotaAsal();
+            $fromCities = $this->UangJalan->getKotaAsal();
 
-                if( !empty($data['Ttuj']['from_city_id']) ) {
-                    // $toCities = $this->UangJalan->getKotaTujuan($data['Ttuj']['customer_id'], $data['Ttuj']['from_city_id']);
-                    $toCities = $this->UangJalan->getKotaTujuan($data['Ttuj']['from_city_id']);
+            if( !empty($data['Ttuj']['from_city_id']) ) {
+                $toCities = $this->UangJalan->getKotaTujuan($data['Ttuj']['customer_id'], $data['Ttuj']['from_city_id']);
+                $toCities = $this->UangJalan->getKotaTujuan($data['Ttuj']['from_city_id']);
 
-                    if( !empty($data['Ttuj']['to_city_id']) ) {
-                        if( !empty($truck['Truck']['capacity']) ) {
-                            $dataTruck = $this->UangJalan->getNopol($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $truck['Truck']['capacity']);
-                            $uangKuli = $this->UangKuli->getUangKuli( $data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $truck['Truck']['capacity'] );
-                            $uangJalan['UangJalan']['uang_kuli_muat_per_unit'] = 1;
+                if( !empty($data['Ttuj']['to_city_id']) ) {
+                    if( !empty($truck['Truck']['capacity']) ) {
+                        $dataTruck = $this->UangJalan->getNopol($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $truck['Truck']['capacity']);
+                        $uangKuli = $this->UangKuli->getUangKuli( $data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $truck['Truck']['capacity'] );
+                        $uangJalan['UangJalan']['uang_kuli_muat_per_unit'] = 1;
 
-                            if( !empty($dataTruck) ) {
-                                $uangJalan = $dataTruck;
+                        if( !empty($dataTruck) ) {
+                            $uangJalan = $dataTruck;
 
-                                if( !empty($uangKuli) ) {
-                                    $uangJalan['UangJalan']['uang_kuli_muat'] = !empty($uangKuli['UangKuliMuat']['UangKuli']['uang_kuli'])?$uangKuli['UangKuliMuat']['UangKuli']['uang_kuli']:0;
-                                    $uangJalan['UangJalan']['uang_kuli_bongkar'] = !empty($uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli'])?$uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli']:0;
+                            if( !empty($uangKuli) ) {
+                                $uangJalan['UangJalan']['uang_kuli_muat'] = !empty($uangKuli['UangKuliMuat']['UangKuli']['uang_kuli'])?$uangKuli['UangKuliMuat']['UangKuli']['uang_kuli']:0;
+                                $uangJalan['UangJalan']['uang_kuli_bongkar'] = !empty($uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli'])?$uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli']:0;
 
-                                    if( !empty($uangKuli['UangKuliMuat']['UangKuli']['uang_kuli_type']) && $uangKuli['UangKuliMuat']['UangKuli']['uang_kuli_type'] == 'per_unit' ) {
-                                        $uangJalan['UangJalan']['uang_kuli_muat_per_unit'] = 1;
-                                    }
-
-                                    if( !empty($uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli_type']) && $uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli_type'] == 'per_unit' ) {
-                                        $uangJalan['UangJalan']['uang_kuli_bongkar_per_unit'] = 1;
-                                    }
+                                if( !empty($uangKuli['UangKuliMuat']['UangKuli']['uang_kuli_type']) && $uangKuli['UangKuliMuat']['UangKuli']['uang_kuli_type'] == 'per_unit' ) {
+                                    $uangJalan['UangJalan']['uang_kuli_muat_per_unit'] = 1;
                                 }
 
-                                $this->request->data['Ttuj']['uang_jalan_1_ori'] = $uang_jalan_1 = !empty($uangJalan['UangJalan']['uang_jalan_1'])?$uangJalan['UangJalan']['uang_jalan_1']:0;
-                                $uang_jalan_2 = !empty($uangJalan['UangJalan']['uang_jalan_2'])?$uangJalan['UangJalan']['uang_jalan_2']:0;
-                                $this->request->data['Ttuj']['uang_kuli_muat_ori'] = $uang_kuli_muat = !empty($uangJalan['UangJalan']['uang_kuli_muat'])?$uangJalan['UangJalan']['uang_kuli_muat']:0;
-                                $this->request->data['Ttuj']['uang_kuli_bongkar_ori'] = $uang_kuli_bongkar = !empty($uangJalan['UangJalan']['uang_kuli_bongkar'])?$uangJalan['UangJalan']['uang_kuli_bongkar']:0;
-                                $this->request->data['Ttuj']['asdp_ori'] = $asdp = !empty($uangJalan['UangJalan']['asdp'])?$uangJalan['UangJalan']['asdp']:0;
-                                $this->request->data['Ttuj']['uang_kawal_ori'] = $uang_kawal = !empty($uangJalan['UangJalan']['uang_kawal'])?$uangJalan['UangJalan']['uang_kawal']:0;
-                                $this->request->data['Ttuj']['uang_keamanan_ori'] = $uang_keamanan = !empty($uangJalan['UangJalan']['uang_keamanan'])?$uangJalan['UangJalan']['uang_keamanan']:0;
-                                $this->request->data['Ttuj']['uang_jalan_extra_ori'] = $uang_jalan_extra = !empty($uangJalan['UangJalan']['uang_jalan_extra'])?$uangJalan['UangJalan']['uang_jalan_extra']:0;
-                                $this->request->data['Ttuj']['commission_ori'] = $commission = !empty($uangJalan['UangJalan']['commission'])?$uangJalan['UangJalan']['commission']:0;
-                                $this->request->data['Ttuj']['commission_extra_ori'] = $commission_extra = !empty($uangJalan['UangJalan']['commission_extra'])?$uangJalan['UangJalan']['commission_extra']:0;
-                                $uang_jalan_tipe_motor = 0;
-                                $uang_kuli_bongkar_tipe_motor = 0;
-                                $uang_kuli_muat_tipe_motor = 0;
-                                $asdp_tipe_motor = 0;
-                                $uang_kawal_tipe_motor = 0;
-                                $uang_keamanan_tipe_motor = 0;
-                                $commission_tipe_motor = 0;
-                                $totalMuatan = 0;
-                                $uangJalanTipeMotor = array();
-
-                                if( !empty($uangJalan['UangJalanTipeMotor']) ) {
-                                    foreach ($uangJalan['UangJalanTipeMotor'] as $key => $tipeMotor) {
-                                        $uangJalanTipeMotor['UangJalan'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_jalan_1'];
-                                    }
+                                if( !empty($uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli_type']) && $uangKuli['UangKuliBongkar']['UangKuli']['uang_kuli_type'] == 'per_unit' ) {
+                                    $uangJalan['UangJalan']['uang_kuli_bongkar_per_unit'] = 1;
                                 }
-                                if( !empty($uangJalan['CommissionGroupMotor']) ) {
-                                    foreach ($uangJalan['CommissionGroupMotor'] as $key => $tipeMotor) {
-                                        $uangJalanTipeMotor['Commission'][$tipeMotor['group_motor_id']] = $tipeMotor['commission'];
-                                    }
+                            }
+
+                            $this->request->data['Ttuj']['uang_jalan_1_ori'] = $uang_jalan_1 = !empty($uangJalan['UangJalan']['uang_jalan_1'])?$uangJalan['UangJalan']['uang_jalan_1']:0;
+                            $uang_jalan_2 = !empty($uangJalan['UangJalan']['uang_jalan_2'])?$uangJalan['UangJalan']['uang_jalan_2']:0;
+                            $this->request->data['Ttuj']['uang_kuli_muat_ori'] = $uang_kuli_muat = !empty($uangJalan['UangJalan']['uang_kuli_muat'])?$uangJalan['UangJalan']['uang_kuli_muat']:0;
+                            $this->request->data['Ttuj']['uang_kuli_bongkar_ori'] = $uang_kuli_bongkar = !empty($uangJalan['UangJalan']['uang_kuli_bongkar'])?$uangJalan['UangJalan']['uang_kuli_bongkar']:0;
+                            $this->request->data['Ttuj']['asdp_ori'] = $asdp = !empty($uangJalan['UangJalan']['asdp'])?$uangJalan['UangJalan']['asdp']:0;
+                            $this->request->data['Ttuj']['uang_kawal_ori'] = $uang_kawal = !empty($uangJalan['UangJalan']['uang_kawal'])?$uangJalan['UangJalan']['uang_kawal']:0;
+                            $this->request->data['Ttuj']['uang_keamanan_ori'] = $uang_keamanan = !empty($uangJalan['UangJalan']['uang_keamanan'])?$uangJalan['UangJalan']['uang_keamanan']:0;
+                            $this->request->data['Ttuj']['uang_jalan_extra_ori'] = $uang_jalan_extra = !empty($uangJalan['UangJalan']['uang_jalan_extra'])?$uangJalan['UangJalan']['uang_jalan_extra']:0;
+                            $this->request->data['Ttuj']['commission_ori'] = $commission = !empty($uangJalan['UangJalan']['commission'])?$uangJalan['UangJalan']['commission']:0;
+                            $this->request->data['Ttuj']['commission_extra_ori'] = $commission_extra = !empty($uangJalan['UangJalan']['commission_extra'])?$uangJalan['UangJalan']['commission_extra']:0;
+                            $uang_jalan_tipe_motor = 0;
+                            $uang_kuli_bongkar_tipe_motor = 0;
+                            $uang_kuli_muat_tipe_motor = 0;
+                            $asdp_tipe_motor = 0;
+                            $uang_kawal_tipe_motor = 0;
+                            $uang_keamanan_tipe_motor = 0;
+                            $commission_tipe_motor = 0;
+                            $totalMuatan = 0;
+                            $uangJalanTipeMotor = array();
+
+                            if( !empty($uangJalan['UangJalanTipeMotor']) ) {
+                                foreach ($uangJalan['UangJalanTipeMotor'] as $key => $tipeMotor) {
+                                    $uangJalanTipeMotor['UangJalan'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_jalan_1'];
                                 }
-                                if( !empty($uangJalan['AsdpGroupMotor']) ) {
-                                    foreach ($uangJalan['AsdpGroupMotor'] as $key => $tipeMotor) {
-                                        $uangJalanTipeMotor['Asdp'][$tipeMotor['group_motor_id']] = $tipeMotor['asdp'];
-                                    }
+                            }
+                            if( !empty($uangJalan['CommissionGroupMotor']) ) {
+                                foreach ($uangJalan['CommissionGroupMotor'] as $key => $tipeMotor) {
+                                    $uangJalanTipeMotor['Commission'][$tipeMotor['group_motor_id']] = $tipeMotor['commission'];
                                 }
-                                if( !empty($uangJalan['UangKawalGroupMotor']) ) {
-                                    foreach ($uangJalan['UangKawalGroupMotor'] as $key => $tipeMotor) {
-                                        $uangJalanTipeMotor['UangKawal'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_kawal'];
-                                    }
+                            }
+                            if( !empty($uangJalan['AsdpGroupMotor']) ) {
+                                foreach ($uangJalan['AsdpGroupMotor'] as $key => $tipeMotor) {
+                                    $uangJalanTipeMotor['Asdp'][$tipeMotor['group_motor_id']] = $tipeMotor['asdp'];
                                 }
-                                if( !empty($uangJalan['UangKeamananGroupMotor']) ) {
-                                    foreach ($uangJalan['UangKeamananGroupMotor'] as $key => $tipeMotor) {
-                                        $uangJalanTipeMotor['UangKeamanan'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_keamanan'];
-                                    }
+                            }
+                            if( !empty($uangJalan['UangKawalGroupMotor']) ) {
+                                foreach ($uangJalan['UangKawalGroupMotor'] as $key => $tipeMotor) {
+                                    $uangJalanTipeMotor['UangKawal'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_kawal'];
                                 }
-                                if( !empty($uangKuli['UangKuliMuat']['UangKuliGroupMotor']) ) {
-                                    foreach ($uangKuli['UangKuliMuat']['UangKuliGroupMotor'] as $key => $tipeMotor) {
-                                        $uangJalanTipeMotor['UangKuliMuat'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_kuli'];
-                                    }
+                            }
+                            if( !empty($uangJalan['UangKeamananGroupMotor']) ) {
+                                foreach ($uangJalan['UangKeamananGroupMotor'] as $key => $tipeMotor) {
+                                    $uangJalanTipeMotor['UangKeamanan'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_keamanan'];
                                 }
-                                if( !empty($uangKuli['UangKuliBongkar']['UangKuliGroupMotor']) ) {
-                                    foreach ($uangKuli['UangKuliBongkar']['UangKuliGroupMotor'] as $key => $tipeMotor) {
-                                        $uangJalanTipeMotor['UangKuliBongkar'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_kuli'];
-                                    }
+                            }
+                            if( !empty($uangKuli['UangKuliMuat']['UangKuliGroupMotor']) ) {
+                                foreach ($uangKuli['UangKuliMuat']['UangKuliGroupMotor'] as $key => $tipeMotor) {
+                                    $uangJalanTipeMotor['UangKuliMuat'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_kuli'];
                                 }
+                            }
+                            if( !empty($uangKuli['UangKuliBongkar']['UangKuliGroupMotor']) ) {
+                                foreach ($uangKuli['UangKuliBongkar']['UangKuliGroupMotor'] as $key => $tipeMotor) {
+                                    $uangJalanTipeMotor['UangKuliBongkar'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_kuli'];
+                                }
+                            }
 
-                                if( !empty($data['TtujTipeMotor']['qty']) ) {
-                                    foreach ($data['TtujTipeMotor']['qty'] as $key => $qty) {
-                                        if( !empty($qty) ) {
-                                            $tipe_motor_id = !empty($data['TtujTipeMotor']['tipe_motor_id'][$key])?$data['TtujTipeMotor']['tipe_motor_id'][$key]:false;
-                                            $group_motor_id = 0;
-                                            $totalMuatan += $qty;
-                                            $groupMotor = $this->TipeMotor->find('first', array(
-                                                'conditions' => array(
-                                                    'TipeMotor.id' => $tipe_motor_id,
-                                                    'TipeMotor.status' => 1,
-                                                ),
-                                            ));
+                            if( !empty($data['TtujTipeMotor']['qty']) ) {
+                                foreach ($data['TtujTipeMotor']['qty'] as $key => $qty) {
+                                    if( !empty($qty) ) {
+                                        $tipe_motor_id = !empty($data['TtujTipeMotor']['tipe_motor_id'][$key])?$data['TtujTipeMotor']['tipe_motor_id'][$key]:false;
+                                        $group_motor_id = 0;
+                                        $totalMuatan += $qty;
+                                        $groupMotor = $this->TipeMotor->find('first', array(
+                                            'conditions' => array(
+                                                'TipeMotor.id' => $tipe_motor_id,
+                                                'TipeMotor.status' => 1,
+                                            ),
+                                        ));
 
-                                            if( !empty($groupMotor) ) {
-                                                $group_motor_id = $groupMotor['TipeMotor']['group_motor_id'];
-                                            }
+                                        if( !empty($groupMotor) ) {
+                                            $group_motor_id = $groupMotor['TipeMotor']['group_motor_id'];
+                                        }
 
-                                            if( !empty($uangJalanTipeMotor['UangJalan'][$group_motor_id]) ) {
-                                                $uang_jalan_tipe_motor += $uangJalanTipeMotor['UangJalan'][$group_motor_id] * $qty;
-                                            } else {
-                                                $uang_jalan_tipe_motor += $uang_jalan_1 * $qty;
-                                            }
+                                        if( !empty($uangJalanTipeMotor['UangJalan'][$group_motor_id]) ) {
+                                            $uang_jalan_tipe_motor += $uangJalanTipeMotor['UangJalan'][$group_motor_id] * $qty;
+                                        } else {
+                                            $uang_jalan_tipe_motor += $uang_jalan_1 * $qty;
+                                        }
 
-                                            if( !empty($uangJalanTipeMotor['UangKuliMuat'][$group_motor_id]) ) {
-                                                $uang_kuli_muat_tipe_motor += $uangJalanTipeMotor['UangKuliMuat'][$group_motor_id] * $qty;
-                                            } else {
-                                                $uang_kuli_muat_tipe_motor += $uang_kuli_muat * $qty;
-                                            }
+                                        if( !empty($uangJalanTipeMotor['UangKuliMuat'][$group_motor_id]) ) {
+                                            $uang_kuli_muat_tipe_motor += $uangJalanTipeMotor['UangKuliMuat'][$group_motor_id] * $qty;
+                                        } else {
+                                            $uang_kuli_muat_tipe_motor += $uang_kuli_muat * $qty;
+                                        }
 
-                                            if( !empty($uangJalanTipeMotor['UangKuliBongkar'][$group_motor_id]) ) {
-                                                $uang_kuli_bongkar_tipe_motor += $uangJalanTipeMotor['UangKuliBongkar'][$group_motor_id] * $qty;
-                                            } else {
-                                                $uang_kuli_bongkar_tipe_motor += $uang_kuli_bongkar * $qty;
-                                            }
+                                        if( !empty($uangJalanTipeMotor['UangKuliBongkar'][$group_motor_id]) ) {
+                                            $uang_kuli_bongkar_tipe_motor += $uangJalanTipeMotor['UangKuliBongkar'][$group_motor_id] * $qty;
+                                        } else {
+                                            $uang_kuli_bongkar_tipe_motor += $uang_kuli_bongkar * $qty;
+                                        }
 
-                                            if( !empty($uangJalanTipeMotor['Asdp'][$group_motor_id]) ) {
-                                                $asdp_tipe_motor += $uangJalanTipeMotor['Asdp'][$group_motor_id] * $qty;
-                                            } else {
-                                                $asdp_tipe_motor += $asdp * $qty;
-                                            }
+                                        if( !empty($uangJalanTipeMotor['Asdp'][$group_motor_id]) ) {
+                                            $asdp_tipe_motor += $uangJalanTipeMotor['Asdp'][$group_motor_id] * $qty;
+                                        } else {
+                                            $asdp_tipe_motor += $asdp * $qty;
+                                        }
 
-                                            if( !empty($uangJalanTipeMotor['UangKawal'][$group_motor_id]) ) {
-                                                $uang_kawal_tipe_motor += $uangJalanTipeMotor['UangKawal'][$group_motor_id] * $qty;
-                                            } else {
-                                                $uang_kawal_tipe_motor += $uang_kawal * $qty;
-                                            }
+                                        if( !empty($uangJalanTipeMotor['UangKawal'][$group_motor_id]) ) {
+                                            $uang_kawal_tipe_motor += $uangJalanTipeMotor['UangKawal'][$group_motor_id] * $qty;
+                                        } else {
+                                            $uang_kawal_tipe_motor += $uang_kawal * $qty;
+                                        }
 
-                                            if( !empty($uangJalanTipeMotor['UangKeamanan'][$group_motor_id]) ) {
-                                                $uang_keamanan_tipe_motor += $uangJalanTipeMotor['UangKeamanan'][$group_motor_id] * $qty;
-                                            } else {
-                                                $uang_keamanan_tipe_motor += $uang_keamanan * $qty;
-                                            }
+                                        if( !empty($uangJalanTipeMotor['UangKeamanan'][$group_motor_id]) ) {
+                                            $uang_keamanan_tipe_motor += $uangJalanTipeMotor['UangKeamanan'][$group_motor_id] * $qty;
+                                        } else {
+                                            $uang_keamanan_tipe_motor += $uang_keamanan * $qty;
+                                        }
 
-                                            if( !empty($uangJalanTipeMotor['Commission'][$group_motor_id]) ) {
-                                                $commission_tipe_motor += $uangJalanTipeMotor['Commission'][$group_motor_id] * $qty;
-                                            } else {
-                                                $commission_tipe_motor += $commission * $qty;
-                                            }
+                                        if( !empty($uangJalanTipeMotor['Commission'][$group_motor_id]) ) {
+                                            $commission_tipe_motor += $uangJalanTipeMotor['Commission'][$group_motor_id] * $qty;
+                                        } else {
+                                            $commission_tipe_motor += $commission * $qty;
                                         }
                                     }
                                 }
+                            }
 
-                                if( empty($totalMuatan) ) {
-                                    $totalMuatan = 1;
-                                }
+                            if( empty($totalMuatan) ) {
+                                $totalMuatan = 1;
+                            }
 
-                                if( !empty($uangJalan['UangJalan']['uang_jalan_per_unit']) ) {
-                                    $uang_jalan_1 = $uang_jalan_tipe_motor;
-                                    $uang_jalan_2 = 0;
-                                }
+                            if( !empty($uangJalan['UangJalan']['uang_jalan_per_unit']) ) {
+                                $uang_jalan_1 = $uang_jalan_tipe_motor;
+                                $uang_jalan_2 = 0;
+                            }
 
-                                if( !empty($uangJalan['UangJalan']['uang_kuli_muat_per_unit']) ) {
-                                    $uang_kuli_muat = $uang_kuli_muat_tipe_motor;
-                                }
+                            if( !empty($uangJalan['UangJalan']['uang_kuli_muat_per_unit']) ) {
+                                $uang_kuli_muat = $uang_kuli_muat_tipe_motor;
+                            }
 
-                                if( !empty($uangJalan['UangJalan']['uang_kuli_bongkar_per_unit']) ) {
-                                    $uang_kuli_bongkar = $uang_kuli_bongkar_tipe_motor;
-                                }
+                            if( !empty($uangJalan['UangJalan']['uang_kuli_bongkar_per_unit']) ) {
+                                $uang_kuli_bongkar = $uang_kuli_bongkar_tipe_motor;
+                            }
 
-                                if( !empty($uangJalan['UangJalan']['asdp_per_unit']) ) {
-                                    $asdp = $asdp_tipe_motor;
-                                }
+                            if( !empty($uangJalan['UangJalan']['asdp_per_unit']) ) {
+                                $asdp = $asdp_tipe_motor;
+                            }
 
-                                if( !empty($uangJalan['UangJalan']['uang_kawal_per_unit']) ) {
-                                    $uang_kawal = $uang_kawal_tipe_motor;
-                                }
+                            if( !empty($uangJalan['UangJalan']['uang_kawal_per_unit']) ) {
+                                $uang_kawal = $uang_kawal_tipe_motor;
+                            }
 
-                                if( !empty($uangJalan['UangJalan']['uang_keamanan_per_unit']) ) {
-                                    $uang_keamanan = $uang_keamanan_tipe_motor;
-                                }
+                            if( !empty($uangJalan['UangJalan']['uang_keamanan_per_unit']) ) {
+                                $uang_keamanan = $uang_keamanan_tipe_motor;
+                            }
 
-                                if( !empty($uangJalan['UangJalan']['commission_per_unit']) ) {
-                                    $commission = $commission_tipe_motor;
-                                }
+                            if( !empty($uangJalan['UangJalan']['commission_per_unit']) ) {
+                                $commission = $commission_tipe_motor;
+                            }
 
-                                if( !empty($uangJalan['UangJalan']['uang_jalan_extra']) && !empty($uangJalan['UangJalan']['min_capacity']) ) {
-                                    if( $totalMuatan > $uangJalan['UangJalan']['min_capacity'] ) {
-                                        if( !empty($uangJalan['UangJalan']['uang_jalan_extra_per_unit']) ) {
-                                            $capacityCost = $totalMuatan - $uangJalan['UangJalan']['min_capacity'];
-                                            $uang_jalan_extra = $uang_jalan_extra*$capacityCost;
-                                        }
-                                    } else {
-                                        $uang_jalan_extra = 0;
+                            if( !empty($uangJalan['UangJalan']['uang_jalan_extra']) && !empty($uangJalan['UangJalan']['min_capacity']) ) {
+                                if( $totalMuatan > $uangJalan['UangJalan']['min_capacity'] ) {
+                                    if( !empty($uangJalan['UangJalan']['uang_jalan_extra_per_unit']) ) {
+                                        $capacityCost = $totalMuatan - $uangJalan['UangJalan']['min_capacity'];
+                                        $uang_jalan_extra = $uang_jalan_extra*$capacityCost;
                                     }
                                 } else {
                                     $uang_jalan_extra = 0;
                                 }
+                            } else {
+                                $uang_jalan_extra = 0;
+                            }
 
-                                if( !empty($uangJalan['UangJalan']['commission_extra']) && !empty($uangJalan['UangJalan']['commission_min_qty']) ) {
-                                    if( $totalMuatan > $uangJalan['UangJalan']['commission_min_qty'] ) {
-                                        if( !empty($uangJalan['UangJalan']['commission_extra_per_unit']) ) {
-                                            $capacityCost = $totalMuatan - $uangJalan['UangJalan']['commission_min_qty'];
-                                            $commission_extra = $commission_extra*$capacityCost;
-                                        }
-                                    } else {
-                                        $commission_extra = 0;
+                            if( !empty($uangJalan['UangJalan']['commission_extra']) && !empty($uangJalan['UangJalan']['commission_min_qty']) ) {
+                                if( $totalMuatan > $uangJalan['UangJalan']['commission_min_qty'] ) {
+                                    if( !empty($uangJalan['UangJalan']['commission_extra_per_unit']) ) {
+                                        $capacityCost = $totalMuatan - $uangJalan['UangJalan']['commission_min_qty'];
+                                        $commission_extra = $commission_extra*$capacityCost;
                                     }
                                 } else {
                                     $commission_extra = 0;
                                 }
+                            } else {
+                                $commission_extra = 0;
+                            }
 
-                                $this->request->data['Ttuj']['uang_jalan_1'] = number_format($uang_jalan_1, 0);
-                                $this->request->data['Ttuj']['uang_kuli_muat'] = number_format($uang_kuli_muat, 0);
-                                $this->request->data['Ttuj']['uang_kuli_bongkar'] = number_format($uang_kuli_bongkar, 0);
-                                $this->request->data['Ttuj']['asdp'] = number_format($asdp, 0);
-                                $this->request->data['Ttuj']['uang_kawal'] = number_format($uang_kawal, 0);
-                                $this->request->data['Ttuj']['uang_keamanan'] = number_format($uang_keamanan, 0);
-                                $this->request->data['Ttuj']['uang_jalan_extra'] = number_format($uang_jalan_extra, 0);
+                            $this->request->data['Ttuj']['uang_jalan_1'] = number_format($uang_jalan_1, 0);
+                            $this->request->data['Ttuj']['uang_kuli_muat'] = number_format($uang_kuli_muat, 0);
+                            $this->request->data['Ttuj']['uang_kuli_bongkar'] = number_format($uang_kuli_bongkar, 0);
+                            $this->request->data['Ttuj']['asdp'] = number_format($asdp, 0);
+                            $this->request->data['Ttuj']['uang_kawal'] = number_format($uang_kawal, 0);
+                            $this->request->data['Ttuj']['uang_keamanan'] = number_format($uang_keamanan, 0);
+                            $this->request->data['Ttuj']['uang_jalan_extra'] = number_format($uang_jalan_extra, 0);
 
-                                $this->request->data['Ttuj']['uang_jalan_per_unit'] = !empty($uangJalan['UangJalan']['uang_jalan_per_unit'])?$uangJalan['UangJalan']['uang_jalan_per_unit']:0;
-                                $this->request->data['Ttuj']['uang_kuli_muat_per_unit'] = !empty($uangJalan['UangJalan']['uang_kuli_muat_per_unit'])?$uangJalan['UangJalan']['uang_kuli_muat_per_unit']:0;
-                                $this->request->data['Ttuj']['uang_kuli_bongkar_per_unit'] = !empty($uangJalan['UangJalan']['uang_kuli_bongkar_per_unit'])?$uangJalan['UangJalan']['uang_kuli_bongkar_per_unit']:0;
-                                $this->request->data['Ttuj']['asdp_per_unit'] = !empty($uangJalan['UangJalan']['asdp_per_unit'])?$uangJalan['UangJalan']['asdp_per_unit']:0;
-                                $this->request->data['Ttuj']['uang_kawal_per_unit'] = !empty($uangJalan['UangJalan']['uang_kawal_per_unit'])?$uangJalan['UangJalan']['uang_kawal_per_unit']:0;
-                                $this->request->data['Ttuj']['uang_keamanan_per_unit'] = !empty($uangJalan['UangJalan']['uang_keamanan_per_unit'])?$uangJalan['UangJalan']['uang_keamanan_per_unit']:0;
-                                $this->request->data['Ttuj']['uang_jalan_extra_per_unit'] = !empty($uangJalan['UangJalan']['uang_jalan_extra_per_unit'])?$uangJalan['UangJalan']['uang_jalan_extra_per_unit']:0;
+                            $this->request->data['Ttuj']['uang_jalan_per_unit'] = !empty($uangJalan['UangJalan']['uang_jalan_per_unit'])?$uangJalan['UangJalan']['uang_jalan_per_unit']:0;
+                            $this->request->data['Ttuj']['uang_kuli_muat_per_unit'] = !empty($uangJalan['UangJalan']['uang_kuli_muat_per_unit'])?$uangJalan['UangJalan']['uang_kuli_muat_per_unit']:0;
+                            $this->request->data['Ttuj']['uang_kuli_bongkar_per_unit'] = !empty($uangJalan['UangJalan']['uang_kuli_bongkar_per_unit'])?$uangJalan['UangJalan']['uang_kuli_bongkar_per_unit']:0;
+                            $this->request->data['Ttuj']['asdp_per_unit'] = !empty($uangJalan['UangJalan']['asdp_per_unit'])?$uangJalan['UangJalan']['asdp_per_unit']:0;
+                            $this->request->data['Ttuj']['uang_kawal_per_unit'] = !empty($uangJalan['UangJalan']['uang_kawal_per_unit'])?$uangJalan['UangJalan']['uang_kawal_per_unit']:0;
+                            $this->request->data['Ttuj']['uang_keamanan_per_unit'] = !empty($uangJalan['UangJalan']['uang_keamanan_per_unit'])?$uangJalan['UangJalan']['uang_keamanan_per_unit']:0;
+                            $this->request->data['Ttuj']['uang_jalan_extra_per_unit'] = !empty($uangJalan['UangJalan']['uang_jalan_extra_per_unit'])?$uangJalan['UangJalan']['uang_jalan_extra_per_unit']:0;
 
-                                if( !empty($data['Ttuj']['truck_id']) ) {
-                                    $truckInfo = $this->Truck->getInfoTruck($data['Ttuj']['truck_id']);
-                                    $this->request->data['Ttuj']['driver_name'] = !empty($truckInfo['Driver']['name'])?$truckInfo['Driver']['name']:false;
-                                    $this->request->data['Ttuj']['truck_capacity'] = !empty($truckInfo['Truck']['capacity'])?$truckInfo['Truck']['capacity']:false;
-                                    $this->request->data['Ttuj']['truck_capacity'] = !empty($truckInfo['Truck']['capacity'])?$truckInfo['Truck']['capacity']:false;
-                                }
+                            if( !empty($data['Ttuj']['truck_id']) ) {
+                                $truckInfo = $this->Truck->getInfoTruck($data['Ttuj']['truck_id']);
+                                $this->request->data['Ttuj']['driver_name'] = !empty($truckInfo['Driver']['name'])?$truckInfo['Driver']['name']:false;
+                                $this->request->data['Ttuj']['truck_capacity'] = !empty($truckInfo['Truck']['capacity'])?$truckInfo['Truck']['capacity']:false;
+                                $this->request->data['Ttuj']['truck_capacity'] = !empty($truckInfo['Truck']['capacity'])?$truckInfo['Truck']['capacity']:false;
                             }
                         }
                     }
                 }
-            // }
+            }
 
             $this->request->data['Ttuj']['ttuj_date'] = !empty($data['Ttuj']['ttuj_date'])?date('d/m/Y', strtotime($data['Ttuj']['ttuj_date'])):false;
 
@@ -941,15 +937,11 @@ class RevenuesController extends AppController {
                 }
             }
 
-            // if( !empty($this->request->data['Ttuj']['customer_id']) ) {
-                // $fromCities = $this->UangJalan->getKotaAsal($this->request->data['Ttuj']['customer_id']);
-                $fromCities = $this->UangJalan->getKotaAsal();
+            $fromCities = $this->UangJalan->getKotaAsal();
 
-                if( !empty($this->request->data['Ttuj']['from_city_id']) ) {
-                    // $toCities = $this->UangJalan->getKotaTujuan($this->request->data['Ttuj']['customer_id'], $this->request->data['Ttuj']['from_city_id']);
-                    $toCities = $this->UangJalan->getKotaTujuan($this->request->data['Ttuj']['from_city_id']);
-                }
-            // }
+            if( !empty($this->request->data['Ttuj']['from_city_id']) ) {
+                $toCities = $this->UangJalan->getKotaTujuan($this->request->data['Ttuj']['from_city_id']);
+            }
         }
 
         $customerConditions = array(
@@ -2700,6 +2692,7 @@ class RevenuesController extends AppController {
         $from_date = '';
         $to_date = '';
         $conditions = array();
+
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
 
@@ -2799,8 +2792,13 @@ class RevenuesController extends AppController {
             'conditions' => $conditions,
             'contain' => array(
                 'Ttuj',
-            )
-        ));
+            ),
+            'order' => array(
+                'Revenue.status' => 'DESC',
+                'Revenue.created' => 'DESC',
+                'Revenue.id' => 'DESC',
+            ),
+        ), true, 'all');
         $revenues = $this->paginate('Revenue');
 
         if(!empty($revenues)){
@@ -2888,8 +2886,8 @@ class RevenuesController extends AppController {
             ),
             'contain' => array(
                 'Ttuj'
-            )
-        ));
+            ),
+        ), true, 'all');
 
         if(!empty($revenue)){
             $revenue = $this->Revenue->RevenueDetail->getMergeAll( $revenue, $revenue['Revenue']['id'] );
@@ -2972,7 +2970,6 @@ class RevenuesController extends AppController {
                             'RevenueDetail' => array(
                                 'no_do' => $value['RevenueDetail']['no_do'],
                                 'no_sj' => $value['RevenueDetail']['no_sj'],
-                                // 'note' => $value['RevenueDetail']['note'],
                                 'to_city_name' => !empty($value['City']['name'])?$value['City']['name']:'',
                                 'price_unit' => array(
                                     'jenis_unit' => $value['RevenueDetail']['payment_type'],
@@ -3081,7 +3078,6 @@ class RevenuesController extends AppController {
                         'RevenueDetail' => array(
                             'no_do' => $this->request->data['RevenueDetail']['no_do'][$key],
                             'no_sj' => $this->request->data['RevenueDetail']['no_sj'][$key],
-                            // 'note' => $this->request->data['RevenueDetail']['note'][$key],
                             'to_city_name' => $to_city_name,
                             'price_unit' => $tarif,
                             'total_price_unit' => $this->request->data['RevenueDetail']['total_price_unit'][$key],
@@ -3132,7 +3128,7 @@ class RevenuesController extends AppController {
         ));
         $this->set('customers', $customers);
 
-        // $toCities = $this->City->toCities();
+        $toCities = $this->City->getListCities();
         $groupMotors = $this->GroupMotor->getData('list', array(
             'conditions' => array(
                 'GroupMotor.status' => 1
@@ -3191,7 +3187,6 @@ class RevenuesController extends AppController {
 
     function revenue_toggle( $id ){
         $this->loadModel('Revenue');
-        $this->loadModel('Ttuj');
         $locale = $this->Revenue->getData('first', array(
             'conditions' => array(
                 'Revenue.id' => $id
@@ -3208,6 +3203,7 @@ class RevenuesController extends AppController {
             $this->Revenue->id = $id;
 
             if($this->Revenue->save()){
+                $this->loadModel('Ttuj');
                 $this->Ttuj->set('is_revenue', 0);
                 $this->Ttuj->id = $locale['Revenue']['ttuj_id'];
                 $this->Ttuj->save();
@@ -3466,7 +3462,7 @@ class RevenuesController extends AppController {
             'conditions' => $conditions,
             'order' => array(
                 'Invoice.id' => 'DESC'
-            )
+            ),
         ), false);
         $invoices = $this->paginate('Invoice');
 
@@ -3538,25 +3534,6 @@ class RevenuesController extends AppController {
             if($this->Invoice->validates()){
                 $this->loadModel('Journal');
                 $tarif_type = !empty($data['Invoice']['tarif_type'])?$data['Invoice']['tarif_type']:false;
-                // $revenues = $this->Revenue->getData('all', array(
-                //     'conditions' => array(
-                //         'Revenue.customer_id' => $customer_id,
-                //         'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
-                //         // 'Revenue.type' => !empty($data['Invoice']['tarif_type'])?$data['Invoice']['tarif_type']:false,
-                //         'Revenue.status' => 1,                      
-                //     ),
-                //     'order' => array(
-                //         'Revenue.date_revenue' => 'ASC'
-                //     ),
-                // ));
-
-                // if(!empty($revenues)){
-                //     $total = 0;
-                //     foreach ($revenues as $key => $value) {
-                //         $total += $value['Revenue']['total'];   
-                //     }
-                //     $data['Invoice']['total'] = $total;
-                // }
                 
                 if($action == 'tarif'){
                     if(!empty($customer)){
@@ -3564,9 +3541,9 @@ class RevenuesController extends AppController {
                             'conditions' => array(
                                 'Revenue.customer_id' => $customer_id,
                                 'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
-                                'Revenue.status' => 1,
-                                'RevenueDetail.invoice_id' => NULL,
                                 'RevenueDetail.tarif_angkutan_type' => $tarif_type,
+                                'RevenueDetail.invoice_id' => NULL,
+                                'Revenue.status' => 1,
                             ),
                             'order' => array(
                                 'RevenueDetail.price_unit' => 'DESC'
@@ -3581,23 +3558,26 @@ class RevenuesController extends AppController {
                         }
 
                         if(!empty($result)){
+                            $invoice_number = $this->MkCommon->getNoInvoice( $customer );
+
                             foreach ($result as $key => $value) {
                                 $this->Invoice->create();
-                                $invoice_number = $this->Invoice->getNoInvoice( $customer );
                                 $data['Invoice']['no_invoice'] = $invoice_number;
                                 $data['Invoice']['type_invoice'] = 'tarif';
                                 $data['Invoice']['due_invoice'] = $customer['Customer']['term_of_payment'];
-                                
                                 $this->Invoice->set($data);
+
                                 if($this->Invoice->save()){
                                     $invoice_id = $this->Invoice->id;
+                                    $invoice_number = $this->Customer->CustomerGroup->CustomerGroupPattern->addPattern($customer, $data);
+                                    $this->Customer->CustomerGroup->CustomerGroupPattern->addPattern($customer, $data);
 
                                     if( !empty($data['Invoice']['total']) ) {
                                         $this->Journal->setJournal( $invoice_id, $invoice_number, 'invoice_coa_debit_id', $data['Invoice']['total'], 0, 'invoice' );
                                         $this->Journal->setJournal( $invoice_id, $invoice_number, 'invoice_coa_credit_id', 0, $data['Invoice']['total'], 'invoice' );
                                     }
 
-                                    $this->Revenue->getProsesInvoice( $customer_id, $invoice_id, $tarif_type );
+                                    $this->Revenue->getProsesInvoice( $customer_id, $invoice_id, $action, $tarif_type, $value );
                                     $this->Log->logActivity( sprintf(__('Berhasil %s Invoice #%s'), $msg, $this->Invoice->id), $this->user_data, $this->RequestHandler, $this->params );
                                 } else {
                                     $this->Log->logActivity( sprintf(__('Gagal %s Invoice #%s'), $msg, $this->Invoice->id), $this->user_data, $this->RequestHandler, $this->params, 1 );
@@ -3624,23 +3604,17 @@ class RevenuesController extends AppController {
                             $this->Journal->setJournal( $invoice_id, $document_no, 'invoice_coa_credit_id', 0, $data['Invoice']['total'], 'invoice' );
                         }
 
-                        if( !empty($customer['CustomerGroup']['CustomerGroupPattern']) ) {
-                            $last_number = str_replace($customer['CustomerGroup']['CustomerGroupPattern']['pattern'], '', $data['Invoice']['no_invoice']);
-                            $last_number = intval($last_number)+1;
-                            $this->Customer->CustomerGroup->CustomerGroupPattern->set('last_number', $last_number);
-                            $this->Customer->CustomerGroup->CustomerGroupPattern->id = $customer['CustomerGroup']['CustomerGroupPattern']['id'];
-                            $this->Customer->CustomerGroup->CustomerGroupPattern->save();
-                        }
+                        $this->Customer->CustomerGroup->CustomerGroupPattern->addPattern($customer, $data);
 
-                        if( !empty($customer['CustomerPattern']) ) {
-                            $last_number = str_replace($customer['CustomerPattern']['pattern'], '', $data['Invoice']['no_invoice']);
-                            $last_number = intval($last_number)+1;
-                            $this->Customer->CustomerPattern->set('last_number', $last_number);
-                            $this->Customer->CustomerPattern->id = $customer['CustomerPattern']['id'];
-                            $this->Customer->CustomerPattern->save();
-                        }
+                        // if( !empty($customer['CustomerPattern']) ) {
+                        //     $last_number = str_replace($customer['CustomerPattern']['pattern'], '', $data['Invoice']['no_invoice']);
+                        //     $last_number = intval($last_number)+1;
+                        //     $this->Customer->CustomerPattern->set('last_number', $last_number);
+                        //     $this->Customer->CustomerPattern->id = $customer['CustomerPattern']['id'];
+                        //     $this->Customer->CustomerPattern->save();
+                        // }
 
-                        $this->Revenue->getProsesInvoice( $customer_id, $invoice_id, $tarif_type );
+                        $this->Revenue->getProsesInvoice( $customer_id, $invoice_id, $action, $tarif_type );
                         $this->MkCommon->setCustomFlash(sprintf(__('Berhasil %s Invoice'), $msg), 'success'); 
                         $this->Log->logActivity( sprintf(__('Berhasil %s Invoice #%s'), $msg, $invoice_id), $this->user_data, $this->RequestHandler, $this->params );
                         $this->redirect(array(
@@ -3686,7 +3660,7 @@ class RevenuesController extends AppController {
             'group' => array(
                 'Revenue.customer_id'
             ),
-        ), false);
+        ));
         $customers = array();
 
         if( !empty($revenues) ) {
@@ -4030,7 +4004,6 @@ class RevenuesController extends AppController {
         }
 
         $conditions = array(
-            'Revenue.status'=> 1,
             'Revenue.transaction_status <>' => 'invoiced',
         );
         $defaultConditionsInvoice = array(
@@ -4048,7 +4021,7 @@ class RevenuesController extends AppController {
                 'fields' => array(
                     'SUM(Revenue.total) total'
                 ),
-            ), false);
+            ));
             $totalAr['AR'][$month] = !empty($revenues[0]['total'])?$revenues[0]['total']:0;
 
             $conditionsInvoice = $defaultConditionsInvoice;
@@ -4788,7 +4761,7 @@ class RevenuesController extends AppController {
                                 'fields' => array(
                                     'RevenueDetail.revenue_id'
                                 )
-                            ), false);
+                            ));
                             $revenueDetailId = $this->Revenue->RevenueDetail->getData('list', array(
                                 'conditions' => array(
                                     'RevenueDetail.invoice_id' => $id
@@ -4796,7 +4769,7 @@ class RevenuesController extends AppController {
                                 'fields' => array(
                                     'RevenueDetail.id', 'RevenueDetail.id',
                                 )
-                            ), false);
+                            ));
                         }
 
                         if(!empty($revenueDetailId)){
@@ -4819,7 +4792,7 @@ class RevenuesController extends AppController {
                                         'RevenueDetail.revenue_id' => $revenue_id,
                                         'RevenueDetail.invoice_id' => $id,
                                     ),
-                                ), false);
+                                ));
 
                                 $this->Revenue->id = $revenue_id;
 
@@ -5336,9 +5309,7 @@ class RevenuesController extends AppController {
         $fromYear = date('Y');
         $toMonth = date('m');
         $toYear = date('Y');
-        $conditions = array(
-            'Revenue.status'=> 1,
-        );
+        $conditions = array();
         $conditionsCustomer = array(
             'Customer.status'=> 1,
         );
@@ -5406,12 +5377,11 @@ class RevenuesController extends AppController {
                         'SUM(Revenue.total) as total',
                         'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') as dt',
                     ),
-                ), false);
+                ));
 
                 $conditionsYear = array(
                     'DATE_FORMAT(Revenue.date_revenue, \'%Y\')' => $avgYear,
                     'Revenue.customer_id' => $customer['Customer']['id'],
-                    'Revenue.status' => 1,
                 );
                 $revenueYear = $this->Revenue->getData('first', array(
                     'conditions' => $conditionsYear,
@@ -5422,7 +5392,7 @@ class RevenuesController extends AppController {
                         'Revenue.customer_id', 
                         'SUM(Revenue.total) as total',
                     ),
-                ), false);
+                ));
                 $customer['RevenueYear'] = !empty($revenueYear[0]['total'])?$revenueYear[0]['total']/12:0;
 
                 if( !empty($revenues) ) {
@@ -5570,7 +5540,7 @@ class RevenuesController extends AppController {
                             'fields' => array(
                                 'Revenue.id', 'Revenue.ttuj_id'
                             ),
-                        ), false);
+                        ), true, 'all');
 
                         $options['conditions']['Ttuj.id'] = $revenues;
                         break;
@@ -5586,7 +5556,6 @@ class RevenuesController extends AppController {
 
         $this->paginate = $options;
         $ttujs = $this->paginate('Ttuj');
-        // $ttujs = $this->Ttuj->find('all', $options);
 
         if( !empty($ttujs) ) {
             foreach ($ttujs as $key => $ttuj) {

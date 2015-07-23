@@ -259,9 +259,6 @@
                     ?>
                 </td>
                 <?php 
-                        // if( !empty($value['Ttuj']['is_invoice']) ) {
-                        //     echo $this->Html->tag('td', '<span class="label label-code">Invoiced</span>');
-                        // } else
                         if(empty($value['Ttuj']['status'])){
                             echo $this->Html->tag('td', '<span class="label label-danger">Void</span>');
                         } else if(!empty($value['Ttuj']['is_laka'])){

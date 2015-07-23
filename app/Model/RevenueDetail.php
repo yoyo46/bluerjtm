@@ -2,18 +2,12 @@
 class RevenueDetail extends AppModel {
 	var $name = 'RevenueDetail';
 	var $validate = array(
-        // 'no_do' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'No DO harap diisi'
-        //     ),
-        // ),
-        // 'no_sj' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'No SJ harap diisi'
-        //     ),
-        // ),
+        'city_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Kota Tujuan harap dipilih'
+            ),
+        ),
         'qty_unit' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -69,8 +63,11 @@ class RevenueDetail extends AppModel {
         $active = isset($elements['active'])?$elements['active']:true;
 
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'Revenue.group_branch_id' => Configure::read('__Site.config_branch_id'),
+            ),
             'order'=> array(),
+            'group'=> array(),
             'contain' => array(
                 'Revenue',
             ),
@@ -93,6 +90,9 @@ class RevenueDetail extends AppModel {
             }
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
@@ -154,11 +154,10 @@ class RevenueDetail extends AppModel {
                     'RevenueDetail.total_price_unit', 'RevenueDetail.city_id',
                     'SUM(RevenueDetail.total_price_unit) AS total_price_unit',
                     'RevenueDetail.tarif_angkutan_type', 'MAX(RevenueDetail.from_ttuj) from_ttuj',
-                    // 'RevenueDetail.note', 
                 ),
             ), array(
                 'active' => true,
-            ), false);
+            ));
 
             if(!empty($data_merge)){
                 $data['RevenueDetail'] = $data_merge;
@@ -183,67 +182,62 @@ class RevenueDetail extends AppModel {
     }
 
     function getPreviewInvoice ( $id = false, $invoice_type = 'angkut', $action = false, $data_action = false, $revenue_detail_id = false ) {
-        $this->TipeMotor = ClassRegistry::init('TipeMotor');
-        $this->City = ClassRegistry::init('City');
-        $this->TarifAngkutan = ClassRegistry::init('TarifAngkutan');
-        $this->Ttuj = ClassRegistry::init('Ttuj');
-        $contains = array(
-            'Revenue' => array(
-                'Ttuj'
-            ),
-            'GroupMotor'
-        );
+        $result = array();
+        $options = array();
+        // $contains = array(
+            // 'Revenue' => array(
+            //     'Ttuj'
+            // ),
+            // 'GroupMotor'
+        // );
         
         if( $data_action == 'date' ) {
-            $contains[] = 'Invoice';
+            $options['contain'][] = 'Invoice';
         }
 
         if( !empty($revenue_detail_id) ) {
-            $conditions = array(
+            $options['conditions'] = array(
                 'RevenueDetail.id' => $revenue_detail_id,
                 'Revenue.status' => 1,
             );
         } else if( in_array($data_action, array( 'invoice', 'date' )) ) {
-            $conditions = array(
+            $options['conditions'] = array(
                 'RevenueDetail.invoice_id' => $id,
             );
         } else {
-            $conditions = array(
+            $options['conditions'] = array(
                 'RevenueDetail.revenue_id' => $id,
                 'Revenue.status' => 1,
+                'RevenueDetail.invoice_id' => NULL,
             );
-            $conditions['RevenueDetail.invoice_id'] = NULL;
         }
 
         if( !empty($invoice_type) ) {
-            $conditions['RevenueDetail.tarif_angkutan_type'] = $invoice_type;
-            // $conditions['Revenue.type'] = $invoice_type;
+            $options['conditions']['RevenueDetail.tarif_angkutan_type'] = $invoice_type;
         }
 
         if( $action == 'tarif' && $data_action == 'invoice' ){
-            $revenue_detail = $this->getData('all', array(
-                'conditions' => $conditions,
-                'order' => array(
-                    'RevenueDetail.price_unit' => 'DESC'
-                ),
-                'contain' => $contains,
-            ));
+            $options['order'] = array(
+                'RevenueDetail.price_unit' => 'DESC'
+            );
         }else{
-            $revenue_detail = $this->getData('all', array(
-                'conditions' => $conditions,
-                'order' => array(
-                    'Revenue.date_revenue' => 'ASC',
-                    'Revenue.id' => 'ASC',
-                    'RevenueDetail.id' => 'ASC',
-                ),
-                'contain' => $contains,
-            ));
+            $options['order'] = array(
+                'Revenue.date_revenue' => 'ASC',
+                'Revenue.id' => 'ASC',
+                'RevenueDetail.id' => 'ASC',
+            );
         }
 
-        if( !empty($revenue_detail) ) {
-            foreach ($revenue_detail as $key => $value) {
-                $this->Truck = ClassRegistry::init('Truck');
+        $revenue_detail = $this->getData('all', $options);
 
+        if( !empty($revenue_detail) ) {
+            $this->TipeMotor = ClassRegistry::init('TipeMotor');
+            $this->Truck = ClassRegistry::init('Truck');
+            $this->City = ClassRegistry::init('City');
+            $this->TarifAngkutan = ClassRegistry::init('TarifAngkutan');
+            $this->Ttuj = ClassRegistry::init('Ttuj');
+
+            foreach ($revenue_detail as $key => $value) {
                 if(!empty($value['RevenueDetail'])){
                     $from_city_id = !empty($value['Revenue']['Ttuj']['from_city_id'])?$value['Revenue']['Ttuj']['from_city_id']:false;
                     $fromCity = $this->City->getMerge($value, $from_city_id);
@@ -252,41 +246,33 @@ class RevenueDetail extends AppModel {
                     $value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
                     $value = $this->TarifAngkutan->getMerge($value, $value['RevenueDetail']['tarif_angkutan_id']);
 
+                    $ttuj = $this->Ttuj->getMerge($value, $value['Revenue']['ttuj_id']);
+                    if( !empty($ttuj['Ttuj']) ) {
+                        $value['Revenue']['Ttuj'] = $ttuj['Ttuj'];
+                    } else {
+                        $value['Revenue']['Ttuj'] = array();;
+                    }
+
                     if( empty($value['Revenue']['ttuj_id']) ) {
                         $value = $this->Truck->getMerge($value, $value['Revenue']['truck_id']);
                     }
 
-                    $revenue_detail[$key] = $value;
-                }
-            }
-        }
-
-        if($action == 'tarif' && $data_action == 'invoice'){
-            $result = array();
-            foreach ($revenue_detail as $key => $value) {
-                $result[$value['RevenueDetail']['price_unit']][] = $value;
-            }
-            $revenue_detail = $result;
-        }else{
-            $result = array();
-
-            foreach ($revenue_detail as $key => $value) {
-                if( $data_action == 'date' && !empty($value['Revenue']['date_revenue']) ) {
-                    // $date_revenue = date('d/m/Y', strtotime($value['Revenue']['date_revenue']));
-                    // $result[$date_revenue][] = $value;
-                    $result[0][] = $value;
-                } else {
-                    if( $value['Revenue']['revenue_tarif_type'] == 'per_truck' ) {
-                        $result[$value['Revenue']['no_doc']][] = $value;
+                    if($action == 'tarif' && $data_action == 'invoice'){
+                        $result[$value['RevenueDetail']['price_unit']][] = $value;
+                    } else if( $data_action == 'date' && !empty($value['Revenue']['date_revenue']) ) {
+                        $result[0][] = $value;
                     } else {
-                        $result[$value['RevenueDetail']['city_id']][] = $value;
+                        if( $value['Revenue']['revenue_tarif_type'] == 'per_truck' ) {
+                            $result[$value['Revenue']['no_doc']][] = $value;
+                        } else {
+                            $result[$value['RevenueDetail']['city_id']][] = $value;
+                        }
                     }
                 }
             }
-            $revenue_detail = $result;
         }
 
-        return $revenue_detail;
+        return $result;
     }
 
     function getSumUnit($data, $id, $data_action = 'invoice'){
@@ -305,7 +291,7 @@ class RevenueDetail extends AppModel {
                     'RevenueDetail.revenue_id',
                 );
 
-                $data_merge = $this->getData('first', $options, false, false);
+                $data_merge = $this->getData('first', $options, false);
 
                 if(!empty($data_merge[0])){
                     $data['qty_unit'] = $data_merge[0]['qty_unit'];
@@ -325,7 +311,7 @@ class RevenueDetail extends AppModel {
                     ),
                 );
 
-                $data_merge = $this->getData('first', $options, false, false);
+                $data_merge = $this->getData('first', $options, false);
 
                 if(!empty($data_merge[0])){
                     $data['total_price'] = $data_merge[0]['total_price'];
@@ -340,7 +326,7 @@ class RevenueDetail extends AppModel {
                     'RevenueDetail.invoice_id',
                 );
 
-                $data_merge = $this->getData('first', $options, false, false);
+                $data_merge = $this->getData('first', $options, false);
 
                 if(!empty($data_merge[0])){
                     $data['RevenueDetail']['qty_unit'] = $data_merge[0]['qty_unit'];
@@ -362,7 +348,6 @@ class RevenueDetail extends AppModel {
             ),
             'contain' => array(
                 'City',
-                'Revenue',
             ),
             'fields' => array(
                 'RevenueDetail.id', 'City.name',
@@ -372,9 +357,10 @@ class RevenueDetail extends AppModel {
             ),
         ), array(
             'active' => true,
-        ), false);
+        ));
 
         if(!empty($revenueDetails)){
+            $revenueDetails = array_unique($revenueDetails);
             $data['city_name'] = implode(', ', $revenueDetails);
         }
 

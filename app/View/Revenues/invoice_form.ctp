@@ -51,6 +51,9 @@
 						));
 				?>
 	        </div>
+	    	<?php
+	    			if($action != 'tarif'){
+	    	?>
 	        <div class="form-group">
 	        	<?php 
 						echo $this->Form->input('tarif_type',array(
@@ -67,6 +70,14 @@
 						));
 				?>
 	        </div>
+	        <?php
+	    			} else {
+	    				echo $this->Form->hidden('tarif_type',array(
+							'value' => 'angkut',
+							'id' => 'invoiceType'
+						));
+	    			}
+	    	?>
 	        <div class="form-group">
 	        	<?php 
 						echo $this->Form->input('invoice_date',array(

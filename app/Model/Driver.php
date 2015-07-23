@@ -206,7 +206,7 @@ class Driver extends AppModel {
         return $result;
     }
 
-    function getMerge($data, $id){
+    function getMerge($data, $id, $modelName = 'Driver'){
         if(empty($data['Driver'])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
@@ -217,7 +217,7 @@ class Driver extends AppModel {
             ));
 
             if(!empty($data_merge)){
-                $data = array_merge($data, $data_merge);
+                $data[$modelName] = $data_merge['Driver'];
             }
         }
 

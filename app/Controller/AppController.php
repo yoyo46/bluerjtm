@@ -139,11 +139,16 @@ class AppController extends Controller {
 
 			Configure::write('__Site.allowed_controller', $controller_allowed);
 			Configure::write('__Site.allowed_action', $action_allowed);
+			$conditionsBranch = array();
+
+			if( $GroupId != 1 ) {
+				$conditionsBranch = array(
+					'GroupBranch.group_id' => $GroupId
+				);
+			}
 
 			$_branches = $this->GroupBranch->getData('all', array(
-				'conditions' => array(
-					'GroupBranch.group_id' => $GroupId
-				),
+				'conditions' => $conditionsBranch,
 				'contain' => array(
 					'City'
 				)
@@ -192,7 +197,9 @@ class AppController extends Controller {
 				}
 			}
 
+			Configure::write('__Site.config_branch_id', $group_branch_id);
 			$this->helpers['Html']['group_id'] = $GroupId;
+			
 			if(!empty($_branch_action_module)){
 				$this->helpers['Html']['rule_link'] = $_branch_action_module;
 			}

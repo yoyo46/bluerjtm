@@ -72,17 +72,29 @@ class Invoice extends AppModel {
         ),
     );
 
-	function getData( $find, $options = false, $is_merge = true ){
+	function getData( $find, $options = false, $is_merge = true, $status = 'active' ){
         $default_options = array(
-            'conditions'=> array(
-                'Invoice.status' => 1,
-            ),
+            'conditions'=> array(),
             'order'=> array(
                 'Invoice.id' => 'DESC'
             ),
             'contain' => array(),
             'fields' => array(),
         );
+
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['Invoice.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['Invoice.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['Invoice.status'] = 1;
+                break;
+        }
 
         if( !empty($options) && $is_merge ){
             if(!empty($options['conditions'])){
@@ -131,16 +143,17 @@ class Invoice extends AppModel {
         return $data;
     }
 
-    function getNoInvoice($action = 'tarif'){
-        $last_invoice = $this->find('first', array(
+    function getNoInvoice( $customer_id, $action = 'tarif' ){
+        $last_invoice = $this->getData('paginate', array(
             'conditions' => array(
-                'type_invoice' => $action,
-                'status' => 1
+                'Invoice.customer_id' => $customer_id,
+                'Invoice.type_invoice' => $action,
             ),
             'order' => array(
                 'id' => 'DESC'
             )
-        ));
+        ), true, 'all');
+        debug($last_invoice);die();
 
         if(!empty($last_invoice)){
             $arr_explode = explode('/', $last_invoice['Invoice']['no_invoice']);

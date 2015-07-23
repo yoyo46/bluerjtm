@@ -4,6 +4,9 @@ class AjaxController extends AppController {
 
 	public $name = 'Ajax';
 	public $uses = array();
+	public $components = array(
+		'RjLku'
+	);
 	
 	function beforeFilter() {
 		parent::beforeFilter();
@@ -62,14 +65,27 @@ class AjaxController extends AppController {
 				'Ttuj.id' => $ttuj_id
 			),
 			'contain' => array(
-				'UangJalan'
+				'UangJalan',
+				'TtujTipeMotor' => array(
+                    'City',
+                    'ColorMotor',
+                    'TipeMotor',
+                ),
 			)
 		));
 		
 		if(!empty($data_ttuj)){
+			if( !empty($data_ttuj['Ttuj']['driver_penganti_id']) ) {
+				$this->loadModel('Driver');
+
+				$driver_penganti_id = $data_ttuj['Ttuj']['driver_penganti_id'];
+				$data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_penganti_id, 'DriverPenganti');
+			}
+
 			if(!empty($data_ttuj['TtujTipeMotor'])){
 				$this->loadModel('TipeMotor');
 				$tipe_motor_list = array();
+
 				foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
 					$tipe_motor = $this->TipeMotor->getData('first', array(
 						'conditions' => array(
@@ -84,8 +100,6 @@ class AjaxController extends AppController {
 			}
 			$this->request->data = $data_ttuj;
 		}
-		
-		$this->set('tipe_motor_list', $tipe_motor_list);
 
 		$part_motors = $this->PartsMotor->getData('list', array(
             'conditions' => array(
@@ -95,7 +109,9 @@ class AjaxController extends AppController {
                 'PartsMotor.id', 'PartsMotor.name'
             )
         ));
-        $this->set(compact('part_motors'));
+        $this->set(compact(
+        	'part_motors', 'tipe_motor_list'
+    	));
 	}
 
 	function getInfoTtujKsu($ttuj_id, $atpm = false){
@@ -107,7 +123,7 @@ class AjaxController extends AppController {
 				'Ttuj.id' => $ttuj_id
 			),
 			'contain' => array(
-				'UangJalan'
+				'UangJalan',
 			)
 		));
 		
@@ -116,7 +132,6 @@ class AjaxController extends AppController {
 		}
 
 		$this->request->data['Ksu']['kekurangan_atpm'] = (($atpm == 'true') ? true : false);
-
 		$perlengkapans = $this->Perlengkapan->getListPerlengkapan(2);
         $this->set(compact('perlengkapans'));
 	}
@@ -442,7 +457,6 @@ class AjaxController extends AppController {
 		$this->loadModel('City');
 		$this->loadModel('GroupMotor');
 		$this->loadModel('Revenue');
-		// $this->loadModel('TtujTipeMotorUse');
 		$data_revenue_detail = array();
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
@@ -473,42 +487,13 @@ class AjaxController extends AppController {
 
 			if(!empty($data_ttuj['TtujTipeMotor'])){
 				foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
-					$price_unit = false;
 					$group_motor_name = false;
 					$qtyTtuj = !empty($value[0]['qty'])?$value[0]['qty']:0;
 					$group_motor_id = !empty($value['TipeMotor']['group_motor_id'])?$value['TipeMotor']['group_motor_id']:false;
 					$groupMotor = $this->GroupMotor->getMerge($value, $group_motor_id);
-		            $revenue_id = $this->Revenue->find('list', array(
-		                'conditions' => array(
-		                    'Revenue.ttuj_id' => $ttuj_id,
-		                    'Revenue.status' => 1,
-		                ),
-		            ));
-		            // $qtyUsed = $this->TtujTipeMotorUse->find('first', array(
-		            //     'conditions' => array(
-		            //         'TtujTipeMotorUse.revenue_id' => $revenue_id,
-		            //         'TtujTipeMotorUse.group_motor_id' => $value['TipeMotor']['group_motor_id'],
-		            //     ),
-		            //     'fields' => array(
-		            //         'SUM(TtujTipeMotorUse.qty) as count_qty'
-		            //     )
-		            // ));
-		            $qtyUsed = $this->Revenue->RevenueDetail->getData('first', array(
-		                'conditions' => array(
-		                    'RevenueDetail.revenue_id' => $revenue_id,
-		                    'RevenueDetail.group_motor_id' => $value['TipeMotor']['group_motor_id'],
-		                    'Revenue.status' => 1,
-		                ),
-		                'fields' => array(
-		                    'SUM(RevenueDetail.qty_unit) as count_qty'
-		                ),
-		            ));
-
-		            if( !empty($qtyUsed[0]['count_qty']) ) {
-		                $qtyUsed = $qtyUsed[0]['count_qty'];
-		            } else {
-		            	$qtyUsed = 0;
-		            }
+        			$qtyReview = $this->Revenue->checkQtyUsed( $ttuj_id, false, $group_motor_id, false );
+        			$qtyUsed = !empty($qtyReview['qtyUsed'])?$qtyReview['qtyUsed']:0;
+					$qtyUnit = $qtyTtuj - $qtyUsed;
 
 					if(!empty($groupMotor)){
 						$group_motor_name = $groupMotor['GroupMotor']['name'];
@@ -533,8 +518,6 @@ class AjaxController extends AppController {
 
 						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
 					}
-
-					$qtyUnit = $qtyTtuj - $qtyUsed;
 
 					if( !empty($qtyUnit) ) {
 						$data_revenue_detail[$key] = array(
@@ -566,13 +549,12 @@ class AjaxController extends AppController {
             ),
 		));
 
-		$toCities = $this->City->toCities();
+		$toCities = $this->City->getListCities();
 		$groupMotors = $this->GroupMotor->getData('list', array(
 			'conditions' => array(
 				'GroupMotor.status' => 1
 			)
 		));
-		// debug($data_revenue_detail);die();
 		$this->set(compact(
 			'data_revenue_detail', 'customers', 'toCities', 'groupMotors',
 			'tarifTruck'
@@ -819,7 +801,6 @@ class AjaxController extends AppController {
 		$conditions = array(
 			'Revenue.customer_id' => $customer_id,
 			'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
-			// 'Revenue.type' => $tarif_type,
 			'Revenue.status' => 1,
 		);
 		$customer = $this->Customer->getData('first', array(
@@ -845,18 +826,12 @@ class AjaxController extends AppController {
 			'group' => array(
 				'Revenue.customer_id'
 			),
-			'contain' => array(
-				'Revenue'
-			),
 		));
 		$revenueId = $this->Revenue->RevenueDetail->getData('list', array(
 			'conditions' => $conditionsDetail,
 			'fields' => array(
 				'RevenueDetail.revenue_id',
 				'RevenueDetail.revenue_id',
-			),
-			'contain' => array(
-				'Revenue'
 			),
 		));
         $conditions['Revenue.id'] = $revenueId;
@@ -870,7 +845,7 @@ class AjaxController extends AppController {
 			'group' => array(
 				'Revenue.customer_id'
 			),
-		), false);
+		));
         $banks = $this->Bank->getData('list', array(
             'conditions' => array(
                 'Bank.status' => 1,
@@ -904,9 +879,6 @@ class AjaxController extends AppController {
 	    	} else if( !empty($customer['CustomerGroup']['CustomerGroupPattern']) ) {
                 $this->request->data['Invoice']['pattern'] = $this->MkCommon->getNoInvoice( $customer['CustomerGroup'] );
 			}
-			// } else if( !empty($customer['CustomerPattern']) ) {
-   //              $this->request->data['Invoice']['pattern'] = $this->MkCommon->getNoInvoice( $customer );
-			// }
 		}
 
 		$this->set(compact(
@@ -914,33 +886,33 @@ class AjaxController extends AppController {
 		));
 	}
 
-	function getInvoicePaymentInfo($customer_id = false){
-		$this->loadModel('Revenue');
-		$revenues = $this->Revenue->getData('first', array(
-			'conditions' => array(
-				'Revenue.customer_id' => $customer_id,
-				'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
-				'Revenue.status' => 1,						
-			),
-			'order' => array(
-				'Revenue.date_revenue' => 'ASC'
-			),
-			'fields' => array(
-				'SUM(Revenue.total) total',
-				'MAX(Revenue.date_revenue) period_to',
-				'MIN(Revenue.date_revenue) period_from',
-			),
-			'group' => array(
-				'Revenue.customer_id'
-			),
-		));
+	// function getInvoicePaymentInfo($customer_id = false){
+	// 	$this->loadModel('Revenue');
+	// 	$revenues = $this->Revenue->getData('first', array(
+	// 		'conditions' => array(
+	// 			'Revenue.customer_id' => $customer_id,
+	// 			'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
+	// 			'Revenue.status' => 1,						
+	// 		),
+	// 		'order' => array(
+	// 			'Revenue.date_revenue' => 'ASC'
+	// 		),
+	// 		'fields' => array(
+	// 			'SUM(Revenue.total) total',
+	// 			'MAX(Revenue.date_revenue) period_to',
+	// 			'MIN(Revenue.date_revenue) period_from',
+	// 		),
+	// 		'group' => array(
+	// 			'Revenue.customer_id'
+	// 		),
+	// 	));
 
-		if(!empty($revenues)){
-			$this->request->data['Invoice']['period_from'] = !empty($revenues[0]['period_from'])?$this->MkCommon->customDate($revenues[0]['period_from'], 'd/m/Y'):false;
-			$this->request->data['Invoice']['period_to'] = !empty($revenues[0]['period_to'])?$this->MkCommon->customDate($revenues[0]['period_to'], 'd/m/Y'):false;
-			$this->request->data['Invoice']['total'] = !empty($revenues[0]['total'])?$revenues[0]['total']:0;;
-		}
-	}
+	// 	if(!empty($revenues)){
+	// 		$this->request->data['Invoice']['period_from'] = !empty($revenues[0]['period_from'])?$this->MkCommon->customDate($revenues[0]['period_from'], 'd/m/Y'):false;
+	// 		$this->request->data['Invoice']['period_to'] = !empty($revenues[0]['period_to'])?$this->MkCommon->customDate($revenues[0]['period_to'], 'd/m/Y'):false;
+	// 		$this->request->data['Invoice']['total'] = !empty($revenues[0]['total'])?$revenues[0]['total']:0;;
+	// 	}
+	// }
 
 	function previewInvoice($customer_id = false, $invoice_type = 'angkut', $action = false){
 		$this->loadModel('Revenue');
@@ -951,12 +923,7 @@ class AjaxController extends AppController {
 		$conditions = array(
 			'Revenue.customer_id' => $customer_id,
 			'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
-			'Revenue.status' => 1,
 		);
-
-		// if( !empty($invoice_type) ) {
-		// 	$conditions['Revenue.type'] = $invoice_type;
-		// }
 
 		$revenue_id = $this->Revenue->getData('list', array(
 			'conditions' => $conditions,
@@ -966,7 +933,7 @@ class AjaxController extends AppController {
 			'fields' => array(
 				'Revenue.id', 'Revenue.id',
 			),
-		), false);
+		));
 		$totalPPN = $this->Revenue->getData('first', array(
 			'conditions' => $conditions,
 			'group_id' => array(
@@ -975,7 +942,7 @@ class AjaxController extends AppController {
 			'fields' => array(
 				'SUM(total_without_tax * (ppn / 100)) ppn',
 			),
-		), false);
+		));
 		$totalPPh = $this->Revenue->getData('first', array(
 			'conditions' => $conditions,
 			'group_id' => array(
@@ -984,7 +951,7 @@ class AjaxController extends AppController {
 			'fields' => array(
 				'SUM(total_without_tax * (pph / 100)) pph',
 			),
-		), false);
+		));
 
 		if(!empty($revenue_id)){
             $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($revenue_id, $invoice_type, $action);
@@ -1382,7 +1349,10 @@ class AjaxController extends AppController {
             'Ttuj.is_draft' => 0,
             'Ttuj.is_laka' => 0,
         );
-        $orders = array();
+        $orders = array(
+            'Ttuj.created' => 'DESC',
+            'Ttuj.id' => 'DESC',
+        );
 
         if(!empty($this->request->data)){
             if(!empty($this->request->data['Ttuj']['nottuj'])){
@@ -1478,12 +1448,12 @@ class AjaxController extends AppController {
                 break;
 
             case 'lku':
-                $conditions['Ttuj.is_bongkaran'] = 1;
+                $conditions = array_merge($conditions, $this->RjLku->getTtujConditions());
 				$data_change = 'getTtujInfo';
                 break;
 
             case 'ksu':
-                $conditions['Ttuj.is_bongkaran'] = 1;
+                $conditions = array_merge($conditions, $this->RjLku->getTtujConditions());
 				$data_change = 'getTtujInfoKsu';
                 break;
 
@@ -1851,6 +1821,7 @@ class AjaxController extends AppController {
 	public function getCashBankPpnRevenue() {
         $this->loadModel('Customer');
 		$this->loadModel('Revenue');
+
 		$title = __('Data Revenue');
 		$data_action = 'browse-form';
 		$data_change = 'document-id';
@@ -1858,11 +1829,11 @@ class AjaxController extends AppController {
             'conditions' => array(
 	            'Revenue.paid_ppn' => 0,
 				'Revenue.transaction_status <>' => 'unposting',
-				'Revenue.status' => 1,
 	        ),
             'limit' => 10,
             'contain' => array(
-                'CustomerNoType'
+                'Ttuj',
+                'CustomerNoType',
             ),
 			'order' => array(
 				'Revenue.id' => 'ASC'
@@ -2159,7 +2130,7 @@ class AjaxController extends AppController {
 				'contain' => array(
 					'CustomerNoType'
 				),
-			), false);
+			), true, 'all');
 
 	        $this->CoaSetting->bindModel(array(
 				'belongsTo' => array(

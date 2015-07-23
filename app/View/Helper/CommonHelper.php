@@ -1056,6 +1056,7 @@ class CommonHelper extends AppHelper {
     function _getButtonPostingUnposting ( $revenue = false ) {
         $posting = false;
         $invoiced = false;
+        $revenue_status = true;
 
         if( !empty($revenue['Revenue']['transaction_status']) && $revenue['Revenue']['transaction_status'] == 'posting' ) {
             $posting = true;
@@ -1063,8 +1064,11 @@ class CommonHelper extends AppHelper {
         if( !empty($revenue['Revenue']['transaction_status']) && in_array($revenue['Revenue']['transaction_status'], array( 'invoiced', 'half_invoiced' )) ) {
             $invoiced = true;
         }
+        if( isset($revenue['Revenue']['status']) && empty($revenue['Revenue']['status']) ) {
+            $revenue_status = false;
+        }
 
-        if( !$invoiced ) {
+        if( !$invoiced && $revenue_status ) {
             echo $this->Form->button(__('Posting'), array(
                 'type' => 'submit',
                 'class'=> 'btn btn-success submit-form btn-lg',

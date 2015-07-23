@@ -83,5 +83,21 @@ class CustomerGroupPattern extends AppModel {
         }
         return $result;
     }
+
+    function addPattern ( $customer, $data ) {
+        $last_number = false;
+
+        if( !empty($customer['CustomerGroup']['CustomerGroupPattern']) ) {
+            $last_number = str_replace($customer['CustomerGroup']['CustomerGroupPattern']['pattern'], '', $data['Invoice']['no_invoice']);
+            $last_number = intval($last_number)+1;
+            $this->set('last_number', $last_number);
+            $this->id = $customer['CustomerGroup']['CustomerGroupPattern']['id'];
+            $this->save();
+
+            $last_number = sprintf('%s%s', str_pad($last_number, $customer['CustomerGroup']['CustomerGroupPattern']['min_digit'], '0', STR_PAD_LEFT), $customer['CustomerGroup']['CustomerGroupPattern']['pattern']);
+        }
+
+        return $last_number;
+    }
 }
 ?>

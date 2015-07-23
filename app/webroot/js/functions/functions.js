@@ -2852,9 +2852,13 @@ var get_document_cashbank = function(){
             url = '/ajax/getCustomer/prepayment_id:'+val+'/';
         }
 
+        if( cash_bank_id != '' ) {
+            url = cash_bank_id+'/';
+        }
+
         if(val != ''){
             $.ajax({
-                url: url+cash_bank_id+'/',
+                url: url,
                 type: 'POST',
                 success: function(response, status) {
                     var customer_id = $(response).filter('#customer-id').html();
@@ -3669,7 +3673,11 @@ $(function() {
     $('.custom-find-invoice,#invoiceType').change(function(){
         var customer_id = $('.custom-find-invoice').val();
         var invoiceType = $('#invoiceType').val();
-        var url = '/ajax/getInvoiceInfo/'+customer_id+'/';
+        var url = '/ajax/getInvoiceInfo/';
+
+        if( customer_id != '' ) {
+            url += customer_id+'/';
+        }
 
         if( invoiceType != '' ) {
             url += invoiceType+'/';
@@ -3713,6 +3721,8 @@ $(function() {
 
         if( invoiceType != '' ) {
             url += invoiceType+'/';
+        } else {
+            url += 'angkut/';
         }
 
         if(typeof rel != 'undefined' && rel != ''){

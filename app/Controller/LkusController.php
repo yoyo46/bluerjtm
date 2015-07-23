@@ -354,6 +354,8 @@ class LkusController extends AppController {
                 'Ttuj.id', 'Ttuj.no_ttuj'
             ),
             'conditions' => array(
+                'Ttuj.is_draft' => 0,
+                'Ttuj.is_laka' => 0,
                 'OR' => array(
                     array(
                         'Ttuj.is_bongkaran' => 1,
@@ -365,7 +367,7 @@ class LkusController extends AppController {
                     )
                 )
             ),
-        ), false);
+        ));
 
         if(!empty($this->request->data['Lku']['ttuj_id'])){
             $data_ttuj = $this->Ttuj->getData('first', array(

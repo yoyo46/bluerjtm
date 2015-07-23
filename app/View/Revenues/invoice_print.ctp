@@ -326,31 +326,6 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 ?>
 <div class="invoice-print">
 	<?php
-	/*
-	<table border="1" width="100%">
-		<tr>
-			<th><?php echo __('No. Invoice');?></th>
-			<td><?php echo $invoice['Invoice']['no_invoice'];?></td>
-		</tr>
-		<tr>
-			<th><?php echo __('Tgl Invoice');?></th>
-			<td><?php echo $this->Common->customDate($invoice['Invoice']['invoice_date'], 'd/m/Y');?></td>
-		</tr>
-		<tr>
-			<th><?php echo __('Customer');?></th>
-			<td><?php echo !empty($invoice['Customer']['customer_name'])?$invoice['Customer']['customer_name']:'-';?></td>
-		</tr>
-		<tr>
-			<th><?php echo __('Periode');?></th>
-			<td><?php printf('%s s/d %s', $this->Common->customDate($invoice['Invoice']['period_from'], 'd/m/Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd/m/Y'));?></td>
-		</tr>
-		<tr>
-			<th><?php echo __('Term Of Payment');?></th>
-			<td><?php printf(__('%s Hari'), $invoice['Customer']['term_of_payment']);?></td>
-			<!-- <td><?php // printf(__('%s Hari'), $invoice['Invoice']['due_invoice']);?></td> -->
-		</tr>
-	</table>
-	*/
             echo $this->element('blocks/revenues/preview_invoice');
 	?>
 </div>

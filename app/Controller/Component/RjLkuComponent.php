@@ -86,5 +86,20 @@ class RjLkuComponent extends Component {
 
 		return $parameters;
 	}
+
+	function getTtujConditions () {
+		return array(
+            'OR' => array(
+                array(
+                    'Ttuj.is_bongkaran' => 1,
+                    'Ttuj.is_draft' => 0,
+                    'Ttuj.status' => 1,
+                ),
+                array(
+                    'Ttuj.id' => !empty($data_local['Lku']['ttuj_id']) ? $data_local['Lku']['ttuj_id'] : false
+                )
+            ),
+        );
+	}
 }
 ?>
