@@ -3519,14 +3519,14 @@ $(function() {
     });
     // change_customer_revenue();
 
-    $('.ttuj-invoice-ajax').change(function() {
-        var self = $(this);
-        var data_action = $(this).attr('data-action');
+    // $('.ttuj-invoice-ajax').change(function() {
+    //     var self = $(this);
+    //     var data_action = $(this).attr('data-action');
 
-        if( self.val() != '' ) {
-            findInfoTTujPayment('/ajax/getInfoTtujPayment/'+self.val()+'/'+data_action+'/');
-        }
-    });
+    //     if( self.val() != '' ) {
+    //         findInfoTTujPayment('/ajax/getInfoTtujPayment/'+self.val()+'/'+data_action+'/');
+    //     }
+    // });
 
     $('#laka-driver-change').change(function(){
         var self = $(this);
@@ -3560,42 +3560,11 @@ $(function() {
     $('#getTtujCustomerInfo').change(function(){
         var self = $(this);
         var val = self.val();
-        // var val_type_lku = $('.type-lku').val();
-
-        // $.ajax({
-        //     url: '/ajax/getTtujCustomerInfo/'+val+'/',
-        //     type: 'POST',
-        //     success: function(response, status) {
-        //         $('#detail-customer-info').html(response);
-        //         add_custom_field();
-        //         choose_item_info();
-        //         delete_custom_field();
-        //     },
-        //     error: function(XMLHttpRequest, textStatus, errorThrown) {
-        //         alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-        //         return false;
-        //     }
-        // });
     });
 
     $('#getTtujCustomerInfoKsu').change(function(){
         var self = $(this);
         var val = self.val();
-
-        // $.ajax({
-        //     url: '/ajax/getTtujCustomerInfoKsu/'+val+'/',
-        //     type: 'POST',
-        //     success: function(response, status) {
-        //         $('#detail-customer-info').html(response);
-        //         add_custom_field();
-        //         choose_item_info();
-        //         delete_custom_field();
-        //     },
-        //     error: function(XMLHttpRequest, textStatus, errorThrown) {
-        //         alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-        //         return false;
-        //     }
-        // });
     });
 
     $('.popover-hover-bottom').popover({

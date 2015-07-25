@@ -71,11 +71,11 @@
         </thead>
         <tbody class="ttuj-info-table">
             <?php
-                $total = $i = 0;
+                    $total = $i = 0;
 
-                if(!empty($lku_details)){
-                    foreach ($lku_details as $key => $value) {
-                        $lku = $value['Lku'];
+                    if(!empty($lku_details)){
+                        foreach ($lku_details as $key => $value) {
+                            $lku = $value['Lku'];
             ?>
             <tr class="child-search child-search-<?php echo $value['LkuDetail']['id'];?>" rel="<?php echo $value['LkuDetail']['id'];?>">
                 <td class="checkbox-detail">
@@ -179,17 +179,22 @@
             <?php
                     }
                 }else{
-                    echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan')) );
+                    echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan'), array(
+                        'colspan' => 9,
+                        'class' => 'text-center alert alert-warning',
+                    )));
                 }
             ?>
         </tbody>
     </table>
 </div>
 <?php
-        echo $this->element('pagination', array(
-            'options' => array(
-                'data-action' => $data_action,
-                'class' => 'ajaxModal',
-            ),
-        ));
+        if(!empty($lku_details)){
+            echo $this->element('pagination', array(
+                'options' => array(
+                    'data-action' => $data_action,
+                    'class' => 'ajaxModal',
+                ),
+            ));
+        }
 ?>

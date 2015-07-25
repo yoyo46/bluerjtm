@@ -49,6 +49,7 @@ class TtujPerlengkapan extends AppModel {
                 'TtujPerlengkapan.status' => 1,
             ),
             'contain' => array(),
+            'order' => array(),
         );
 
         if(!empty($options)){
@@ -56,7 +57,7 @@ class TtujPerlengkapan extends AppModel {
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
             if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
@@ -72,6 +73,24 @@ class TtujPerlengkapan extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
+    }
+
+    function getMerge ( $data = false, $ttuj_id = false ) {
+        if( empty($data['TtujPerlengkapan']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'TtujPerlengkapan.ttuj_id'=> $ttuj_id,
+                    'TtujPerlengkapan.status'=> 1,
+                ),
+                'order' => array(
+                    'TtujPerlengkapan.id' => 'ASC',
+                ),
+            );
+            $ttujPerlengkapan = $this->getData('all', $default_options);
+            $data['TtujPerlengkapan'] = $ttujPerlengkapan;
+        }
+
+        return $data;
     }
 }
 ?>

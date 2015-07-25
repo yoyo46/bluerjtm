@@ -80,15 +80,13 @@ class UsersController extends AppController {
         $ttujSJ = $this->Ttuj->getData('count', array(
             'conditions' => array(
                 'Ttuj.is_sj_completed' => 0,
-                'Ttuj.status' => 1,
             ),
-        ), false);
+        ), true);
 
 		$this->set('sub_module_title', 'dashboard');
 	}
 
 	function authorization(){
-        // debug($this->Auth->password('admin'));die();
 		if(!empty($this->request->data)){
 			
     		$data = $this->request->data;

@@ -45,7 +45,7 @@
                     );
 
                     if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
-                        if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
+                        if( !empty($active_menu) && in_array($active_menu, $dataMenu['users']) ) {
                             $activeMenu = 'active';
                         }
             ?>

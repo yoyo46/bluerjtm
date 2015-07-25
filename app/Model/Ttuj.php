@@ -85,10 +85,6 @@ class Ttuj extends AppModel {
             'className' => 'Truck',
             'foreignKey' => 'truck_id',
         ),
-        'DriverPenganti' => array(
-            'className' => 'Driver',
-            'foreignKey' => 'driver_penganti_id',
-        ),
         'UangJalan' => array(
             'className' => 'UangJalan',
             'foreignKey' => 'uang_jalan_id',
@@ -104,13 +100,6 @@ class Ttuj extends AppModel {
     );
 
     var $hasMany = array(
-        'TtujTipeMotor' => array(
-            'className' => 'TtujTipeMotor',
-            'foreignKey' => 'ttuj_id',
-            'conditions' => array(
-                'TtujTipeMotor.status' => 1,
-            ),
-        ),
         'TtujPerlengkapan' => array(
             'className' => 'TtujPerlengkapan',
             'foreignKey' => 'ttuj_id',
@@ -136,23 +125,17 @@ class Ttuj extends AppModel {
                 'Ttuj.created' => 'DESC',
                 'Ttuj.id' => 'DESC',
             ),
-            // 'contain' => array(),
-            'contain' => array(
-                'DriverPenganti',
-                'TtujTipeMotor' => array(
-                    'City',
-                    'ColorMotor',
-                    'TipeMotor',
-                ),
-                'TtujPerlengkapan',
-                'UangJalan' => array(
-                    'UangJalanTipeMotor',
-                    'CommissionGroupMotor',
-                    'AsdpGroupMotor',
-                    'UangKawalGroupMotor',
-                    'UangKeamananGroupMotor',
-                ),
-            ),
+            'contain' => array(),
+            // 'contain' => array(
+            //     'TtujPerlengkapan',
+            //     'UangJalan' => array(
+            //         'UangJalanTipeMotor',
+            //         'CommissionGroupMotor',
+            //         'AsdpGroupMotor',
+            //         'UangKawalGroupMotor',
+            //         'UangKeamananGroupMotor',
+            //     ),
+            // ),
             'fields' => array(),
         );
 
@@ -175,7 +158,7 @@ class Ttuj extends AppModel {
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
             if( isset($options['contain']) && empty($options['contain']) ) {
                 $default_options['contain'] = false;
@@ -213,6 +196,8 @@ class Ttuj extends AppModel {
 
     function getSumUnit($data, $ttuj_id, $surat_jalan_id = false, $data_action = false){
         if( empty($data['Qty']) ){
+            $this->TtujTipeMotor = ClassRegistry::init('TtujTipeMotor');
+            
             $data_merge = $this->TtujTipeMotor->find('first', array(
                 'conditions' => array(
                     'TtujTipeMotor.status' => 1,
@@ -288,9 +273,8 @@ class Ttuj extends AppModel {
     }
 
     function getTruckStatus ( $data, $truck_id ) {
-        $truckAway = $this->getData('first', array(
+        $truckAway = $this->getData('paginate', array(
             'conditions' => array(
-                'Ttuj.status' => 1,
                 'Ttuj.is_pool' => 0,
                 'Ttuj.truck_id' => $truck_id,
             ),
@@ -308,15 +292,8 @@ class Ttuj extends AppModel {
             'conditions' => array(
                 'Ttuj.id' => $ttuj_id,
             ),
-        ));
+        ), true, 'all');
         $total = 0;
-        // $customer_name = '';
-        // $driver_name = '';
-        // $change_driver_name = '';
-        // $from_name = '';
-        // $to_name = '';
-        // $driver_id = '';
-        // $driver_penganti_id = '';
 
         if( !empty($data_ttuj) ) {
             $this->Customer = ClassRegistry::init('Customer');
@@ -326,19 +303,9 @@ class Ttuj extends AppModel {
             $data_ttuj = $this->Customer->getMerge($data_ttuj, $customer_id);
             $data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_id);
 
-            // $customer_name = !empty($data_ttuj['Customer']['customer_name_code'])?$data_ttuj['Customer']['customer_name_code']:'';
-            // $driver_name = !empty($data_ttuj['Driver']['driver_name'])?$data_ttuj['Driver']['driver_name']:'';
-            // $driver_id = !empty($data_ttuj['Ttuj']['id'])?$data_ttuj['Ttuj']['id']:'';
-            // $change_driver_name = !empty($data_ttuj['DriverPenganti']['driver_name'])?$data_ttuj['DriverPenganti']['driver_name']:'';
-            // $driver_penganti_id = !empty($data_ttuj['DriverPenganti']['id'])?$data_ttuj['DriverPenganti']['id']:'';
-            // $from_name = !empty($data_ttuj['Ttuj']['from_city_name'])?$data_ttuj['Ttuj']['from_city_name']:'';
-            // $to_name = !empty($data_ttuj['Ttuj']['to_city_name'])?$data_ttuj['Ttuj']['to_city_name']:'';
-
             switch ($data_action) {
                 case 'commission':
                     $commission = !empty($data_ttuj['Ttuj']['commission'])?$data_ttuj['Ttuj']['commission']:0;
-                    // $commission_extra = !empty($data_ttuj['Ttuj']['commission_extra'])?$data_ttuj['Ttuj']['commission_extra']:0;
-                    // $total = $commission + $commission_extra;
                     $total = $commission;
                     break;
                     
@@ -376,9 +343,6 @@ class Ttuj extends AppModel {
                 
                 default:
                     $uang_jalan_1 = !empty($data_ttuj['Ttuj']['uang_jalan_1'])?$data_ttuj['Ttuj']['uang_jalan_1']:0;
-                    // $uang_jalan_2 = !empty($data_ttuj['Ttuj']['uang_jalan_2'])?$data_ttuj['Ttuj']['uang_jalan_2']:0;
-                    // $uang_jalan_extra = !empty($data_ttuj['Ttuj']['uang_jalan_extra'])?$data_ttuj['Ttuj']['uang_jalan_extra']:0;
-                    // $total = $uang_jalan_1 + $uang_jalan_2 + $uang_jalan_extra;
                     $total = $uang_jalan_1;
                     break;
             }
@@ -388,13 +352,13 @@ class Ttuj extends AppModel {
         return $data_ttuj;
     }
 
-    function setTtuj ( $ttuj_id, $data ) {
-        $data['Ttuj'] = $data;
-        $this->set($data);
-        $this->id = $ttuj_id;
+    // function setTtuj ( $ttuj_id, $data ) {
+    //     $data['Ttuj'] = $data;
+    //     $this->set($data);
+    //     $this->id = $ttuj_id;
 
-        return $this->save();
-    }
+    //     return $this->save();
+    // }
 
     function getMerge($data, $id){
         if(empty($data['Ttuj'])){
@@ -408,6 +372,19 @@ class Ttuj extends AppModel {
                 $data = array_merge($data, $data_merge);
             }
         }
+
+        return $data;
+    }
+
+    function getMergeContain ( $data, $ttuj_id ) {
+        $this->TtujTipeMotor = ClassRegistry::init('TtujTipeMotor');
+        $this->TtujPerlengkapan = ClassRegistry::init('TtujPerlengkapan');
+        $this->Driver = ClassRegistry::init('Driver');
+
+        $driver_penganti_id = !empty($data['Ttuj']['driver_penganti_id'])?$data['Ttuj']['driver_penganti_id']:false;
+        $data = $this->Driver->getMerge($data, $driver_penganti_id, 'DriverPenganti');
+        $data = $this->TtujTipeMotor->getMergeTtujTipeMotor( $data, $ttuj_id, 'all');
+        $data = $this->TtujPerlengkapan->getMerge($data, $ttuj_id);
 
         return $data;
     }

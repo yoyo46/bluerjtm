@@ -176,9 +176,13 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.to_city_name', __('Tujuan'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', __('Tgl Terima SJ'), array(
-                            'class' => 'text-center',
-                        ));
+
+                        if( $active_menu == 'ttuj' ) {
+                            echo $this->Html->tag('th', __('Tgl Terima SJ'), array(
+                                'class' => 'text-center',
+                            ));
+                        }
+
                         echo $this->Html->tag('th', __('Status'));
 
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.created', __('Dibuat'), array(
@@ -249,16 +253,19 @@
                 <td><?php echo $value['Ttuj']['customer_name'];?></td>
                 <td><?php echo $value['Ttuj']['from_city_name'];?></td>
                 <td><?php echo $value['Ttuj']['to_city_name'];?></td>
-                <td class="text-center">
-                    <?php 
-                            if(!empty($value['SuratJalan']['tgl_surat_jalan'])){
-                                echo $this->Common->customDate($value['SuratJalan']['tgl_surat_jalan'], 'd/m/Y');
-                            } else {
-                                echo '-';
-                            }
-                    ?>
-                </td>
                 <?php 
+                        if( $active_menu == 'ttuj' ) {
+                            $sjLabel = '-';
+
+                            if(!empty($value['SuratJalan']['tgl_surat_jalan'])){
+                                $sjLabel = $this->Common->customDate($value['SuratJalan']['tgl_surat_jalan'], 'd/m/Y');
+                            }
+
+                            echo $this->Html->tag('td', $sjLabel, array(
+                                'class' => 'text-center',
+                            ));
+                        }
+                        
                         if(empty($value['Ttuj']['status'])){
                             echo $this->Html->tag('td', '<span class="label label-danger">Void</span>');
                         } else if(!empty($value['Ttuj']['is_laka'])){

@@ -59,10 +59,10 @@ class MkCommonComponent extends Component {
             $tempTipeMotor = array();
 
             foreach ($data['TtujTipeMotor'] as $key => $tipeMotor) {
-                $tempTipeMotor['TtujTipeMotor']['tipe_motor_id'][$key] = $tipeMotor['tipe_motor_id'];
-                $tempTipeMotor['TtujTipeMotor']['color_motor_id'][$key] = $tipeMotor['color_motor_id'];
-                $tempTipeMotor['TtujTipeMotor']['qty'][$key] = $tipeMotor['qty'];
-                $tempTipeMotor['TtujTipeMotor']['city_id'][$key] = $tipeMotor['city_id'];
+                $tempTipeMotor['TtujTipeMotor']['tipe_motor_id'][$key] = $tipeMotor['TtujTipeMotor']['tipe_motor_id'];
+                $tempTipeMotor['TtujTipeMotor']['color_motor_id'][$key] = $tipeMotor['TtujTipeMotor']['color_motor_id'];
+                $tempTipeMotor['TtujTipeMotor']['qty'][$key] = $tipeMotor['TtujTipeMotor']['qty'];
+                $tempTipeMotor['TtujTipeMotor']['city_id'][$key] = $tipeMotor['TtujTipeMotor']['city_id'];
                 $tempTipeMotor['TtujTipeMotor']['city'][$key] = !empty($tipeMotor['City']['name'])?$tipeMotor['City']['name']:false;
             }
 
@@ -78,7 +78,7 @@ class MkCommonComponent extends Component {
             $tempPerlengkapan = array();
 
             foreach ($data['TtujPerlengkapan'] as $key => $dataPerlengkapan) {
-                $tempPerlengkapan['TtujPerlengkapan'][$dataPerlengkapan['perlengkapan_id']] = $dataPerlengkapan['qty'];
+                $tempPerlengkapan['TtujPerlengkapan'][$dataPerlengkapan['TtujPerlengkapan']['perlengkapan_id']] = $dataPerlengkapan['TtujPerlengkapan']['qty'];
             }
 
             unset($data['TtujPerlengkapan']);

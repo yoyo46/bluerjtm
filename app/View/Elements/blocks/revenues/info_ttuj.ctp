@@ -56,7 +56,7 @@
                         <?php 
                                 if( !empty($ttuj['TtujTipeMotor']) ) {
                                     foreach ($ttuj['TtujTipeMotor'] as $key => $ttujTipeMotor) {
-                                        $qty = !empty($ttujTipeMotor['qty'])?$ttujTipeMotor['qty']:0;
+                                        $qty = !empty($ttujTipeMotor['TtujTipeMotor']['qty'])?$ttujTipeMotor['TtujTipeMotor']['qty']:0;
                                         $motor = !empty($ttujTipeMotor['TipeMotor']['name'])?$ttujTipeMotor['TipeMotor']['name']:false;
                                         $color_motor = !empty($ttujTipeMotor['ColorMotor']['name'])?$ttujTipeMotor['ColorMotor']['name']:false;
                                         $totalUnitMuatan += $qty;

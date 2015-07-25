@@ -146,7 +146,8 @@ class LakasController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
-            // debug($data);die();
+            $ttuj_data = array();
+
             if($id && $data_local){
                 $this->Laka->id = $id;
                 $msg = 'merubah';
@@ -177,43 +178,30 @@ class LakasController extends AppController {
 
             if(!empty($data['Laka']['ttuj_id'])){
                 $this->loadModel('Ttuj');
-                $ttuj = $this->Ttuj->find('first', array(
-                    'conditions' => array(
-                        'Ttuj.id' => $data['Laka']['ttuj_id']
-                    )
-                ));
-
-                if(!empty($ttuj['Ttuj']['driver_name'])){
-                    $data['Laka']['driver_name'] = $ttuj['Ttuj']['driver_name'];
-                }
-            }
-
-            $ttuj_data = array();
-            if(!empty($data['Laka']['ttuj_id'])){
                 $ttuj_data = $this->Ttuj->getData('first', array(
                     'conditions' => array(
                         'Ttuj.id' => $data['Laka']['ttuj_id']
-                    )
-                ));
+                    ),
+                ), true, 'all');
 
+                if(!empty($ttuj_data['Ttuj']['driver_name'])){
+                    $data['Laka']['driver_name'] = $ttuj_data['Ttuj']['driver_name'];
+                }
                 if(!empty($ttuj_data['Ttuj']['driver_penganti_id'])){
-                    $data['Laka']['change_driver_id'] = $ttuj_data['Ttuj']['driver_penganti_id'];
+                    $driver = $this->Ttuj->Truck->Driver->getData('first', array(
+                        'conditions' => array(
+                            'Driver.id' => $ttuj_data['Ttuj']['driver_penganti_id'],
+                            'Driver.status' => 1
+                        )
+                    ));
+
+                    if(!empty($driver)){
+                        $data['Laka']['change_driver_id'] = $ttuj_data['Ttuj']['driver_penganti_id'];
+                        $data['Laka']['change_driver_name'] = $driver['Driver']['driver_name'];
+                    }
                 }
             }
 
-            if(!empty($data['Laka']['change_driver_id'])){
-                $driver = $this->Ttuj->Truck->Driver->getData('first', array(
-                    'conditions' => array(
-                        'Driver.id' => $data['Laka']['change_driver_id'],
-                        'Driver.status' => 1
-                    )
-                ));
-
-                if(!empty($driver['Driver']['name'])){
-                    $data['Laka']['change_driver_name'] = $driver['Driver']['driver_name'];
-                }
-            }
-            
             $this->Laka->set($data);
 
             if($this->Laka->validates($data)){
@@ -225,6 +213,7 @@ class LakasController extends AppController {
                 if(!empty($data['LakaMedias']['name'])){
                     foreach ($data['LakaMedias']['name'] as $key => $temp_image) {
                         $uploaded = $this->RjImage->upload($temp_image, '/'.Configure::read('__Site.laka_photo_folder').'/', String::uuid());
+
                         if(!empty($uploaded)) {
                             if(!$uploaded['error']) {
                                 $data['LakaMedias']['name'][$key] = $uploaded['imageName'];
@@ -348,6 +337,9 @@ class LakasController extends AppController {
         }
 
         $this->loadModel('Truck');
+        $this->loadModel('LakaMaterial');
+        $this->loadModel('LakaInsurance');
+
         $this->Truck->bindModel(array(
             'hasOne' => array(
                 'Laka' => array(
@@ -383,8 +375,8 @@ class LakasController extends AppController {
                 'Truck.nopol' => 'ASC',
             ),
         ));
-
         $result = array();
+
         if(!empty($trucks)){
             foreach ($trucks as $key => $value) {
                 $truckName = $value['Truck']['nopol'];
@@ -396,34 +388,11 @@ class LakasController extends AppController {
                 $result[$value['Truck']['id']] = $truckName;
             }
         }
-        $trucks = $result;
-
-        $this->loadModel('LakaMaterial');
-        $this->loadModel('LakaInsurance');
-
-        $material = $this->LakaMaterial->find('list');
-        $insurance = $this->LakaInsurance->find('list');
 
         $ttujs = array();
-        
-        if(!empty($this->request->data['Laka']['truck_id'])){
-            $ttujs = $this->Ttuj->getData('list', array(
-                'conditions' => array(
-                    'Ttuj.is_pool <>' => 1,
-                    'Ttuj.is_draft' => 0,
-                    'Ttuj.status' => 1,
-                    'Ttuj.truck_id' => $this->request->data['Laka']['truck_id']
-                ),
-                'fields' => array(
-                    'Ttuj.id', 'Ttuj.no_ttuj'
-                ),
-                'order' => array(
-                    'Ttuj.created' => 'DESC',
-                    'Ttuj.id' => 'DESC'
-                ),
-            ), false);
-        }
-
+        $trucks = $result;
+        $material = $this->LakaMaterial->find('list');
+        $insurance = $this->LakaInsurance->find('list');
         $driverPengantis = $this->Ttuj->Truck->Driver->getData('list', array(
             'conditions' => array(
                 'Driver.status' => 1,
@@ -436,12 +405,26 @@ class LakasController extends AppController {
                 'Truck'
             )
         ));
-
-        $this->set(compact('material', 'insurance', 'step', 'ttujs', 'driverPengantis'));
+        
+        if(!empty($this->request->data['Laka']['truck_id'])){
+            $ttujs = $this->Ttuj->getData('list', array(
+                'conditions' => array(
+                    'Ttuj.is_pool <>' => 1,
+                    'Ttuj.is_draft' => 0,
+                    'Ttuj.truck_id' => $this->request->data['Laka']['truck_id'],
+                ),
+                'fields' => array(
+                    'Ttuj.id', 'Ttuj.no_ttuj'
+                ),
+            ));
+        }
 
         $this->set('active_menu', 'lakas');
-        $this->set('trucks', $trucks);
-        $this->set('id', $id);
+        $this->set(compact(
+            'material', 'insurance', 'step', 
+            'ttujs', 'driverPengantis', 'id',
+            'trucks'
+        ));
         $this->render('laka_form');
     }
 

@@ -270,5 +270,51 @@ class Driver extends AppModel {
         
         return $format_id;
     }
+
+    function getListDriverPenganti ( $include_this_driver_id = false, $only_bind = false ) {
+        $this->bindModel(array(
+            'hasOne' => array(
+                'Ttuj' => array(
+                    'className' => 'Ttuj',
+                    'foreignKey' => 'driver_penganti_id',
+                    'conditions' => array(
+                        'Ttuj.status' => 1,
+                        'Ttuj.is_pool' => 0,
+                        'Ttuj.is_laka' => 0,
+                    ),
+                )
+            )
+        ), false);
+        
+        if( !empty($include_this_driver_id) ) {
+            // Ambil data Driver Penganti berikut id ini
+            $conditions = array(
+                'OR' => array(
+                    'Driver.id' => $include_this_driver_id,
+                    'Ttuj.id' => NULL,
+                ),
+            );
+        } else {
+            $conditions = array(
+                'Ttuj.id' => NULL,
+            );
+        }
+
+        if( empty($only_bind) ) {
+            $drivers = $this->getData('list', array(
+                'conditions' => $conditions,
+                'fields' => array(
+                    'Driver.id', 'Driver.driver_name'
+                ),
+                'contain' => array(
+                    'Ttuj'
+                ),
+            ));
+
+            return $drivers;
+        } else {
+            return $conditions;
+        }
+    }
 }
 ?>

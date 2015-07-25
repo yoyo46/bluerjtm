@@ -128,6 +128,9 @@ class AjaxController extends AppController {
 		));
 		
 		if(!empty($data_ttuj)){
+			$this->loadModel('Driver');
+			$driver_id = !empty($data_ttuj['Ttuj']['driver_penganti_id'])?$data_ttuj['Ttuj']['driver_penganti_id']:false;
+			$data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_id, 'DriverPenganti');
 			$this->request->data = $data_ttuj;
 		}
 
@@ -138,7 +141,9 @@ class AjaxController extends AppController {
 
 	function getColorTipeMotor($tipe_motor_id, $ttuj_id){
 		$this->loadModel('Ttuj');
-		$data_ttuj = $this->Ttuj->TtujTipeMotor->getData('first', array(
+		$this->loadModel('TtujTipeMotor');
+
+		$data_ttuj = $this->TtujTipeMotor->getData('first', array(
 			'conditions' => array(
 				'TtujTipeMotor.ttuj_id' => $ttuj_id,
 				'TtujTipeMotor.tipe_motor_id' => $tipe_motor_id
@@ -162,8 +167,9 @@ class AjaxController extends AppController {
 	}
 
 	function getValuePerlengkapan($perlengkapan_id, $ttuj_id){
-		$this->loadModel('Ttuj');
-		$data_ttuj = $this->Ttuj->TtujPerlengkapan->getData('first', array(
+		$this->loadModel('TtujPerlengkapan');
+		
+		$data_ttuj = $this->TtujPerlengkapan->getData('first', array(
 			'conditions' => array(
 				'TtujPerlengkapan.ttuj_id' => $ttuj_id,
 				'TtujPerlengkapan.perlengkapan_id' => $perlengkapan_id
@@ -175,20 +181,19 @@ class AjaxController extends AppController {
 
 	function getInfoLaka($ttuj_id = false){
 		$this->loadModel('Ttuj');
-		$this->loadModel('Driver');
-		$this->loadModel('Truck');
-		$this->loadModel('City');
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
 				'Ttuj.id' => $ttuj_id,
 				'Ttuj.is_pool <>' => 1,
                 'Ttuj.is_draft' => 0,
-                'Ttuj.status' => 1,
-			)
-		), false);
+			),
+			'contain' => false,
+		));
 
 		if( !empty($data_ttuj) ) {
+			$this->loadModel('Driver');
+			$this->loadModel('City');
 			$driver_id = $data_ttuj['Ttuj']['driver_id'];
 
 			if(!empty($data_ttuj['Ttuj']['driver_penganti_id'])){
@@ -212,11 +217,10 @@ class AjaxController extends AppController {
 	function getTtujCustomerInfo($customer_id = false){
 		$this->loadModel('Ttuj');
 		$this->loadModel('Lku');
-		$this->loadModel('LkuDetail');
-		$default_conditions = array(
-			'Ttuj.customer_id' => $customer_id
-		);
 
+		$default_conditions = array(
+			'Ttuj.customer_id' => $customer_id,
+		);
 		$ttuj_id = $this->Ttuj->getData('list', array(
 			'conditions' => $default_conditions,
 			'group' => array(
@@ -224,17 +228,16 @@ class AjaxController extends AppController {
 			),
 			'fields' => array(
 				'Ttuj.id'
-			)
+			),
+			'contain' => false,
 		));
-
 		$lku_condition = array(
 			'Lku.ttuj_id' => $ttuj_id,
 			'Lku.status' => 1,
 			'Lku.complete_paid' => 0
-			// 'Lku.type_lku' => $type_lku
 		);
-
 		$lku_details = array();
+
 		if(!empty($ttuj_id)){
 			if(!empty($this->request->data['Lku']['date_from']) || !empty($this->request->data['Lku']['date_to'])){
 				if(!empty($this->request->data['Lku']['date_from'])){
@@ -250,6 +253,7 @@ class AjaxController extends AppController {
 			));
 
 			if(!empty($lkus)){
+				$this->loadModel('LkuDetail');
 				$lku_id = Set::extract('/Lku/id', $lkus);
 				$this->paginate = $this->LkuDetail->getData('paginate', array(
 					'conditions' => array(
@@ -280,15 +284,14 @@ class AjaxController extends AppController {
 						'SUM(LkuPaymentDetail.total_biaya_klaim) as lku_has_paid'
 					),
 				));
-
 				$lku_details[$key]['LkuDetail']['lku_has_paid'] = $lku_has_paid[0]['lku_has_paid'];
 
 				$ttuj = $this->Ttuj->getData('first', array(
 					'conditions' => array(
 						'Ttuj.id' => $value['Lku']['ttuj_id']
-					)
+					),
+					'contain' => false,
 				));
-
 				$lku_details[$key]['Ttuj'] = !empty($ttuj['Ttuj']) ? $ttuj['Ttuj'] : array();
 
 				$part_motor = array();
@@ -313,22 +316,22 @@ class AjaxController extends AppController {
 			}
 		}
 		
-		$this->set('lkus', $lkus);
 		$data_change = 'browse-invoice';
 		$data_action = 'getTtujCustomerInfo';
 		$title = 'Pembayaran LKU Customer';
-		$this->set(compact('customer_id', 'data_change', 'data_action', 'title', 'lku_details'));
+		$this->set(compact(
+			'customer_id', 'data_change', 'data_action', 
+			'title', 'lku_details', 'lkus'
+		));
 	}
 
 	function getTtujCustomerInfoKsu($customer_id = false){
 		$this->loadModel('Ttuj');
 		$this->loadModel('Ksu');
-		$this->loadModel('KsuDetail');
 
 		$default_conditions = array(
 			'Ttuj.customer_id' => $customer_id
 		);
-
 		$ttuj_id = $this->Ttuj->getData('list', array(
 			'conditions' => $default_conditions,
 			'group' => array(
@@ -336,9 +339,9 @@ class AjaxController extends AppController {
 			),
 			'fields' => array(
 				'Ttuj.id'
-			)
+			),
+			'contain' => false,
 		));
-
 		$ksu_condition = array(
 			'Ksu.ttuj_id' => $ttuj_id,
 			'Ksu.status' => 1,
@@ -362,6 +365,7 @@ class AjaxController extends AppController {
 			));
 			
 			if(!empty($ksus)){
+				$this->loadModel('KsuDetail');
 				$ksu_id = Set::extract('/Ksu/id', $ksus);
 				$this->paginate = $this->KsuDetail->getData('paginate', array(
 					'conditions' => array(
@@ -391,15 +395,14 @@ class AjaxController extends AppController {
 						'SUM(KsuPaymentDetail.total_biaya_klaim) as ksu_has_paid'
 					),
 				));
-
 				$ttuj = $this->Ttuj->getData('first', array(
 					'conditions' => array(
 						'Ttuj.id' => $value['Ksu']['ttuj_id']
-					)
+					),
+					'contain' => false,
 				));
 
 				$ksu_details[$key]['Ttuj'] = !empty($ttuj['Ttuj']) ? $ttuj['Ttuj'] : array();
-
 				$ksu_details[$key]['KsuDetail']['ksu_has_paid'] = $ksu_has_paid[0]['ksu_has_paid'];
 
 				$Perlengkapan = array();
@@ -453,22 +456,22 @@ class AjaxController extends AppController {
 	function getInfoTtujRevenue( $ttuj_id = false, $customer_id = false ){
 		$this->loadModel('Ttuj');
 		$this->loadModel('TarifAngkutan');
-		$this->loadModel('Customer');
 		$this->loadModel('City');
 		$this->loadModel('GroupMotor');
-		$this->loadModel('Revenue');
 		$data_revenue_detail = array();
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
-				'Ttuj.status' => 1,
-				'Ttuj.is_draft' => 0,
                 'Ttuj.id' => $ttuj_id,
+				'Ttuj.is_draft' => 0,
 			),
-		), false);
+			'contain' => false,
+		));
 
 		if(!empty($data_ttuj)){
-			$data_ttuj = $this->Ttuj->TtujTipeMotor->getMergeTtujTipeMotor( $data_ttuj, $ttuj_id );
+			$this->loadModel('TtujTipeMotor');
+
+			$data_ttuj = $this->TtujTipeMotor->getMergeTtujTipeMotor( $data_ttuj, $ttuj_id );
             $tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity']);
 
             if( !empty($tarif['jenis_unit']) && $tarif['jenis_unit'] == 'per_truck' ) {
@@ -486,6 +489,8 @@ class AjaxController extends AppController {
 			$toCities = array();
 
 			if(!empty($data_ttuj['TtujTipeMotor'])){
+				$this->loadModel('Revenue');
+
 				foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
 					$group_motor_name = false;
 					$qtyTtuj = !empty($value[0]['qty'])?$value[0]['qty']:0;
@@ -540,7 +545,7 @@ class AjaxController extends AppController {
 			}
 		}
 
-		$customers = $this->Customer->getData('list', array(
+		$customers = $this->Ttuj->Customer->getData('list', array(
 			'conditions' => array(
 				'Customer.status' => 1
 			),
@@ -548,7 +553,6 @@ class AjaxController extends AppController {
                 'Customer.id', 'Customer.customer_name_code'
             ),
 		));
-
 		$toCities = $this->City->getListCities();
 		$groupMotors = $this->GroupMotor->getData('list', array(
 			'conditions' => array(
@@ -746,14 +750,14 @@ class AjaxController extends AppController {
 
 	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $detail_city_id = false, $group_motor_id = false, $is_charge = false, $main_city_id = false, $qty = 0, $jenis_unit = '', $from_city_id = false, $truck_id = false, $from_ttuj = false ){
 		$this->loadModel('Ttuj');
-		$this->loadModel('GroupMotor');
 		$this->loadModel('TarifAngkutan');
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
 				'Ttuj.id' => $ttuj_id,
 			),
-		), false);
+			'contain' => false,
+		), true, 'all');
 		$from_city_id = !empty($data_ttuj['Ttuj']['from_city_id'])?$data_ttuj['Ttuj']['from_city_id']:$from_city_id;
 
 		if( !empty($truck_id) ) {
@@ -774,6 +778,7 @@ class AjaxController extends AppController {
 		}
 
 		if( !empty($group_motor_id) ) {
+			$this->loadModel('GroupMotor');
 			$groupMotor = $this->GroupMotor->getData('first', array(
 				'conditions' => array(
 					'GroupMotor.id' => $group_motor_id,
@@ -1049,7 +1054,7 @@ class AjaxController extends AppController {
                     'conditions' => array(
                         'Ttuj.id' => $action_id,
                     ),
-		        ), false);
+		        ), true, 'all');
         		$ttuj_truck_id = !empty($ttuj['Ttuj']['truck_id'])?$ttuj['Ttuj']['truck_id']:false;
 				$addConditions = $this->Truck->getListTruck( $ttuj_truck_id, true );
 
@@ -1345,7 +1350,6 @@ class AjaxController extends AppController {
 		$data_action = 'browse-form';
 		$data_change = 'no_ttuj';
 		$conditions = array(
-		 	'Ttuj.status' => 1,
             'Ttuj.is_draft' => 0,
             'Ttuj.is_laka' => 0,
         );
@@ -1485,6 +1489,19 @@ class AjaxController extends AppController {
         ));
         $ttujs = $this->paginate('Ttuj');
 
+        if( !empty($ttujs) ) {
+        	$this->loadModel('Driver');
+
+        	foreach ($ttujs as $key => $ttuj) {
+        		if( !empty($ttuj['Ttuj']['driver_penganti_id']) ) {
+					$driver_penganti_id = $ttuj['Ttuj']['driver_penganti_id'];
+					$ttuj = $this->Driver->getMerge($ttuj, $driver_penganti_id, 'DriverPenganti');
+				}
+
+				$ttujs[$key] = $ttuj;
+        	}
+        }
+
         $this->set(compact(
         	'ttujs', 'data_action', 'title',
         	'data_change', 'action_type'
@@ -1606,9 +1623,9 @@ class AjaxController extends AppController {
 				'Driver'
 			)
 		));
-
 		$driver_name = '';
 		$no_sim = '';
+		
 		if(!empty($driver)){
 			$driver_name = $driver['Driver']['name'];
 			$no_sim = $driver['Driver']['no_sim'];
@@ -1616,16 +1633,16 @@ class AjaxController extends AppController {
 
 		$ttujs = $this->Ttuj->getData('list', array(
             'conditions' => array(
+                'Ttuj.truck_id' => $id,
                 'Ttuj.is_pool <>' => 1,
                 'Ttuj.is_draft' => 0,
-                'Ttuj.status' => 1,
                 'Ttuj.is_laka' => 0,
-                'Ttuj.truck_id' => $id
             ),
             'fields' => array(
                 'Ttuj.id', 'Ttuj.no_ttuj'
-            )
-        ), false);
+            ),
+            'contain' => false,
+        ));
 
 		$this->set(compact('driver_name', 'no_sim', 'ttujs'));
 	}
@@ -2157,12 +2174,12 @@ class AjaxController extends AppController {
 		$this->render('get_customer');
 	}
 
-	function getInfoTtujPayment( $ttuj_id, $action_type = 'uang_jalan'){
-		$this->loadModel('Ttuj');
-		$result = $this->Ttuj->getTtujPayment($ttuj_id, $action_type);
-		echo json_encode($result);
-		$this->render(false);
-	}
+	// function getInfoTtujPayment( $ttuj_id, $action_type = 'uang_jalan'){
+	// 	$this->loadModel('Ttuj');
+	// 	$result = $this->Ttuj->getTtujPayment($ttuj_id, $action_type);
+	// 	echo json_encode($result);
+	// 	$this->render(false);
+	// }
 
 	function getInfoEmploye($id){
 		$this->loadModel('Employe');
@@ -2197,7 +2214,6 @@ class AjaxController extends AppController {
 		$document_type = false;
 		$conditions = array(
             'Ttuj.is_draft' => 0,
-            'Ttuj.status' => 1,
         );
 
         switch ($action_type) {
@@ -2339,61 +2355,6 @@ class AjaxController extends AppController {
                 	$conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $to_date;
                 }
             }
-            // if(!empty($this->request->data['Ttuj']['document_type'])){
-            //     $document_type = urldecode($this->request->data['Ttuj']['document_type']);
-
-            //     switch ($document_type) {
-            //     	case 'uang_jalan':
-            //     		unset($conditions['OR']);
-            //     		$conditions['Ttuj.paid_uang_jalan <>'] = 'full';
-            //     		break;
-            //     	case 'uang_jalan_2':
-            //     		unset($conditions['OR']);
-            //     		$conditions['Ttuj.paid_uang_jalan_2 <>'] = 'full';
-            //     		$conditions['Ttuj.uang_jalan_2 <>'] = 0;
-            //     		break;
-            //     	case 'uang_jalan_extra':
-            //     		unset($conditions['OR']);
-            //     		$conditions['Ttuj.paid_uang_jalan_extra <>'] = 'full';
-            //     		$conditions['Ttuj.uang_jalan_extra <>'] = 0;
-            //     		break;
-            //     	case 'commission':
-            //     		unset($conditions['OR']);
-            //     		$conditions['Ttuj.paid_commission <>'] = 'full';
-            //     		$conditions['Ttuj.commission <>'] = 0;
-            //     		break;
-            //     	case 'commission_extra':
-            //     		unset($conditions['OR']);
-            //     		$conditions['Ttuj.paid_commission_extra <>'] = 'full';
-            //     		$conditions['Ttuj.commission_extra <>'] = 0;
-            //     		break;
-            //     	case 'uang_kuli_muat':
-            //     		unset($conditions['OR']);
-            //     		$conditions['Ttuj.paid_uang_kuli_muat <>'] = 'full';
-            //     		$conditions['Ttuj.uang_kuli_muat <>'] = 0;
-            //     		break;
-            //     	case 'uang_kuli_bongkar':
-            //     		unset($conditions['OR']);
-            //     		$conditions['Ttuj.paid_uang_kuli_bongkar <>'] = 'full';
-            //     		$conditions['Ttuj.uang_kuli_bongkar <>'] = 0;
-            //     		break;
-            //     	case 'asdp':
-            //     		unset($conditions['OR']);
-            //     		$conditions['Ttuj.paid_asdp <>'] = 'full';
-            //     		$conditions['Ttuj.asdp <>'] = 0;
-            //     		break;
-            //     	case 'uang_kawal':
-            //     		unset($conditions['OR']);
-            //     		$conditions['Ttuj.paid_uang_kawal <>'] = 'full';
-            //     		$conditions['Ttuj.uang_kawal <>'] = 0;
-            //     		break;
-            //     	case 'uang_keamanan':
-            //     		unset($conditions['OR']);
-            //     		$conditions['Ttuj.paid_uang_keamanan <>'] = 'full';
-            //     		$conditions['Ttuj.uang_keamanan <>'] = 0;
-            //     		break;
-            //     }
-            // }
 
             if(!empty($this->request->data['Ttuj']['uang_jalan_1']) || !empty($this->request->data['Ttuj']['uang_jalan_2']) || !empty($this->request->data['Ttuj']['uang_jalan_extra']) || !empty($this->request->data['Ttuj']['commission']) || !empty($this->request->data['Ttuj']['commission_extra']) || !empty($this->request->data['Ttuj']['uang_kuli_muat']) || !empty($this->request->data['Ttuj']['uang_kuli_bongkar']) || !empty($this->request->data['Ttuj']['asdp']) || !empty($this->request->data['Ttuj']['uang_kawal']) || !empty($this->request->data['Ttuj']['uang_keamanan'])){
             	unset($conditions['OR']);
@@ -2471,8 +2432,10 @@ class AjaxController extends AppController {
         		$customer_id = !empty($ttuj['Ttuj']['customer_id'])?$ttuj['Ttuj']['customer_id']:'';
             	$driver_id = !empty($ttuj['Ttuj']['driver_id'])?$ttuj['Ttuj']['driver_id']:'';
             	$ttuj_id = !empty($ttuj['Ttuj']['id'])?$ttuj['Ttuj']['id']:'';
+            	$driver_penganti_id = !empty($ttuj['Ttuj']['driver_penganti_id'])?$ttuj['Ttuj']['driver_penganti_id']:'';
         		$ttuj = $this->Customer->getMerge($ttuj, $customer_id);
             	$ttuj = $this->Driver->getMerge($ttuj, $driver_id);
+            	$ttuj = $this->Driver->getMerge($ttuj, $driver_penganti_id, 'DriverPenganti');
 
             	switch ($action_type) {
 		        	case 'biaya_ttuj':

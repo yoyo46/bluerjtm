@@ -44,9 +44,8 @@ class RevenuesController extends AppController {
         $this->set('sub_module_title', __('TTUJ'));
         $this->set('label_tgl', __('Tanggal Berangkat'));
 
-        $conditions = array(
-            'Ttuj.status' => array( 0, 1 ),
-        );
+        $conditions = array();
+
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
 
@@ -172,7 +171,7 @@ class RevenuesController extends AppController {
                 'Ttuj.created' => 'DESC',
                 'Ttuj.id' => 'DESC',
             ),
-        ), false);
+        ), true, 'all');
         $ttujs = $this->paginate('Ttuj');
 
         if( !empty($ttujs) ) {
@@ -201,6 +200,7 @@ class RevenuesController extends AppController {
         ), true, 'all');
 
         if(!empty($ttuj)){
+            $ttuj = $this->Ttuj->getMergeContain( $ttuj, $id );
             $ttuj = $this->Revenue->getPaid( $ttuj, $ttuj['Ttuj']['id'] );
             $data_action = false;
 
@@ -229,7 +229,7 @@ class RevenuesController extends AppController {
 
         if( !empty($dataTtujTipeMotor) ) {
             if( !empty($ttuj_id) ) {
-                $this->Ttuj->TtujTipeMotor->updateAll( array(
+                $this->TtujTipeMotor->updateAll( array(
                     'TtujTipeMotor.status' => 0,
                 ), array(
                     'TtujTipeMotor.ttuj_id' => $ttuj_id,
@@ -246,7 +246,7 @@ class RevenuesController extends AppController {
                     $dataValidate['TtujTipeMotor']['city_id'] = !empty($data['TtujTipeMotor']['city_id'][$key])?$data['TtujTipeMotor']['city_id'][$key]:false;
                 }
                 
-                $this->Ttuj->TtujTipeMotor->set($dataValidate);
+                $this->TtujTipeMotor->set($dataValidate);
 
                 if( !empty($dataRevenue) ) {
                     if( !empty($tipe_motor_id) ) {
@@ -303,15 +303,15 @@ class RevenuesController extends AppController {
 
                 if( !empty($ttuj_id) ) {
                     $dataValidate['TtujTipeMotor']['ttuj_id'] = $ttuj_id;
-                    $this->Ttuj->TtujTipeMotor->create();
-                    $this->Ttuj->TtujTipeMotor->save($dataValidate);
+                    $this->TtujTipeMotor->create();
+                    $this->TtujTipeMotor->save($dataValidate);
 
                     if( !empty($dataRevenue) ) {
                         $this->RevenueDetail->create();
                         $this->RevenueDetail->save($dataRevenue);
                     }
                 } else {
-                    if(!$this->Ttuj->TtujTipeMotor->validates($dataValidate)){
+                    if(!$this->TtujTipeMotor->validates($dataValidate)){
                         $result['validates'] = false;
                     } else {
                         $result['data'][$key] = $dataValidate;
@@ -331,6 +331,7 @@ class RevenuesController extends AppController {
     }
 
     function saveTtujPerlengkapan ( $dataTtujPerlengkapan = false, $data = false, $ttuj_id = false ) {
+        $this->loadModel('TtujPerlengkapan');
         $result = array(
             'validates' => true,
             'data' => false,
@@ -338,7 +339,7 @@ class RevenuesController extends AppController {
 
         if( !empty($dataTtujPerlengkapan) ) {
             if( !empty($ttuj_id) ) {
-                $this->Ttuj->TtujPerlengkapan->updateAll( array(
+                $this->TtujPerlengkapan->updateAll( array(
                     'TtujPerlengkapan.status' => 0,
                 ), array(
                     'TtujPerlengkapan.ttuj_id' => $ttuj_id,
@@ -348,15 +349,15 @@ class RevenuesController extends AppController {
             foreach ($dataTtujPerlengkapan as $key => $qty) {
                 $dataValidate['TtujPerlengkapan']['qty'] = $qty;
                 $dataValidate['TtujPerlengkapan']['perlengkapan_id'] = !empty($data['TtujPerlengkapan']['id'][$key])?$data['TtujPerlengkapan']['id'][$key]:false;
-                $this->Ttuj->TtujPerlengkapan->set($dataValidate);
+                $this->TtujPerlengkapan->set($dataValidate);
 
                 if( !empty($ttuj_id) ) {
                     $dataValidate['TtujPerlengkapan']['ttuj_id'] = $ttuj_id;
 
-                    $this->Ttuj->TtujPerlengkapan->create();
-                    $this->Ttuj->TtujPerlengkapan->save($dataValidate);
+                    $this->TtujPerlengkapan->create();
+                    $this->TtujPerlengkapan->save($dataValidate);
                 } else {
-                    if(!$this->Ttuj->TtujPerlengkapan->validates($dataValidate)){
+                    if(!$this->TtujPerlengkapan->validates($dataValidate)){
                         $result['validates'] = false;
                     } else {
                         $result['data'][$key] = $dataValidate;
@@ -379,6 +380,8 @@ class RevenuesController extends AppController {
         $this->loadModel('Revenue');
         $this->loadModel('RevenueDetail');
         $this->loadModel('UangKuli');
+        $this->loadModel('TtujTipeMotor');
+
         $is_draft = isset($data_local['Ttuj']['is_draft'])?$data_local['Ttuj']['is_draft']:true;
         $allowUpdate = false;
 
@@ -452,6 +455,7 @@ class RevenuesController extends AppController {
             $data['Ttuj']['arrive_lead_time'] = !empty($uangJalan['UangJalan']['arrive_lead_time'])?$uangJalan['UangJalan']['arrive_lead_time']:0;
             $data['Ttuj']['back_lead_time'] = !empty($uangJalan['UangJalan']['back_lead_time'])?$uangJalan['UangJalan']['back_lead_time']:0;
             $data['Ttuj']['tgljam_berangkat'] = '';
+            $data['Ttuj']['group_branch_id'] = Configure::read('__Site.config_branch_id');
 
             if( !empty($data['Ttuj']['getting_sj']) ) {
                 $data['Ttuj']['date_sj'] = $this->MkCommon->getDate($data['Ttuj']['date_sj']);
@@ -955,6 +959,7 @@ class RevenuesController extends AppController {
 
         $ttuj_truck_id = !empty($data_local['Ttuj']['truck_id'])?$data_local['Ttuj']['truck_id']:false;
         $ttuj_truck_nopol = !empty($data_local['Ttuj']['nopol'])?$data_local['Ttuj']['nopol']:false;
+        $driver_penganti_id = !empty($data_local['Ttuj']['driver_penganti_id'])?$data_local['Ttuj']['driver_penganti_id']:false;
         $trucks = $this->Truck->getListTruck($ttuj_truck_id, false, $ttuj_truck_nopol);
         $customers = $this->Ttuj->Customer->getData('list', array(
             'conditions' => $customerConditions,
@@ -962,18 +967,7 @@ class RevenuesController extends AppController {
                 'Customer.id', 'Customer.customer_name_code'
             )
         ));
-        $driverPengantis = $this->Ttuj->Truck->Driver->getData('list', array(
-            'conditions' => array(
-                'Driver.status' => 1,
-                // 'Truck.id' => NULL,
-            ),
-            'fields' => array(
-                'Driver.id', 'Driver.driver_name'
-            ),
-            // 'contain' => array(
-            //     'Truck'
-            // )
-        ));
+        $driverPengantis = $this->Ttuj->Truck->Driver->getListDriverPenganti($driver_penganti_id);
         $perlengkapans = $this->Perlengkapan->getData('list', array(
             'fields' => array(
                 'Perlengkapan.id', 'Perlengkapan.name',
@@ -1030,9 +1024,9 @@ class RevenuesController extends AppController {
         $this->loadModel('Ttuj');
         $locale = $this->Ttuj->getData('first', array(
             'conditions' => array(
-                'Ttuj.id' => $id
+                'Ttuj.id' => $id,
             )
-        ));
+        ), true, 'all');
 
         if($locale){
             $value = true;
@@ -1199,9 +1193,14 @@ class RevenuesController extends AppController {
 
         $ttuj = $this->Ttuj->getData('first', array(
             'conditions' => array(
-                'Ttuj.id' => $id
+                'Ttuj.id' => $id,
             )
         ));
+
+        if( !empty($ttuj) ) {
+            $ttuj = $this->Ttuj->getMergeContain( $ttuj, $id );
+        }
+
         $this->doTTUJLanjutan( $action_type, $id, $ttuj );
     }
 
@@ -1215,8 +1214,9 @@ class RevenuesController extends AppController {
         $this->set('module_title', __('TTUJ'));
 
         if( !empty($this->params['named']['no_ttuj']) ) {
+            $no_ttuj_id = $this->params['named']['no_ttuj'];
             $conditionsDataLocal = array(
-                'Ttuj.id' => $this->params['named']['no_ttuj'],
+                'Ttuj.id' => $no_ttuj_id,
                 'Ttuj.is_draft' => 0,
                 'Ttuj.status' => 1,
             );
@@ -1247,6 +1247,10 @@ class RevenuesController extends AppController {
             $data_local = $this->Ttuj->getData('first', array(
                 'conditions' => $conditionsDataLocal
             ));
+
+            if( !empty($data_local) ) {
+                $data_local = $this->Ttuj->getMergeContain( $data_local, $no_ttuj_id );
+            }
 
             if( !empty($data_local['Ttuj']['is_retail']) ) {
                 $module_title = __('Truk Tiba - RETAIL');
@@ -1386,7 +1390,6 @@ class RevenuesController extends AppController {
         }
 
         $conditionsTtuj = array(
-            'Ttuj.status' => 1,
             'Ttuj.is_draft' => 0,
             'Ttuj.is_laka' => 0,
         );
@@ -1550,15 +1553,15 @@ class RevenuesController extends AppController {
         ));
 
         if( !empty($data_local) ){
-            if( !empty($data_local['Ttuj']['is_retail']) ) {
-                $module_title = __('Info Truk Tiba - RETAIL');
-                $data_action = 'retail';
-            }
-
+            $data_local = $this->Ttuj->getMergeContain( $data_local, $ttuj_id );
             $data_local['Ttuj']['ttuj_date'] = date('d/m/Y', strtotime($data_local['Ttuj']['ttuj_date']));
             $data_local = $this->MkCommon->getTtujTipeMotor($data_local);
             $data_local = $this->MkCommon->getTtujPerlengkapan($data_local);
 
+            if( !empty($data_local['Ttuj']['is_retail']) ) {
+                $module_title = __('Info Truk Tiba - RETAIL');
+                $data_action = 'retail';
+            }
             if( !empty($data_local['Ttuj']['tgljam_berangkat']) && $data_local['Ttuj']['tgljam_berangkat'] != '0000-00-00 00:00:00' ) {
                 $data_local['Ttuj']['tgl_berangkat'] = date('d/m/Y', strtotime($data_local['Ttuj']['tgljam_berangkat']));
                 $data_local['Ttuj']['jam_berangkat'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_berangkat']));
@@ -1579,6 +1582,7 @@ class RevenuesController extends AppController {
                 $data_local['Ttuj']['tgl_pool'] = date('d/m/Y', strtotime($data_local['Ttuj']['tgljam_pool']));
                 $data_local['Ttuj']['jam_pool'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_pool']));
             }
+
             $this->request->data = $data_local;
             $perlengkapans = $this->Perlengkapan->getData('list', array(
                 'fields' => array(
@@ -1913,17 +1917,10 @@ class RevenuesController extends AppController {
                 $truck = $this->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
                 $conditionsTtuj = array(
                     'Ttuj.is_pool'=> 1,
-                    'Ttuj.status'=> 1,
                     'Ttuj.truck_id'=> $truck['Truck']['id'],
                     'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='=> $dateFrom,
                     'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <=' => $dateTo,
                 );
-
-                // if( $data_type == 'retail' ) {
-                //     $conditionsTtuj['Ttuj.is_retail'] = 1;
-                // } else {
-                //     $conditionsTtuj['Ttuj.is_retail'] = 0;
-                // }
 
                 $total = $this->Ttuj->getData('count', array(
                     'conditions' => $conditionsTtuj
@@ -1948,7 +1945,7 @@ class RevenuesController extends AppController {
                             'COUNT(Ttuj.id) as cnt',
                             'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') as dt',
                         ),
-                    ), false);
+                    ));
                     $truck['City'] = $cities;
                 }
 
@@ -1970,10 +1967,6 @@ class RevenuesController extends AppController {
         } else {
             $this->set('active_menu', 'ritase_report');
             $cities = $this->Ttuj->getData('list', array(
-                'conditions' => array(
-                    'Ttuj.status' => 1,
-                    // 'City.is_tujuan' => 1,
-                ),
                 'fields' => array(
                     'ToCity.id', 'ToCity.name'
                 ),
@@ -1986,7 +1979,7 @@ class RevenuesController extends AppController {
                 'group' => array(
                     'ToCity.id',
                 )
-            ), false);
+            ));
         }
 
         $this->set(compact(
@@ -2255,7 +2248,6 @@ class RevenuesController extends AppController {
         $lakas = array_values($lakas);
         $lakas = array_unique($lakas);
         $conditions = array(
-            'Ttuj.status'=> 1,
             'Ttuj.is_draft'=> 0,
             'OR' => array(
                 'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m\')' => $currentMonth,
@@ -2284,7 +2276,6 @@ class RevenuesController extends AppController {
             if( !empty($refine['monitoring_customer_id']) ) {
                 $refine['monitoring_customer_id'] = urldecode($refine['monitoring_customer_id']);
                 $customerId = explode(',', $refine['monitoring_customer_id']);
-                // $conditions['Ttuj.customer_id'] = $customerId;
                 $conditionTrucks['TruckCustomerWithOrder.customer_id'] = $customerId;
             }
         }
@@ -2349,8 +2340,12 @@ class RevenuesController extends AppController {
         $dataRit = array();
 
         if( !empty($ttujs) ) {
+            $this->loadModel('Driver');
+
             foreach ($ttujs as $key => $value) {
                 $inArr = array();
+                $driver_penganti_id = !empty($value['Ttuj']['driver_penganti_id'])?$value['Ttuj']['driver_penganti_id']:false;
+                $value = $this->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
                 $value = $this->Laka->getMergeTtuj($value['Ttuj']['id'], $value, array(
                     'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\')' => $currentMonth,
                 ));
@@ -2535,80 +2530,57 @@ class RevenuesController extends AppController {
 
                 while (strtotime($date) <= strtotime($end_date)) {
                     $currMonth = date('Y-m', strtotime($date));
+                    $currDay = date('d', strtotime($date));
+                    $currMonthly = date('m', strtotime($date));
+                    
+                    if( !in_array($currDay, $inArr) ) {
+                        $popIcon = false;
 
-                    // if( $currMonth == $currentMonth ) {
-                        $currDay = date('d', strtotime($date));
-                        $currMonthly = date('m', strtotime($date));
-                        
-                        // if( !empty($value['Laka']['id']) ) {
-                        //     $dataTtuj['Truck-'.$truck_id][$currDay][] = array(
-                        //         'is_laka' => true,
-                        //         'from_date' => $this->MkCommon->customDate($value['Laka']['tgl_laka'], 'd/m/Y - H:i'),
-                        //         'to_date' => !empty($value['Laka']['completed_date'])?$this->MkCommon->customDate($value['Laka']['completed_date'], 'd/m/Y - H:i'):'-',
-                        //         'driver_name' => $value['Laka']['driver_name'],
-                        //         'lokasi_laka' => $value['Laka']['lokasi_laka'],
-                        //         'truck_condition' => $value['Laka']['truck_condition'],
-                        //         'icon' => ( empty($i) || ( $date == $end_date && !empty($value['Laka']['completed']) ) )?'/img/accident.png':false,
-                        //         'iconPopup' => '/img/accident.png',
-                        //         'color' => $color,
-                        //         'url' => array(
-                        //             'controller' => 'lakas',
-                        //             'action' => 'edit',
-                        //             $value['Laka']['id'],
-                        //         ),
-                        //     );
-                        // }
-                        if( !in_array($currDay, $inArr) ) {
-                            $popIcon = false;
-
-                            if( !empty($lakaDate) && $this->MkCommon->customDate($lakaDate, 'Y-m-d') <= $date ) {
-                                $dataTtujCalendar['color'] = '#dd545f';
-                                $icon = !empty($setting['Setting']['icon_laka'])?$setting['Setting']['icon_laka']:'';
-                            } else if( !empty($tglPool) && $this->MkCommon->customDate($tglPool, 'Y-m-d') <= $date ) {
-                                $dataTtujCalendar['color'] = '#00a65a';
-                                $icon = !empty($setting['Setting']['icon_pool'])?$setting['Setting']['icon_pool']:'';
-                                $dataRit['Truck-'.$truck_id]['rit'][$currMonthly][$currDay][] = $tglPool;
-                            } else if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m-d') <= $date ) {
-                                $dataTtujCalendar['color'] = '#3d9970';
-                                $icon = !empty($setting['Setting']['icon_balik'])?$setting['Setting']['icon_balik']:'';
-                            } else if( !empty($tglBongkaran) && $this->MkCommon->customDate($tglBongkaran, 'Y-m-d') <= $date ) {
-                                $dataTtujCalendar['color'] = '#d3e3d4';
-                                $icon = !empty($setting['Setting']['icon_bongkaran'])?$setting['Setting']['icon_bongkaran']:'';
-                            } else if( !empty($tglTiba) && $this->MkCommon->customDate($tglTiba, 'Y-m-d') <= $date ) {
-                                $dataTtujCalendar['color'] = '#f39c12';
-                                $icon = !empty($setting['Setting']['icon_tiba'])?$setting['Setting']['icon_tiba']:'';
-                            } else {
-                                $dataTtujCalendar['color'] = '#4389fe';
-                                $icon = !empty($setting['Setting']['icon_berangkat'])?$setting['Setting']['icon_berangkat']:'';
-                            }
-
-                            if( $differentTtuj ) {
-                                if( empty($i) || ( $date == $end_date && !empty($toDate) ) ) {
-                                    $dataTtujCalendar['icon'] = $icon;
-                                    $popIcon = $dataTtujCalendar['icon'];
-                                } else {
-                                    $popIcon = $icon;
-                                    $dataTtujCalendar['icon'] = false;
-                                }
-                            } else {
-                                if( empty($i) || ( $date == $end_date && !empty($toDate) ) ) {
-                                    $popIcon = $icon;
-                                    $dataTtujCalendar['icon'] = $icon;
-                                } else {
-                                    $popIcon = $icon;
-                                    $dataTtujCalendar['icon'] = false;
-                                }
-                            }
-
-                            $dataTtujCalendar['iconPopup'] = $popIcon;
-                            $dataTtuj['Truck-'.$truck_id][$currMonthly][$currDay][] = $dataTtujCalendar;
+                        if( !empty($lakaDate) && $this->MkCommon->customDate($lakaDate, 'Y-m-d') <= $date ) {
+                            $dataTtujCalendar['color'] = '#dd545f';
+                            $icon = !empty($setting['Setting']['icon_laka'])?$setting['Setting']['icon_laka']:'';
+                        } else if( !empty($tglPool) && $this->MkCommon->customDate($tglPool, 'Y-m-d') <= $date ) {
+                            $dataTtujCalendar['color'] = '#00a65a';
+                            $icon = !empty($setting['Setting']['icon_pool'])?$setting['Setting']['icon_pool']:'';
+                            $dataRit['Truck-'.$truck_id]['rit'][$currMonthly][$currDay][] = $tglPool;
+                        } else if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m-d') <= $date ) {
+                            $dataTtujCalendar['color'] = '#3d9970';
+                            $icon = !empty($setting['Setting']['icon_balik'])?$setting['Setting']['icon_balik']:'';
+                        } else if( !empty($tglBongkaran) && $this->MkCommon->customDate($tglBongkaran, 'Y-m-d') <= $date ) {
+                            $dataTtujCalendar['color'] = '#d3e3d4';
+                            $icon = !empty($setting['Setting']['icon_bongkaran'])?$setting['Setting']['icon_bongkaran']:'';
+                        } else if( !empty($tglTiba) && $this->MkCommon->customDate($tglTiba, 'Y-m-d') <= $date ) {
+                            $dataTtujCalendar['color'] = '#f39c12';
+                            $icon = !empty($setting['Setting']['icon_tiba'])?$setting['Setting']['icon_tiba']:'';
+                        } else {
+                            $dataTtujCalendar['color'] = '#4389fe';
+                            $icon = !empty($setting['Setting']['icon_berangkat'])?$setting['Setting']['icon_berangkat']:'';
                         }
 
-                        $date = date ("Y-m-d", strtotime("+1 day", strtotime($date)));
-                        $i++;
-                    // } else {
-                    //     break;
-                    // }
+                        if( $differentTtuj ) {
+                            if( empty($i) || ( $date == $end_date && !empty($toDate) ) ) {
+                                $dataTtujCalendar['icon'] = $icon;
+                                $popIcon = $dataTtujCalendar['icon'];
+                            } else {
+                                $popIcon = $icon;
+                                $dataTtujCalendar['icon'] = false;
+                            }
+                        } else {
+                            if( empty($i) || ( $date == $end_date && !empty($toDate) ) ) {
+                                $popIcon = $icon;
+                                $dataTtujCalendar['icon'] = $icon;
+                            } else {
+                                $popIcon = $icon;
+                                $dataTtujCalendar['icon'] = false;
+                            }
+                        }
+
+                        $dataTtujCalendar['iconPopup'] = $popIcon;
+                        $dataTtuj['Truck-'.$truck_id][$currMonthly][$currDay][] = $dataTtujCalendar;
+                    }
+
+                    $date = date ("Y-m-d", strtotime("+1 day", strtotime($date)));
+                    $i++;
                 }
             }
         }
@@ -2837,39 +2809,39 @@ class RevenuesController extends AppController {
         $this->set('customers', $customers);
     }
 
-    function revenue_add(){
-        $this->loadModel('Revenue');
-        $module_title = __('Tambah Revenue');
-        $this->set('sub_module_title', trim($module_title));
-        $this->doTTUJ();
-    }
+    // function revenue_add(){
+    //     $this->loadModel('Revenue');
+    //     $module_title = __('Tambah Revenue');
+    //     $this->set('sub_module_title', trim($module_title));
+    //     $this->doTTUJ();
+    // }
 
-    function revenue_edit( $id ){
-        $this->loadModel('Ttuj');
-        $ttuj = $this->Ttuj->getData('first', array(
-            'conditions' => array(
-                'Ttuj.id' => $id
-            )
-        ));
+    // function revenue_edit( $id ){
+    //     $this->loadModel('Ttuj');
+    //     $ttuj = $this->Ttuj->getData('first', array(
+    //         'conditions' => array(
+    //             'Ttuj.id' => $id
+    //         )
+    //     ));
 
-        if(!empty($ttuj)){
-            $data_action = false;
+    //     if(!empty($ttuj)){
+    //         $data_action = false;
 
-            if( !empty($ttuj['Ttuj']['is_retail']) ) {
-                $data_action = 'retail';
-            }
+    //         if( !empty($ttuj['Ttuj']['is_retail']) ) {
+    //             $data_action = 'retail';
+    //         }
 
-            $module_title = sprintf(__('Rubah TTUJ %s'), ucwords($data_action));
-            $this->set('sub_module_title', trim($module_title));
-            $this->doTTUJ($data_action, $id, $ttuj);
-        }else{
-            $this->MkCommon->setCustomFlash(__('TTUJ tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'revenues',
-                'action' => 'ttuj'
-            ));
-        }
-    }
+    //         $module_title = sprintf(__('Rubah TTUJ %s'), ucwords($data_action));
+    //         $this->set('sub_module_title', trim($module_title));
+    //         $this->doTTUJ($data_action, $id, $ttuj);
+    //     }else{
+    //         $this->MkCommon->setCustomFlash(__('TTUJ tidak ditemukan'), 'error');  
+    //         $this->redirect(array(
+    //             'controller' => 'revenues',
+    //             'action' => 'ttuj'
+    //         ));
+    //     }
+    // }
 
     function add( $action_type = false ){
         $this->loadModel('Revenue');
@@ -2908,6 +2880,7 @@ class RevenuesController extends AppController {
         $this->loadModel('TarifAngkutan');
         $this->loadModel('City');
         $this->loadModel('GroupMotor');
+        $this->loadModel('TtujTipeMotor');
         $data_revenue_detail = array();
 
         if(!empty($this->request->data)){
@@ -3000,10 +2973,9 @@ class RevenuesController extends AppController {
             $ttuj_data = $this->Ttuj->getData('first', array(
                 'conditions' => array(
                     'Ttuj.id' => $ttuj_id,
-                    'Ttuj.status' => 1,
                     'Ttuj.is_draft' => 0,
                 )
-            ), false);
+            ));
 
             if( !empty($this->request->data['RevenueDetail']['no_do']) ){
                 foreach ($this->request->data['RevenueDetail']['no_do'] as $key => $value) {
@@ -3053,7 +3025,7 @@ class RevenuesController extends AppController {
                     if( !empty($ttuj_data['Ttuj']['is_retail']) ){
                         $to_city_name = !empty($city['City']['name'])?$city['City']['name']:false;
 
-                        $ttujTipeMotor = $this->Ttuj->TtujTipeMotor->getMergeTtujTipeMotor( $ttuj_data, $this->request->data['Revenue']['ttuj_id'], 'first', array(
+                        $ttujTipeMotor = $this->TtujTipeMotor->getMergeTtujTipeMotor( $ttuj_data, $this->request->data['Revenue']['ttuj_id'], 'first', array(
                             'TtujTipeMotor.ttuj_id' => $this->request->data['Revenue']['ttuj_id'],
                             'TipeMotor.group_motor_id' => $group_motor_id,
                             'TtujTipeMotor.city_id' => $to_city_id,
@@ -3114,7 +3086,7 @@ class RevenuesController extends AppController {
                     ),
                 ),
             ),
-        ), false);
+        ), true, 'all');
         $this->set('ttujs', $ttujs);
 
         $this->loadModel('Customer');
@@ -3271,21 +3243,22 @@ class RevenuesController extends AppController {
                     'conditions' => array(
                         'Ttuj.truck_id' => $id,
                         'Ttuj.is_pool' => 1,
-                        'Ttuj.status' => 1
                     )
                 ));
-
-                $total_unit = $this->Ttuj->getData('all', array(
+                $ttuj_id = $this->Ttuj->getData('list', array(
                     'conditions' => array(
                         'Ttuj.truck_id' => $id,
                         'Ttuj.is_draft' => 0,
-                        'Ttuj.status' => 1
-                    )
+                    ),
+                    'fields' => array(
+                        'Ttuj.id', 'Ttuj.id',
+                    ),
                 ));
 
-                if(!empty($total_unit)){
-                    $ttuj_id = Set::extract('/Ttuj/id', $total_unit);
-                    $total_unit = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                if(!empty($ttuj_id)){
+                    $this->loadModel('TtujTipeMotor');
+
+                    $total_unit = $this->TtujTipeMotor->getData('first', array(
                         'conditions' => array(
                             'TtujTipeMotor.ttuj_id' => $ttuj_id
                         ),
@@ -3303,7 +3276,6 @@ class RevenuesController extends AppController {
 
                 $default_conditions = array(
                     'Ttuj.truck_id' => $id,
-                    'Ttuj.status' => 1,
                     'Ttuj.is_draft' => 0,
                 );
 
@@ -3400,7 +3372,10 @@ class RevenuesController extends AppController {
                 }
 
                 $sub_module_title = __('Detail Ritase Truk');
-                $this->set(compact('id', 'truk', 'truk_ritase', 'sub_module_title', 'total_ritase', 'total_unit', 'total_lku'));
+                $this->set(compact(
+                    'id', 'truk', 'truk_ritase', 'sub_module_title', 
+                    'total_ritase', 'total_unit', 'total_lku'
+                ));
             }else{
                 $this->MkCommon->setCustomFlash(__('Truk tidak ditemukan'), 'error');
                 $this->redirect($this->referer());
@@ -5096,9 +5071,10 @@ class RevenuesController extends AppController {
             'conditions' => array(
                 'Ttuj.id' => $ttuj_id
             )
-        ));
+        ), true, 'all');
 
         if( !empty($ttuj) ) {
+            $ttuj = $this->Ttuj->getMergeContain( $ttuj, $ttuj_id );
             $ttuj = $this->Ttuj->getSumUnit( $ttuj, $ttuj_id );
             $qtySJNow = !empty($ttuj['QtySJ'])?$ttuj['QtySJ']:0;
             $qtyTipeMotor = !empty($ttuj['Qty'])?$ttuj['Qty']:0;
@@ -5133,7 +5109,7 @@ class RevenuesController extends AppController {
             'conditions' => array(
                 'Ttuj.id' => $id
             )
-        ));
+        ), true, 'all');
 
         if( !empty($ttuj) ) {
             $ttuj = $this->Ttuj->getSumUnit( $ttuj, $id );
@@ -5273,18 +5249,19 @@ class RevenuesController extends AppController {
                         'Ttuj.driver_penganti_id' => $driver_id,
                     ),
                     'Ttuj.is_sj_completed' => 0,
-                    'Ttuj.status' => 1,
                 ),
                 'order' => array(
                     'Ttuj.created' => 'DESC',
                     'Ttuj.id' => 'DESC',
                 ),
-            ), false);
+            ));
 
             if( !empty($ttujs) ) {
+                $this->loadModel('TtujTipeMotor');
+
                 foreach ($ttujs as $key => $ttuj) {
                     $ttuj['SjKembali'] = $this->Ttuj->SuratJalan->getSJKembali( $ttuj['Ttuj']['id'] );
-                    $ttuj['TotalMuatan'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj['Ttuj']['id'] );
+                    $ttuj['TotalMuatan'] = $this->TtujTipeMotor->getTotalMuatan( $ttuj['Ttuj']['id'] );
                     $ttujs[$key] = $ttuj;
                 }
 

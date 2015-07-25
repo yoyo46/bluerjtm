@@ -228,7 +228,7 @@ class AppController extends Controller {
 	        }
 
 	        $cacheName = sprintf('LeadTime-%s', $this->user_id);
-			$lead_time_notif = Cache::read($cacheName, 'short');
+			// $lead_time_notif = Cache::read($cacheName, 'short');
 			
 			if(empty($lead_time_notif)){
 				$this->loadModel('Ttuj');
@@ -237,19 +237,16 @@ class AppController extends Controller {
 						'Ttuj.is_arrive' => 1,
 						'Ttuj.arrive_over_time >' => 0,
 						'Ttuj.is_pool' => 0,
-						'Ttuj.status' => 1
 					),
 					'fields' => array(
 						'Ttuj.id'
 					)
 				));
-
 				$overlead_time_pool = $this->Ttuj->getData('all', array(
 					'conditions' => array(
 						'Ttuj.is_arrive' => 1,
 						'Ttuj.back_orver_time >' => 0,
 						'Ttuj.is_pool' => 1,
-						'Ttuj.status' => 1
 					),
 					'fields' => array(
 						'Ttuj.id', 'Ttuj.nopol', 'Ttuj.no_ttuj'

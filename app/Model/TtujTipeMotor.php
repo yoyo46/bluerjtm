@@ -80,6 +80,7 @@ class TtujTipeMotor extends AppModel {
             ),
             'fields' => array(),
             'group' => array(),
+            'order' => array(),
         );
 
         if( !empty($options) && $is_merge ){
@@ -100,6 +101,9 @@ class TtujTipeMotor extends AppModel {
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
+            }
+            if(!empty($options['order'])){
+                $default_options['order'] = $options['order'];
             }
         } else if( !empty($options) ) {
             $default_options = $options;
@@ -124,9 +128,11 @@ class TtujTipeMotor extends AppModel {
                     'TipeMotor.group_motor_id',
                     'TtujTipeMotor.city_id',
                 ),
-                'fields' => array(
-                    'TtujTipeMotor.id', 'TipeMotor.group_motor_id',
-                    'TtujTipeMotor.city_id', 'SUM(TtujTipeMotor.qty) qty'
+                'order' => array(
+                    'TtujTipeMotor.id' => 'ASC',
+                ),
+                'contain' => array(
+                    'City',
                 ),
             );
 
