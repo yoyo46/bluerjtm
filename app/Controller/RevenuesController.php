@@ -171,7 +171,9 @@ class RevenuesController extends AppController {
                 'Ttuj.created' => 'DESC',
                 'Ttuj.id' => 'DESC',
             ),
-        ), true, 'all');
+        ), true, array(
+            'status' => 'all',
+        ));
         $ttujs = $this->paginate('Ttuj');
 
         if( !empty($ttujs) ) {
@@ -197,7 +199,9 @@ class RevenuesController extends AppController {
             'conditions' => array(
                 'Ttuj.id' => $id,
             ),
-        ), true, 'all');
+        ), true, array(
+            'status' => 'all',
+        ));
 
         if(!empty($ttuj)){
             $ttuj = $this->Ttuj->getMergeContain( $ttuj, $id );
@@ -407,24 +411,17 @@ class RevenuesController extends AppController {
 
             $uangJalan = $this->UangJalan->getData('first', array(
                 'conditions' => array(
-                    'UangJalan.status' => 1,
-                    // 'UangJalan.customer_id' => $customer_id,
                     'UangJalan.from_city_id' => $from_city_id,
                     'UangJalan.to_city_id' => $to_city_id,
                 ),
             ));
             $customer = $this->Ttuj->Customer->getData('first', array(
                 'conditions' => array(
-                    'Customer.status' => 1,
                     'Customer.id' => $customer_id,
                 ),
-                'contain' => array(
-                    'CustomerType',
-                ),
-            ), false);
+            ));
             $truck = $this->Truck->getData('first', array(
                 'conditions' => array(
-                    'Truck.status' => 1,
                     'Truck.id' => $truck_id,
                 ),
                 'fields' => array(
@@ -433,8 +430,13 @@ class RevenuesController extends AppController {
                 ),
             ));
 
-            $data['Ttuj']['from_city_name'] = !empty($uangJalan['FromCity']['name'])?$uangJalan['FromCity']['name']:0;
-            $data['Ttuj']['to_city_name'] = !empty($uangJalan['ToCity']['name'])?$uangJalan['ToCity']['name']:0;
+            if( !empty($uangJalan) ) {
+                $uangJalan = $this->City->getMerge($uangJalan, $from_city_id, 'FromCity');
+                $uangJalan = $this->City->getMerge($uangJalan, $to_city_id, 'ToCity');
+            }
+
+            $data['Ttuj']['from_city_name'] = !empty($uangJalan['FromCity']['name'])?$uangJalan['FromCity']['name']:false;
+            $data['Ttuj']['to_city_name'] = !empty($uangJalan['ToCity']['name'])?$uangJalan['ToCity']['name']:false;
             $data['Ttuj']['customer_name'] = !empty($customer['Customer']['customer_name_code'])?$customer['Customer']['customer_name_code']:'';
             $data['Ttuj']['uang_jalan_id'] = !empty($uangJalan['UangJalan']['id'])?$uangJalan['UangJalan']['id']:false;
             $data['Ttuj']['nopol'] = !empty($truck['Truck']['nopol'])?$truck['Truck']['nopol']:false;
@@ -645,7 +647,6 @@ class RevenuesController extends AppController {
             $fromCities = $this->UangJalan->getKotaAsal();
 
             if( !empty($data['Ttuj']['from_city_id']) ) {
-                $toCities = $this->UangJalan->getKotaTujuan($data['Ttuj']['customer_id'], $data['Ttuj']['from_city_id']);
                 $toCities = $this->UangJalan->getKotaTujuan($data['Ttuj']['from_city_id']);
 
                 if( !empty($data['Ttuj']['to_city_id']) ) {
@@ -692,27 +693,27 @@ class RevenuesController extends AppController {
 
                             if( !empty($uangJalan['UangJalanTipeMotor']) ) {
                                 foreach ($uangJalan['UangJalanTipeMotor'] as $key => $tipeMotor) {
-                                    $uangJalanTipeMotor['UangJalan'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_jalan_1'];
+                                    $uangJalanTipeMotor['UangJalan'][$tipeMotor['UangJalanTipeMotor']['group_motor_id']] = $tipeMotor['UangJalanTipeMotor']['uang_jalan_1'];
                                 }
                             }
                             if( !empty($uangJalan['CommissionGroupMotor']) ) {
                                 foreach ($uangJalan['CommissionGroupMotor'] as $key => $tipeMotor) {
-                                    $uangJalanTipeMotor['Commission'][$tipeMotor['group_motor_id']] = $tipeMotor['commission'];
+                                    $uangJalanTipeMotor['Commission'][$tipeMotor['CommissionGroupMotor']['group_motor_id']] = $tipeMotor['CommissionGroupMotor']['commission'];
                                 }
                             }
                             if( !empty($uangJalan['AsdpGroupMotor']) ) {
                                 foreach ($uangJalan['AsdpGroupMotor'] as $key => $tipeMotor) {
-                                    $uangJalanTipeMotor['Asdp'][$tipeMotor['group_motor_id']] = $tipeMotor['asdp'];
+                                    $uangJalanTipeMotor['Asdp'][$tipeMotor['AsdpGroupMotor']['group_motor_id']] = $tipeMotor['AsdpGroupMotor']['asdp'];
                                 }
                             }
                             if( !empty($uangJalan['UangKawalGroupMotor']) ) {
                                 foreach ($uangJalan['UangKawalGroupMotor'] as $key => $tipeMotor) {
-                                    $uangJalanTipeMotor['UangKawal'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_kawal'];
+                                    $uangJalanTipeMotor['UangKawal'][$tipeMotor['UangKawalGroupMotor']['group_motor_id']] = $tipeMotor['UangKawalGroupMotor']['uang_kawal'];
                                 }
                             }
                             if( !empty($uangJalan['UangKeamananGroupMotor']) ) {
                                 foreach ($uangJalan['UangKeamananGroupMotor'] as $key => $tipeMotor) {
-                                    $uangJalanTipeMotor['UangKeamanan'][$tipeMotor['group_motor_id']] = $tipeMotor['uang_keamanan'];
+                                    $uangJalanTipeMotor['UangKeamanan'][$tipeMotor['UangKeamananGroupMotor']['group_motor_id']] = $tipeMotor['UangKeamananGroupMotor']['uang_keamanan'];
                                 }
                             }
                             if( !empty($uangKuli['UangKuliMuat']['UangKuliGroupMotor']) ) {
@@ -854,6 +855,7 @@ class RevenuesController extends AppController {
                             $this->request->data['Ttuj']['uang_kawal'] = number_format($uang_kawal, 0);
                             $this->request->data['Ttuj']['uang_keamanan'] = number_format($uang_keamanan, 0);
                             $this->request->data['Ttuj']['uang_jalan_extra'] = number_format($uang_jalan_extra, 0);
+                            $this->request->data['Ttuj']['uang_jalan_2'] = !empty($this->request->data['Ttuj']['uang_jalan_2'])?trim($this->request->data['Ttuj']['uang_jalan_2']):0;
 
                             $this->request->data['Ttuj']['uang_jalan_per_unit'] = !empty($uangJalan['UangJalan']['uang_jalan_per_unit'])?$uangJalan['UangJalan']['uang_jalan_per_unit']:0;
                             $this->request->data['Ttuj']['uang_kuli_muat_per_unit'] = !empty($uangJalan['UangJalan']['uang_kuli_muat_per_unit'])?$uangJalan['UangJalan']['uang_kuli_muat_per_unit']:0;
@@ -950,7 +952,6 @@ class RevenuesController extends AppController {
 
         $customerConditions = array(
             'Customer.customer_type_id' => 2,
-            'Customer.status' => 1,
         );
 
         if( $data_action == 'retail' ) {
@@ -1026,7 +1027,9 @@ class RevenuesController extends AppController {
             'conditions' => array(
                 'Ttuj.id' => $id,
             )
-        ), true, 'all');
+        ), true, array(
+            'status' => 'all',
+        ));
 
         if($locale){
             $value = true;
@@ -2263,11 +2266,8 @@ class RevenuesController extends AppController {
             'CalendarEvent.status'=> 1,
             'DATE_FORMAT(CalendarEvent.from_date, \'%Y-%m\')' => $currentMonth,
         );
+        $conditionTrucks = $default_conditionsTruck;
         $conditionEvents = array_merge($conditionEvents, $default_conditionsEvent);
-        $conditionTrucks = array(
-            'Truck.status' => 1
-        );
-        $conditionTrucks = array_merge($conditionTrucks, $default_conditionsTruck);
         $setting = $this->Setting->find('first');
 
         if( !empty($this->params['named']) ) {
@@ -2770,7 +2770,9 @@ class RevenuesController extends AppController {
                 'Revenue.created' => 'DESC',
                 'Revenue.id' => 'DESC',
             ),
-        ), true, 'all');
+        ), true, array(
+            'status' => 'all',
+        ));
         $revenues = $this->paginate('Revenue');
 
         if(!empty($revenues)){
@@ -2781,11 +2783,11 @@ class RevenuesController extends AppController {
                 $value = $this->Revenue->InvoiceDetail->getInvoicedRevenue($value, $value['Revenue']['id']);
 
                 if( empty($value['Revenue']['ttuj_id']) ) {
-                    $valueFromCity = $this->City->getMerge($value, $value['Revenue']['from_city_id']);
-                    $value['FromCity'] = !empty($valueFromCity['City'])?$valueFromCity['City']:false;
+                    $from_city_id = !empty($value['Revenue']['from_city_id'])?$value['Revenue']['from_city_id']:false;
+                    $to_city_id = !empty($value['Revenue']['to_city_id'])?$value['Revenue']['to_city_id']:false;
 
-                    $valueToCity = $this->City->getMerge($value, $value['Revenue']['to_city_id']);
-                    $value['ToCity'] = !empty($valueToCity['City'])?$valueToCity['City']:false;
+                    $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
+                    $value = $this->City->getMerge($value, $to_city_id);
                     $value = $this->Truck->getMerge($value, $value['Revenue']['truck_id']);
                     $value = $this->Ttuj->Customer->getMerge($value, $value['Revenue']['customer_id']);
                 } else {
@@ -2799,9 +2801,6 @@ class RevenuesController extends AppController {
 
         $this->loadModel('Customer');
         $customers = $this->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1
-            ),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -2859,7 +2858,9 @@ class RevenuesController extends AppController {
             'contain' => array(
                 'Ttuj'
             ),
-        ), true, 'all');
+        ), true, array(
+            'status' => 'all',
+        ));
 
         if(!empty($revenue)){
             $revenue = $this->Revenue->RevenueDetail->getMergeAll( $revenue, $revenue['Revenue']['id'] );
@@ -2985,6 +2986,8 @@ class RevenuesController extends AppController {
                         'conditions' => array(
                             'GroupMotor.id' => $group_motor_id
                         )
+                    ), array(
+                        'status' => 'all',
                     ));
                     $city = $this->City->getData('first', array(
                         'conditions' => array(
@@ -3086,14 +3089,13 @@ class RevenuesController extends AppController {
                     ),
                 ),
             ),
-        ), true, 'all');
+        ), true, array(
+            'status' => 'all',
+        ));
         $this->set('ttujs', $ttujs);
 
         $this->loadModel('Customer');
         $customers = $this->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1
-            ),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -3101,12 +3103,7 @@ class RevenuesController extends AppController {
         $this->set('customers', $customers);
 
         $toCities = $this->City->getListCities();
-        $groupMotors = $this->GroupMotor->getData('list', array(
-            'conditions' => array(
-                'GroupMotor.status' => 1
-            )
-        ));
-
+        $groupMotors = $this->GroupMotor->getData('list');
         $branches = $this->City->branchCities();
 
         $this->set(compact(
@@ -3219,13 +3216,8 @@ class RevenuesController extends AppController {
             $truk = $this->Truck->getData('first', array(
                 'conditions' => array(
                     'Truck.id' => $id,
-                    'Truck.status' => 1
                 ),
                 'contain' => array(
-                    'TruckBrand',
-                    'TruckCategory',
-                    'TruckFacility',
-                    'Driver',
                     'TruckCustomer' => array(
                         'conditions' => array(
                             'TruckCustomer.primary'=> 1,
@@ -3236,9 +3228,18 @@ class RevenuesController extends AppController {
                     )
                 )
             ));
-            $truk = $this->Customer->getMerge($truk, $truk['TruckCustomer'][0]['customer_id']);
             
             if(!empty($truk)){
+                $customer_id = !empty($truk['TruckCustomer'][0]['customer_id'])?$truk['TruckCustomer'][0]['customer_id']:false;
+                $truck_brand_id = !empty($truk['Truck']['truck_brand_id'])?$truk['Truck']['truck_brand_id']:false;
+                $truck_category_id = !empty($truk['Truck']['truck_category_id'])?$truk['Truck']['truck_category_id']:false;
+                $truck_facility_id = !empty($truk['Truck']['truck_facility_id'])?$truk['Truck']['truck_facility_id']:false;
+                $driver_id = !empty($truk['Truck']['driver_id'])?$truk['Truck']['driver_id']:false;
+                $truk = $this->Customer->getMerge($truk, $customer_id);
+                $truk = $this->Truck->TruckBrand->getMerge($truk, $truck_brand_id);
+                $truk = $this->Truck->TruckCategory->getMerge($truk, $truck_category_id);
+                $truk = $this->Truck->TruckFacility->getMerge($truk, $truck_facility_id);
+                $truk = $this->Truck->Driver->getMerge($truk, $driver_id);
                 $total_ritase = $this->Ttuj->getData('count', array(
                     'conditions' => array(
                         'Ttuj.truck_id' => $id,
@@ -3450,9 +3451,6 @@ class RevenuesController extends AppController {
 
         $this->loadModel('Customer');
         $customers = $this->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1
-            ),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -3508,6 +3506,8 @@ class RevenuesController extends AppController {
 
             if($this->Invoice->validates()){
                 $this->loadModel('Journal');
+                $this->loadModel('CustomerGroupPattern');
+
                 $tarif_type = !empty($data['Invoice']['tarif_type'])?$data['Invoice']['tarif_type']:false;
                 
                 if($action == 'tarif'){
@@ -3544,8 +3544,8 @@ class RevenuesController extends AppController {
 
                                 if($this->Invoice->save()){
                                     $invoice_id = $this->Invoice->id;
-                                    $invoice_number = $this->Customer->CustomerGroup->CustomerGroupPattern->addPattern($customer, $data);
-                                    $this->Customer->CustomerGroup->CustomerGroupPattern->addPattern($customer, $data);
+                                    $invoice_number = $this->CustomerGroupPattern->addPattern($customer, $data);
+                                    $this->CustomerGroupPattern->addPattern($customer, $data);
 
                                     if( !empty($data['Invoice']['total']) ) {
                                         $this->Journal->setJournal( $invoice_id, $invoice_number, 'invoice_coa_debit_id', $data['Invoice']['total'], 0, 'invoice' );
@@ -3579,7 +3579,7 @@ class RevenuesController extends AppController {
                             $this->Journal->setJournal( $invoice_id, $document_no, 'invoice_coa_credit_id', 0, $data['Invoice']['total'], 'invoice' );
                         }
 
-                        $this->Customer->CustomerGroup->CustomerGroupPattern->addPattern($customer, $data);
+                        $this->CustomerGroupPattern->addPattern($customer, $data);
 
                         // if( !empty($customer['CustomerPattern']) ) {
                         //     $last_number = str_replace($customer['CustomerPattern']['pattern'], '', $data['Invoice']['no_invoice']);
@@ -3642,7 +3642,6 @@ class RevenuesController extends AppController {
             foreach ($revenues as $key => $revenue) {
                 $revenueCustomer = $this->Customer->getData('first', array(
                     'conditions' => array(
-                        'Customer.status' => 1,
                         'Customer.id' => $revenue['Revenue']['customer_id'],
                     ),
                 ));
@@ -3663,12 +3662,6 @@ class RevenuesController extends AppController {
 
     function invoice_print($id, $action_print = false){
         $this->loadModel('Invoice');
-        $this->loadModel('Revenue');
-        $this->loadModel('GroupMotor');
-        $this->loadModel('City');
-        $this->loadModel('Customer');
-        $this->loadModel('Ttuj');
-        $this->loadModel('User');
 
         if( !empty($this->params['named']) ){
             $data_print = $this->params['named']['print'];
@@ -3683,17 +3676,23 @@ class RevenuesController extends AppController {
         $invoice = $this->Invoice->getData('first', array(
             'conditions' => array(
                 'Invoice.id' => $id,
-                'Invoice.status' => array( 0,1 ),
             ),
             'contain' => array(
                 'InvoiceDetail',
             )
+        ), true, array(
+            'status' => 'all',
         ));
 
         if(!empty($invoice)){
+            $this->loadModel('Customer');
+            $this->loadModel('Bank');
+            $this->loadModel('User');
+            $this->loadModel('Revenue');
+
             $invoice = $this->Customer->getMerge($invoice, $invoice['Invoice']['customer_id']);
             $invoice = $this->User->getMerge($invoice, $invoice['Invoice']['billing_id']);
-            $invoice = $this->Customer->Bank->getMerge($invoice, $invoice['Invoice']['bank_id']);
+            $invoice = $this->Bank->getMerge($invoice, $invoice['Invoice']['bank_id']);
             $revenueDetailId = Set::extract('/InvoiceDetail/revenue_detail_id', $invoice);
 
             if( $data_print == 'header' ) {
@@ -3732,16 +3731,15 @@ class RevenuesController extends AppController {
         $this->set('active_menu', 'revenue');
         $this->set('sub_module_title', __('Account Receivable Aging Report'));
 
-        $default_conditions = array(
-             'Customer.status' => 1
-        );
+        $default_conditions = array();
         $invoice_conditions = array();
-
         $customer_id = '';
         $customer_collect_id = array();
         $due_30= false;
         $due_15= false;
         $due_above_30= false;
+        $list_customer = array();
+
         if( !empty($this->params['named']) ){
             $refine = $this->params['named'];
 
@@ -3878,7 +3876,6 @@ class RevenuesController extends AppController {
             ));
         }
 
-        $list_customer = array();
         foreach ($customers as $key => $value) {
             $default_conditions = array(
                 'Invoice.paid' => 0,
@@ -3944,9 +3941,6 @@ class RevenuesController extends AppController {
         $this->set('active_menu', 'invoice_reports');
 
         $list_customer = $this->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1
-            ),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -4338,7 +4332,6 @@ class RevenuesController extends AppController {
         ));
         $list_customer = $this->Customer->getData('list', array(
             'conditions' => array(
-                'Customer.status' => 1,
                 'Customer.id' => $customers,
             ),
             'fields' => array(
@@ -5071,7 +5064,9 @@ class RevenuesController extends AppController {
             'conditions' => array(
                 'Ttuj.id' => $ttuj_id
             )
-        ), true, 'all');
+        ), true, array(
+            'status' => 'all',
+        ));
 
         if( !empty($ttuj) ) {
             $ttuj = $this->Ttuj->getMergeContain( $ttuj, $ttuj_id );
@@ -5109,7 +5104,9 @@ class RevenuesController extends AppController {
             'conditions' => array(
                 'Ttuj.id' => $id
             )
-        ), true, 'all');
+        ), true, array(
+            'status' => 'all',
+        ));
 
         if( !empty($ttuj) ) {
             $ttuj = $this->Ttuj->getSumUnit( $ttuj, $id );
@@ -5239,7 +5236,9 @@ class RevenuesController extends AppController {
             'conditions' => array(
                 'Driver.id' => $driver_id,
             )
-        ), false);
+        ), true, array(
+            'status' => 'all',
+        ));
 
         if( !empty($driver) ) {
             $ttujs = $this->Ttuj->getData('all', array(
@@ -5517,7 +5516,9 @@ class RevenuesController extends AppController {
                             'fields' => array(
                                 'Revenue.id', 'Revenue.ttuj_id'
                             ),
-                        ), true, 'all');
+                        ), true, array(
+                            'status' => 'all',
+                        ));
 
                         $options['conditions']['Ttuj.id'] = $revenues;
                         break;
@@ -6419,7 +6420,6 @@ class RevenuesController extends AppController {
                                                     $groupMotor = $this->GroupMotor->getData('first', array(
                                                         'conditions' => array(
                                                             'GroupMotor.name' => $group_motor_detail,
-                                                            'GroupMotor.status' => 1,
                                                         ),
                                                     ));
 

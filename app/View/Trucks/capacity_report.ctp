@@ -127,7 +127,7 @@
                             }
                         }
 
-                        if( !empty($truckWithoutAlocations) ) {
+                        if( !empty($capacities) && !empty($truckWithoutAlocations) ) {
                 ?>
                 <tr>
                     <?php

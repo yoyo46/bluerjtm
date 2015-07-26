@@ -97,11 +97,7 @@ class CashbanksController extends AppController {
 
                         break;
                     default:
-                        $list_result = $this->Customer->getData('first', array(
-                            'conditions' => array(
-                                'Customer.status' => 1
-                            )
-                        ));
+                        $list_result = $this->Customer->getData('first');
 
                         break;
                 }
@@ -376,11 +372,7 @@ class CashbanksController extends AppController {
 
                     break;
                 default:
-                    $list_result = $this->Customer->getData('first', array(
-                        'conditions' => array(
-                            'Customer.status' => 1
-                        )
-                    ));
+                    $list_result = $this->Customer->getData('first');
 
                     break;
             }
@@ -679,11 +671,7 @@ class CashbanksController extends AppController {
 
                             break;
                         default:
-                            $list_result = $this->Customer->getData('first', array(
-                                'conditions' => array(
-                                    'Customer.status' => 1
-                                )
-                            ));
+                            $list_result = $this->Customer->getData('first');
 
                             break;
                     }
@@ -710,7 +698,9 @@ class CashbanksController extends AppController {
                             'conditions' => array(
                                 'Revenue.id' => $document_id,
                             ),
-                        ), true, 'all');
+                        ), true, array(
+                            'status' => 'all',
+                        ));
                         $cashbank = array_merge($cashbank, $revenue);
                         break;
                 }

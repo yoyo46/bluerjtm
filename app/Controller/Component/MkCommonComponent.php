@@ -138,58 +138,32 @@ class MkCommonComponent extends Component {
             $tempGroupMotor = array();
 
             foreach ($data['UangJalanTipeMotor'] as $key => $groupMotor) {
-                $tempGroupMotor['UangJalanTipeMotor']['group_motor_id'][$key] = $groupMotor['group_motor_id'];
-                $tempGroupMotor['UangJalanTipeMotor']['uang_jalan_1'][$key] = $groupMotor['uang_jalan_1'];
+                $tempGroupMotor['UangJalanTipeMotor']['group_motor_id'][$key] = $groupMotor['UangJalanTipeMotor'] ['group_motor_id'];
+                $tempGroupMotor['UangJalanTipeMotor']['uang_jalan_1'][$key] = $groupMotor['UangJalanTipeMotor'] ['uang_jalan_1'];
             }
 
             unset($data['UangJalanTipeMotor']);
             $data['UangJalanTipeMotor'] = $tempGroupMotor['UangJalanTipeMotor'];
         }
 
-        if( !empty($data['UangExtraGroupMotor']) ) {
-            $tempGroupMotor = array();
-
-            foreach ($data['UangExtraGroupMotor'] as $key => $groupMotor) {
-                $tempGroupMotor['UangExtraGroupMotor']['group_motor_id'][$key] = $groupMotor['group_motor_id'];
-                $tempGroupMotor['UangExtraGroupMotor']['uang_jalan_extra'][$key] = $groupMotor['uang_jalan_extra'];
-                $tempGroupMotor['UangExtraGroupMotor']['min_capacity'][$key] = $groupMotor['min_capacity'];
-            }
-
-            unset($data['UangExtraGroupMotor']);
-            $data['UangExtraGroupMotor'] = $tempGroupMotor['UangExtraGroupMotor'];
-        }
-
         if( !empty($data['CommissionGroupMotor']) ) {
             $tempGroupMotor = array();
 
             foreach ($data['CommissionGroupMotor'] as $key => $groupMotor) {
-                $tempGroupMotor['CommissionGroupMotor']['group_motor_id'][$key] = $groupMotor['group_motor_id'];
-                $tempGroupMotor['CommissionGroupMotor']['commission'][$key] = $groupMotor['commission'];
+                $tempGroupMotor['CommissionGroupMotor']['group_motor_id'][$key] = $groupMotor['CommissionGroupMotor']['group_motor_id'];
+                $tempGroupMotor['CommissionGroupMotor']['commission'][$key] = $groupMotor['CommissionGroupMotor']['commission'];
             }
 
             unset($data['CommissionGroupMotor']);
             $data['CommissionGroupMotor'] = $tempGroupMotor['CommissionGroupMotor'];
         }
 
-        if( !empty($data['CommissionExtraGroupMotor']) ) {
-            $tempGroupMotor = array();
-
-            foreach ($data['CommissionExtraGroupMotor'] as $key => $groupMotor) {
-                $tempGroupMotor['CommissionExtraGroupMotor']['group_motor_id'][$key] = $groupMotor['group_motor_id'];
-                $tempGroupMotor['CommissionExtraGroupMotor']['commission'][$key] = $groupMotor['commission'];
-                $tempGroupMotor['CommissionExtraGroupMotor']['min_capacity'][$key] = $groupMotor['min_capacity'];
-            }
-
-            unset($data['CommissionExtraGroupMotor']);
-            $data['CommissionExtraGroupMotor'] = $tempGroupMotor['CommissionExtraGroupMotor'];
-        }
-
         if( !empty($data['AsdpGroupMotor']) ) {
             $tempGroupMotor = array();
 
             foreach ($data['AsdpGroupMotor'] as $key => $groupMotor) {
-                $tempGroupMotor['AsdpGroupMotor']['group_motor_id'][$key] = $groupMotor['group_motor_id'];
-                $tempGroupMotor['AsdpGroupMotor']['asdp'][$key] = $groupMotor['asdp'];
+                $tempGroupMotor['AsdpGroupMotor']['group_motor_id'][$key] = $groupMotor['AsdpGroupMotor']['group_motor_id'];
+                $tempGroupMotor['AsdpGroupMotor']['asdp'][$key] = $groupMotor['AsdpGroupMotor']['asdp'];
             }
 
             unset($data['AsdpGroupMotor']);
@@ -200,8 +174,8 @@ class MkCommonComponent extends Component {
             $tempGroupMotor = array();
 
             foreach ($data['UangKawalGroupMotor'] as $key => $groupMotor) {
-                $tempGroupMotor['UangKawalGroupMotor']['group_motor_id'][$key] = $groupMotor['group_motor_id'];
-                $tempGroupMotor['UangKawalGroupMotor']['uang_kawal'][$key] = $groupMotor['uang_kawal'];
+                $tempGroupMotor['UangKawalGroupMotor']['group_motor_id'][$key] = $groupMotor['UangKawalGroupMotor']['group_motor_id'];
+                $tempGroupMotor['UangKawalGroupMotor']['uang_kawal'][$key] = $groupMotor['UangKawalGroupMotor']['uang_kawal'];
             }
 
             unset($data['UangKawalGroupMotor']);
@@ -212,8 +186,8 @@ class MkCommonComponent extends Component {
             $tempGroupMotor = array();
 
             foreach ($data['UangKeamananGroupMotor'] as $key => $groupMotor) {
-                $tempGroupMotor['UangKeamananGroupMotor']['group_motor_id'][$key] = $groupMotor['group_motor_id'];
-                $tempGroupMotor['UangKeamananGroupMotor']['uang_keamanan'][$key] = $groupMotor['uang_keamanan'];
+                $tempGroupMotor['UangKeamananGroupMotor']['group_motor_id'][$key] = $groupMotor['UangKeamananGroupMotor']['group_motor_id'];
+                $tempGroupMotor['UangKeamananGroupMotor']['uang_keamanan'][$key] = $groupMotor['UangKeamananGroupMotor']['uang_keamanan'];
             }
 
             unset($data['UangKeamananGroupMotor']);

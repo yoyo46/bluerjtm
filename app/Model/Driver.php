@@ -10,12 +10,6 @@ class Driver extends AppModel {
         //         'message' => 'Foto harap diisi'
         //     ),
         // ),
-        'branch_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Cabang harap dipilih'
-            ),
-        ),
         'no_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -152,7 +146,7 @@ class Driver extends AppModel {
 
     function uniqueUpdate($data){
         $result = false;
-        $find = $this->find('count', array(
+        $find = $this->getData('count', array(
             'conditions' => array(
                 'Driver.id NOT' => $this->data['Driver']['id'],
                 'Driver.identity_number' => $data['identity_number']
@@ -166,26 +160,44 @@ class Driver extends AppModel {
         return $result;
     }
 
-	function getData( $find, $options = false, $is_merge = true ){
+	function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'Driver.status' => 1,
+                'Driver.group_branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'Driver.name' => 'ASC'
             ),
             'contain' => array(),
             'fields' => array(),
+            'groups' => array(),
         );
+
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['Driver.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['Driver.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['Driver.status'] = 1;
+                break;
+        }
 
         if( !empty($options) && $is_merge ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['fields'])){
@@ -208,10 +220,9 @@ class Driver extends AppModel {
 
     function getMerge($data, $id, $modelName = 'Driver'){
         if(empty($data['Driver'])){
-            $data_merge = $this->find('first', array(
+            $data_merge = $this->getData('first', array(
                 'conditions' => array(
                     'Driver.id' => $id,
-                    'Driver.status' => 1,
                     'Driver.is_resign' => 0,
                 )
             ));
@@ -251,7 +262,7 @@ class Driver extends AppModel {
         $default_id = 1;
         $format_id = sprintf('SP-%s-%s-', date('Y'), date('m'));
 
-        $last_data = $this->find('first', array(
+        $last_data = $this->getData('first', array(
             'order' => array(
                 'Driver.no_id' => 'DESC'
             ),

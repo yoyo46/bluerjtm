@@ -85,10 +85,6 @@ class Ttuj extends AppModel {
             'className' => 'Truck',
             'foreignKey' => 'truck_id',
         ),
-        'UangJalan' => array(
-            'className' => 'UangJalan',
-            'foreignKey' => 'uang_jalan_id',
-        ),
         'Customer' => array(
             'className' => 'Customer',
             'foreignKey' => 'customer_id',
@@ -97,9 +93,20 @@ class Ttuj extends AppModel {
             'className' => 'City',
             'foreignKey' => 'to_city_id',
         ),
+        'UangJalan' => array(
+            'className' => 'UangJalan',
+            'foreignKey' => 'uang_jalan_id',
+        ),
     );
 
     var $hasMany = array(
+        'TtujTipeMotor' => array(
+            'className' => 'TtujTipeMotor',
+            'foreignKey' => 'ttuj_id',
+            'conditions' => array(
+                'TtujTipeMotor.status' => 1,
+            ),
+        ),
         'TtujPerlengkapan' => array(
             'className' => 'TtujPerlengkapan',
             'foreignKey' => 'ttuj_id',
@@ -116,7 +123,8 @@ class Ttuj extends AppModel {
         ),
     );
 
-    function getData( $find, $options = false, $is_merge = true, $status = 'active' ){
+    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
                 'Ttuj.group_branch_id' => Configure::read('__Site.config_branch_id'),
@@ -126,16 +134,6 @@ class Ttuj extends AppModel {
                 'Ttuj.id' => 'DESC',
             ),
             'contain' => array(),
-            // 'contain' => array(
-            //     'TtujPerlengkapan',
-            //     'UangJalan' => array(
-            //         'UangJalanTipeMotor',
-            //         'CommissionGroupMotor',
-            //         'AsdpGroupMotor',
-            //         'UangKawalGroupMotor',
-            //         'UangKeamananGroupMotor',
-            //     ),
-            // ),
             'fields' => array(),
         );
 
@@ -292,11 +290,12 @@ class Ttuj extends AppModel {
             'conditions' => array(
                 'Ttuj.id' => $ttuj_id,
             ),
-        ), true, 'all');
+        ), true, array(
+            'status' => 'all',
+        ));
         $total = 0;
 
         if( !empty($data_ttuj) ) {
-            $this->Customer = ClassRegistry::init('Customer');
             $this->Driver = ClassRegistry::init('Driver');
             $customer_id = !empty($data_ttuj['Ttuj']['customer_id'])?$data_ttuj['Ttuj']['customer_id']:'';
             $driver_id = !empty($data_ttuj['Ttuj']['driver_id'])?$data_ttuj['Ttuj']['driver_id']:'';

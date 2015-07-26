@@ -78,7 +78,8 @@ class Revenue extends AppModel {
         ),
     );
 
-	function getData( $find, $options = false, $is_merge = true, $status = 'active' ){
+	function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
                 'Revenue.group_branch_id' => Configure::read('__Site.config_branch_id'),
@@ -144,7 +145,6 @@ class Revenue extends AppModel {
                     $data_merge = $this->getData('all', array(
                         'conditions' => array(
                             'Revenue.id' => $id,
-                            'Revenue.status' => 1,
                         ),
                         'contain' => array(
                             'RevenueDetail' => array(
@@ -165,7 +165,9 @@ class Revenue extends AppModel {
                         'conditions' => array(
                             'Revenue.id' => $id
                         ),
-                    ), true, 'all');
+                    ), true, array(
+                        'status' => 'all',
+                    ));
 
                     if(!empty($data_merge)){
                         $data = array_merge($data, $data_merge);
@@ -180,17 +182,15 @@ class Revenue extends AppModel {
     function checkQtyUsed ( $ttuj_id = false, $id = false, $group_motor_id = false, $with_qty_ttuj = true ) {
         $this->Ttuj = ClassRegistry::init('Ttuj');
 
-        $revenue_id = $this->find('list', array(
+        $revenue_id = $this->getData('list', array(
             'conditions' => array(
                 'Revenue.ttuj_id' => $ttuj_id,
-                'Revenue.status' => 1,
             ),
         ));
         $conditions = array(
             'RevenueDetail.revenue_id' => $revenue_id,
             'RevenueDetail.revenue_id NOT' => $id,
             'RevenueDetail.tarif_angkutan_type' => 'angkut',
-            'Revenue.status' => 1,
         );
 
         if( !empty($group_motor_id) ) {
@@ -371,7 +371,6 @@ class Revenue extends AppModel {
                         'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
                         'RevenueDetail.tarif_angkutan_type' => $tarif_type,
                         'RevenueDetail.invoice_id' => NULL,
-                        'Revenue.status' => 1,
                     ),
                     'contain' => array(
                         'Revenue'
@@ -409,7 +408,7 @@ class Revenue extends AppModel {
                         'RevenueDetail.revenue_id' => $revenue_id,
                         'RevenueDetail.invoice_id' => NULL,
                     ),
-                ), false);
+                ));
 
                 $this->id = $revenue_id;
 

@@ -15,9 +15,8 @@ class PagesController extends AppController {
         $ttujSJ = $this->Ttuj->getData('count', array(
             'conditions' => array(
                 'Ttuj.is_sj_completed' => 0,
-                'Ttuj.status' => 1,
             ),
-        ), false);
+        ));
         $invoiceUnPaid = $this->Invoice->getData('count', array(
             'conditions' => array(
                 'Invoice.complete_paid' => 0,
@@ -40,14 +39,13 @@ class PagesController extends AppController {
         ));
         $truckAvailable = $this->Truck->getData('count', array(
             'conditions' => array(
-                'Truck.status' => 1,
                 'Truck.sold' => 0,
                 'Ttuj.id' => NULL,
             ),
             'contain' => array(
             	'Ttuj'
         	),
-        ), false);
+        ));
 
         $this->set(compact(
         	'ttujSJ', 'invoiceUnPaid', 'truckAvailable'

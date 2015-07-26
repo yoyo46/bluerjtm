@@ -19,5 +19,28 @@ class UangKeamananGroupMotor extends AppModel {
             ),
         ),
 	);
+
+    function getMerge ( $data = false, $uang_jalan_id = false ) {
+        if( empty($data['UangKeamananGroupMotor']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'UangKeamananGroupMotor.uang_jalan_id'=> $uang_jalan_id,
+                    'UangKeamananGroupMotor.status'=> 1,
+                ),
+                'order' => array(
+                    'UangKeamananGroupMotor.id' => 'ASC',
+                ),
+            );
+
+            if( !empty($conditions) ) {
+                $default_options['conditions'] = $conditions;
+            }
+
+            $uangKeamananGroupMotor = $this->find('all', $default_options);
+            $data['UangKeamananGroupMotor'] = $uangKeamananGroupMotor;
+        }
+
+        return $data;
+    }
 }
 ?>

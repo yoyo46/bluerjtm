@@ -15,7 +15,8 @@ class GroupMotor extends AppModel {
         $this->virtualFields['lower_name'] = sprintf('LOWER(%s.name)', $this->alias);
     }
 
-    function getData( $find, $options = false, $status = 'active' ){
+    function getData( $find, $options = false, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(

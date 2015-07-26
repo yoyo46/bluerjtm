@@ -88,19 +88,20 @@ class LkusController extends AppController {
                         'conditions' => array(
                             'Customer.id' => $value['Ttuj']['customer_id']
                         )
+                    ), true, array(
+                        'status' => 'all',
                     ));
-                }
 
-                $Lkus[$key]['Customer'] = $customer_data['Customer'];
+                    if( !empty($customer_data['Customer']) ) {
+                        $Lkus[$key]['Customer'] = $customer_data['Customer'];
+                    }
+                }
             }
         }
 
         $this->set('Lkus', $Lkus);
 
         $customers = $this->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1
-            ),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -373,7 +374,9 @@ class LkusController extends AppController {
                 'contain' => array(
                     'UangJalan'
                 )
-            ), true, 'all');
+            ), true, array(
+                'status' => 'all',
+            ));
             
             if(!empty($data_ttuj)){
                 $this->loadModel('Driver');
@@ -390,7 +393,9 @@ class LkusController extends AppController {
                             'conditions' => array(
                                 'GroupMotor.id' => $group_motor_id,
                             ),
-                        ), 'all');
+                        ), array(
+                            'status' => 'all',
+                        ));
                         $group_motor_name = !empty($groupMotor['GroupMotor']['name'])?$groupMotor['GroupMotor']['name']:false;
                         $tipe_motor_list[$value['TipeMotor']['id']] = sprintf('%s (%s)', $value['TipeMotor']['name'], $group_motor_name);
                     }
@@ -497,9 +502,6 @@ class LkusController extends AppController {
         $this->set('payments', $payments);
 
         $customers = $this->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1
-            ),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -770,7 +772,9 @@ class LkusController extends AppController {
                             'conditions' => array(
                                 'Ttuj.id' => $lku_data['Lku']['ttuj_id']
                             ),
-                        ), true, 'all');
+                        ), true, array(
+                            'status' => 'all',
+                        ));
 
                         if(!empty($ttuj['Ttuj'])){
                             $lku_data['Ttuj'] = $ttuj['Ttuj'];
@@ -854,6 +858,8 @@ class LkusController extends AppController {
                     'conditions' => array(
                         'Customer.id' => $customer_id,
                     ),
+                ), true, array(
+                    'status' => 'all',
                 ));
 
                 if( !empty($dataCust) ) {
@@ -1210,6 +1216,8 @@ class LkusController extends AppController {
                         'conditions' => array(
                             'Customer.id' => $value['Ttuj']['customer_id']
                         )
+                    ), true, array(
+                        'status' => 'all',
                     ));
                 }
 
@@ -1220,9 +1228,6 @@ class LkusController extends AppController {
         $this->set('Ksus', $Ksus);
 
         $customers = $this->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1
-            ),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -1485,7 +1490,9 @@ class LkusController extends AppController {
                     )
                 )
             ),
-        ), true, 'all');
+        ), true, array(
+            'status' => 'all',
+        ));
 
         if(!empty($this->request->data['Ksu']['ttuj_id'])){
             $ttuj_id = $this->request->data['Ksu']['ttuj_id'];
@@ -1496,7 +1503,9 @@ class LkusController extends AppController {
                 'contain' => array(
                     'UangJalan',
                 )
-            ), true, 'all');
+            ), true, array(
+                'status' => 'all',
+            ));
             
             if(!empty($data_ttuj)){
                 $this->loadModel('TtujPerlengkapan');
@@ -1613,9 +1622,6 @@ class LkusController extends AppController {
         $this->set('payments', $payments);
 
         $customers = $this->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1
-            ),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -1927,7 +1933,9 @@ class LkusController extends AppController {
                             'conditions' => array(
                                 'Ttuj.id' => $ksu_data['Ksu']['ttuj_id'],
                             )
-                        ), true, 'all');
+                        ), true, array(
+                            'status' => 'all',
+                        ));
 
                         if(!empty($ttuj['Ttuj'])){
                             $ksu_data['Ttuj'] = $ttuj['Ttuj'];
@@ -2014,6 +2022,8 @@ class LkusController extends AppController {
                     'conditions' => array(
                         'Customer.id' => $customer_id,
                     ),
+                ), true, array(
+                    'status' => 'all',
                 ));
 
                 if( !empty($dataCust) ) {

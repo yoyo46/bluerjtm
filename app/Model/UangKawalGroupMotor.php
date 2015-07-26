@@ -19,5 +19,28 @@ class UangKawalGroupMotor extends AppModel {
             ),
         ),
 	);
+
+    function getMerge ( $data = false, $uang_jalan_id = false ) {
+        if( empty($data['UangKawalGroupMotor']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'UangKawalGroupMotor.uang_jalan_id'=> $uang_jalan_id,
+                    'UangKawalGroupMotor.status'=> 1,
+                ),
+                'order' => array(
+                    'UangKawalGroupMotor.id' => 'ASC',
+                ),
+            );
+
+            if( !empty($conditions) ) {
+                $default_options['conditions'] = $conditions;
+            }
+
+            $uangKawalGroupMotor = $this->find('all', $default_options);
+            $data['UangKawalGroupMotor'] = $uangKawalGroupMotor;
+        }
+
+        return $data;
+    }
 }
 ?>

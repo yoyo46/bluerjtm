@@ -493,7 +493,7 @@ class AjaxController extends AppController {
 
 				foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
 					$group_motor_name = false;
-					$qtyTtuj = !empty($value[0]['qty'])?$value[0]['qty']:0;
+					$qtyTtuj = !empty($value['TtujTipeMotor']['qty'])?$value['TtujTipeMotor']['qty']:0;
 					$group_motor_id = !empty($value['TipeMotor']['group_motor_id'])?$value['TipeMotor']['group_motor_id']:false;
 					$groupMotor = $this->GroupMotor->getMerge($value, $group_motor_id);
         			$qtyReview = $this->Revenue->checkQtyUsed( $ttuj_id, false, $group_motor_id, false );
@@ -546,19 +546,12 @@ class AjaxController extends AppController {
 		}
 
 		$customers = $this->Ttuj->Customer->getData('list', array(
-			'conditions' => array(
-				'Customer.status' => 1
-			),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
 		));
 		$toCities = $this->City->getListCities();
-		$groupMotors = $this->GroupMotor->getData('list', array(
-			'conditions' => array(
-				'GroupMotor.status' => 1
-			)
-		));
+		$groupMotors = $this->GroupMotor->getData('list');
 		$this->set(compact(
 			'data_revenue_detail', 'customers', 'toCities', 'groupMotors',
 			'tarifTruck'
@@ -572,9 +565,8 @@ class AjaxController extends AppController {
 		$truck = $this->Truck->getData('first', array(
 			'conditions' => array(
 				'Truck.nopol' => $nopol,
-				'Truck.status' => 1
 			)
-		), false);
+		));
 
         $this->doEvent( $truck, $date );
 	}
@@ -757,14 +749,15 @@ class AjaxController extends AppController {
 				'Ttuj.id' => $ttuj_id,
 			),
 			'contain' => false,
-		), true, 'all');
+		), true, array(
+			'status' => 'all',
+		));
 		$from_city_id = !empty($data_ttuj['Ttuj']['from_city_id'])?$data_ttuj['Ttuj']['from_city_id']:$from_city_id;
 
 		if( !empty($truck_id) ) {
 			$this->loadModel('Truck');
 			$truck = $this->Truck->getData('first', array(
                 'conditions' => array(
-                    'Truck.status' => 1,
                     'Truck.id' => $truck_id,
                 ),
                 'fields' => array(
@@ -782,9 +775,8 @@ class AjaxController extends AppController {
 			$groupMotor = $this->GroupMotor->getData('first', array(
 				'conditions' => array(
 					'GroupMotor.id' => $group_motor_id,
-	                'GroupMotor.status' => 1,
 				),
-			), false);
+			));
 
 			if( !empty($groupMotor) ) {
 				$group_motor_id = $groupMotor['GroupMotor']['id'];
@@ -812,6 +804,8 @@ class AjaxController extends AppController {
             'conditions' => array(
                 'Customer.id' => $customer_id
             ),
+        ), true, array(
+            'status' => 'all',
         ));
 
         $conditionsDetail = $conditions;
@@ -979,7 +973,6 @@ class AjaxController extends AppController {
 		$data_action = 'browse-form';
 		$data_change = 'driverID';
 		$conditions = array(
-            'Driver.status' => 1,
             'Truck.id' => NULL,
         );
 
@@ -1020,7 +1013,7 @@ class AjaxController extends AppController {
                 'Truck'
             ),
             'limit' => 10,
-        ), false);
+        ));
         $drivers = $this->paginate('Driver');
 
         $this->set(compact(
@@ -1035,16 +1028,14 @@ class AjaxController extends AppController {
 		$data_action = 'browse-form';
 		$data_change = 'truckID';
 		$options = array(
-            'conditions' => array(
-	            'Truck.status' => 1
-	        ),
-            'limit' => 10,
+            'conditions' => array(),
             'contain' => array(
                 'Driver'
             ),
             'order' => array(
                 'Truck.nopol' => 'ASC',
             ),
+            'limit' => 10,
         );
 
         switch ($action_type) {
@@ -1054,7 +1045,9 @@ class AjaxController extends AppController {
                     'conditions' => array(
                         'Ttuj.id' => $action_id,
                     ),
-		        ), true, 'all');
+		        ), true, array(
+					'status' => 'all',
+				));
         		$ttuj_truck_id = !empty($ttuj['Ttuj']['truck_id'])?$ttuj['Ttuj']['truck_id']:false;
 				$addConditions = $this->Truck->getListTruck( $ttuj_truck_id, true );
 
@@ -1121,7 +1114,6 @@ class AjaxController extends AppController {
 		$options = array(
             'conditions' => array(
 	            'Truck.id' => $truck_id,
-	            'Truck.status' => 1,
 	        ),
         );
         $result = $this->Truck->getData('first', $options);
@@ -1398,7 +1390,9 @@ class AjaxController extends AppController {
             		'fields' => array(
             			'Customer.id', 'Customer.id'
         			),
-            	));
+            	), true, array(
+                    'status' => 'all',
+                ));
                 $conditions['Ttuj.customer_id'] = $customers;
             }
             if(!empty($this->request->data['City']['name'])){
@@ -1616,7 +1610,6 @@ class AjaxController extends AppController {
 
 		$driver = $this->Truck->getData('first', array(
 			'conditions' => array(
-				'Truck.status' => 1,
 				'Truck.id' => $id
 			),
 			'contain' => array(
@@ -1954,9 +1947,6 @@ class AjaxController extends AppController {
         }
 
         $customers = $this->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1
-            ),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -2047,11 +2037,7 @@ class AjaxController extends AppController {
 
                         break;
                     default:
-                        $list_result = $this->Customer->getData('first', array(
-                            'conditions' => array(
-                                'Customer.status' => 1
-                            )
-                        ));
+                        $list_result = $this->Customer->getData('first');
 
                         break;
                 }
@@ -2123,11 +2109,7 @@ class AjaxController extends AppController {
                         break;
                     default:
             			$this->loadModel('Customer');
-                        $list_result = $this->Customer->getData('first', array(
-                            'conditions' => array(
-                                'Customer.status' => 1
-                            )
-                        ));
+                        $list_result = $this->Customer->getData('first');
 
                         break;
                 }
@@ -2147,7 +2129,9 @@ class AjaxController extends AppController {
 				'contain' => array(
 					'CustomerNoType'
 				),
-			), true, 'all');
+			), true, array(
+				'status' => 'all',
+			));
 
 	        $this->CoaSetting->bindModel(array(
 				'belongsTo' => array(
@@ -2324,7 +2308,9 @@ class AjaxController extends AppController {
             		'fields' => array(
             			'Customer.id', 'Customer.id'
         			),
-            	));
+            	), true, array(
+                    'status' => 'all',
+                ));
                 $conditions['Ttuj.customer_id'] = $customers;
             }
             if(!empty($this->request->data['City']['name'])){

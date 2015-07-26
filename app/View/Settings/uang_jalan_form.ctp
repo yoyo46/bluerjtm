@@ -20,8 +20,6 @@
 		    </div>
 		    <div class="box-body">
 		    	<?php 
-		    			echo $this->Common->branchForm('UangJalan', $branches);
-		    			
 						echo $this->Html->tag('div', $this->Form->input('title',array(
 							'label'=> __('Nama *'), 
 							'class'=>'form-control',
@@ -323,35 +321,6 @@
 							));
 		        	?>
 				</div>
-				<?php
-				/*
-				<div class="uang-extra-unit <?php echo !empty($this->request->data['UangJalan']['uang_jalan_extra_per_unit'])?'':'hide'; ?>">
-					<?php 
-		    				echo $this->Form->label('uang_jalan', __('Biaya Per Group Motor <small>(* Semua biaya berlaku apabila per unit)</small>'));
-		    		?>
-			        <div class="form-group">
-			            <?php
-			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
-			                        'class' => 'add-custom-field btn btn-success btn-xs',
-			                        'action_type' => 'uang_jalan_extra',
-			                        'escape' => false
-			                    ));
-			            ?>
-			        </div>
-			        <div id="box-field-input-extra">
-			        	<?php 
-			        			if( !empty($this->request->data['UangExtraGroupMotor']['group_motor_id']) ) {
-									foreach ($this->request->data['UangExtraGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
-										echo $this->element('blocks/settings/list_uang_extra', array(
-											'idx' => $key,
-										));
-									}
-								}
-			        	?>
-			        </div>
-				</div>
-				*/
-				?>
 			</div>
 		</div>
 	</div>
@@ -477,35 +446,6 @@
 							));
 		        	?>
 				</div>
-				<?php
-				/*
-				<div class="commission-extra-unit <?php echo !empty($this->request->data['UangJalan']['commission_extra_per_unit'])?'':'hide'; ?>">
-					<?php 
-		    				echo $this->Form->label('uang_jalan', __('Biaya Per Group Motor <small>(* Semua biaya berlaku apabila per unit)</small>'));
-		    		?>
-			        <div class="form-group">
-			            <?php
-			                    echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
-			                        'class' => 'add-custom-field btn btn-success btn-xs',
-			                        'action_type' => 'commission_extra',
-			                        'escape' => false
-			                    ));
-			            ?>
-			        </div>
-			        <div id="box-field-input-commission-extra">
-			        	<?php 
-			        			if( !empty($this->request->data['CommissionExtraGroupMotor']['group_motor_id']) ) {
-									foreach ($this->request->data['CommissionExtraGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
-										echo $this->element('blocks/settings/list_commission_extra', array(
-											'idx' => $key,
-										));
-									}
-								}
-			        	?>
-			        </div>
-				</div>
-				*/
-				?>
 			</div>
 		</div>
 	</div>

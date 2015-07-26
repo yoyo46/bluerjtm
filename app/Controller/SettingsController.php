@@ -169,6 +169,8 @@ class SettingsController extends AppController {
 
     function customers(){
         $this->loadModel('Customer');
+        $this->loadModel('CustomerGroup');
+
         $options = array(
             'paramType' => 'querystring',
         );
@@ -195,7 +197,7 @@ class SettingsController extends AppController {
         $this->paginate = $this->Customer->getData('paginate', $options);
         $truck_customers = $this->paginate('Customer');
         $customerTypes  = $this->Customer->CustomerType->getData('list', false, true);
-        $customerGroups  = $this->Customer->CustomerGroup->getData('list');
+        $customerGroups  = $this->CustomerGroup->getData('list');
 
         $this->set('active_menu', 'customers');
         $this->set('module_title', 'Data Master');
@@ -218,7 +220,7 @@ class SettingsController extends AppController {
         $customer = $this->Customer->getData('first', array(
             'conditions' => array(
                 'Customer.id' => $id
-            )
+            ),
         ));
 
         if(!empty($customer)){
@@ -233,8 +235,6 @@ class SettingsController extends AppController {
     }
 
     function doCustomer($id = false, $data_local = false){
-        $this->loadModel('User');
-
         if(!empty($this->request->data)){
             $data = $this->request->data;
             if($id && $data_local){
@@ -247,6 +247,7 @@ class SettingsController extends AppController {
                         
             $data['Customer']['bank_id'] = !empty($data['Customer']['bank_id'])?$data['Customer']['bank_id']:0;
             $data['Customer']['billing_id'] = !empty($data['Customer']['billing_id'])?$data['Customer']['billing_id']:0;
+            $data['Customer']['group_branch_id'] = Configure::read('__Site.config_branch_id');
             $this->Customer->set($data);
 
             if($this->Customer->validates($data)){
@@ -273,9 +274,13 @@ class SettingsController extends AppController {
             }
         }
 
+        $this->loadModel('Bank');
+        $this->loadModel('User');
+        $this->loadModel('CustomerGroup');
+
         $customerTypes  = $this->Customer->CustomerType->getData('list', false, true);
-        $customerGroups  = $this->Customer->CustomerGroup->getData('list');
-        $banks  = $this->Customer->Bank->getData('list', array(
+        $customerGroups  = $this->CustomerGroup->getData('list');
+        $banks  = $this->Bank->getData('list', array(
             'fields' => array(
                 'Bank.id', 'Bank.bank_name'
             ),
@@ -850,16 +855,46 @@ class SettingsController extends AppController {
             if(!empty($refine['from'])){
                 $name = urldecode($refine['from']);
                 $this->request->data['UangJalan']['from_city'] = $name;
-                $options['conditions']['FromCity.name LIKE'] = '%'.$name.'%';
+                $city_id = $this->City->getData('list', array(
+                    'conditions' => array(
+                        'City.name LIKE' => '%'.$name.'%',
+                    ),
+                    'fields' => array(
+                        'City.id', 'City.id',
+                    ),
+                ), true, array(
+                    'all',
+                ));
+                $options['conditions']['UangJalan.from_city_id'] = $city_id;
             }
             if(!empty($refine['to'])){
                 $name = urldecode($refine['to']);
                 $this->request->data['UangJalan']['to_city'] = $name;
-                $options['conditions']['ToCity.name LIKE'] = '%'.$name.'%';
+                $city_id = $this->City->getData('list', array(
+                    'conditions' => array(
+                        'City.name LIKE' => '%'.$name.'%',
+                    ),
+                    'fields' => array(
+                        'City.id', 'City.id',
+                    ),
+                ), true, array(
+                    'all',
+                ));
+                $options['conditions']['UangJalan.to_city_id'] = $city_id;
             }
         }
         $this->paginate = $this->UangJalan->getData('paginate', $options);
         $uangJalans = $this->paginate('UangJalan');
+
+        if( !empty($uangJalans) ) {
+            foreach ($uangJalans as $key => $uangJalan) {
+                $from_city_id = !empty($uangJalan['UangJalan']['from_city_id'])?$uangJalan['UangJalan']['from_city_id']:false;
+                $to_city_id = !empty($uangJalan['UangJalan']['to_city_id'])?$uangJalan['UangJalan']['to_city_id']:false;
+                $uangJalan = $this->City->getMerge($uangJalan, $from_city_id, 'FromCity');
+                $uangJalan = $this->City->getMerge($uangJalan, $to_city_id, 'ToCity');
+                $uangJalans[$key] = $uangJalan;
+            }
+        }
 
         $this->set('active_menu', 'uang_jalan');
         $this->set('module_title', __('TTUJ'));
@@ -909,37 +944,6 @@ class SettingsController extends AppController {
         return $result;
     }
 
-    // function saveUangExtraGroupMotor ( $data = false, $uang_jalan_id = false ) {
-    //     $result = array(
-    //         'validates' => true,
-    //         'data' => false,
-    //     );
-
-    //     if( !empty($data['UangExtraGroupMotor']['group_motor_id']) ) {
-    //         foreach ($data['UangExtraGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
-    //             $dataValidate['UangExtraGroupMotor']['group_motor_id'] = $group_motor_id;
-    //             $dataValidate['UangExtraGroupMotor']['min_capacity'] = !empty($data['UangExtraGroupMotor']['min_capacity'][$key])?$this->MkCommon->convertPriceToString($data['UangExtraGroupMotor']['min_capacity'][$key], 0):0;
-    //             $dataValidate['UangExtraGroupMotor']['uang_jalan_extra'] = !empty($data['UangExtraGroupMotor']['uang_jalan_extra'][$key])?$this->MkCommon->convertPriceToString($data['UangExtraGroupMotor']['uang_jalan_extra'][$key], 0):0;
-
-    //             $this->UangJalan->UangExtraGroupMotor->set($dataValidate);
-
-    //             if( !empty($uang_jalan_id) ) {
-    //                 $dataValidate['UangExtraGroupMotor']['uang_jalan_id'] = $uang_jalan_id;
-    //                 $this->UangJalan->UangExtraGroupMotor->create();
-    //                 $this->UangJalan->UangExtraGroupMotor->save($dataValidate);
-    //             } else {
-    //                 if(!$this->UangJalan->UangExtraGroupMotor->validates($dataValidate)){
-    //                     $result['validates'] = false;
-    //                 } else {
-    //                     $result['data'][$key] = $dataValidate;
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     return $result;
-    // }
-
     function saveCommissionGroupMotor ( $data = false, $uang_jalan_id = false ) {
         $result = array(
             'validates' => true,
@@ -969,37 +973,6 @@ class SettingsController extends AppController {
 
         return $result;
     }
-
-    // function saveCommissionExtraGroupMotor ( $data = false, $uang_jalan_id = false ) {
-    //     $result = array(
-    //         'validates' => true,
-    //         'data' => false,
-    //     );
-
-    //     if( !empty($data['CommissionExtraGroupMotor']['group_motor_id']) ) {
-    //         foreach ($data['CommissionExtraGroupMotor']['group_motor_id'] as $key => $group_motor_id) {
-    //             $dataValidate['CommissionExtraGroupMotor']['group_motor_id'] = $group_motor_id;
-    //             $dataValidate['CommissionExtraGroupMotor']['min_capacity'] = !empty($data['CommissionExtraGroupMotor']['min_capacity'][$key])?$this->MkCommon->convertPriceToString($data['CommissionExtraGroupMotor']['min_capacity'][$key], 0):0;
-    //             $dataValidate['CommissionExtraGroupMotor']['commission'] = !empty($data['CommissionExtraGroupMotor']['commission'][$key])?$this->MkCommon->convertPriceToString($data['CommissionExtraGroupMotor']['commission'][$key], 0):0;
-
-    //             $this->UangJalan->CommissionExtraGroupMotor->set($dataValidate);
-
-    //             if( !empty($uang_jalan_id) ) {
-    //                 $dataValidate['CommissionExtraGroupMotor']['uang_jalan_id'] = $uang_jalan_id;
-    //                 $this->UangJalan->CommissionExtraGroupMotor->create();
-    //                 $this->UangJalan->CommissionExtraGroupMotor->save($dataValidate);
-    //             } else {
-    //                 if(!$this->UangJalan->CommissionExtraGroupMotor->validates($dataValidate)){
-    //                     $result['validates'] = false;
-    //                 } else {
-    //                     $result['data'][$key] = $dataValidate;
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     return $result;
-    // }
 
     function saveAsdpGroupMotor ( $data = false, $uang_jalan_id = false ) {
         $result = array(
@@ -1180,6 +1153,7 @@ class SettingsController extends AppController {
             $data['UangJalan']['group_classification_2_id'] = !empty($data['UangJalan']['group_classification_2_id'])?$data['UangJalan']['group_classification_2_id']:0;
             $data['UangJalan']['group_classification_3_id'] = !empty($data['UangJalan']['group_classification_3_id'])?$data['UangJalan']['group_classification_3_id']:0;
             $data['UangJalan']['group_classification_4_id'] = !empty($data['UangJalan']['group_classification_4_id'])?$data['UangJalan']['group_classification_4_id']:0;
+            $data['UangJalan']['group_branch_id'] = Configure::read('__Site.config_branch_id');
 
             if( !empty($data['UangJalan']['uang_jalan_per_unit']) ) {
                 $data['UangJalan']['uang_jalan_2'] = 0;
@@ -1189,9 +1163,7 @@ class SettingsController extends AppController {
 
             if($this->UangJalan->validates($data)){
                 $saveGroupMotor = false;
-                // $saveUangExtraGroupMotor = false;
                 $saveCommissionGroupMotor = false;
-                // $saveCommissionExtraGroupMotor = false;
                 $saveAsdpGroupMotor = false;
                 $saveUangKawalGroupMotor = false;
                 $saveUangKeamananGroupMotor = false;
@@ -1203,26 +1175,12 @@ class SettingsController extends AppController {
                     $saveGroupMotor = true;
                 }
 
-                // if( !empty($data['UangExtraGroupMotor']['group_motor_id']) ) {
-                //     $resultUangExtraGroupMotor = $this->saveUangExtraGroupMotor($data);
-                //     $saveUangExtraGroupMotor = !empty($resultUangExtraGroupMotor['validates'])?$resultUangExtraGroupMotor['validates']:false;
-                // } else {
-                //     $saveUangExtraGroupMotor = true;
-                // }
-
                 if( !empty($data['CommissionGroupMotor']['group_motor_id']) ) {
                     $resultCommissionGroupMotor = $this->saveCommissionGroupMotor($data);
                     $saveCommissionGroupMotor = !empty($resultCommissionGroupMotor['validates'])?$resultCommissionGroupMotor['validates']:false;
                 } else {
                     $saveCommissionGroupMotor = true;
                 }
-
-                // if( !empty($data['CommissionExtraGroupMotor']['group_motor_id']) ) {
-                //     $resultCommissionExtraGroupMotor = $this->saveCommissionExtraGroupMotor($data);
-                //     $saveCommissionExtraGroupMotor = !empty($resultCommissionExtraGroupMotor['validates'])?$resultCommissionExtraGroupMotor['validates']:false;
-                // } else {
-                //     $saveCommissionExtraGroupMotor = true;
-                // }
 
                 if( !empty($data['AsdpGroupMotor']['group_motor_id']) ) {
                     $resultAsdpGroupMotor = $this->saveAsdpGroupMotor($data);
@@ -1252,21 +1210,11 @@ class SettingsController extends AppController {
                         ), array(
                             'UangJalanTipeMotor.uang_jalan_id' => $id,
                         ));
-                        // $this->UangJalan->UangExtraGroupMotor->updateAll( array(
-                        //     'UangExtraGroupMotor.status' => 0,
-                        // ), array(
-                        //     'UangExtraGroupMotor.uang_jalan_id' => $id,
-                        // ));
                         $this->UangJalan->CommissionGroupMotor->updateAll( array(
                             'CommissionGroupMotor.status' => 0,
                         ), array(
                             'CommissionGroupMotor.uang_jalan_id' => $id,
                         ));
-                        // $this->UangJalan->CommissionExtraGroupMotor->updateAll( array(
-                        //     'CommissionExtraGroupMotor.status' => 0,
-                        // ), array(
-                        //     'CommissionExtraGroupMotor.uang_jalan_id' => $id,
-                        // ));
                         $this->UangJalan->AsdpGroupMotor->updateAll( array(
                             'AsdpGroupMotor.status' => 0,
                         ), array(
@@ -1288,17 +1236,9 @@ class SettingsController extends AppController {
                         $this->saveGroupMotor($data, $this->UangJalan->id);
                     }
 
-                    // if( !empty($data['UangJalan']['uang_jalan_extra_per_unit']) ) {
-                    //     $this->saveUangExtraGroupMotor($data, $this->UangJalan->id);
-                    // }
-
                     if( !empty($data['UangJalan']['commission_per_unit']) ) {
                         $this->saveCommissionGroupMotor($data, $this->UangJalan->id);
                     }
-
-                    // if( !empty($data['UangJalan']['commission_extra_per_unit']) ) {
-                    //     $this->saveCommissionExtraGroupMotor($data, $this->UangJalan->id);
-                    // }
 
                     if( !empty($data['UangJalan']['asdp_per_unit']) ) {
                         $this->saveAsdpGroupMotor($data, $this->UangJalan->id);
@@ -1326,8 +1266,8 @@ class SettingsController extends AppController {
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Uang jalan'), $msg), 'error');
             }
         }else{
-            
             if($id && $data_local){
+                $data_local = $this->UangJalan->gerMergeBiaya( $data_local, $id );
                 $data_local = $this->MkCommon->getUangJalanGroupMotor($data_local);
                 $this->request->data = $data_local;
                 $this->request->data['UangJalan']['commission_min_qty'] = !empty($this->request->data['UangJalan']['commission_min_qty'])?$this->request->data['UangJalan']['commission_min_qty']:'';
@@ -1554,9 +1494,6 @@ class SettingsController extends AppController {
             ),
         ));
         $customers = $this->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1,
-            ),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             )
@@ -1844,30 +1781,14 @@ class SettingsController extends AppController {
             }
         }
 
-        // $this->loadModel('CodeMotor');
         $this->loadModel('GroupMotor');
 
         $group_motors = $this->GroupMotor->getData('list', array(
-            'conditions' => array(
-                'GroupMotor.status' => 1
-            ),
             'fields' => array(
                 'GroupMotor.id', 'GroupMotor.name'
             )
         ));
         $this->set('group_motors', $group_motors);
-
-        // $code_motors = $this->CodeMotor->getData('list', array(
-        //     'conditions' => array(
-        //         'CodeMotor.status' => 1
-        //     ),
-        //     'fields' => array(
-        //         'CodeMotor.id', 'CodeMotor.name'
-        //     )
-        // ));
-        // $this->set('code_motors', $code_motors);
-
-
         $this->set('active_menu', 'type_motors');
         $this->render('type_motor_form');
     }
@@ -2142,11 +2063,7 @@ class SettingsController extends AppController {
 
     function group_motors(){
         $this->loadModel('GroupMotor');
-        $options = array(
-            'conditions' => array(
-                'status' => 1
-            )
-        );
+        $options = array();
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -2177,7 +2094,7 @@ class SettingsController extends AppController {
         $GroupMotor = $this->GroupMotor->getData('first', array(
             'conditions' => array(
                 'GroupMotor.id' => $id
-            )
+            ),
         ));
 
         if(!empty($GroupMotor)){
@@ -3052,21 +2969,13 @@ class SettingsController extends AppController {
 
         $this->loadModel('Customer');
         $customers = $this->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1
-            ),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
         ));
 
         $this->loadModel('GroupMotor');
-        $group_motors = $this->GroupMotor->getData('list', array(
-            'conditions' => array(
-                'GroupMotor.status' => 1
-            ),
-        ));
-        
+        $group_motors = $this->GroupMotor->getData('list');
         $fromCities = $this->City->getListCities();
         $toCities = $fromCities;
 
@@ -3260,9 +3169,6 @@ class SettingsController extends AppController {
         }
 
         $customers = $this->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1
-            ),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             )
@@ -3957,9 +3863,6 @@ class SettingsController extends AppController {
                                         ),
                                     ));
                                     $groupMotors = $this->GroupMotor->getData('list', array(
-                                        'conditions' => array(
-                                            'GroupMotor.status' => 1,
-                                        ),
                                         'fields' => array(
                                             'GroupMotor.lower_name', 'GroupMotor.id'
                                         ),
@@ -4593,7 +4496,6 @@ class SettingsController extends AppController {
                                     $groupMotor = $this->GroupMotor->getData('first', array(
                                         'conditions' => array(
                                             'GroupMotor.name' => $group_motor,
-                                            'GroupMotor.status' => 1,
                                         ),
                                         'fields' => array(
                                             'GroupMotor.lower_name', 'GroupMotor.id'
@@ -4601,7 +4503,6 @@ class SettingsController extends AppController {
                                     ));
                                     $customer = $this->Customer->getData('first', array(
                                         'conditions' => array(
-                                            'Customer.status' => 1,
                                             'Customer.code' => $kode_customer,
                                         ),
                                         'fields' => array(

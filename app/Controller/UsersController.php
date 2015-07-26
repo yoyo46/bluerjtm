@@ -81,7 +81,7 @@ class UsersController extends AppController {
             'conditions' => array(
                 'Ttuj.is_sj_completed' => 0,
             ),
-        ), true);
+        ));
 
 		$this->set('sub_module_title', 'dashboard');
 	}

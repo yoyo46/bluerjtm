@@ -2,12 +2,6 @@
 class TarifAngkutan extends AppModel {
 	var $name = 'TarifAngkutan';
 	var $validate = array(
-        'branch_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Cabang harap dipilih'
-            ),
-        ),
         'name_tarif' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

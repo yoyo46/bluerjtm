@@ -33,11 +33,10 @@ class City extends AppModel {
 		)
 	);
 
-	function getData( $find, $options = false, $is_merge = true ){
+    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
-            'conditions'=> array(
-                'City.status' => 1,
-            ),
+            'conditions'=> array(),
             'order'=> array(
                 'City.name' => 'ASC'
             ),
@@ -45,14 +44,30 @@ class City extends AppModel {
             'fields' => array(),
         );
 
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['City.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['City.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['City.status'] = 1;
+                break;
+        }
+
         if( !empty($options) && $is_merge ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['fields'])){
@@ -71,22 +86,6 @@ class City extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
-    }
-
-    function getMerge($data, $id){
-        if(empty($data['City'])){
-            $data_merge = $this->find('first', array(
-                'conditions' => array(
-                    'id' => $id
-                )
-            ));
-
-            if(!empty($data_merge)){
-                $data = array_merge($data, $data_merge);
-            }
-        }
-
-        return $data;
     }
 
     function getMergeDirection($data){
@@ -165,6 +164,33 @@ class City extends AppModel {
             $city = $city['City'][$field];
         }
         return $city;
+    }
+
+    function getMerge ( $data = false, $city_id = false, $ModelName = 'City' ) {
+        if( empty($data[$ModelName]) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'City.id'=> $city_id,
+                ),
+                'order' => array(
+                    'City.name' => 'ASC',
+                ),
+            );
+
+            if( !empty($conditions) ) {
+                $default_options['conditions'] = $conditions;
+            }
+
+            $city = $this->getData('first', $default_options, true, array(
+                'status' => 'all',
+            ));
+
+            if( !empty($city) ) {
+                $data[$ModelName] = $city['City'];
+            }
+        }
+
+        return $data;
     }
 }
 ?>

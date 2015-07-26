@@ -182,7 +182,9 @@ class LakasController extends AppController {
                     'conditions' => array(
                         'Ttuj.id' => $data['Laka']['ttuj_id']
                     ),
-                ), true, 'all');
+                ), true, array(
+                    'status' => 'all',
+                ));
 
                 if(!empty($ttuj_data['Ttuj']['driver_name'])){
                     $data['Laka']['driver_name'] = $ttuj_data['Ttuj']['driver_name'];
@@ -191,7 +193,6 @@ class LakasController extends AppController {
                     $driver = $this->Ttuj->Truck->Driver->getData('first', array(
                         'conditions' => array(
                             'Driver.id' => $ttuj_data['Ttuj']['driver_penganti_id'],
-                            'Driver.status' => 1
                         )
                     ));
 
@@ -324,10 +325,12 @@ class LakasController extends AppController {
 
             if(!empty($this->request->data['Laka']['change_driver_id'])){
                 $this->loadModel('Driver');
-                $driver_change = $this->Driver->find('first', array(
+                $driver_change = $this->Driver->getData('first', array(
                     'conditions' => array(
                         'Driver.id' => $this->request->data['Laka']['change_driver_id']
                     )
+                ), true, array(
+                    'status' => 'all',
                 ));
 
                 if(!empty($driver_change['Driver']['driver_name'])){
@@ -357,7 +360,6 @@ class LakasController extends AppController {
                 'Truck.id', 'Truck.nopol', 'Driver.name'
             ),
             'conditions' => array(
-                'Truck.status' => 1,
                 'OR' => array(
                     array(
                         'Laka.id' => NULL
@@ -395,7 +397,6 @@ class LakasController extends AppController {
         $insurance = $this->LakaInsurance->find('list');
         $driverPengantis = $this->Ttuj->Truck->Driver->getData('list', array(
             'conditions' => array(
-                'Driver.status' => 1,
                 'Truck.id <>' => NULL,
             ),
             'fields' => array(

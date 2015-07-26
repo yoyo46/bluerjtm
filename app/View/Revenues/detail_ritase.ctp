@@ -95,44 +95,49 @@
 		        	<div class="col-sm-6">
 		        		<ul class="conntent-ritase-truk">
 		        			<?php
-		        				$label = $this->Html->tag('label', 'VIN');
-			        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $truk['Truck']['id']));
-		        				$label = $this->Html->tag('label', 'NOPOL');
-			        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $truk['Truck']['nopol']));
+		        					$brand_name = !empty($truk['TruckBrand']['name'])?$truk['TruckBrand']['name']:false;
+		        					$category_name = !empty($truk['TruckCategory']['name'])?$truk['TruckCategory']['name']:false;
+		        					$facility_name = !empty($truk['TruckFacility']['name'])?$truk['TruckFacility']['name']:false;
+		        					$driver_name = !empty($truk['Driver']['name'])?$truk['Driver']['name']:false;
 
-		        				$label = $this->Html->tag('label', 'STATUS');
-		        				$status = 'AVAILABLE';
-		        				if(!empty($truk['Truck']['sold'])){
-		        					$status = 'TERJUAL';
-		        				}
+			        				$label = $this->Html->tag('label', 'VIN');
+				        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $truk['Truck']['id']));
+			        				$label = $this->Html->tag('label', 'NOPOL');
+				        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $truk['Truck']['nopol']));
 
-			        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $status));
+			        				$label = $this->Html->tag('label', 'STATUS');
+			        				$status = 'AVAILABLE';
+			        				if(!empty($truk['Truck']['sold'])){
+			        					$status = 'TERJUAL';
+			        				}
 
-			        			$label = $this->Html->tag('label', 'TAHUN PERAKITAN');
-			        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $truk['Truck']['tahun']));
+				        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $status));
 
-			        			$label = $this->Html->tag('label', 'MEREK');
-			        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $truk['TruckBrand']['name']));
+				        			$label = $this->Html->tag('label', 'TAHUN PERAKITAN');
+				        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $truk['Truck']['tahun']));
 
-			        			$label = $this->Html->tag('label', 'JENIS TRUK');
-			        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $truk['TruckCategory']['name']));
+				        			$label = $this->Html->tag('label', 'MEREK');
+				        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $brand_name));
 
-			        			$label = $this->Html->tag('label', 'KAPASITAS');
-			        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $truk['Truck']['capacity']));
+				        			$label = $this->Html->tag('label', 'JENIS TRUK');
+				        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $category_name));
 
-			        			if(!empty($truk['TruckFacility']['name'])){
-			        				$label = $this->Html->tag('label', 'FASILITAS');
-			        				echo $this->Html->tag('li', sprintf('%s : %s', $label, $truk['TruckFacility']['name']));
-			        			}
+				        			$label = $this->Html->tag('label', 'KAPASITAS');
+				        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $truk['Truck']['capacity']));
 
-			        			if(!empty($truk['Driver']['name'])){
-			        				$label = $this->Html->tag('label', 'Nama Supir');
-			        				echo $this->Html->tag('li', sprintf('%s : %s', $label, $truk['Driver']['name']));
-			        			}
-			        			if(!empty($truk['Customer']['name'])){
-			        				$label = $this->Html->tag('label', 'GROUP');
-			        				echo $this->Html->tag('li', sprintf('%s : %s', $label, $truk['Customer']['name']));
-			        			}
+				        			if(!empty($facility_name)){
+				        				$label = $this->Html->tag('label', 'FASILITAS');
+				        				echo $this->Html->tag('li', sprintf('%s : %s', $label, $facility_name));
+				        			}
+
+				        			if(!empty($driver_name)){
+				        				$label = $this->Html->tag('label', 'Nama Supir');
+				        				echo $this->Html->tag('li', sprintf('%s : %s', $label, $driver_name));
+				        			}
+				        			if(!empty($truk['Customer']['name'])){
+				        				$label = $this->Html->tag('label', 'GROUP');
+				        				echo $this->Html->tag('li', sprintf('%s : %s', $label, $truk['Customer']['name']));
+				        			}
 			        		?>
 		        		</ul>
 		        		<div class="clear"></div>

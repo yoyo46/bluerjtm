@@ -61,14 +61,14 @@ class Customer extends AppModel {
             'className' => 'CustomerType',
             'foreignKey' => 'customer_type_id',
         ),
-        'CustomerGroup' => array(
-            'className' => 'CustomerGroup',
-            'foreignKey' => 'customer_group_id',
-        ),
-        'Bank' => array(
-            'className' => 'Bank',
-            'foreignKey' => 'bank_id',
-        )
+        // 'CustomerGroup' => array(
+        //     'className' => 'CustomerGroup',
+        //     'foreignKey' => 'customer_group_id',
+        // ),
+        // 'Bank' => array(
+        //     'className' => 'Bank',
+        //     'foreignKey' => 'bank_id',
+        // )
 	);
 
     // var $hasOne = array(
@@ -86,10 +86,11 @@ class Customer extends AppModel {
         $this->virtualFields['order_sort'] = sprintf('CASE WHEN %s.order IS NULL THEN 1 ELSE 0 END', $this->alias);
     }
 
-	function getData( $find, $options = false, $is_merge = true ){
+	function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'Customer.status' => 1,
+                'Customer.group_branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'Customer.order_sort' => 'ASC',
@@ -98,24 +99,43 @@ class Customer extends AppModel {
             ),
             'contain' => array(
                 'CustomerType',
-                'CustomerGroup' => array(
-                    'CustomerGroupPattern'
-                ),
-                'Bank',
-                // 'CustomerPattern'
             ),
+            // 'contain' => array(
+            //     'CustomerType',
+            //     'CustomerGroup' => array(
+            //         'CustomerGroupPattern'
+            //     ),
+            //     'Bank',
+            //     // 'CustomerPattern'
+            // ),
             'fields' => array(),
             'group' => array(),
         );
+
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['Customer.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['Customer.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['Customer.status'] = 1;
+                break;
+        }
 
         if( !empty($options) && $is_merge ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['fields'])){
@@ -141,6 +161,15 @@ class Customer extends AppModel {
 
     function getMerge( $data, $id, $with_contain = false ){
         if(empty($data['Customer'])){
+            $this->bindModel(array(
+                'belongsTo' => array(
+                    'Bank' => array(
+                        'className' => 'Bank',
+                        'foreignKey' => 'bank_id',
+                    )
+                )
+            ), false);
+        
             $contain = array(
                 'CustomerType',
             );
@@ -149,11 +178,13 @@ class Customer extends AppModel {
                 $contain[] = 'Bank';
             }
 
-            $data_merge = $this->find('first', array(
+            $data_merge = $this->getData('first', array(
                 'conditions' => array(
                     'Customer.id' => $id
                 ),
                 'contain' => $contain,
+            ), true, array(
+                'status' => 'all',
             ));
 
             if(!empty($data_merge)){

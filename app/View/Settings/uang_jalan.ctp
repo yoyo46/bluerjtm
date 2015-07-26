@@ -63,11 +63,13 @@
                     if(!empty($uangJalans)){
                         foreach ($uangJalans as $key => $value) {
                             $id = $value['UangJalan']['id'];
+                            $from_city_name = !empty($value['FromCity']['name'])?$value['FromCity']['name']:false;
+                            $to_city_name = !empty($value['ToCity']['name'])?$value['ToCity']['name']:false;
             ?>
             <tr>
                 <td><?php echo $value['UangJalan']['title'];?></td>
-                <td><?php echo $value['FromCity']['name'];?></td>
-                <td><?php echo $value['ToCity']['name'];?></td>
+                <td><?php echo $from_city_name;?></td>
+                <td><?php echo $to_city_name;?></td>
                 <td><?php echo $value['UangJalan']['capacity'];?></td>
                 <td><?php echo $this->Common->customDate($value['UangJalan']['created']);?></td>
                 <td class="action">

@@ -2,12 +2,6 @@
 class UangJalan extends AppModel {
 	var $name = 'UangJalan';
 	var $validate = array(
-        'branch_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Cabang harap dipilih'
-            ),
-        ),
         'title' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -186,25 +180,11 @@ class UangJalan extends AppModel {
                 'UangJalanTipeMotor.status' => 1,
             ),
         ),
-        'UangExtraGroupMotor' => array(
-            'className' => 'UangExtraGroupMotor',
-            'foreignKey' => 'uang_jalan_id',
-            'conditions' => array(
-                'UangExtraGroupMotor.status' => 1,
-            ),
-        ),
         'CommissionGroupMotor' => array(
             'className' => 'CommissionGroupMotor',
             'foreignKey' => 'uang_jalan_id',
             'conditions' => array(
                 'CommissionGroupMotor.status' => 1,
-            ),
-        ),
-        'CommissionExtraGroupMotor' => array(
-            'className' => 'CommissionExtraGroupMotor',
-            'foreignKey' => 'uang_jalan_id',
-            'conditions' => array(
-                'CommissionExtraGroupMotor.status' => 1,
             ),
         ),
         'AsdpGroupMotor' => array(
@@ -230,36 +210,52 @@ class UangJalan extends AppModel {
         ),
     );
 
-	function getData($find, $options = false){
+    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
-            'fields'=> array(),
             'conditions'=> array(
-                'UangJalan.status' => 1,
+                'UangJalan.group_branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
-                'UangJalan.status' => 'DESC'
+                'UangJalan.title' => 'DESC'
             ),
-            'contain' => array(
-                'FromCity',
-                'ToCity',
-                'UangJalanTipeMotor',
-                // 'UangExtraGroupMotor',
-                'CommissionGroupMotor',
-                // 'CommissionExtraGroupMotor',
-                'AsdpGroupMotor',
-                'UangKawalGroupMotor',
-                'UangKeamananGroupMotor',
-            )
+            'contain' => array(),
+            // 'contain' => array(
+            //     'FromCity',
+            //     'ToCity',
+            //     'UangJalanTipeMotor',
+            //     'CommissionGroupMotor',
+            //     'AsdpGroupMotor',
+            //     'UangKawalGroupMotor',
+            //     'UangKeamananGroupMotor',
+            // ),
+            'fields'=> array(),
         );
+
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['UangJalan.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['UangJalan.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['UangJalan.status'] = 1;
+                break;
+        }
 
         if(!empty($options)){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['fields'])){
@@ -349,9 +345,6 @@ class UangJalan extends AppModel {
 
     function getKotaAsal () {
         $fromCity = $this->getData('all', array(
-            'conditions' => array(
-                'UangJalan.status' => 1,
-            ),
             'group' => array(
                 'UangJalan.from_city_id'
             ),
@@ -376,7 +369,6 @@ class UangJalan extends AppModel {
     function getKotaTujuan ( $from_city_id ) {
         $toCity = $this->getData('all', array(
             'conditions' => array(
-                'UangJalan.status' => 1,
                 'UangJalan.from_city_id' => $from_city_id,
             ),
             'group' => array(
@@ -400,36 +392,31 @@ class UangJalan extends AppModel {
         return $resultCity;
     }
 
-    // function getNopol ($customer_id, $from_city_id, $to_city_id) {
     function getNopol ( $from_city_id, $to_city_id, $capacity ) {
-        $result = false;
-        $this->Truck = ClassRegistry::init('Truck');
         $uangJalan = $this->getData('first', array(
             'conditions' => array(
-                'UangJalan.status' => 1,
                 'UangJalan.capacity' => $capacity,
                 'UangJalan.from_city_id' => $from_city_id,
                 'UangJalan.to_city_id' => $to_city_id,
             ),
         ));
 
-        // if( !empty($uangJalan) ) {
-        //     $result = $this->Truck->getData('list', array(
-        //         'conditions' => array(
-        //             'Truck.status' => 1,
-        //             'Truck.capacity' => $uangJalan['UangJalan']['capacity'],
-        //         ),
-        //         'fields' => array(
-        //             'Truck.id', 'Truck.nopol'
-        //         ),
-        //     ));
-        // }
-
-        // return array(
-        //     'result' => $result,
-        //     'uangJalan' => $uangJalan,
-        // );
+        if( !empty($uangJalan) ) {
+            $id = !empty($uangJalan['UangJalan']['id'])?$uangJalan['UangJalan']['id']:false;
+            $uangJalan = $this->gerMergeBiaya( $uangJalan, $id );
+        }
+        
         return $uangJalan;
+    }
+
+    function gerMergeBiaya ( $data, $id ) {
+        $data = $this->UangJalanTipeMotor->getMerge( $data, $id );
+        $data = $this->CommissionGroupMotor->getMerge( $data, $id );
+        $data = $this->AsdpGroupMotor->getMerge( $data, $id );
+        $data = $this->UangKawalGroupMotor->getMerge( $data, $id );
+        $data = $this->UangKeamananGroupMotor->getMerge( $data, $id );
+
+        return $data;
     }
 }
 ?>

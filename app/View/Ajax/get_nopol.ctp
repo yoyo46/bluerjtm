@@ -108,11 +108,11 @@
 	<?php 
 			if( !empty($uangJalan['UangJalanTipeMotor']) ) {
 				foreach ($uangJalan['UangJalanTipeMotor'] as $key => $value) {
-					echo $this->Html->tag('div', $value['uang_jalan_1'], array(
-						'class' => sprintf('uang-jalan-1-%s', $value['group_motor_id'])
+					echo $this->Html->tag('div', $value['UangJalanTipeMotor']['uang_jalan_1'], array(
+						'class' => sprintf('uang-jalan-1-%s', $value['UangJalanTipeMotor']['group_motor_id'])
 					));
-					echo $this->Html->tag('div', !empty($value['uang_jalan_2'])?$value['uang_jalan_2']:0, array(
-						'class' => sprintf('uang-jalan-2-%s', $value['group_motor_id'])
+					echo $this->Html->tag('div', !empty($value['UangJalanTipeMotor']['uang_jalan_2'])?$value['UangJalanTipeMotor']['uang_jalan_2']:0, array(
+						'class' => sprintf('uang-jalan-2-%s', $value['UangJalanTipeMotor']['group_motor_id'])
 					));
 				}
 			}
@@ -133,56 +133,34 @@
 				}
 			}
 
-			// if( !empty($uangJalan['UangExtraGroupMotor']) ) {
-			// 	foreach ($uangJalan['UangExtraGroupMotor'] as $key => $value) {
-			// 		echo $this->Html->tag('div', $value['uang_jalan_extra'], array(
-			// 			'class' => sprintf('uang-jalan-extra-%s', $value['group_motor_id'])
-			// 		));
-			// 		echo $this->Html->tag('div', $value['min_capacity'], array(
-			// 			'class' => sprintf('uang-jalan-extra-min-capacity-%s', $value['group_motor_id'])
-			// 		));
-			// 	}
-			// }
-
 			if( !empty($uangJalan['CommissionGroupMotor']) ) {
 				foreach ($uangJalan['CommissionGroupMotor'] as $key => $value) {
-					echo $this->Html->tag('div', $value['commission'], array(
-						'class' => sprintf('commission-%s', $value['group_motor_id'])
+					echo $this->Html->tag('div', $value['CommissionGroupMotor']['commission'], array(
+						'class' => sprintf('commission-%s', $value['CommissionGroupMotor']['group_motor_id'])
 					));
 				}
 			}
 
-			// if( !empty($uangJalan['CommissionExtraGroupMotor']) ) {
-			// 	foreach ($uangJalan['CommissionExtraGroupMotor'] as $key => $value) {
-			// 		echo $this->Html->tag('div', $value['commission'], array(
-			// 			'class' => sprintf('commission-extra-%s', $value['group_motor_id'])
-			// 		));
-			// 		echo $this->Html->tag('div', $value['min_capacity'], array(
-			// 			'class' => sprintf('commission-extra-min-capacity-%s', $value['group_motor_id'])
-			// 		));
-			// 	}
-			// }
-
 			if( !empty($uangJalan['AsdpGroupMotor']) ) {
 				foreach ($uangJalan['AsdpGroupMotor'] as $key => $value) {
-					echo $this->Html->tag('div', $value['asdp'], array(
-						'class' => sprintf('asdp-%s', $value['group_motor_id'])
+					echo $this->Html->tag('div', $value['AsdpGroupMotor']['asdp'], array(
+						'class' => sprintf('asdp-%s', $value['AsdpGroupMotor']['group_motor_id'])
 					));
 				}
 			}
 
 			if( !empty($uangJalan['UangKawalGroupMotor']) ) {
 				foreach ($uangJalan['UangKawalGroupMotor'] as $key => $value) {
-					echo $this->Html->tag('div', $value['uang_kawal'], array(
-						'class' => sprintf('uang-kawal-%s', $value['group_motor_id'])
+					echo $this->Html->tag('div', $value['UangKawalGroupMotor']['uang_kawal'], array(
+						'class' => sprintf('uang-kawal-%s', $value['UangKawalGroupMotor']['group_motor_id'])
 					));
 				}
 			}
 
 			if( !empty($uangJalan['UangKeamananGroupMotor']) ) {
 				foreach ($uangJalan['UangKeamananGroupMotor'] as $key => $value) {
-					echo $this->Html->tag('div', $value['uang_keamanan'], array(
-						'class' => sprintf('uang-keamanan-%s', $value['group_motor_id'])
+					echo $this->Html->tag('div', $value['UangKeamananGroupMotor']['uang_keamanan'], array(
+						'class' => sprintf('uang-keamanan-%s', $value['UangKeamananGroupMotor']['group_motor_id'])
 					));
 				}
 			}

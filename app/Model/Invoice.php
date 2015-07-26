@@ -72,7 +72,8 @@ class Invoice extends AppModel {
         ),
     );
 
-	function getData( $find, $options = false, $is_merge = true, $status = 'active' ){
+	function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
@@ -152,7 +153,9 @@ class Invoice extends AppModel {
             'order' => array(
                 'id' => 'DESC'
             )
-        ), true, 'all');
+        ), true, array(
+            'status' => 'all',
+        ));
         debug($last_invoice);die();
 
         if(!empty($last_invoice)){

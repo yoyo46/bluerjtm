@@ -50,5 +50,28 @@ class UangJalanTipeMotor extends AppModel {
             'foreignKey' => 'uang_jalan_id',
         ),
     );
+
+    function getMerge ( $data = false, $uang_jalan_id = false ) {
+        if( empty($data['UangJalanTipeMotor']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'UangJalanTipeMotor.uang_jalan_id'=> $uang_jalan_id,
+                    'UangJalanTipeMotor.status'=> 1,
+                ),
+                'order' => array(
+                    'UangJalanTipeMotor.id' => 'ASC',
+                ),
+            );
+
+            if( !empty($conditions) ) {
+                $default_options['conditions'] = $conditions;
+            }
+
+            $uangJalanTipeMotor = $this->find('all', $default_options);
+            $data['UangJalanTipeMotor'] = $uangJalanTipeMotor;
+        }
+
+        return $data;
+    }
 }
 ?>

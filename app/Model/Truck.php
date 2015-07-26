@@ -12,12 +12,6 @@ class Truck extends AppModel {
                 'message' => 'Nopol telah terdaftar',
             ),
         ),
-        'branch_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Cabang harap dipilih'
-            ),
-        ),
         'truck_brand_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -274,26 +268,44 @@ class Truck extends AppModel {
         }
     }
 
-	function getData( $find, $options = false, $is_merge = true ){
+    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'Truck.status' => 1,
+                'Truck.group_branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order' => array(
                 'Truck.nopol' => 'ASC',
             ),
             'contain' => array(),
             'fields' => array(),
+            'groups' => array(),
         );
+
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['Truck.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['Truck.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['Truck.status'] = 1;
+                break;
+        }
 
         if( !empty($options) && $is_merge ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['limit'])){
@@ -317,7 +329,6 @@ class Truck extends AppModel {
     function getTruck($id){
         $truck = $this->getData('first', array(
             'conditions' => array(
-                'Truck.status' => 1,
                 'Truck.id' => $id
             )
         ));
@@ -337,7 +348,6 @@ class Truck extends AppModel {
     function getInfoTruck( $truck_id ) {
         $result = $this->getData('first', array(
             'conditions' => array(
-                'Truck.status' => 1,
                 'Truck.id' => $truck_id,
             ),
             'contain' => array(

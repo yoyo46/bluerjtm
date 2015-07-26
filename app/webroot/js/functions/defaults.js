@@ -48,7 +48,6 @@ $(function() {
         } else {
             $('#getKotaTujuan').val('').attr('disabled', true);
             $('#getTruck').val('').attr('disabled', true);
-            $('#getInfoTruck').val('').attr('disabled', true);
         }
     });
 
@@ -83,7 +82,6 @@ $(function() {
                 url: '/ajax/getNopol/'+from_city_id+'/'+self.val()+'/'+'/'+customer_id+'/',
                 type: 'POST',
                 success: function(response, status) {
-                    $('.truck_id #getInfoTruck').attr('disabled', false).html($(response).filter('#truck_id').html());
                     $('.uang_jalan_1').val($(response).filter('#uang_jalan_1').html());
                     $('.uang_jalan_2').val($(response).filter('#uang_jalan_2').html());
                     $('.commission').val($(response).filter('#commission').html());
@@ -92,27 +90,6 @@ $(function() {
                     $('.asdp').val($(response).filter('#asdp').html());
                     $('.uang_kawal').val($(response).filter('#uang_kawal').html());
                     $('.uang_keamanan').val($(response).filter('#uang_keamanan').html());
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                    return false;
-                }
-            });
-        } else {
-
-        }
-    });
-
-    $('#getInfoTruck').change(function() {
-        var self = $(this);
-
-        if( self.val() != '' ) {
-            $.ajax({
-                url: '/ajax/getInfoTruck/'+self.val()+'/',
-                type: 'POST',
-                success: function(response, status) {
-                    $('.truck_capacity').val($(response).filter('#truck_capacity').html());
-                    $('.driver_name').val($(response).filter('#driver_name').html());
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');

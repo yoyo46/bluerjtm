@@ -19,5 +19,31 @@ class AsdpGroupMotor extends AppModel {
             ),
         ),
 	);
+
+    function getMerge ( $data = false, $uang_jalan_id = false ) {
+        if( empty($data['AsdpGroupMotor']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'AsdpGroupMotor.uang_jalan_id'=> $uang_jalan_id,
+                    'AsdpGroupMotor.status'=> 1,
+                ),
+                'group' => array(
+                    'AsdpGroupMotor.group_motor_id',
+                ),
+                'order' => array(
+                    'AsdpGroupMotor.id' => 'ASC',
+                ),
+            );
+
+            if( !empty($conditions) ) {
+                $default_options['conditions'] = $conditions;
+            }
+
+            $asdpGroupMotor = $this->find('all', $default_options);
+            $data['AsdpGroupMotor'] = $asdpGroupMotor;
+        }
+
+        return $data;
+    }
 }
 ?>

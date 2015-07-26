@@ -3276,7 +3276,6 @@ $(function() {
 
     $('#getTruck').change(function() {
         var self = $(this);
-        // var customer_id = $('.customer').val();
         var from_city_id = $('.from_city #getKotaTujuan').val();
         var nopol = $('#truckID').val();
         var customer_id = $('#getKotaAsal').val();
@@ -3284,11 +3283,6 @@ $(function() {
         var cityRetail = $('.city-retail-id');
 
         if( self.val() != '' ) {
-            // $.ajax({
-            //     // url: '/ajax/getNopol/'+from_city_id+'/'+self.val()+'/'+'/'+customer_id+'/',
-            //     url: '/ajax/getNopol/'+from_city_id+'/'+self.val()+'/',
-            //     type: 'POST',
-            //     success: function(response, status) {
             $('#truckID,#truckBrowse').attr('disabled', false);
             
             for (i = 0; i < lenCity; i++) {
@@ -3310,12 +3304,6 @@ $(function() {
                     }
                 });
             }
-            //     },
-            //     error: function(XMLHttpRequest, textStatus, errorThrown) {
-            //         alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-            //         return false;
-            //     }
-            // });
         } else {
             $('#truckID').val('').attr('disabled', true);
             $('#truckBrowse').attr('disabled', true);

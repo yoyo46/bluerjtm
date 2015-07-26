@@ -19,5 +19,28 @@ class CommissionGroupMotor extends AppModel {
             ),
         ),
 	);
+
+    function getMerge ( $data = false, $uang_jalan_id = false ) {
+        if( empty($data['CommissionGroupMotor']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'CommissionGroupMotor.uang_jalan_id'=> $uang_jalan_id,
+                    'CommissionGroupMotor.status'=> 1,
+                ),
+                'order' => array(
+                    'CommissionGroupMotor.id' => 'ASC',
+                ),
+            );
+
+            if( !empty($conditions) ) {
+                $default_options['conditions'] = $conditions;
+            }
+
+            $commissionGroupMotor = $this->find('all', $default_options);
+            $data['CommissionGroupMotor'] = $commissionGroupMotor;
+        }
+
+        return $data;
+    }
 }
 ?>

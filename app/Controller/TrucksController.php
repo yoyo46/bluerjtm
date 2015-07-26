@@ -232,7 +232,6 @@ class TrucksController extends AppController {
     function doTruck($id = false, $data_local = false){
         $this->loadModel('Driver');
         $driverConditions = array(
-            'Driver.status' => 1,
             'Truck.id' => NULL,
         );
 
@@ -268,6 +267,7 @@ class TrucksController extends AppController {
             $data['Truck']['emergency_call'] = (!empty($data['Truck']['emergency_call'])) ? $data['Truck']['emergency_call'] : '';
             $data['Truck']['emergency_name'] = (!empty($data['Truck']['emergency_name'])) ? $data['Truck']['emergency_name'] : '';
             $data['Truck']['is_gps'] = (!empty($data['Truck']['is_gps'])) ? $data['Truck']['is_gps'] : 0;
+            $data['Truck']['group_branch_id'] = Configure::read('__Site.config_branch_id');
 
             if(!empty($data['Truck']['photo']['name']) && is_array($data['Truck']['photo'])){
                 $temp_image = $data['Truck']['photo'];
@@ -440,14 +440,11 @@ class TrucksController extends AppController {
             ),
             'contain' => array(
                 'Truck'
-            )
+            ),
         ));
         $branches = $this->City->branchCities();
 
         $customers = $this->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1
-            ),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -745,9 +742,8 @@ class TrucksController extends AppController {
     function drivers(){
         $this->loadModel('Driver');
 
-        $conditions = array(
-            'Driver.status' => array( 0, 1 )
-        );
+        $conditions = array();
+
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
 
@@ -764,7 +760,9 @@ class TrucksController extends AppController {
                 'Driver.status' => 'DESC',
                 'Driver.name' => 'ASC',
             ),
-        ), false);
+        ), true, array(
+            'status' => 'all',
+        ));
         $truck_drivers = $this->paginate('Driver');
 
         $this->set('active_menu', 'drivers');
@@ -784,8 +782,9 @@ class TrucksController extends AppController {
         $driver = $this->Driver->getData('first', array(
             'conditions' => array(
                 'Driver.id' => $id,
-                'Driver.status' => array( 0, 1 ),
-            )
+            ),
+        ), true, array(
+            'status' => 'all',
         ));
 
         if(!empty($driver)){
@@ -809,6 +808,7 @@ class TrucksController extends AppController {
             $data['Driver']['birth_date'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_lahir']);
             $data['Driver']['join_date'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_penerimaan']);
             $data['Driver']['expired_date_sim'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_expire_sim']);
+            $data['Driver']['group_branch_id'] = Configure::read('__Site.config_branch_id');
             
             if(!empty($data['Driver']['photo']['name']) && is_array($data['Driver']['photo'])){
                 $temp_image = $data['Driver']['photo'];
@@ -937,8 +937,9 @@ class TrucksController extends AppController {
         $locale = $this->Driver->getData('first', array(
             'conditions' => array(
                 'Driver.id' => $id,
-                'Driver.status' => array( 0, 1 ),
-            )
+            ),
+        ), true, array(
+            'status' => 'all',
         ));
 
         if($locale){
@@ -1051,7 +1052,6 @@ class TrucksController extends AppController {
                 $this->request->data['Kir']['truck_id'] = $name;
                 $truck = $this->Truck->getData('first', array(
                     'conditions' => array(
-                        'Truck.status' => 1,
                         'Truck.id' => $name,
                     ),
                 ));
@@ -1131,9 +1131,6 @@ class TrucksController extends AppController {
 
         $this->loadModel('Truck');
         $trucks = $this->Truck->getData('list', array(
-            'conditions' => array(
-                'Truck.status' => 1
-            ),
             'fields' => array(
                 'Truck.id', 'Truck.nopol'
             )
@@ -1479,7 +1476,6 @@ class TrucksController extends AppController {
                 $this->request->data['Siup']['truck_id'] = $name;
                 $truck = $this->Truck->getData('first', array(
                     'conditions' => array(
-                        'Truck.status' => 1,
                         'Truck.id' => $name,
                     ),
                 ));
@@ -1553,9 +1549,6 @@ class TrucksController extends AppController {
 
         $this->loadModel('Truck');
         $trucks = $this->Truck->getData('list', array(
-            'conditions' => array(
-                'Truck.status' => 1
-            ),
             'fields' => array(
                 'Truck.id', 'Truck.nopol'
             )
@@ -2355,7 +2348,6 @@ class TrucksController extends AppController {
                 $this->request->data['Stnk']['truck_id'] = $name;
                 $truck = $this->Truck->getData('first', array(
                     'conditions' => array(
-                        'Truck.status' => 1,
                         'Truck.id' => $name,
                     ),
                 ));
@@ -2459,9 +2451,6 @@ class TrucksController extends AppController {
 
         $this->loadModel('Truck');
         $trucks = $this->Truck->getData('list', array(
-            'conditions' => array(
-                'Truck.status' => 1
-            ),
             'fields' => array(
                 'Truck.id', 'Truck.nopol'
             )
@@ -2847,9 +2836,7 @@ class TrucksController extends AppController {
         $options = $this->Truck->getData('paginate', array(
             'conditions' => $defaul_condition,
             'contain' => array(
-                'TruckBrand', 
                 'TruckCategory',
-                'TruckFacility',
                 'TruckCustomer',
                 'CustomerNoType',
             )
@@ -2866,7 +2853,13 @@ class TrucksController extends AppController {
 
         if( !empty($trucks) ) {
             foreach ($trucks as $key => $truck) {
-                $truck = $this->Truck->Driver->getMerge( $truck, $truck['Truck']['driver_id'] );
+                $driver_id = !empty($truck['Truck']['driver_id'])?$truck['Truck']['driver_id']:false;
+                $truck_brand_id = !empty($truck['Truck']['truck_brand_id'])?$truck['Truck']['truck_brand_id']:false;
+                $truck_facility_id = !empty($truck['Truck']['truck_facility_id'])?$truck['Truck']['truck_facility_id']:false;
+
+                $truck = $this->Truck->Driver->getMerge( $truck, $driver_id );
+                $truck = $this->Truck->TruckBrand->getMerge($truck, $truck_brand_id);
+                $truck = $this->Truck->TruckFacility->getMerge($truck, $truck_facility_id);
                 $trucks[$key] = $truck;
             }
         }
@@ -3007,18 +3000,7 @@ class TrucksController extends AppController {
         $this->set('active_menu', 'capacity_report');
         $this->set('sub_module_title', __('Laporan Truk Per Kapasitas'));
         
-        $options = $this->Customer->getData('paginate', array(
-            'conditions' => array(
-                'Customer.status' => 1,
-            ),
-            'limit' => 20,
-        ));
-
-        $options = $this->Customer->getData('paginate', array(
-            'conditions' => array(
-                'Customer.status' => 1,
-            ),
-        ));
+        $options = $this->Customer->getData('paginate');
 
         if( !empty($data_action) ) {
             $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
@@ -3030,9 +3012,6 @@ class TrucksController extends AppController {
         $customers = $this->paginate('Customer');
 
         $capacities = $this->Truck->getData('list', array(
-            'conditions' => array(
-                'Truck.status' => 1,
-            ),
             'group' => array(
                 'Truck.capacity',
             ),
@@ -3043,7 +3022,7 @@ class TrucksController extends AppController {
             'order' => array(
                 'Truck.capacity*1' => 'ASC',
             ),
-        ), false);
+        ));
         $truckArr = array();
 
         if( !empty($customers) ) {
@@ -3099,7 +3078,6 @@ class TrucksController extends AppController {
         ), false);
         $truckWithoutAlocations = $this->Truck->getData('all', array(
             'conditions' => array(
-                'Truck.status' => 1,
                 'TruckCustomer.id' => NULL,
             ),
             'contain' => array(
@@ -3163,11 +3141,7 @@ class TrucksController extends AppController {
 
         $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
         $lastDay = date('t', strtotime($currentMonth));
-        $options = $this->Customer->getData('paginate', array(
-            'conditions' => array(
-                'Customer.status' => 1,
-            ),
-        ));
+        $options = $this->Customer->getData('paginate');
 
         if( !empty($data_action) ) {
             $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
@@ -3296,7 +3270,6 @@ class TrucksController extends AppController {
         $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
         $lastDay = date('t', strtotime($currentMonth));
         $conditionsCustomer = array(
-            'Customer.status' => 1,
             'Customer.customer_type_id' => 2,
         );
 
@@ -3529,9 +3502,6 @@ class TrucksController extends AppController {
 
         $this->loadModel('Customer');
         $customers = $this->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.status' => 1
-            ),
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -3822,7 +3792,6 @@ class TrucksController extends AppController {
                                     $driver = $this->Truck->Driver->getData('first', array(
                                         'conditions' => array(
                                             'Driver.no_id' => $no_id_supir,
-                                            'Driver.status' => 1,
                                         ),
                                     ));
 
@@ -3888,7 +3857,6 @@ class TrucksController extends AppController {
                                             $customer = $this->Customer->getData('first', array(
                                                 'conditions' => array(
                                                     'Customer.code' => $customer_code,
-                                                    'Customer.status' => 1,
                                                 ),
                                             ));
 
