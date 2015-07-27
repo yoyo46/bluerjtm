@@ -27,10 +27,10 @@
 				<th><?php echo __('Tanggal Pembayaran');?></th>
 				<td><?php echo $this->Common->customDate($invoice['InvoicePayment']['date_payment']);?></td>
 			</tr>
-			<tr>
+			<!-- <tr>
 				<th><?php echo __('Total Pembayaran');?></th>
-				<td><?php echo $this->Number->currency($invoice['InvoicePayment']['total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
-			</tr>
+				<td><?php echo $this->Number->currency($invoice['InvoicePayment']['grand_total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
+			</tr> -->
 		</table>
 	</div>
 </div>
@@ -70,6 +70,45 @@
 									));
 
 								echo $this->Html->tag('tr', $colom);
+							}
+
+							$ppn = !empty($invoice['InvoicePayment']['ppn'])?$invoice['InvoicePayment']['ppn']:0;
+							$pph = !empty($invoice['InvoicePayment']['pph'])?$invoice['InvoicePayment']['pph']:0;
+							$ppn_total = $this->Common->calcFloat($grandTotal, $ppn);
+							$pph_total = $this->Common->calcFloat($grandTotal, $pph)*-1;
+							$grandTotal += $ppn_total;
+							$grandTotal -= $pph_total;
+
+							if( !empty($ppn) ) {
+								$colom = $this->Html->tag('td', __('PPN ('.$ppn.'%)'), array(
+									'colspan' => 3,
+									'align' => 'right',
+									'style' => 'font-weight: bold;',
+								));
+								$colom .= $this->Html->tag('td', $this->Number->currency($ppn_total, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+									'align' => 'right',
+									'style' => 'font-weight: bold;',
+								));
+
+								echo $this->Html->tag('tr', $colom, array(
+									'class' => 'total-row'
+								));
+							}
+
+							if( !empty($pph) ) {
+								$colom = $this->Html->tag('td', __('PPh ('.$pph.'%)'), array(
+									'colspan' => 3,
+									'align' => 'right',
+									'style' => 'font-weight: bold;',
+								));
+								$colom .= $this->Html->tag('td', $this->Number->currency($pph_total, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+									'align' => 'right',
+									'style' => 'font-weight: bold;',
+								));
+
+								echo $this->Html->tag('tr', $colom, array(
+									'class' => 'total-row'
+								));
 							}
 
 							$colom = $this->Html->tag('td', __('Total '), array(

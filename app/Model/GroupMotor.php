@@ -68,9 +68,9 @@ class GroupMotor extends AppModel {
 
     function getMerge($data, $id){
         if(empty($data['GroupMotor'])){
-            $data_merge = $this->find('first', array(
+            $data_merge = $this->getData('first', array(
                 'conditions' => array(
-                    'id' => $id
+                    'GroupMotor.id' => $id
                 )
             ));
 

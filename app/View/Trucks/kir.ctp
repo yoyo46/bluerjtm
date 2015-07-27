@@ -89,13 +89,13 @@
 
                             if( !empty($value['Kir']['status']) ) {
                                 if( empty($value['Kir']['paid']) && empty($value['Kir']['rejected']) ){
-                                    echo $this->Html->link(__('Hapus'), array(
+                                    echo $this->Html->link(__('Void'), array(
                                         'controller' => 'trucks',
                                         'action' => 'kir_delete',
                                         $id
                                     ), array(
                                         'class' => 'btn btn-danger btn-xs'
-                                    ), __('Anda yakin ingin menghapus data Perpanjang KIR ini?'));
+                                    ), __('Anda yakin ingin menon-aktifkan data Perpanjang KIR ini?'));
                                 }
                             }
                     ?>

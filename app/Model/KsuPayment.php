@@ -51,27 +51,45 @@ class KsuPayment extends AppModel {
         )
     );
 
-	function getData($find, $options = false, $is_merge = true){
+    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'KsuPayment.status' => 1,
+                'KsuPayment.group_branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'KsuPayment.created' => 'DESC',
                 'KsuPayment.id' => 'DESC',
             ),
             'fields' => array(),
-            'contain' => array()
+            'contain' => array(),
+            'group' => array(),
         );
+
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['KsuPayment.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['KsuPayment.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['KsuPayment.status'] = 1;
+                break;
+        }
 
         if(!empty($options) && $is_merge){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['limit'])){
@@ -79,6 +97,9 @@ class KsuPayment extends AppModel {
             }
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         }else{
             $default_options = $options;
@@ -102,7 +123,7 @@ class KsuPayment extends AppModel {
             )
         ));
         
-        return $this->find('first', array(
+        return $this->getData('first', array(
             'conditions' => array(
                 'KsuPayment.id' => $id
             ),
@@ -110,6 +131,8 @@ class KsuPayment extends AppModel {
                 'CustomerNoType',
                 'KsuPaymentDetail'
             )
+        ), true, array(
+            'status' => 'all',
         ));
     }
 }

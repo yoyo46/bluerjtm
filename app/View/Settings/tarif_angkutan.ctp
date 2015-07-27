@@ -57,6 +57,8 @@
                         foreach ($tarif_angkutan as $key => $value) {
                             $value_data = $value['TarifAngkutan'];
                             $id = $value_data['id'];
+                            $group_motor_name = !empty($value['GroupMotor']['name'])?$value['GroupMotor']['name']:false;
+                            $customer_name = !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';
             ?>
             <tr>
                 <td><?php echo $value_data['name_tarif'];?></td>
@@ -77,7 +79,7 @@
                 </td>
                 <td><?php echo $value_data['from_city_name'];?></td>
                 <td><?php echo $value_data['to_city_name'];?></td>
-                <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';?></td>
+                <td><?php echo $customer_name;?></td>
                 <td>
                     <?php
                             switch ($value_data['jenis_unit']) {
@@ -91,7 +93,7 @@
                             };
                     ?>
                 </td>
-                <td><?php echo $value['GroupMotor']['name'];?></td>
+                <td><?php echo $group_motor_name;?></td>
                 <td><?php echo $value_data['capacity'];?></td>
                 <td><?php echo $this->Number->currency($value_data['tarif'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>

@@ -233,7 +233,6 @@ class AjaxController extends AppController {
 		));
 		$lku_condition = array(
 			'Lku.ttuj_id' => $ttuj_id,
-			'Lku.status' => 1,
 			'Lku.complete_paid' => 0
 		);
 		$lku_details = array();
@@ -249,11 +248,12 @@ class AjaxController extends AppController {
 			}
 
 			$lkus = $this->Lku->getData('all', array(
-				'conditions' => $lku_condition
+				'conditions' => $lku_condition,
 			));
 
 			if(!empty($lkus)){
 				$this->loadModel('LkuDetail');
+				
 				$lku_id = Set::extract('/Lku/id', $lkus);
 				$this->paginate = $this->LkuDetail->getData('paginate', array(
 					'conditions' => array(
@@ -344,7 +344,6 @@ class AjaxController extends AppController {
 		));
 		$ksu_condition = array(
 			'Ksu.ttuj_id' => $ttuj_id,
-			'Ksu.status' => 1,
 			'Ksu.complete_paid' => 0,
 			'Ksu.kekurangan_atpm' => 0
 		);
@@ -429,7 +428,6 @@ class AjaxController extends AppController {
 		$lku = $this->Lku->getData('first', array(
 			'conditions' => array(
 				'Lku.id' => $lku_id,
-				// 'Lku.type_lku' => $type_lku
 			),
 			'contain' => array(
 				'Ttuj'
@@ -1130,7 +1128,6 @@ class AjaxController extends AppController {
 		$data_action = 'browse-form';
 		$data_change = 'truckID';
 		$conditions = array(
-            'Kir.status' => 1,
             'Kir.paid' => 0,
             'Kir.rejected' => 0,
         );
@@ -1272,7 +1269,6 @@ class AjaxController extends AppController {
 		$data_action = 'browse-form';
 		$data_change = 'truckID';
 		$conditions = array(
-            'Siup.status' => 1,
             'Siup.paid' => 0,
             'Siup.rejected' => 0,
         );
@@ -1317,9 +1313,6 @@ class AjaxController extends AppController {
         $this->paginate = $this->Siup->getData('paginate', array(
             'conditions' => $conditions,
             'limit' => Configure::read('__Site.config_pagination'),
-            'contain' => array(
-            	'Truck'
-        	),
         ));
         $trucks = $this->paginate('Siup');
 
@@ -1516,7 +1509,7 @@ class AjaxController extends AppController {
 		
 		$invoice_real = $this->Invoice->getdata('first', array(
 			'conditions' => array(
-				'Invoice.id' => $id
+				'Invoice.id' => $id,
 			),
 		));
 
@@ -1534,7 +1527,6 @@ class AjaxController extends AppController {
 		$default_conditions = array(
 			'Invoice.customer_id' => $id,
 			'Invoice.complete_paid' => 0,
-			'Invoice.status' => 1,
 		);
 
 		if(!empty($this->request->data['Invoice']['date_from']) || !empty($this->request->data['Invoice']['date_to'])){
@@ -1570,7 +1562,9 @@ class AjaxController extends AppController {
 
 		$data_action = 'browse-invoice';
 		$title = __('Invoice Customer');
-		$this->set(compact('invoices', 'id', 'data_action', 'title'));
+		$this->set(compact(
+			'invoices', 'id', 'data_action', 'title'
+		));
 	}
 
 	function delete_laka_media($id = false){
@@ -1966,7 +1960,6 @@ class AjaxController extends AppController {
 
 		$options = array(
             'conditions' => array(
-	            'CashBank.status' => 1,
                 'CashBank.is_rejected' => 0,
                 'CashBank.receiving_cash_type' => 'prepayment_out',
                 'CashBank.branch_id' => $this->group_branch_id
@@ -2014,31 +2007,33 @@ class AjaxController extends AppController {
         $cashBanks = $this->paginate('CashBank');
 
         if(!empty($cashBanks)){
-            $this->loadModel('Vendor');
-            $this->loadModel('Employe');
-            $this->loadModel('Customer');
-
             foreach ($cashBanks as $key => $value) {
                 $model = $value['CashBank']['receiver_type'];
+                $receiver_id = $value['CashBank']['receiver_id'];
+                $this->loadModel($model);
 
                 switch ($model) {
                     case 'Vendor':
                         $list_result = $this->Vendor->getData('first', array(
                             'conditions' => array(
-                                'Vendor.status' => 1
-                            )
+                                'Vendor.id' => $receiver_id,
+                            ),
                         ));
                         break;
                     case 'Employe':
                         $list_result = $this->Employe->getData('first', array(
                             'conditions' => array(
-                                'Employe.status' => 1
-                            )
+                                'Employe.id' => $receiver_id,
+                            ),
                         ));
 
                         break;
                     default:
-                        $list_result = $this->Customer->getData('first');
+                        $list_result = $this->Customer->getData('first', array(
+                            'conditions' => array(
+                                'Customer.id' => $receiver_id,
+                            ),
+                        ));
 
                         break;
                 }
@@ -2071,10 +2066,14 @@ class AjaxController extends AppController {
 						'Coa'
 					),
 				),
-			), false);
+			), true, array(
+				'status' => 'all',
+			));
 
 			if( !empty($customer) ) {
 				$model = $customer['CashBank']['receiver_type'];
+                $receiver_id = $customer['CashBank']['receiver_id'];
+                $this->loadModel($model);
 
 				if( !empty($customer['CashBankDetail']) ) {
 					foreach ($customer['CashBankDetail'] as $key => $cashBankDetail) {
@@ -2093,25 +2092,26 @@ class AjaxController extends AppController {
 
                 switch ($model) {
                     case 'Vendor':
-           		 		$this->loadModel('Vendor');
                         $list_result = $this->Vendor->getData('first', array(
                             'conditions' => array(
-                                'Vendor.status' => 1
-                            )
+                                'Vendor.id' => $receiver_id,
+                            ),
                         ));
                         break;
                     case 'Employe':
-            			$this->loadModel('Employe');
                         $list_result = $this->Employe->getData('first', array(
                             'conditions' => array(
-                                'Employe.status' => 1
-                            )
+                                'Employe.id' => $receiver_id,
+                            ),
                         ));
 
                         break;
                     default:
-            			$this->loadModel('Customer');
-                        $list_result = $this->Customer->getData('first');
+                        $list_result = $this->Customer->getData('first', array(
+                            'conditions' => array(
+                                'Customer.id' => $receiver_id,
+                            ),
+                        ));
 
                         break;
                 }

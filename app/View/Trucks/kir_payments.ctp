@@ -61,23 +61,22 @@
                 </td>
                 <td>
                     <?php 
-                        if(empty($value['KirPayment']['is_void'])){
-                            if( !empty($value['Kir']['paid']) ) {
-                                echo '<span class="label label-success">Sudah Bayar</span>'; 
-                            } else if( !empty($value['Kir']['rejected']) ) {
-                                echo '<span class="label label-danger">Ditolak</span>'; 
-                            } else {
-                                echo '<span class="label label-default">Belum Bayar</span>';  
+                            if(empty($value['KirPayment']['is_void'])){
+                                if( !empty($value['Kir']['paid']) ) {
+                                    echo '<span class="label label-success">Sudah Bayar</span>'; 
+                                } else if( !empty($value['Kir']['rejected']) ) {
+                                    echo '<span class="label label-danger">Ditolak</span>'; 
+                                } else {
+                                    echo '<span class="label label-default">Belum Bayar</span>';  
+                                }
+                            }else{
+                                echo '<span class="label label-danger">Non-Aktif</span>'; 
                             }
-                        }else{
-                            echo '<span class="label label-danger">Void</span>'; 
-                        }
                     ?>
                 </td>
                 <td><?php echo $this->Time->niceShort($value['KirPayment']['created']);?></td>
                 <td class="action">
                     <?php
-                        if(empty($value['KirPayment']['is_void'])){
                             echo $this->Html->link(__('Detail'), array(
                                 'controller' => 'trucks',
                                 'action' => 'kir_detail',
@@ -86,14 +85,15 @@
                                 'class' => 'btn btn-primary btn-xs'
                             ));
 
-                            echo $this->Html->link(__('Void'), array(
-                                'controller' => 'trucks',
-                                'action' => 'kir_payment_delete',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-danger btn-xs'
-                            ), __('Anda yakin ingin membatalkan data pembayaran KIR ini?'));
-                        }
+                            if( empty($value['KirPayment']['is_void']) && empty($value['KirPayment']['rejected']) ){
+                                echo $this->Html->link(__('Void'), array(
+                                    'controller' => 'trucks',
+                                    'action' => 'kir_payment_delete',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs'
+                                ), __('Anda yakin ingin membatalkan data pembayaran KIR ini?'));
+                            }
                     ?>
                 </td>
             </tr>

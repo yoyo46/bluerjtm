@@ -44,9 +44,8 @@ class LeasingsController extends AppController {
 
         $this->paginate = $this->Leasing->getData('paginate', array(
             'conditions' => $conditions,
-            'contain' => array(
-                'LeasingCompany'
-            )
+        ), true, array(
+            'status' => 'all',
         ));
         $leasings = $this->paginate('Leasing');
 
@@ -85,6 +84,8 @@ class LeasingsController extends AppController {
             'contain' => array(
                 'LeasingDetail'
             )
+        ), true, array(
+            'status' => 'all',
         ));
 
         if(!empty($truck)){
@@ -150,6 +151,7 @@ class LeasingsController extends AppController {
             $data['Leasing']['denda'] = !empty($data['Leasing']['denda']) ? str_replace(',', '', $data['Leasing']['denda']) : 0;
 
             $data['Leasing']['total_biaya'] = $data['Leasing']['installment'] + $data['Leasing']['denda'];
+            $data['Leasing']['group_branch_id'] = Configure::read('__Site.config_branch_id');
 
             $validate_leasing_detail = true;
             $temp_detail = array();
@@ -276,8 +278,10 @@ class LeasingsController extends AppController {
             )
         ));
 
-        $this->set(compact('leasing_companies', 'trucks'));
         $this->set('active_menu', 'view_leasing');
+        $this->set(compact(
+            'leasing_companies', 'trucks', 'data_local'
+        ));
         $this->render('leasing_form');
     }
 
@@ -372,7 +376,7 @@ class LeasingsController extends AppController {
         $this->loadModel('Leasing');
         $locale = $this->Leasing->getData('first', array(
             'conditions' => array(
-                'Leasing.id' => $id
+                'Leasing.id' => $id,
             )
         ));
 

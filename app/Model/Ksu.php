@@ -46,6 +46,10 @@ class Ksu extends AppModel {
             'conditions' => array(
                 'KsuDetail.status' => 1,
             ),
+            'order'=> array(
+                'KsuDetail.id' => 'ASC',
+                'KsuDetail.created' => 'ASC',
+            ),
         ),
     );
 
@@ -60,34 +64,53 @@ class Ksu extends AppModel {
         return $result;
     }
 
-	function getData($find, $options = false, $is_merge = true){
+    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'Ksu.status' => 1,
+                'Ksu.group_branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'Ksu.created' => 'DESC',
                 'Ksu.id' => 'DESC',
             ),
-            'contain' => array(
-                'KsuDetail' => array(
-                    'order'=> array(
-                        'KsuDetail.id' => 'ASC',
-                        'KsuDetail.created' => 'ASC',
-                    ),
-                )
-            ),
+            'contain' => array(),
+            // 'contain' => array(
+            //     'KsuDetail' => array(
+            //         'order'=> array(
+            //             'KsuDetail.id' => 'ASC',
+            //             'KsuDetail.created' => 'ASC',
+            //         ),
+            //     )
+            // ),
             'fields' => array(),
+            'group' => array(),
         );
+
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['Ksu.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['Ksu.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['Ksu.status'] = 1;
+                break;
+        }
 
         if(!empty($options) && $is_merge){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['limit'])){
@@ -95,6 +118,9 @@ class Ksu extends AppModel {
             }
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         }else{
             $default_options = $options;
@@ -109,9 +135,9 @@ class Ksu extends AppModel {
     }
 
     function getKsu($id){
-        return $this->find('first', array(
+        return $this->getData('first', array(
             'conditions' => array(
-                'Ksu.id' => $id
+                'Ksu.id' => $id,
             ),
             'contain' => array(
                 'KsuDetail',

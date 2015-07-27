@@ -34,9 +34,7 @@ class CashbanksController extends AppController {
         $this->loadModel('CashBank');
         $this->set('sub_module_title', 'index');
 
-        $default_conditions = array(
-            'CashBank.status' => 1
-        );
+        $default_conditions = array();
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -73,31 +71,33 @@ class CashbanksController extends AppController {
         $cash_banks = $this->paginate('CashBank');
 
         if(!empty($cash_banks)){
-            $this->loadModel('Vendor');
-            $this->loadModel('Employe');
-            $this->loadModel('Customer');
-
             foreach ($cash_banks as $key => $value) {
                 $model = $value['CashBank']['receiver_type'];
+                $receiver_id = $value['CashBank']['receiver_id'];
+                $this->loadModel($model);
 
                 switch ($model) {
                     case 'Vendor':
                         $list_result = $this->Vendor->getData('first', array(
                             'conditions' => array(
-                                'Vendor.status' => 1
-                            )
+                                'Vendor.id' => $receiver_id,
+                            ),
                         ));
                         break;
                     case 'Employe':
                         $list_result = $this->Employe->getData('first', array(
                             'conditions' => array(
-                                'Employe.status' => 1
+                                'Employe.id' => $receiver_id,
                             )
                         ));
 
                         break;
                     default:
-                        $list_result = $this->Customer->getData('first');
+                        $list_result = $this->Customer->getData('first', array(
+                            'conditions' => array(
+                                'Customer.id' => $receiver_id,
+                            )
+                        ));
 
                         break;
                 }
@@ -129,7 +129,6 @@ class CashbanksController extends AppController {
             $cashbank = $this->CashBank->getData('first', array(
                 'conditions' => array(
                     'CashBank.id' => $id,
-                    'CashBank.status' => 1,
                 ),
                 'contain' => array(
                     'CashBankDetail',
@@ -155,7 +154,6 @@ class CashbanksController extends AppController {
             $cashbank = $this->CashBank->getData('first', array(
                 'conditions' => array(
                     'CashBank.id' => $id,
-                    'CashBank.status' => 1,
                 ),
                 'contain' => array(
                     'CashBankDetail',
@@ -195,6 +193,7 @@ class CashbanksController extends AppController {
             $total_coa = 0;
             $prepayment_status = false;
             $data['CashBank']['is_revised'] = 0;
+            $data['CashBank']['group_branch_id'] = Configure::read('__Site.config_branch_id');
 
             if($id && $data_local){
                 $this->CashBank->id = $id;
@@ -212,8 +211,6 @@ class CashbanksController extends AppController {
                 $arr_list = array();
 
                 foreach ($data['CashBankDetail']['coa_id'] as $key => $coa_id) {
-                    // $debit = !empty($data['CashBankDetail']['debit'][$key]) ? str_replace(',', '', $data['CashBankDetail']['debit'][$key]) : 0;
-                    // $credit = !empty($data['CashBankDetail']['credit'][$key]) ? str_replace(',', '', $data['CashBankDetail']['credit'][$key]) : 0;
                     $total_coa_detail = (!empty($data['CashBankDetail']['total'][$key])) ? str_replace(',', '', $data['CashBankDetail']['total'][$key]) : 0;
                     $paid = false;
 
@@ -242,8 +239,6 @@ class CashbanksController extends AppController {
 
                     $arr_list[] = array(
                         'coa_id' => $coa_id,
-                        // 'debit' => $debit,
-                        // 'credit' => $credit
                         'total' => $total_coa_detail,
                         'paid' => $paid,
                     );
@@ -353,26 +348,31 @@ class CashbanksController extends AppController {
 
         if(!empty($this->request->data['CashBank']['receiver_type'])){
             $model = $this->request->data['CashBank']['receiver_type'];
+            $receiver_id = !empty($this->request->data['CashBank']['receiver_id'])?$this->request->data['CashBank']['receiver_id']:false;
             $this->loadModel($model);
 
             switch ($model) {
                 case 'Vendor':
                     $list_result = $this->Vendor->getData('first', array(
                         'conditions' => array(
-                            'Vendor.status' => 1
-                        )
+                            'Vendor.id' => $receiver_id,
+                        ),
                     ));
                     break;
                 case 'Employe':
                     $list_result = $this->Employe->getData('first', array(
                         'conditions' => array(
-                            'Employe.status' => 1
-                        )
+                            'Employe.id' => $receiver_id,
+                        ),
                     ));
 
                     break;
                 default:
-                    $list_result = $this->Customer->getData('first');
+                    $list_result = $this->Customer->getData('first', array(
+                        'conditions' => array(
+                            'Customer.id' => $receiver_id,
+                        ),
+                    ));
 
                     break;
             }
@@ -520,7 +520,6 @@ class CashbanksController extends AppController {
             $cashbank = $this->CashBank->getData('first', array(
                 'conditions' => array(
                     'CashBank.id' => $id,
-                    'CashBank.status' => 1,
                 ),
                 'contain' => array(
                     'CashBankDetail' => array(
@@ -652,26 +651,31 @@ class CashbanksController extends AppController {
 
                 if(!empty($cashbank['CashBank']['receiver_type'])){
                     $model = $cashbank['CashBank']['receiver_type'];
+                    $receiver_id = !empty($cashbank['CashBank']['receiver_id'])?$cashbank['CashBank']['receiver_id']:false;
                     $this->loadModel($model);
 
                     switch ($model) {
                         case 'Vendor':
                             $list_result = $this->Vendor->getData('first', array(
                                 'conditions' => array(
-                                    'Vendor.status' => 1
+                                    'Vendor.id' => $receiver_id,
                                 )
                             ));
                             break;
                         case 'Employe':
                             $list_result = $this->Employe->getData('first', array(
                                 'conditions' => array(
-                                    'Employe.status' => 1
+                                    'Employe.id' => $receiver_id,
                                 )
                             ));
 
                             break;
                         default:
-                            $list_result = $this->Customer->getData('first');
+                            $list_result = $this->Customer->getData('first', array(
+                                'conditions' => array(
+                                    'Customer.id' => $receiver_id,
+                                )
+                            ));
 
                             break;
                     }
@@ -953,7 +957,6 @@ class CashbanksController extends AppController {
     public function prepayment_report( $data_action = false ) {
         $this->loadModel('CashBank');
         $conditions = array(
-            'CashBank.status' => 1,
             'CashBank.is_rejected' => 0,
             'CashBank.receiving_cash_type' => 'prepayment_out',
         );

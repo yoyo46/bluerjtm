@@ -23,7 +23,7 @@ class PagesController extends AppController {
                 'Invoice.paid' => 0,
                 'Invoice.is_canceled' => 0,
             ),
-        ), false);
+        ));
 
         $this->Truck->bindModel(array(
             'hasOne' => array(

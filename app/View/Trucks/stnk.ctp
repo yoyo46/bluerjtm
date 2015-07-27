@@ -95,13 +95,13 @@
 
                             if( !empty($value['Stnk']['status']) ) {
                                 if( empty($value['Stnk']['paid']) && empty($value['Stnk']['rejected']) ){
-                                    echo $this->Html->link(__('Hapus'), array(
+                                    echo $this->Html->link(__('Void'), array(
                                         'controller' => 'trucks',
                                         'action' => 'stnk_delete',
                                         $id
                                     ), array(
                                         'class' => 'btn btn-danger btn-xs'
-                                    ), __('Anda yakin ingin menghapus data Perpanjang STNK ini?'));
+                                    ), __('Anda yakin ingin menon-aktifkan data Perpanjang STNK ini?'));
                                 }
                             }
                     ?>

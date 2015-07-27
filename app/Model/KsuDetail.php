@@ -94,5 +94,23 @@ class KsuDetail extends AppModel {
         }
         return $result;
     }
+
+    function getMerge ( $data = false, $ksu_id = false ) {
+        if( empty($data['KsuDetail']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'KsuDetail.ksu_id'=> $ksu_id,
+                ),
+                'order' => array(
+                    'KsuDetail.id' => 'ASC',
+                ),
+            );
+
+            $ksuDetails = $this->getData('all', $default_options);
+            $data['KsuDetail'] = $ksuDetails;
+        }
+
+        return $data;
+    }
 }
 ?>

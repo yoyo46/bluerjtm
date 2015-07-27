@@ -2,12 +2,6 @@
 class CashBank extends AppModel {
 	var $name = 'CashBank';
 	var $validate = array(
-        'branch_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Cabang harap dipilih'
-            ),
-        ),
         'nodoc' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -64,24 +58,42 @@ class CashBank extends AppModel {
         )
     );
 
-	function getData( $find, $options = false, $is_merge = true ){
+    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'CashBank.status' => 1,
+                'CashBank.group_branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(),
             'contain' => array(),
             'fields' => array(),
+            'group' => array(),
         );
+
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['CashBank.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['CashBank.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['CashBank.status'] = 1;
+                break;
+        }
 
         if( !empty($options) && $is_merge ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['fields'])){
@@ -89,6 +101,9 @@ class CashBank extends AppModel {
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         } else if( !empty($options) ) {
             $default_options = $options;
@@ -104,7 +119,7 @@ class CashBank extends AppModel {
 
     function getMerge($data, $id){
         if(empty($data['CashBank'])){
-            $data_merge = $this->find('first', array(
+            $data_merge = $this->getData('first', array(
                 'conditions' => array(
                     'id' => $id
                 )
@@ -125,7 +140,6 @@ class CashBank extends AppModel {
         );
         $options = array(
             'conditions' => array(
-                'CashBank.status' => 1,
                 'CashBank.is_rejected' => 0,
                 'CashBank.receiving_cash_type' => $document_type,
                 'CashBank.branch_id' => $group_branch_id
@@ -149,7 +163,7 @@ class CashBank extends AppModel {
                 break;
         }
 
-        $docTmps = $this->getData('all', $options, false);
+        $docTmps = $this->getData('all', $options);
 
         if( $document_type == 'prepayment_in' ) {
             return $docTmps;
@@ -175,7 +189,6 @@ class CashBank extends AppModel {
     function totalPrepaymentDibayar ( $prepayment_id ) {
         $conditions = array(
             'CashBank.document_id' => $prepayment_id,
-            'CashBank.status' => 1,
             'CashBank.is_rejected' => 0,
             'CashBank.receiving_cash_type' => 'prepayment_in',
         );
@@ -194,7 +207,7 @@ class CashBank extends AppModel {
             'fields' => array(
                 'SUM(CashBank.debit_total+CashBank.credit_total) AS total'
             ),
-        ), false);
+        ));
 
         return !empty($docPaid[0]['total'])?$docPaid[0]['total']:0;
     }

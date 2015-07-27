@@ -56,41 +56,59 @@ class TarifAngkutan extends AppModel {
             'className' => 'Customer',
             'foreignKey' => 'customer_id',
         ),
-        'GroupMotor' => array(
-            'className' => 'GroupMotor',
-            'foreignKey' => 'group_motor_id',
-        ),
-        'FromCity' => array(
-            'className' => 'City',
-            'foreignKey' => 'from_city_id',
-        ),
-        'ToCity' => array(
-            'className' => 'City',
-            'foreignKey' => 'to_city_id',
-        ),
+        // 'GroupMotor' => array(
+        //     'className' => 'GroupMotor',
+        //     'foreignKey' => 'group_motor_id',
+        // ),
+        // 'FromCity' => array(
+        //     'className' => 'City',
+        //     'foreignKey' => 'from_city_id',
+        // ),
+        // 'ToCity' => array(
+        //     'className' => 'City',
+        //     'foreignKey' => 'to_city_id',
+        // ),
     );
 
-	function getData( $find, $options = false, $is_merge = true ){
+    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'TarifAngkutan.status' => 1,
+                'TarifAngkutan.group_branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'TarifAngkutan.name_tarif' => 'ASC'
             ),
-            'contain' => array(
-                'GroupMotor',
-            ),
+            'contain' => array(),
+            // 'contain' => array(
+            //     'GroupMotor',
+            // ),
         );
+
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['TarifAngkutan.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['TarifAngkutan.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['TarifAngkutan.status'] = 1;
+                break;
+        }
 
         if( !empty($options) && $is_merge ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['limit'])){
@@ -110,10 +128,10 @@ class TarifAngkutan extends AppModel {
 
     function getMerge($data, $id){
         if(empty($data['TarifAngkutan'])){
-            $data_merge = $this->find('first', array(
+            $data_merge = $this->getData('first', array(
                 'conditions' => array(
-                    'id' => $id
-                )
+                    'TarifAngkutan.id' => $id,
+                ),
             ));
 
             if(!empty($data_merge)){
@@ -126,14 +144,13 @@ class TarifAngkutan extends AppModel {
 
     function findTarif( $from_city_id, $to_city_id, $customer_id, $capacity = false, $group_motor_id = false ){
         $conditions = array(
-            'from_city_id' => $from_city_id,
-            'to_city_id' => $to_city_id,
-            'customer_id' => $customer_id,
-            'status' => 1,
+            'TarifAngkutan.from_city_id' => $from_city_id,
+            'TarifAngkutan.to_city_id' => $to_city_id,
+            'TarifAngkutan.customer_id' => $customer_id,
         );
         $capacity = !empty($capacity)?$capacity:false;
         $group_motor_id = !empty($group_motor_id)?$group_motor_id:false;
-        $results = $this->find('all', array(
+        $results = $this->getData('all', array(
             'conditions' => $conditions,
         ));
 
@@ -173,12 +190,14 @@ class TarifAngkutan extends AppModel {
                 $addConditions['TarifAngkutan.capacity'] = array( 0, '' );
             }
 
-            $result = $this->find('first', array(
+            $result = $this->getData('first', array(
                 'conditions' => $addConditions,
                 'order' => array(
                     'TarifAngkutan.group_motor_id' => 'DESC',
                     'TarifAngkutan.capacity' => 'DESC',
                 ),
+            ), true, array(
+                'status' => 'all',
             ));
 
             if( !empty($result) ) {
@@ -199,17 +218,14 @@ class TarifAngkutan extends AppModel {
             'TarifAngkutan.customer_id' => $this->data['TarifAngkutan']['customer_id'],
             'TarifAngkutan.from_city_id' => $this->data['TarifAngkutan']['from_city_id'],
             'TarifAngkutan.to_city_id' => $this->data['TarifAngkutan']['to_city_id'],
-            // 'TarifAngkutan.jenis_unit' => $this->data['TarifAngkutan']['jenis_unit'],
-            // 'TarifAngkutan.capacity' => $this->data['TarifAngkutan']['capacity'],
             'TarifAngkutan.type' => $this->data['TarifAngkutan']['type'],
-            'TarifAngkutan.status' => 1,
         );
 
         if( !empty($this->data['TarifAngkutan']['id']) ) {
             $conditions['TarifAngkutan.id <>'] = $this->data['TarifAngkutan']['id'];
         }
         
-        $tarifAngkutan = $this->find('first', array(
+        $tarifAngkutan = $this->getData('first', array(
             'conditions' => $conditions,
         ));
         $result = true;
@@ -221,7 +237,7 @@ class TarifAngkutan extends AppModel {
                 if( $tarifAngkutan['TarifAngkutan']['jenis_unit'] == 'per_truck' ) {
                     $conditions['TarifAngkutan.capacity'] = $this->data['TarifAngkutan']['capacity'];
 
-                    $tarifAngkutan = $this->find('first', array(
+                    $tarifAngkutan = $this->getData('first', array(
                         'conditions' => $conditions,
                     ));
 
@@ -232,7 +248,7 @@ class TarifAngkutan extends AppModel {
                     $group_motor_id = !empty($this->data['TarifAngkutan']['group_motor_id'])?$this->data['TarifAngkutan']['group_motor_id']:0;
                     $conditions['TarifAngkutan.group_motor_id'] = $group_motor_id;
 
-                    $tarifAngkutan = $this->find('first', array(
+                    $tarifAngkutan = $this->getData('first', array(
                         'conditions' => $conditions,
                     ));
 

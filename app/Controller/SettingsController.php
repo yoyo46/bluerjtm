@@ -505,6 +505,8 @@ class SettingsController extends AppController {
     function doVendor($id = false, $data_local = false){
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $data['Vendor']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            
             if($id && $data_local){
                 $this->Vendor->id = $id;
                 $msg = 'merubah';
@@ -2794,14 +2796,10 @@ class SettingsController extends AppController {
     function tarif_angkutan(){
         $this->loadModel('Customer');
         $this->loadModel('TarifAngkutan');
-        $options = array(
-            'contain' => array(
-                'FromCity',
-                'ToCity',
-            ),
-        );
+        $options = array();
 
         if(!empty($this->params['named'])){
+            $this->loadModel('City');
             $refine = $this->params['named'];
 
             if(!empty($refine['name'])){
@@ -2828,20 +2826,41 @@ class SettingsController extends AppController {
                 $options['conditions']['TarifAngkutan.capacity LIKE'] = '%'.$capacity.'%';
             }
 
-            if(!empty($refine['from'])){
-                $name = urldecode($refine['from']);
-                $this->request->data['UangJalan']['from_city'] = $name;
-                $options['conditions']['FromCity.name LIKE'] = '%'.$name.'%';
-            }
-            if(!empty($refine['to'])){
-                $name = urldecode($refine['to']);
-                $this->request->data['UangJalan']['to_city'] = $name;
-                $options['conditions']['ToCity.name LIKE'] = '%'.$name.'%';
-            }
             if(!empty($refine['jenis_unit'])){
                 $name = urldecode($refine['jenis_unit']);
                 $this->request->data['TarifAngkutan']['jenis_unit'] = $name;
                 $options['conditions']['TarifAngkutan.jenis_unit LIKE'] = '%'.$name.'%';
+            }
+
+            if(!empty($refine['from'])){
+                $name = urldecode($refine['from']);
+                $this->request->data['UangJalan']['from_city'] = $name;
+                $city_id = $this->City->getData('list', array(
+                    'conditions' => array(
+                        'City.name LIKE' => '%'.$name.'%',
+                    ),
+                    'fields' => array(
+                        'City.id', 'City.id',
+                    ),
+                ), true, array(
+                    'all',
+                ));
+                $options['conditions']['TarifAngkutan.from_city_id'] = $city_id;
+            }
+            if(!empty($refine['to'])){
+                $name = urldecode($refine['to']);
+                $this->request->data['UangJalan']['to_city'] = $name;
+                $city_id = $this->City->getData('list', array(
+                    'conditions' => array(
+                        'City.name LIKE' => '%'.$name.'%',
+                    ),
+                    'fields' => array(
+                        'City.id', 'City.id',
+                    ),
+                ), true, array(
+                    'all',
+                ));
+                $options['conditions']['TarifAngkutan.to_city_id'] = $city_id;
             }
         }
 
@@ -2849,8 +2868,15 @@ class SettingsController extends AppController {
         $tarif_angkutan = $this->paginate('TarifAngkutan');
 
         if(!empty($tarif_angkutan)){
+            $this->loadModel('GroupMotor');
+
             foreach ($tarif_angkutan as $key => $value) {
-                $tarif_angkutan[$key] = $this->Customer->getMerge($value, $value['TarifAngkutan']['customer_id']);
+                $group_motor_id = !empty($value['TarifAngkutan']['group_motor_id'])?$value['TarifAngkutan']['group_motor_id']:false;
+                $customer_id = !empty($value['TarifAngkutan']['customer_id'])?$value['TarifAngkutan']['customer_id']:false;
+
+                $value = $this->Customer->getMerge($value, $customer_id);
+                $value = $this->GroupMotor->getMerge($value, $group_motor_id);
+                $tarif_angkutan[$key] = $value;
             }
         }
 
@@ -2870,7 +2896,7 @@ class SettingsController extends AppController {
         $tarif_angkutan = $this->TarifAngkutan->getData('first', array(
             'conditions' => array(
                 'TarifAngkutan.id' => $id
-            )
+            ),
         ));
 
         if(!empty($tarif_angkutan)){
@@ -2902,6 +2928,7 @@ class SettingsController extends AppController {
             $data['TarifAngkutan']['group_motor_id'] = !empty($data['TarifAngkutan']['group_motor_id'])?$data['TarifAngkutan']['group_motor_id']:0;
             $data['TarifAngkutan']['tarif'] = !empty($data['TarifAngkutan']['tarif'])?str_replace(',', '', $data['TarifAngkutan']['tarif']):false;
             $data['TarifAngkutan']['capacity'] = !empty($data['TarifAngkutan']['capacity'])?$data['TarifAngkutan']['capacity']:0;
+            $data['TarifAngkutan']['group_branch_id'] = Configure::read('__Site.config_branch_id');
 
             if(!empty($data['TarifAngkutan']['from_city_id'])){
                 $city = $this->City->getData('first', array(
@@ -2938,9 +2965,6 @@ class SettingsController extends AppController {
             if( !empty($data['TarifAngkutan']['jenis_unit']) && $data['TarifAngkutan']['jenis_unit'] == 'per_truck' ){
                 $data['TarifAngkutan']['group_motor_id'] = 0;
             }
-            // if(!empty($data['TarifAngkutan']['from_city_name']) && !empty($data['TarifAngkutan']['to_city_name'])){
-            //     $data['TarifAngkutan']['name_tarif'] = sprintf('%s - %s', $data['TarifAngkutan']['from_city_name'], $data['TarifAngkutan']['to_city_name']);
-            // }
 
             $this->TarifAngkutan->set($data);
 
@@ -2995,7 +3019,7 @@ class SettingsController extends AppController {
         $locale = $this->TarifAngkutan->getData('first', array(
             'conditions' => array(
                 'TarifAngkutan.id' => $id
-            )
+            ),
         ));
 
         if($locale){
@@ -3909,6 +3933,7 @@ class SettingsController extends AppController {
                                             'uang_jalan_extra' => !empty($uang_jalan_extra)?str_replace(array('.', ',', '* '), array('', '', ''), $uang_jalan_extra):0,
                                             'uang_jalan_extra_per_unit' => !empty($uang_jalan_extra_per_unit)?$uang_jalan_extra_per_unit:0,
                                             'min_capacity' => !empty($min_kapasitas_ujalan_extra)?$min_kapasitas_ujalan_extra:0,
+                                            'group_branch_id' => Configure::read('__Site.config_branch_id'),
                                         ),
                                     );
                                     
@@ -4538,6 +4563,7 @@ class SettingsController extends AppController {
                                             'jenis_unit' => !empty($jenis_tarif)?strtolower($jenis_tarif):false,
                                             'tarif' => !empty($tarif_angkutan)?str_replace(array('.', ',', '* '), array('', '', ''), $tarif_angkutan):false,
                                             'group_motor_id' => !empty($group_motor_id)?$group_motor_id:0,
+                                            'group_branch_id' => Configure::read('__Site.config_branch_id'),
                                         ),
                                     );
                                 }

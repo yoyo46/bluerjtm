@@ -998,15 +998,14 @@ class TrucksController extends AppController {
         }
         $this->paginate = $this->Kir->getData('paginate', array(
             'conditions' => $conditions,
-            'contain' => array(
-                'Truck'
-            ),
             'order'=> array(
                 'Kir.status' => 'DESC',
                 'Kir.rejected' => 'ASC',
                 'Kir.paid' => 'ASC',
                 'Kir.tgl_kir' => 'DESC',
             ),
+        ), true, array(
+            'status' => 'all',
         ));
         $kir = $this->paginate('Kir');
         
@@ -1028,7 +1027,9 @@ class TrucksController extends AppController {
         $kir = $this->Kir->getData('first', array(
             'conditions' => array(
                 'Kir.id' => $id,
-            )
+            ),
+        ), true, array(
+            'status' => 'all',
         ));
 
         if(!empty($kir)){
@@ -1082,6 +1083,7 @@ class TrucksController extends AppController {
             $data['Kir']['price_estimate'] = !empty($truck['Truck']['kir'])?$this->MkCommon->convertPriceToString($truck['Truck']['kir']):0;
             $data['Kir']['price'] = !empty($data['Kir']['price'])?$this->MkCommon->convertPriceToString($data['Kir']['price']):0;
             $data['Kir']['denda'] = (!empty($data['Kir']['denda'])) ? $this->MkCommon->convertPriceToString($data['Kir']['denda']) : 0;
+            $data['Kir']['group_branch_id'] = Configure::read('__Site.config_branch_id');
             $this->Kir->set($data);
 
             if( $this->Kir->validates($data) ){
@@ -1180,10 +1182,9 @@ class TrucksController extends AppController {
         $this->paginate = $this->KirPayment->getData('paginate', array(
             'conditions' => $conditions,
             'limit' => Configure::read('__Site.config_pagination'),
-            'contain' => array(
-                'Kir'
-            )
-        ), date('Y-m-d'));
+        ), true, array(
+            'status' => 'all',
+        ));
 
         $kirPayments = $this->paginate('KirPayment');
 
@@ -1209,7 +1210,6 @@ class TrucksController extends AppController {
         $this->doKirPayment($kir_id, $kir);
         $kirs = $this->Kir->getData('list', array(
             'conditions' => array(
-                'Kir.status' => 1,
                 'Kir.paid' => 0,
                 'Kir.rejected' => 0,
             ),
@@ -1231,9 +1231,8 @@ class TrucksController extends AppController {
             'conditions' => array(
                 'KirPayment.id' => $id,
             ),
-            'contain' => array(
-                'Kir'
-            )
+        ), true, array(
+            'status' => 'all',
         ));
 
         if( !empty($kir) ) {
@@ -1268,6 +1267,7 @@ class TrucksController extends AppController {
                 $data['KirPayment']['biaya_perpanjang'] = $this->MkCommon->convertPriceToString($kir['Kir']['price']);
                 $data['KirPayment']['denda'] = $this->MkCommon->convertPriceToString($kir['Kir']['denda']);
                 $data['KirPayment']['total_pembayaran'] = intval($data['KirPayment']['biaya_perpanjang']) + intval($data['KirPayment']['denda']);
+                $data['KirPayment']['group_branch_id'] = Configure::read('__Site.config_branch_id');
 
                 $this->KirPayment->set($data);
                 $this->Truck->set($data);
@@ -1356,10 +1356,7 @@ class TrucksController extends AppController {
             'conditions' => array(
                 'KirPayment.id' => $id,
             ),
-            'contain' => array(
-                'Kir'
-            )
-        ), false);
+        ));
 
         if( !empty($KirPayment) ) {
             $this->KirPayment->id = $id;
@@ -1424,14 +1421,14 @@ class TrucksController extends AppController {
         }
         $this->paginate = $this->Siup->getData('paginate', array(
             'conditions' => $conditions,
-            'contain' => array(
-                'Truck'
-            ),
             'order'=> array(
                 'Siup.status' => 'DESC',
+                'Siup.id' => 'DESC',
                 'Siup.tgl_kir' => 'DESC',
             ),
-        ), false);
+        ), true, array(
+            'status' => 'all',
+        ));
         $siup = $this->paginate('Siup');
 
         $this->set('active_menu', 'siup');
@@ -1453,7 +1450,9 @@ class TrucksController extends AppController {
             'conditions' => array(
                 'Siup.id' => $id,
             )
-        ), false);
+        ), true, array(
+            'status' => 'all',
+        ));
 
         if(!empty($siup)){
             $this->doSiup($id, $siup);
@@ -1516,6 +1515,7 @@ class TrucksController extends AppController {
             $data['Siup']['price_estimate'] = !empty($truck['Truck']['siup'])?$this->MkCommon->convertPriceToString($truck['Truck']['siup']):false;
             $data['Siup']['price'] = !empty($data['Siup']['price'])?$this->MkCommon->convertPriceToString($data['Siup']['price']):false;
             $data['Siup']['denda'] = (!empty($data['Siup']['denda'])) ? $this->MkCommon->convertPriceToString($data['Siup']['denda']) : 0;
+            $data['Siup']['group_branch_id'] = Configure::read('__Site.config_branch_id');
             $this->Siup->set($data);
 
             if( $this->Siup->validates($data) ){
@@ -1598,10 +1598,9 @@ class TrucksController extends AppController {
         $this->paginate = $this->SiupPayment->getData('paginate', array(
             'conditions' => $conditions,
             'limit' => Configure::read('__Site.config_pagination'),
-            'contain' => array(
-                'Siup'
-            )
-        ), false);
+        ), true, array(
+            'status' => 'all',
+        ));
         $siupPayments = $this->paginate('SiupPayment');
 
         $this->set('active_menu', 'siup_payments');
@@ -1626,7 +1625,6 @@ class TrucksController extends AppController {
         $this->doSiupPayment($siup_id, $siup);
         $siups = $this->Siup->getData('list', array(
             'conditions' => array(
-                'Siup.status' => 1,
                 'Siup.paid' => 0,
                 'Siup.rejected' => 0,
             ),
@@ -1648,9 +1646,8 @@ class TrucksController extends AppController {
             'conditions' => array(
                 'SiupPayment.id' => $id,
             ),
-            'contain' => array(
-                'Siup'
-            )
+        ), true, array(
+            'status' => 'all',
         ));
 
         if( !empty($siup) ) {
@@ -1685,6 +1682,7 @@ class TrucksController extends AppController {
                 $data['SiupPayment']['biaya_perpanjang'] = $this->MkCommon->convertPriceToString($siup['Siup']['price']);
                 $data['SiupPayment']['denda'] = $this->MkCommon->convertPriceToString($siup['Siup']['denda']);
                 $data['SiupPayment']['total_pembayaran'] = intval($data['SiupPayment']['biaya_perpanjang']) + intval($data['SiupPayment']['denda']);
+                $data['SiupPayment']['group_branch_id'] = Configure::read('__Site.config_branch_id');
 
                 $this->SiupPayment->set($data);
                 $this->Truck->set($data);
@@ -1773,10 +1771,7 @@ class TrucksController extends AppController {
             'conditions' => array(
                 'SiupPayment.id' => $id,
             ),
-            'contain' => array(
-                'Siup'
-            )
-        ), false);
+        ));
 
         if( !empty($SiupPayment) ) {
             $this->SiupPayment->id = $id;
@@ -2298,9 +2293,12 @@ class TrucksController extends AppController {
             'conditions' => $conditions,
             'order'=> array(
                 'Stnk.status' => 'DESC',
+                'Stnk.id' => 'DESC',
                 'Stnk.tgl_stnk' => 'DESC',
             ),
-        ), false);
+        ), true, array(
+            'status' => 'all',
+        ));
         $stnks = $this->paginate('Stnk');
 
         $this->set('active_menu', 'stnk');
@@ -2325,7 +2323,9 @@ class TrucksController extends AppController {
             'contain' => array(
                 'Truck'
             ),
-        ), false);
+        ), true, array(
+            'status' => 'all',
+        ));
 
         if(!empty($Stnk)){
             $this->doStnk($id, $Stnk);
@@ -2405,6 +2405,7 @@ class TrucksController extends AppController {
             $data['Stnk']['price_estimate'] = !empty($truck['Truck'])?$this->MkCommon->convertPriceToString($truck['Truck']['bbnkb']+$truck['Truck']['pkb']):false;
             $data['Stnk']['price'] = $this->MkCommon->convertPriceToString($data['Stnk']['price']);
             $data['Stnk']['denda'] = (!empty($data['Stnk']['denda'])) ? $this->MkCommon->convertPriceToString($data['Stnk']['denda']) : 0;
+            $data['Stnk']['group_branch_id'] = Configure::read('__Site.config_branch_id');
 
             if( $this->Stnk->validates($data) ){
                 if( $this->Stnk->save($data) ){
@@ -2501,10 +2502,7 @@ class TrucksController extends AppController {
             'conditions' => array(
                 'StnkPayment.id' => $id,
             ),
-            'contain' => array(
-                'Stnk'
-            )
-        ), false);
+        ));
 
         if( !empty($StnkPayment) ) {
             $this->StnkPayment->id = $id;
@@ -2577,14 +2575,13 @@ class TrucksController extends AppController {
         $this->paginate = $this->StnkPayment->getData('paginate', array(
             'conditions' => $conditions,
             'limit' => Configure::read('__Site.config_pagination'),
-            'contain' => array(
-                'Stnk'
-            ),
             'order'=> array(
                 'StnkPayment.created' => 'DESC',
                 'StnkPayment.id' => 'DESC',
             ),
-        ), false);
+        ), true, array(
+            'status' => 'all',
+        ));
 
         $stnkPayments = $this->paginate('StnkPayment');
 
@@ -2610,7 +2607,6 @@ class TrucksController extends AppController {
         $this->doStnkPayment($stnk_id, $stnk);
         $stnks = $this->Stnk->getData('list', array(
             'conditions' => array(
-                'Stnk.status' => 1,
                 'Stnk.paid' => 0,
                 'Stnk.rejected' => 0,
             ),
@@ -2632,9 +2628,8 @@ class TrucksController extends AppController {
             'conditions' => array(
                 'StnkPayment.id' => $id,
             ),
-            'contain' => array(
-                'Stnk'
-            )
+        ), true, array(
+            'status' => 'all',
         ));
 
         if( !empty($stnk) ) {
@@ -2673,6 +2668,7 @@ class TrucksController extends AppController {
                 $data['StnkPayment']['biaya_perpanjang'] = $this->MkCommon->convertPriceToString($stnk['Stnk']['price']);
                 $data['StnkPayment']['denda'] = $this->MkCommon->convertPriceToString($stnk['Stnk']['denda']);
                 $data['StnkPayment']['total_pembayaran'] = intval($data['StnkPayment']['biaya_perpanjang']) + intval($data['StnkPayment']['denda']);
+                $data['StnkPayment']['group_branch_id'] = Configure::read('__Site.config_branch_id');
 
                 $this->StnkPayment->set($data);
                 $this->Truck->set($data);
@@ -3842,6 +3838,7 @@ class TrucksController extends AppController {
                                             'tgl_stnk_plat' => !empty($tgl_perpanjang_stnk_5thn)?$tgl_perpanjang_stnk_5thn:false,
                                             'tgl_siup' => !empty($tgl_perpanjang_siup)?$tgl_perpanjang_siup:false,
                                             'tgl_kir' => !empty($tgl_perpanjang_kir)?$tgl_perpanjang_kir:false,
+                                            'group_branch_id' => Configure::read('__Site.config_branch_id'),
                                         ),
                                     );
                                     

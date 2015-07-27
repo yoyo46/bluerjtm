@@ -32,37 +32,6 @@ class TtujPayment extends AppModel {
         ),
 	);
 
-	// var $belongsTo = array(
- //        'Driver' => array(
- //            'className' => 'Driver',
- //            'foreignKey' => 'receiver_id',
- //            'conditions' => array(
- //                'TtujPayment.receiver_type' => 'Driver',
- //            )
- //        ),
- //        'CustomerNoType' => array(
- //            'className' => 'CustomerNoType',
- //            'foreignKey' => 'receiver_id',
- //            'conditions' => array(
- //                'TtujPayment.receiver_type' => 'Customer',
- //            )
- //        ),
- //        'Vendor' => array(
- //            'className' => 'Vendor',
- //            'foreignKey' => 'receiver_id',
- //            'conditions' => array(
- //                'TtujPayment.receiver_type' => 'Vendor',
- //            )
- //        ),
- //        'Employe' => array(
- //            'className' => 'Employe',
- //            'foreignKey' => 'receiver_id',
- //            'conditions' => array(
- //                'TtujPayment.receiver_type' => 'Employe',
- //            )
- //        ),
-	// );
-
     var $hasMany = array(
         'TtujPaymentDetail' => array(
             'className' => 'TtujPaymentDetail',
@@ -73,31 +42,43 @@ class TtujPayment extends AppModel {
         ),
     );
 
-	function getData( $find, $options = false, $is_merge = true ){
+    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'TtujPayment.status' => 1,
+                'TtujPayment.group_branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'TtujPayment.id' => 'DESC'
             ),
-            'contain' => array(
-                // 'Driver',
-                // 'Vendor',
-                // 'CustomerNoType',
-                // 'Employe'
-            ),
+            'contain' => array(),
             'fields' => array(),
         );
+
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['TtujPayment.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['TtujPayment.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['TtujPayment.status'] = 1;
+                break;
+        }
 
         if( !empty($options) && $is_merge ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['fields'])){
@@ -105,6 +86,9 @@ class TtujPayment extends AppModel {
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         } else if( !empty($options) ) {
             $default_options = $options;

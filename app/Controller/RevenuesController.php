@@ -2231,7 +2231,6 @@ class RevenuesController extends AppController {
         $lastDay = date('t', strtotime($currentMonth));
         $customerId = array();
         $conditionsLaka = array(
-            'Laka.status'=> 1,
             'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\') <=' => $currentMonth,
             'OR' => array(
                 'DATE_FORMAT(Laka.completed_date, \'%Y-%m\') >=' => $currentMonth,
@@ -2887,6 +2886,7 @@ class RevenuesController extends AppController {
         if(!empty($this->request->data)){
             $data = $this->request->data;
             $data['Revenue']['date_revenue'] = $this->MkCommon->getDate($data['Revenue']['date_revenue']);
+            $data['Revenue']['group_branch_id'] = Configure::read('__Site.config_branch_id');
             $resultSave = $this->Revenue->saveRevenue($id, $data_local, $data);
             $statusSave = !empty($resultSave['status'])?$resultSave['status']:false;
             $msgSave = !empty($resultSave['msg'])?$resultSave['msg']:false;
@@ -3338,7 +3338,6 @@ class RevenuesController extends AppController {
 
                         $lkus = $this->Lku->getData('first', array(
                             'conditions' => array(
-                                'Lku.status' => 1,
                                 'Lku.ttuj_id' => $value['Ttuj']['id']
                             ),
                             'fields' => array(
@@ -3393,6 +3392,7 @@ class RevenuesController extends AppController {
         $this->set('sub_module_title', __('Invoice'));
 
         $conditions = array();
+
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
 
@@ -3439,7 +3439,9 @@ class RevenuesController extends AppController {
             'order' => array(
                 'Invoice.id' => 'DESC'
             ),
-        ), false);
+        ), true, array(
+            'status' => 'all',
+        ));
         $invoices = $this->paginate('Invoice');
 
         if(!empty($invoices)){
@@ -3486,6 +3488,7 @@ class RevenuesController extends AppController {
             $data['Invoice']['period_from'] = $this->MkCommon->getDate($data['Invoice']['period_from']);
             $data['Invoice']['period_to'] = $this->MkCommon->getDate($data['Invoice']['period_to']);
             $data['Invoice']['invoice_date'] = $this->MkCommon->getDate($data['Invoice']['invoice_date']);
+            $data['Invoice']['group_branch_id'] = Configure::read('__Site.config_branch_id');
 
             $customer = $this->Customer->getData('first', array(
                 'conditions' => array(
@@ -3976,7 +3979,6 @@ class RevenuesController extends AppController {
             'Revenue.transaction_status <>' => 'invoiced',
         );
         $defaultConditionsInvoice = array(
-            'Invoice.status'=> 1,
             'Invoice.paid'=> 0,
         );
         $totalAr = array();
@@ -4000,7 +4002,7 @@ class RevenuesController extends AppController {
                 'fields' => array(
                     'SUM(Invoice.total) total'
                 ),
-            ), false);
+            ));
             $totalAr['Invoice'][$month] = !empty($invoice[0]['total'])?$invoice[0]['total']:0;
 
             if( $month <= date('Y-m') ) {
@@ -4011,7 +4013,7 @@ class RevenuesController extends AppController {
                     'fields' => array(
                         'SUM(Invoice.total) total'
                     ),
-                ), false);
+                ));
                 $totalAr['LastInvoice'][$month] = !empty($invoice[0]['total'])?$invoice[0]['total']:0;
             }
         }
@@ -4040,6 +4042,7 @@ class RevenuesController extends AppController {
         $this->set('sub_module_title', __('Pembayaran Invoice'));
 
         $conditions = array();
+
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
 
@@ -4069,7 +4072,9 @@ class RevenuesController extends AppController {
                 'InvoicePayment.created' => 'DESC',
                 'InvoicePayment.id' => 'DESC',
             ),
-        ), false);
+        ), true, array(
+            'status' => 'all',
+        ));
         $invoices = $this->paginate('InvoicePayment');
 
         if(!empty($invoices)){
@@ -4112,6 +4117,7 @@ class RevenuesController extends AppController {
             }
 
             $data['InvoicePayment']['date_payment'] = !empty($data['InvoicePayment']['date_payment']) ? $this->MkCommon->getDate($data['InvoicePayment']['date_payment']) : '';
+            $data['InvoicePayment']['group_branch_id'] = Configure::read('__Site.config_branch_id');
             $total = 0;
             $validate_price_pay = true;
 
@@ -4144,7 +4150,7 @@ class RevenuesController extends AppController {
                         $invoice_data = $this->Invoice->getData('first', array(
                             'conditions' => array(
                                 'Invoice.id' => $_invoice_id
-                            )
+                            ),
                         ));
                         
                         if(!empty($invoice_data)){
@@ -4282,7 +4288,7 @@ class RevenuesController extends AppController {
                 'conditions' => array(
                     'Invoice.customer_id' => $this->request->data['InvoicePayment']['customer_id'],
                     'Invoice.complete_paid' => 0
-                )
+                ),
             ));
 
             if( !empty($customer) ) {
@@ -4306,15 +4312,6 @@ class RevenuesController extends AppController {
 
             $this->set(compact('invoices'));
         }
-
-        // $list_invoices = $this->Invoice->getData('list', array(
-        //     'conditions' => array(
-        //         'Invoice.paid' => 0
-        //     ),
-        //     'fields' => array(
-        //         'Invoice.id', 'Invoice.no_invoice'
-        //     ),
-        // ));
 
         $customers = $this->Invoice->getData('list', array(
             'conditions' => array(
@@ -4363,7 +4360,6 @@ class RevenuesController extends AppController {
 
             $invoice_payment = $this->Invoice->InvoicePaymentDetail->InvoicePayment->getData('first', array(
                 'conditions' => array(
-                    'InvoicePayment.status' => 1,
                     'InvoicePayment.id' => $id
                 ),
                 'contain' => array(
@@ -4595,18 +4591,15 @@ class RevenuesController extends AppController {
             'Invoice.is_canceled' => 0,
             'Invoice.complete_paid' => 0,
             'Invoice.paid' => 0,
-            'Invoice.status' => 1,
         );
         $invoicePaidOption = array(
             'Invoice.is_canceled' => 0,
             'Invoice.complete_paid' => 1,
-            'Invoice.status' => 1,
         );
         $invoiceHalfPaidOption = array(
             'Invoice.is_canceled' => 0,
             'Invoice.complete_paid' => 0,
             'Invoice.paid' => 1,
-            'Invoice.status' => 1,
         );
         $invoiceVoidOption = array(
             'Invoice.is_canceled' => 1,
@@ -4622,7 +4615,9 @@ class RevenuesController extends AppController {
         ));
         $dataStatus['InvoiceVoid'] = $this->Invoice->getData('count', array(
             'conditions' => $invoiceVoidOption,
-        ), false);
+        ), true, array(
+            'status' => 'all',
+        ));
 
         if( !empty($invoices) ) {
             foreach ($invoices as $key => $invoice) {
@@ -4674,7 +4669,6 @@ class RevenuesController extends AppController {
         );
         $invoice = $this->Invoice->getData('first', array(
             'conditions' => array(
-                'Invoice.status' => 1,
                 'Invoice.id' => $id
             ),
             'contain' => array(
@@ -4682,7 +4676,6 @@ class RevenuesController extends AppController {
             )
         ));
 
-        // if( !empty($invoice) && empty($invoice['Invoice']['complete_paid']) && empty($invoice['Invoice']['paid']) ){
         if( !empty($invoice) ){
             if(!empty($this->request->data)){
                 if(!empty($this->request->data['Invoice']['canceled_date'])){
@@ -4896,7 +4889,6 @@ class RevenuesController extends AppController {
                 $conditionsYear = array(
                     'DATE_FORMAT(Invoice.invoice_date, \'%Y\')' => $avgYear,
                     'Invoice.customer_id' => $customer['Customer']['id'],
-                    'Invoice.status' => 1,
                 );
                 $invoiceYear = $this->Invoice->getData('first', array(
                     'conditions' => $conditionsYear,
@@ -4907,12 +4899,11 @@ class RevenuesController extends AppController {
                         'Invoice.customer_id', 
                         'SUM(Invoice.total) as total',
                     ),
-                ), false);
+                ));
                 $customer['InvoiceYear'] = !empty($invoiceYear[0]['total'])?$invoiceYear[0]['total']/12:0;
 
                 $invoices = $this->Invoice->getData('all', array(
                     'conditions' => array(
-                        // 'Invoice.status' => 1,
                         'Invoice.customer_id' => $customer['Customer']['id'],
                         'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') >=' => $fromDt,
                         'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => $toDt,
@@ -4924,7 +4915,9 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\')'
                     ),
-                ), false);
+                ), true, array(
+                    'status' => 'all',
+                ));
 
                 $invoicePayments = $this->InvoicePayment->InvoicePaymentDetail->getData('all', array(
                     'conditions' => array(
@@ -4960,7 +4953,9 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\')'
                     ),
-                ), false);
+                ), true, array(
+                    'status' => 'all',
+                ));
 
                 if( !empty($invoices) ) {
                     foreach ($invoices as $key_invoice => $invoices) {
@@ -4992,7 +4987,6 @@ class RevenuesController extends AppController {
                 $monthDt = date('Y-m', mktime(0, 0, 0, $fromMonth-1, 1, $fromYear));
                 $invoicesBefore = $this->Invoice->getData('first', array(
                     'conditions' => array(
-                        'Invoice.status' => 1,
                         'Invoice.customer_id' => $customer['Customer']['id'],
                         'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => $monthDt,
                     ),
@@ -5003,7 +4997,6 @@ class RevenuesController extends AppController {
 
                 $invoicePaymentsBefore = $this->InvoicePayment->getData('first', array(
                     'conditions' => array(
-                        'InvoicePayment.status' => 1,
                         'InvoicePayment.customer_id' => $customer['Customer']['id'],
                         'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $monthDt,
                     ),
@@ -5020,7 +5013,9 @@ class RevenuesController extends AppController {
                     'fields' => array(
                         'SUM(Invoice.total) total',
                     ),
-                ), false);
+                ), true, array(
+                    'status' => 'all',
+                ));
                 $totalInvoice = !empty($invoicesBefore[0]['total'])?$invoicesBefore[0]['total']:0;
                 $totalInvoicePayment = !empty($invoicePaymentsBefore[0]['total'])?$invoicePaymentsBefore[0]['total']:0;
                 $totalInvoicePaymentVoid = !empty($invoiceVoidBefore[0]['total'])?$invoiceVoidBefore[0]['total']:0;
@@ -5606,8 +5601,9 @@ class RevenuesController extends AppController {
         $invoice = $this->Invoice->getData('first', array(
             'conditions' => array(
                 'Invoice.id' => $id,
-                'Invoice.status' => array( 0,1 ),
             ),
+        ), true, array(
+            'status' => 'all',
         ));
 
         if(!empty($invoice)){
@@ -5712,7 +5708,6 @@ class RevenuesController extends AppController {
             'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') >=' => $fromMonthYear,
             'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $toMonthYear,
             'InvoicePayment.is_canceled' => 0,
-            'InvoicePayment.status' => 1,
         );
         $customerList = $this->Customer->getData('list', array(
             'fields' => array(
@@ -5745,7 +5740,9 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'Invoice.customer_id'
                     ),
-                ), false);
+                ), true, array(
+                    'status' => 'all',
+                ));
 
                 $conditionsInvVoidLastMonth = array(
                     'Invoice.customer_id' => $customer['Customer']['id'],
@@ -5761,13 +5758,14 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'Invoice.customer_id'
                     ),
-                ), false);
+                ), true, array(
+                    'status' => 'all',
+                ));
 
                 $conditionsInvPaidLastMonth = array(
                     'InvoicePayment.customer_id' => $customer['Customer']['id'],
                     'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $lastMonth,
                     'InvoicePayment.is_canceled' => 0,
-                    'InvoicePayment.status' => 1,
                 );
                 $customer['InvPaidLastMonth'] = $this->InvoicePayment->getData('first', array(
                     'conditions' => $conditionsInvPaidLastMonth,
@@ -5778,7 +5776,7 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'InvoicePayment.customer_id'
                     ),
-                ), false);
+                ));
 
                 $conditionsInvoiceTotal = $conditionsInvoice;
                 $customer['InvoiceTotal'] = $this->Invoice->getData('first', array(
@@ -5790,7 +5788,9 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'Invoice.customer_id'
                     ),
-                ), false);
+                ), true, array(
+                    'status' => 'all',
+                ));
 
                 $conditionsInvoiceVoid = array(
                     'Invoice.customer_id' => $customer['Customer']['id'],
@@ -5807,7 +5807,9 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'Invoice.customer_id'
                     ),
-                ), false);
+                ), true, array(
+                    'status' => 'all',
+                ));
 
                 $conditionsInvoicePayment['InvoicePayment.customer_id'] = $customer['Customer']['id'];
                 $customer['InvoicePaymentTotal'] = $this->InvoicePayment->getData('first', array(
@@ -5819,7 +5821,7 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'InvoicePayment.customer_id'
                     ),
-                ), false);
+                ));
 
                 $customers[$key] = $customer;
             }
@@ -6112,6 +6114,7 @@ class RevenuesController extends AppController {
             $data = $this->request->data;
             $data['TtujPayment']['date_payment'] = !empty($data['TtujPayment']['date_payment']) ? $this->MkCommon->getDate($data['TtujPayment']['date_payment']) : '';
             $data['TtujPayment']['type'] = $action_type;
+            $data['TtujPayment']['group_branch_id'] = Configure::read('__Site.config_branch_id');
             $dataAmount = !empty($data['TtujPayment']['amount_payment'])?$data['TtujPayment']['amount_payment']:false;
             $flagTtujPaymentDetail = $this->doTtujPaymentDetail($dataAmount, $data);
 
@@ -6176,7 +6179,6 @@ class RevenuesController extends AppController {
         );
         $invoice = $this->TtujPayment->getData('first', array(
             'conditions' => array(
-                'TtujPayment.status' => 1,
                 'TtujPayment.id' => $id,
             ),
             'contain' => array(
@@ -6474,6 +6476,7 @@ class RevenuesController extends AppController {
                                                 'pph' => $pph,
                                                 'revenue_tarif_type' => $jenis_tarif,
                                                 'additional_charge' => $additional_charge,
+                                                'group_branch_id' => Configure::read('__Site.config_branch_id'),
                                             );
 
                                             if( !empty($dataRevenue['RevenueDetail']) && empty($tarifNotFound) ) {

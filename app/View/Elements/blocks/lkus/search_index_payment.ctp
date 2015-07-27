@@ -7,18 +7,18 @@
     </div>
     <div class="box-body">
         <?php 
-            $model = (isset($model) && !empty($model)) ? $model : 'LkuPayment';
-            $action = (isset($action) && !empty($action)) ? $action : 'payments';
-            
-            echo $this->Form->create($model, array(
-                'url'=> $this->Html->url( array(
-                    'controller' => 'lkus',
-                    'action' => 'search',
-                    $action
-                )), 
-                'role' => 'form',
-                'inputDefaults' => array('div' => false),
-            ));
+                $model = (isset($model) && !empty($model)) ? $model : 'LkuPayment';
+                $action = (isset($action) && !empty($action)) ? $action : 'payments';
+                
+                echo $this->Form->create($model, array(
+                    'url'=> $this->Html->url( array(
+                        'controller' => 'lkus',
+                        'action' => 'search',
+                        $action
+                    )), 
+                    'role' => 'form',
+                    'inputDefaults' => array('div' => false),
+                ));
         ?>
         <div class="row">
             <div class="col-sm-6">
@@ -40,7 +40,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'payments', 
+                                'action' => $action, 
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',

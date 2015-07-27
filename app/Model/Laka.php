@@ -163,29 +163,48 @@ class Laka extends AppModel {
         }
     }
 
-	function getData($find, $options = false, $is_merge = true){
+    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'Laka.status' => 1,
+                'Laka.group_branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'Laka.created' => 'DESC',
                 'Laka.id' => 'DESC',
             ),
-            'contain' => array(
-                'LakaDetail'
-            ),
+            'contain' => array(),
+            // 'contain' => array(
+            //     'LakaDetail'
+            // ),
             'fields' => array(),
+            'group' => array(),
         );
+
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['Laka.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['Laka.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['Laka.status'] = 1;
+                break;
+        }
 
         if( !empty($options) && !empty($is_merge) ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['limit'])){
@@ -193,6 +212,9 @@ class Laka extends AppModel {
             }
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         } else if( !empty($options) ){
             $default_options = $options;
@@ -208,10 +230,9 @@ class Laka extends AppModel {
 
     function getMerge( $truck_id, $data ){
         if( empty($data['Laka'])){
-            $data_merge = $this->find('first', array(
+            $data_merge = $this->getData('first', array(
                 'conditions' => array(
                     'Ttuj.truck_id' => $truck_id,
-                    'Laka.status' => 1,
                     'Laka.completed' => 0,
                 ),
                 'contain' => array(

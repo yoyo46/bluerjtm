@@ -75,12 +75,15 @@ class Invoice extends AppModel {
 	function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'Invoice.group_branch_id' => Configure::read('__Site.config_branch_id'),
+            ),
             'order'=> array(
                 'Invoice.id' => 'DESC'
             ),
             'contain' => array(),
             'fields' => array(),
+            'group' => array(),
         );
 
         switch ($status) {
@@ -102,9 +105,11 @@ class Invoice extends AppModel {
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['fields'])){
@@ -112,6 +117,9 @@ class Invoice extends AppModel {
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         } else if( !empty($options) ) {
             $default_options = $options;
@@ -123,25 +131,6 @@ class Invoice extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
-    }
-
-    function getMerge($data, $id){
-        if(empty($data['Invoice'])){
-            $data_merge = $this->find('first', array(
-                'conditions' => array(
-                    'Invoice.id' => $id
-                ),
-                'contain' => array(
-                    'InvoiceType',
-                ),
-            ));
-
-            if(!empty($data_merge)){
-                $data = array_merge($data, $data_merge);
-            }
-        }
-
-        return $data;
     }
 
     function getNoInvoice( $customer_id, $action = 'tarif' ){

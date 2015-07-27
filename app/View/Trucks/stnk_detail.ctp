@@ -85,10 +85,16 @@
                     <dt><?php echo __('Status')?></dt>
                     <dd>
                         <?php 
-                                if( !empty($stnk['StnkPayment']['rejected']) ) {
-                                    echo '<span class="label label-danger">Ditolak</span>'; 
-                                } else {
-                                    echo '<span class="label label-success">Sudah Bayar</span>'; 
+                                if(empty($stnk['StnkPayment']['is_void'])){
+                                    if( !empty($stnk['Stnk']['paid']) ) {
+                                        echo '<span class="label label-success">Sudah Bayar</span>'; 
+                                    } else if( !empty($stnk['Stnk']['rejected']) ) {
+                                        echo '<span class="label label-danger">Ditolak</span>'; 
+                                    } else {
+                                        echo '<span class="label label-default">Belum Bayar</span>';  
+                                    }
+                                }else{
+                                    echo '<span class="label label-danger">Non-Aktif</span>'; 
                                 }
                         ?>
                     </dd>

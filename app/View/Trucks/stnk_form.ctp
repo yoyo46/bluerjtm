@@ -206,7 +206,7 @@
 </div>
 <div class="box-footer text-center action">
 	<?php
-			if( empty($stnk) || !empty($stnk['Siup']['status']) ) {
+			if( empty($stnk) || !empty($stnk['Stnk']['status']) ) {
 	            if( empty($stnk['Stnk']['paid']) && empty($stnk['Stnk']['rejected']) ){
 		    		echo $this->Form->button(__('Simpan'), array(
 						'div' => false, 

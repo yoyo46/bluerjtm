@@ -29,10 +29,11 @@ class SiupPayment extends AppModel {
 		)
 	);
 
-	function getData($find, $options = false, $is_merge = false){
+    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'SiupPayment.status' => 1,
+                'SiupPayment.group_branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'SiupPayment.created' => 'DESC',
@@ -42,16 +43,33 @@ class SiupPayment extends AppModel {
                 'Siup'
             ),
             'fields' => array(),
+            'group' => array(),
         );
+
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['SiupPayment.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['SiupPayment.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['SiupPayment.status'] = 1;
+                break;
+        }
 
         if(!empty($options) && $is_merge){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['fields'])){
@@ -59,6 +77,9 @@ class SiupPayment extends AppModel {
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         }else{
             $default_options = $options;
@@ -70,22 +91,6 @@ class SiupPayment extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
-    }
-
-    function getMerge( $data, $id ){
-        if(empty($data['SiupPayment'])){
-            $data_merge = $this->find('first', array(
-                'conditions' => array(
-                    'SiupPayment.id' => $id,
-                ),
-            ));
-
-            if(!empty($data_merge)){
-                $data = array_merge($data, $data_merge);
-            }
-        }
-
-        return $data;
     }
 }
 ?>

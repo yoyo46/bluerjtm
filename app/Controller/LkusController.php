@@ -32,9 +32,7 @@ class LkusController extends AppController {
 
 		$this->set('active_menu', 'lkus');
 		$this->set('sub_module_title', __('Data LKU'));
-        $conditions = array(
-            'Lku.status' => array( 0, 1 ),
-        );
+        $conditions = array();
         
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -74,9 +72,10 @@ class LkusController extends AppController {
             'conditions' => $conditions,
             'contain' => array(
                 'Ttuj'
-            )
+            ),
+        ), true, array(
+            'status' => 'all',
         ));
-
         $Lkus = $this->paginate('Lku');
 
         if(!empty($Lkus)){
@@ -99,14 +98,14 @@ class LkusController extends AppController {
             }
         }
 
-        $this->set('Lkus', $Lkus);
-
         $customers = $this->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
         ));
-        $this->set('customers', $customers);
+        $this->set(compact(
+            'Lkus', 'customers'
+        ));
 	}
 
     function detail($id = false){
@@ -188,6 +187,7 @@ class LkusController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $data['Lku']['group_branch_id'] = Configure::read('__Site.config_branch_id');
             
             if($id && $data_local){
                 $this->Lku->id = $id;
@@ -243,15 +243,7 @@ class LkusController extends AppController {
 
             if($this->Lku->validates($data) && $validate_lku_detail){
                 if($this->Lku->save($data)){
-                    // $this->loadModel('Journal');
                     $lku_id = $this->Lku->id;
-                    // $this->Journal->deleteJournal( $lku_id, 'lku' );
-
-                    // if( !empty($total_price) ) {
-                    //     $document_no = !empty($data['Lku']['no_doc'])?$data['Lku']['no_doc']:false;
-                    //     $this->Journal->setJournal( $lku_id, $document_no, 'lku_coa_debit_id', $total_price, 0, 'lku' );
-                    //     $this->Journal->setJournal( $lku_id, $document_no, 'lku_coa_credit_id', 0, $total_price, 'lku' );
-                    // }
 
                     if($id && $data_local){
                         $this->Lku->LkuDetail->deleteAll(array(
@@ -282,13 +274,14 @@ class LkusController extends AppController {
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LKU. Lengkapi field yang dibutuhkan'), $msg), 'error');
             }
         } else if($id && $data_local){
+            $data_local = $this->Lku->LkuDetail->getMerge($data_local, $id);
             $this->request->data = $data_local;
 
             if(!empty($this->request->data['LkuDetail'])){
                 foreach ($this->request->data['LkuDetail'] as $key => $value) {
                     $tipe_motor = $this->TipeMotor->getData('first', array(
                         'conditions' => array(
-                            'TipeMotor.id' => $value['tipe_motor_id']
+                            'TipeMotor.id' => $value['LkuDetail']['tipe_motor_id']
                         ),
                     ));
                     
@@ -296,9 +289,11 @@ class LkusController extends AppController {
                         $Ttuj_Tipe_Motor = $this->TtujTipeMotor->getData('first', array(
                             'conditions' => array(
                                 'TtujTipeMotor.ttuj_id' => $this->request->data['Lku']['ttuj_id'],
-                                'TtujTipeMotor.tipe_motor_id' => $value['tipe_motor_id']
+                                'TtujTipeMotor.tipe_motor_id' => $value['LkuDetail']['tipe_motor_id']
                             )
                         ));
+                        $this->request->data['LkuDetail'][$key] = $value['LkuDetail'];
+                        $this->request->data['LkuDetail'][$key]['TipeMotor'] = array_merge($tipe_motor['TipeMotor'], $Ttuj_Tipe_Motor);
                         $this->request->data['LkuDetail'][$key]['TipeMotor'] = array_merge($tipe_motor['TipeMotor'], $Ttuj_Tipe_Motor);
                         $this->request->data['LkuDetail'][$key]['ColorMotor'] = !empty($Ttuj_Tipe_Motor['ColorMotor'])?$Ttuj_Tipe_Motor['ColorMotor']:false;
                     }
@@ -425,6 +420,7 @@ class LkusController extends AppController {
         $this->loadModel('Lku');
 
         $status = 1;
+
         if($action == 'activate'){
             $status = 0;
         }
@@ -434,7 +430,7 @@ class LkusController extends AppController {
                 'Lku.id' => $id,
                 'Lku.status' => $status
             ),
-        ));
+        ), false);
 
         if($locale){
             $this->Lku->id = $id;
@@ -488,7 +484,9 @@ class LkusController extends AppController {
             'order' => array(
                 'LkuPayment.created' => 'DESC'
             )
-        ), false);
+        ), true, array(
+            'status' => 'all',
+        ));
         $payments = $this->paginate('LkuPayment');
 
         if( !empty($payments) ) {
@@ -556,6 +554,7 @@ class LkusController extends AppController {
             }
             
             $data['LkuPayment']['tgl_bayar'] = (!empty($data['LkuPayment']['tgl_bayar'])) ? $this->MkCommon->getDate($data['LkuPayment']['tgl_bayar']) : '';
+            $data['LkuPayment']['group_branch_id'] = Configure::read('__Site.config_branch_id');
             $total_price = 0;
 
             $validate_lku_detail = true;
@@ -841,19 +840,21 @@ class LkusController extends AppController {
                     'CustomerNoType'
                 )
             ),
+        ), true, array(
+            'status' => 'all',
         ));
+        $ttujs = array();
 
         if(!empty($customers)){
             $list_customer = array();
             foreach ($customers as $key => $value) {
-                $list_customer[$value['Ttuj']['customer_id']] = sprintf('%s - %s', $value['Ttuj']['customer_name'], $value['Ttuj']['CustomerNoType']['code']);
-            }
-            $customers = $list_customer;
-        }
-        $ttujs = array();
+                $customer_id = !empty($value['Ttuj']['customer_id'])?$value['Ttuj']['customer_id']:false;
+                $customer_name = !empty($value['Ttuj']['customer_name'])?$value['Ttuj']['customer_name']:false;
+                $customer_code = !empty($value['Ttuj']['CustomerNoType']['code'])?$value['Ttuj']['CustomerNoType']['code']:false;
 
-        if( !empty($customers) ) {
-            foreach ($customers as $customer_id => $value) {
+                $list_customer[$customer_id] = sprintf('%s - %s', $customer_name, $customer_code);
+                $customers = $list_customer;
+
                 $dataCust = $this->Ttuj->Customer->getData('first', array(
                     'conditions' => array(
                         'Customer.id' => $customer_id,
@@ -868,14 +869,11 @@ class LkusController extends AppController {
             }
         }
 
+        $this->set('active_menu', 'lku_payments');
         $this->set(compact(
             'list_customer', 'id', 'action',
-            'coas'
+            'coas', 'ttujs'
         ));
-
-        $this->set('active_menu', 'lku_payments');
-        $this->set('id', $id);
-        $this->set('ttujs', $ttujs);
         $this->render('lku_payment_form');
     }
 
@@ -1161,9 +1159,7 @@ class LkusController extends AppController {
 
         $this->set('active_menu', 'ksus');
         $this->set('sub_module_title', __('Data KSU'));
-        $conditions = array(
-            'Ksu.status' => array( 0, 1 ),
-        );
+        $conditions = array();
         
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -1204,6 +1200,8 @@ class LkusController extends AppController {
             'contain' => array(
                 'Ttuj'
             )
+        ), true, array(
+            'status' => 'all',
         ));
         $Ksus = $this->paginate('Ksu');
 
@@ -1225,14 +1223,14 @@ class LkusController extends AppController {
             }
         }
 
-        $this->set('Ksus', $Ksus);
-
         $customers = $this->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
         ));
-        $this->set('customers', $customers);
+        $this->set(compact(
+            'Ksus', 'customers'
+        ));
     }
 
     function detail_ksu($id = false){
@@ -1281,9 +1279,6 @@ class LkusController extends AppController {
             'conditions' => array(
                 'Ksu.id' => $id
             ),
-            'contain' => array(
-                'KsuDetail'
-            )
         ));
 
         if(!empty($Ksu)){
@@ -1304,6 +1299,7 @@ class LkusController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $data['Ksu']['group_branch_id'] = Configure::read('__Site.config_branch_id');
             
             if($id && $data_local){
                 $this->Ksu->id = $id;
@@ -1368,15 +1364,7 @@ class LkusController extends AppController {
 
             if($this->Ksu->validates($data) && $validate_ksu_detail && $total_choosen > 0){
                 if($this->Ksu->save($data)){
-                    // $this->loadModel('Journal');
                     $ksu_id = $this->Ksu->id;
-                    // $this->Journal->deleteJournal( $ksu_id, 'ksu' );
-
-                    // if( !empty($total_price) ) {
-                    //     $document_no = !empty($data['Ksu']['no_doc'])?$data['Ksu']['no_doc']:false;
-                    //     $this->Journal->setJournal( $ksu_id, $document_no, 'ksu_coa_debit_id', $total_price, 0, 'ksu' );
-                    //     $this->Journal->setJournal( $ksu_id, $document_no, 'ksu_coa_credit_id', 0, $total_price, 'ksu' );
-                    // }
 
                     if($id && $data_local){
                         $this->Ksu->KsuDetail->deleteAll(array(
@@ -1407,22 +1395,24 @@ class LkusController extends AppController {
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s KSU'), $msg), 'error');
             }
         } else if($id && $data_local){
+            $data_local = $this->Ksu->KsuDetail->getMerge($data_local, $id);
             $this->request->data = $data_local;
 
             if(!empty($this->request->data['KsuDetail'])){
                 foreach ($this->request->data['KsuDetail'] as $key => $value) {
                     $perlengkapan = $this->Perlengkapan->getData('first', array(
                         'conditions' => array(
-                            'Perlengkapan.id' => $value['perlengkapan_id']
+                            'Perlengkapan.id' => $value['KsuDetail']['perlengkapan_id']
                         ),
                     ));
                     if(!empty($perlengkapan)){
                         $Ttuj_perlengkapan = $this->TtujPerlengkapan->getData('first', array(
                             'conditions' => array(
                                 'TtujPerlengkapan.ttuj_id' => $this->request->data['Ksu']['ttuj_id'],
-                                'TtujPerlengkapan.perlengkapan_id' => $value['perlengkapan_id']
+                                'TtujPerlengkapan.perlengkapan_id' => $value['KsuDetail']['perlengkapan_id']
                             )
                         ));
+                        $this->request->data['KsuDetail'][$key] = $value['KsuDetail'];
                         $this->request->data['KsuDetail'][$key]['Perlengkapan'] = array_merge($perlengkapan['Perlengkapan'], $Ttuj_perlengkapan);
                     }
                 }
@@ -1550,7 +1540,7 @@ class LkusController extends AppController {
                 'Ksu.id' => $id,
                 'Ksu.status' => $status
             )
-        ));
+        ), false);
 
         if($locale){
             $value = 0;
@@ -1562,13 +1552,6 @@ class LkusController extends AppController {
             $this->Ksu->set('status', $value);
 
             if($this->Ksu->save()){
-                // if( !empty($locale['Ksu']['total_price']) ) {
-                //     $this->loadModel('Journal');
-                //     $document_no = !empty($locale['Ksu']['no_doc'])?$locale['Ksu']['no_doc']:false;
-                //     $this->Journal->setJournal( $id, $document_no, 'ksu_void_coa_debit_id', $locale['Ksu']['total_price'], 0, 'ksu_void' );
-                //     $this->Journal->setJournal( $id, $document_no, 'ksu_void_coa_credit_id', 0, $locale['Ksu']['total_price'], 'ksu_void' );
-                // }
-
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
                 $this->Log->logActivity( sprintf(__('Sukses merubah status KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
             }else{
@@ -1608,7 +1591,9 @@ class LkusController extends AppController {
 
         $this->paginate = $this->KsuPayment->getData('paginate', array(
             'conditions' => $conditions,
-        ), false);
+        ), true, array(
+            'status' => 'all',
+        ));
         $payments = $this->paginate('KsuPayment');
 
         if( !empty($payments) ) {
@@ -1639,7 +1624,7 @@ class LkusController extends AppController {
         $this->set('sub_module_title', 'Rubah Pembayaran KSU');
         $Ksu = $this->KsuPayment->getData('first', array(
             'conditions' => array(
-                'KsuPayment.id' => $id
+                'KsuPayment.id' => $id,
             ),
             'contain' => array(
                 'KsuPaymentDetail'
@@ -1676,6 +1661,7 @@ class LkusController extends AppController {
             }
             
             $data['KsuPayment']['tgl_bayar'] = (!empty($data['KsuPayment']['tgl_bayar'])) ? $this->MkCommon->getDate($data['KsuPayment']['tgl_bayar']) : '';
+            $data['KsuPayment']['group_branch_id'] = Configure::read('__Site.config_branch_id');
             $total_price = 0;
 
             $validate_ksu_detail = true;
@@ -2005,6 +1991,8 @@ class LkusController extends AppController {
                     'CustomerNoType'
                 )
             ),
+        ), true, array(
+            'status' => 'all',
         ));
 
         if(!empty($customers)){
@@ -2048,7 +2036,6 @@ class LkusController extends AppController {
         $payments = $this->LkuPayment->getData('first', array(
             'conditions' => array(
                 'LkuPayment.id' => $id,
-                'LkuPayment.status' => 1,
                 'LkuPayment.is_void' => 0,
             ), 
             'contain' => array(
@@ -2128,7 +2115,6 @@ class LkusController extends AppController {
         $payments = $this->KsuPayment->getData('first', array(
             'conditions' => array(
                 'KsuPayment.id' => $id,
-                'KsuPayment.status' => 1,
                 'KsuPayment.is_void' => 0,
             ), 
             'contain' => array(

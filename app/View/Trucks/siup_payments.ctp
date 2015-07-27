@@ -70,14 +70,13 @@
                                 echo '<span class="label label-default">Belum Bayar</span>';  
                             }
                         }else{
-                            echo '<span class="label label-danger">Void</span>'; 
+                            echo '<span class="label label-danger">Non-Aktif</span>'; 
                         }
                     ?>
                 </td>
                 <td><?php echo $this->Time->niceShort($value['SiupPayment']['created']);?></td>
                 <td class="action">
                     <?php
-                        if(empty($value['SiupPayment']['is_void'])){
                             echo $this->Html->link(__('Detail'), array(
                                 'controller' => 'trucks',
                                 'action' => 'siup_detail',
@@ -86,14 +85,15 @@
                                 'class' => 'btn btn-primary btn-xs'
                             ));
 
-                            echo $this->Html->link(__('Void'), array(
-                                'controller' => 'trucks',
-                                'action' => 'siup_payment_delete',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-danger btn-xs'
-                            ), __('Anda yakin ingin membatalkan data pembayaran Ijin Usaha ini?'));
-                        }
+                            if( empty($value['SiupPayment']['is_void']) && empty($value['SiupPayment']['rejected']) ){
+                                echo $this->Html->link(__('Void'), array(
+                                    'controller' => 'trucks',
+                                    'action' => 'siup_payment_delete',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs'
+                                ), __('Anda yakin ingin membatalkan data pembayaran Ijin Usaha ini?'));
+                            }
                     ?>
                 </td>
             </tr>
