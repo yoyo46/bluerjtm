@@ -963,7 +963,11 @@ class UsersController extends AppController {
                     'BranchModule.parent_id' => 0
                 ),
                 'contain' => array(
-                    'BranchChild'
+                    'BranchChild' => array(
+                        'order'=> array(
+                            'BranchChild.name' => 'ASC'
+                        ),
+                    )
                 )
             ));
 

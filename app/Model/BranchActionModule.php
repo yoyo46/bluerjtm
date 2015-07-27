@@ -45,5 +45,41 @@ class BranchActionModule extends AppModel {
         }
         return $result;
     }
+
+
+    function getDataBranch($group_branch_id, $full_result = false, $branch_module_id = false){
+        $default_conditions = array(
+            'BranchActionModule.group_branch_id' => $group_branch_id
+        );
+
+        if(!empty($branch_module_id)){
+            $default_conditions['BranchActionModule.branch_module_id'] = $branch_module_id;
+        }
+
+        $data_auth = $this->find('all', array(
+            'conditions' => $default_conditions,
+            'fields' => array(
+                'BranchActionModule.id', 'BranchActionModule.branch_module_id', 'BranchActionModule.is_allow'
+            )
+        ));
+
+        $data_result_auth = array();
+        if($full_result){
+            if(!empty($data_auth)){
+                foreach ($data_auth as $key => $value) {
+                    $data_result_auth[$value['BranchActionModule']['branch_module_id']] = $value['BranchActionModule']['is_allow'];
+                }
+                $data_auth = $data_result_auth;
+            }
+        }else{
+            foreach ($data_auth as $key => $value) {
+                $data_result_auth[$value['BranchActionModule']['branch_module_id']] = $value['BranchActionModule']['id'];
+            }
+
+            $data_auth = $data_result_auth;
+        }
+
+        return $data_auth;
+    }
 }
 ?>

@@ -21,6 +21,20 @@
 							'empty' => __('Pilih Cabang'),
 							'div' => false
 						));
+
+						$link_check = $this->Html->link('checkall', 'javascript:', array(
+							'class' => 'branch-check',
+							'type-action' => 'checkall'
+						));
+
+						$link_uncheck = $this->Html->link('uncheckall', 'javascript:', array(
+							'class' => 'branch-check',
+							'type-action' => 'uncheckall'
+						));
+
+						echo $this->Html->tag('div', sprintf('%s / %s', $link_check, $link_uncheck), array(
+							'class' => 'branch-action'
+						));
 		        	?>
 		        </div>
 		        <div class="box-tools pull-right">
@@ -55,6 +69,20 @@
 							'empty' => __('Pilih Cabang'),
 							'value' => $value['GroupBranch']['city_id'],
 							'div' => false
+						));
+
+						$link_check = $this->Html->link('checkall', 'javascript:', array(
+							'class' => 'branch-check',
+							'type-action' => 'checkall'
+						));
+
+						$link_uncheck = $this->Html->link('uncheckall', 'javascript:', array(
+							'class' => 'branch-check',
+							'type-action' => 'uncheckall'
+						));
+
+						echo $this->Html->tag('div', sprintf('%s / %s', $link_check, $link_uncheck), array(
+							'class' => 'branch-action'
 						));
 		        	?>
 		        </div>

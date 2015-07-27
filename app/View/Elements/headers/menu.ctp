@@ -56,7 +56,7 @@
                 </li>
                 <!-- User Account: style can be found in dropdown.less -->
                 <?php
-                        $name = $User['first_name'];
+                        $name = !empty($User['first_name']) ? $User['first_name'] : '';
 
                         if(!empty($User['last_name'])){
                             $name .= ' '.$User['last_name'];

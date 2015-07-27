@@ -1810,7 +1810,7 @@ class AjaxController extends AppController {
             
             case 'prepayment_in':
 				$this->loadModel('CashBank');
-				$result = $this->CashBank->getDocumentCashBank();
+				$result = $this->CashBank->getDocumentCashBank($this->group_branch_id);
 				$urlBrowseDocument = array(
                     'controller'=> 'ajax', 
                     'action' => 'getCashBankPrepayment',
@@ -1969,6 +1969,7 @@ class AjaxController extends AppController {
 	            'CashBank.status' => 1,
                 'CashBank.is_rejected' => 0,
                 'CashBank.receiving_cash_type' => 'prepayment_out',
+                'CashBank.branch_id' => $this->group_branch_id
 	        ),
             'limit' => 10,
 			'order' => array(
@@ -2063,6 +2064,7 @@ class AjaxController extends AppController {
 			$customer = $this->CashBank->getData('first', array(
 				'conditions' => array(
 					'CashBank.id' => $prepayment_id,
+					'CashBank.branch_id' => $this->group_branch_id
 				),
 				'contain' => array(
 					'CashBankDetail' => array(
@@ -2462,7 +2464,7 @@ class AjaxController extends AppController {
 		));
 	}
 
-	function auth_action_module($group_id = false, $city_id = false){
+	function auth_action_module($group_id = false, $city_id = false, $checkall = false){
 		if( !empty($city_id) && !empty($group_id) ){
 			$this->loadModel('BranchModule');
 			$this->loadModel('BranchActionModule');
@@ -2490,23 +2492,6 @@ class AjaxController extends AppController {
 				}
 			}
 
-			$data_auth = $this->BranchActionModule->getData('all', array(
-                'conditions' => array(
-                    'BranchActionModule.group_branch_id' => $group_branch_id
-                ),
-                'fields' => array(
-                	'BranchActionModule.branch_module_id', 'BranchActionModule.is_allow'
-                )
-            ));
-
-            $data_result_auth = array();
-            if(!empty($data_auth)){
-            	foreach ($data_auth as $key => $value) {
-            		$data_result_auth[$value['BranchActionModule']['branch_module_id']] = $value['BranchActionModule']['is_allow'];
-            	}
-            	$data_auth = $data_result_auth;
-            }
-
 			$branch_modules = $this->BranchModule->getData('all', array(
                 'conditions' => array(
                     'BranchModule.status' => 1,
@@ -2516,6 +2501,39 @@ class AjaxController extends AppController {
                     'BranchChild'
                 )
             ));
+			
+			$data_auth = $this->BranchActionModule->getDataBranch($group_branch_id);
+
+            /*custom*/
+            if(!empty($branch_modules) && !empty($checkall)){
+            	$allow = 1;
+            	if($checkall == 'uncheckall'){
+            		$allow = 0;
+            	}
+            	
+				foreach ($branch_modules as $key => $value_module) {
+					if(!empty($value_module['BranchChild'])){
+						foreach ($value_module['BranchChild'] as $key => $value) {
+							if(!empty($data_auth[$value['id']])){
+								$this->BranchActionModule->id = $data_auth[$value['id']];
+								$this->BranchActionModule->set('is_allow', $allow);
+							}else{
+								$this->BranchActionModule->create();
+				            	$this->BranchActionModule->set(array(
+				            		'group_branch_id' => $group_branch_id,
+				            		'branch_module_id' => $value['id'],
+				            		'is_allow' => $allow,
+				            	));
+							}
+
+							$this->BranchActionModule->save();
+						}
+					}
+				}
+			}
+            /*end custom*/
+
+            $data_auth = $this->BranchActionModule->getDataBranch($group_branch_id, true);
 
             $this->set(compact('branch_modules', 'data_auth', 'group_branch_id'));
 		}
@@ -2615,6 +2633,66 @@ class AjaxController extends AppController {
 			}
 
 			$this->set('msg', $msg);
+		}
+	}
+
+	function check_per_branch($group_id = false, $city_id = false, $parent_id = false, $type = false){
+		if(!empty($group_id) && !empty($parent_id) && !empty($type)){
+			$this->loadModel('BranchActionModule');
+			$this->loadModel('BranchModule');
+			$this->loadModel('GroupBranch');
+
+			$GroupBranch = $this->GroupBranch->find('first', array(
+				'conditions' => array(
+					'GroupBranch.group_id' => $group_id,
+					'GroupBranch.city_id' => $city_id,
+				)
+			));
+
+			$group_branch_id = '';
+			if(!empty($GroupBranch)){
+				$group_branch_id = $GroupBranch['GroupBranch']['id'];
+			}
+
+            if(!empty($GroupBranch)){
+            	$branch_modules = $this->BranchModule->getData('all', array(
+	                'conditions' => array(
+	                    'BranchModule.status' => 1,
+	                    'BranchModule.parent_id' => $parent_id
+	                )
+	            ));
+
+            	$allow = 0;
+	            if($type == 'checkall'){
+	            	$allow = 1;
+	            }
+
+	            if(!empty($branch_modules)){
+	            	$branch_action_id = Set::extract('/BranchModule/id', $branch_modules);
+
+	            	$data_auth = $this->BranchActionModule->getDataBranch($group_branch_id, false, $branch_action_id);
+
+		            foreach ($branch_modules as $key => $value) {
+		            	if(!empty($data_auth[$value['BranchModule']['id']])){
+							$this->BranchActionModule->id = $data_auth[$value['BranchModule']['id']];
+							$this->BranchActionModule->set('is_allow', $allow);
+						}else{
+							$this->BranchActionModule->create();
+			            	$this->BranchActionModule->set(array(
+			            		'group_branch_id' => $group_branch_id,
+			            		'branch_module_id' => $value['BranchModule']['id'],
+			            		'is_allow' => $allow,
+			            	));
+						}
+
+						$this->BranchActionModule->save();
+		            }
+
+		            $data_auth = $this->BranchActionModule->getDataBranch($group_branch_id, true, $branch_action_id);
+		            
+		            $this->set(compact('data_auth', 'branch_modules'));
+		        }
+            }
 		}
 	}
 }

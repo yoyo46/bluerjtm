@@ -7,6 +7,24 @@
 					'class' => 'parent-auth'
 				));
 
+				$link_check = $this->Html->link('checkall', 'javascript:', array(
+					'class' => 'branch-module-check',
+					'type-action' => 'checkall',
+					'parent-id' => $value_module['BranchModule']['id'],
+				));
+
+				$link_uncheck = $this->Html->link('uncheckall', 'javascript:', array(
+					'class' => 'branch-module-check',
+					'type-action' => 'uncheckall',
+					'parent-id' => $value_module['BranchModule']['id']
+				));
+
+				$content_check = $this->Html->tag('div', sprintf('(%s / %s)', $link_check, $link_uncheck), array(
+					'class' => 'branch-module-action'
+				));
+
+				$link = sprintf('%s %s <div class="clear"></div>', $link, $content_check);
+
 				if(!empty($value_module['BranchChild'])){
 					foreach ($value_module['BranchChild'] as $key => $value) {
 						$icon = '<i class="fa fa-times"></i>';

@@ -1125,6 +1125,10 @@ var add_custom_field = function( obj ){
                     '<div class="box-header">'+
                         '<div class="box-title">'+
                             content_select+
+                            '<div class="branch-action">'+
+                                '<a href="javascript:" class="branch-check" type-action="checkall">checkall</a> / '+
+                                '<a href="javascript:" class="branch-check" type-action="uncheckall">uncheckall</a>'+
+                            '</div>'+
                         '</div>'+
                         '<div class="box-tools pull-right">'+
                             '<button class="btn btn-default btn-sm trigger-collapse" rel="plus"><i class="fa fa-plus"></i></button>'+
@@ -1139,6 +1143,7 @@ var add_custom_field = function( obj ){
                 delete_custom_field( $('#auth-box div.box[rel="'+idx+'"] .delete-custom-field') );
                 auth_form_open($('#auth-box div.box[rel="'+idx+'"] .auth-form-open'));
                 accordion_toggle($('#auth-box div.box[rel="'+idx+'"] .trigger-collapse'));
+                branch_check($('#auth-box div.box[rel="'+idx+'"] .branch-check'));
                 break;
         }
     });
@@ -3022,31 +3027,33 @@ var auth_form_open = function(obj){
         var val = self.val();
         var group_id = $('#group-id').val();
 
-        if(val != ''){
-            $.ajax({
-                url: '/ajax/auth_action_module/'+group_id+'/'+val+'/',
-                type: 'POST',
-                success: function(response, status) {
-                    if( $(response).filter('#box-action-auth').html() != null ) {
-                        var target_box = parent.find('.auth-action-box');
-                        
-                        target_box.html($(response).filter('#box-action-auth').html()).show();                        
-                        
-                        parent.find('.trigger-collapse').click();
+        check_full_auth(parent, group_id, val, false);
 
-                        parent.find('.delete-custom-field').attr('group-branch-id', $(response).filter('#group_branch_id').html());
-                        action_child_module();
-                    }
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                    return false;
-                }
-            });
-        }else{
-            parent.find('.auth-action-box').html('');
-            parent.find('.trigger-collapse').html('<i class="fa fa-plus"></i>');            
-        }
+        // if(val != ''){
+        //     $.ajax({
+        //         url: '/ajax/auth_action_module/'+group_id+'/'+val+'/',
+        //         type: 'POST',
+        //         success: function(response, status) {
+        //             if( $(response).filter('#box-action-auth').html() != null ) {
+        //                 var target_box = parent.find('.auth-action-box');
+                        
+        //                 target_box.html($(response).filter('#box-action-auth').html()).show();                        
+                        
+        //                 parent.find('.trigger-collapse').click();
+
+        //                 parent.find('.delete-custom-field').attr('group-branch-id', $(response).filter('#group_branch_id').html());
+        //                 action_child_module();
+        //             }
+        //         },
+        //         error: function(XMLHttpRequest, textStatus, errorThrown) {
+        //             alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+        //             return false;
+        //         }
+        //     });
+        // }else{
+        //     parent.find('.auth-action-box').html('');
+        //     parent.find('.trigger-collapse').html('<i class="fa fa-plus"></i>');            
+        // }
     });
 }
 
@@ -3068,6 +3075,8 @@ var action_child_module = function(obj){
                 self.parents('li').html(response);
 
                 action_child_module($('.list-auth-action li[rel="'+id+'"] .action-child-module'));
+
+                parent.find('.trigger-collapse').click();
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
@@ -3099,6 +3108,114 @@ var accordion_toggle = function(obj){
     });
 }
 
+function check_full_auth(parent, group_id, val, attr){
+    if(val != ''){
+        if(attr == false){
+            attr = '';
+        }
+
+        $.ajax({
+            url: '/ajax/auth_action_module/'+group_id+'/'+val+'/'+attr+'/',
+            type: 'POST',
+            success: function(response, status) {
+                if( $(response).filter('#box-action-auth').html() != null ) {
+                    var target_box = parent.find('.auth-action-box');
+                    
+                    target_box.html($(response).filter('#box-action-auth').html()).show();
+
+                    parent.find('.delete-custom-field').attr('group-branch-id', $(response).filter('#group_branch_id').html());
+                    action_child_module();
+                    branch_module_check();
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    }else{
+        parent.find('.auth-action-box').html('');
+        parent.find('.trigger-collapse').html('<i class="fa fa-plus"></i>');            
+    }
+}
+
+var branch_check = function(obj){
+    if( typeof obj == 'undefined' ) {
+        obj = $('.branch-check');
+    }
+
+    obj.click(function(){
+        var text = 'check semua';
+        var self = $(this);
+        var attr = self.attr('type-action');
+        var parent = self.parents('.box');
+
+        var val = parent.find('.auth-form-open').val();
+        var group_id = $('#group-id').val();
+
+        if(attr == 'uncheckall'){
+            text = 'tidak check semua';
+        }
+
+        if(val != ''){
+            if( confirm('Apakah Anda ingin '+text+'?') ) {
+                check_full_auth(parent, group_id, val, attr);
+            } else {
+                return false;
+            }
+        }else{
+            alert('Harap Pilih Cabang');
+        }
+    });
+}
+
+var branch_module_check = function(obj){
+    if( typeof obj == 'undefined' ) {
+        obj = $('.branch-module-check');
+    }
+
+    obj.click(function(){
+        var text = 'check semua';
+        var self = $(this);
+        var attr = self.attr('type-action');
+        var parent_id = self.attr('parent-id');
+        var main_parent = self.parents('.box');
+        var parent = self.parents('.box-action-auth-module');
+        var city_id = main_parent.find('.auth-form-open').val();
+
+        var val = parent.find('.auth-form-open').val();
+        var group_id = $('#group-id').val();
+
+        if(attr == 'uncheckall'){
+            text = 'tidak check semua';
+        }
+
+        if(val != '' && city_id != '' && parent_id != ''){
+            if( confirm('Apakah Anda ingin '+text+'?') ) {
+                $.ajax({
+                    url: '/ajax/check_per_branch/'+group_id+'/'+city_id+'/'+parent_id+'/'+attr+'/',
+                    type: 'POST',
+                    success: function(response, status) {
+                        if( $(response).filter('.list-auth-action').html() != null ) {
+                            var target_box = parent.find('.box-act');
+                            
+                            target_box.html(response);
+                        }
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                        return false;
+                    }
+                });
+            } else {
+                return false;
+            }
+        }else{
+            alert('Error! harap menghubungi bagian IT');
+        }
+    });
+}
+
 $(function() {
     leasing_action();
     laka_ttuj_change();
@@ -3110,6 +3227,8 @@ $(function() {
     auth_form_open();
     action_child_module();
     accordion_toggle();
+    branch_check();
+    branch_module_check();
 
     set_auth_cash_bank($('.cash-bank-auth-user'));
 
