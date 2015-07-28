@@ -1186,6 +1186,25 @@ class CommonHelper extends AppHelper {
         return $result;
     }
 
+    function getMergeTotalPrepayment ( $prepayment ) {
+        $debit_total = $this->filterEmptyField($prepayment, 'CashBank', 'debit_total', 0);
+        $credit_total = $this->filterEmptyField($prepayment, 'CashBank', 'credit_total', 0);
+
+        // Prepayment IN
+        if( !empty($prepayment['PrepaymentIN']) ) {
+            foreach ($prepayment['PrepaymentIN'] as $key => $prepaymentIN) {
+                $result = $this->getMergeTotalPrepayment( $prepaymentIN );
+                $debit_total += !empty($result['debit_total'])?$result['debit_total']:0;
+                $credit_total += !empty($result['credit_total'])?$result['credit_total']:0;
+            }
+        }
+
+        return array(
+            'debit_total' => $debit_total,
+            'credit_total' => $credit_total,
+        );
+    }
+
     function getNotif($type_notif = false, $data, $header = true){
         $url = 'javascript;';
         if(!empty($data['Notification']['url'])){

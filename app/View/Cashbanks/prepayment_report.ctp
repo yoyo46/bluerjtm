@@ -114,9 +114,28 @@
             <tbody>
                 <?php
                         if(!empty($prepayments)){
+                            $total_debit = 0;
+                            $total_credit = 0;
+
                             foreach ($prepayments as $key => $prepayment) {
+                                $total = $this->Common->getMergeTotalPrepayment($prepayment);
                                 echo $this->Common->getMergePrepayment($prepayment);
+
+                                $total_debit += !empty($total['debit_total'])?$total['debit_total']:0;
+                                $total_credit += !empty($total['credit_total'])?$total['credit_total']:0;
                             }
+
+                            $kolom = $this->Html->tag('td', __('Total'), array(
+                                'colspan' => 5,
+                                'style' => 'text-align: right;font-weight:bold;'
+                            ));
+                            $kolom .= $this->Html->tag('td', $this->Number->format($total_debit, '', array('places' => 0)), array(
+                                'style' => 'text-align: right;font-weight:bold;'
+                            ));
+                            $kolom .= $this->Html->tag('td', $this->Number->format($total_credit, '', array('places' => 0)), array(
+                                'style' => 'text-align: right;font-weight:bold;'
+                            ));
+                            echo $this->Html->tag('tr', $kolom);
                         }
                 ?>
             </tbody>
