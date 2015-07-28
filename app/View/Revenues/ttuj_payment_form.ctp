@@ -171,6 +171,7 @@
 			                    ));
 			                    echo $this->Html->tag('th', __('NoPol'));
 			                    echo $this->Html->tag('th', __('Customer'));
+			                    echo $this->Html->tag('th', __('Dari'));
 			                    echo $this->Html->tag('th', __('Tujuan'));
 			                    echo $this->Html->tag('th', __('Supir'));
 			                    echo $this->Html->tag('th', __('Jenis'), array(
