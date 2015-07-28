@@ -95,7 +95,8 @@
 			        <table class="table table-hover">
 			        	<thead>
 			        		<tr>
-			        			<th width="20%"><?php echo __('No LKU');?></th>
+			        			<th width="20%"><?php echo __('No KSU');?></th>
+			        			<th><?php echo __('Tgl KSU');?></th>
 				                <th><?php echo __('TTUJ');?></th>
 				                <th><?php echo __('Nopol Truk');?></th>
 				                <th><?php echo __('Perlengkapan');?></th>

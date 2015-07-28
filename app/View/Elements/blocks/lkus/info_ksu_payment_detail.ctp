@@ -18,7 +18,7 @@
             // ));
 
             // printf('%s (%s)', date('d F Y', strtotime($value['Ttuj']['ttuj_date'])), $value['Ttuj']['no_ttuj']);
-            printf('%s (%s)', date('d F Y', strtotime($value['Ksu']['tgl_ksu'])), $value['Ksu']['no_doc']);
+            echo $value['Ksu']['no_doc'];
 
             $keyd = (isset($this->request->data['KsuPaymentDetail'][$Ksu['id']]['ksu_detail_id']) && !empty($this->request->data['KsuPaymentDetail'][$Ksu['id']]['ksu_detail_id'])) ? $this->request->data['KsuPaymentDetail'][$Ksu['id']]['ksu_detail_id'] : '';
 
@@ -26,6 +26,11 @@
                 'type' => 'hidden',
                 'value' => $keyd
             ));
+        ?>
+    </td>
+    <td>
+        <?php
+            echo date('d F Y', strtotime($value['Ksu']['tgl_ksu']));
         ?>
     </td>
     <td class="data-no-ttuj">
@@ -108,7 +113,7 @@
 }
 ?>
 <tr id="field-grand-total-ttuj">
-    <td align="right" colspan="6"><?php echo __('Grand Total')?></td>
+    <td align="right" colspan="7"><?php echo __('Grand Total')?></td>
     <td align="right" id="grand-total-payment">
         <?php 
             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));

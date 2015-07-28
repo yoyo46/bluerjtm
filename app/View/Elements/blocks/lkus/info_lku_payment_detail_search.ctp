@@ -34,6 +34,17 @@
             ?>
         </div>
     </div>
+    <div class="col-sm-6">
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->input('no_doc',array(
+                        'label'=> __('No LKU'),
+                        'class'=>'form-control',
+                        'required' => false,
+                    ));
+            ?>
+        </div>
+    </div>
 </div>
 <div class="form-group action">
     <?php
@@ -61,6 +72,7 @@
                     echo $this->Html->tag('th', $input_all);
                 ?>
                 <th width="20%"><?php echo __('No LKU');?></th>
+                <th><?php echo __('Tgl LKU');?></th>
                 <th><?php echo __('TTUJ');?></th>
                 <th><?php echo __('Nopol Truk');?></th>
                 <th><?php echo __('Tipe Motor');?></th>
@@ -88,12 +100,17 @@
                 </td>
                 <td>
                     <?php
-                        printf('%s (%s)', date('d F Y', strtotime($value['Lku']['tgl_lku'])), $value['Lku']['no_doc']);
+                        echo $value['Lku']['no_doc'];
 
                         echo $this->Form->input('LkuPaymentDetail.lku_detail_id.'.$value['LkuDetail']['id'], array(
                             'type' => 'hidden',
                             'value' => $value['LkuDetail']['id']
                         ));
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        echo date('d F Y', strtotime($value['Lku']['tgl_lku']));
                     ?>
                 </td>
                 <td>

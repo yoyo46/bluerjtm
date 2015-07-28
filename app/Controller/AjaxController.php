@@ -247,6 +247,10 @@ class AjaxController extends AppController {
 				}
 			}
 
+			if(!empty($this->request->data['Lku']['no_doc'])){
+				$lku_condition['Lku.no_doc LIKE '] = '%'.$this->request->data['Lku']['no_doc'].'%';
+			}
+
 			$lkus = $this->Lku->getData('all', array(
 				'conditions' => $lku_condition,
 			));
@@ -357,6 +361,10 @@ class AjaxController extends AppController {
 				if(!empty($this->request->data['Ksu']['date_to'])){
 					$ksu_condition['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') <='] = $this->MkCommon->getDate($this->request->data['Ksu']['date_to']);
 				}
+			}
+
+			if(!empty($this->request->data['Ksu']['no_doc'])){
+				$ksu_condition['Ksu.no_doc LIKE '] = '%'.$this->request->data['Ksu']['no_doc'].'%';
 			}
 
 			$ksus = $this->Ksu->getData('all', array(

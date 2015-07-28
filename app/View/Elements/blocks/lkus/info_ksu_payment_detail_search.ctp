@@ -2,7 +2,7 @@
         echo $this->Form->create('Ksu', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
-                'action' => 'getTtujCustomerInfo',
+                'action' => 'getTtujCustomerInfoKsu',
                 $customer_id
             )), 
             'role' => 'form',
@@ -34,6 +34,17 @@
             ?>
         </div>
     </div>
+    <div class="col-sm-6">
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->input('no_doc',array(
+                        'label'=> __('No KSU'),
+                        'class'=>'form-control',
+                        'required' => false,
+                    ));
+            ?>
+        </div>
+    </div>
 </div>
 <div class="form-group action">
     <?php
@@ -60,7 +71,8 @@
                     ));
                     echo $this->Html->tag('th', $input_all);
                 ?>
-                <th width="20%"><?php echo __('No LKU');?></th>
+                <th width="20%"><?php echo __('No KSU');?></th>
+                <th><?php echo __('Tgl KSU');?></th>
                 <th><?php echo __('TTUJ');?></th>
                 <th><?php echo __('Nopol Truk');?></th>
                 <th><?php echo __('Perlengkapan');?></th>
@@ -87,12 +99,17 @@
                 </td>
                 <td>
                     <?php
-                        printf('%s (%s)', date('d F Y', strtotime($value['Ksu']['tgl_ksu'])), $value['Ksu']['no_doc']);
+                        echo $value['Ksu']['no_doc'];
 
                         echo $this->Form->input('KsuPaymentDetail.ksu_detail_id.'.$value['KsuDetail']['id'], array(
                             'type' => 'hidden',
                             'value' => $value['KsuDetail']['id']
                         ));
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        echo date('d F Y', strtotime($value['Ksu']['tgl_ksu']));
                     ?>
                 </td>
                 <td>

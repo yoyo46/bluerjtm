@@ -96,6 +96,7 @@
 			        	<thead>
 			        		<tr>
 			        			<th width="20%"><?php echo __('No LKU');?></th>
+			        			<th><?php echo __('Tgl LKU');?></th>
 				                <th><?php echo __('TTUJ');?></th>
 				                <th><?php echo __('Nopol Truk');?></th>
 				                <th><?php echo __('Tipe Motor');?></th>
