@@ -635,8 +635,8 @@ class LkusController extends AppController {
                     if( !empty($total_price) ) {
                         $this->loadModel('Journal');
                         $document_no = !empty($data['LkuPayment']['no_doc'])?$data['LkuPayment']['no_doc']:false;
-                        $this->Journal->setJournal( $lku_payment_id, $document_no, 'lku_payment_coa_debit_id', $total_price, 0, 'lku_payment' );
                         $this->Journal->setJournal( $lku_payment_id, $document_no, 'lku_payment_coa_credit_id', 0, $total_price, 'lku_payment' );
+                        $this->Journal->setJournal( $lku_payment_id, $document_no, 'lku_payment_coa_debit_id', $total_price, 0, 'lku_payment' );
                     }
 
                     if($id && $data_local){
@@ -1751,8 +1751,8 @@ class LkusController extends AppController {
                     if( !empty($total_price) ) {
                         $this->loadModel('Journal');
                         $document_no = !empty($data['KsuPayment']['no_doc'])?$data['KsuPayment']['no_doc']:false;
-                        $this->Journal->setJournal( $ksu_payment_id, $document_no, 'ksu_payment_coa_debit_id', $total_price, 0, 'ksu_payment' );
                         $this->Journal->setJournal( $ksu_payment_id, $document_no, 'ksu_payment_coa_credit_id', 0, $total_price, 'ksu_payment' );
+                        $this->Journal->setJournal( $ksu_payment_id, $document_no, 'ksu_payment_coa_debit_id', $total_price, 0, 'ksu_payment' );
                     }
 
                     if($id && $data_local){

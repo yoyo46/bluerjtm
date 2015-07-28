@@ -192,6 +192,8 @@ class CashbanksController extends AppController {
             $credit_total = 0;
             $total_coa = 0;
             $prepayment_status = false;
+            $document_no = !empty($data['CashBank']['nodoc'])?$data['CashBank']['nodoc']:false;
+            $document_coa_id = !empty($data['CashBank']['coa_id'])?$data['CashBank']['coa_id']:false;
             $data['CashBank']['is_revised'] = 0;
             $data['CashBank']['group_branch_id'] = Configure::read('__Site.config_branch_id');
 
@@ -276,7 +278,10 @@ class CashbanksController extends AppController {
 
             if($this->CashBank->validates($data) && $coas_validate){
                 if($this->CashBank->save($data)){
+                    $this->loadModel('Journal');
                     $cash_bank_id = $this->CashBank->id;
+                    $receiving_cash_type = $data['CashBank']['receiving_cash_type'];
+                    $this->Journal->deleteJournal( $cash_bank_id, $receiving_cash_type );
 
                     if( !empty($prepayment_status) && !empty($document_id) ) {
                         $this->CashBank->id = $document_id;
@@ -306,19 +311,35 @@ class CashbanksController extends AppController {
                     if(!empty($data['CashBankDetail'])){
                         foreach ($data['CashBankDetail'] as $key => $value) {
                             $value['cash_bank_id'] = $cash_bank_id;
+                            $coa_id = $value['coa_id'];
+                            $total = $value['total'];
+
                             $this->CashBank->CashBankDetail->create();
                             $this->CashBank->CashBankDetail->set($value);
+
                             if( $this->CashBank->CashBankDetail->save() ) {
+                                if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
+                                    $this->Journal->setJournal( $cash_bank_id, $document_no, $coa_id, 0, $total, $receiving_cash_type );
+                                } else {
+                                    $this->Journal->setJournal( $cash_bank_id, $document_no, $coa_id, $total, 0, $receiving_cash_type );
+                                }
+
                                 if( !empty($value['paid']) ) {
                                     $this->CashBank->CashBankDetail->updateAll(array(
                                         'CashBankDetail.prepayment_paid'=> "'".$value['paid']."'"
                                     ), array(
                                         'CashBankDetail.cash_bank_id'=> $document_id,
-                                        'CashBankDetail.coa_id'=> $value['coa_id'],
+                                        'CashBankDetail.coa_id'=> $coa_id,
                                     ));
                                 }
                             }
                         }
+                    }
+
+                    if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
+                        $this->Journal->setJournal( $cash_bank_id, $document_no, $document_coa_id, $debit_total, 0, $receiving_cash_type );
+                    } else {
+                        $this->Journal->setJournal( $cash_bank_id, $document_no, $document_coa_id, 0, $credit_total, $receiving_cash_type );
                     }
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Kas/Bank'), $msg), 'success');

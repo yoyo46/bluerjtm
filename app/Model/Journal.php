@@ -32,18 +32,12 @@ class Journal extends AppModel {
     );
 
     function setJournal ( $document_id = false, $document_no = false, $coa_name = false, $debit = 0, $credit = 0, $type = false ) {
-        $this->CoaSetting = ClassRegistry::init('CoaSetting');
-        $coaSetting = $this->CoaSetting->getData('first', array(
-            'conditions' => array(
-                'CoaSetting.status' => 1
-            ),
-        ));
-
-        if( !empty($coaSetting['CoaSetting'][$coa_name]) ) {
+        if( is_numeric($coa_name) ) {
+            $coa_id = $coa_name;
             $data['Journal'] = array(
                 'document_id' => $document_id,
                 'document_no' => $document_no,
-                'coa_id' => $coaSetting['CoaSetting'][$coa_name],
+                'coa_id' => $coa_id,
                 'debit' => $debit,
                 'credit' => $credit,
                 'type' => $type,
@@ -57,7 +51,33 @@ class Journal extends AppModel {
                 return false;
             }
         } else {
-            return false;
+            $this->CoaSetting = ClassRegistry::init('CoaSetting');
+            $coaSetting = $this->CoaSetting->getData('first', array(
+                'conditions' => array(
+                    'CoaSetting.status' => 1
+                ),
+            ));
+
+            if( !empty($coaSetting['CoaSetting'][$coa_name]) ) {
+                $data['Journal'] = array(
+                    'document_id' => $document_id,
+                    'document_no' => $document_no,
+                    'coa_id' => $coaSetting['CoaSetting'][$coa_name],
+                    'debit' => $debit,
+                    'credit' => $credit,
+                    'type' => $type,
+                );
+                $this->create();
+                $this->set($data);
+
+                if( $this->save($data) ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
         }
     }
 

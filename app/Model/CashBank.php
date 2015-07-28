@@ -133,7 +133,7 @@ class CashBank extends AppModel {
         return $data;
     }
 
-    function getDocumentCashBank ( $group_branch_id, $prepayment_out_id = false, $document_type = 'prepayment_out' ) {
+    function getDocumentCashBank ( $prepayment_out_id = false, $document_type = 'prepayment_out' ) {
         $result = array(
             'docs' => array(),
             'docs_type' => false,
@@ -142,7 +142,6 @@ class CashBank extends AppModel {
             'conditions' => array(
                 'CashBank.is_rejected' => 0,
                 'CashBank.receiving_cash_type' => $document_type,
-                'CashBank.branch_id' => $group_branch_id
             ),
         );
 

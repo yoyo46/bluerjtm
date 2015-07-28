@@ -1284,8 +1284,8 @@ class TrucksController extends AppController {
                             $this->loadModel('Journal');
                             $total = $data['KirPayment']['total_pembayaran'];
 
-                            $this->Journal->setJournal( $document_id, $document_no, 'kir_payment_coa_debit_id', $total, 0, 'kir' );
                             $this->Journal->setJournal( $document_id, $document_no, 'kir_payment_coa_credit_id', 0, $total, 'kir' );
+                            $this->Journal->setJournal( $document_id, $document_no, 'kir_payment_coa_debit_id', $total, 0, 'kir' );
                         }
 
                         $this->MkCommon->setCustomFlash(sprintf(__('KIR Truk %s telah dibayar'), $kir['Kir']['no_pol']), 'success');
@@ -1699,8 +1699,8 @@ class TrucksController extends AppController {
                             $this->loadModel('Journal');
                             $total = $data['SiupPayment']['total_pembayaran'];
 
-                            $this->Journal->setJournal( $document_id, $document_no, 'siup_payment_coa_debit_id', $total, 0, 'siup' );
                             $this->Journal->setJournal( $document_id, $document_no, 'siup_payment_coa_credit_id', 0, $total, 'siup' );
+                            $this->Journal->setJournal( $document_id, $document_no, 'siup_payment_coa_debit_id', $total, 0, 'siup' );
                         }
 
                         $this->MkCommon->setCustomFlash(sprintf(__('Ijin Usaha Truk %s telah dibayar'), $siup['Siup']['no_pol']), 'success');
@@ -2685,8 +2685,8 @@ class TrucksController extends AppController {
                             $this->loadModel('Journal');
                             $total = $data['StnkPayment']['total_pembayaran'];
 
-                            $this->Journal->setJournal( $document_id, $document_no, 'stnk_payment_coa_debit_id', $total, 0, 'stnk' );
                             $this->Journal->setJournal( $document_id, $document_no, 'stnk_payment_coa_credit_id', 0, $total, 'stnk' );
+                            $this->Journal->setJournal( $document_id, $document_no, 'stnk_payment_coa_debit_id', $total, 0, 'stnk' );
                         }
 
                         $this->MkCommon->setCustomFlash(sprintf(__('STNK Truk %s telah dibayar'), $stnk['Stnk']['no_pol']), 'success');

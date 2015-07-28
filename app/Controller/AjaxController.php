@@ -1804,7 +1804,7 @@ class AjaxController extends AppController {
             
             case 'prepayment_in':
 				$this->loadModel('CashBank');
-				$result = $this->CashBank->getDocumentCashBank($this->group_branch_id);
+				$result = $this->CashBank->getDocumentCashBank();
 				$urlBrowseDocument = array(
                     'controller'=> 'ajax', 
                     'action' => 'getCashBankPrepayment',
@@ -1962,7 +1962,6 @@ class AjaxController extends AppController {
             'conditions' => array(
                 'CashBank.is_rejected' => 0,
                 'CashBank.receiving_cash_type' => 'prepayment_out',
-                'CashBank.branch_id' => $this->group_branch_id
 	        ),
             'limit' => 10,
 			'order' => array(
@@ -2059,7 +2058,6 @@ class AjaxController extends AppController {
 			$customer = $this->CashBank->getData('first', array(
 				'conditions' => array(
 					'CashBank.id' => $prepayment_id,
-					'CashBank.branch_id' => $this->group_branch_id
 				),
 				'contain' => array(
 					'CashBankDetail' => array(
