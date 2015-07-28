@@ -278,10 +278,8 @@ class CashbanksController extends AppController {
 
             if($this->CashBank->validates($data) && $coas_validate){
                 if($this->CashBank->save($data)){
-                    $this->loadModel('Journal');
                     $cash_bank_id = $this->CashBank->id;
                     $receiving_cash_type = $data['CashBank']['receiving_cash_type'];
-                    $this->Journal->deleteJournal( $cash_bank_id, $receiving_cash_type );
 
                     if( !empty($prepayment_status) && !empty($document_id) ) {
                         $this->CashBank->id = $document_id;
@@ -318,12 +316,6 @@ class CashbanksController extends AppController {
                             $this->CashBank->CashBankDetail->set($value);
 
                             if( $this->CashBank->CashBankDetail->save() ) {
-                                if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
-                                    $this->Journal->setJournal( $cash_bank_id, $document_no, $coa_id, 0, $total, $receiving_cash_type );
-                                } else {
-                                    $this->Journal->setJournal( $cash_bank_id, $document_no, $coa_id, $total, 0, $receiving_cash_type );
-                                }
-
                                 if( !empty($value['paid']) ) {
                                     $this->CashBank->CashBankDetail->updateAll(array(
                                         'CashBankDetail.prepayment_paid'=> "'".$value['paid']."'"
@@ -334,12 +326,6 @@ class CashbanksController extends AppController {
                                 }
                             }
                         }
-                    }
-
-                    if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
-                        $this->Journal->setJournal( $cash_bank_id, $document_no, $document_coa_id, $debit_total, 0, $receiving_cash_type );
-                    } else {
-                        $this->Journal->setJournal( $cash_bank_id, $document_no, $document_coa_id, 0, $credit_total, $receiving_cash_type );
                     }
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Kas/Bank'), $msg), 'success');
@@ -492,6 +478,7 @@ class CashbanksController extends AppController {
             $this->CashBank->id = $id;
             $this->CashBank->set('status', $value);
             if($this->CashBank->save()){
+                $this->loadModel('Journal');
                 $document_id = !empty($locale['CashBank']['document_id'])?$locale['CashBank']['document_id']:false;
                 $document_type = !empty($locale['CashBank']['document_type'])?$locale['CashBank']['document_type']:false;
 
@@ -558,6 +545,11 @@ class CashbanksController extends AppController {
                 $cashbank_auth_id = Set::extract('/CashBankAuthMaster/employe_id', $cash_bank_auth_master);
                 $document_type = !empty($cashbank['CashBank']['document_type'])?$cashbank['CashBank']['document_type']:false;
                 $document_id = !empty($cashbank['CashBank']['document_id'])?$cashbank['CashBank']['document_id']:false;
+                $debit_total = !empty($cashbank['CashBank']['debit_total'])?$cashbank['CashBank']['debit_total']:0;
+                $credit_total = !empty($cashbank['CashBank']['credit_total'])?$cashbank['CashBank']['credit_total']:0;
+                $receiving_cash_type = !empty($cashbank['CashBank']['receiving_cash_type'])?$cashbank['CashBank']['receiving_cash_type']:false;
+                $nodoc = !empty($cashbank['CashBank']['nodoc'])?$cashbank['CashBank']['nodoc']:false;
+                $document_coa_id = !empty($cashbank['CashBank']['coa_id'])?$cashbank['CashBank']['coa_id']:false;
 
                 if(!empty($this->request->data) && !empty($cash_bank_master_user)){
                     if( in_array($this->user_id, $cashbank_auth_id) ){
@@ -646,6 +638,29 @@ class CashbanksController extends AppController {
                                                 $this->CashBank->set('prepayment_status', $this->CashBank->getStatusPrepayment($document_id));
                                                 $this->CashBank->save();
                                                 break;
+                                        }
+                                    }
+
+                                    if( $status_document == 'approve' ) {
+                                        $this->loadModel('Journal');
+
+                                        if( !empty($cashbank['CashBankDetail']) ) {
+                                            foreach ($cashbank['CashBankDetail'] as $key => $cashBankDetail) {
+                                                $coa_id = !empty($cashBankDetail['coa_id'])?$cashBankDetail['coa_id']:false;
+                                                $total = !empty($cashBankDetail['total'])?$cashBankDetail['total']:false;
+
+                                                if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
+                                                    $this->Journal->setJournal( $id, $nodoc, $coa_id, 0, $total, $receiving_cash_type );
+                                                } else {
+                                                    $this->Journal->setJournal( $id, $nodoc, $coa_id, $total, 0, $receiving_cash_type );
+                                                }
+                                            }
+                                        }
+
+                                        if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
+                                            $this->Journal->setJournal( $id, $nodoc, $document_coa_id, $debit_total, 0, $receiving_cash_type );
+                                        } else {
+                                            $this->Journal->setJournal( $id, $nodoc, $document_coa_id, 0, $credit_total, $receiving_cash_type );
                                         }
                                     }
                                 }

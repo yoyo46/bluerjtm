@@ -76,14 +76,16 @@
                             ));
                         }
 
-                        $link .= $this->Html->link('Hapus', array(
-                            'controller' => 'cashbanks',
-                            'action' => 'cashbank_delete',
-                            $value['CashBank']['id']
-                        ), array(
-                            'escape' => false,
-                            'class' => 'btn btn-danger btn-xs'
-                        ), __('Anda yakin ingin menghapus data ini?'));
+                        if( empty($value['CashBank']['completed']) ) {
+                            $link .= $this->Html->link('Hapus', array(
+                                'controller' => 'cashbanks',
+                                'action' => 'cashbank_delete',
+                                $value['CashBank']['id']
+                            ), array(
+                                'escape' => false,
+                                'class' => 'btn btn-danger btn-xs'
+                            ), __('Anda yakin ingin menghapus data ini?'));
+                        }
 
                         if( in_array($User['id'], $cashbank_auth_id) && empty($value['CashBank']['is_rejected']) && empty($value['CashBank']['completed']) ){
                             $link .= $this->Html->link('Approval', array(
