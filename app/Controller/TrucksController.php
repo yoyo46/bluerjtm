@@ -808,7 +808,6 @@ class TrucksController extends AppController {
             $data['Driver']['birth_date'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_lahir']);
             $data['Driver']['join_date'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_penerimaan']);
             $data['Driver']['expired_date_sim'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_expire_sim']);
-            $data['Driver']['group_branch_id'] = Configure::read('__Site.config_branch_id');
             
             if(!empty($data['Driver']['photo']['name']) && is_array($data['Driver']['photo'])){
                 $temp_image = $data['Driver']['photo'];
@@ -904,7 +903,7 @@ class TrucksController extends AppController {
         }
 
         $this->loadModel('DriverRelation');
-        $this->loadModel('City');
+        $this->loadModel('GroupBranch');
         $this->loadModel('JenisSim');
 
         $driverRelations = $this->DriverRelation->find('list', array(
@@ -915,7 +914,17 @@ class TrucksController extends AppController {
                 'DriverRelation.id', 'DriverRelation.name'
             )
         ));
-        $branches = $this->City->branchCities();
+        $branches = $this->GroupBranch->getData('list', array(
+            'contain' => array(
+                'City',
+            ),
+            'fields' => array(
+                'GroupBranch.id', 'City.name',
+            ),
+            'order' => array(
+                'City.name'
+            ),
+        ));
         $jenisSims = $this->JenisSim->find('list', array(
             'conditions' => array(
                 'JenisSim.status' => 1

@@ -392,11 +392,12 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-							echo $this->Form->input('branch_id',array(
+							echo $this->Form->input('group_branch_id',array(
 								'label'=> __('Cabang Penerimaan *'), 
 								'class'=>'form-control',
 								'required' => false,
 								'empty' => __('Pilih Cabang'),
+								'options' => $branches,
 							));
 					?>
 		        </div>

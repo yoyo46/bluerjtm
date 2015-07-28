@@ -38,16 +38,6 @@
 		        <?php 
 		        		}
 		        ?>
-		        <div class="form-group">
-		        	<?php 
-							echo $this->Form->input('branch_id',array(
-								'label'=> __('Cabang Penerimaan *'), 
-								'class'=>'form-control',
-								'required' => false,
-								'empty' => __('Pilih Cabang'),
-							));
-					?>
-		        </div>
 		    	<div class="form-group">
 		        	<?php 
 						echo $this->Form->label('nopol',__('Nopol *')); 
