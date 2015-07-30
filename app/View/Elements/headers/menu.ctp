@@ -56,11 +56,7 @@
                 </li>
                 <!-- User Account: style can be found in dropdown.less -->
                 <?php
-                        $name = !empty($User['first_name']) ? $User['first_name'] : '';
-
-                        if(!empty($User['last_name'])){
-                            $name .= ' '.$User['last_name'];
-                        }
+                        $name = !empty($User['Employe']['full_name']) ? $User['Employe']['full_name'] : '';
                 ?>
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">

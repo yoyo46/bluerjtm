@@ -87,7 +87,7 @@
                 <td><?php echo $value['Spk']['no_doc'];?></td>
                 <td><?php echo ucwords($value['Spk']['type']);?></td>
                 <td><?php echo $value['Truck']['nopol'];?></td>
-                <td><?php echo $value['Employe']['name'];?></td>
+                <td><?php echo $value['Employe']['full_name'];?></td>
                 <td class="text-center">
                     <?php 
                             echo $this->Common->customDate($value['Spk']['date_spk'], 'd/m/Y');

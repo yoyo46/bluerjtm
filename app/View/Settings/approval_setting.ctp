@@ -7,7 +7,7 @@
             ),
             'position' => array(
                 'name' => __('Posisi yg Mengajukan'),
-                'field_model' => 'EmployePosition.name',
+                'field_model' => 'Group.name',
                 'display' => true,
             ),
             'created' => array(
@@ -57,7 +57,7 @@
                         foreach ($approvals as $key => $approval) {
                             $id = !empty($approval['Approval']['id'])?$approval['Approval']['id']:false;
                             $module = !empty($approval['ApprovalModule']['name'])?$approval['ApprovalModule']['name']:false;
-                            $position = !empty($approval['EmployePosition']['name'])?$approval['EmployePosition']['name']:false;
+                            $position = !empty($approval['Group']['name'])?$approval['Group']['name']:false;
             ?>
             <tr>
                 <td><?php echo $module;?></td>

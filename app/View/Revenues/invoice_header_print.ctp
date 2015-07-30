@@ -1,5 +1,7 @@
 <?php
 		$qty_unit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
+        $full_name = !empty($invoice['User']['full_name'])?$invoice['User']['full_name']:false;
+
 if($action_print == 'pdf'){
 	App::import('Vendor','xtcpdf');
     ob_end_clean();
@@ -23,7 +25,7 @@ if($action_print == 'pdf'){
 	$terbilang = sprintf(': %s', $this->Common->terbilang($invoice['Invoice']['total']));
 	$totalUnit = sprintf(__(': JASA ANGKUT SEPEDA MOTOR<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $qty_unit, $this->Common->customDate($invoice['Invoice']['period_from'], 'd/m/Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd/m/Y'));
 	$dateLocation = sprintf('%s, %s', $this->Common->getDataSetting( $setting, 'pusat' ), date('d F Y'));
-	$billing_name = !empty($invoice['User']['full_name'])?$invoice['User']['full_name']:false;
+	$billing_name = $full_name;
 	// $note = sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Invoice']['due_invoice']);
 	$note = sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Invoice']['term_of_payment']);
 	$bank_name = !empty($invoice['Bank']['name'])?$invoice['Bank']['name']:false;
@@ -255,7 +257,6 @@ readfile($path.'/'.$filename);
 				</td>
 				<td valign="top" align="right" style="padding-top: 50px;">
 					<?php 
-							$full_name = !empty($invoice['User']['full_name'])?$invoice['User']['full_name']:false;
 							echo $this->Html->tag('p', sprintf('%s, %s', $this->Common->getDataSetting( $setting, 'pusat' ), date('d F Y')));
 							echo $this->Html->tag('p', $full_name, array(
 								'style' => 'margin: 70px 0 0;border-bottom: 1px solid #000;display: inline-block;'

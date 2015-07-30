@@ -2182,20 +2182,8 @@ class AjaxController extends AppController {
 			)
 		));
 
-		$first_name = '';
-		$last_name = '';
-		if(!empty($employes['Employe']['name'])){
-			$arr_str = explode(' ', $employes['Employe']['name']);
-
-			if(!empty($arr_str[0])){
-				$first_name = $arr_str[0];
-			}
-
-			if(count($arr_str) > 1){
-				unset($arr_str[0]);
-				$last_name = implode(' ', $arr_str);
-			}
-		}
+		$first_name = !empty($employes['Employe']['first_name'])?$employes['Employe']['first_name']:false;
+		$last_name = !empty($employes['Employe']['last_name'])?$employes['Employe']['last_name']:false;
 
 		$this->set(compact('first_name', 'last_name'));
 	}

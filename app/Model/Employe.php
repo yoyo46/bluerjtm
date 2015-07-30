@@ -2,12 +2,12 @@
 class Employe extends AppModel {
 	var $name = 'Employe';
 	var $validate = array(
-		'name' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-                'message' => 'Nama karyawan harap diisi'
-			),
-		),
+        'first_name' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'nama depan harap diisi'
+            ),
+        ),
         'address' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -26,7 +26,25 @@ class Employe extends AppModel {
                 'message' => 'Posisi Karyawan harap diisi'
             ),
         ),
+        'gender' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Jenis kelamin harap diisi'
+            ),
+        ),
+        'birthdate' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tanggal lahir harap diisi'
+            ),
+        ),
 	);
+
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['full_name'] = sprintf('CONCAT(%s.first_name, " ", %s.last_name)', $this->alias, $this->alias);
+        $this->virtualFields['name'] = sprintf('CONCAT(%s.first_name, " ", %s.last_name)', $this->alias, $this->alias);
+    }
 
     var $belongsTo = array(
         'Group' => array(
@@ -41,10 +59,10 @@ class Employe extends AppModel {
                 'Employe.status' => 1,
             ),
             'order'=> array(
-                'Employe.name' => 'ASC'
+                'Employe.full_name' => 'ASC'
             ),
             'contain' => array(
-                'EmployePosition'
+                'Group'
             ),
         );
 

@@ -65,7 +65,7 @@ class Approval extends AppModel {
             'order'=> array(),
             'contain' => array(
                 'ApprovalModule',
-                'EmployePosition',
+                'Group',
             ),
             'fields' => array(),
             'group' => array(),

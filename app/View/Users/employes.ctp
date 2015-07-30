@@ -33,7 +33,7 @@
                     echo $this->Html->tag('th', $this->Paginator->sort('Employe.name', __('Karyawan'), array(
                         'escape' => false
                     )));
-                    echo $this->Html->tag('th', $this->Paginator->sort('EmployePosition.name', __('Posisi'), array(
+                    echo $this->Html->tag('th', $this->Paginator->sort('Group.name', __('Posisi'), array(
                         'escape' => false
                     )));
                     echo $this->Html->tag('th', $this->Paginator->sort('Employe.address', __('Alamat'), array(
@@ -56,11 +56,13 @@
                         foreach ($employes as $key => $value) {
                             $value_data = $value['Employe'];
                             $id = $value_data['id'];
+                            $group_name = !empty($value['Group']['name'])?$value['Group']['name']:false;
+                            $full_name = !empty($value_data['full_name'])?$value_data['full_name']:false;
             ?>
             <tr>
                 <td><?php echo $start;?></td>
-                <td><?php echo $value_data['name'];?></td>
-                <td><?php echo $value['EmployePosition']['name'];?></td>
+                <td><?php echo $full_name;?></td>
+                <td><?php echo $group_name;?></td>
                 <td><?php echo $value_data['address'];?></td>
                 <td><?php echo $value_data['phone'];?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
@@ -91,7 +93,7 @@
                             ), array(
                                 'class' => 'btn btn-danger btn-xs',
                                 'title' => 'disable status brand'
-                            ), sprintf(__('Apakah Anda yakin akan menon-aktifkan %s?'), $value_data['name']));
+                            ), sprintf(__('Apakah Anda yakin akan menon-aktifkan %s?'), $full_name));
                     ?>
                 </td>
             </tr>

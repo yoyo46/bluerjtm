@@ -49,6 +49,26 @@
                     <dd><?php echo $this->Common->customDate($cashbank['CashBank']['tgl_cash_bank'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Keterangan')?></dt>
                     <dd><?php echo !empty($cashbank['CashBank']['description'])?$cashbank['CashBank']['description']:'-';?></dd>
+                    <dt><?php echo __('Status')?></dt>
+                    <dd>
+                        <?php
+                                $status = 'Pending';
+                                $class = 'info';
+
+                                if(!empty($cashbank['CashBank']['completed'])){
+                                    $status = 'Complete';
+                                    $class = 'success';
+                                }else if(!empty($cashbank['CashBank']['is_revised'])){
+                                    $status = 'Revisi';
+                                    $class = 'primary';
+                                }else if(!empty($cashbank['CashBank']['is_rejected'])){
+                                    $status = 'Ditolak';
+                                    $class = 'danger';
+                                }
+
+                                echo '<span class="label label-'.$class.'">'.$status.'</span>';
+                        ?>
+                    </dd>
             </div>
         </div>
     </div>
@@ -172,7 +192,7 @@
                     <tbody>
                         <?php
                                 foreach ($user_otorisasi_approvals as $key => $value) {
-                                    $position_name = !empty($value['EmployePosition']['name'])?$value['EmployePosition']['name']:false;
+                                    $position_name = !empty($value['Group']['name'])?$value['Group']['name']:false;
                                     $is_priority = !empty($value['ApprovalDetailPosition']['is_priority'])?$value['ApprovalDetailPosition']['is_priority']:false;
 
                                     if( !empty($is_priority) ) {
@@ -198,7 +218,7 @@
                                     }
 
                                     if( !empty($value['CashBankAuth']['description']) ) {
-                                        $description = ucfirst($value['CashBankAuth']['status_document']);
+                                        $description = ucfirst($value['CashBankAuth']['description']);
                                     } else {
                                         $description = '-';
                                     }

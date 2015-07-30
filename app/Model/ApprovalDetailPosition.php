@@ -29,7 +29,7 @@ class ApprovalDetailPosition extends AppModel {
                 'ApprovalDetailPosition.id' => 'ASC',
             ),
             'contain' => array(
-                'EmployePosition',
+                'Group',
             ),
             'fields' => array(),
             'group' => array(

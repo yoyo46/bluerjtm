@@ -34,6 +34,7 @@
 						'class'=>'form-control',
 						'required' => false,
 						'empty' => __('Pilih Posisi'),
+						'options' => $employePositions,
 					));
 			?>
         </div>

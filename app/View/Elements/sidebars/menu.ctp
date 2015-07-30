@@ -1,8 +1,5 @@
 <?php
-        $name = !empty($User['first_name']) ? $User['first_name'] : '';
-        if(!empty($User['last_name'])){
-            $name .= ' '.$User['last_name'];
-        }
+        $name = !empty($User['Employe']['full_name']) ? $User['Employe']['full_name'] : '';
 ?>
 <!-- Left side column. contains the logo and sidebar -->
 <aside class="left-side sidebar-offcanvas">
@@ -66,7 +63,7 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'list_user' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> group', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Posisi Karyawan', array(
                                 'controller' => 'users',
                                 'action' => 'groups',
                             ), array(

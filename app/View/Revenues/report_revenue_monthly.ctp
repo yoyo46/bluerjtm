@@ -188,7 +188,7 @@
     <?php 
             }
 
-            echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $User['full_name'])), array(
+            echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
                 'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'
             ));
             
@@ -251,7 +251,7 @@
             }
 
             $date_title = $sub_module_title;
-            $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $User['full_name'])), array(
+            $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
                 'style' => 'font-size: 24px;font-style: italic;margin-top: 10px;'
             ));
 $tbl = <<<EOD

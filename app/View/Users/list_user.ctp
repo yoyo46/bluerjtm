@@ -36,14 +36,16 @@
                             $value_data = $value['User'];
                             $id = $value_data['id'];
 
-                            $name = $value_data['full_name'];
+                            $name = !empty($value['Employe']['full_name'])?$value['Employe']['full_name']:false;
+                            $phone = !empty($value['Employe']['phone'])?$value['Employe']['phone']:false;
+                            $group_name = !empty($value['Group']['name'])?$value['Group']['name']:false;
             ?>
             <tr>
                 <td><?php echo $name;?></td>
                 <td><?php echo !empty($value['City']['name'])?$value['City']['name']:false;?></td>
-                <td><?php echo $value['Group']['name'];?></td>
+                <td><?php echo $group_name;?></td>
                 <td><?php echo $value_data['email'];?></td>
-                <td><?php echo $value_data['phone'];;?></td>
+                <td><?php echo $phone;?></td>
                 <td>
                     <?php 
                         if(!empty($value_data['status'])){

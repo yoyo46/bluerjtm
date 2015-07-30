@@ -562,7 +562,7 @@ class CashbanksController extends AppController {
             $position_normal = !empty($position_approval['Normal'])?$position_approval['Normal']:false;
 
             if( !empty($user_otorisasi_approvals) ) {
-                $position_otorisasi_approvals = Set::extract('/EmployePosition/id', $user_otorisasi_approvals);
+                $position_otorisasi_approvals = Set::extract('/Group/id', $user_otorisasi_approvals);
             } else {
                 $position_otorisasi_approvals = array();
             }
@@ -650,7 +650,7 @@ class CashbanksController extends AppController {
                         if($this->CashBank->CashBankAuth->save()){
                             $data_arr = array();
 
-                            if( $this->MkCommon->checkArrayExists($position_priority_auth, $position_priority) || ( empty($position_priority) && $this->MkCommon->checkArrayExists($position_normal_auth, $position_normal) ) ){
+                            if( $this->MkCommon->checkArrayApproval($position_priority_auth, $position_priority) || ( empty($position_priority) && $this->MkCommon->checkArrayApproval($position_normal_auth, $position_normal) ) ){
                                 switch ($status_document) {
                                     case 'approve':
                                         $data_arr = array(

@@ -439,7 +439,7 @@ class SpkController extends AppController {
 
         $employes = $this->Employe->getData('list', array(
             'fields' => array(
-                'Employe.id', 'Employe.name'
+                'Employe.id', 'Employe.full_name'
             ),
         ));
         $trucks = $this->Truck->getData('list', array(

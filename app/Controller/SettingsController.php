@@ -4745,7 +4745,7 @@ class SettingsController extends AppController {
             if(!empty($refine['position'])){
                 $name = urldecode($refine['position']);
                 $this->request->data['Approval']['position'] = $name;
-                $options['conditions']['EmployePosition.name LIKE '] = '%'.$name.'%';
+                $options['conditions']['Group.name LIKE '] = '%'.$name.'%';
             }
         }
 
@@ -4785,7 +4785,7 @@ class SettingsController extends AppController {
 
     function doApproval( $id = false, $approval = false ){
         $this->loadModel('ApprovalModule');
-        $this->loadModel('EmployePosition');
+        $this->loadModel('Group');
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -4866,7 +4866,7 @@ class SettingsController extends AppController {
                 'ApprovalModule.name' => 'ASC',
             ),
         ));
-        $employePositions = $this->EmployePosition->getData('list');
+        $employePositions = $this->Group->getData('list');
 
         $this->set('active_menu', 'approval_setting');
         $this->set(compact(

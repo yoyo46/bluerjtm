@@ -520,8 +520,10 @@ class MkCommonComponent extends Component {
         return false;
     }
 
-    function checkArrayExists ( $arrKey, $arrayFind ) {
-        if( !empty($arrKey) ) {
+    function checkArrayApproval ( $arrKey, $arrayFind ) {
+        if( count($arrKey) < count($arrayFind) ) {
+            return false;
+        } else if( !empty($arrKey) ) {
             foreach ($arrKey as $key => $value) {
                 if( !in_array($value, $arrayFind) ) {
                     return false;

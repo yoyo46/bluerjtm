@@ -1,4 +1,5 @@
 <?php
+        $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
 	if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
         $tdStyle = '';
         $border = 0;
@@ -198,7 +199,7 @@
     <?php 
             }
 
-            echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $User['full_name'])), array(
+            echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
                 'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'
             ));
             
@@ -232,7 +233,7 @@
         
         $each_loop_message = '';
         $no = 1;
-        $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $User['full_name'])), array(
+        $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
             'style' => 'font-size: 24px;font-style: italic;margin-top: 10px;'
         ));
 

@@ -31,7 +31,8 @@
 						'label'=>false,
 						'empty' => __('Pilih Karyawan'),
 						'required' => false,
-						'class' => 'form-control employe-field',
+						'class' => 'form-control',
+						// 'class' => 'form-control employe-field',
 						'options' => $employes
 					)); 
 			?>
@@ -98,120 +99,6 @@
 		<?php 
 				}
 		?>
-		<div class="form-group">
-			<?php 
-					$title = __('Group *');
-					echo $this->Form->label('group_id', $title, array(
-						'class'=>'control-label col-sm-2'
-					)); 
-			?>
-			<div class="col-sm-8">
-			<?php 
-					echo $this->Form->input('group_id',array(
-						'label'=>false,
-						'required' => false,
-						'class' => 'form-control',
-						'empty' => __('Pilih Group'),
-						'options' => $groups
-					)); 
-			?>
-			</div>
-		</div>
-		<div class="form-group">
-			<?php 
-					$title = __('Nama Depan *');
-					echo $this->Form->label('first_name', $title, array(
-						'class'=>'control-label col-sm-2'
-					)); 
-			?>
-			<div class="col-sm-8">
-			<?php 
-					echo $this->Form->input('first_name',array(
-						'label'=>false,
-						'placeholder' => $title,
-						'required' => false,
-						'class' => 'form-control first-name-box',
-					)); 
-			?>
-			</div>
-		</div>
-		<div class="form-group">
-			<?php 
-					$title = __('Nama Belakang');
-					echo $this->Form->label('last_name', $title, array(
-						'class'=>'control-label col-sm-2'
-					)); 
-			?>
-			<div class="col-sm-8">
-			<?php 
-					echo $this->Form->input('last_name',array(
-						'label'=>false,
-						'placeholder' => $title,
-						'required' => false,
-						'class' => 'form-control last-name-box',
-					)); 
-			?>
-			</div>
-		</div>
-		<div class="form-group">
-			<?php 
-					$title = __('Telepon *');
-					echo $this->Form->label('phone', $title, array(
-						'class'=>'control-label col-sm-2'
-					)); 
-			?>
-			<div class="col-sm-8">
-			<?php 
-					echo $this->Form->input('phone',array(
-						'label'=>false,
-						'placeholder' => $title,
-						'required' => false,
-						'class' => 'form-control',
-					)); 
-			?>
-			</div>
-		</div>
-		<div class="form-group">
-			<?php 
-					$title = __('Jenis Kelamin *');
-					echo $this->Form->label('gender', $title, array(
-						'class'=>'control-label col-sm-2'
-					)); 
-			?>
-			<div class="col-sm-8">
-			<?php 
-					echo $this->Form->input('gender',array(
-						'label'=>false,
-						'required' => false,
-						'class' => 'form-control',
-						'empty' => __('Pilih Jenis Kelamin'),
-						'options' => array(
-							'male' => __('Pria'),
-							'female' => __('Wanita'),
-						)
-					)); 
-			?>
-			</div>
-		</div>
-		<div class="form-group">
-			<?php 
-					$title = __('Tangal Lahir *');
-					echo $this->Form->label('birthdate', $title, array(
-						'class'=>'control-label col-sm-2'
-					)); 
-			?>
-			<div class="col-sm-8">
-			<?php 
-					echo $this->Form->input('birthdate',array(
-						'type' => 'text',
-						'label'=>false,
-						'placeholder' => $title,
-						'required' => false,
-						'class' => 'form-control custom-date',
-					)); 
-			?>
-			</div>
-		</div>
 		<div class="box-footer text-center action">
 	    	<?php
 		    		echo $this->Form->button(__('Simpan'), array(

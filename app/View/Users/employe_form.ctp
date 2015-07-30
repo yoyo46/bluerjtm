@@ -18,13 +18,25 @@
     <div class="box-body">
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('name',__('Nama Karyawan *')); 
+				echo $this->Form->label('first_name',__('Nama Depan *')); 
 
-				echo $this->Form->input('name',array(
+				echo $this->Form->input('first_name',array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('Nama Karyawan')
+					'placeholder' => __('Nama Depan')
+				));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+				echo $this->Form->label('last_name',__('Nama Belakang *')); 
+
+				echo $this->Form->input('last_name',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Nama Belakang')
 				));
 			?>
         </div>
@@ -41,6 +53,20 @@
 				));
 			?>
         </div>
+		<div class="form-group">
+			<?php 
+					echo $this->Form->input('Employe.gender',array(
+						'label'=>__('Jenis Kelamin *'),
+						'required' => false,
+						'class' => 'form-control',
+						'empty' => __('Pilih Jenis Kelamin'),
+						'options' => array(
+							1 => __('Pria'),
+							2 => __('Wanita'),
+						)
+					)); 
+			?>
+		</div>
         <div class="form-group">
         	<?php 
 				echo $this->Form->label('address',__('Alamat *')); 
@@ -49,7 +75,7 @@
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'type' => 'text',
+					'type' => 'textarea',
 					'placeholder' => __('Alamat')
 				));
 			?>

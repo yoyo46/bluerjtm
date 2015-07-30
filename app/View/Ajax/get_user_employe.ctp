@@ -31,7 +31,7 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('full_name',array(
+                    echo $this->Form->input('Employe.full_name',array(
                         'label'=> __('Nama Karyawan'),
                         'class'=>'form-control',
                         'required' => false,
@@ -75,9 +75,10 @@
         <?php
                 if(!empty($users)){
                     foreach ($users as $key => $value) {
+                        $full_name = !empty($value['Employe']['full_name'])?$value['Employe']['full_name']:false;
         ?>
         <tr data-value="<?php echo $value['User']['id'];?>" data-rel="#cash-auth-<?php echo $rel;?>" data-change=".<?php echo $data_change;?>">
-            <td><?php echo $value['User']['full_name'];?></td>
+            <td><?php echo $full_name;?></td>
             <td><?php echo $value['Group']['name'];?></td>
         </tr>
         <?php

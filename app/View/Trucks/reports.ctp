@@ -1,4 +1,5 @@
 <?php 
+        $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $text = __('Semua Truk');
         $dataColumns = array(
             'nomor_id' => array(
@@ -234,7 +235,7 @@
     <?php 
             }
 
-            echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $User['full_name'])), array(
+            echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
                 'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'
             ));
             
@@ -315,7 +316,7 @@
         }   
 
 $total_trucks = count($trucks);
-$print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $User['full_name'])), array(
+$print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
     'style' => 'font-size: 24px;font-style: italic;margin-top: 10px;'
 ));
 $tbl = <<<EOD

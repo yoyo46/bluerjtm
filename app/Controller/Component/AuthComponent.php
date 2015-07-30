@@ -372,12 +372,12 @@ class AuthComponent extends Component {
 					'User.password' => $password,
 					'User.status' => 1,
 				),
-			), false);	
-			
+			));
+
 			if( !empty($data) ) {
-				$user = $data;
+				$user = array_merge($data, $data['User']);
 				unset($user['User']);
-				$user = array_merge($data['User'], $user);
+			
 				return $user;
 			}
 		}

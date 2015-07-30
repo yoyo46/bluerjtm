@@ -13,6 +13,10 @@ class User extends AppModel {
                 'City.is_branch' => 1,
             ),
         ),
+        'Employe' => array(
+            'className' => 'Employe',
+            'foreignKey' => 'employe_id',
+        ),
     );
     
     var $validate = array(
@@ -26,12 +30,6 @@ class User extends AppModel {
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Karyawan harap dipilih'
-            ),
-        ),
-        'first_name' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'nama depan harap diisi'
             ),
         ),
         'username' => array(
@@ -64,24 +62,6 @@ class User extends AppModel {
                 'message' => 'Email sudah tersedia sebelumnya, mohon masukkan email lain.'
             ),
         ),
-        'phone' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Telepon harap diisi'
-            ),
-        ),
-        'gender' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'jenis kelamin harap diisi'
-            ),
-        ),
-        'birthdate' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'tanggal lahir harap diisi'
-            ),
-        ),
         'password' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -108,11 +88,6 @@ class User extends AppModel {
         ),
     );
 
-    function __construct($id = false, $table = null, $ds = null) {
-        parent::__construct($id, $table, $ds);
-        $this->virtualFields['full_name'] = sprintf('CONCAT(%s.first_name, " ", %s.last_name)', $this->alias, $this->alias);
-    }
-
     function parentNode() {
         if (!$this->id && empty($this->data)) {
             return null;
@@ -135,7 +110,9 @@ class User extends AppModel {
             'order'=> array(
                 'User.status' => 'DESC'
             ),
-            'contain' => array(),
+            'contain' => array(
+                'Employe',
+            ),
             'fields' => array(),
         );
 
@@ -178,7 +155,7 @@ class User extends AppModel {
 
     function getMerge( $data, $id, $with_contain = false ){
         if(empty($data['User'])){
-            $data_merge = $this->find('first', array(
+            $data_merge = $this->getData('first', array(
                 'conditions' => array(
                     'User.id' => $id
                 ),
