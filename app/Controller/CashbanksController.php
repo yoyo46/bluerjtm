@@ -107,11 +107,7 @@ class CashbanksController extends AppController {
                 }
             }
         }
-        $this->loadModel('CashBankAuthMaster');
-        $cash_bank_auth_master = $this->CashBankAuthMaster->getUserApproval();
-        $cashbank_auth_id = Set::extract('/CashBankAuthMaster/employe_id', $cash_bank_auth_master);
 
-        $this->set('cashbank_auth_id', $cashbank_auth_id);
         $this->set('cash_banks', $cash_banks);
         $this->set('active_menu', 'cash_bank');
     }
@@ -196,6 +192,7 @@ class CashbanksController extends AppController {
             $document_coa_id = !empty($data['CashBank']['coa_id'])?$data['CashBank']['coa_id']:false;
             $data['CashBank']['is_revised'] = 0;
             $data['CashBank']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['CashBank']['user_id'] = $this->user_id;
 
             if($id && $data_local){
                 $this->CashBank->id = $id;
@@ -511,118 +508,179 @@ class CashbanksController extends AppController {
 
     function detail($id = false){
         $this->set('sub_module_title', 'Detail Kas/Bank');
-        $coa = false;
 
-        if( !empty($id) ) {
-            $this->loadModel('CashBankAuthMaster');
-            $cash_bank_auth_master = $this->CashBankAuthMaster->getUserApproval($id);
-            $this->set('cash_bank_auth_master', $cash_bank_auth_master);
+        // $this->loadModel('CashBankAuthMaster');
+        // $cash_bank_auth_master = $this->CashBankAuthMaster->getUserApproval($id);
+        // $this->set('cash_bank_auth_master', $cash_bank_auth_master);
 
-            $cash_bank_master_user = $this->CashBankAuthMaster->find('first', array(
-                'conditions' => array(
-                    'CashBankAuthMaster.employe_id' => $this->user_id
-                )
-            ));
-            $this->set('cash_bank_master_user', $cash_bank_master_user);
+        // $cash_bank_master_user = $this->CashBankAuthMaster->find('first', array(
+        //     'conditions' => array(
+        //         'CashBankAuthMaster.employe_id' => $this->user_id
+        //     )
+        // ));
+        // $this->set('cash_bank_master_user', $cash_bank_master_user);
 
-            $cashbank = $this->CashBank->getData('first', array(
-                'conditions' => array(
-                    'CashBank.id' => $id,
+        $cashbank = $this->CashBank->getData('first', array(
+            'conditions' => array(
+                'CashBank.id' => $id,
+            ),
+            'contain' => array(
+                'CashBankDetail' => array(
+                    'Coa'
                 ),
-                'contain' => array(
-                    'CashBankDetail' => array(
-                        'Coa'
+                // 'CashBankAuth' => array(
+                //     'conditions' => array(
+                //         'CashBankAuth.cash_bank_auth_master_id' => !empty($cash_bank_master_user['CashBankAuthMaster']['id']) ? $cash_bank_master_user['CashBankAuthMaster']['id'] : ''
+                //     )
+                // )
+            )
+        ));
+
+        if( !empty($cashbank) ) {
+            $this->loadModel('Employe');
+            $this->loadModel('User');
+            $this->loadModel('Approval');
+
+            // $cashbank_auth_id = Set::extract('/CashBankAuthMaster/employe_id', $cash_bank_auth_master);
+            $user_id = !empty($cashbank['CashBank']['user_id'])?$cashbank['CashBank']['user_id']:false;
+            $document_type = !empty($cashbank['CashBank']['document_type'])?$cashbank['CashBank']['document_type']:false;
+            $document_id = !empty($cashbank['CashBank']['document_id'])?$cashbank['CashBank']['document_id']:false;
+            $debit_total = !empty($cashbank['CashBank']['debit_total'])?$cashbank['CashBank']['debit_total']:0;
+            $credit_total = !empty($cashbank['CashBank']['credit_total'])?$cashbank['CashBank']['credit_total']:0;
+            $receiving_cash_type = !empty($cashbank['CashBank']['receiving_cash_type'])?$cashbank['CashBank']['receiving_cash_type']:false;
+            $nodoc = !empty($cashbank['CashBank']['nodoc'])?$cashbank['CashBank']['nodoc']:false;
+            $document_coa_id = !empty($cashbank['CashBank']['coa_id'])?$cashbank['CashBank']['coa_id']:false;
+            $grand_total = $credit_total + $debit_total;
+            
+            $cashbank = $this->User->getMerge($cashbank, $user_id);
+            $user_employe_id = !empty($cashbank['User']['employe_id'])?$cashbank['User']['employe_id']:false;
+            $cashbank = $this->Employe->getMerge($cashbank, $user_employe_id);
+            $user_position_id = !empty($cashbank['Employe']['group_id'])?$cashbank['Employe']['group_id']:false;
+            $user_otorisasi_approvals = $this->Approval->getUserOtorisasiApproval('cash-bank', $user_position_id, $grand_total, $id);
+            $position_approval = $this->Approval->getPositionPriority($user_otorisasi_approvals);
+            $position_priority = !empty($position_approval['Priority'])?$position_approval['Priority']:false;
+            $position_normal = !empty($position_approval['Normal'])?$position_approval['Normal']:false;
+
+            if( !empty($user_otorisasi_approvals) ) {
+                $position_otorisasi_approvals = Set::extract('/EmployePosition/id', $user_otorisasi_approvals);
+            } else {
+                $position_otorisasi_approvals = array();
+            }
+
+            $approval = $this->user_data;
+            $approval_employe_id = !empty($approval['employe_id'])?$approval['employe_id']:false;
+            $approval = $this->Employe->getMerge($approval, $approval);
+            $approval_position_id = !empty($approval['Employe']['group_id'])?$approval['Employe']['group_id']:false;
+            $idx_arr_otorisasi = array_search($approval_position_id, $position_otorisasi_approvals);
+            $show_approval = false;
+
+            if( is_numeric($idx_arr_otorisasi) && !empty($user_otorisasi_approvals[$idx_arr_otorisasi]) ) {
+                $dataOtorisasiApproval = $user_otorisasi_approvals[$idx_arr_otorisasi];
+                $approval_detail_id = !empty($dataOtorisasiApproval['ApprovalDetailPosition']['approval_detail_id'])?$dataOtorisasiApproval['ApprovalDetailPosition']['approval_detail_id']:0;
+                $approval_detail_position_id = !empty($dataOtorisasiApproval['ApprovalDetailPosition']['id'])?$dataOtorisasiApproval['ApprovalDetailPosition']['id']:0;
+                $approvalDetail = $this->Approval->ApprovalDetail->getData('first', array(
+                    'conditions' => array(
+                        'ApprovalDetail.id' => $approval_detail_id,
                     ),
-                    'CashBankAuth' => array(
+                ));
+                $approval_id = !empty($approvalDetail['ApprovalDetail']['approval_id'])?$approvalDetail['ApprovalDetail']['approval_id']:false;
+                $auth = $this->CashBank->CashBankAuth->getData('first', array(
+                    'conditions' => array(
+                        'CashBankAuth.cash_bank_id' => $id,
+                        'CashBankAuth.approval_id' => $approval_id,
+                        'CashBankAuth.approval_detail_id' => $approval_detail_id,
+                        'CashBankAuth.approval_detail_position_id' => $approval_detail_position_id,
+                    ),
+                ));
+
+                if( empty($auth) ) {
+                    $show_approval = in_array($approval_position_id, $position_otorisasi_approvals)?true:false;
+                }
+            }
+
+            if( !empty($this->request->data) ){
+                if( !empty($show_approval) ){
+                    $data = $this->request->data;
+                    $is_priority = !empty($dataOtorisasiApproval['ApprovalDetailPosition']['is_priority'])?$dataOtorisasiApproval['ApprovalDetailPosition']['is_priority']:false;
+                    $group_id = !empty($dataOtorisasiApproval['ApprovalDetailPosition']['group_id'])?$dataOtorisasiApproval['ApprovalDetailPosition']['group_id']:false;
+                    $status_document = !empty($data['CashBankAuth']['status_document'])?$data['CashBankAuth']['status_document']:false;
+
+                    $data['CashBankAuth']['cash_bank_id'] = $id;
+                    $data['CashBankAuth']['approval_id'] = $approval_id;
+                    $data['CashBankAuth']['approval_detail_id'] = $approval_detail_id;
+                    $data['CashBankAuth']['approval_detail_position_id'] = $approval_detail_position_id;
+
+                    $position_auths = $this->CashBank->CashBankAuth->getData('all', array(
                         'conditions' => array(
-                            'CashBankAuth.cash_bank_auth_master_id' => !empty($cash_bank_master_user['CashBankAuthMaster']['id']) ? $cash_bank_master_user['CashBankAuthMaster']['id'] : ''
-                        )
-                    )
-                )
-            ));
+                            'CashBankAuth.cash_bank_id' => $id,
+                        ),
+                        'contain' => array(
+                            'ApprovalDetailPosition',
+                        ),
+                    ));
+                    $position_priority_auth = array();
+                    $position_normal_auth = array();
 
-            if( !empty($cashbank) ) {
-                $cashbank_auth_id = Set::extract('/CashBankAuthMaster/employe_id', $cash_bank_auth_master);
-                $document_type = !empty($cashbank['CashBank']['document_type'])?$cashbank['CashBank']['document_type']:false;
-                $document_id = !empty($cashbank['CashBank']['document_id'])?$cashbank['CashBank']['document_id']:false;
-                $debit_total = !empty($cashbank['CashBank']['debit_total'])?$cashbank['CashBank']['debit_total']:0;
-                $credit_total = !empty($cashbank['CashBank']['credit_total'])?$cashbank['CashBank']['credit_total']:0;
-                $receiving_cash_type = !empty($cashbank['CashBank']['receiving_cash_type'])?$cashbank['CashBank']['receiving_cash_type']:false;
-                $nodoc = !empty($cashbank['CashBank']['nodoc'])?$cashbank['CashBank']['nodoc']:false;
-                $document_coa_id = !empty($cashbank['CashBank']['coa_id'])?$cashbank['CashBank']['coa_id']:false;
+                    if( !empty($position_auths) ) {
+                        foreach ($position_auths as $key => $value) {
+                            if( !empty($value['ApprovalDetailPosition']['group_id']) ) {
+                                if( !empty($value['ApprovalDetailPosition']['is_priority']) ) {
+                                    $position_priority_auth[] = $value['ApprovalDetailPosition']['group_id'];
+                                } else {
+                                    $position_normal_auth[] = $value['ApprovalDetailPosition']['group_id'];
+                                }
+                            }
+                        }
+                    }
 
-                if(!empty($this->request->data) && !empty($cash_bank_master_user)){
-                    if( in_array($this->user_id, $cashbank_auth_id) ){
-                        $data = $this->request->data;
-                        $data['CashBankAuth']['cash_bank_id'] = $id;
+                    $position_priority_auth = array_values($position_priority_auth);
 
-                        if( !empty($data['CashBankAuth']['status_document']) ) {
-                            $auth = $this->CashBank->CashBankAuth->getData('first', array(
-                                'conditions' => array(
-                                    'CashBankAuth.cash_bank_auth_master_id' => $cash_bank_master_user['CashBankAuthMaster']['id']
-                                ),
-                            ));
+                    if( !empty($is_priority) ) {
+                        $position_priority_auth[] = $group_id;
+                        $position_priority_auth = array_unique($position_priority_auth);
+                    } else {
+                        $position_normal_auth[] = $group_id;
+                        $position_normal_auth = array_unique($position_normal_auth);
+                    }
 
-                            if(empty($auth)){
-                                $this->CashBank->CashBankAuth->create();
-                            }else{
-                                $this->CashBank->CashBankAuth->id = $auth['CashBankAuth']['id'];
+                    if( !empty($status_document) ) {
+                        $this->CashBank->CashBankAuth->create();
+                        $this->CashBank->CashBankAuth->set($data);
+
+                        if($this->CashBank->CashBankAuth->save()){
+                            $data_arr = array();
+
+                            if( $this->MkCommon->checkArrayExists($position_priority_auth, $position_priority) || ( empty($position_priority) && $this->MkCommon->checkArrayExists($position_normal_auth, $position_normal) ) ){
+                                switch ($status_document) {
+                                    case 'approve':
+                                        $data_arr = array(
+                                            'completed' => 1,
+                                            'is_revised' => 0,
+                                            'is_rejected' => 0
+                                        );
+                                        break;
+                                    case 'revise':
+                                        $data_arr = array(
+                                            'completed' => 0,
+                                            'is_revised' => 1,
+                                            'is_rejected' => 0
+                                        );
+                                        break;
+                                    case 'reject':
+                                        $data_arr = array(
+                                            'completed' => 0,
+                                            'is_revised' => 0,
+                                            'is_rejected' => 1
+                                        );
+                                        break;
+                                }
+                            }else if($status_document == 'revise'){
+                                $data_arr = array(
+                                    'is_revised' => 1,
+                                );
                             }
 
-                            $this->CashBank->CashBankAuth->set($data);
-
-                            if($this->CashBank->CashBankAuth->save()){
-                                $status_document = !empty($data['CashBankAuth']['status_document'])?$data['CashBankAuth']['status_document']:false;
-
-                                if($cash_bank_master_user['CashBankAuthMaster']['level'] == 1){
-                                    $data_arr = array();
-
-                                    switch ($status_document) {
-                                        case 'approve':
-                                            $data_arr = array(
-                                                'completed' => 1,
-                                                'is_revised' => 0,
-                                                'is_rejected' => 0
-                                            );
-                                            break;
-                                        case 'revise':
-                                            $data_arr = array(
-                                                'completed' => 0,
-                                                'is_revised' => 1,
-                                                'is_rejected' => 0
-                                            );
-                                            break;
-                                        case 'reject':
-                                            $data_arr = array(
-                                                'completed' => 0,
-                                                'is_revised' => 0,
-                                                'is_rejected' => 1
-                                            );
-                                            break;
-                                    }
-                                }else{
-                                    $cashBankmaster = $this->CashBank->CashBankAuth->getData('first', array(
-                                        'conditions' => array(
-                                            'CashBankAuth.cash_bank_id' => $id
-                                        ),
-                                        'contain' => array(
-                                            'CashBankAuthMaster' => array(
-                                                'conditions' => array(
-                                                    'CashBankAuthMaster.level' => 4
-                                                )
-                                            )
-                                        )
-                                    ));
-                                    
-                                    if(empty($cashBankmaster['CashBankAuthMaster']['id'])){
-                                        if($status_document == 'revise'){
-                                            $data_arr = array(
-                                                'is_revised' => 1,
-                                            );
-                                        }
-                                    }
-                                }
-
+                            if( !empty($data_arr) ) {
                                 $this->CashBank->id = $id;
                                 $this->CashBank->set($data_arr);
 
@@ -664,199 +722,202 @@ class CashbanksController extends AppController {
                                         }
                                     }
                                 }
-
-                                $this->MkCommon->setCustomFlash('Berhasil melakukan Approval Kas/Bank.', 'success');
-                                $this->Log->logActivity( sprintf(__('Berhasil melakukan %s Kas/Bank #%s'), $status_document, $id), $this->user_data, $this->RequestHandler, $this->params );
-                            }else{
-                                $this->MkCommon->setCustomFlash('Gagal melakukan Approval Kas/Bank.', 'error');
-                                $this->Log->logActivity( sprintf(__('Berhasil melakukan %s Kas/Bank #%s'), $status_document, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                             }
+
+                            $this->MkCommon->setCustomFlash('Berhasil melakukan Approval Kas/Bank.', 'success');
+                            $this->Log->logActivity( sprintf(__('Berhasil melakukan %s Kas/Bank #%s'), $status_document, $id), $this->user_data, $this->RequestHandler, $this->params );
                         }else{
-                            $this->MkCommon->setCustomFlash('Silahkan pilih Status Approval', 'error');
+                            $this->MkCommon->setCustomFlash('Gagal melakukan Approval Kas/Bank.', 'error');
+                            $this->Log->logActivity( sprintf(__('Berhasil melakukan %s Kas/Bank #%s'), $status_document, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                         }
                     }else{
-                        $this->MkCommon->setCustomFlash('Anda tidak mempunyai hak untuk mengakses kontent tersebut.', 'error');
+                        $this->MkCommon->setCustomFlash('Silahkan pilih Status Approval', 'error');
                     }
-
-                    $this->redirect($this->referer());
                 }else{
-                    if(!empty($cashbank['CashBankAuth'][0])){
-                        $this->request->data['CashBankAuth'] = $cashbank['CashBankAuth'][0];
-                    }
+                    $this->MkCommon->setCustomFlash('Anda tidak mempunyai hak untuk mengakses kontent tersebut.', 'error');
                 }
 
-                if(!empty($cashbank['CashBank']['receiver_type'])){
-                    $model = $cashbank['CashBank']['receiver_type'];
-                    $receiver_id = !empty($cashbank['CashBank']['receiver_id'])?$cashbank['CashBank']['receiver_id']:false;
-                    $this->loadModel($model);
+                $this->redirect($this->referer());
+            }else{
+                // if(!empty($cashbank['CashBankAuth'][0])){
+                //     $this->request->data['CashBankAuth'] = $cashbank['CashBankAuth'][0];
+                // }
+            }
 
-                    switch ($model) {
-                        case 'Vendor':
-                            $list_result = $this->Vendor->getData('first', array(
-                                'conditions' => array(
-                                    'Vendor.id' => $receiver_id,
-                                )
-                            ));
-                            break;
-                        case 'Employe':
-                            $list_result = $this->Employe->getData('first', array(
-                                'conditions' => array(
-                                    'Employe.id' => $receiver_id,
-                                )
-                            ));
+            if(!empty($cashbank['CashBank']['receiver_type'])){
+                $model = $cashbank['CashBank']['receiver_type'];
+                $receiver_id = !empty($cashbank['CashBank']['receiver_id'])?$cashbank['CashBank']['receiver_id']:false;
+                $this->loadModel($model);
 
-                            break;
-                        default:
-                            $list_result = $this->Customer->getData('first', array(
-                                'conditions' => array(
-                                    'Customer.id' => $receiver_id,
-                                )
-                            ));
-
-                            break;
-                    }
-
-                    if(!empty($list_result)){
-                        $cashbank['CashBank']['receiver'] = $list_result[$model]['name'];
-                    }
-                }
-
-                $cashBankAuth = $this->CashBankAuthMaster->CashBankAuth->find('all', array(
-                    'conditions' => array(
-                        'CashBankAuth.cash_bank_id' => $id,
-                        'CashBankAuthMaster.employe_id' => $this->user_id,
-                    ),
-                    'contain' => array(
-                        'CashBankAuthMaster'
-                    ),
-                ));
-
-                switch ($document_type) {
-                    case 'revenue':
-                        $this->loadModel('Revenue');
-                        $revenue = $this->Revenue->getData('first', array(
+                switch ($model) {
+                    case 'Vendor':
+                        $list_result = $this->Vendor->getData('first', array(
                             'conditions' => array(
-                                'Revenue.id' => $document_id,
-                            ),
-                        ), true, array(
-                            'status' => 'all',
+                                'Vendor.id' => $receiver_id,
+                            )
                         ));
-                        $cashbank = array_merge($cashbank, $revenue);
+                        break;
+                    case 'Employe':
+                        $list_result = $this->Employe->getData('first', array(
+                            'conditions' => array(
+                                'Employe.id' => $receiver_id,
+                            )
+                        ));
+
+                        break;
+                    default:
+                        $list_result = $this->Customer->getData('first', array(
+                            'conditions' => array(
+                                'Customer.id' => $receiver_id,
+                            )
+                        ));
+
                         break;
                 }
-                
-                $this->set('active_menu', 'cash_bank');
-                $this->set('cashBankAuth', $cashBankAuth);                
-                $this->set('cashbank', $cashbank);                
-                $this->set('cashbank_auth_id', $cashbank_auth_id);
-            } else {
-                $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
-                $this->redirect($this->referer());
-            }
-        } 
-    }
 
-    function approval_setting(){
-        $this->loadModel('User');
-        $this->loadModel('CashBankAuthMaster');
-        $cash_bank_auth_master = $this->CashBankAuthMaster->find('all');
-
-        if(!empty($this->request->data)){
-            $data = $this->request->data;
-
-            $validate_auth = true;
-            $user_collect = array();
-            if(!empty($data['CashBankAuthMaster']['employe_id'])){
-                $arr_list_auth = array();
-                foreach ($data['CashBankAuthMaster']['employe_id'] as $key => $value) {
-                    if(!in_array($value, $user_collect) && !empty($value)){
-                        $id = !empty($data['CashBankAuthMaster']['id'][$key]) ? $data['CashBankAuthMaster']['id'][$key] : '';
-                        $arr_list_auth[] = array(
-                            'employe_id' => $value,
-                            'level' => $key+1,
-                            'id' => $id
-                        );
-
-                        array_push($user_collect, $value);
-                    }
+                if(!empty($list_result)){
+                    $cashbank['CashBank']['receiver'] = $list_result[$model]['name'];
                 }
-                $data['CashBankAuthMaster'] = $arr_list_auth;
-            }else{
-                $validate_auth = false;
             }
 
-            if($validate_auth && !empty($user_collect)){
-                if(!empty($data['CashBankAuthMaster'])){
-                    foreach ($data['CashBankAuthMaster'] as $key => $value) {
-                        $id_cash = !empty($value['id'])?$value['id']:false;
+            // $cashBankAuth = $this->CashBankAuthMaster->CashBankAuth->find('all', array(
+            //     'conditions' => array(
+            //         'CashBankAuth.cash_bank_id' => $id,
+            //         'CashBankAuthMaster.employe_id' => $this->user_id,
+            //     ),
+            //     'contain' => array(
+            //         'CashBankAuthMaster'
+            //     ),
+            // ));
 
-                        if(!empty($id_cash)){
-                            $this->CashBankAuthMaster->id = $id_cash;
-                        }else{
-                            $this->CashBankAuthMaster->create();
-                        }
-
-                        $this->CashBankAuthMaster->set($value);
-
-                        if( $this->CashBankAuthMaster->save() ) {
-                            $this->Log->logActivity( sprintf(__('Sukses melakukan setting approval #%s'), $this->CashBankAuthMaster->id), $this->user_data, $this->RequestHandler, $this->params );
-                        } else {
-                            $this->Log->logActivity( sprintf(__('Gagal melakukan setting approval #%s'), $id_cash), $this->user_data, $this->RequestHandler, $this->params, 1 );
-                        }
-                    }
-
-                    $this->MkCommon->setCustomFlash('Sukses melakukan setting approval.', 'success');
-                    $this->redirect(array(
-                        'action' => 'approval_setting'
+            switch ($document_type) {
+                case 'revenue':
+                    $this->loadModel('Revenue');
+                    $revenue = $this->Revenue->getData('first', array(
+                        'conditions' => array(
+                            'Revenue.id' => $document_id,
+                        ),
+                    ), true, array(
+                        'status' => 'all',
                     ));
-                }
-            }else{
-                $this->MkCommon->setCustomFlash('Harap masukkan karyawan yang akan di jadikan approval Kas/Bank.', 'error');
+                    $cashbank = array_merge($cashbank, $revenue);
+                    break;
             }
-        }else{
-            $data = array();
-            if(!empty($cash_bank_auth_master)){
-                foreach ($cash_bank_auth_master as $key => $value) {
-                    $data['CashBankAuthMaster'][] = $value['CashBankAuthMaster'];
-                }
-            }
+
+            $this->set('active_menu', 'cash_bank');
+            // $this->set('cashBankAuth', $cashBankAuth);                
+            // $this->set('cashbank_auth_id', $cashbank_auth_id);
+            $this->set(compact(
+                'user_otorisasi_approvals', 'cashbank',
+                'show_approval'
+            ));
+        } else {
+            $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
+            $this->redirect($this->referer());
         }
-
-        if(!empty($data['CashBankAuthMaster'])){
-            $auth_data = array();
-            foreach ($data['CashBankAuthMaster'] as $key => $value) {
-                $group = $this->User->find('first', array(
-                    'conditions' => array(
-                        'User.id' => $value['employe_id']
-                    ),
-                    'contain' => array(
-                        'Group'
-                    )
-                ));
-
-                if(!empty($group['Group']['name'])){
-                    $group = $group['Group']['name'];
-                }
-                $auth_data['CashBankAuthMaster'][] = array_merge($value, array(
-                    'group' => $group
-                ));
-            }
-
-            $this->set('auth_data', $auth_data);
-        }
-
-        $employes = $this->User->getData('list', array(
-            'conditions' => array(
-                'User.status' => 1,
-            ),
-            'fields' => array(
-                'User.id', 'User.full_name'
-            )
-        ));
-
-        $this->set('active_menu', 'approval_setting');
-        $this->set(compact('employes', 'cash_bank_auth_master'));
     }
+
+    // function approval_setting(){
+    //     $this->loadModel('User');
+    //     $this->loadModel('CashBankAuthMaster');
+    //     $cash_bank_auth_master = $this->CashBankAuthMaster->find('all');
+
+    //     if(!empty($this->request->data)){
+    //         $data = $this->request->data;
+
+    //         $validate_auth = true;
+    //         $user_collect = array();
+    //         if(!empty($data['CashBankAuthMaster']['employe_id'])){
+    //             $arr_list_auth = array();
+    //             foreach ($data['CashBankAuthMaster']['employe_id'] as $key => $value) {
+    //                 if(!in_array($value, $user_collect) && !empty($value)){
+    //                     $id = !empty($data['CashBankAuthMaster']['id'][$key]) ? $data['CashBankAuthMaster']['id'][$key] : '';
+    //                     $arr_list_auth[] = array(
+    //                         'employe_id' => $value,
+    //                         'level' => $key+1,
+    //                         'id' => $id
+    //                     );
+
+    //                     array_push($user_collect, $value);
+    //                 }
+    //             }
+    //             $data['CashBankAuthMaster'] = $arr_list_auth;
+    //         }else{
+    //             $validate_auth = false;
+    //         }
+
+    //         if($validate_auth && !empty($user_collect)){
+    //             if(!empty($data['CashBankAuthMaster'])){
+    //                 foreach ($data['CashBankAuthMaster'] as $key => $value) {
+    //                     $id_cash = !empty($value['id'])?$value['id']:false;
+
+    //                     if(!empty($id_cash)){
+    //                         $this->CashBankAuthMaster->id = $id_cash;
+    //                     }else{
+    //                         $this->CashBankAuthMaster->create();
+    //                     }
+
+    //                     $this->CashBankAuthMaster->set($value);
+
+    //                     if( $this->CashBankAuthMaster->save() ) {
+    //                         $this->Log->logActivity( sprintf(__('Sukses melakukan setting approval #%s'), $this->CashBankAuthMaster->id), $this->user_data, $this->RequestHandler, $this->params );
+    //                     } else {
+    //                         $this->Log->logActivity( sprintf(__('Gagal melakukan setting approval #%s'), $id_cash), $this->user_data, $this->RequestHandler, $this->params, 1 );
+    //                     }
+    //                 }
+
+    //                 $this->MkCommon->setCustomFlash('Sukses melakukan setting approval.', 'success');
+    //                 $this->redirect(array(
+    //                     'action' => 'approval_setting'
+    //                 ));
+    //             }
+    //         }else{
+    //             $this->MkCommon->setCustomFlash('Harap masukkan karyawan yang akan di jadikan approval Kas/Bank.', 'error');
+    //         }
+    //     }else{
+    //         $data = array();
+    //         if(!empty($cash_bank_auth_master)){
+    //             foreach ($cash_bank_auth_master as $key => $value) {
+    //                 $data['CashBankAuthMaster'][] = $value['CashBankAuthMaster'];
+    //             }
+    //         }
+    //     }
+
+    //     if(!empty($data['CashBankAuthMaster'])){
+    //         $auth_data = array();
+    //         foreach ($data['CashBankAuthMaster'] as $key => $value) {
+    //             $group = $this->User->find('first', array(
+    //                 'conditions' => array(
+    //                     'User.id' => $value['employe_id']
+    //                 ),
+    //                 'contain' => array(
+    //                     'Group'
+    //                 )
+    //             ));
+
+    //             if(!empty($group['Group']['name'])){
+    //                 $group = $group['Group']['name'];
+    //             }
+    //             $auth_data['CashBankAuthMaster'][] = array_merge($value, array(
+    //                 'group' => $group
+    //             ));
+    //         }
+
+    //         $this->set('auth_data', $auth_data);
+    //     }
+
+    //     $employes = $this->User->getData('list', array(
+    //         'conditions' => array(
+    //             'User.status' => 1,
+    //         ),
+    //         'fields' => array(
+    //             'User.id', 'User.full_name'
+    //         )
+    //     ));
+
+    //     $this->set('active_menu', 'approval_setting');
+    //     $this->set(compact('employes', 'cash_bank_auth_master'));
+    // }
 
     function settings(){
         $this->loadModel('CashBankSetting');

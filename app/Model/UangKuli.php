@@ -200,7 +200,7 @@ class UangKuli extends AppModel {
                 $uangKuliMuat['UangKuli']['uang_kuli'] = $uangKuliMuat['UangKuliCapacity'][0]['uang_kuli'];
                 $uangKuliMuat['UangKuli']['capacity'] = $uangKuliMuat['UangKuliCapacity'][0]['capacity'];
             } else {
-                $uangKuliMuat['UangKuli']['uang_kuli'] = 0;
+                $uangKuliMuat['UangKuli']['uang_kuli'] = !empty($uangKuliMuat['UangKuli']['uang_kuli'])?$uangKuliMuat['UangKuli']['uang_kuli']:0;
             }
         }
 
@@ -209,7 +209,7 @@ class UangKuli extends AppModel {
                 $uangKuliBongkar['UangKuli']['uang_kuli'] = $uangKuliBongkar['UangKuliCapacity'][0]['uang_kuli'];
                 $uangKuliBongkar['UangKuli']['capacity'] = $uangKuliBongkar['UangKuliCapacity'][0]['capacity'];
             } else {
-                $uangKuliBongkar['UangKuli']['uang_kuli'] = 0;
+                $uangKuliBongkar['UangKuli']['uang_kuli'] = !empty($uangKuliBongkar['UangKuli']['uang_kuli'])?$uangKuliBongkar['UangKuli']['uang_kuli']:0;
             }
         }
 

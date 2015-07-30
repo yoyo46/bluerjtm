@@ -15,13 +15,13 @@
                         'class' => 'btn btn-app pull-right'
                     ));
 
-                    echo $this->Html->link('<i class="fa fa-user"></i> Posisi Karyawan', array(
-                        'controller' => 'users',
-                        'action' => 'employe_positions'
-                    ), array(
-                        'escape' => false,
-                        'class' => 'btn btn-app pull-right'
-                    ));
+                    // echo $this->Html->link('<i class="fa fa-user"></i> Posisi Karyawan', array(
+                    //     'controller' => 'users',
+                    //     'action' => 'employe_positions'
+                    // ), array(
+                    //     'escape' => false,
+                    //     'class' => 'btn btn-app pull-right'
+                    // ));
             ?>
         </div>
     </div><!-- /.box-header -->

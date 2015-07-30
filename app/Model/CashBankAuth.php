@@ -8,12 +8,42 @@ class CashBankAuth extends AppModel {
                 'message' => 'COA harap dipilih'
             ),
         ),
+        'approval_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Anda tidak mempunyai hak untuk mengakses kontent tersebut.'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'Anda tidak mempunyai hak untuk mengakses kontent tersebut.'
+            ),
+        ),
+        'approval_detail_id' => array(
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'Anda tidak mempunyai hak untuk mengakses kontent tersebut.'
+            ),
+        ),
+        'approval_detail_position_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Anda tidak mempunyai hak untuk mengakses kontent tersebut.'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'Anda tidak mempunyai hak untuk mengakses kontent tersebut.'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(
-        'CashBankAuthMaster' => array(
-            'className' => 'CashBankAuthMaster',
-            'foreignKey' => 'cash_bank_auth_master_id',
+        // 'CashBankAuthMaster' => array(
+        //     'className' => 'CashBankAuthMaster',
+        //     'foreignKey' => 'cash_bank_auth_master_id',
+        // ),
+        'ApprovalDetailPosition' => array(
+            'className' => 'ApprovalDetailPosition',
+            'foreignKey' => 'approval_detail_position_id',
         )
 	);
 

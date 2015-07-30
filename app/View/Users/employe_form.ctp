@@ -30,9 +30,9 @@
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('employe_position_id',__('Posisi Karyawan *')); 
+				echo $this->Form->label('group_id',__('Posisi Karyawan *')); 
 
-				echo $this->Form->input('employe_position_id',array(
+				echo $this->Form->input('group_id',array(
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,

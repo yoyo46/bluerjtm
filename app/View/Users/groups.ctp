@@ -7,7 +7,7 @@
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Group', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Posisi Karyawan', array(
                         'controller' => 'users',
                         'action' => 'group_add'
                     ), array(
@@ -28,7 +28,7 @@
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>
-                <th>Group</th>
+                <th>Posisi</th>
                 <th>Dibuat</th>
                 <th>Action</th>
             </tr>
@@ -58,7 +58,7 @@
                                 $id
                             ), array(
                                 'class' => 'btn btn-danger btn-xs'
-                            ), __('Anda yakin ingin menghapus group user ini?'));
+                            ), __('Anda yakin ingin menghapus posisi karyawan ini?'));
 
                             if( $id != 1 ) {
                                 echo $this->Html->link('Otorisasi', array(

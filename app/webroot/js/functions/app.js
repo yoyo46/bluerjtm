@@ -89,7 +89,11 @@ $(function() {
     $("[data-widget='remove']").click(function() {
         //Find the box parent        
         var box = $(this).parents(".box").first();
-        box.slideUp();
+        box.slideUp( "slow", function() {
+            box.remove();
+        });
+
+        return false;
     });
 
     /* Sidebar tree view */

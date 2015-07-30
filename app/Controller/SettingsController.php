@@ -4647,4 +4647,257 @@ class SettingsController extends AppController {
 
         $this->redirect($this->referer());
     }
+
+    function saveApprovalDetail ( $data, $approval_id = 0 ) {
+        $result = true;
+
+        if( isset($data['ApprovalDetail']['min_amount']) ) {
+            $this->loadModel('ApprovalDetail');
+
+            foreach ($data['ApprovalDetail']['min_amount'] as $key => $min_amount) {
+                $min_amount = !empty($min_amount)?$this->MkCommon->convertPriceToString($min_amount, 0):0;
+                $max_amount = !empty($data['ApprovalDetail']['max_amount'][$key])?$this->MkCommon->convertPriceToString($data['ApprovalDetail']['max_amount'][$key], 0):0;
+                
+                if( $min_amount <= $max_amount || empty($max_amount) ) {
+                    $dataDetail['ApprovalDetail'] = array(
+                        'min_amount' => $min_amount,
+                        'max_amount' => $max_amount,
+                        'approval_id' => $approval_id,
+                    );
+
+                    $this->ApprovalDetail->create();
+                    $this->ApprovalDetail->set($dataDetail);
+
+                    if( !empty($approval_id) ) {
+                        $flagSave = $this->ApprovalDetail->save();
+                        $approval_detail_id = $this->ApprovalDetail->id;
+                    } else {
+                        $flagSave = $this->ApprovalDetail->validates();
+                        $approval_detail_id = 0;
+                    }
+
+                    if( !$flagSave ) {
+                        $result = false;
+                    } else {
+                        if( !empty($data['ApprovalDetailPosition']['group_id'][$key]) ) {
+                            $this->loadModel('ApprovalDetailPosition');
+
+                            if( !empty($approval_detail_id) ) {
+                                $this->Approval->ApprovalDetail->ApprovalDetailPosition->updateAll( array(
+                                    'ApprovalDetailPosition.status' => 0,
+                                ), array(
+                                    'ApprovalDetailPosition.approval_detail_id' => $approval_detail_id,
+                                ));
+                            }
+
+                            foreach ($data['ApprovalDetailPosition']['group_id'][$key] as $idx => $group_id) {
+                                $is_priority = !empty($data['ApprovalDetailPosition']['is_priority'][$key][$idx])?$data['ApprovalDetailPosition']['is_priority'][$key][$idx]:'';
+                                
+                                $dataUser['ApprovalDetailPosition'] = array(
+                                    'is_priority' => $is_priority,
+                                    'group_id' => $group_id,
+                                    'approval_detail_id' => $approval_detail_id,
+                                );
+
+                                $this->ApprovalDetailPosition->create();
+                                $this->ApprovalDetailPosition->set($dataUser);
+
+                                if( !empty($approval_detail_id) ) {
+                                    $flagSave = $this->ApprovalDetailPosition->save();
+                                } else {
+                                    $flagSave = $this->ApprovalDetailPosition->validates();
+                                }
+
+                                if( !$flagSave ) {
+                                    $result = false;
+                                }
+                            }
+                        } else {
+                            $result = false;
+                        }
+                    }
+                } else {
+                    $result = array(
+                        'status' => 0,
+                        'msg' => __('Nominal transaksi tidak boleh lebih besar dari maksimalnya'),
+                    );
+                }
+            }
+        } else {
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    function approval_setting(){
+        $this->loadModel('Approval');
+        $options = array();
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['module'])){
+                $name = urldecode($refine['module']);
+                $this->request->data['Approval']['module'] = $name;
+                $options['conditions']['ApprovalModule.name LIKE '] = '%'.$name.'%';
+            }
+            if(!empty($refine['position'])){
+                $name = urldecode($refine['position']);
+                $this->request->data['Approval']['position'] = $name;
+                $options['conditions']['EmployePosition.name LIKE '] = '%'.$name.'%';
+            }
+        }
+
+        $this->paginate = $this->Approval->getData('paginate', $options);
+        $approvals = $this->paginate('Approval');
+
+        $this->set('active_menu', 'approval_setting');
+        $this->set('sub_module_title', __('Pengaturan Approval'));
+        $this->set('approvals', $approvals);
+    }
+
+    function approval_setting_add(){
+        $this->loadModel('Approval');
+        $this->set('sub_module_title', __('Tambah Pengaturan Approval'));
+        $this->doApproval();
+    }
+
+    function approval_setting_edit( $id ){
+        $this->loadModel('Approval');
+        $this->set('sub_module_title', __('Edit Pengaturan Approval'));
+        $approval = $this->Approval->getData('first', array(
+            'conditions' => array(
+                'Approval.id' => $id
+            ),
+        ));
+
+        if(!empty($approval)){
+            $this->doApproval($id, $approval);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Pengaturan approval tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'approval_setting'
+            ));
+        }
+    }
+
+    function doApproval( $id = false, $approval = false ){
+        $this->loadModel('ApprovalModule');
+        $this->loadModel('EmployePosition');
+
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            $error_message = __('Gagal menyimpan pengaturan approval.');
+
+            if( !empty($id) ) {
+                $this->Approval->id = $id;
+                $msg = __('merubah');
+            } else {
+                $this->Approval->create();
+                $msg = __('membuat');
+            }
+
+            $this->Approval->set($data);
+
+            $validate_approval = $this->Approval->validates();
+            $validate_approval_detail = $this->saveApprovalDetail($data);
+
+            if( is_array($validate_approval_detail) ) {
+                $error_message = !empty($validate_approval_detail['msg'])?$validate_approval_detail['msg']:$error_message;
+                $validate_approval_detail = !empty($validate_approval_detail['status'])?$validate_approval_detail['status']:false;
+            }
+
+            if( $validate_approval && $validate_approval_detail ){
+                if( $this->Approval->save() ){
+                    $approval_id = $this->Approval->id;
+                    $this->Approval->ApprovalDetail->updateAll( array(
+                        'ApprovalDetail.status' => 0,
+                    ), array(
+                        'ApprovalDetail.approval_id' => $approval_id,
+                    ));
+
+                    $validate_approval_detail = $this->saveApprovalDetail($data, $approval_id);
+
+                    $this->Log->logActivity( sprintf(__('Berhasil %s data approval ID #%s'), $msg, $approval_id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->MkCommon->setCustomFlash('Berhasil melakukan pengaturan approval.', 'success');
+                    $this->redirect(array(
+                        'action' => 'approval_setting'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash($error_message, 'error');
+                }
+            }else{
+                $this->MkCommon->setCustomFlash($error_message, 'error');
+            }
+        } else if( !empty($approval) ) {
+            $this->request->data = $approval;
+            $approval = $this->Approval->ApprovalDetail->getMerge($approval, $id);
+
+            if( !empty($approval['ApprovalDetail']) ) {
+                foreach ($approval['ApprovalDetail'] as $key => $value) {
+                    $approval_detail_id = !empty($value['ApprovalDetail']['id'])?$value['ApprovalDetail']['id']:false;
+                    $min_amount = !empty($value['ApprovalDetail']['min_amount'])?$value['ApprovalDetail']['min_amount']:false;
+                    $max_amount = !empty($value['ApprovalDetail']['max_amount'])?$value['ApprovalDetail']['max_amount']:false;
+                    $approvalDetailPosition = $this->Approval->ApprovalDetail->ApprovalDetailPosition->getMerge($value, $approval_detail_id);
+
+                    $this->request->data['ApprovalDetail']['min_amount'][$key] = $min_amount;
+                    $this->request->data['ApprovalDetail']['max_amount'][$key] = $max_amount;
+
+                    if( !empty($approvalDetailPosition['ApprovalDetailPosition']) ) {
+                        foreach ($approvalDetailPosition['ApprovalDetailPosition'] as $key_user => $approvalPosition) {
+                            $group_id = !empty($approvalPosition['ApprovalDetailPosition']['group_id'])?$approvalPosition['ApprovalDetailPosition']['group_id']:false;
+                            $is_priority = !empty($approvalPosition['ApprovalDetailPosition']['is_priority'])?$approvalPosition['ApprovalDetailPosition']['is_priority']:false;
+
+                            $this->request->data['ApprovalDetailPosition']['group_id'][$key][$key_user] = $group_id;
+                            $this->request->data['ApprovalDetailPosition']['is_priority'][$key][$key_user] = $is_priority;
+                        }
+                    }
+                }
+            }
+        }
+
+        $approvalModules = $this->ApprovalModule->find('list', array(
+            'conditions' => array(
+                'ApprovalModule.status' => 1,
+            ),
+            'order' => array(
+                'ApprovalModule.name' => 'ASC',
+            ),
+        ));
+        $employePositions = $this->EmployePosition->getData('list');
+
+        $this->set('active_menu', 'approval_setting');
+        $this->set(compact(
+            'approvalModules', 'employePositions'
+        ));
+        $this->render('approval_setting_form');
+    }
+
+    function approval_setting_toggle( $id = false ){
+        $this->loadModel('Approval');
+        $locale = $this->Approval->getData('first', array(
+            'conditions' => array(
+                'Approval.id' => $id
+            )
+        ));
+
+        if($locale){
+            $this->Approval->id = $id;
+            $this->Approval->set('status', 0);
+
+            if($this->Approval->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses menghapus data approval.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses menghapus data approval ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal menghapus data approval_id.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal menghapus data approval ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Data tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
 }

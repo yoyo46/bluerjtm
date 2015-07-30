@@ -643,8 +643,8 @@ class UsersController extends AppController {
             }
             if(!empty($refine['position'])){
                 $position = urldecode($refine['position']);
-                $this->request->data['Employe']['employe_position_id'] = $position;
-                $options['conditions']['Employe.employe_position_id'] = $position;
+                $this->request->data['Employe']['group_id'] = $position;
+                $options['conditions']['Employe.group_id'] = $position;
             }
             if(!empty($refine['phone'])){
                 $phone = urldecode($refine['phone']);

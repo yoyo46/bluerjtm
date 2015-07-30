@@ -519,5 +519,19 @@ class MkCommonComponent extends Component {
         }
         return false;
     }
+
+    function checkArrayExists ( $arrKey, $arrayFind ) {
+        if( !empty($arrKey) ) {
+            foreach ($arrKey as $key => $value) {
+                if( !in_array($value, $arrayFind) ) {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+
+        return true;
+    }
 }
 ?>

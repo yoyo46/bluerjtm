@@ -21,8 +21,8 @@ class RjUserComponent extends Component {
 				if( !empty($refine['Employe']['name']) ) {
 					$refine_conditions['Employe']['name'] = $refine['Employe']['name'];
 				}
-				if( !empty($refine['Employe']['employe_position_id']) ) {
-					$refine_conditions['Employe']['position'] = $refine['Employe']['employe_position_id'];
+				if( !empty($refine['Employe']['group_id']) ) {
+					$refine_conditions['Employe']['position'] = $refine['Employe']['group_id'];
 				}
 				if( !empty($refine['Employe']['phone']) ) {
 					$refine_conditions['Employe']['phone'] = $refine['Employe']['phone'];

@@ -68,6 +68,15 @@ body > .header {
 .relative {
   position: relative;
 }
+
+.range-text:before {
+  content: "s/d";
+  position: absolute;
+  top: 7px;
+  left: -9px;
+  font-weight: bold;
+}
+
 @media screen and (min-width: 992px) {
   .left-side {
     top: 50px;
@@ -587,6 +596,11 @@ body > .header .logo .icon {
     right: 0;
     float: none;
     background: #efefef;
+  }
+
+  .range-text:before {
+    top: -11px;
+    left: 50%;
   }
 }
 @media (max-width: 767px) {

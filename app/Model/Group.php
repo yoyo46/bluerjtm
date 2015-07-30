@@ -63,5 +63,21 @@ class Group extends AppModel {
         }
         return $result;
     }
+
+    function getMerge( $data, $id ){
+        if(empty($data['Group'])){
+            $data_merge = $this->find('first', array(
+                'conditions' => array(
+                    'Group.id' => $id
+                ),
+            ));
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

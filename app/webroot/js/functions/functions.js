@@ -940,13 +940,13 @@ var add_custom_field = function( obj ){
                     </div> \
                     <div class="box-body"> \
                         <div class="form-group"> \
-                            <label for="CashBankDetailMinAmount'+count_next+'">Range Jumlah Approval *</label> \
+                            <label for="ApprovalDetailMinAmount'+count_next+'">Range Jumlah Approval *</label> \
                             <div class="row"> \
                                 <div class="col-sm-6"> \
-                                    <input name="data[CashBankDetail][min_amount]['+count_next+']" class="form-control" placeholder="Jumlah dari" type="text" id="CashBankDetailMinAmount'+count_next+'"> \
+                                    <input name="data[ApprovalDetail][min_amount]['+count_next+']" class="form-control input_price" placeholder="Jumlah dari" type="text" id="ApprovalDetailMinAmount'+count_next+'"> \
                                 </div> \
                                 <div class="col-sm-6"> \
-                                    <input name="data[CashBankDetail][max_amount]['+count_next+']" class="form-control" placeholder="Sampai Jumlah" type="text" id="CashBankDetailMaxAmount'+count_next+'"> \
+                                    <input name="data[ApprovalDetail][max_amount]['+count_next+']" class="form-control input_price" placeholder="Sampai Jumlah" type="text" id="ApprovalDetailMaxAmount'+count_next+'"> \
                                 </div> \
                             </div> \
                         </div> \
@@ -957,7 +957,6 @@ var add_custom_field = function( obj ){
                             <thead> \
                                 <tr> \
                                     <th>Nama Approval</th> \
-                                    <th>Grup</th> \
                                     <th class="text-center">Approval Prioritas</th> \
                                     <th class="text-center">Action</th> \
                                 </tr> \
@@ -965,21 +964,11 @@ var add_custom_field = function( obj ){
                             <tbody class="cashbanks-auth-table"> \
                                 <tr class="cash-auth-row" id="cash-auth" rel="0"> \
                                     <td> \
-                                        <div class="col-sm-10"> \
-                                            '+tempContent+' \
-                                            <input type="hidden" name="data[CashBankAuthMaster][id]['+count_next+'][]" id="CashBankAuthMasterId'+count_next+'"> \
-                                        </div> \
-                                        <div class="col-sm-2"> \
-                                            <a href="/ajax/getUserEmploye/0" class="btn bg-maroon ajaxModal" title="Data Karyawan" data-action="browse-form" data-change="cash-bank-auth-user-0"><i class="fa fa-search"></i></a> \
-                                        </div> \
-                                        <div class="clear"></div> \
-                                    </td> \
-                                    <td class="group_auth text-center"> \
-                                        - \
+                                        '+tempContent+' \
                                     </td> \
                                     <td class="text-center"> \
                                         <label> \
-                                            <input type="hidden" name="data[CashBankAuthMaster][is_priority]['+count_next+'][]" id="CashBankAuthMasterIsPriority'+count_next+'" value="0"><input type="checkbox" name="data[CashBankAuthMaster][is_priority]['+count_next+'][]" value="1" id="CashBankAuthMasterIsPriority'+count_next+'"> \
+                                            <input type="hidden" name="data[ApprovalDetailPosition][is_priority]['+count_next+'][]" id="ApprovalDetailPositionIsPriority'+count_next+'" value="0"><input type="checkbox" name="data[ApprovalDetailPosition][is_priority]['+count_next+'][]" value="1" id="ApprovalDetailPositionIsPriority'+count_next+'"> \
                                         </label> \
                                     </td> \
                                     <td class="action text-center"> \
@@ -996,14 +985,24 @@ var add_custom_field = function( obj ){
                 var objParentTable = '.wrapper-approval-setting[rel="'+count_next+'"]';
                 var objParentTr = objParentTable + ' #cash-auth[rel="0"]';
 
-                $(objParentTr+' .cash-bank-auth-user').addClass('cash-bank-auth-user-0');
-                $(objParentTr+' .cash-bank-auth-user').attr('name', 'data[CashBankAuthMaster][employe_id]['+count_next+'][]');
+                $(objParentTr+' .approval-position').addClass('approval-position-0');
+                $(objParentTr+' .approval-position').attr('name', 'data[ApprovalDetailPosition][group_id]['+count_next+'][]');
 
-                set_auth_cash_bank( objParentTr+' .cash-bank-auth-user' );
                 delete_custom_field( $(objParentTr+' .delete-custom-field') );
                 add_custom_field( $(objParentTable+' .add-custom-field') );
                 ajaxModal( $(objParentTr+' .ajaxModal') );
+                input_price( $(objParentTable+' .input_price') );
                 pickData();
+
+                $(objParentTable+' [data-widget="remove"]').click(function() {
+                    //Find the box parent        
+                    var box = $(this).parents(".box").first();
+                    box.slideUp( "slow", function() {
+                        box.remove();
+                    });
+
+                    return false;
+                });
             break;
             case 'auth-cash-bank-user-approval':
                 var parent = self.parents('.wrapper-approval-setting');
@@ -1013,19 +1012,11 @@ var add_custom_field = function( obj ){
                 var tempContent = $('#form-authorize').html();
                 var content = '<tr class="cash-auth-row" id="cash-auth" rel="'+count_next+'"> \
                     <td> \
-                        <div class="col-sm-10">'+
-                            tempContent +
-                            '<input type="hidden" name="data[CashBankAuthMaster][id]['+rel+'][]" id="CashBankAuthMasterId'+rel+count_next+'"> \
-                        </div> \
-                        <div class="col-sm-2"> \
-                            <a href="/ajax/getUserEmploye/'+count_next+'/" class="btn bg-maroon ajaxModal" title="Data Karyawan" data-action="browse-form" data-change="cash-bank-auth-user-'+count_next+'"><i class="fa fa-search"></i></a> \
-                        </div> \
-                        <div class="clear"></div> \
+                        '+tempContent+' \
                     </td> \
-                    <td class="group_auth text-center">-</td> \
                     <td class="text-center"> \
                         <label> \
-                            <input type="checkbox" name="data[CashBankAuthMaster][is_priority]['+rel+'][]" value="1" id="CashBankAuthMaster'+rel+count_next+'"> \
+                            <input type="checkbox" name="data[ApprovalDetailPosition][is_priority]['+rel+'][]" value="1" id="ApprovalDetailPosition'+rel+count_next+'"> \
                         </label> \
                     </td> \
                     <td class="action text-center"> \
@@ -1037,10 +1028,9 @@ var add_custom_field = function( obj ){
                 var objParentTr = '#cash-auth[rel="'+count_next+'"]';
 
                 objParentTable.append(content);
-                $(objParentTr+' .cash-bank-auth-user').addClass('cash-bank-auth-user-'+count_next);
-                $(objParentTr+' .cash-bank-auth-user').attr('name', 'data[CashBankAuthMaster][employe_id]['+rel+'][]');
+                $(objParentTr+' .approval-position').addClass('approval-position-'+count_next);
+                $(objParentTr+' .approval-position').attr('name', 'data[ApprovalDetailPosition][group_id]['+rel+'][]');
 
-                set_auth_cash_bank( objParentTr+' .cash-bank-auth-user' );
                 delete_custom_field( $(objParentTr+' .delete-custom-field') );
                 ajaxModal( $(objParentTr+' .ajaxModal') );
                 pickData();

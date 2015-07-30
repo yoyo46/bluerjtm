@@ -20,7 +20,7 @@ class Employe extends AppModel {
                 'message' => 'No. Telepon harap diisi'
             ),
         ),
-        'employe_position_id' => array(
+        'group_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Posisi Karyawan harap diisi'
@@ -29,9 +29,9 @@ class Employe extends AppModel {
 	);
 
     var $belongsTo = array(
-        'EmployePosition' => array(
-            'className' => 'EmployePosition',
-            'foreignKey' => 'employe_position_id',
+        'Group' => array(
+            'className' => 'Group',
+            'foreignKey' => 'group_id',
         ),
     );
 
@@ -73,5 +73,20 @@ class Employe extends AppModel {
         return $result;
     }
 
+    function getMerge( $data, $id ){
+        if(empty($data['Employe'])){
+            $data_merge = $this->getData('first', array(
+                'conditions' => array(
+                    'Employe.id' => $id
+                ),
+            ));
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

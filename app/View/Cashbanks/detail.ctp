@@ -148,7 +148,7 @@
         </div>
     </div>
     <?php
-        if(!empty($cash_bank_auth_master)){
+        if(!empty($user_otorisasi_approvals)){
     ?>
     <div class="col-sm-12" id="list-approval">
         <div class="box box-success">
@@ -163,23 +163,57 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th><?php echo __('Nama');?></th>
-                            <th><?php echo __('Group');?></th>
-                            <th width="10%" class="text-center"><?php echo __('level Otorisasi');?></th>
+                            <th><?php echo __('Posisi yang menyetujui');?></th>
+                            <th class="text-center"><?php echo __('Prioritas Approval');?></th>
                             <th class="text-center"><?php echo __('Status');?></th>
                             <th><?php echo __('Keterangan');?></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                            foreach ($cash_bank_auth_master as $key => $value) {
+                                foreach ($user_otorisasi_approvals as $key => $value) {
+                                    $position_name = !empty($value['EmployePosition']['name'])?$value['EmployePosition']['name']:false;
+                                    $is_priority = !empty($value['ApprovalDetailPosition']['is_priority'])?$value['ApprovalDetailPosition']['is_priority']:false;
+
+                                    if( !empty($is_priority) ) {
+                                        $labelCheck = '<i class="fa fa-check text-green"></i>';
+                                    } else {
+                                        $labelCheck = '<i class="fa fa-times text-red"></i>';
+                                    }
+
+                                    if( !empty($value['CashBankAuth']['status_document']) ) {
+                                        switch ($value['CashBankAuth']['status_document']) {
+                                            case 'approve':
+                                                $status_document = $this->Html->tag('div', ucwords($value['CashBankAuth']['status_document']), array(
+                                                    'class' => 'label label-success',
+                                                ));
+                                                break;
+                                            
+                                            default:
+                                                $status_document = ucwords($value['CashBankAuth']['status_document']);
+                                                break;
+                                        }
+                                    } else {
+                                        $status_document = '-';
+                                    }
+
+                                    if( !empty($value['CashBankAuth']['description']) ) {
+                                        $description = ucfirst($value['CashBankAuth']['status_document']);
+                                    } else {
+                                        $description = '-';
+                                    }
                         ?>
                         <tr>
-                            <td><?php echo $value['User']['full_name']?></td>
-                            <td><?php echo $value['User']['Group']['name']?></td>
-                            <td class="text-center"><?php echo $value['CashBankAuthMaster']['level']?></td>
-                            <td class="text-center"><?php echo !empty($value['CashBankAuth']['status_document']) ? ucfirst($value['CashBankAuth']['status_document']) : '-';?></td>
-                            <td><?php echo !empty($value['CashBankAuth']['description']) ? $value['CashBankAuth']['description'] : '-';?></td>
+                            <?php 
+                                    echo $this->Html->tag('td', $position_name);
+                                    echo $this->Html->tag('td', $labelCheck, array(
+                                        'class' => 'text-center',
+                                    ));
+                                    echo $this->Html->tag('td', $status_document, array(
+                                        'class' => 'text-center',
+                                    ));
+                                    echo $this->Html->tag('td', $description);
+                            ?>
                         </tr>
                         <?php
                             }
@@ -192,7 +226,7 @@
     <?php
             }
 
-            if( in_array($User['id'], $cashbank_auth_id) && !$cashbank['CashBank']['completed'] && empty($cashBankAuth) ){
+            if( $show_approval && empty($cashbank['CashBank']['completed']) ){
     ?>
     <div class="col-sm-12">
         <div class="box box-success">
@@ -223,11 +257,6 @@
                         ),
                         'class' => 'form-control',
                         'empty' => __('Pilih Status Approval'),
-                    ));
-
-                    echo $this->Form->input('cash_bank_auth_master_id', array(
-                        'type' => 'hidden',
-                        'value' => $cash_bank_master_user['CashBankAuthMaster']['id']
                     ));
 
                     echo $this->Form->input('description', array(

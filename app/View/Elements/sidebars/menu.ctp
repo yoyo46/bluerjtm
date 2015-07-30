@@ -713,7 +713,7 @@
 
                     $activeSetting = false;
                     $settingMenu = array(
-                        'cash_bank', 'approval_setting', 'kir_payments',
+                        'cash_bank', 'kir_payments',
                         'stnk_payments', 'siup_payments', 'invoice_payments', 
                         'lku_payments', 'coa_setting', 'ksu_payments',
                         'uang_jalan_commission_payments',
@@ -722,7 +722,7 @@
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
-                            'index', 'approval_setting', 'coa_setting',
+                            'index', 'coa_setting',
                             'journal_report', 'prepayment_report',
                         ),
                         'trucks' => array(
@@ -756,14 +756,6 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'cash_bank' )?'active':'',
-                            ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Approval Setting</span>', array(
-                                'controller' => 'cashbanks',
-                                'action' => 'approval_setting'
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'approval_setting' )?'active':'',
                             ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pengaturan COA</span>', array(
                                 'controller' => 'cashbanks',
@@ -953,7 +945,7 @@
                             'cities', 'companies', 'vendors',
                             'jenis_sim', 'classifications',
                             'calendar_colors', 'calendar_icons',
-                            'parts_motor', 'index'
+                            'parts_motor', 'index', 'approval_setting'
                         ),
                     );
 
@@ -964,7 +956,7 @@
                             'perlengkapan', 'coas', 'branches', 
                             'classifications', 'banks', 'calendar_colors',
                             'calendar_icons', 'settings', 'jenis_sim',
-                            'parts_motor'
+                            'parts_motor', 'approval_setting'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1085,6 +1077,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'parts_motor' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pengaturan Approval</span>', array(
+                                'controller' => 'settings',
+                                'action' => 'approval_setting'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'approval_setting' )?'active':'',
                             ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-wrench"></i> Pengaturan', array(
