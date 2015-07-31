@@ -33,6 +33,7 @@ class UsersController extends AppController {
 
     function login() {
         $this->layout = 'login';
+
     	if(!$this->MkCommon->loggedIn()){
 			if(!empty($this->request->data)){
                 $emailCache = $this->RequestHandler->getClientIP();
@@ -63,6 +64,7 @@ class UsersController extends AppController {
                     unset($this->request->data['User']['password']);
                 }
 			}
+            
     	}else{
     		$this->redirect($this->Auth->loginRedirect);
     	}

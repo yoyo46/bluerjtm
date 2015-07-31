@@ -968,7 +968,7 @@ var add_custom_field = function( obj ){
                                     </td> \
                                     <td class="text-center"> \
                                         <label> \
-                                            <input type="hidden" name="data[ApprovalDetailPosition][is_priority]['+count_next+'][]" id="ApprovalDetailPositionIsPriority'+count_next+'" value="0"><input type="checkbox" name="data[ApprovalDetailPosition][is_priority]['+count_next+'][]" value="1" id="ApprovalDetailPositionIsPriority'+count_next+'"> \
+                                            <input type="hidden" name="data[ApprovalDetailPosition][is_priority]['+count_next+'][0]" id="ApprovalDetailPositionIsPriority'+count_next+'0" value="0"><input type="checkbox" name="data[ApprovalDetailPosition][is_priority]['+count_next+'][0]" value="1" id="ApprovalDetailPositionIsPriority'+count_next+'0"> \
                                         </label> \
                                     </td> \
                                     <td class="action text-center"> \
@@ -986,7 +986,7 @@ var add_custom_field = function( obj ){
                 var objParentTr = objParentTable + ' #cash-auth[rel="0"]';
 
                 $(objParentTr+' .approval-position').addClass('approval-position-0');
-                $(objParentTr+' .approval-position').attr('name', 'data[ApprovalDetailPosition][group_id]['+count_next+'][]');
+                $(objParentTr+' .approval-position').attr('name', 'data[ApprovalDetailPosition][group_id]['+count_next+'][0]');
 
                 delete_custom_field( $(objParentTr+' .delete-custom-field') );
                 add_custom_field( $(objParentTable+' .add-custom-field') );
@@ -1007,7 +1007,7 @@ var add_custom_field = function( obj ){
             case 'auth-cash-bank-user-approval':
                 var parent = self.parents('.wrapper-approval-setting');
                 var rel = parent.attr('rel');
-                var count_cash_auth = $('.cash-auth-row').length-1;
+                var count_cash_auth = $('.wrapper-approval-setting[rel="'+rel+'"] .cash-auth-row').length-1;
                 var count_next = count_cash_auth+1;
                 var tempContent = $('#form-authorize').html();
                 var content = '<tr class="cash-auth-row" id="cash-auth" rel="'+count_next+'"> \
@@ -1016,7 +1016,7 @@ var add_custom_field = function( obj ){
                     </td> \
                     <td class="text-center"> \
                         <label> \
-                            <input type="checkbox" name="data[ApprovalDetailPosition][is_priority]['+rel+'][]" value="1" id="ApprovalDetailPosition'+rel+count_next+'"> \
+                            <input type="checkbox" name="data[ApprovalDetailPosition][is_priority]['+rel+']['+count_next+']" value="1" id="ApprovalDetailPosition'+rel+count_next+'"> \
                         </label> \
                     </td> \
                     <td class="action text-center"> \
@@ -1029,7 +1029,7 @@ var add_custom_field = function( obj ){
 
                 objParentTable.append(content);
                 $(objParentTr+' .approval-position').addClass('approval-position-'+count_next);
-                $(objParentTr+' .approval-position').attr('name', 'data[ApprovalDetailPosition][group_id]['+rel+'][]');
+                $(objParentTr+' .approval-position').attr('name', 'data[ApprovalDetailPosition][group_id]['+rel+']['+count_next+']');
 
                 delete_custom_field( $(objParentTr+' .delete-custom-field') );
                 ajaxModal( $(objParentTr+' .ajaxModal') );

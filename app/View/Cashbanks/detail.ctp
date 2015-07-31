@@ -204,15 +204,25 @@
                                     if( !empty($value['CashBankAuth']['status_document']) ) {
                                         switch ($value['CashBankAuth']['status_document']) {
                                             case 'approve':
-                                                $status_document = $this->Html->tag('div', ucwords($value['CashBankAuth']['status_document']), array(
-                                                    'class' => 'label label-success',
-                                                ));
+                                                $labelClass = 'success';
+                                                break;
+
+                                            case 'reject':
+                                                $labelClass = 'danger';
+                                                break;
+
+                                            case 'revise':
+                                                $labelClass = 'warning';
                                                 break;
                                             
                                             default:
-                                                $status_document = ucwords($value['CashBankAuth']['status_document']);
+                                                $labelClass = 'default';
                                                 break;
                                         }
+
+                                        $status_document = $this->Html->tag('div', ucwords($value['CashBankAuth']['status_document']), array(
+                                            'class' => sprintf('label label-%s', $labelClass),
+                                        ));
                                     } else {
                                         $status_document = '-';
                                     }

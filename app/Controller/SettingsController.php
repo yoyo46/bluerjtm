@@ -4726,7 +4726,7 @@ class SettingsController extends AppController {
         } else {
             $result = false;
         }
-
+        
         return $result;
     }
 

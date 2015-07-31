@@ -96,7 +96,7 @@ class ApprovalDetailPosition extends AppModel {
                 ),
             );
 
-            $approvalDetailPositions = $this->find('all', $default_options);
+            $approvalDetailPositions = $this->getData('all', $default_options);
             $data['ApprovalDetailPosition'] = $approvalDetailPositions;
         }
 

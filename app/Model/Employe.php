@@ -42,8 +42,8 @@ class Employe extends AppModel {
 
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
-        $this->virtualFields['full_name'] = sprintf('CONCAT(%s.first_name, " ", %s.last_name)', $this->alias, $this->alias);
-        $this->virtualFields['name'] = sprintf('CONCAT(%s.first_name, " ", %s.last_name)', $this->alias, $this->alias);
+        $this->virtualFields['full_name'] = 'CONCAT(Employe.first_name, " ", Employe.last_name)';
+        $this->virtualFields['name'] ='CONCAT(Employe.first_name, " ", Employe.last_name)';
     }
 
     var $belongsTo = array(

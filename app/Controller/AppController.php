@@ -126,7 +126,7 @@ class AppController extends Controller {
 	    if($logged_in){
 			$this->user_id = $this->Auth->user('id');
 			$GroupId = $this->Auth->user('group_id');
-			$User = $this->user_data = $User = $this->Auth->user();
+			$User = $this->user_data = $this->Auth->user();
 
 			/*Auth*/
 			$controller_allowed = array(
