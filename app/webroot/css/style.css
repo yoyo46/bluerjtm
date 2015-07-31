@@ -545,6 +545,12 @@ body > .header .logo {
   height: 50px;
   display: block;
 }
+
+body > .header .logo img {
+  max-height: 40px;
+  margin-right: 5px;
+}
+
 body > .header .logo .icon {
   margin-right: 10px;
 }
@@ -601,6 +607,10 @@ body > .header .logo .icon {
   .range-text:before {
     top: -11px;
     left: 50%;
+  }
+
+  body > .header .logo img {
+    max-height: 30px;
   }
 }
 @media (max-width: 767px) {

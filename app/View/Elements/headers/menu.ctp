@@ -1,7 +1,8 @@
 <header class="header">
     <?php 
-            echo $this->Html->link('RJTM ERP', '/', array(
-                'class' => 'logo'
+            echo $this->Html->link($this->Html->image('/img/logo-rjtm.png').__('RJTM'), '/', array(
+                'class' => 'logo',
+                'escape' => false,
             ));
     ?>
     <nav class="navbar navbar-static-top" role="navigation">

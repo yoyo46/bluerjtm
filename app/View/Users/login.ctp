@@ -14,11 +14,11 @@
 		echo $this->Session->flash('error');
 		echo $this->Session->flash('info');
 		echo $this->Session->flash('email');
-?>
-<h2>
-    RJTM<small class="on-right">site</small>
-</h2>
-<?php
+		
+        echo $this->Html->tag('h2', $this->Html->image('/img/logo-rjtm.png'), array(
+            'class' => 'text-center',
+        ));
+
 		echo $this->Form->input('User.username', array(
 			'placeholder' => 'Username',
 			'label' => false,
