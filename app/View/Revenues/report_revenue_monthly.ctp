@@ -1,4 +1,5 @@
 <?php 
+        $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $dataColumns = array(
             'code' => array(
                 'name' => __('Customer'),
@@ -220,6 +221,12 @@
             $contentTr = '';
 
             if(!empty($customers)){
+                $totalSaldoLastMonth = 0;
+                $totalKW = 0;
+                $totalAR = 0;
+                $totalKWVoid = 0;
+                $totalSaldoAR = 0;
+                
                 foreach ($customers as $key => $customer) {
                     $invLastMonth = !empty($customer['InvLastMonth'][0]['total'])?$customer['InvLastMonth'][0]['total']:0;
                     $invVoidLastMonth = !empty($customer['InvVoidLastMonth'][0]['total'])?$customer['InvVoidLastMonth'][0]['total']:0;
@@ -227,7 +234,12 @@
                     $invoiceTotal = !empty($customer['InvoiceTotal'][0]['total'])?$customer['InvoiceTotal'][0]['total']:0;
                     $invoicePaymentTotal = !empty($customer['InvoicePaymentTotal'][0]['total'])?$customer['InvoicePaymentTotal'][0]['total']:0;
                     $invoiceVoidTotal = !empty($customer['InvoiceVoidTotal'][0]['total'])?$customer['InvoiceVoidTotal'][0]['total']:0;
-                    $total = $invLastMonth + $invPaidLastMonth - $invVoidLastMonth + $invoiceTotal + $invoicePaymentTotal - $invoiceVoidTotal;
+                    $total = $invLastMonth + $invPaidLastMonth - $invVoidLastMonth + $invoiceTotal - $invoicePaymentTotal - $invoiceVoidTotal;
+                    $totalSaldoLastMonth += $invLastMonth + $invPaidLastMonth - $invVoidLastMonth;
+                    $totalKW += $invoiceTotal;
+                    $totalAR += $invoicePaymentTotal;
+                    $totalKWVoid += $invoiceVoidTotal;
+                    $totalSaldoAR += $total;
 
                     $contentTd = $this->Html->tag('td', $customer['Customer']['code']);
                     $contentTd .= $this->Html->tag('td', $this->Number->format($invLastMonth+$invPaidLastMonth-$invVoidLastMonth, '', array('places' => 0)), array(
@@ -248,6 +260,28 @@
 
                     $contentTr .= $this->Html->tag('tr', $contentTd);
                 }
+
+
+
+                $contentTd = $this->Html->tag('td', $this->Html->tag('strong', __('Total')), array(
+                    'style' => 'text-align: right;vertical-align: middle;',
+                ));
+                $contentTd .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->format($totalSaldoLastMonth, '', array('places' => 0))), array(
+                    'style' => 'text-align: right;vertical-align: middle;font-weight:bold;',
+                ));
+                $contentTd .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->format($totalKW, '', array('places' => 0))), array(
+                    'style' => 'text-align: right;vertical-align: middle;font-weight:bold;',
+                ));
+                $contentTd .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->format($totalAR, '', array('places' => 0))), array(
+                    'style' => 'text-align: right;vertical-align: middle;font-weight:bold;',
+                ));
+                $contentTd .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->format($totalKWVoid, '', array('places' => 0))), array(
+                    'style' => 'text-align: right;vertical-align: middle;font-weight:bold;',
+                ));
+                $contentTd .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->format($totalSaldoAR, '', array('places' => 0))), array(
+                    'style' => 'text-align: right;vertical-align: middle;font-weight:bold;',
+                ));
+                $contentTr .= $this->Html->tag('tr', $contentTd);
             }
 
             $date_title = $sub_module_title;
