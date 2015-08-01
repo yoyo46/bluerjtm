@@ -88,6 +88,46 @@ class UsersController extends AppController {
 		$this->set('sub_module_title', 'dashboard');
 	}
 
+    function password( $id = false ){
+        $this->set('sub_module_title', __('Ganti Password'));
+        $user = $this->User->getData('first', array(
+            'conditions' => array(
+                'User.id' => $id
+            )
+        ), true, array(
+            'status' => 'all',
+        ));
+
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            $this->User->id = $id;
+
+            $this->User->set($data);
+
+            if( $this->User->validates() ){
+                $data['User']['password'] = !empty($data['User']['new_password']) ? $this->Auth->password($data['User']['new_password']):'';
+
+                if($this->User->save($data)){
+                    $this->MkCommon->setCustomFlash(__('Sukses mengganti password'), 'success');
+
+                    $this->Log->logActivity( sprintf(__('Sukses mengganti password #%s'), $this->User->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->redirect(array(
+                        'controller' => 'users',
+                        'action' => 'list_user',
+                        'admin' => false,
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal mengganti password'), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal mengganti password #%s'), $this->User->id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal mengganti password'), 'error');
+            }
+        }
+        
+        $this->set('active_menu', 'list_user');
+    }
+
 	function authorization(){
 		if(!empty($this->request->data)){
 			
@@ -300,13 +340,10 @@ class UsersController extends AppController {
     function list_user(){
         $this->loadModel('User');
         $default_options = array(
-            'conditions' => array(
-                'User.status' => 1
-            ),
             'contain' => array(
                 'Group',
                 'City',
-            )
+            ),
         );
 
         if(!empty($this->params['named'])){
@@ -324,7 +361,9 @@ class UsersController extends AppController {
             }
         }
 
-        $this->paginate = $this->User->getData('paginate', $default_options);
+        $this->paginate = $this->User->getData('paginate', $default_options, true, array(
+            'status' => 'all',
+        ));
         $list_user = $this->paginate('User');
 
         $this->set('active_menu', 'list_user');
@@ -345,6 +384,8 @@ class UsersController extends AppController {
             'conditions' => array(
                 'User.id' => $id
             )
+        ), true, array(
+            'status' => 'all',
         ));
 
         if(!empty($User)){
@@ -470,7 +511,9 @@ class UsersController extends AppController {
         $locale = $this->User->getData('first', array(
             'conditions' => array(
                 'User.id' => $id
-            )
+            ),
+        ), true, array(
+            'status' => 'all',
         ));
 
         if($locale){
@@ -618,15 +661,10 @@ class UsersController extends AppController {
 
     function employes(){
         $this->loadModel('Employe');
-        $start = 1;
         $limit = 20;
         $options = array(
             'contain' => array(
                 'Group'
-            ),
-            'order' => array(
-                'Employe.status' => 'DESC',
-                'Employe.full_name' => 'ASC',
             ),
             'limit' => $limit,
         );
@@ -649,13 +687,11 @@ class UsersController extends AppController {
                 $this->request->data['Employe']['phone'] = $phone;
                 $options['conditions']['Employe.phone LIKE '] = '%'.$phone.'%';
             }
-
-            if(!empty($refine['page'])){
-                $start = (($refine['page']-1)*$limit)+1;
-            }
         }
 
-        $this->paginate = $this->Employe->getData('paginate', $options, false);
+        $this->paginate = $this->Employe->getData('paginate', $options, true, array(
+            'status' => 'all',
+        ));
         $employes = $this->paginate('Employe');
 
         $this->loadModel('Group');
@@ -668,7 +704,6 @@ class UsersController extends AppController {
         $this->set('active_menu', 'employes');
         $this->set('sub_module_title', 'Karyawan');
         $this->set('employes', $employes);
-        $this->set('start', $start);
     }
 
     function employe_add(){
@@ -682,7 +717,9 @@ class UsersController extends AppController {
         $Employe = $this->Employe->getData('first', array(
             'conditions' => array(
                 'Employe.id' => $id
-            )
+            ),
+        ), true, array(
+            'status' => 'all',
         ));
 
         if(!empty($Employe)){
@@ -747,7 +784,9 @@ class UsersController extends AppController {
         $locale = $this->Employe->getData('first', array(
             'conditions' => array(
                 'Employe.id' => $id
-            )
+            ),
+        ), true, array(
+            'status' => 'all',
         ));
 
         if($locale){

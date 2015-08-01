@@ -105,7 +105,7 @@
                                 'class' => 'btn btn-info btn-xs'
                             ));
 
-                            echo $this->Html->link('Rubah', array(
+                            echo $this->Html->link('Edit', array(
                                 'controller' => 'trucks',
                                 'action' => 'edit',
                                 $id

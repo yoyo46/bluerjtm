@@ -76,17 +76,45 @@ class User extends AppModel {
                 'message' => 'Panjang password maksimal 64 karakter',
             ),
         ),
-        'password_confirmation' => array(
+        'new_password' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Konfirmasi password harap diisi',
+                'on' => 'update',
+                'message' => 'Password baru harap diisi',
             ),
-            'notMatch' => array(
-                'rule' => array('matchPasswords'),
+            'minLength' => array(
+                'rule' => array('minLength', 6),
+                'on' => 'update',
+                'message' => 'Panjang password baru minimal 6 karakter',
+            ),
+        ),
+        'new_password_confirmation' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Konfirmasi password baru harap diisi',
+            ),
+            'notMatchNew' => array(
+                'rule' => array('matchNewPasswords'),
+                'on' => 'update',
                 'message' => 'Konfirmasi password anda tidak sesuai',
             ),
         ),
     );
+    
+    /**
+    *   @param array $data['new_password_confirmation'] - password baru
+    *   @return boolean true or false
+    */
+    function matchNewPasswords($data) {
+        if($this->data['User']['new_password']) {
+            if($this->data['User']['new_password'] == $data['new_password_confirmation']) {
+                return true;
+            }
+            return false; 
+        } else {
+            return true;
+        }
+    }
 
     function parentNode() {
         if (!$this->id && empty($this->data)) {
@@ -104,34 +132,56 @@ class User extends AppModel {
         }
     }
 
-    function getData($find, $options = false){
+    function getData($find, $options = false, $is_merge = true, $elements = array()){
+        $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'User.status' => 'DESC'
+                'User.status' => 'DESC',
+                'Employe.full_name' => 'ASC',
             ),
             'contain' => array(
                 'Employe',
             ),
             'fields' => array(),
+            'group' => array(),
         );
 
-        if(!empty($options)){
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['User.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['User.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['User.status'] = 1;
+                break;
+        }
+
+        if(!empty($options) && $is_merge){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
             if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
-            if(!empty($options['limit'])){
-                $default_options['limit'] = $options['limit'];
-            }
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
             }
+            if(!empty($options['limit'])){
+                $default_options['limit'] = $options['limit'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
+            }
+        } else if( !empty($options) ) {
+            $default_options = $options;
         }
 
         if( $find == 'paginate' ) {

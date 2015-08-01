@@ -4,6 +4,50 @@
         ));
         $this->Html->addCrumb($sub_module_title);
         echo $this->element('blocks/trucks/search_supir');
+
+        $dataColumns = array(
+            'no_id' => array(
+                'name' => __('No. ID'),
+                'field_model' => 'Driver.no_id',
+                'display' => true,
+            ),
+            'name' => array(
+                'name' => __('Nama Supir'),
+                'field_model' => 'Driver.name',
+                'display' => true,
+            ),
+            'alias' => array(
+                'name' => __('alias'),
+                'field_model' => 'Driver.alias',
+                'display' => true,
+            ),
+            'identity_number' => array(
+                'name' => __('No. Identitas'),
+                'field_model' => 'Driver.identity_number',
+                'display' => true,
+            ),
+            'Address' => array(
+                'name' => __('Alamat'),
+                'field_model' => 'Driver.Address',
+                'display' => true,
+            ),
+            'phone' => array(
+                'name' => __('Telepon'),
+                'field_model' => 'Driver.phone',
+                'display' => true,
+            ),
+            'status' => array(
+                'name' => __('Status'),
+                'field_model' => 'Driver.status',
+                'display' => true,
+            ),
+            'action' => array(
+                'name' => __('Action'),
+                'field_model' => false,
+                'display' => true,
+            ),
+        );
+        $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 ?>
 <div class="box">
     <div class="box-header">
@@ -21,36 +65,16 @@
         </div>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
-        <table class="table table-hover">
-            <tr>
-                <?php
-                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.no_id', __('No. ID'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.name', __('Nama Supir'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.alias', __('Panggilan'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.identity_number', __('No. Identitas'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.Address', __('Alamat'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.phone', __('Telepon'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.status', __('Status'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Driver.created', __('Dibuat'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', __('Action'));
-                ?>
-            </tr>
+        <table class="table table-hover sorting">
+            <thead>
+                <tr>
+                    <?php
+                            if( !empty($fieldColumn) ) {
+                                echo $fieldColumn;
+                            }
+                    ?>
+                </tr>
+            </thead>
             <?php
                     if( !empty($truck_drivers) ){
                         foreach ($truck_drivers as $key => $value) {
@@ -105,7 +129,7 @@
                             } else {
                                 $title = __('Aktifkan');
                                 $msg = sprintf(__('Anda yakin ingin Aktifkan data supir %s?'), $value['Driver']['name']);
-                                $class = 'warning';
+                                $class = 'success';
                             }
 
                             echo $this->Html->link($title, array(

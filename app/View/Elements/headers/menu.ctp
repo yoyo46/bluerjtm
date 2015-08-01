@@ -79,7 +79,7 @@
                         <li class="user-body">
                             <div class="col-xs-4 text-center">
                                 <?php
-                                    echo $this->Html->link(__('Rubah Password'), array(
+                                    echo $this->Html->link(__('Ganti Password'), array(
                                         'controller' => 'users',
                                         'action' => 'authorization'
                                     ));
@@ -87,7 +87,7 @@
                             </div>
                             <div class="col-xs-4 text-center">
                                 <?php
-                                    echo $this->Html->link(__('Rubah Profile'), array(
+                                    echo $this->Html->link(__('Edit Profile'), array(
                                         'controller' => 'users',
                                         'action' => 'profile'
                                     ));

@@ -1,6 +1,50 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
         echo $this->element('blocks/users/search_list_users');
+
+        $dataColumns = array(
+            'full_name' => array(
+                'name' => __('Nama'),
+                'field_model' => 'Employe.full_name',
+                'display' => true,
+            ),
+            'branch' => array(
+                'name' => __('Cabang'),
+                'field_model' => 'City.name',
+                'display' => true,
+            ),
+            'group' => array(
+                'name' => __('Posisi'),
+                'field_model' => 'Group.name',
+                'display' => true,
+            ),
+            'email' => array(
+                'name' => __('Email'),
+                'field_model' => 'User.email',
+                'display' => true,
+            ),
+            'phone' => array(
+                'name' => __('Telepon'),
+                'field_model' => 'Employe.phone',
+                'display' => true,
+            ),
+            'modified' => array(
+                'name' => __('Dirubah'),
+                'field_model' => 'User.modified',
+                'display' => true,
+            ),
+            'status' => array(
+                'name' => __('Status'),
+                'field_model' => 'User.status',
+                'display' => true,
+            ),
+            'action' => array(
+                'name' => __('Action'),
+                'field_model' => false,
+                'display' => true,
+            ),
+        );
+        $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 ?>
 <div class="box">
     <div class="box-header">
@@ -18,19 +62,17 @@
         </div>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
-        <table class="table table-hover">
-            <tr>
-                <th>Nama</th>
-                <th>Cabang</th>
-                <th>Group</th>
-                <th>Email</th>
-                <th>Telepon</th>
-                <th>Status</th>
-                <th>Terakhir dirubah</th>
-                <th>Action</th>
-            </tr>
+        <table class="table table-hover sorting">
+            <thead>
+                <tr>
+                    <?php
+                            if( !empty($fieldColumn) ) {
+                                echo $fieldColumn;
+                            }
+                    ?>
+                </tr>
+            </thead>
             <?php
-                    $i = 1;
                     if(!empty($list_user)){
                         foreach ($list_user as $key => $value) {
                             $value_data = $value['User'];
@@ -39,6 +81,11 @@
                             $name = !empty($value['Employe']['full_name'])?$value['Employe']['full_name']:false;
                             $phone = !empty($value['Employe']['phone'])?$value['Employe']['phone']:false;
                             $group_name = !empty($value['Group']['name'])?$value['Group']['name']:false;
+                            $activate = array(
+                                'controller' => 'users',
+                                'action' => 'toggle',
+                                $id
+                            );
             ?>
             <tr>
                 <td><?php echo $name;?></td>
@@ -46,17 +93,24 @@
                 <td><?php echo $group_name;?></td>
                 <td><?php echo $value_data['email'];?></td>
                 <td><?php echo $phone;?></td>
+                <td><?php echo $this->Common->customDate($value_data['modified']);?></td>
                 <td>
                     <?php 
-                        if(!empty($value_data['status'])){
-                            echo '<span class="label label-success">Active</span>'; 
-                        }else{
-                            echo '<span class="label label-danger">Non Active</span>';  
-                        }
-                        
+                            if(!empty($value_data['status'])){
+                                echo $this->Html->link($this->Common->icon('check'), $activate, array(
+                                    'escape' => false,
+                                    'class' => 'btn btn-success btn-xs',
+                                    'title' => 'enable status user'
+                                ), sprintf(__('Apakah Anda yakin akan mengaktifkan %s?'), $name));
+                            }else{
+                                echo $this->Html->link($this->Common->icon('times'), $activate, array(
+                                    'escape' => false,
+                                    'class' => 'btn btn-danger btn-xs',
+                                    'title' => 'disable status user'
+                                ), sprintf(__('Apakah Anda yakin akan menon-aktifkan %s?'), $name));
+                            }
                     ?>
                 </td>
-                <td><?php echo $this->Common->customDate($value_data['modified']);?></td>
                 <td class="action">
                     <?php 
                             echo $this->Html->link('Edit', array(
@@ -66,22 +120,21 @@
                             ), array(
                                 'class' => 'btn btn-primary btn-xs'
                             ));
+                            echo $this->Html->link(__('Ganti Password'), array(
+                                'controller' => 'users',
+                                'action' => 'password',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-warning btn-xs'
+                            ));
 
                             if(!empty($value_data['status'])){
-                                echo $this->Html->link('Disable', array(
-                                    'controller' => 'users',
-                                    'action' => 'toggle',
-                                    $id
-                                ), array(
+                                echo $this->Html->link(__('Non-Aktif'), $activate, array(
                                     'class' => 'btn btn-danger btn-xs',
                                     'title' => 'disable status user'
                                 ), sprintf(__('Apakah Anda yakin akan menon-aktifkan %s?'), $name));
                             }else{
-                                echo $this->Html->link('Enable', array(
-                                    'controller' => 'users',
-                                    'action' => 'toggle',
-                                    $id
-                                ), array(
+                                echo $this->Html->link('Aktifkan', $activate, array(
                                     'class' => 'btn btn-success btn-xs',
                                     'title' => 'enable status user'
                                 ), sprintf(__('Apakah Anda yakin akan mengaktifkan %s?'), $name));

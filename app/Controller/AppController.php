@@ -156,7 +156,7 @@ class AppController extends Controller {
 
 			$list_branch = array();
 			$this->group_branch_id = $group_branch_id = '';
-			$is_allow = false;
+			$is_allow = true;
 			$_branch_action_module = array();
 
 			if(!empty($_branches)){
@@ -232,15 +232,12 @@ class AppController extends Controller {
 			
 			if(empty($lead_time_notif)){
 				$this->loadModel('Ttuj');
-				$overlead_time_destination = $this->Ttuj->getData('list', array(
+				$overlead_time_destination = $this->Ttuj->getData('all', array(
 					'conditions' => array(
 						'Ttuj.is_arrive' => 1,
 						'Ttuj.arrive_over_time >' => 0,
 						'Ttuj.is_pool' => 0,
 					),
-					'fields' => array(
-						'Ttuj.id'
-					)
 				));
 				$overlead_time_pool = $this->Ttuj->getData('all', array(
 					'conditions' => array(
@@ -279,7 +276,7 @@ class AppController extends Controller {
 
 							if(empty($check_notif)){
 								foreach ($overlead_time_destination as $key => $value) {
-									$data_ttuj = $value['Ttuj'];
+									$data_ttuj = !empty($value['Ttuj'])?$value['Ttuj']:false;
 									$this->Notification->saveData($list_id_user_admin, array(
 										'document_id' => $data_ttuj['id'],
 										'action' => 'overlead_time_destination',

@@ -47,7 +47,7 @@
                 <td><?php echo $value['City']['name'];?></td>
                 <td>
                     <?php
-                        echo $this->Html->link('Rubah', array(
+                        echo $this->Html->link('Edit', array(
                             'controller' => 'trucks',
                             'action' => 'alocation_edit',
                             $value_truck['truck_id'],

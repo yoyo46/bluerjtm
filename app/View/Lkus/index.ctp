@@ -116,7 +116,7 @@
                         ));
 
                         if( $allowChange && !empty($value['Lku']['status']) ){
-                            echo $this->Html->link('Rubah', array(
+                            echo $this->Html->link('Edit', array(
                                 'controller' => 'lkus',
                                 'action' => 'edit',
                                 $id

@@ -38,7 +38,7 @@
 
 		<div class="form-group">
 			<?php 
-					$title = __('New Password *');
+					$title = __('Password baru *');
 					echo $this->Form->label('password', $title, array(
 						'class'=>'control-label col-sm-2'
 					)); 

@@ -30,7 +30,7 @@
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('last_name',__('Nama Belakang *')); 
+				echo $this->Form->label('last_name',__('Nama Belakang')); 
 
 				echo $this->Form->input('last_name',array(
 					'label'=> false, 

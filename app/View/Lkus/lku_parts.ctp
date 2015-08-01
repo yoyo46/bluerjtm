@@ -64,7 +64,7 @@
                 <td><?php echo $this->Common->customDate($value['Lku']['created']);?></td>
                 <td class="action">
                     <?php
-                            echo $this->Html->link('Rubah', array(
+                            echo $this->Html->link('Edit', array(
                                 'controller' => 'lkus',
                                 'action' => 'lku_part_edit',
                                 $id

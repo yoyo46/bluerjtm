@@ -106,7 +106,7 @@
                 <td><?php echo $this->Common->customDate($value['Laka']['created']);?></td>
                 <td class="action">
                     <?php
-                            echo $this->Html->link('Rubah', array(
+                            echo $this->Html->link('Edit', array(
                                 'controller' => 'lakas',
                                 'action' => 'edit',
                                 $id

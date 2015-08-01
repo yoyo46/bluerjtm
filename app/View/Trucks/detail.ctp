@@ -8,7 +8,7 @@
 ?>
 <div class="form-group text-center action">
     <?php
-            echo $this->Html->link(__('Rubah'), array(
+            echo $this->Html->link(__('Edit'), array(
                 'action' => 'edit', 
                 $truck['Truck']['id'],
             ), array(

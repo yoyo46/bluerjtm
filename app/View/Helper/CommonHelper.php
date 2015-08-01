@@ -1373,4 +1373,16 @@ class CommonHelper extends AppHelper {
 
         return $allow;
     }
+
+    function icon($icon, $content = false, $tag = 'i', $addClass = false) {
+        return $this->Html->tag($tag, $content, array(
+            'class' => sprintf('fa fa-%s %s', $icon, $addClass),
+        ));
+    }
+
+    function tag($tag, $addClass = false, $content = false) {
+        return $this->Html->tag($tag, $content, array(
+            'class' => $addClass,
+        ));
+    }
 }
