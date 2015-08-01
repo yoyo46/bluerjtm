@@ -2190,6 +2190,7 @@ class AjaxController extends AppController {
 
 	function getBiayaTtuj( $action_type = false ){
 		$this->loadModel('Ttuj');
+    	$this->loadModel('Driver');
 
 		$document_type = false;
 		$conditions = array(
@@ -2292,8 +2293,18 @@ class AjaxController extends AppController {
             }
             if(!empty($this->request->data['Driver']['name'])){
                 $name = urldecode($this->request->data['Driver']['name']);
-                $this->Ttuj->virtualFields['ttuj_driver_name'] = 'CASE WHEN DriverPenganti.name IS NULL THEN Ttuj.driver_name ELSE DriverPenganti.name END';
-                $conditions['Ttuj.ttuj_driver_name LIKE'] = '%'.$name.'%';
+                $driverId = $this->Driver->getData('list', array(
+                	'conditions' => array(
+                		'Driver.name LIKE' => '%'.$name.'%',
+            		),
+            		'fields' => array(
+            			'Driver.id', 'Driver.id'
+        			),
+            	));
+                $conditions['AND']['OR'] = array(
+                	'Ttuj.driver_id' => $driverId,
+                	'Ttuj.driver_penganti_id' => $driverId,
+            	);
             }
             if(!empty($this->request->data['Customer']['name'])){
                 $name = urldecode($this->request->data['Customer']['name']);
@@ -2407,7 +2418,6 @@ class AjaxController extends AppController {
 
         if( !empty($ttujs) ) {
         	$this->loadModel('Customer');
-        	$this->loadModel('Driver');
         	$this->loadModel('TtujPaymentDetail');
 
         	foreach ($ttujs as $key => $ttuj) {
