@@ -33,6 +33,9 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('BranchModule.name', __('Nama Module'), array(
                             'escape' => false
                         )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('BranchModule.type', __('Tipe Module'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('BranchModule.controller', __('Controller'), array(
                             'escape' => false
                         )));
@@ -50,6 +53,7 @@
                         foreach ($action_modules as $key => $value) {
                             $id = $this->Common->safeTagPrint($value['BranchModule']['id']);
                             $name = $this->Common->safeTagPrint($value['BranchModule']['name']);
+                            $type = !empty($value['BranchModule']['type']) ? ucwords($this->Common->safeTagPrint($value['BranchModule']['type'])) : ' - ';
                             $controller = !empty($value['BranchModule']['controller']) ? $this->Common->safeTagPrint($value['BranchModule']['controller']) : '-';
                             $action = !empty($value['BranchModule']['action']) ? $this->Common->safeTagPrint($value['BranchModule']['action']) : '-';
                             $created = $this->Common->safeTagPrint($value['BranchModule']['created']);
@@ -57,6 +61,7 @@
             <tr>
                 <td><?php echo $id;?></td>
                 <td><?php echo $name;?></td>
+                <td><?php echo $type;?></td>
                 <td><?php echo $controller;?></td>
                 <td><?php echo $action;?></td>
                 <td><?php echo $this->Common->customDate($created);?></td>

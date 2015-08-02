@@ -3062,9 +3062,9 @@ var action_child_module = function(obj){
             url: '/ajax/auth_action_child_module/'+branch_id+'/'+id+'/',
             type: 'POST',
             success: function(response, status) {
-                self.parents('li').html(response);
+                self.parents('div.action-link-auth').html(response);
 
-                action_child_module($('.list-auth-action li[rel="'+id+'"] .action-child-module'));
+                action_child_module($('.list-auth-action div[rel="'+id+'"] .action-child-module'));
 
                 parent.find('.trigger-collapse').click();
             },
@@ -3173,6 +3173,8 @@ var branch_module_check = function(obj){
         var parent = self.parents('.box-action-auth-module');
         var city_id = main_parent.find('.auth-form-open').val();
 
+        var parent_rel = self.parents('.box').attr('rel');
+        
         var val = parent.find('.auth-form-open').val();
         var group_id = $('#group-id').val();
 
@@ -3189,7 +3191,9 @@ var branch_module_check = function(obj){
                         if( $(response).filter('.list-auth-action').html() != null ) {
                             var target_box = parent.find('.box-act');
                             
-                            target_box.html(response);
+                            target_box.html($(response).filter('.list-auth-action').html());
+
+                            action_child_module($('.box[rel="'+parent_rel+'"] .box-act .action-child-module'));
                         }
                     },
                     error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -4123,8 +4127,29 @@ $(function() {
     $('#handle-module input').click(function(){
         if( $(this).is(':checked') ){
             $('.box-action-module').hide();
+            $('#parent_branch').show();
+            $('#order-control').attr('readonly', false);
         }else{
             $('.box-action-module').show();
+            $('#parent_branch').hide();
+            $('#parent_branch select').val('');
+            $('#order-control').attr('readonly', true);
         }
+    });
+
+    $('.order-handle').change(function(){
+        var val = $(this).val();
+
+        var order = 4;
+        if(val == 'lihat'){
+            order = 1;
+        }else if(val == 'tambah'){
+            order = 2;
+        }else if(val == 'ubah'){
+            order = 3;
+        }
+
+        $('#order-control').val(order);
+        $('#order-control').attr('readonly', true);
     });
 });

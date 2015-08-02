@@ -33,6 +33,18 @@
 					));
 			?>
         </div>
+        <div class="form-group" id="parent_branch" style="display:<?php echo empty($this->request->data['BranchModule']['parent_id']) ? 'block' : 'none';?>">
+        	<?php 
+					echo $this->Form->input('branch_parent_module_id',array(
+						'label'=> __('Parent Module Group *'), 
+						'class'=>'form-control',
+						'required' => false,
+						'placeholder' => __('Parent Module Group'),
+						'options' => $parent_modules,
+						'empty' => __('Pilih Parent Module Group')
+					));
+			?>
+        </div>
         <div class="form-group">
 	        <div class="checkbox-options">
 	        	<div class="checkbox" id="handle-module">
@@ -65,6 +77,24 @@
 	        </div>
 	        <div class="form-group">
 	        	<?php 
+						echo $this->Form->input('type',array(
+							'label'=> __('Tipe Modul *'), 
+							'class'=>'form-control order-handle',
+							'required' => false,
+							'empty' => __('Pilih Tipe Modul'),
+							'options' => array(
+								'lihat' => 'Lihat',
+								'tambah' => 'Tambah',
+								'ubah' => 'Ubah',
+								'hapus' => 'Hapus',
+								'void' => 'Void',
+								'non-aktif' => 'Non-aktif',
+							)
+						));
+				?>
+	        </div>
+	        <div class="form-group">
+	        	<?php 
 						echo $this->Form->input('controller',array(
 							'label'=> __('Controller *'), 
 							'class'=>'form-control',
@@ -84,6 +114,18 @@
 				?>
 	        </div>
 	    </div>
+	    <div class="form-group">
+        	<?php 
+					echo $this->Form->input('order',array(
+						'label'=> __('order *'), 
+						'class'=>'form-control',
+						'id' => 'order-control',
+						'required' => false,
+						'placeholder' => __('order'),
+						'readonly' => !empty($this->request->data['BranchModule']['parent_id']) ? true : false
+					));
+			?>
+        </div>
     </div>
 
     <div class="box-footer text-center action">

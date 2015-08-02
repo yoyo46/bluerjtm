@@ -4040,6 +4040,9 @@ table.sorting thead th a {
 }
 .list-auth-action{
   padding-left: 0px;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
 }
 #auth-box .box-title label{
   float: left;
@@ -4062,11 +4065,11 @@ table.sorting thead th a {
 }
 .box-act{
   border: 1px solid #ccc;
-  padding: 10px 10px 0px;
+  padding: 15px 25px;
 }
-.box-act a{
+/*.box-act a{
   color: #000;
-}
+}*/
 .box-act a .fa-times{
   color: #d9534f;
 }

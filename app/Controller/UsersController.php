@@ -908,8 +908,12 @@ class UsersController extends AppController {
 
         $parent_group = $this->BranchModule->getParentModule();
 
+        $this->loadModel('BranchParentModule');
+        $parent_modules = $this->BranchParentModule->getData('list');
+
         $this->set('active_menu', 'action_modules');
         $this->set('parent_group', $parent_group);
+        $this->set('parent_modules', $parent_modules);
         $this->render('action_module_form');
     }
 
@@ -946,73 +950,91 @@ class UsersController extends AppController {
 
     function authorization_privilage($group_id){
         $this->loadModel('Group');
+        $this->loadModel('BranchParentModule');
 
-        $group = $this->Group->getData('first', array(
-            'conditions' => array(
-                'Group.id' => $group_id
-            )
-        ));
+        $parent_modules = $this->BranchParentModule->getData('all');
 
-        if(!empty($group)){
-            $this->loadModel('City');
-            $this->loadModel('BranchModule');
-            $this->loadModel('GroupBranch');
-
-            $GroupBranches = $this->GroupBranch->find('all', array(
+        if(!empty($parent_modules)){
+            $group = $this->Group->getData('first', array(
                 'conditions' => array(
-                    'GroupBranch.group_id' => $group_id,
-                ),
-                'contain' => array(
-                    'BranchActionModule',
-                    'City'
+                    'Group.id' => $group_id
                 )
             ));
 
-            if(!empty($GroupBranches)){
-                foreach ($GroupBranches as $key => $value_k) {
-                    if(!empty($value_k['BranchActionModule'])){
-                        $data_result_auth = array();
-                        foreach ($value_k['BranchActionModule'] as $key_k => $value) {
-                            $data_result_auth[$value['branch_module_id']] = $value['is_allow'];
+            if(!empty($group)){
+                $this->loadModel('City');
+                $this->loadModel('BranchModule');
+                $this->loadModel('GroupBranch');
+
+                $GroupBranches = $this->GroupBranch->find('all', array(
+                    'conditions' => array(
+                        'GroupBranch.group_id' => $group_id,
+                    ),
+                    'contain' => array(
+                        'BranchActionModule',
+                        'City'
+                    )
+                ));
+
+                if(!empty($GroupBranches)){
+                    foreach ($GroupBranches as $key => $value_k) {
+                        if(!empty($value_k['BranchActionModule'])){
+                            $data_result_auth = array();
+                            foreach ($value_k['BranchActionModule'] as $key_k => $value) {
+                                $data_result_auth[$value['branch_module_id']] = $value['is_allow'];
+                            }
+                            
+                            $GroupBranches[$key]['BranchActionModule'] = $data_result_auth;
                         }
-                        
-                        $GroupBranches[$key]['BranchActionModule'] = $data_result_auth;
                     }
                 }
-            }
 
-            /*supporting data*/
-            $branches = $this->City->getData('list', array(
-                'conditions' => array(
-                    'OR' => array(
-                        array('City.is_branch' => 1),
-                        array('City.is_pool' => 1)
+                /*supporting data*/
+                $branches = $this->City->getData('list', array(
+                    'conditions' => array(
+                        'OR' => array(
+                            array('City.is_branch' => 1),
+                            array('City.is_pool' => 1)
+                        )
+                    ),
+                    'fields' => array(
+                        'City.id', 'City.name'
                     )
-                ),
-                'fields' => array(
-                    'City.id', 'City.name'
-                )
-            ));
+                ));
 
-            $branch_modules = $this->BranchModule->getData('all', array(
-                'conditions' => array(
-                    'BranchModule.status' => 1,
-                    'BranchModule.parent_id' => 0
-                ),
-                'contain' => array(
-                    'BranchChild' => array(
-                        'order'=> array(
-                            'BranchChild.name' => 'ASC'
+                foreach ($parent_modules as $key => $value) {
+                    $parent_modules[$key]['child'] = $this->BranchModule->getData('all', array(
+                        'conditions' => array(
+                            'BranchModule.branch_parent_module_id' => $value['BranchParentModule']['id'],
+                            'BranchModule.status' => 1,
+                            'BranchModule.parent_id' => 0
                         ),
-                    )
-                )
-            ));
+                        'contain' => array(
+                            'BranchChild' => array(
+                                'conditions' => array(
+                                    'BranchChild.status' => 1
+                                ),
+                                'order'=> array(
+                                    'BranchChild.order' => 'ASC'
+                                ),
+                            )
+                        ),
+                        'order' => array(
+                            'BranchModule.order' => 'ASC'
+                        )
+                    ));
+                }
 
-            $sub_module_title = sprintf('Otorisasi Group %s', $group['Group']['name']);
-            $this->set(compact('branches', 'sub_module_title', 'group_id', 'GroupBranches', 'branch_modules'));
-            /*End supporting data*/
-        }else{
-            $this->redirect($this->referer());
+                $branch_modules = $parent_modules;
+
+                // debug($branch_modules);die();
+
+                $sub_module_title = sprintf('Otorisasi Group %s', $group['Group']['name']);
+                $this->set(compact('branches', 'sub_module_title', 'group_id', 'GroupBranches', 'branch_modules'));
+                /*End supporting data*/
+            }else{
+                $this->redirect($this->referer());
+            }
         }
     }
 

@@ -20,6 +20,24 @@ class BranchModule extends AppModel {
                 'message' => 'Action harap diisi'
             ),
         ),
+        'type' => array(
+            'validateAction' => array(
+                'rule' => array('validateAction'),
+                'message' => 'Tipe modul harap diisi'
+            ),
+        ),
+        'branch_parent_module_id' => array(
+            'validateParentGroup' => array(
+                'rule' => array('validateParentGroup'),
+                'message' => 'Parent modul group harap diisi'
+            ),
+        ),
+        'order' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Order harap diisi'
+            ),
+        ),
 	);
 
     var $hasMany = array(
@@ -28,6 +46,15 @@ class BranchModule extends AppModel {
             'foreignKey' => 'parent_id',
         ),
     );
+
+    function validateParentGroup($data){
+        $result = true;
+        if(!empty($this->data['BranchModule']['is_parent']) && empty($data['branch_parent_module_id'])){
+            $result = false;
+        }
+
+        return $result;
+    }
 
     function validateAction($data){
         $key = key($data);
