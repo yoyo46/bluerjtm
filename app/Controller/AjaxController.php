@@ -2191,6 +2191,7 @@ class AjaxController extends AppController {
 	function getBiayaTtuj( $action_type = false ){
 		$this->loadModel('Ttuj');
     	$this->loadModel('Driver');
+    	$this->loadModel('City');
 
 		$document_type = false;
 		$conditions = array(
@@ -2326,11 +2327,11 @@ class AjaxController extends AppController {
             }
             if(!empty($this->request->data['Ttuj']['from_city'])){
                 $name = urldecode($this->request->data['Ttuj']['from_city']);
-                $conditions['Ttuj.from_city_name LIKE'] = '%'.$name.'%';
+                $conditions['Ttuj.from_city_id'] = $name;
             }
             if(!empty($this->request->data['Ttuj']['to_city'])){
                 $name = urldecode($this->request->data['Ttuj']['to_city']);
-                $conditions['Ttuj.to_city_name LIKE'] = '%'.$name.'%';
+                $conditions['Ttuj.to_city_id'] = $name;
             }
             if(!empty($this->request->data['Ttuj']['date'])){
                 $date = urldecode($this->request->data['Ttuj']['date']);
@@ -2452,10 +2453,11 @@ class AjaxController extends AppController {
         }
 
         $data_action = 'browse-check-docs';
-
+        $cities = $this->City->getData('list');
 		$this->set(compact(
 			'data_action', 'title', 'ttujs',
-			'action_type', 'jenisBiaya', 'document_type'
+			'action_type', 'jenisBiaya', 'document_type',
+			'cities'
 		));
 	}
 

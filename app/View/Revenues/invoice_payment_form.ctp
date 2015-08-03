@@ -134,7 +134,7 @@
 				), array(
 					'class'=> 'btn btn-default',
 				));
-	    		echo $this->Form->button(__('Buat Pembayaran Invoice'), array(
+	    		echo $this->Form->button(__('Simpan'), array(
 	    			'type' => 'submit',
 					'class'=> 'btn btn-success btn-lg',
 				));

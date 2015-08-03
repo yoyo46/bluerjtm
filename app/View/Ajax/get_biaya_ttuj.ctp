@@ -37,7 +37,8 @@
                         'label'=> __('Kota Asal'),
                         'class'=>'form-control',
                         'required' => false,
-                        'placeholder' => __('Kota Asal')
+                        'empty' => __('Pilih Kota Asal'),
+                        'options' => $cities,
                     ));
             ?>
         </div>
@@ -71,28 +72,18 @@
                 </div>
             </div>
         </div>
-        <div class="form-group">
-            <?php 
-                    echo $this->Form->input('Customer.name',array(
-                        'label'=> __('Customer'),
-                        'class'=>'form-control',
-                        'required' => false,
-                        'placeholder' => __('Customer')
-                    ));
-            ?>
-        </div>
     </div>
     <div class="col-sm-6">
-        <div class="form-group">
+        <!-- <div class="form-group">
             <?php 
-                    echo $this->Form->input('City.name',array(
-                        'label'=> __('Tujuan'),
-                        'class'=>'form-control',
-                        'required' => false,
-                        'placeholder' => __('Tujuan')
-                    ));
+                    // echo $this->Form->input('City.name',array(
+                    //     'label'=> __('Tujuan'),
+                    //     'class'=>'form-control',
+                    //     'required' => false,
+                    //     'placeholder' => __('Tujuan')
+                    // ));
             ?>
-        </div>
+        </div> -->
         <div class="form-group">
             <?php 
                     echo $this->Form->input('Driver.name',array(
@@ -105,11 +96,22 @@
         </div>
         <div class="form-group">
             <?php 
+                    echo $this->Form->input('Customer.name',array(
+                        'label'=> __('Customer'),
+                        'class'=>'form-control',
+                        'required' => false,
+                        'placeholder' => __('Customer')
+                    ));
+            ?>
+        </div>
+        <div class="form-group">
+            <?php 
                     echo $this->Form->input('Ttuj.to_city',array(
                         'label'=> __('Kota Tujuan'),
                         'class'=>'form-control',
                         'required' => false,
-                        'placeholder' => __('Kota Tujuan')
+                        'empty' => __('Pilih Kota Tujuan'),
+                        'options' => $cities,
                     ));
             ?>
         </div>
