@@ -55,7 +55,7 @@
         </div>
 		<div class="form-group">
 			<?php 
-					echo $this->Form->input('Employe.gender',array(
+					echo $this->Form->input('Employe.gender_id',array(
 						'label'=>__('Jenis Kelamin *'),
 						'required' => false,
 						'class' => 'form-control',
