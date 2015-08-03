@@ -2,10 +2,12 @@
 		switch ($action_type) {
 			case 'biaya_ttuj':
 				$titleCrumb = __('Pembayaran Biaya TTUJ');
+				$titleBrowse = __('Biaya TTUJ');
 				break;
 			
 			default:
 				$titleCrumb = __('Pembayaran Uang Jalan/Komisi');
+				$titleBrowse = __('Biaya Uang Jalan/Komisi');
 				break;
 		}
 
@@ -145,10 +147,10 @@
                             'action' => 'getBiayaTtuj',
                             $action_type
                         )),
-                        'title' => $titleCrumb,
+                        'title' => sprintf(__('Detail %s'), $titleBrowse),
                     );
 					$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                    echo $this->Html->tag('div', $this->Html->link('<i class="fa fa-plus-square"></i> '.$titleCrumb, 'javascript:', $attrBrowse), array(
+                    echo $this->Html->tag('div', $this->Html->link('<i class="fa fa-plus-square"></i> '.$titleBrowse, 'javascript:', $attrBrowse), array(
                     	'class' => "form-group",
                 	));
 				}

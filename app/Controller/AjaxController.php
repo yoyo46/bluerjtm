@@ -2407,6 +2407,15 @@ class AjaxController extends AppController {
             }
         }
 
+        if( empty($this->request->data['Ttuj']['date']) ){
+        	$from_date = date('Y-m-d', strtotime('-1 month'));
+        	$to_date = date('Y-m-d');
+        	$conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $from_date;
+        	$conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $to_date;
+
+        	$this->request->data['Ttuj']['date'] = sprintf('%s - %s', $this->MkCommon->getDate($from_date, true), $this->MkCommon->getDate($to_date, true));
+        }
+
         $this->paginate = $this->Ttuj->getData('paginate', array(
             'conditions' => $conditions,
             'order' => array(
