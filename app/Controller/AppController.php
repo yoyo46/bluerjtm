@@ -134,7 +134,7 @@ class AppController extends Controller {
 			);
 			$action_allowed = array(
 				'change_branch', 'search', 'logout', 'login', 'dashboard', 'display', 'index',
-				'authorization'
+				'authorization', 'profile'
 			);
 
 			Configure::write('__Site.allowed_controller', $controller_allowed);
@@ -156,7 +156,7 @@ class AppController extends Controller {
 
 			$list_branch = array();
 			$this->group_branch_id = $group_branch_id = '';
-			$is_allow = true;
+			$is_allow = false;
 			$_branch_action_module = array();
 
 			if(!empty($_branches)){
