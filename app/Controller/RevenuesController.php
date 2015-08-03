@@ -6382,6 +6382,12 @@ class RevenuesController extends AppController {
                                         $tarif = $this->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, false, $customer_id, $truck_capacity, false );
                                         $tarif_per_truck = 0;
                                         $jenis_tarif = !empty($tarif['jenis_unit'])?$tarif['jenis_unit']:'per_unit';
+                                        // $no_do = !empty($tarif['no_do'])?$tarif['no_do']:false;
+                                        // $no_js = !empty($tarif['no_js'])?$tarif['no_js']:false;
+                                        // $group_motor = !empty($tarif['group_motor'])?$tarif['group_motor']:false;
+                                        // $jml_unit = !empty($tarif['jml_unit'])?$tarif['jml_unit']:false;
+                                        // $is_charge = !empty($tarif['is_charge'])?$tarif['is_charge']:false;
+                                        // $harga_unit = !empty($tarif['harga_unit'])?$tarif['harga_unit']:false;
                                         $ppn = !empty($ppn)?$ppn:0;
                                         $pph = !empty($pph)?$pph:0;
                                         $dataRevenue = array();
