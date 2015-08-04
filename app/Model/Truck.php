@@ -75,8 +75,8 @@ class Truck extends AppModel {
             ),
         ),
         'tahun_neraca' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'validateThnNeraca' => array(
+                'rule' => array('validateThnNeraca'),
                 'message' => 'Tahun Neraca truk harap diisi'
             ),
         ),
@@ -263,6 +263,17 @@ class Truck extends AppModel {
             } else {
                 return true;
             }
+        } else {
+            return true;
+        }
+    }
+
+    function validateThnNeraca () {
+        $is_asset = !empty($this->data['Truck']['is_asset'])?$this->data['Truck']['is_asset']:false;
+        $tahun_neraca = !empty($this->data['Truck']['tahun_neraca'])?$this->data['Truck']['tahun_neraca']:false;
+
+        if( !empty($is_asset) && empty($tahun_neraca) ) {
+            return false;
         } else {
             return true;
         }
