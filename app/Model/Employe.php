@@ -39,6 +39,12 @@ class Employe extends AppModel {
             ),
         ),
 	);
+    var $hasOne = array(
+        'User' => array(
+            'className' => 'User',
+            'foreignKey' => 'employe_id',
+        ),
+    );
 
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);

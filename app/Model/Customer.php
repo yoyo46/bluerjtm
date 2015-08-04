@@ -61,10 +61,10 @@ class Customer extends AppModel {
             'className' => 'CustomerType',
             'foreignKey' => 'customer_type_id',
         ),
-        // 'CustomerGroup' => array(
-        //     'className' => 'CustomerGroup',
-        //     'foreignKey' => 'customer_group_id',
-        // ),
+        'CustomerGroup' => array(
+            'className' => 'CustomerGroup',
+            'foreignKey' => 'customer_group_id',
+        ),
         // 'Bank' => array(
         //     'className' => 'Bank',
         //     'foreignKey' => 'bank_id',

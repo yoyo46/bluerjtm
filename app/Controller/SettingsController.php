@@ -173,6 +173,9 @@ class SettingsController extends AppController {
 
         $options = array(
             'paramType' => 'querystring',
+            'contain' => array(
+                'CustomerGroup',
+            ),
         );
 
         if(!empty($this->params['named'])){
@@ -285,12 +288,15 @@ class SettingsController extends AppController {
                 'Bank.id', 'Bank.bank_name'
             ),
         ));
-        $billings  = $this->User->getData('list', array(
+        $billings  = $this->User->Employe->getData('list', array(
             'fields' => array(
-                'User.id', 'User.full_name'
+                'User.id', 'Employe.full_name'
             ),
             'conditions' => array(
                 'User.status' => 1,
+            ),
+            'contain' => array(
+                'User',
             ),
         ));
 
