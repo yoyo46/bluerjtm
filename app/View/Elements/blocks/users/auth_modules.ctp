@@ -40,7 +40,7 @@
 									$icon = '<i class="fa fa-check"></i>';
 								}
 
-								$link_action = $this->Html->link(sprintf('%s %s', $icon, ucfirst($value['type'])), 'javascript:', array(
+								$link_action = $this->Html->link(sprintf('%s %s', $icon, ucfirst($value['name'])), 'javascript:', array(
 									'action-id' => $value['id'],
 									'branch-id' => $group_branch_id,
 									'class' => 'action-child-module',

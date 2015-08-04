@@ -113,6 +113,16 @@
 						));
 				?>
 	        </div>
+	        <div class="form-group">
+	        	<?php 
+						echo $this->Form->input('extend_action',array(
+							'label'=> __('Parameter Tambahan'), 
+							'class'=>'form-control',
+							'required' => false,
+							'placeholder' => __('Parameter Tambahan')
+						));
+				?>
+	        </div>
 	    </div>
 	    <div class="form-group">
         	<?php 

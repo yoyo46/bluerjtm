@@ -42,6 +42,9 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('BranchModule.action', __('Action'), array(
                             'escape' => false
                         )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('BranchModule.extend_action', __('Parameter<br>Tambahan'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('BranchModule.created', __('Dibuat'), array(
                             'escape' => false
                         )));
@@ -56,6 +59,7 @@
                             $type = !empty($value['BranchModule']['type']) ? ucwords($this->Common->safeTagPrint($value['BranchModule']['type'])) : ' - ';
                             $controller = !empty($value['BranchModule']['controller']) ? $this->Common->safeTagPrint($value['BranchModule']['controller']) : '-';
                             $action = !empty($value['BranchModule']['action']) ? $this->Common->safeTagPrint($value['BranchModule']['action']) : '-';
+                            $extend_action = !empty($value['BranchModule']['extend_action']) ? $this->Common->safeTagPrint($value['BranchModule']['extend_action']) : '-';
                             $created = $this->Common->safeTagPrint($value['BranchModule']['created']);
             ?>
             <tr>
@@ -64,6 +68,7 @@
                 <td><?php echo $type;?></td>
                 <td><?php echo $controller;?></td>
                 <td><?php echo $action;?></td>
+                <td><?php echo $extend_action;?></td>
                 <td><?php echo $this->Common->customDate($created);?></td>
                 <td class="action">
                     <?php 

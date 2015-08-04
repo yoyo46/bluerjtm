@@ -136,9 +136,14 @@ class AppController extends Controller {
 				'change_branch', 'search', 'logout', 'login', 'dashboard', 'display', 'index',
 				'authorization', 'profile'
 			);
+			$allowness_extend = array(
+				'ttuj_payments', 'ttuj_payment_add', 'ttuj_payment_delete', 'detail_ttuj_payment'
+			);
 
 			Configure::write('__Site.allowed_controller', $controller_allowed);
 			Configure::write('__Site.allowed_action', $action_allowed);
+			Configure::write('__Site.allowed_extend', $allowness_extend);
+
 			$conditionsBranch = array();
 
 			if( $GroupId != 1 ) {
@@ -181,7 +186,7 @@ class AppController extends Controller {
 						'contain' => array(
 							'BranchModule' => array(
 								'fields' => array(
-									'BranchModule.controller', 'BranchModule.action'
+									'BranchModule.controller', 'BranchModule.action', 'BranchModule.extend_action'
 								)
 							)
 						)
@@ -208,9 +213,22 @@ class AppController extends Controller {
 				$is_allow = true;
 			}else if(!empty($_branch_action_module)){
 				foreach ($_branch_action_module as $key => $value) {
-					if($this->params['controller'] == $value['BranchModule']['controller'] && $this->params['action'] == $value['BranchModule']['action'] && $value['BranchActionModule']['is_allow']){
-						$is_allow = true;
-						break;
+					$controller_name = $value['BranchModule']['controller'];
+					$action_name = $value['BranchModule']['action'];
+					$extend_name = !empty($value['BranchModule']['extend_action']) ? $value['BranchModule']['extend_action'] : '';
+					$allow_module = $value['BranchActionModule']['is_allow'];
+
+					$extend_param = !empty($this->params['pass'][0]) ? $this->params['pass'][0] : '';
+					if(!empty($extend_param)){
+						if($this->params['controller'] == $controller_name && $this->params['action'] == $action_name && !empty($extend_name) && $extend_name == $extend_param && !empty($allow_module)){
+							$is_allow = true;
+							break;
+						}
+					}else{
+						if($this->params['controller'] == $controller_name && $this->params['action'] == $action_name && $allow_module){
+							$is_allow = true;
+							break;
+						}
 					}
 				}
 			}

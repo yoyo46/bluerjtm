@@ -347,15 +347,30 @@ class HtmlHelper extends AppHelper {
 		/*custom*/
 		$controller_allowed = Configure::read('__Site.allowed_controller');
 		$action_allowed = Configure::read('__Site.allowed_action');
+		$allowness_extend = Configure::read('__Site.allowed_extend');
 
 		$is_show = false;
 		if( in_array($url, array('/', 'javascript:')) || (!empty($url['action']) && in_array($url['action'], $action_allowed)) || (!empty($url['controller']) && in_array($url['controller'], $controller_allowed) && !empty($url['action']) && in_array($url['action'], $action_allowed)) || (!empty($url['controller']) && $url['controller'] == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || !empty($url['page']) || $this->group_id == 1 ){
 			$is_show = true;
 		}else if(is_array($url) && !empty($url['controller']) && !empty($url['action'])){
 			foreach ($this->_rule_link as $key => $value) {
-				if($url['controller'] == $value['BranchModule']['controller'] && $url['action'] == $value['BranchModule']['action'] && $value['BranchActionModule']['is_allow']){
-					$is_show = true;
-					break;
+				$controller_name = $value['BranchModule']['controller'];
+				$action_name = $value['BranchModule']['action'];
+				$extend_name = !empty($value['BranchModule']['extend_action']) ? $value['BranchModule']['extend_action'] : '';
+				$allow_module = $value['BranchActionModule']['is_allow'];
+
+				$extend_param = !empty($url[0]) ? $url[0] : '';
+
+				if(!empty($extend_param)){
+					if($url['controller'] == $controller_name && $url['action'] == $action_name && !empty($extend_name) && $extend_name == $extend_param && !empty($allow_module)){
+						$is_show = true;
+						break;
+					}
+				}else{
+					if($url['controller'] == $controller_name && $url['action'] == $action_name && $allow_module){
+						$is_show = true;
+						break;
+					}
 				}
 			}
 		}
