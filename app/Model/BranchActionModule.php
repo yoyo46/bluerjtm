@@ -81,5 +81,46 @@ class BranchActionModule extends AppModel {
 
         return $data_auth;
     }
+
+    function getRuleByModule($id = '', $group_branch_id = ''){
+        if(!empty($id) && !empty($group_branch_id)){
+            $result = array();
+
+            $branch_module_id = $this->BranchModule->find('all', array(
+                'conditions' => array(
+                    'BranchModule.parent_id' => $id
+                )
+            ));
+            
+            if(!empty($branch_module_id)){
+                $branch_module_id = Set::extract('/BranchModule/id', $branch_module_id);
+
+                $_branch_action_module = $this->getData('all', array(
+                    'conditions' => array(
+                        'BranchActionModule.branch_module_id' => $branch_module_id,
+                        'BranchActionModule.group_branch_id' => $group_branch_id
+                    ),
+                    'fields' => array(
+                        'BranchActionModule.is_allow'
+                    ),
+                    'contain' => array(
+                        'BranchModule' => array(
+                            'fields' => array(
+                                'BranchModule.controller', 'BranchModule.action', 'BranchModule.extend_action', 'BranchModule.type'
+                            )
+                        )
+                    )
+                ));
+
+                if(!empty($_branch_action_module)){
+                    foreach ($_branch_action_module as $key => $value) {
+                        $result[$value['BranchModule']['type']] = $value['BranchActionModule']['is_allow'];
+                    }
+                }
+            }
+
+            return $result;
+        }
+    }
 }
 ?>

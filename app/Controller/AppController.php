@@ -191,6 +191,14 @@ class AppController extends Controller {
 							)
 						)
 					));
+					
+					if($this->params['controller'] == 'revenues' && $this->params['action'] == 'index'){
+						// 327 = module revenue
+						$another_rule = $this->BranchActionModule->getRuleByModule(327, $group_branch_id);
+
+						$this->set('another_rule', $another_rule);
+					}
+					
 					$_allowController = Set::extract('/BranchModule/controller', $_branch_action_module);
 					$_allowAction = Set::extract('/BranchModule/action', $_branch_action_module);
 					$_allowController = array_unique($_allowController);

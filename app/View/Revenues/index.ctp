@@ -69,6 +69,7 @@
     <div class="box-body table-responsive">
         <div class="trigger-posting btn-group">
             <?php
+                if(!empty($another_rule['ubah'])){
                     echo $this->Html->tag('button', __('Posting'), array(
                         'class' => 'btn btn-default submit_butt',
                         'data-val' => 'posting'
@@ -77,6 +78,7 @@
                         'class' => 'btn btn-default submit_butt',
                         'data-val' => 'unposting'
                     ));
+                }
             ?>
         </div>
         <table class="table table-hover">
