@@ -3062,7 +3062,7 @@ var action_child_module = function(obj){
             url: '/ajax/auth_action_child_module/'+branch_id+'/'+id+'/',
             type: 'POST',
             success: function(response, status) {
-                self.parents('div.action-link-auth').html(response);
+                self.parents('.action-link-auth').html(response);
 
                 action_child_module($('.list-auth-action div[rel="'+id+'"] .action-child-module'));
 
@@ -3112,6 +3112,7 @@ function check_full_auth(parent, group_id, val, attr){
                     var target_box = parent.find('.auth-action-box');
                     
                     target_box.html($(response).filter('#box-action-auth').html()).show();
+                    parent.find('.trigger-collapse').attr('rel', 'times').html('<i class="fa fa-minus"></i>');
 
                     parent.find('.delete-custom-field').attr('group-branch-id', $(response).filter('#group_branch_id').html());
                     action_child_module();
