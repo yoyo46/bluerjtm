@@ -74,7 +74,7 @@
 	        <div class="form-group">
 				<?php 
 						echo $this->Form->input('tgl_ksu',array(
-							'label'=> __('Tanggal Klaim'), 
+							'label'=> __('Tgl Klaim'), 
 							'class'=>'form-control custom-date',
 							'type' => 'text',
 							'value' => (!empty($this->request->data['Ksu']['tgl_ksu'])) ? $this->request->data['Ksu']['tgl_ksu'] : date('d/m/Y')
@@ -98,7 +98,7 @@
             	<div class="form-group">
 					<?php 
 							echo $this->Form->input('date_atpm',array(
-								'label'=> __('Tanggal ATPM *'), 
+								'label'=> __('Tgl ATPM *'), 
 								'class'=>'form-control custom-date',
 								'type' => 'text',
 								'value' => (!empty($this->request->data['Ksu']['date_atpm'])) ? $this->request->data['Ksu']['date_atpm'] : date('d/m/Y'),

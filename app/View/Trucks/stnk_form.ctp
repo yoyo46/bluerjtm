@@ -154,7 +154,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('tgl_bayar', array(
-								'label'=> __('Tanggal Perpanjang *'), 
+								'label'=> __('Tgl Perpanjang *'), 
 								'class'=>'form-control custom-date',
 								'type' => 'text',
 								'required' => false,

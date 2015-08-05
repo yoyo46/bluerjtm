@@ -15,7 +15,7 @@
                 <dl class="dl-horizontal">
                     <dt><?php echo __('No. Pol')?></dt>
                     <dd><?php echo $kir['Kir']['no_pol'];?></dd>
-                    <dt><?php echo __('Tanggal Perpanjang')?></dt>
+                    <dt><?php echo __('Tgl Perpanjang')?></dt>
                     <dd><?php echo $this->Common->customDate($kir['Kir']['tgl_kir']);?></dd>
                     <dt><?php echo __('Tgl Berakhir KIR')?></dt>
                     <dd><?php echo $this->Common->customDate($kir['Kir']['from_date']);?></dd>

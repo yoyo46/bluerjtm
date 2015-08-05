@@ -11,7 +11,7 @@
                 'display' => true,
             ),
             'tgl_cash_bank' => array(
-                'name' => __('Tanggal Transaksi'),
+                'name' => __('Tgl Transaksi'),
                 'field_model' => 'CashBank.tgl_cash_bank',
                 'class' => 'text-center',
                 'display' => true,

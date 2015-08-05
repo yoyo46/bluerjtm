@@ -72,7 +72,7 @@
                     <dd><?php echo $truck['Truck']['atas_nama'];?></dd>
                     <dt><?php echo __('BPKB')?></dt>
                     <dd><?php echo $truck['Truck']['bpkb'];?></dd>
-                    <dt><?php echo __('Tanggal BPKB')?></dt>
+                    <dt><?php echo __('Tgl BPKB')?></dt>
                     <dd><?php echo $this->Common->customDate($truck['Truck']['tgl_bpkb'], 'd M Y', '-');?></dd>
                     <dt><?php echo __('No. STNK')?></dt>
                     <dd><?php echo $truck['Truck']['no_stnk'];?></dd>

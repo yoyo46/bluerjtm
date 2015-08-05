@@ -22,7 +22,7 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->label('date', __('Tanggal Bayar'));
+                            echo $this->Form->label('date', __('Tgl Bayar'));
                     ?>
                     <div class="input-group">
                         <div class="input-group-addon">

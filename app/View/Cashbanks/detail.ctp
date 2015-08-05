@@ -45,7 +45,7 @@
                         ?>
                     </dt>
                     <dd><?php echo !empty($cashbank['CashBank']['receiver'])?$cashbank['CashBank']['receiver']:false;?></dd>
-                    <dt><?php echo __('Tanggal Kas/Bank')?></dt>
+                    <dt><?php echo __('Tgl Kas/Bank')?></dt>
                     <dd><?php echo $this->Common->customDate($cashbank['CashBank']['tgl_cash_bank'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Keterangan')?></dt>
                     <dd><?php echo !empty($cashbank['CashBank']['description'])?$cashbank['CashBank']['description']:'-';?></dd>

@@ -19,7 +19,7 @@
 						<td><?php echo $Lku['Ttuj']['no_ttuj'];?></td>
 					</tr>
 					<tr>
-						<th width="30%"><?php echo __('Tanggal LKU');?></th>
+						<th width="30%"><?php echo __('Tgl LKU');?></th>
 						<td><?php echo date('d/m/Y', strtotime($Lku['Lku']['tgl_lku']));?></td>
 					</tr>
 					<tr>

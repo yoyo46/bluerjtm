@@ -24,7 +24,7 @@
 				<td><?php // echo !empty($KsuPayment['Coa']['name'])?$KsuPayment['Coa']['name']:false;?></td>
 			</tr> -->
 			<tr>
-				<th><?php echo __('Tanggal Pembayaran');?></th>
+				<th><?php echo __('Tgl Pembayaran');?></th>
 				<td><?php echo $this->Common->customDate($KsuPayment['KsuPayment']['tgl_bayar']);?></td>
 			</tr>
 			<tr>

@@ -179,7 +179,7 @@
 				        				<ul>
 				        					<?php
 						        				if(!empty($truk['Truck']['tgl_stnk'])){
-							        				$label = $this->Html->tag('label', 'Tanggal STNK');
+							        				$label = $this->Html->tag('label', 'Tgl STNK');
 							        				echo $this->Html->tag('li', sprintf('%s : %s', $label, $truk['Truck']['tgl_stnk']));
 							        			}
 							        		?>

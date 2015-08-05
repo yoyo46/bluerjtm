@@ -12,7 +12,7 @@
             //     'options' => $lkus,
             //     'class' => 'form-control lku-choose-ttuj',
             //     'label' => false,
-            //     'empty' => __('Pilih Tanggal TTUJ'),
+            //     'empty' => __('Pilih Tgl TTUJ'),
             //     'required' => false,
             //     'value' => (isset($this->request->data['LkuPaymentDetail'][$key]['lku_id']) && !empty($this->request->data['LkuPaymentDetail'][$key]['lku_id'])) ? $this->request->data['LkuPaymentDetail'][$key]['lku_id'] : ''
             // ));

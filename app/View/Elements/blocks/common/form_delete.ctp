@@ -26,7 +26,7 @@
 
 		echo $this->Form->input('canceled_date', array(
 			'class' => 'form-control custom-date',
-			'label' => __('Tanggal pembatalan'),
+			'label' => __('Tgl pembatalan'),
 			'div' => array(
 				'class' => 'form-group'
 			),

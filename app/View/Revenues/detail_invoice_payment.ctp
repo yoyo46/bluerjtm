@@ -24,7 +24,7 @@
 				<td><?php echo !empty($invoice['Coa']['name'])?$invoice['Coa']['name']:false;?></td>
 			</tr>
 			<tr>
-				<th><?php echo __('Tanggal Pembayaran');?></th>
+				<th><?php echo __('Tgl Pembayaran');?></th>
 				<td><?php echo $this->Common->customDate($invoice['InvoicePayment']['date_payment']);?></td>
 			</tr>
 			<!-- <tr>

@@ -33,7 +33,7 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                        echo $this->Form->label('date_from', 'Tanggal Bayar');
+                        echo $this->Form->label('date_from', 'Tgl Bayar');
                     ?>
                     <div class="row">
                         <div class="col-sm-6">

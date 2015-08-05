@@ -62,10 +62,10 @@
 	        	<?php 
 						echo $this->Form->input('date_payment',array(
 							'type' => 'text',
-							'label'=> __('Tanggal Pembayaran *'), 
+							'label'=> __('Tgl Pembayaran *'), 
 							'class'=>'form-control custom-date',
 							'required' => false,
-							'placeholder' => __('Tanggal Pembayaran'),
+							'placeholder' => __('Tgl Pembayaran'),
 							'value' => (!empty($this->request->data['InvoicePayment']['date_payment'])) ? $this->request->data['InvoicePayment']['date_payment'] : date('d/m/Y')
 						));
 				?>

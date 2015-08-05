@@ -22,7 +22,7 @@
                <div class="form-group">
                     <?php 
                             echo $this->Form->input('date',array(
-                                'label'=> __('Tanggal Prepayment'),
+                                'label'=> __('Tgl Prepayment'),
                                 'class'=>'form-control date-range',
                                 'required' => false,
                             ));

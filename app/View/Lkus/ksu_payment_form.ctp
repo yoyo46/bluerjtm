@@ -47,7 +47,7 @@
 				        <div class="form-group">
 							<?php 
 									echo $this->Form->input('tgl_bayar',array(
-										'label'=> __('Tanggal Bayar'), 
+										'label'=> __('Tgl Bayar'), 
 										'class'=>'form-control custom-date',
 										'type' => 'text',
 										'value' => (!empty($this->request->data['KsuPayment']['tgl_bayar'])) ? $this->request->data['KsuPayment']['tgl_bayar'] : date('d/m/Y')

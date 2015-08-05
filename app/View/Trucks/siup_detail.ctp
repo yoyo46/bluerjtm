@@ -15,7 +15,7 @@
                 <dl class="dl-horizontal">
                     <dt><?php echo __('No. Pol')?></dt>
                     <dd><?php echo $siup['Siup']['no_pol'];?></dd>
-                    <dt><?php echo __('Tanggal Perpanjang')?></dt>
+                    <dt><?php echo __('Tgl Perpanjang')?></dt>
                     <dd><?php echo $this->Common->customDate($siup['Siup']['tgl_siup']);?></dd>
                     <dt><?php echo __('Tgl Berakhir Ijin Usaha')?></dt>
                     <dd><?php echo $this->Common->customDate($siup['Siup']['from_date']);?></dd>

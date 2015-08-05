@@ -19,7 +19,7 @@
 						<td><?php echo $Ksu['Ttuj']['no_ttuj'];?></td>
 					</tr>
 					<tr>
-						<th width="30%"><?php echo __('Tanggal KSU');?></th>
+						<th width="30%"><?php echo __('Tgl KSU');?></th>
 						<td><?php echo date('d/m/Y', strtotime($Ksu['Ksu']['tgl_ksu']));?></td>
 					</tr>
 					<tr>
@@ -68,7 +68,7 @@
 	                	if(!empty($Ksu['Ksu']['kekurangan_atpm'])){
 	                ?>
 	                <tr>
-						<th width="30%"><?php echo __('Tanggal ATPM');?></th>
+						<th width="30%"><?php echo __('Tgl ATPM');?></th>
 						<td>
 						<?php 
 	                		if(!empty($Ksu['Ksu']['date_atpm'])){

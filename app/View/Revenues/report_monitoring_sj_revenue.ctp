@@ -48,7 +48,7 @@
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('date',array(
-                                'label'=> __('Tanggal Laporan'),
+                                'label'=> __('Tgl Laporan'),
                                 'class'=>'form-control date-range',
                                 'required' => false,
                             ));

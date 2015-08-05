@@ -41,10 +41,10 @@
         	<?php 
 					echo $this->Form->input('paid_date',array(
 						'type' => 'text',
-						'label'=> __('Tanggal Leasing *'), 
+						'label'=> __('Tgl Leasing *'), 
 						'class'=>'form-control custom-date',
 						'required' => false,
-						'placeholder' => __('Tanggal Leasing'),
+						'placeholder' => __('Tgl Leasing'),
 						'value' => (!empty($this->request->data['Leasing']['paid_date'])) ? $this->request->data['Leasing']['paid_date'] : date('d/m/Y')
 					));
 			?>
@@ -53,10 +53,10 @@
         	<?php 
 					echo $this->Form->input('date_first_installment',array(
 						'type' => 'text',
-						'label'=> __('Tanggal Angsuran Pertama *'), 
+						'label'=> __('Tgl Angsuran Pertama *'), 
 						'class'=>'form-control custom-date',
 						'required' => false,
-						'placeholder' => __('Tanggal Angsuran Pertama'),
+						'placeholder' => __('Tgl Angsuran Pertama'),
 					));
 			?>
         </div>
@@ -64,10 +64,10 @@
         	<?php 
 					echo $this->Form->input('date_last_installment',array(
 						'type' => 'text',
-						'label'=> __('Tanggal Angsuran Terakhir *'), 
+						'label'=> __('Tgl Angsuran Terakhir *'), 
 						'class'=>'form-control custom-date',
 						'required' => false,
-						'placeholder' => __('Tanggal Angsuran Terakhir'),
+						'placeholder' => __('Tgl Angsuran Terakhir'),
 					));
 			?>
         </div>

@@ -33,7 +33,7 @@
 				<?php 
 						echo $this->Form->input('Spk.date_spk',array(
 							'type' => 'text',
-							'label'=> __('Tanggal SPK *'), 
+							'label'=> __('Tgl SPK *'), 
 							'class'=>'form-control custom-date',
 							'required' => false,
 							'value' => (!empty($this->request->data['Spk']['date_spk'])) ? $this->request->data['Spk']['date_spk'] : date('d/m/Y')

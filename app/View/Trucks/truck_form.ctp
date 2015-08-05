@@ -287,14 +287,14 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('tgl_bpkb',__('Tanggal BPKB')); 
+						echo $this->Form->label('tgl_bpkb',__('Tgl BPKB')); 
 
 						echo $this->Form->input('tgl_bpkb',array(
 							'type' => 'text',
 							'label'=> false, 
 							'class'=>'form-control custom-date',
 							'required' => false,
-							'placeholder' => __('Tanggal BPKB')
+							'placeholder' => __('Tgl BPKB')
 						));
 					?>
 		        </div>

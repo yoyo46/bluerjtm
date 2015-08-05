@@ -40,7 +40,7 @@
                                 'options' => $ksus,
                                 'class' => 'form-control ksu-choose-ttuj',
                                 'label' => false,
-                                'empty' => __('Pilih Tanggal TTUJ'),
+                                'empty' => __('Pilih Tgl TTUJ'),
                                 'required' => false,
                                 'value' => (isset($this->request->data['KsuPaymentDetail'][$i]['ksu_id']) && !empty($this->request->data['KsuPaymentDetail'][$i]['ksu_id'])) ? $this->request->data['KsuPaymentDetail'][$i]['ksu_id'] : ''
                             ));
@@ -144,7 +144,7 @@
                             'options' => $ksus,
                             'class' => 'form-control ksu-choose-ttuj',
                             'label' => false,
-                            'empty' => __('Pilih Tanggal TTUJ'),
+                            'empty' => __('Pilih Tgl TTUJ'),
                             'required' => false,
                         ));
                     ?>

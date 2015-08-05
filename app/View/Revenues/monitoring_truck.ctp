@@ -122,7 +122,7 @@
 
                                                 $formLaka .= $this->Html->tag('p', sprintf(__('Lokasi: %s', $data['lokasi_laka'])));
                                                 $formLaka .= $this->Html->tag('p', sprintf(__('Kondisi Truk: %s', $data['truck_condition'])));
-                                                $formTtuj .= $this->Html->tag('p', sprintf(__('Tanggal LAKA: %s', $data['laka_date'])));
+                                                $formTtuj .= $this->Html->tag('p', sprintf(__('Tgl LAKA: %s', $data['laka_date'])));
 
                                                 if( !empty($data['laka_completed_date']) ) {
                                                     $formTtuj .= $this->Html->tag('p', sprintf(__('Selesai LAKA: %s', $data['laka_completed_date'])));

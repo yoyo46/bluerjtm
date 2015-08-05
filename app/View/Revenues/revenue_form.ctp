@@ -101,10 +101,10 @@
 						<?php 
 								echo $this->Form->input('Revenue.date_revenue',array(
 									'type' => 'text',
-									'label'=> __('Tanggal Revenue *'), 
+									'label'=> __('Tgl Revenue *'), 
 									'class'=>'form-control custom-date',
 									'required' => false,
-									'placeholder' => __('Tanggal Revenue'),
+									'placeholder' => __('Tgl Revenue'),
 									'id' => 'date_revenue',
 									'value' => (!empty($this->request->data['Revenue']['date_revenue'])) ? $this->request->data['Revenue']['date_revenue'] : date('d/m/Y')
 								));

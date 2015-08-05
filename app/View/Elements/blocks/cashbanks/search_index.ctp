@@ -53,7 +53,7 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                        echo $this->Form->label('date_from', 'Tanggal Transaksi');
+                        echo $this->Form->label('date_from', 'Tgl Transaksi');
                     ?>
                     <div class="row">
                         <div class="col-sm-6">

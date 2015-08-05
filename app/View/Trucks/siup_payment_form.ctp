@@ -102,7 +102,7 @@
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('tgl_siup', array(
-                                'label'=> __('Tanggal Perpanjang'), 
+                                'label'=> __('Tgl Perpanjang'), 
                                 'class'=>'form-control',
                                 'type' => 'text',
                                 'required' => false,

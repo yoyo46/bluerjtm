@@ -74,7 +74,7 @@
 	        <div class="form-group">
 				<?php 
 						echo $this->Form->input('tgl_lku',array(
-							'label'=> __('Tanggal Klaim'), 
+							'label'=> __('Tgl Klaim'), 
 							'class'=>'form-control custom-date',
 							'type' => 'text',
 							'value' => (!empty($this->request->data['Lku']['tgl_lku'])) ? $this->request->data['Lku']['tgl_lku'] : date('d/m/Y')
