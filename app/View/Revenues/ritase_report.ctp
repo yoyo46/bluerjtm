@@ -1,5 +1,7 @@
 <?php 
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
+        $cities = !empty($cities)?array_filter($cities):false;
+        
         if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
             $this->Html->addCrumb($sub_module_title);
             $addStyle = '';

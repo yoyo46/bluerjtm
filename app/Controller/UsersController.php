@@ -492,7 +492,13 @@ class UsersController extends AppController {
         $arr_list = array();
         if(!empty($employes)){
             foreach ($employes as $key => $value) {
-                $arr_list[$value['Employe']['id']] = sprintf('%s (%s)', $value['Employe']['full_name'], $value['EmployePosition']['name']);
+                $employe_name = $value['Employe']['full_name'];
+
+                if( !empty($value['EmployePosition']['name']) ) {
+                    $employe_name = sprintf('%s (%s)', $employe_name, $value['EmployePosition']['name']);
+                }
+
+                $arr_list[$value['Employe']['id']] = $employe_name;
             }
 
             $employes = $arr_list;
@@ -702,6 +708,7 @@ class UsersController extends AppController {
     }
 
     function employe_add(){
+        $this->loadModel('Employe');
         $this->set('sub_module_title', 'Tambah Karyawan');
         $this->doEmploye();
     }

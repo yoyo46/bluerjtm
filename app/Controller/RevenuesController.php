@@ -1918,6 +1918,11 @@ class RevenuesController extends AppController {
                 'CustomerNoType',
             ),
         ));
+        $defaultConditionsTtuj = array(
+            'Ttuj.is_pool'=> 1,
+            'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='=> $dateFrom,
+            'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <=' => $dateTo,
+        );
 
         if( !empty($data_action) ) {
             $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
@@ -1934,12 +1939,8 @@ class RevenuesController extends AppController {
                 );
 
                 $truck = $this->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
-                $conditionsTtuj = array(
-                    'Ttuj.is_pool'=> 1,
-                    'Ttuj.truck_id'=> $truck['Truck']['id'],
-                    'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='=> $dateFrom,
-                    'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <=' => $dateTo,
-                );
+                $conditionsTtuj = $defaultConditionsTtuj;
+                $conditionsTtuj['Ttuj.truck_id'] = $truck['Truck']['id'];
 
                 $total = $this->Ttuj->getData('count', array(
                     'conditions' => $conditionsTtuj
@@ -1986,18 +1987,19 @@ class RevenuesController extends AppController {
         } else {
             $this->set('active_menu', 'ritase_report');
             $cities = $this->Ttuj->getData('list', array(
-                'fields' => array(
-                    'ToCity.id', 'ToCity.name'
+                'conditions' => $defaultConditionsTtuj,
+                'group' => array(
+                    'Ttuj.to_city_id'
                 ),
-                'contain' => array(
-                    'ToCity'
+                'fields'=> array(
+                    'Ttuj.to_city_id', 
+                    'Ttuj.to_city_name', 
                 ),
                 'order' => array(
-                    'ToCity.name' => 'ASC',
+                    'Ttuj.to_city_name' => 'ASC',
                 ),
-                'group' => array(
-                    'ToCity.id',
-                )
+            ), true, array(
+                'status' => 'all',
             ));
         }
 
