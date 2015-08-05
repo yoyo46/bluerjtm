@@ -1,10 +1,9 @@
 <?php
-		$this->Html->addCrumb(__('Karyawan'), array(
-            'action' => 'employes',
-        ));
-		$this->Html->addCrumb(__('Posisi Karyawan'), array(
+		$urlBack = array(
             'action' => 'employe_positions',
-        ));
+            'admin' => false,
+        );
+		$this->Html->addCrumb(__('Posisi Karyawan'), $urlBack);
         $this->Html->addCrumb($sub_module_title);
 ?>
 <div class="box box-primary">
@@ -48,13 +47,10 @@
     <div class="box-footer text-center action">
     	<?php
 	    		echo $this->Form->button(__('Simpan'), array(
-					'div' => false, 
 					'class'=> 'btn btn-success',
 					'type' => 'submit',
 				));
-	    		echo $this->Html->link(__('Kembali'), array(
-					'action' => 'employe_positions', 
-				), array(
+	    		echo $this->Html->link(__('Kembali'), $urlBack, array(
 					'class'=> 'btn btn-default',
 				));
     	?>

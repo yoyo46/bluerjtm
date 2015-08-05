@@ -55,8 +55,8 @@
         	</thead>
         	<tbody class="cashbanks-auth-table" rel="<?php echo $idx; ?>">
 	            <?php 
-	            		if( !empty($this->request->data['ApprovalDetailPosition']['group_id'][$idx]) ) {
-				            foreach ($this->request->data['ApprovalDetailPosition']['group_id'][$idx] as $key => $group_id) {
+	            		if( !empty($this->request->data['ApprovalDetailPosition']['employe_position_id'][$idx]) ) {
+				            foreach ($this->request->data['ApprovalDetailPosition']['employe_position_id'][$idx] as $key => $employe_position_id) {
 								echo $this->element('blocks/settings/approval_users', array(
 									'parent_idx' => $idx,
 									'idx' => $key,

@@ -33,7 +33,7 @@
             <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('group_id',array(
+                            echo $this->Form->input('employe_position_id',array(
                                 'label'=> __('Posisi'),
                                 'class'=>'form-control',
                                 'required' => false,

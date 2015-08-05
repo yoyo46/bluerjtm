@@ -38,6 +38,7 @@
                     $dataMenu = array(
                         'users' => array(
                             'list_user', 'groups', 'employes',
+                            'employe_positions',
                         ),
                     );
 
@@ -54,6 +55,24 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Posisi Karyawan', array(
+                                'controller' => 'users',
+                                'action' => 'employe_positions',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'employe_positions' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Grup User', array(
+                                'controller' => 'users',
+                                'action' => 'groups',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'groups' )?'active':'',
+                            ));
+
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> list user', array(
                                 'controller' => 'users',
                                 'action' => 'list_user',
@@ -61,15 +80,6 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'list_user' )?'active':'',
-                            ));
-
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Posisi Karyawan', array(
-                                'controller' => 'users',
-                                'action' => 'groups',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'groups' )?'active':'',
                             ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Karyawan', array(

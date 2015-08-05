@@ -1,7 +1,7 @@
 <tr class="cash-auth-row" id="cash-auth" rel="<?php echo $idx; ?>">
     <td>
 		<?php 
-        		echo $this->Form->input('ApprovalDetailPosition.group_id.'.$parent_idx.'.'.$idx, array(
+        		echo $this->Form->input('ApprovalDetailPosition.employe_position_id.'.$parent_idx.'.'.$idx, array(
         			'label' => false,
         			'empty' => __('Pilih Posisi'),
         			'options' => $employePositions,

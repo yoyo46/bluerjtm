@@ -2,7 +2,7 @@
 class ApprovalDetailPosition extends AppModel {
 	var $name = 'ApprovalDetailPosition';
 	var $validate = array(
-        'group_id' => array(
+        'employe_position_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Karyawan harap dipilih'
@@ -15,9 +15,9 @@ class ApprovalDetailPosition extends AppModel {
 			'className' => 'ApprovalDetail',
 			'foreignKey' => 'approval_detail_id',
 		),
-        'Group' => array(
-            'className' => 'Group',
-            'foreignKey' => 'group_id',
+        'EmployePosition' => array(
+            'className' => 'EmployePosition',
+            'foreignKey' => 'employe_position_id',
         ),
 	);
 
@@ -29,11 +29,11 @@ class ApprovalDetailPosition extends AppModel {
                 'ApprovalDetailPosition.id' => 'ASC',
             ),
             'contain' => array(
-                'Group',
+                'EmployePosition',
             ),
             'fields' => array(),
             'group' => array(
-                'ApprovalDetailPosition.group_id',
+                'ApprovalDetailPosition.employe_position_id',
             ),
         );
 

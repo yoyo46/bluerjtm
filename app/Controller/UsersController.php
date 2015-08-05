@@ -233,23 +233,25 @@ class UsersController extends AppController {
             }
         }
 
-        $groups = $this->Group->find('all', array(
+        $this->paginate = $this->Group->getData('paginate', array(
             'conditions' => $conditions,
+            'limit' => 20,
         ));
+        $groups = $this->paginate('Group');
 
         $this->set('active_menu', 'groups');
-        $this->set('sub_module_title', __('Posisi Karyawan'));
+        $this->set('sub_module_title', __('Grup User'));
         $this->set('groups', $groups);
     }
 
     function group_add(){
-        $this->set('sub_module_title', 'Tambah Posisi Karyawan');
+        $this->set('sub_module_title', 'Tambah Grup User');
         $this->doGroup();
     }
 
     function group_edit($id){
         $this->loadModel('Group');
-        $this->set('sub_module_title', 'Rubah Posisi Karyawan');
+        $this->set('sub_module_title', 'Edit Grup User');
         $Group = $this->Group->find('first', array(
             'conditions' => array(
                 'Group.id' => $id
@@ -259,7 +261,7 @@ class UsersController extends AppController {
         if(!empty($Group)){
             $this->doGroup($id, $Group);
         }else{
-            $this->MkCommon->setCustomFlash(__('Posisi Karyawan tidak ditemukan'), 'error');  
+            $this->MkCommon->setCustomFlash(__('Grup User tidak ditemukan'), 'error');  
             $this->redirect(array(
                 'controller' => 'users',
                 'action' => 'groups'
@@ -282,18 +284,18 @@ class UsersController extends AppController {
 
             if($this->Group->validates($data)){
                 if($this->Group->save($data)){
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Posisi Karyawan'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Posisi Karyawan #%s'), $msg, $this->Group->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->MkCommon->setCustomFlash(__('Berhasil menyimpan Grup User'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Grup User #%s'), $msg, $this->Group->id), $this->user_data, $this->RequestHandler, $this->params );
                     $this->redirect(array(
                         'controller' => 'users',
                         'action' => 'groups'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Posisi Karyawan'), $msg), 'error');  
-                    $this->Log->logActivity( sprintf(__('Gagal %s Posisi Karyawan #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->MkCommon->setCustomFlash(__('Gagal menyimpan Grup User'), 'error');  
+                    $this->Log->logActivity( sprintf(__('Gagal %s Grup User #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 }
             }else{
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Posisi Karyawan'), $msg), 'error');
+                $this->MkCommon->setCustomFlash(__('Gagal menyimpan Grup User'), 'error');
             }
         }else{
             
@@ -303,6 +305,7 @@ class UsersController extends AppController {
             }
         }
 
+        $this->set('active_menu', 'groups');
         $this->render('group_form');
     }
 
@@ -324,14 +327,14 @@ class UsersController extends AppController {
             $this->Group->id = $id;
             $this->Group->set('status', $value);
             if($this->Group->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
+                $this->MkCommon->setCustomFlash(__('Berhasil menghapus Grup User'), 'success');
+                $this->Log->logActivity( sprintf(__('Berhasil menghapus Grup User #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                $this->MkCommon->setCustomFlash(__('Gagal menghapus Grup User'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal menghapus Grup User #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
             }
         }else{
-            $this->MkCommon->setCustomFlash(__('Posisi Karyawan tidak ditemukan.'), 'error');
+            $this->MkCommon->setCustomFlash(__('Grup User tidak ditemukan.'), 'error');
         }
 
         $this->redirect($this->referer());
@@ -415,9 +418,7 @@ class UsersController extends AppController {
             if($this->User->validates($data)){
                 $employe_id = (!empty($data['User']['employe_id'])) ? $data['User']['employe_id'] : '';
                 $data = $this->User->Employe->getMerge($data, $employe_id);
-
                 $data['User']['username'] = (!empty($data['User']['email'])) ? $data['User']['email'] : '';
-                $data['User']['group_id'] = (!empty($data['Employe']['group_id'])) ? $data['Employe']['group_id'] : '';
 
                 if( empty($id) ) {
                     $data['User']['password'] = $this->Auth->password($data['User']['password']);
@@ -426,6 +427,7 @@ class UsersController extends AppController {
 
                 if($this->User->save($data)){
                     $this->loadModel('Employe');
+
                     if(!empty($data_local['User']['employe_id']) && $data_local['User']['employe_id'] != $data['User']['employe_id']){
                         $this->Employe->updateAll(
                             array(
@@ -485,15 +487,12 @@ class UsersController extends AppController {
                     )
                 )
             ),
-            'contain' => array(
-                'Group'
-            )
         ));
 
         $arr_list = array();
         if(!empty($employes)){
             foreach ($employes as $key => $value) {
-                $arr_list[$value['Employe']['id']] = sprintf('%s (%s)', $value['Employe']['full_name'], $value['Group']['name']);
+                $arr_list[$value['Employe']['id']] = sprintf('%s (%s)', $value['Employe']['full_name'], $value['EmployePosition']['name']);
             }
 
             $employes = $arr_list;
@@ -538,134 +537,131 @@ class UsersController extends AppController {
         $this->redirect($this->referer());
     }
 
-    // function employe_positions(){
-    //     $this->loadModel('EmployePosition');
-    //     $options = array(
-    //         'conditions' => array(
-    //             'status' => 1
-    //         )
-    //     );
+    function employe_positions(){
+        $this->loadModel('EmployePosition');
+        $options = array(
+            'conditions' => array(
+                'status' => 1
+            )
+        );
 
-    //     if(!empty($this->params['named'])){
-    //         $refine = $this->params['named'];
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
 
-    //         if(!empty($refine['name'])){
-    //             $name = urldecode($refine['name']);
-    //             $this->request->data['EmployePosition']['name'] = $name;
-    //             $options['conditions']['EmployePosition.name LIKE '] = '%'.$name.'%';
-    //         }
-    //     }
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['EmployePosition']['name'] = $name;
+                $options['conditions']['EmployePosition.name LIKE '] = '%'.$name.'%';
+            }
+        }
 
-    //     $this->paginate = $this->EmployePosition->getData('paginate', $options);
-    //     $employe_positions = $this->paginate('EmployePosition');
+        $this->paginate = $this->EmployePosition->getData('paginate', $options);
+        $employe_positions = $this->paginate('EmployePosition');
 
-    //     $this->set('active_menu', 'employes');
-    //     $this->set('sub_module_title', 'Posisi Karyawan');
-    //     $this->set('employe_positions', $employe_positions);
-    // }
+        $this->set('active_menu', 'employe_positions');
+        $this->set('sub_module_title', 'Posisi Karyawan');
+        $this->set('employe_positions', $employe_positions);
+    }
 
-    // function employe_position_add(){
-    //     $this->set('sub_module_title', 'Tambah Posisi Karyawan');
-    //     $this->doEmployePosition();
-    // }
+    function employe_position_add(){
+        $this->set('sub_module_title', 'Tambah Posisi Karyawan');
+        $this->doEmployePosition();
+    }
 
-    // function employe_position_edit($id){
-    //     $this->loadModel('EmployePosition');
-    //     $this->set('sub_module_title', 'Rubah Posisi Karyawan');
-    //     $EmployePosition = $this->EmployePosition->getData('first', array(
-    //         'conditions' => array(
-    //             'EmployePosition.id' => $id
-    //         )
-    //     ));
+    function employe_position_edit($id){
+        $this->loadModel('EmployePosition');
+        $this->set('sub_module_title', 'Rubah Posisi Karyawan');
+        $EmployePosition = $this->EmployePosition->getData('first', array(
+            'conditions' => array(
+                'EmployePosition.id' => $id
+            )
+        ));
 
-    //     if(!empty($EmployePosition)){
-    //         $this->doEmployePosition($id, $EmployePosition);
-    //     }else{
-    //         $this->MkCommon->setCustomFlash(__('Posisi Karyawan tidak ditemukan'), 'error');  
-    //         $this->redirect(array(
-    //             'controller' => 'users',
-    //             'action' => 'employe_positions'
-    //         ));
-    //     }
-    // }
+        if(!empty($EmployePosition)){
+            $this->doEmployePosition($id, $EmployePosition);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Posisi Karyawan tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'users',
+                'action' => 'employe_positions'
+            ));
+        }
+    }
 
-    // function doEmployePosition($id = false, $data_local = false){
-    //     if(!empty($this->request->data)){
-    //         $data = $this->request->data;
-    //         if($id && $data_local){
-    //             $this->EmployePosition->id = $id;
-    //             $msg = 'merubah';
-    //         }else{
-    //             $this->loadModel('EmployePosition');
-    //             $this->EmployePosition->create();
-    //             $msg = 'menambah';
-    //         }
-    //         $this->EmployePosition->set($data);
+    function doEmployePosition($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            if($id && $data_local){
+                $this->EmployePosition->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->loadModel('EmployePosition');
+                $this->EmployePosition->create();
+                $msg = 'menambah';
+            }
+            $this->EmployePosition->set($data);
 
-    //         if($this->EmployePosition->validates($data)){
-    //             if($this->EmployePosition->save($data)){
-    //                 $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Posisi Karyawan'), $msg), 'success');
-    //                 $this->Log->logActivity( sprintf(__('Sukses %s Posisi Karyawan #%s'), $msg, $this->EmployePosition->id), $this->user_data, $this->RequestHandler, $this->params );
-    //                 $this->redirect(array(
-    //                     'controller' => 'users',
-    //                     'action' => 'employe_positions'
-    //                 ));
-    //             }else{
-    //                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Posisi Karyawan'), $msg), 'error');
-    //                 $this->Log->logActivity( sprintf(__('Gagal %s Posisi Karyawan #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
-    //             }
-    //         }else{
-    //             $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Posisi Karyawan'), $msg), 'error');
-    //         }
-    //     }else{
+            if($this->EmployePosition->validates($data)){
+                if($this->EmployePosition->save($data)){
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Posisi Karyawan'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Posisi Karyawan #%s'), $msg, $this->EmployePosition->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->redirect(array(
+                        'controller' => 'users',
+                        'action' => 'employe_positions'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Posisi Karyawan'), $msg), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal %s Posisi Karyawan #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Posisi Karyawan'), $msg), 'error');
+            }
+        }else{
             
-    //         if($id && $data_local){
+            if($id && $data_local){
                 
-    //             $this->request->data = $data_local;
-    //         }
-    //     }
+                $this->request->data = $data_local;
+            }
+        }
 
-    //     $this->set('active_menu', 'employes');
-    //     $this->render('employe_position_form');
-    // }
+        $this->set('active_menu', 'employe_positions');
+        $this->render('employe_position_form');
+    }
 
-    // function employe_position_toggle($id){
-    //     $this->loadModel('EmployePosition');
-    //     $locale = $this->EmployePosition->getData('first', array(
-    //         'conditions' => array(
-    //             'EmployePosition.id' => $id
-    //         )
-    //     ));
+    function employe_position_toggle($id){
+        $this->loadModel('EmployePosition');
+        $locale = $this->EmployePosition->getData('first', array(
+            'conditions' => array(
+                'EmployePosition.id' => $id
+            )
+        ));
 
-    //     if($locale){
-    //         $value = true;
-    //         if($locale['EmployePosition']['status']){
-    //             $value = false;
-    //         }
+        if($locale){
+            $value = true;
+            if($locale['EmployePosition']['status']){
+                $value = false;
+            }
 
-    //         $this->EmployePosition->id = $id;
-    //         $this->EmployePosition->set('status', $value);
-    //         if($this->EmployePosition->save()){
-    //             $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-    //             $this->Log->logActivity( sprintf(__('Sukses merubah status posisi karyawan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params );
-    //         }else{
-    //             $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-    //             $this->Log->logActivity( sprintf(__('Gagal merubah status posisi karyawan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
-    //         }
-    //     }else{
-    //         $this->MkCommon->setCustomFlash(__('Posisi Karyawan tidak ditemukan.'), 'error');
-    //     }
+            $this->EmployePosition->id = $id;
+            $this->EmployePosition->set('status', $value);
+            if($this->EmployePosition->save()){
+                $this->MkCommon->setCustomFlash(__('Berhasil menghapus data posisi karyawan'), 'success');
+                $this->Log->logActivity( sprintf(__('Berhasil menghapus data posisi karyawan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params );
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal menghapus data posisi karyawan'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal menghapus data posisi karyawan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Posisi Karyawan tidak ditemukan.'), 'error');
+        }
 
-    //     $this->redirect($this->referer());
-    // }
+        $this->redirect($this->referer());
+    }
 
     function employes(){
         $this->loadModel('Employe');
         $limit = 20;
         $options = array(
-            'contain' => array(
-                'Group'
-            ),
             'limit' => $limit,
         );
 
@@ -679,8 +675,8 @@ class UsersController extends AppController {
             }
             if(!empty($refine['position'])){
                 $position = urldecode($refine['position']);
-                $this->request->data['Employe']['group_id'] = $position;
-                $options['conditions']['Employe.group_id'] = $position;
+                $this->request->data['Employe']['employe_position_id'] = $position;
+                $options['conditions']['Employe.employe_position_id'] = $position;
             }
             if(!empty($refine['phone'])){
                 $phone = urldecode($refine['phone']);
@@ -694,10 +690,9 @@ class UsersController extends AppController {
         ));
         $employes = $this->paginate('Employe');
 
-        $this->loadModel('Group');
-        $employe_positions = $this->Group->getData('list', array(
+        $employe_positions = $this->Employe->EmployePosition->getData('list', array(
             'fields' => array(
-                'Group.id', 'Group.name'
+                'EmployePosition.id', 'EmployePosition.name'
             )
         ));
         $this->set('employe_positions', $employe_positions);
@@ -768,10 +763,9 @@ class UsersController extends AppController {
             }
         }
 
-        $this->loadModel('Group');
-        $employe_positions = $this->Group->getData('list', array(
+        $employe_positions = $this->Employe->EmployePosition->getData('list', array(
             'fields' => array(
-                'Group.id', 'Group.name'
+                'EmployePosition.id', 'EmployePosition.name'
             )
         ));
         $this->set('employe_positions', $employe_positions);
@@ -1030,7 +1024,11 @@ class UsersController extends AppController {
                 // debug($branch_modules);die();
 
                 $sub_module_title = sprintf('Otorisasi Group %s', $group['Group']['name']);
-                $this->set(compact('branches', 'sub_module_title', 'group_id', 'GroupBranches', 'branch_modules'));
+                $this->set('active_menu', 'groups');
+                $this->set(compact(
+                    'branches', 'sub_module_title', 'group_id', 
+                    'GroupBranches', 'branch_modules'
+                ));
                 /*End supporting data*/
             }else{
                 $this->redirect($this->referer());

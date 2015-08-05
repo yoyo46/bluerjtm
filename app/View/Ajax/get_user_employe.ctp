@@ -19,10 +19,10 @@
         <div class="form-group">
             <?php 
                     echo $this->Form->input('group_id',array(
-                        'label'=> __('Grup Karyawan'),
+                        'label'=> __('Grup User'),
                         'class'=>'form-control',
                         'required' => false,
-                        'empty' => __('Pilih Grup Karyawan'),
+                        'empty' => __('Pilih Grup User'),
                         'options' => $groups
                     ));
             ?>
@@ -69,7 +69,7 @@
         <tr>
             <?php 
                     echo $this->Html->tag('th', __('Nama'));
-                    echo $this->Html->tag('th', __('Alamat'));
+                    echo $this->Html->tag('th', __('Grup User'));
             ?>
         </tr>
         <?php

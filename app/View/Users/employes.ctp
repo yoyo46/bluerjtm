@@ -8,9 +8,9 @@
                 'field_model' => 'Employe.full_name',
                 'display' => true,
             ),
-            'group' => array(
+            'position' => array(
                 'name' => __('Posisi'),
-                'field_model' => 'Group.name',
+                'field_model' => 'EmployePosition.name',
                 'display' => true,
             ),
             'address' => array(
@@ -80,7 +80,7 @@
                         foreach ($employes as $key => $value) {
                             $value_data = $value['Employe'];
                             $id = $value_data['id'];
-                            $group_name = !empty($value['Group']['name'])?$value['Group']['name']:false;
+                            $position_name = !empty($value['EmployePosition']['name'])?$value['EmployePosition']['name']:false;
                             $full_name = !empty($value_data['full_name'])?$value_data['full_name']:false;
                             $activate = array(
                                 'controller' => 'users',
@@ -90,7 +90,7 @@
             ?>
             <tr>
                 <td><?php echo $full_name;?></td>
-                <td><?php echo $group_name;?></td>
+                <td><?php echo $position_name;?></td>
                 <td><?php echo $value_data['address'];?></td>
                 <td><?php echo $value_data['phone'];?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>

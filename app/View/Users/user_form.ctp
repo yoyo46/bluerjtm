@@ -40,6 +40,25 @@
 		</div>
 		<div class="form-group">
 			<?php 
+					$title = __('Grup User *');
+					echo $this->Form->label('group_id', $title, array(
+						'class'=>'control-label col-sm-2'
+					)); 
+			?>
+			<div class="col-sm-8">
+			<?php 
+					echo $this->Form->input('group_id',array(
+						'label'=>false,
+						'empty' => __('Pilih Grup User'),
+						'required' => false,
+						'class' => 'form-control',
+						'options' => $groups,
+					)); 
+			?>
+			</div>
+		</div>
+		<div class="form-group">
+			<?php 
 					$title = __('Email *');
 					echo $this->Form->label('email', $title, array(
 						'class'=>'control-label col-sm-2'

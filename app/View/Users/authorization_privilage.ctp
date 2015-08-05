@@ -1,8 +1,9 @@
 <?php
-		$this->Html->addCrumb(__('Group'), array(
+		$urlBack = array(
 			'controller' => 'users',
 			'action' => 'groups'
-		));
+		);
+		$this->Html->addCrumb(__('Group'), $urlBack);
 		$this->Html->addCrumb($sub_module_title);
 ?>
 	<div id="auth-box">
@@ -115,29 +116,33 @@
 	    ?>
 	</div>
 <?php
-	echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Tambah Otorisasi'), 'javascript:', array(
-		'class' => 'add-custom-field btn bg-maroon',
-		'action_type' => 'add_auth',
-		'escape' => false
-	));
+		echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Tambah Otorisasi'), 'javascript:', array(
+			'class' => 'add-custom-field btn bg-maroon',
+			'action_type' => 'add_auth',
+			'escape' => false
+		));
+		echo '&nbsp;';
+		echo $this->Html->link(__('Kembali'), $urlBack, array(
+			'class'=> 'btn btn-default',
+		));
 ?>
 <div class="hide" id="temp-auth">
     <?php 
-		echo $this->Form->input('city_id.',array(
-			'label'=> false, 
-			'class'=>'form-control auth-form-open',
-			'required' => false,
-			'options' => $branches,
-			'empty' => __('Pilih Cabang'),
-			'div' => false
-		));
+			echo $this->Form->input('city_id.',array(
+				'label'=> false, 
+				'class'=>'form-control auth-form-open',
+				'required' => false,
+				'options' => $branches,
+				'empty' => __('Pilih Cabang'),
+				'div' => false
+			));
 	?>
 </div>
 <div class="hide">
     <?php 
-		echo $this->Form->hidden('group_id',array(
-			'value'=> $group_id, 
-			'id' => 'group-id'
-		));
+			echo $this->Form->hidden('group_id',array(
+				'value'=> $group_id, 
+				'id' => 'group-id'
+			));
 	?>
 </div>

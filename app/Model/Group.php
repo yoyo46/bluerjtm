@@ -28,10 +28,11 @@ class Group extends AppModel {
             	'Group.status' => 1
             ),
             'order'=> array(
-                'Group.name' => 'ASC'
+                'Group.order' => 'ASC',
+                'Group.name' => 'ASC',
             ),
             'contain' => array(
-            	'GroupBranch'
+            	// 'GroupBranch'
             ),
             'fields' => array(),
         );

@@ -192,7 +192,7 @@
                     <tbody>
                         <?php
                                 foreach ($user_otorisasi_approvals as $key => $value) {
-                                    $position_name = !empty($value['Group']['name'])?$value['Group']['name']:false;
+                                    $position_name = !empty($value['EmployePosition']['name'])?$value['EmployePosition']['name']:false;
                                     $is_priority = !empty($value['ApprovalDetailPosition']['is_priority'])?$value['ApprovalDetailPosition']['is_priority']:false;
 
                                     if( !empty($is_priority) ) {

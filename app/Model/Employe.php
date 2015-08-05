@@ -20,7 +20,7 @@ class Employe extends AppModel {
                 'message' => 'No. Telepon harap diisi'
             ),
         ),
-        'group_id' => array(
+        'employe_position_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Posisi Karyawan harap diisi'
@@ -53,9 +53,9 @@ class Employe extends AppModel {
     }
 
     var $belongsTo = array(
-        'Group' => array(
-            'className' => 'Group',
-            'foreignKey' => 'group_id',
+        'EmployePosition' => array(
+            'className' => 'EmployePosition',
+            'foreignKey' => 'employe_position_id',
         ),
     );
 
@@ -70,7 +70,7 @@ class Employe extends AppModel {
                 'Employe.full_name' => 'ASC',
             ),
             'contain' => array(
-                'Group'
+                'EmployePosition'
             ),
             'fields' => array(),
             'group' => array(),

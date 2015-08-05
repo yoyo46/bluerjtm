@@ -4685,7 +4685,7 @@ class SettingsController extends AppController {
                     if( !$flagSave ) {
                         $result = false;
                     } else {
-                        if( !empty($data['ApprovalDetailPosition']['group_id'][$key]) ) {
+                        if( !empty($data['ApprovalDetailPosition']['employe_position_id'][$key]) ) {
                             $this->loadModel('ApprovalDetailPosition');
 
                             if( !empty($approval_detail_id) ) {
@@ -4696,12 +4696,12 @@ class SettingsController extends AppController {
                                 ));
                             }
 
-                            foreach ($data['ApprovalDetailPosition']['group_id'][$key] as $idx => $group_id) {
+                            foreach ($data['ApprovalDetailPosition']['employe_position_id'][$key] as $idx => $employe_position_id) {
                                 $is_priority = !empty($data['ApprovalDetailPosition']['is_priority'][$key][$idx])?$data['ApprovalDetailPosition']['is_priority'][$key][$idx]:'';
                                 
                                 $dataUser['ApprovalDetailPosition'] = array(
                                     'is_priority' => $is_priority,
-                                    'group_id' => $group_id,
+                                    'employe_position_id' => $employe_position_id,
                                     'approval_detail_id' => $approval_detail_id,
                                 );
 
@@ -4751,7 +4751,7 @@ class SettingsController extends AppController {
             if(!empty($refine['position'])){
                 $name = urldecode($refine['position']);
                 $this->request->data['Approval']['position'] = $name;
-                $options['conditions']['Group.name LIKE '] = '%'.$name.'%';
+                $options['conditions']['EmployePosition.name LIKE '] = '%'.$name.'%';
             }
         }
 
@@ -4791,7 +4791,7 @@ class SettingsController extends AppController {
 
     function doApproval( $id = false, $approval = false ){
         $this->loadModel('ApprovalModule');
-        $this->loadModel('Group');
+        $this->loadModel('EmployePosition');
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -4853,10 +4853,10 @@ class SettingsController extends AppController {
 
                     if( !empty($approvalDetailPosition['ApprovalDetailPosition']) ) {
                         foreach ($approvalDetailPosition['ApprovalDetailPosition'] as $key_user => $approvalPosition) {
-                            $group_id = !empty($approvalPosition['ApprovalDetailPosition']['group_id'])?$approvalPosition['ApprovalDetailPosition']['group_id']:false;
+                            $employe_position_id = !empty($approvalPosition['ApprovalDetailPosition']['employe_position_id'])?$approvalPosition['ApprovalDetailPosition']['employe_position_id']:false;
                             $is_priority = !empty($approvalPosition['ApprovalDetailPosition']['is_priority'])?$approvalPosition['ApprovalDetailPosition']['is_priority']:false;
 
-                            $this->request->data['ApprovalDetailPosition']['group_id'][$key][$key_user] = $group_id;
+                            $this->request->data['ApprovalDetailPosition']['employe_position_id'][$key][$key_user] = $employe_position_id;
                             $this->request->data['ApprovalDetailPosition']['is_priority'][$key][$key_user] = $is_priority;
                         }
                     }
@@ -4872,7 +4872,7 @@ class SettingsController extends AppController {
                 'ApprovalModule.name' => 'ASC',
             ),
         ));
-        $employePositions = $this->Group->getData('list');
+        $employePositions = $this->EmployePosition->getData('list');
 
         $this->set('active_menu', 'approval_setting');
         $this->set(compact(

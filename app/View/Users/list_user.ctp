@@ -14,7 +14,7 @@
                 'display' => true,
             ),
             'group' => array(
-                'name' => __('Posisi'),
+                'name' => __('Grup User'),
                 'field_model' => 'Group.name',
                 'display' => true,
             ),

@@ -29,7 +29,7 @@
         </div>
         <div class="form-group">
         	<?php 
-					echo $this->Form->input('group_id',array(
+					echo $this->Form->input('employe_position_id',array(
 						'label'=> __('Posisi yg Mengajukan *'), 
 						'class'=>'form-control',
 						'required' => false,
@@ -86,7 +86,7 @@
 ?>
 <div id="form-authorize" class="hide">
 	<?php 
-			echo $this->Form->input('ApprovalDetailPosition.group_id.', array(
+			echo $this->Form->input('ApprovalDetailPosition.employe_position_id.', array(
 				'label' => false,
 				'empty' => __('Pilih Posisi'),
 				'options' => $employePositions,

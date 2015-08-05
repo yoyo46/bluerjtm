@@ -12,7 +12,7 @@ class Approval extends AppModel {
                 'message' => 'Pengaturan approval sudah terdaftar'
             ),
         ),
-        'group_id' => array(
+        'employe_position_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Posisi yg Mengajukan dipilih'
@@ -25,9 +25,9 @@ class Approval extends AppModel {
 			'className' => 'ApprovalModule',
 			'foreignKey' => 'approval_module_id',
 		),
-        'Group' => array(
-            'className' => 'Group',
-            'foreignKey' => 'group_id',
+        'EmployePosition' => array(
+            'className' => 'EmployePosition',
+            'foreignKey' => 'employe_position_id',
         ),
 	);
 
@@ -41,12 +41,12 @@ class Approval extends AppModel {
     function checkUniq() {
         $id = $this->id;
         $approval_module_id = !empty($this->data['Approval']['approval_module_id'])?trim($this->data['Approval']['approval_module_id']):false;
-        $group_id = !empty($this->data['Approval']['group_id'])?trim($this->data['Approval']['group_id']):false;
+        $employe_position_id = !empty($this->data['Approval']['employe_position_id'])?trim($this->data['Approval']['employe_position_id']):false;
         $check = $this->getData('first', array(
             'conditions' => array(
                 'Approval.id <>' => $id,
                 'Approval.approval_module_id' => $approval_module_id,
-                'Approval.group_id' => $group_id,
+                'Approval.employe_position_id' => $employe_position_id,
             ),
             'contain' => false,
         ));
@@ -65,7 +65,7 @@ class Approval extends AppModel {
             'order'=> array(),
             'contain' => array(
                 'ApprovalModule',
-                'Group',
+                'EmployePosition',
             ),
             'fields' => array(),
             'group' => array(),
@@ -118,12 +118,12 @@ class Approval extends AppModel {
         return $result;
     }
 
-    function getUserOtorisasiApproval ( $modul, $group_id, $grand_total, $cash_bank_id = false ) {
+    function getUserOtorisasiApproval ( $modul, $employe_position_id, $grand_total, $cash_bank_id = false ) {
         $result = false;
         $data = $this->getData('first', array(
             'conditions' => array(
                 'ApprovalModule.slug' => $modul,
-                'Approval.group_id' => $group_id,
+                'Approval.employe_position_id' => $employe_position_id,
             ),
         ));
         
@@ -186,9 +186,9 @@ class Approval extends AppModel {
         if( !empty($data) ) {
             foreach ($data as $key => $value) {
                 if( !empty($value['ApprovalDetailPosition']['is_priority']) ) {
-                    $result['Priority'][] = $value['ApprovalDetailPosition']['group_id'];
+                    $result['Priority'][] = $value['ApprovalDetailPosition']['employe_position_id'];
                 } else {
-                    $result['Normal'][] = $value['ApprovalDetailPosition']['group_id'];
+                    $result['Normal'][] = $value['ApprovalDetailPosition']['employe_position_id'];
                 }
             }
         }

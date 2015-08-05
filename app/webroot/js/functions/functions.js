@@ -986,7 +986,7 @@ var add_custom_field = function( obj ){
                 var objParentTr = objParentTable + ' #cash-auth[rel="0"]';
 
                 $(objParentTr+' .approval-position').addClass('approval-position-0');
-                $(objParentTr+' .approval-position').attr('name', 'data[ApprovalDetailPosition][group_id]['+count_next+'][0]');
+                $(objParentTr+' .approval-position').attr('name', 'data[ApprovalDetailPosition][employe_position_id]['+count_next+'][0]');
 
                 delete_custom_field( $(objParentTr+' .delete-custom-field') );
                 add_custom_field( $(objParentTable+' .add-custom-field') );
@@ -1029,7 +1029,7 @@ var add_custom_field = function( obj ){
 
                 objParentTable.append(content);
                 $(objParentTr+' .approval-position').addClass('approval-position-'+count_next);
-                $(objParentTr+' .approval-position').attr('name', 'data[ApprovalDetailPosition][group_id]['+rel+']['+count_next+']');
+                $(objParentTr+' .approval-position').attr('name', 'data[ApprovalDetailPosition][employe_position_id]['+rel+']['+count_next+']');
 
                 delete_custom_field( $(objParentTr+' .delete-custom-field') );
                 ajaxModal( $(objParentTr+' .ajaxModal') );

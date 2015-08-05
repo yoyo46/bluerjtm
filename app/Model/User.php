@@ -45,7 +45,7 @@ class User extends AppModel {
         'group_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'group harap dipilih'
+                'message' => 'Grup user harap dipilih'
             ),
         ),
         'email' => array(
@@ -121,7 +121,7 @@ class User extends AppModel {
             return null;
         }
         if (isset($this->data['User']['group_id'])) {
-        $groupId = $this->data['User']['group_id'];
+            $groupId = $this->data['User']['group_id'];
         } else {
             $groupId = $this->field('group_id');
         }

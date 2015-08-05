@@ -555,14 +555,14 @@ class CashbanksController extends AppController {
             $cashbank = $this->User->getMerge($cashbank, $user_id);
             $user_employe_id = !empty($cashbank['User']['employe_id'])?$cashbank['User']['employe_id']:false;
             $cashbank = $this->Employe->getMerge($cashbank, $user_employe_id);
-            $user_position_id = !empty($cashbank['Employe']['group_id'])?$cashbank['Employe']['group_id']:false;
+            $user_position_id = !empty($cashbank['Employe']['employe_position_id'])?$cashbank['Employe']['employe_position_id']:false;
             $user_otorisasi_approvals = $this->Approval->getUserOtorisasiApproval('cash-bank', $user_position_id, $grand_total, $id);
             $position_approval = $this->Approval->getPositionPriority($user_otorisasi_approvals);
             $position_priority = !empty($position_approval['Priority'])?$position_approval['Priority']:false;
             $position_normal = !empty($position_approval['Normal'])?$position_approval['Normal']:false;
 
             if( !empty($user_otorisasi_approvals) ) {
-                $position_otorisasi_approvals = Set::extract('/Group/id', $user_otorisasi_approvals);
+                $position_otorisasi_approvals = Set::extract('/EmployePosition/id', $user_otorisasi_approvals);
             } else {
                 $position_otorisasi_approvals = array();
             }
@@ -570,7 +570,7 @@ class CashbanksController extends AppController {
             $approval = $this->user_data;
             $approval_employe_id = !empty($approval['employe_id'])?$approval['employe_id']:false;
             $approval = $this->Employe->getMerge($approval, $approval);
-            $approval_position_id = !empty($approval['Employe']['group_id'])?$approval['Employe']['group_id']:false;
+            $approval_position_id = !empty($approval['Employe']['employe_position_id'])?$approval['Employe']['employe_position_id']:false;
             $idx_arr_otorisasi = array_search($approval_position_id, $position_otorisasi_approvals);
             $show_approval = false;
 
@@ -602,7 +602,7 @@ class CashbanksController extends AppController {
                 if( !empty($show_approval) ){
                     $data = $this->request->data;
                     $is_priority = !empty($dataOtorisasiApproval['ApprovalDetailPosition']['is_priority'])?$dataOtorisasiApproval['ApprovalDetailPosition']['is_priority']:false;
-                    $group_id = !empty($dataOtorisasiApproval['ApprovalDetailPosition']['group_id'])?$dataOtorisasiApproval['ApprovalDetailPosition']['group_id']:false;
+                    $employe_position_id = !empty($dataOtorisasiApproval['ApprovalDetailPosition']['employe_position_id'])?$dataOtorisasiApproval['ApprovalDetailPosition']['employe_position_id']:false;
                     $status_document = !empty($data['CashBankAuth']['status_document'])?$data['CashBankAuth']['status_document']:false;
 
                     $data['CashBankAuth']['cash_bank_id'] = $id;
@@ -623,11 +623,11 @@ class CashbanksController extends AppController {
 
                     if( !empty($position_auths) ) {
                         foreach ($position_auths as $key => $value) {
-                            if( !empty($value['ApprovalDetailPosition']['group_id']) ) {
+                            if( !empty($value['ApprovalDetailPosition']['employe_position_id']) ) {
                                 if( !empty($value['ApprovalDetailPosition']['is_priority']) ) {
-                                    $position_priority_auth[] = $value['ApprovalDetailPosition']['group_id'];
+                                    $position_priority_auth[] = $value['ApprovalDetailPosition']['employe_position_id'];
                                 } else {
-                                    $position_normal_auth[] = $value['ApprovalDetailPosition']['group_id'];
+                                    $position_normal_auth[] = $value['ApprovalDetailPosition']['employe_position_id'];
                                 }
                             }
                         }
@@ -636,10 +636,10 @@ class CashbanksController extends AppController {
                     $position_priority_auth = array_values($position_priority_auth);
 
                     if( !empty($is_priority) ) {
-                        $position_priority_auth[] = $group_id;
+                        $position_priority_auth[] = $employe_position_id;
                         $position_priority_auth = array_unique($position_priority_auth);
                     } else {
-                        $position_normal_auth[] = $group_id;
+                        $position_normal_auth[] = $employe_position_id;
                         $position_normal_auth = array_unique($position_normal_auth);
                     }
 

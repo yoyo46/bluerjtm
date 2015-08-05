@@ -941,7 +941,7 @@ class AjaxController extends AppController {
 		));
 		$totalPPN = $this->Revenue->getData('first', array(
 			'conditions' => $conditions,
-			'group_id' => array(
+			'group' => array(
 				'Revenue.customer_id'
 			),
 			'fields' => array(
@@ -950,7 +950,7 @@ class AjaxController extends AppController {
 		));
 		$totalPPh = $this->Revenue->getData('first', array(
 			'conditions' => $conditions,
-			'group_id' => array(
+			'group' => array(
 				'Revenue.customer_id'
 			),
 			'fields' => array(
@@ -1740,8 +1740,8 @@ class AjaxController extends AppController {
             'User.status' => 1
         );
 
-        if(!empty($this->request->data['User']['full_name'])){
-			$default_conditions['User.full_name LIKE'] = '%'.$this->request->data['User']['full_name'].'%';
+        if(!empty($this->request->data['Employe']['full_name'])){
+			$default_conditions['CONCAT(Employe.first_name,\' \',Employe.last_name) LIKE'] = '%'.$this->request->data['Employe']['full_name'].'%';
 		}
 		if(!empty($this->request->data['User']['group_id'])){
 			$default_conditions['User.group_id'] = $this->request->data['User']['group_id'];
