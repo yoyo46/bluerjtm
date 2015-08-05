@@ -1418,10 +1418,10 @@ class SettingsController extends AppController {
             $data['UangKuli']['uang_kuli'] = $this->MkCommon->convertPriceToString($data['UangKuli']['uang_kuli'], 0);
             $data['UangKuli']['category'] = $data_action;
 
-            if( !empty($data['UangKuli']['uang_kuli_type']) && $data['UangKuli']['uang_kuli_type'] == 'per_unit' ) {
-                $data['UangKuli']['capacity'] = 0;
-            }
-            
+            // if( !empty($data['UangKuli']['uang_kuli_type']) && $data['UangKuli']['uang_kuli_type'] == 'per_unit' ) {
+            //     $data['UangKuli']['capacity'] = 0;
+            // }
+
             $this->UangKuli->set($data);
 
             if($this->UangKuli->validates($data)){
@@ -1554,11 +1554,11 @@ class SettingsController extends AppController {
             $this->UangKuli->id = $id;
             $this->UangKuli->set('status', $value);
             if($this->UangKuli->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Uang Kuli ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params );
+                $this->MkCommon->setCustomFlash(__('Berhasil menghapus uang kuli'), 'success');
+                $this->Log->logActivity( sprintf(__('Berhasil menghapus uang kuli ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params );
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Uang Kuli ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
+                $this->MkCommon->setCustomFlash(__('Gagal menghapus uang kuli'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal menghapus uang kuli ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );      
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Uang Kuli tidak ditemukan.'), 'error');

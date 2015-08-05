@@ -24,12 +24,12 @@ class UangKuli extends AppModel {
                 'message' => 'Customer harap dipilih'
             ),
         ),
-        'capacity' => array(
-            'checkCapacity' => array(
-                'rule' => array('checkCapacity'),
-                'message' => 'Kapasitas Muat harap diisi'
-            ),
-        ),
+        // 'capacity' => array(
+        //     'checkCapacity' => array(
+        //         'rule' => array('checkCapacity'),
+        //         'message' => 'Kapasitas Muat harap diisi'
+        //     ),
+        // ),
         'uang_kuli_type' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -121,19 +121,19 @@ class UangKuli extends AppModel {
         return $result;
     }
 
-    function checkCapacity($data) {
-        $uang_kuli_type = !empty($this->data['UangKuli']['uang_kuli_type'])?$this->data['UangKuli']['uang_kuli_type']:false;
+    // function checkCapacity($data) {
+    //     $uang_kuli_type = !empty($this->data['UangKuli']['uang_kuli_type'])?$this->data['UangKuli']['uang_kuli_type']:false;
 
-        if( $uang_kuli_type == 'per_truck' ) {
-            if( empty($this->data['UangKuliCapacity']['capacity']) ) {
-                return false;
-            } else {
-                return true; 
-            }
-        } else {
-            return true; 
-        }
-    }
+    //     if( $uang_kuli_type == 'per_truck' ) {
+    //         if( empty($this->data['UangKuliCapacity']['capacity']) ) {
+    //             return false;
+    //         } else {
+    //             return true; 
+    //         }
+    //     } else {
+    //         return true; 
+    //     }
+    // }
 
     function checkUniq($data) {
         $city_id = !empty($this->data['UangKuli']['city_id'])?trim($this->data['UangKuli']['city_id']):false;
