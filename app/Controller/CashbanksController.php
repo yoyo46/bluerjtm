@@ -173,7 +173,6 @@ class CashbanksController extends AppController {
 
     function doCashBank($id = false, $data_local = false){
         $this->loadModel('Coa');
-        $this->loadModel('User');
         $prepayment_out_id = !empty($data_local['CashBank']['document_id'])?$data_local['CashBank']['document_id']:false;
 
         if(!empty($this->request->data)){
@@ -538,7 +537,6 @@ class CashbanksController extends AppController {
 
         if( !empty($cashbank) ) {
             $this->loadModel('Employe');
-            $this->loadModel('User');
             $this->loadModel('Approval');
 
             // $cashbank_auth_id = Set::extract('/CashBankAuthMaster/employe_id', $cash_bank_auth_master);
@@ -818,7 +816,6 @@ class CashbanksController extends AppController {
     }
 
     // function approval_setting(){
-    //     $this->loadModel('User');
     //     $this->loadModel('CashBankAuthMaster');
     //     $cash_bank_auth_master = $this->CashBankAuthMaster->find('all');
 

@@ -165,10 +165,12 @@ class User extends AppModel {
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
-            if(!empty($options['order'])){
+            if(isset($options['order'])){
                 $default_options['order'] = $options['order'];
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['fields'])){

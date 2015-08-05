@@ -3488,7 +3488,6 @@ class RevenuesController extends AppController {
         $this->loadModel('Revenue');
         $this->loadModel('Customer');
         $this->loadModel('Bank');
-        $this->loadModel('User');
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -3708,7 +3707,6 @@ class RevenuesController extends AppController {
         if(!empty($invoice)){
             $this->loadModel('Customer');
             $this->loadModel('Bank');
-            $this->loadModel('User');
             $this->loadModel('Revenue');
 
             $invoice = $this->Customer->getMerge($invoice, $invoice['Invoice']['customer_id']);
@@ -5600,7 +5598,6 @@ class RevenuesController extends AppController {
         $this->loadModel('City');
         $this->loadModel('Customer');
         $this->loadModel('Ttuj');
-        $this->loadModel('User');
 
         $module_title = __('Print Invoice HSO');
         $this->set('sub_module_title', trim($module_title));

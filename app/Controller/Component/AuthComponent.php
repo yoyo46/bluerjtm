@@ -372,6 +372,8 @@ class AuthComponent extends Component {
 					'User.password' => $password,
 					'User.status' => 1,
 				),
+				'contain' => false,
+				'order' => false,
 			));
 
 			if( !empty($data) ) {

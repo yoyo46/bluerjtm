@@ -278,7 +278,6 @@ class SettingsController extends AppController {
         }
 
         $this->loadModel('Bank');
-        $this->loadModel('User');
         $this->loadModel('CustomerGroup');
 
         $customerTypes  = $this->Customer->CustomerType->getData('list', false, true);

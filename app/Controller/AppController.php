@@ -43,7 +43,9 @@ class AppController extends Controller {
 	);
 
 	var $uses = array(
-		'Log', 'Module', 'Notification', 'GroupBranch', 'BranchActionModule'
+		'Log', 'Module', 'Notification', 
+		'GroupBranch', 'BranchActionModule',
+		'User'
 	);
 
 	function beforeFilter() {
@@ -126,8 +128,13 @@ class AppController extends Controller {
 	    if($logged_in){
 			$this->user_id = $this->Auth->user('id');
 			$GroupId = $this->Auth->user('group_id');
-			$User = $this->user_data = $this->Auth->user();
+			$User = $this->Auth->user();
 
+			if( !empty($User['employe_id']) ) {
+				$User = $this->User->Employe->getMerge($User, $User['employe_id']);
+			}
+
+			$this->user_data = $User;
 			/*Auth*/
 			$controller_allowed = array(
 				'users', 'pages'
@@ -277,8 +284,6 @@ class AppController extends Controller {
 				));
 				
 				if(!empty($overlead_time_destination) || !empty($overlead_time_pool)){
-					$this->loadModel('User');
-
 					$list_id_user_admin = $this->User->getData('list', array(
 						'conditions' => array(
 							'User.group_id' => 1,

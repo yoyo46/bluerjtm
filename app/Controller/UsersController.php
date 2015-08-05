@@ -3,7 +3,6 @@ App::uses('AppController', 'Controller');
 class UsersController extends AppController {
 
 	public $name = 'Users';
-    public $uses = array('User');
 	public $components = array('RjUser');
 	
 	function beforeFilter() {
@@ -341,7 +340,6 @@ class UsersController extends AppController {
     }
 
     function list_user(){
-        $this->loadModel('User');
         $default_options = array(
             'contain' => array(
                 'Group',
@@ -375,13 +373,11 @@ class UsersController extends AppController {
     }
 
     function add(){
-        $this->loadModel('User');
         $this->set('sub_module_title', 'Tambah User');
         $this->doUser();
     }
 
     function edit($id){
-        $this->loadModel('User');
         $this->set('sub_module_title', 'Rubah User');
         $User = $this->User->getData('first', array(
             'conditions' => array(
@@ -512,7 +508,6 @@ class UsersController extends AppController {
     }
 
     function toggle($id){
-        $this->loadModel('User');
         $locale = $this->User->getData('first', array(
             'conditions' => array(
                 'User.id' => $id

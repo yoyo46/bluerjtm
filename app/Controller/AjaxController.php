@@ -1734,8 +1734,6 @@ class AjaxController extends AppController {
 	}
 
 	function getUserEmploye($rel = false, $user_id = false){
-		$this->loadModel('User');
-
 		$default_conditions = array(
             'User.status' => 1
         );
