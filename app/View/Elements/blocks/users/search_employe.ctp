@@ -1,3 +1,7 @@
+<?php 
+        $cities = !empty($cities)?$cities:false;
+        $employe_positions = !empty($employe_positions)?$employe_positions:false;
+?>
 <div class="box box-primary">
     <div class="box-header">
         <h3 class="box-title">Pencarian</h3>
@@ -18,7 +22,7 @@
             ));
         ?>
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('name',array(
@@ -29,8 +33,18 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('phone',array(
+                                'label'=> __('No. Telp'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('No. Telp')
+                            ));
+                    ?>
+                </div>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('employe_position_id',array(
@@ -42,15 +56,14 @@
                             ));
                     ?>
                 </div>
-            </div>
-            <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('phone',array(
-                                'label'=> __('No. Telp'),
+                            echo $this->Form->input('branch_id',array(
+                                'label'=> __('Cabang'), 
                                 'class'=>'form-control',
                                 'required' => false,
-                                'placeholder' => __('No. Telp')
+                                'empty' => __('Pilih Cabang'),
+                                'options' => $cities
                             ));
                     ?>
                 </div>

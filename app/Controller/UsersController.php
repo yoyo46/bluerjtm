@@ -684,22 +684,33 @@ class UsersController extends AppController {
                 $this->request->data['Employe']['phone'] = $phone;
                 $options['conditions']['Employe.phone LIKE '] = '%'.$phone.'%';
             }
+            if(!empty($refine['branch'])){
+                $value = urldecode($refine['branch']);
+                $this->request->data['Employe']['branch_id'] = $value;
+                $options['conditions']['Employe.branch_id'] = $value;
+            }
         }
 
         $this->paginate = $this->Employe->getData('paginate', $options, true, array(
             'status' => 'all',
         ));
         $employes = $this->paginate('Employe');
-
         $employe_positions = $this->Employe->EmployePosition->getData('list', array(
             'fields' => array(
                 'EmployePosition.id', 'EmployePosition.name'
             )
         ));
-        $this->set('employe_positions', $employe_positions);
+        $cities = $this->Employe->City->branchCities('list', array(
+            'fields' => array(
+                'City.id', 'City.name'
+            )
+        ));
+
         $this->set('active_menu', 'employes');
         $this->set('sub_module_title', 'Karyawan');
-        $this->set('employes', $employes);
+        $this->set(compact(
+            'employes', 'employe_positions', 'cities'
+        ));
     }
 
     function employe_add(){
@@ -770,8 +781,15 @@ class UsersController extends AppController {
                 'EmployePosition.id', 'EmployePosition.name'
             )
         ));
-        $this->set('employe_positions', $employe_positions);
+        $cities = $this->Employe->City->branchCities('list', array(
+            'fields' => array(
+                'City.id', 'City.name'
+            )
+        ));
         $this->set('active_menu', 'employes');
+        $this->set(compact(
+            'employe_positions', 'cities'
+        ));
         $this->render('employe_form');
     }
 

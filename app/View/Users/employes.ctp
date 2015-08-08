@@ -13,6 +13,11 @@
                 'field_model' => 'EmployePosition.name',
                 'display' => true,
             ),
+            'cabang' => array(
+                'name' => __('Cabang'),
+                'field_model' => 'City.name',
+                'display' => true,
+            ),
             'address' => array(
                 'name' => __('Alamat'),
                 'field_model' => 'Employe.address',
@@ -78,10 +83,14 @@
             <?php
                     if(!empty($employes)){
                         foreach ($employes as $key => $value) {
-                            $value_data = $value['Employe'];
-                            $id = $value_data['id'];
-                            $position_name = !empty($value['EmployePosition']['name'])?$value['EmployePosition']['name']:false;
-                            $full_name = !empty($value_data['full_name'])?$value_data['full_name']:false;
+                            $id = $this->Common->filterEmptyField($value, 'Employe', 'id');
+                            $full_name = $this->Common->filterEmptyField($value, 'Employe', 'full_name');
+                            $address = $this->Common->filterEmptyField($value, 'Employe', 'address');
+                            $phone = $this->Common->filterEmptyField($value, 'Employe', 'phone');
+                            $created = $this->Common->filterEmptyField($value, 'Employe', 'created');
+                            $status = $this->Common->filterEmptyField($value, 'Employe', 'status');
+                            $position_name = $this->Common->filterEmptyField($value, 'EmployePosition', 'name');
+                            $branch_name = $this->Common->filterEmptyField($value, 'City', 'name');
                             $activate = array(
                                 'controller' => 'users',
                                 'action' => 'employe_toggle',
@@ -91,12 +100,13 @@
             <tr>
                 <td><?php echo $full_name;?></td>
                 <td><?php echo $position_name;?></td>
-                <td><?php echo $value_data['address'];?></td>
-                <td><?php echo $value_data['phone'];?></td>
-                <td><?php echo $this->Common->customDate($value_data['created']);?></td>
+                <td><?php echo $branch_name;?></td>
+                <td><?php echo $address;?></td>
+                <td><?php echo $phone;?></td>
+                <td><?php echo $this->Common->customDate($created, 'd M Y');?></td>
                 <td>
                     <?php 
-                            if(!empty($value_data['status'])){
+                            if(!empty($status)){
                                 echo $this->Html->link($this->Common->icon('check'), $activate, array(
                                     'escape' => false,
                                     'class' => 'btn btn-success btn-xs',
@@ -121,7 +131,7 @@
                                 'class' => 'btn btn-primary btn-xs'
                             ));
 
-                            if(!empty($value_data['status'])){
+                            if(!empty($status)){
                                 echo $this->Html->link(__('Non-Aktif'), $activate, array(
                                     'class' => 'btn btn-danger btn-xs',
                                     'title' => 'disable status user'

@@ -8,6 +8,18 @@ class Employe extends AppModel {
                 'message' => 'nama depan harap diisi'
             ),
         ),
+        'branch_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Cabang harap dipilih'
+            ),
+        ),
+        'gender_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Jenis kelamin harap dipilih'
+            ),
+        ),
         'address' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -24,12 +36,6 @@ class Employe extends AppModel {
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Posisi Karyawan harap diisi'
-            ),
-        ),
-        'gender' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Jenis kelamin harap diisi'
             ),
         ),
         'birthdate' => array(
@@ -57,6 +63,10 @@ class Employe extends AppModel {
             'className' => 'EmployePosition',
             'foreignKey' => 'employe_position_id',
         ),
+        'City' => array(
+            'className' => 'City',
+            'foreignKey' => 'branch_id',
+        ),
     );
 
     function getData($find, $options = false, $is_merge = true, $elements = array()){
@@ -70,7 +80,8 @@ class Employe extends AppModel {
                 'Employe.full_name' => 'ASC',
             ),
             'contain' => array(
-                'EmployePosition'
+                'EmployePosition',
+                'City',
             ),
             'fields' => array(),
             'group' => array(),

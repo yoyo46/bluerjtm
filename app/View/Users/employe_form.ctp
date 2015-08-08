@@ -3,6 +3,8 @@
             'action' => 'employes',
         ));
         $this->Html->addCrumb($sub_module_title);
+
+        $cities = !empty($cities)?$cities:false;
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -18,39 +20,44 @@
     <div class="box-body">
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('first_name',__('Nama Depan *')); 
-
-				echo $this->Form->input('first_name',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'placeholder' => __('Nama Depan')
-				));
+					echo $this->Form->input('first_name',array(
+						'label'=> __('Nama Depan *'), 
+						'class'=>'form-control',
+						'required' => false,
+						'placeholder' => __('Nama Depan')
+					));
 			?>
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('last_name',__('Nama Belakang')); 
-
-				echo $this->Form->input('last_name',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'placeholder' => __('Nama Belakang')
-				));
+					echo $this->Form->input('last_name',array(
+						'label'=> __('Nama Belakang'), 
+						'class'=>'form-control',
+						'required' => false,
+						'placeholder' => __('Nama Belakang')
+					));
 			?>
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('employe_position_id',__('Posisi Karyawan *')); 
-
-				echo $this->Form->input('employe_position_id',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'empty' => __('Pilih Posisi Karyawan'),
-					'options' => $employe_positions
-				));
+					echo $this->Form->input('employe_position_id',array(
+						'label'=> __('Posisi Karyawan *'), 
+						'class'=>'form-control',
+						'required' => false,
+						'empty' => __('Pilih Posisi Karyawan'),
+						'options' => $employe_positions
+					));
+			?>
+        </div>
+        <div class="form-group">
+        	<?php 
+					echo $this->Form->input('branch_id',array(
+						'label'=> __('Cabang *'), 
+						'class'=>'form-control',
+						'required' => false,
+						'empty' => __('Pilih Cabang'),
+						'options' => $cities
+					));
 			?>
         </div>
 		<div class="form-group">
@@ -69,27 +76,23 @@
 		</div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('address',__('Alamat *')); 
-
-				echo $this->Form->input('address',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'type' => 'textarea',
-					'placeholder' => __('Alamat')
-				));
+					echo $this->Form->input('address',array(
+						'label'=> __('Alamat *'), 
+						'class'=>'form-control',
+						'required' => false,
+						'type' => 'textarea',
+						'placeholder' => __('Alamat')
+					));
 			?>
         </div>
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('phone',__('No. Telepon *')); 
-
-				echo $this->Form->input('phone',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'placeholder' => __('No. Telepon')
-				));
+					echo $this->Form->input('phone',array(
+						'label'=> __('No. Telepon *'), 
+						'class'=>'form-control',
+						'required' => false,
+						'placeholder' => __('No. Telepon')
+					));
 			?>
         </div>
     </div>
