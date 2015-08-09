@@ -535,5 +535,186 @@ class MkCommonComponent extends Component {
 
         return true;
     }
+
+    function configureDefaultApp () {
+        Configure::write('__Site.profile_photo_folder', 'users');
+        Configure::write('__Site.laka_photo_folder', 'lakas');
+        Configure::write('__Site.truck_photo_folder', 'trucks');
+
+        Configure::write('__Site.config_currency_code', 'IDR ');
+        Configure::write('__Site.config_currency_second_code', 'Rp ');
+        Configure::write('__Site.config_pagination', 20);
+        Configure::write('__Site.config_pagination_unlimited', 1000);
+        Configure::write('__Site.cache_view_path', '/images/view');
+        Configure::write('__Site.upload_path', APP.'Uploads');
+
+        Configure::write('__Site.fullsize', 'fullsize');
+        Configure::write('__Site.max_image_size', 5241090);
+        Configure::write('__Site.max_image_width', 1000);
+        Configure::write('__Site.max_image_height', 667);
+        Configure::write('__Site.allowed_ext', array('jpg', 'jpeg', 'png', 'gif'));
+        Configure::write('__Site.type_lku', array('lku' => 'LKU', 'ksu' => 'KSU'));
+
+        Configure::write('__Site.thumbnail_view_path', APP.'webroot'.DS.'images'.DS.'view');
+
+        $dimensionProfile = array(
+            'ps' => '50x50',
+            'pm' => '100x100',
+            'pl' => '150x150',
+            'pxl' => '300x300',
+        );
+        Configure::write('__Site.dimension_profile', $dimensionProfile);
+
+        $dimensionArr = array(
+            's' => '150x84',
+            'xsm' => '100x40',
+            'xm' => '165x165',
+            'xxsm' => '240x96',
+            'm' => '300x169',
+            'l' => '855x481',
+        );
+        Configure::write('__Site.dimension', $dimensionArr);
+    }
+
+    function allowPage ( $branchs ) {
+        $result = true;
+
+        if( !is_array($branchs) ) {
+            $branchs = array( $branchs );
+        }
+
+        if( is_array($branchs) ) {
+            $moduleAllow = Configure::read('__Site.config_allow_module');
+            $branchAllow = Configure::read('__Site.config_allow_branch_id');
+            $branchAllow = array_keys($branchAllow);
+            $branchs = array_values($branchs);
+            $controllerName = !empty($this->controller->params['controller'])?$this->controller->params['controller']:false;
+            $actionName = $this->controller->action;
+            $allowBranch = array_intersect($branchs, $branchAllow);
+
+            if( !empty($allowBranch) && !empty($branchs) ) {
+                foreach ($branchs as $key => $branch_id) {
+                    if( !empty($moduleAllow[$branch_id]) ) {
+                        if( !empty($moduleAllow[$branch_id][$controllerName]['action']) ) {
+                            if( !in_array($actionName, $moduleAllow[$branch_id][$controllerName]['action']) ) {
+                                $result = false;
+                            }
+                        } else {
+                            $result = false;
+                        }
+                    } else {
+                        $result = false;
+                    }
+                }
+            } else {
+                $result = false;
+            }
+        } else {
+            $result = false;
+        }
+
+        if( empty($result) ) {
+            $this->setCustomFlash('Anda tidak mempunyai hak mengakses konten tersebut.', 'error');
+            $this->controller->redirect($this->controller->referer());
+        } else {
+            return true;
+        }
+    }
+
+    function allowBranch ( $branchs ) {
+        $result = true;
+
+        if( !is_array($branchs) ) {
+            $branchs = array( $branchs );
+        }
+
+        if( is_array($branchs) ) {
+            $moduleAllow = Configure::read('__Site.config_allow_module');
+            $branchAllow = Configure::read('__Site.config_allow_branch_id');
+            $branchAllow = array_keys($branchAllow);
+            $controllerName = !empty($this->controller->params['controller'])?$this->controller->params['controller']:false;
+            $actionName = $this->controller->action;
+
+            if( !empty($branchs) ) {
+                foreach ($branchs as $branch_id => $branch_name) {
+                    if( in_array($branch_id, $branchAllow) ) {
+                        if( !empty($moduleAllow[$branch_id]) ) {
+                            if( !empty($moduleAllow[$branch_id][$controllerName]['action']) ) {
+                                if( !in_array($actionName, $moduleAllow[$branch_id][$controllerName]['action']) ) {
+                                    unset($branchs[$branch_id]);
+                                }
+                            } else {
+                                unset($branchs[$branch_id]);
+                            }
+                        } else {
+                            unset($branchs[$branch_id]);
+                        }
+                    } else {
+                        unset($branchs[$branch_id]);
+                    }
+                }
+            } else {
+                $branchs = false;
+            }
+        } else {
+            $branchs = false;
+        }
+
+        return $branchs;
+    }
+    
+    function getRefineGroupBranch ( $data, $refine ) {
+        if(!empty($refine)) {
+            if( !empty($refine['GroupBranch']['group_branch']) ) {
+                if( is_array($refine['GroupBranch']['group_branch']) ) {
+                    $group_branch = $refine['GroupBranch']['group_branch'];
+                    $group_branch = array_filter($group_branch);
+                    $group_branch = array_unique($group_branch);
+                    $group_branch = implode(',', $group_branch);
+                } else {
+                    $group_branch = $refine['GroupBranch']['group_branch'];
+                }
+
+                $refine_conditions['GroupBranch']['group_branch'] = $group_branch;
+            }
+        }
+
+        if(isset($refine_conditions['GroupBranch']) && !empty($refine_conditions['GroupBranch'])) {
+            foreach($refine_conditions['GroupBranch'] as $param => $value) {
+                if($value) {
+                    $data[trim($param)] = rawurlencode($value);
+                }
+            }
+        }
+
+        return $data;
+    }
+
+
+    
+    function getConditionGroupBranch ( $refine, $modelName, $options = false, $type = 'options' ) {
+        if(!empty($refine['group_branch'])){
+            if( !is_array($refine['group_branch']) ) {
+                $value = urldecode($refine['group_branch']);
+                $value = explode(',', $value);
+                $value = array_combine(array_keys(array_flip($value)), $value);
+            } else {
+                $value = $refine['group_branch'];
+                $value = array_filter($value);
+            }
+
+            $this->controller->request->data['GroupBranch']['group_branch'] = $value;
+            $fieldName = sprintf('%s.branch_id', $modelName);
+            $this->allowPage( $value );
+
+            if( $type == 'options' ) {
+                $options['conditions'][$fieldName] = $value;
+            } else {
+                $options[$fieldName] = $value;
+            }
+        }
+
+        return $options;
+    }
 }
 ?>

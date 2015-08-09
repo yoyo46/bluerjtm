@@ -49,81 +49,18 @@ class AppController extends Controller {
 	);
 
 	function beforeFilter() {
-	    //Configure AuthComponent
-
-		Configure::write('__Site.profile_photo_folder', 'users');
-		Configure::write('__Site.laka_photo_folder', 'lakas');
-		Configure::write('__Site.truck_photo_folder', 'trucks');
-
-		Configure::write('__Site.config_currency_code', 'IDR ');
-		Configure::write('__Site.config_currency_second_code', 'Rp ');
-		Configure::write('__Site.config_pagination', 20);
-		Configure::write('__Site.config_pagination_unlimited', 1000);
-		Configure::write('__Site.cache_view_path', '/images/view');
-		Configure::write('__Site.upload_path', APP.'Uploads');
-
-		Configure::write('__Site.fullsize', 'fullsize');
-		Configure::write('__Site.max_image_size', 5241090);
-		Configure::write('__Site.max_image_width', 1000);
-		Configure::write('__Site.max_image_height', 667);
-		Configure::write('__Site.allowed_ext', array('jpg', 'jpeg', 'png', 'gif'));
-		Configure::write('__Site.type_lku', array('lku' => 'LKU', 'ksu' => 'KSU'));
-
-		Configure::write('__Site.thumbnail_view_path', APP.'webroot'.DS.'images'.DS.'view');
-
-		$dimensionProfile = array(
-			'ps' => '50x50',
-			'pm' => '100x100',
-			'pl' => '150x150',
-			'pxl' => '300x300',
-		);
-		Configure::write('__Site.dimension_profile', $dimensionProfile);
-
-		$dimensionArr = array(
-			's' => '150x84',
-			'xsm' => '100x40',
-			'xm' => '165x165',
-			'xxsm' => '240x96',
-   			'm' => '300x169',
-   			'l' => '855x481',
-		);
-		Configure::write('__Site.dimension', $dimensionArr);
-
-	    $this->Auth->userModel = 'User';
-	    $this->Auth->authorize = array(
-	        'Controller',
-	        'Actions' => array('actionPath' => 'controllers')
-	    );
-	    $this->Auth->loginAction = array(
-	        'controller' => 'users',
-	        'action' => 'login',
-	        'admin' => false,
-	        'plugin' => false
-	    );
-	    $this->Auth->logoutRedirect = array(
-	        'controller' => 'users',
-	        'action' => 'login',
-	        'admin' => false,
-	        'plugin' => false
-	    );
-	    $this->Auth->loginRedirect = array(
-	        'controller' => 'pages',
-	        'action' => 'dashboard',
-	        'admin' => false,
-	        'plugin' => false
-	    );
-	    $invStatus = array(
-            'paid' => __('Paid'),
-            'unpaid' => __('Unpaid'),
-            'halfpaid' => __('Half Paid'),
-            'void' => __('Void'),
-        );
+		// Configure Default
+		$this->MkCommon->configureDefaultApp();
 
 	    $logged_in = $this->MkCommon->loggedIn();
 	    $this->user_id = false;
 	    $GroupId = false;
 	    $User = array();
 		$_allowModule = array();
+		$list_branch = array();
+		$allowBranch = array();
+		$this->allowBranch = false;
+		$key_branch = false;
 
 	    if($logged_in){
 			$this->user_id = $this->Auth->user('id');
@@ -136,19 +73,39 @@ class AppController extends Controller {
 
 			$this->user_data = $User;
 			/*Auth*/
-			$controller_allowed = array(
-				'users', 'pages'
+			$_allowedModule = array(
+				'users' => array(
+					'change_branch', 'search', 'logout',
+					'login', 'dashboard', 'authorization',
+					'profile'
+				),
+				'pages' => array(
+					'dashboard'
+				),
+				'settings' => array(
+					'search',
+				),
+				'trucks' => array(
+					'search',
+				),
+				'leasings' => array(
+					'search',
+				),
 			);
-			$action_allowed = array(
-				'change_branch', 'search', 'logout', 'login', 'dashboard', 'display', 'index',
-				'authorization', 'profile'
-			);
+			// $controller_allowed = array(
+			// 	'users', 'pages', 'settings'
+			// );
+			// $action_allowed = array(
+			// 	'change_branch', 'search', 'logout', 'login', 'dashboard', 'display', 'index',
+			// 	'authorization', 'profile'
+			// );
 			$allowness_extend = array(
 				'ttuj_payments', 'ttuj_payment_add', 'ttuj_payment_delete', 'detail_ttuj_payment'
 			);
 
-			Configure::write('__Site.allowed_controller', $controller_allowed);
-			Configure::write('__Site.allowed_action', $action_allowed);
+			Configure::write('__Site.allowed_module', $_allowedModule);
+			// Configure::write('__Site.allowed_controller', $controller_allowed);
+			// Configure::write('__Site.allowed_action', $action_allowed);
 			Configure::write('__Site.allowed_extend', $allowness_extend);
 
 			$conditionsBranch = array();
@@ -166,85 +123,120 @@ class AppController extends Controller {
 				)
 			));
 
-			$list_branch = array();
-			$this->group_branch_id = $group_branch_id = '';
+			$group_branch_id = '';
+			$this->branch_city_id = $branch_city_id = '';
 			$is_allow = false;
-			$_branch_action_module = array();
+			$paramController = $this->params['controller'];
+			$paramAction = $this->params['action'];
 
 			if(!empty($_branches)){
 				foreach ($_branches as $key => $value) {
-					if($value['GroupBranch']['city_id'] == $User['branch_id']){
+					$branch_id = $this->MkCommon->filterEmptyField($User, 'Employe', 'branch_id');
+					$city_id = $this->MkCommon->filterEmptyField($value, 'City', 'id');
+					$city_name = $this->MkCommon->filterEmptyField($value, 'City', 'name');
+					$group_branch_city_id = $this->MkCommon->filterEmptyField($value, 'GroupBranch', 'city_id');
+					$id_group_branch = $this->MkCommon->filterEmptyField($value, 'GroupBranch', 'id');
+
+					if($group_branch_city_id == $branch_id){
 						$group_branch_id = $value['GroupBranch']['id'];
+						$this->branch_city_id = $branch_city_id = $city_id;
 					}
-					$list_branch[$value['GroupBranch']['id']] = $value['City']['name'];
+
+					$branchActionModule = $this->BranchActionModule->getData('all', array(
+						'conditions' => array(
+							'BranchActionModule.group_branch_id' => $id_group_branch,
+							'BranchActionModule.is_allow' => 1,
+							'BranchModule.status' => 1,
+						),
+						'contain' => array(
+							'BranchModule',
+						)
+					));
+
+					if( !empty($branchActionModule) ) {
+						foreach ($branchActionModule as $key => $value) {
+							$controllerName = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'controller');
+							$actionName = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'action');
+							$extend_action = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'extend_action');
+							$allow_function = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'allow_function');
+
+							// if( $controllerName == 'trucks' && $actionName == 'index' ) {
+							// 	debug($value);die();
+							// }
+
+							$_allowModule[$city_id][$controllerName]['action'][] = $actionName;
+
+							if( !empty($extend_action) ) {
+								$_allowModule[$city_id][$controllerName]['extends'][$actionName] = $extend_action;
+							}
+							if( !empty($allow_function) ) {
+								$allow_function = explode(',', $allow_function);
+								
+								foreach ($allow_function as $key => $function) {
+									$functionArr = explode('-', $function);
+									$function = !empty($functionArr[0])?$functionArr[0]:$function;
+									$controllerName = !empty($functionArr[1])?$functionArr[1]:$controllerName;
+
+									$_allowModule[$city_id][$controllerName]['action'][] = $function;
+								}
+							}
+						}
+					}
+
+					if($paramController == 'revenues' && $paramAction == 'index'){
+						// 327 = module revenue
+						$another_rule = $this->BranchActionModule->getRuleByModule(327, $group_branch_id);
+					}
+
+					$list_branch[$city_id] = $city_name;
 				}
 
 				$user_branch = $this->Session->read('user_branch');
-				$this->group_branch_id = $group_branch_id = !empty($user_branch)?$user_branch:$group_branch_id;
+				$group_branch_id = !empty($user_branch)?$user_branch:$group_branch_id;
+			}
+			
+			Configure::write('__Site.config_allow_module', $_allowModule);
+			Configure::write('__Site.config_branch_id', $branch_city_id);
+			Configure::write('__Site.config_allow_branch_id', $list_branch);
+			$this->helpers['Html']['group_id'] = $GroupId;
+			$allowBranch = $this->MkCommon->allowBranch($list_branch);
 
-				if(!empty($group_branch_id)){
-					$_branch_action_module = $this->BranchActionModule->getData('all', array(
-						'conditions' => array(
-							'BranchActionModule.group_branch_id' => $group_branch_id
-						),
-						'fields' => array(
-							'BranchActionModule.is_allow'
-						),
-						'contain' => array(
-							'BranchModule' => array(
-								'fields' => array(
-									'BranchModule.controller', 'BranchModule.action', 'BranchModule.extend_action'
-								)
-							)
-						)
-					));
-					
-					if($this->params['controller'] == 'revenues' && $this->params['action'] == 'index'){
-						// 327 = module revenue
-						$another_rule = $this->BranchActionModule->getRuleByModule(327, $group_branch_id);
+			if( !empty($allowBranch) ) {
+                $this->allowBranch = array_keys($allowBranch);
+			}
 
-						$this->set('another_rule', $another_rule);
-					}
-					
-					$_allowController = Set::extract('/BranchModule/controller', $_branch_action_module);
-					$_allowAction = Set::extract('/BranchModule/action', $_branch_action_module);
-					$_allowController = array_unique($_allowController);
-					$_allowAction = array_unique($_allowAction);
-					$_allowModule = array(
-						'controller' => $_allowController,
-						'action' => $_allowAction,
-					);
+			if( !empty($list_branch) ) {
+				$key_branch = array_keys($list_branch);
+                Configure::write('__Site.config_list_branch_id', $key_branch);
+			}
+			
+			if(!empty($_allowModule)){
+				$this->helpers['Html']['rule_link'] = $_allowModule;
+			}
+
+			$allowAction = !empty($_allowedModule[$paramController])?$_allowedModule[$paramController]:array();
+			$allowPage = in_array($paramAction, $allowAction)?true:false;
+
+			// if(in_array($paramController, $controller_allowed) && in_array($paramAction, $action_allowed) || $paramController == 'ajax' || $GroupId == 1){
+			if( !empty($allowPage) || $paramController == 'ajax' || $GroupId == 1 ){
+				$is_allow = true;
+			}else {
+				$allowPage = $this->MkCommon->allowPage( $key_branch );
+				$extend_name = !empty($allowed_module[$paramController]['extends'][$paramAction])?$allowed_module[$paramController]['extends'][$paramAction]:false;
+				$extend_param = !empty($this->params['pass'][0]) ? $this->params['pass'][0] : '';
+
+				if(!empty($extend_param) && !empty($allowPage) && $extend_name == $extend_param ) {
+					$is_allow = true;
+				} else if( !empty($allowPage) ){
+					$is_allow = true;
 				}
 			}
 
-			Configure::write('__Site.config_branch_id', $group_branch_id);
-			$this->helpers['Html']['group_id'] = $GroupId;
-			
-			if(!empty($_branch_action_module)){
-				$this->helpers['Html']['rule_link'] = $_branch_action_module;
-			}
+			if( !empty($this->request->data['Default']['branch_id']) ) {
+				$change_branch = $this->request->data['Default']['branch_id'];
 
-			if(in_array($this->params['controller'], $controller_allowed) && in_array($this->params['action'], $action_allowed) || $this->params['controller'] == 'ajax' || $GroupId == 1){
-				$is_allow = true;
-			}else if(!empty($_branch_action_module)){
-				foreach ($_branch_action_module as $key => $value) {
-					$controller_name = $value['BranchModule']['controller'];
-					$action_name = $value['BranchModule']['action'];
-					$extend_name = !empty($value['BranchModule']['extend_action']) ? $value['BranchModule']['extend_action'] : '';
-					$allow_module = $value['BranchActionModule']['is_allow'];
-
-					$extend_param = !empty($this->params['pass'][0]) ? $this->params['pass'][0] : '';
-					if(!empty($extend_param)){
-						if($this->params['controller'] == $controller_name && $this->params['action'] == $action_name && !empty($extend_name) && $extend_name == $extend_param && !empty($allow_module)){
-							$is_allow = true;
-							break;
-						}
-					}else{
-						if($this->params['controller'] == $controller_name && $this->params['action'] == $action_name && $allow_module){
-							$is_allow = true;
-							break;
-						}
-					}
+				if( empty($allowBranch[$change_branch]) ) {
+					$is_allow = false;
 				}
 			}
 			
@@ -252,8 +244,6 @@ class AppController extends Controller {
 				$this->MkCommon->setCustomFlash('Anda tidak mempunyai hak mengakses konten tersebut.', 'error');
 				$this->redirect('/');
 			}
-
-			$this->set(compact('list_branch', '_branch_action_module', 'group_branch_id'));
 			/*End Auth*/
 
 	        if(isset($this->params['named']['ntf']) && !empty($this->params['named']['ntf'])){
@@ -366,13 +356,21 @@ class AppController extends Controller {
 					'Notification.read' => 0
 				)
 			));
-
-			$this->set('notifications', $notifications);
 		}
+
+		$invStatus = array(
+            'paid' => __('Paid'),
+            'unpaid' => __('Unpaid'),
+            'halfpaid' => __('Half Paid'),
+            'void' => __('Void'),
+        );
 
 	    $this->set(compact(
 	    	'logged_in', 'GroupId', 'User',
-	    	'invStatus', '_allowModule'
+	    	'invStatus', '_allowModule',
+	    	'another_rule', 'notifications',
+	    	'list_branch', 'group_branch_id',
+	    	'allowBranch'
     	));
 	}
 

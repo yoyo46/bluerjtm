@@ -16,7 +16,9 @@
 	?>
 	<div class="box-body">
 		
-		<?php echo $this->Common->branchForm('User', $branches, 'horizontal');?>
+		<?php
+				// echo $this->Common->branchForm('User', $branches, 'horizontal');
+		?>
 
 		<div class="form-group">
 			<?php 

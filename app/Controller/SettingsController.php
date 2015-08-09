@@ -17,8 +17,10 @@ class SettingsController extends AppController {
         $refine = array();
 
         if(!empty($this->request->data)) {
-            $refine = $this->RjSetting->processRefine($this->request->data);
+            $data = $this->request->data;
+            $refine = $this->RjSetting->processRefine($data);
             $params = $this->RjSetting->generateSearchURL($refine);
+            $params = $this->MkCommon->getRefineGroupBranch($params, $data);
             $params['action'] = $index;
 
             if( !empty($param_get) ) {
@@ -191,20 +193,31 @@ class SettingsController extends AppController {
                 $this->request->data['Customer']['customer_type_id'] = $customer_type_id;
                 $options['conditions']['Customer.customer_type_id '] = $customer_type_id;
             }
-            if(!empty($refine['customer_group_id'])){
-                $customer_group_id = urldecode($refine['customer_group_id']);
-                $this->request->data['Customer']['customer_group_id'] = $customer_group_id;
-                $options['conditions']['Customer.customer_group_id '] = $customer_group_id;
-            }
+
+            // Custom Otorisasi
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Customer', $options );
         }
-        $this->paginate = $this->Customer->getData('paginate', $options);
+        $this->paginate = $this->Customer->getData('paginate', $options, true, array(
+            'status' => 'all',
+        ));
         $truck_customers = $this->paginate('Customer');
         $customerTypes  = $this->Customer->CustomerType->getData('list', false, true);
         $customerGroups  = $this->CustomerGroup->getData('list');
 
+        if( !empty($truck_customers) ) {
+            $this->loadModel('City');
+
+            foreach ($truck_customers as $key => $value) {
+                // Custom Otorisasi
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'branch_id');
+                $value = $this->City->getMerge($value, $branch_id);
+                $truck_customers[$key] = $value;
+            }
+        }
+
         $this->set('active_menu', 'customers');
-        $this->set('module_title', 'Data Master');
-        $this->set('sub_module_title', 'Customer');
+        $this->set('module_title', __('Data Master'));
+        $this->set('sub_module_title', __('Customer'));
         $this->set(compact(
             'customerTypes', 'truck_customers',
             'customerGroups'
@@ -222,11 +235,17 @@ class SettingsController extends AppController {
         $this->set('sub_module_title', 'Rubah Customer');
         $customer = $this->Customer->getData('first', array(
             'conditions' => array(
-                'Customer.id' => $id
+                'Customer.id' => $id,
             ),
+        ), true, array(
+            'status' => 'all',
+            'branch' => false,
         ));
 
         if(!empty($customer)){
+            // Custom Otorisasi
+            $branch_id = $this->MkCommon->filterEmptyField($customer, 'Customer', 'branch_id');
+            $this->MkCommon->allowPage($branch_id);
             $this->doCustomer($id, $customer);
         }else{
             $this->MkCommon->setCustomFlash(__('Customer tidak ditemukan'), 'error');  
@@ -250,7 +269,6 @@ class SettingsController extends AppController {
                         
             $data['Customer']['bank_id'] = !empty($data['Customer']['bank_id'])?$data['Customer']['bank_id']:0;
             $data['Customer']['billing_id'] = !empty($data['Customer']['billing_id'])?$data['Customer']['billing_id']:0;
-            $data['Customer']['group_branch_id'] = Configure::read('__Site.config_branch_id');
             $this->Customer->set($data);
 
             if($this->Customer->validates($data)){
@@ -315,16 +333,23 @@ class SettingsController extends AppController {
             'conditions' => array(
                 'Customer.id' => $id
             )
+        ), true, array(
+            'status' => 'all',
+            'branch' => false,
         ));
 
-        if($locale){
+        if( !empty($locale) ){
             $value = true;
-            if($locale['Customer']['status']){
+            // Custom Otorisasi
+            $branch_id = $this->MkCommon->filterEmptyField($locale, 'Customer', 'branch_id');            
+            $this->MkCommon->allowPage($branch_id);
+
+            if( !empty($locale['Customer']['status']) ){
                 $value = false;
             }
 
             $this->Customer->id = $id;
-            $this->Customer->set('status', 0);
+            $this->Customer->set('status', $value);
 
             if($this->Customer->save()){
                 $this->MkCommon->setCustomFlash(__('Customer telah berhasil dihapus.'), 'success');

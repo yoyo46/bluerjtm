@@ -20,8 +20,10 @@ class TrucksController extends AppController {
     function search( $index = 'index' ){
         $refine = array();
         if(!empty($this->request->data)) {
-            $refine = $this->RjTruck->processRefine($this->request->data);
+            $data = $this->request->data;
+            $refine = $this->RjTruck->processRefine($data);
             $params = $this->RjTruck->generateSearchURL($refine);
+            $params = $this->MkCommon->getRefineGroupBranch($params, $data);
             $params['action'] = $index;
 
             $this->redirect($params);
@@ -32,8 +34,7 @@ class TrucksController extends AppController {
 	public function index() {
         $this->loadModel('Laka');
         $this->loadModel('Ttuj');
-		$this->set('active_menu', 'trucks');
-		$this->set('sub_module_title', __('Data Truk'));
+
         $conditions = array();
         $contain = array(
             'Driver'
@@ -135,6 +136,8 @@ class TrucksController extends AppController {
                 $this->request->data['Truck']['category'] = $data;
                 $contain[] = 'TruckCategory';
             }
+
+            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Truck', $conditions, 'conditions' );
         }
 
         $this->paginate = $this->Truck->getData('paginate', array(
@@ -144,20 +147,31 @@ class TrucksController extends AppController {
         $trucks = $this->paginate('Truck');
 
         if(!empty($trucks)){
-            foreach ($trucks as $key => $truck) {
-                $data = $truck['Truck'];
+            $this->loadModel('City');
 
-                $truck = $this->Truck->TruckCategory->getMerge($truck, $data['truck_category_id']);
-                $truck = $this->Truck->TruckBrand->getMerge($truck, $data['truck_brand_id']);
-                $truck = $this->Truck->Company->getMerge($truck, $data['company_id']);
-                $truck = $this->Laka->getMerge($data['id'], $truck);
-                $truck = $this->Ttuj->getTruckStatus($truck, $data['id']);
+            foreach ($trucks as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Truck', 'id');
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'branch_id');
+                $truck_category_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'truck_category_id');
+                $truck_brand_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'truck_brand_id');
+                $company_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'company_id');
 
-                $trucks[$key] = $truck;
+                $value = $this->City->getMerge($value, $branch_id);
+                $value = $this->Truck->TruckCategory->getMerge($value, $truck_category_id);
+                $value = $this->Truck->TruckBrand->getMerge($value, $truck_brand_id);
+                $value = $this->Truck->Company->getMerge($value, $company_id);
+                $value = $this->Laka->getMerge($id, $value);
+                $value = $this->Ttuj->getTruckStatus($value, $id);
+
+                $trucks[$key] = $value;
             }
         }
 
-        $this->set('trucks', $trucks);
+        $this->set('active_menu', 'trucks');
+        $this->set('sub_module_title', __('Data Truk'));
+        $this->set(compact(
+            'trucks'
+        ));
 	}
 
     function detail($id = false){
@@ -166,9 +180,14 @@ class TrucksController extends AppController {
             $this->loadModel('TruckPerlengkapan');
             $this->loadModel('LeasingDetail');
 
-            $truck = $this->Truck->getTruck($id);
+            $truck = $this->Truck->getTruck($id, array(
+                'branch' => false,
+            ));
 
             if(!empty($truck)){
+                $branch_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'branch_id');
+                $this->MkCommon->allowPage($branch_id);
+
                 $truck = $this->TruckCustomer->getMergeTruckCustomer($truck);
                 $truckPerlengkapans = $this->TruckPerlengkapan->getData('all', array(
                     'conditions' => array(
@@ -215,9 +234,14 @@ class TrucksController extends AppController {
             'conditions' => array(
                 'Truck.id' => $id
             ),
+        ), true, array(
+            'branch' => false,
         ));
 
         if(!empty($truck)){
+            $branch_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'branch_id');
+            $this->MkCommon->allowPage($branch_id);
+
             $truck = $this->Truck->TruckCustomer->getMergeTruckCustomer($truck);
             $this->doTruck($id, $truck);
         }else{
@@ -233,6 +257,7 @@ class TrucksController extends AppController {
         $this->loadModel('Driver');
         $driverConditions = array(
             'Truck.id' => NULL,
+            'Driver.branch_id' => $this->allowBranch,
         );
 
         if(!empty($this->request->data)){
@@ -267,7 +292,6 @@ class TrucksController extends AppController {
             $data['Truck']['emergency_call'] = (!empty($data['Truck']['emergency_call'])) ? $data['Truck']['emergency_call'] : '';
             $data['Truck']['emergency_name'] = (!empty($data['Truck']['emergency_name'])) ? $data['Truck']['emergency_name'] : '';
             $data['Truck']['is_gps'] = (!empty($data['Truck']['is_gps'])) ? $data['Truck']['is_gps'] : 0;
-            $data['Truck']['group_branch_id'] = Configure::read('__Site.config_branch_id');
 
             if(!empty($data['Truck']['photo']['name']) && is_array($data['Truck']['photo'])){
                 $temp_image = $data['Truck']['photo'];
@@ -441,6 +465,8 @@ class TrucksController extends AppController {
             'contain' => array(
                 'Truck'
             ),
+        ), true, array(
+            'branch' => false,
         ));
         $branches = $this->City->branchCities();
 
@@ -752,6 +778,8 @@ class TrucksController extends AppController {
                 $this->request->data['Driver']['name'] = $name;
                 $conditions['Driver.name LIKE '] = '%'.$name.'%';
             }
+
+            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Driver', $conditions, 'conditions' );
         }
 
         $this->paginate = $this->Driver->getData('paginate', array(
@@ -760,14 +788,19 @@ class TrucksController extends AppController {
                 'Driver.status' => 'DESC',
                 'Driver.name' => 'ASC',
             ),
+            'contain' => array(
+                'City',
+            ),
         ), true, array(
             'status' => 'all',
         ));
         $truck_drivers = $this->paginate('Driver');
 
         $this->set('active_menu', 'drivers');
-        $this->set('sub_module_title', 'Supir Truk');
-        $this->set('truck_drivers', $truck_drivers);
+        $this->set('sub_module_title', __('Supir Truk'));
+        $this->set(compact(
+            'truck_drivers'
+        ));
     }
 
     function driver_add(){
@@ -785,9 +818,12 @@ class TrucksController extends AppController {
             ),
         ), true, array(
             'status' => 'all',
+            'branch' => false,
         ));
 
         if(!empty($driver)){
+            $branch_id = $this->MkCommon->filterEmptyField($driver, 'Driver', 'branch_id');
+            $this->MkCommon->allowPage($branch_id);
             $this->doDriver($id, $driver);
         }else{
             $this->MkCommon->setCustomFlash(__('Supir Truk tidak ditemukan'), 'error');  
@@ -943,22 +979,28 @@ class TrucksController extends AppController {
 
     function driver_toggle($id){
         $this->loadModel('Driver');
+
         $locale = $this->Driver->getData('first', array(
             'conditions' => array(
                 'Driver.id' => $id,
             ),
         ), true, array(
             'status' => 'all',
+            'branch' => false,
         ));
 
-        if($locale){
+        if( !empty($locale) ){
             $value = true;
-            if($locale['Driver']['status']){
+            $branch_id = $this->MkCommon->filterEmptyField($locale, 'Driver', 'branch_id');            
+            $this->MkCommon->allowPage($branch_id);
+
+            if( !empty($locale['Driver']['status']) ){
                 $value = false;
             }
 
             $this->Driver->id = $id;
             $this->Driver->set('status', $value);
+
             if($this->Driver->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
                 $this->Log->logActivity( sprintf(__('Sukses merubah status Supir Truk ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );   
@@ -1813,9 +1855,14 @@ class TrucksController extends AppController {
 
     function alocations($id = false){
         if(!empty($id)){
-            $truck = $this->Truck->getTruck($id);
+            $truck = $this->Truck->getTruck($id, array(
+                'branch' => false,
+            ));
 
             if(!empty($truck)){
+                $branch_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'branch_id');
+                $this->MkCommon->allowPage($branch_id);
+
                 $this->paginate = $this->Truck->TruckAlocation->getData('paginate', array(
                     'conditions' => array(
                         'truck_id' => $id
@@ -2163,13 +2210,17 @@ class TrucksController extends AppController {
 
     function perlengkapan($truck_id = false){
         if(!empty($truck_id)){
-            $truck = $this->Truck->getTruck($truck_id);
+            $truck = $this->Truck->getTruck($truck_id, array(
+                'branch' => false,
+            ));
 
             if(!empty($truck)){
                 $this->loadModel('TruckPerlengkapan');
                 $this->loadModel('City');
 
-                $branch_id = !empty($truck['Truck']['branch_id'])?$truck['Truck']['branch_id']:false;
+                $branch_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'branch_id');
+                $this->MkCommon->allowPage($branch_id);
+                
                 $truck = $this->City->getMerge($truck, $branch_id);
                 $truckPerlengkapans = $this->TruckPerlengkapan->getData('all', array(
                     'conditions' => array(
@@ -3677,6 +3728,7 @@ class TrucksController extends AppController {
             $this->redirect($link_url);
             exit;
         } else {
+            $this->loadModel('City');
             $this->loadModel('Driver');
             $this->loadModel('Customer');
             $this->loadModel('Perlengkapan');
@@ -3770,6 +3822,11 @@ class TrucksController extends AppController {
                                 }
 
                                 if(array_filter($datavar)) {
+                                    $city = $this->City->getData('first', array(
+                                        'conditions' => array(
+                                            'City.name' => $cabang,
+                                        ),
+                                    ));
                                     $truckBrand = $this->Truck->TruckBrand->getData('first', array(
                                         'conditions' => array(
                                             'TruckBrand.name' => $merek_truk,
@@ -3815,6 +3872,7 @@ class TrucksController extends AppController {
                                     if( !empty($driver) ) {
                                         $driver_id = $driver['Driver']['id'];
                                     }
+                                    $city_id = $this->MkCommon->filterEmptyField($city, 'City', 'name');
 
                                     $requestData['ROW'.($x-1)] = array(
                                         'Truck' => array(
@@ -3847,7 +3905,7 @@ class TrucksController extends AppController {
                                             'tgl_stnk_plat' => !empty($tgl_perpanjang_stnk_5thn)?$tgl_perpanjang_stnk_5thn:false,
                                             'tgl_siup' => !empty($tgl_perpanjang_siup)?$tgl_perpanjang_siup:false,
                                             'tgl_kir' => !empty($tgl_perpanjang_kir)?$tgl_perpanjang_kir:false,
-                                            'group_branch_id' => Configure::read('__Site.config_branch_id'),
+                                            'branch_id' => $city_id,
                                         ),
                                     );
                                     

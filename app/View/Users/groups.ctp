@@ -34,13 +34,13 @@
                         'class' => 'btn btn-app pull-right'
                     ));
 
-                    // echo $this->Html->link('<i class="fa fa-archive"></i> Action Modules', array(
-                    //     'controller' => 'users',
-                    //     'action' => 'action_modules'
-                    // ), array(
-                    //     'escape' => false,
-                    //     'class' => 'btn btn-app pull-right'
-                    // ));
+                    echo $this->Html->link('<i class="fa fa-archive"></i> Action Modules', array(
+                        'controller' => 'users',
+                        'action' => 'action_modules'
+                    ), array(
+                        'escape' => false,
+                        'class' => 'btn btn-app pull-right'
+                    ));
             ?>
         </div>
     </div><!-- /.box-header -->

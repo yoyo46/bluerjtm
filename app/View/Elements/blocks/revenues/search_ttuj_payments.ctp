@@ -83,6 +83,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'controller' => 'revenues', 
                                 'action' => 'ttuj_payments', 
                                 $action_type,
                             ), array(

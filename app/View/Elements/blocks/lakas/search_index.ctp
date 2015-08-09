@@ -66,6 +66,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'controller' => 'lakas', 
                                 'action' => 'index', 
                             ), array(
                                 'escape' => false, 

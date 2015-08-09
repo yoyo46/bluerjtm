@@ -16,8 +16,10 @@ class LeasingsController extends AppController {
     function search( $index = 'index' ){
         $refine = array();
         if(!empty($this->request->data)) {
-            $refine = $this->RjLeasing->processRefine($this->request->data);
+            $data = $this->request->data;
+            $refine = $this->RjLeasing->processRefine($data);
             $params = $this->RjLeasing->generateSearchURL($refine);
+            $params = $this->MkCommon->getRefineGroupBranch($params, $data);
             $params['action'] = $index;
 
             $this->redirect($params);
@@ -27,11 +29,9 @@ class LeasingsController extends AppController {
 
 	public function index() {
         $this->loadModel('Leasing');
-        $this->loadModel('Leasing');
-		$this->set('active_menu', 'view_leasing');
-		$this->set('sub_module_title', __('Leasing'));
 
         $conditions = array();
+
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
 
@@ -40,6 +40,9 @@ class LeasingsController extends AppController {
                 $this->request->data['Leasing']['no_contract'] = $no_contract;
                 $conditions['Leasing.no_contract LIKE '] = '%'.$no_contract.'%';
             }
+
+            // Custom Otorisasi
+            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Leasing', $conditions, 'conditions' );
         }
 
         $this->paginate = $this->Leasing->getData('paginate', array(
@@ -49,7 +52,22 @@ class LeasingsController extends AppController {
         ));
         $leasings = $this->paginate('Leasing');
 
-        $this->set('leasings', $leasings);
+        if( !empty($leasings) ) {
+            $this->loadModel('City');
+
+            foreach ($leasings as $key => $value) {
+                // Custom Otorisasi
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Leasing', 'branch_id');
+                $value = $this->City->getMerge($value, $branch_id);
+                $leasings[$key] = $value;
+            }
+        }
+
+        $this->set('active_menu', 'view_leasing');
+        $this->set('sub_module_title', __('Leasing'));
+        $this->set(compact(
+            'leasings'
+        ));
 	}
 
     function detail($id = false){
@@ -77,7 +95,7 @@ class LeasingsController extends AppController {
     function edit($id){
         $this->loadModel('Leasing');
         $this->set('sub_module_title', 'Rubah Leasing');
-        $truck = $this->Leasing->getData('first', array(
+        $value = $this->Leasing->getData('first', array(
             'conditions' => array(
                 'Leasing.id' => $id
             ),
@@ -86,10 +104,15 @@ class LeasingsController extends AppController {
             )
         ), true, array(
             'status' => 'all',
+            'branch' => false,
         ));
 
-        if(!empty($truck)){
-            $this->doLeasing($id, $truck);
+        if(!empty($value)){
+            // Custom Otorisasi
+            $branch_id = $this->MkCommon->filterEmptyField($value, 'Leasing', 'branch_id');
+            $this->MkCommon->allowPage($branch_id);
+
+            $this->doLeasing($id, $value);
         }else{
             $this->MkCommon->setCustomFlash(__('Leasing tidak ditemukan'), 'error');  
             $this->redirect(array(
@@ -151,7 +174,7 @@ class LeasingsController extends AppController {
             $data['Leasing']['denda'] = !empty($data['Leasing']['denda']) ? str_replace(',', '', $data['Leasing']['denda']) : 0;
 
             $data['Leasing']['total_biaya'] = $data['Leasing']['installment'] + $data['Leasing']['denda'];
-            $data['Leasing']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['Leasing']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             $validate_leasing_detail = true;
             $temp_detail = array();
@@ -374,20 +397,29 @@ class LeasingsController extends AppController {
 
     function toggle($id){
         $this->loadModel('Leasing');
+
         $locale = $this->Leasing->getData('first', array(
             'conditions' => array(
                 'Leasing.id' => $id,
             )
+        ), true, array(
+            'status' => 'all',
+            'branch' => false,
         ));
 
-        if($locale){
+        if( !empty($locale) ){
             $value = true;
-            if($locale['Leasing']['status']){
+            // Custom Otorisasi
+            $branch_id = $this->MkCommon->filterEmptyField($locale, 'Leasing', 'branch_id');            
+            $this->MkCommon->allowPage($branch_id);
+
+            if( !empty($locale['Leasing']['status']) ){
                 $value = false;
             }
 
             $this->Leasing->id = $id;
             $this->Leasing->set('status', $value);
+
             if($this->Leasing->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
                 $this->Log->logActivity( sprintf(__('Sukses merubah status Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 

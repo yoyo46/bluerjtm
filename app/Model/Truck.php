@@ -2,6 +2,16 @@
 class Truck extends AppModel {
 	var $name = 'Truck';
 	var $validate = array(
+        'branch_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Cabang harap dipilih'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'Cabang harap dipilih'
+            ),
+        ),
         'nopol' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -281,10 +291,10 @@ class Truck extends AppModel {
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
+
         $default_options = array(
-            'conditions'=> array(
-                'Truck.group_branch_id' => Configure::read('__Site.config_branch_id'),
-            ),
+            'conditions'=> array(),
             'order' => array(
                 'Truck.nopol' => 'ASC',
             ),
@@ -305,6 +315,10 @@ class Truck extends AppModel {
             default:
                 $default_options['conditions']['Truck.status'] = 1;
                 break;
+        }
+
+        if( !empty($branch) ) {
+            $default_options['conditions']['Truck.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         if( !empty($options) && $is_merge ){
@@ -337,12 +351,12 @@ class Truck extends AppModel {
         return $result;
     }
 
-    function getTruck($id){
+    function getTruck( $id, $options = array() ){
         $truck = $this->getData('first', array(
             'conditions' => array(
                 'Truck.id' => $id
             )
-        ));
+        ), true, $options);
 
         if(!empty($truck)){
             $data = $truck['Truck'];
@@ -376,6 +390,8 @@ class Truck extends AppModel {
                     'Truck.id' => $id,
                     'Truck.status' => 1,
                 )
+            ), true, array(
+                'branch' => false,
             ));
 
             if(!empty($data_merge)){

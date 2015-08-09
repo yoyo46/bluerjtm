@@ -6,13 +6,18 @@
         echo $this->element('blocks/trucks/search_supir');
 
         $dataColumns = array(
+            'cabang' => array(
+                'name' => __('Cabang'),
+                'field_model' => 'City.id',
+                'display' => true,
+            ),
             'no_id' => array(
                 'name' => __('No. ID'),
                 'field_model' => 'Driver.no_id',
                 'display' => true,
             ),
             'name' => array(
-                'name' => __('Nama Supir'),
+                'name' => __('Nama'),
                 'field_model' => 'Driver.name',
                 'display' => true,
             ),
@@ -34,6 +39,11 @@
             'phone' => array(
                 'name' => __('Telepon'),
                 'field_model' => 'Driver.phone',
+                'display' => true,
+            ),
+            'created' => array(
+                'name' => __('Dibuat'),
+                'field_model' => 'Driver.created',
                 'display' => true,
             ),
             'status' => array(
@@ -78,40 +88,54 @@
             <?php
                     if( !empty($truck_drivers) ){
                         foreach ($truck_drivers as $key => $value) {
-                            $id = $value['Driver']['id'];
+                            $id = $this->Common->filterEmptyField($value, 'Driver', 'id');
+                            $no_id = $this->Common->filterEmptyField($value, 'Driver', 'no_id');
+                            $name = $this->Common->filterEmptyField($value, 'Driver', 'name');
+                            $alias = $this->Common->filterEmptyField($value, 'Driver', 'alias', '-');
+                            $identity_number = $this->Common->filterEmptyField($value, 'Driver', 'identity_number');
+                            $address = $this->Common->filterEmptyField($value, 'Driver', 'address');
+                            $phone = $this->Common->filterEmptyField($value, 'Driver', 'phone');
+                            $status = $this->Common->filterEmptyField($value, 'Driver', 'status');
+                            $created = $this->Common->filterEmptyField($value, 'Driver', 'created');
+                            $is_resign = $this->Common->filterEmptyField($value, 'Driver', 'is_resign');
+                            $city = $this->Common->filterEmptyField($value, 'City', 'name');
+                            $branch_id = $this->Common->filterEmptyField($value, 'Driver', 'branch_id');
+                            $activate = array(
+                                'controller' => 'trucks',
+                                'action' => 'driver_toggle',
+                                $id
+                            );
             ?>
             <tr>
-                <td><?php echo $value['Driver']['no_id'];?></td>
-                <td><?php echo $value['Driver']['name'];?></td>
-                <td><?php echo !empty($value['Driver']['alias'])?$value['Driver']['alias']:'-';?></td>
-                <td><?php echo $value['Driver']['identity_number'];?></td>
-                <td><?php echo $value['Driver']['address'];?></td>
-                <td>
-                    <?php 
-                            echo $value['Driver']['phone'];
-                    ?>
-                </td>
+                <td><?php echo $city;?></td>
+                <td><?php echo $no_id;?></td>
+                <td><?php echo $name;?></td>
+                <td><?php echo $alias;?></td>
+                <td><?php echo $identity_number;?></td>
+                <td><?php echo $address;?></td>
+                <td><?php echo $phone;?></td>
+                <td><?php echo $this->Time->niceShort($created);?></td>
                 <td class="text-center">
                     <?php 
-                            if( !empty($value['Driver']['status']) ) {
-                                $title = __('Aktif');
-                                $class = 'success';
-                            } else {
-                                if(!empty($value['Driver']['is_resign'])){
-                                    $title = __('Resign');
+                            if(!empty($status)){
+                                echo $this->Html->link($this->Common->icon('check'), $activate, array(
+                                    'escape' => false,
+                                    'class' => 'btn btn-success btn-xs',
+                                ), __('Apakah Anda yakin akan non-aktifkan data ini?'));
+                            }else{
+                                if(!empty($is_resign)){
+                                    echo $this->Html->tag('span', __('Resign'), array(
+                                        'class' => 'label label-danger',
+                                    ));;
                                 }else{
-                                    $title = __('Non-Aktif');    
+                                    echo $this->Html->link($this->Common->icon('times'), $activate, array(
+                                        'escape' => false,
+                                        'class' => 'btn btn-danger btn-xs',
+                                    ), __('Apakah Anda yakin akan aktifkan data ini?')); 
                                 }
-                                
-                                $class = 'danger';
                             }
-
-                            echo $this->Html->tag('span', $title, array(
-                                'class' => sprintf('label label-%s', $class),
-                            ));
                     ?>
                 </td>
-                <td><?php echo $this->Time->niceShort($value['Driver']['created']);?></td>
                 <td class="action">
                     <?php 
                             echo $this->Html->link('Edit', array(
@@ -119,27 +143,21 @@
                                 'action' => 'driver_edit',
                                 $id
                             ), array(
-                                'class' => 'btn btn-primary btn-xs'
+                                'class' => 'btn btn-primary btn-xs',
+                                'branch_id' => $branch_id,
                             ));
 
-                            if( !empty($value['Driver']['status']) ) {
-                                $title = __('Non-Aktifkan');
-                                $msg = sprintf(__('Anda yakin ingin Non-Aktifkan data supir %s?'), $value['Driver']['name']);
-                                $class = 'danger';
-                            } else {
-                                $title = __('Aktifkan');
-                                $msg = sprintf(__('Anda yakin ingin Aktifkan data supir %s?'), $value['Driver']['name']);
-                                $class = 'success';
+                            if(!empty($status)){
+                                echo $this->Html->link(__('Non-Aktif'), $activate, array(
+                                    'class' => 'btn btn-danger btn-xs',
+                                    'branch_id' => $branch_id,
+                                ), __('Apakah Anda yakin akan non-aktifkan data ini?'));
+                            }else{
+                                echo $this->Html->link(__('Aktifkan'), $activate, array(
+                                    'class' => 'btn btn-success btn-xs',
+                                    'branch_id' => $branch_id,
+                                ), __('Apakah Anda yakin akan aktifkan data ini?'));
                             }
-
-                            echo $this->Html->link($title, array(
-                                'controller' => 'trucks',
-                                'action' => 'driver_toggle',
-                                $id
-                            ), array(
-                                'class' => sprintf('btn btn-%s btn-xs', $class),
-                                'title' => 'disable status brand'
-                            ), $msg);
                     ?>
                 </td>
             </tr>
@@ -148,7 +166,7 @@
                     } else {
                          echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '9'
+                            'colspan' => '10'
                         )));
                     }
             ?>

@@ -4153,4 +4153,10 @@ $(function() {
         $('#order-control').val(order);
         $('#order-control').attr('readonly', true);
     });
+
+    $('.change-branch').change(function(){
+        var val = $(this).val();
+
+        $('.default-branch-id').val(val);
+    });
 });

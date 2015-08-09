@@ -1,5 +1,10 @@
 <?php 
         $dataColumns = array(
+            'branch' => array(
+                'name' => __('Cabang'),
+                'field_model' => false,
+                'display' => true,
+            ),
             'code' => array(
                 'name' => __('Kode'),
                 'field_model' => 'Customer.code',
@@ -42,6 +47,11 @@
                 'field_model' => 'Customer.order',
                 'display' => true,
             ),
+            'status' => array(
+                'name' => __('Status'),
+                'field_model' => 'Customer.status',
+                'display' => true,
+            ),
             'action' => array(
                 'name' => __('Action'),
                 'field_model' => false,
@@ -80,20 +90,29 @@
                 </tr>
             </thead>
             <tbody>
-                <?php
-                        if(!empty($truck_customers)){
-                            foreach ($truck_customers as $key => $value) {
-                                $id = $this->Common->filterEmptyField($value, 'Customer', 'id');
-                                $code = $this->Common->filterEmptyField($value, 'Customer', 'code');
-                                $type = $this->Common->filterEmptyField($value, 'CustomerType', 'name', '-');
-                                $group = $this->Common->filterEmptyField($value, 'CustomerGroup', 'name');
-                                $name = $this->Common->filterEmptyField($value, 'Customer', 'name');
-                                $address = $this->Common->filterEmptyField($value, 'Customer', 'address');
-                                $phone_number = $this->Common->filterEmptyField($value, 'Customer', 'phone_number');
-                                $order = $this->Common->filterEmptyField($value, 'Customer', 'order');
-                                $created = $this->Common->filterEmptyField($value, 'Customer', 'created');
-                ?>
+            <?php
+                    if(!empty($truck_customers)){
+                        foreach ($truck_customers as $key => $value) {
+                            $id = $this->Common->filterEmptyField($value, 'Customer', 'id');
+                            $code = $this->Common->filterEmptyField($value, 'Customer', 'code');
+                            $type = $this->Common->filterEmptyField($value, 'CustomerType', 'name', '-');
+                            $group = $this->Common->filterEmptyField($value, 'CustomerGroup', 'name');
+                            $name = $this->Common->filterEmptyField($value, 'Customer', 'name');
+                            $address = $this->Common->filterEmptyField($value, 'Customer', 'address');
+                            $phone_number = $this->Common->filterEmptyField($value, 'Customer', 'phone_number');
+                            $order = $this->Common->filterEmptyField($value, 'Customer', 'order');
+                            $created = $this->Common->filterEmptyField($value, 'Customer', 'created');
+                            $branch_id = $this->Common->filterEmptyField($value, 'Customer', 'branch_id');
+                            $status = $this->Common->filterEmptyField($value, 'Customer', 'status');
+                            $city = $this->Common->filterEmptyField($value, 'City', 'name');
+                            $activate = array(
+                                'controller' => 'settings',
+                                'action' => 'customer_toggle',
+                                $id
+                            );
+            ?>
                 <tr>
+                    <td><?php echo $city;?></td>
                     <td><?php echo $code;?></td>
                     <td><?php echo $code;?></td>
                     <td><?php echo $type;?></td>
@@ -106,6 +125,21 @@
                     </td>
                     <td><?php echo $this->Common->customDate($created, 'd M Y');?></td>
                     <td><?php echo $order;?></td>
+                    <td class="text-center">
+                        <?php 
+                                if(!empty($status)){
+                                    echo $this->Html->link($this->Common->icon('check'), $activate, array(
+                                        'escape' => false,
+                                        'class' => 'btn btn-success btn-xs',
+                                    ), __('Apakah Anda yakin akan non-aktifkan data ini?'));
+                                }else{
+                                    echo $this->Html->link($this->Common->icon('times'), $activate, array(
+                                        'escape' => false,
+                                        'class' => 'btn btn-danger btn-xs',
+                                    ), __('Apakah Anda yakin akan aktifkan data ini?'));
+                                }
+                        ?>
+                    </td>
                     <td class="action">
                         <?php 
                                 echo $this->Html->link('Edit', array(
@@ -113,29 +147,34 @@
                                     'action' => 'customer_edit',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-primary btn-xs'
+                                    'class' => 'btn btn-primary btn-xs',
+                                    'branch_id' => $branch_id,
                                 ));
 
-                                echo $this->Html->link(__('Hapus'), array(
-                                    'controller' => 'settings',
-                                    'action' => 'customer_toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs',
-                                    'title' => 'Hapus Data Customer'
-                                ), __('Anda yakin ingin menghapus data Customer ini?'));
+                                // Custom Otorisasi
+                                if(!empty($status)){
+                                    echo $this->Html->link(__('Non-Aktif'), $activate, array(
+                                        'class' => 'btn btn-danger btn-xs',
+                                        'branch_id' => $branch_id,
+                                    ), __('Apakah Anda yakin akan non-aktifkan data ini?'));
+                                }else{
+                                    echo $this->Html->link(__('Aktifkan'), $activate, array(
+                                        'class' => 'btn btn-success btn-xs',
+                                        'branch_id' => $branch_id,
+                                    ), __('Apakah Anda yakin akan aktifkan data ini?'));
+                                }
                         ?>
                     </td>
                 </tr>
-                <?php
-                            }
-                        } else {
-                            echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
-                                'class' => 'alert alert-warning text-center',
-                                'colspan' => '9'
-                            )));
+            <?php
                         }
-                ?>
+                    } else {
+                        echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
+                            'class' => 'alert alert-warning text-center',
+                            'colspan' => '9'
+                        )));
+                    }
+            ?>
             </tbody>
         </table>
     </div>

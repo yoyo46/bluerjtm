@@ -123,6 +123,15 @@
 						));
 				?>
 	        </div>
+	        <div class="form-group">
+	        	<?php 
+						echo $this->Form->input('allow_function',array(
+							'label'=> __('Allow Fungsi (Gunakan koma jika lebih dari satu, dan - untuk controller)'), 
+							'class'=>'form-control',
+							'required' => false,
+						));
+				?>
+	        </div>
 	    </div>
 	    <div class="form-group">
         	<?php 

@@ -975,6 +975,7 @@ class AjaxController extends AppController {
 
 	function getDrivers ( $id = false ) {
 		$this->loadModel('Driver');
+
 		$title = __('Supir Truk');
 		$data_action = 'browse-form';
 		$data_change = 'driverID';
@@ -983,21 +984,27 @@ class AjaxController extends AppController {
         );
 
         if(!empty($this->request->data)){
-            if(!empty($this->request->data['Driver']['name'])){
-                $name = urldecode($this->request->data['Driver']['name']);
+        	$data = $this->request->data;
+
+            if(!empty($data['Driver']['name'])){
+                $name = urldecode($data['Driver']['name']);
                 $conditions['Driver.name LIKE '] = '%'.$name.'%';
             }
-            if(!empty($this->request->data['Driver']['alias'])){
-                $alias = urldecode($this->request->data['Driver']['alias']);
+            if(!empty($data['Driver']['alias'])){
+                $alias = urldecode($data['Driver']['alias']);
                 $conditions['Driver.alias LIKE '] = '%'.$alias.'%';
             }
-            if(!empty($this->request->data['Driver']['identity_number'])){
-                $identity_number = urldecode($this->request->data['Driver']['identity_number']);
+            if(!empty($data['Driver']['identity_number'])){
+                $identity_number = urldecode($data['Driver']['identity_number']);
                 $conditions['Driver.identity_number LIKE '] = '%'.$identity_number.'%';
             }
-            if(!empty($this->request->data['Driver']['phone'])){
-                $phone = urldecode($this->request->data['Driver']['phone']);
+            if(!empty($data['Driver']['phone'])){
+                $phone = urldecode($data['Driver']['phone']);
                 $conditions['Driver.phone LIKE '] = '%'.$phone.'%';
+            }
+
+            if( !empty($data['GroupBranch']) ) {
+            	$conditions = $this->MkCommon->getConditionGroupBranch( $data['GroupBranch'], 'Driver', $conditions, 'conditions' );
             }
         }
 
@@ -1021,6 +1028,17 @@ class AjaxController extends AppController {
             'limit' => 10,
         ));
         $drivers = $this->paginate('Driver');
+
+        if( !empty($drivers) ) {
+            $this->loadModel('City');
+
+            foreach ($drivers as $key => $value) {
+                // Custom Otorisasi
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Driver', 'branch_id');
+                $value = $this->City->getMerge($value, $branch_id);
+                $drivers[$key] = $value;
+            }
+        }
 
         $this->set(compact(
         	'drivers', 'data_action', 'title',

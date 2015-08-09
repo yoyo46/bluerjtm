@@ -2,6 +2,16 @@
 class Customer extends AppModel {
 	var $name = 'Customer';
 	var $validate = array(
+        'branch_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Cabang harap dipilih'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'Cabang harap dipilih'
+            ),
+        ),
         'code' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -88,11 +98,12 @@ class Customer extends AppModel {
 
 	function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
+
         $default_options = array(
-            'conditions'=> array(
-                'Customer.group_branch_id' => Configure::read('__Site.config_branch_id'),
-            ),
+            'conditions'=> array(),
             'order'=> array(
+                'Customer.status' => 'DESC',
                 'Customer.order_sort' => 'ASC',
                 'Customer.order' => 'ASC',
                 'Customer.name' => 'ASC',
@@ -124,6 +135,11 @@ class Customer extends AppModel {
             default:
                 $default_options['conditions']['Customer.status'] = 1;
                 break;
+        }
+
+        // Custom Otorisasi
+        if( !empty($branch) ) {
+            $default_options['conditions']['Customer.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         if( !empty($options) && $is_merge ){
@@ -185,6 +201,7 @@ class Customer extends AppModel {
                 'contain' => $contain,
             ), true, array(
                 'status' => 'all',
+                'branch' => false,
             ));
 
             if(!empty($data_merge)){

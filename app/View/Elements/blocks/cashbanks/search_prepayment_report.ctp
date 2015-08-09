@@ -77,6 +77,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'controller' => 'cashbanks', 
                                 'action' => 'prepayment_report', 
                             ), array(
                                 'escape' => false, 

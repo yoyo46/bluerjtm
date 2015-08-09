@@ -343,7 +343,7 @@ class UsersController extends AppController {
         $default_options = array(
             'contain' => array(
                 'Group',
-                'City',
+                // 'City',
             ),
         );
 
@@ -360,16 +360,32 @@ class UsersController extends AppController {
                 $this->request->data['User']['email'] = $email;
                 $default_options['conditions']['User.email LIKE '] = '%'.$email.'%';
             }
+            if(!empty($refine['branch'])){
+                $value = urldecode($refine['branch']);
+                $this->request->data['Employe']['branch_id'] = $value;
+                $default_options['conditions']['Employe.branch_id'] = $value;
+            }
         }
 
         $this->paginate = $this->User->getData('paginate', $default_options, true, array(
             'status' => 'all',
         ));
         $list_user = $this->paginate('User');
+        $cities = $this->User->Employe->City->branchCities();
+
+        if( !empty($list_user) ) {
+            foreach ($list_user as $key => $value) {
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Employe', 'branch_id');
+                $value = $this->User->Employe->City->getMerge($value, $branch_id);
+                $list_user[$key] = $value;
+            }
+        }
 
         $this->set('active_menu', 'list_user');
         $this->set('sub_module_title', 'User');
-        $this->set('list_user', $list_user);
+        $this->set(compact(
+            'list_user', 'cities'
+        ));
     }
 
     function add(){
@@ -700,11 +716,7 @@ class UsersController extends AppController {
                 'EmployePosition.id', 'EmployePosition.name'
             )
         ));
-        $cities = $this->Employe->City->branchCities('list', array(
-            'fields' => array(
-                'City.id', 'City.name'
-            )
-        ));
+        $cities = $this->Employe->City->branchCities();
 
         $this->set('active_menu', 'employes');
         $this->set('sub_module_title', 'Karyawan');
@@ -781,11 +793,8 @@ class UsersController extends AppController {
                 'EmployePosition.id', 'EmployePosition.name'
             )
         ));
-        $cities = $this->Employe->City->branchCities('list', array(
-            'fields' => array(
-                'City.id', 'City.name'
-            )
-        ));
+        $cities = $this->Employe->City->branchCities();
+        
         $this->set('active_menu', 'employes');
         $this->set(compact(
             'employe_positions', 'cities'

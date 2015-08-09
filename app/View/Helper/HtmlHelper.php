@@ -345,32 +345,54 @@ class HtmlHelper extends AppHelper {
 	public function link($title, $url = null, $options = array(), $confirmMessage = false) {
 
 		/*custom*/
-		$controller_allowed = Configure::read('__Site.allowed_controller');
-		$action_allowed = Configure::read('__Site.allowed_action');
+		$allowed_module = Configure::read('__Site.allowed_module');
+		// $controller_allowed = Configure::read('__Site.allowed_controller');
+		// $action_allowed = Configure::read('__Site.allowed_action');
 		$allowness_extend = Configure::read('__Site.allowed_extend');
+		$branch_city_id = Configure::read('__Site.config_list_branch_id');
 
 		$is_show = false;
-		if( in_array($url, array('/', 'javascript:')) || (!empty($url['action']) && in_array($url['action'], $action_allowed)) || (!empty($url['controller']) && in_array($url['controller'], $controller_allowed) && !empty($url['action']) && in_array($url['action'], $action_allowed)) || (!empty($url['controller']) && $url['controller'] == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || !empty($url['page']) || $this->group_id == 1 ){
-			$is_show = true;
-		}else if(is_array($url) && !empty($url['controller']) && !empty($url['action'])){
-			foreach ($this->_rule_link as $key => $value) {
-				$controller_name = $value['BranchModule']['controller'];
-				$action_name = $value['BranchModule']['action'];
-				$extend_name = !empty($value['BranchModule']['extend_action']) ? $value['BranchModule']['extend_action'] : '';
-				$allow_module = $value['BranchActionModule']['is_allow'];
 
+		if( !empty($url['controller']) ) {
+			$controllerName = $url['controller'];
+		} else if( !empty($this->params['controller']) ) {
+			$controllerName = $this->params['controller'];
+		} else {
+			$controllerName = false;
+		}
+
+		$actionName = !empty($url['action'])?$url['action']:false;
+		$branchs = !empty($options['branch_id'])?$options['branch_id']:false;
+		$_allow = !empty($options['allow'])?$options['allow']:false;
+
+		$allowAction = !empty($allowed_module[$controllerName])?$allowed_module[$controllerName]:array();
+		$allowPage = in_array($actionName, $allowAction)?true:false;
+
+		if( empty($branchs) ) {
+			$branchs = $branch_city_id;
+		}
+
+		if( !is_array($branchs) ) {
+			$branchs = array( $branchs );
+		}
+
+		// if( in_array($url, array('/', 'javascript:')) || (in_array($actionName, $action_allowed)) || (in_array($controllerName, $controller_allowed) && in_array($actionName, $action_allowed)) || ($controllerName == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || !empty($url['page']) || $this->group_id == 1 ){
+		if( in_array($url, array('/', 'javascript:', '#')) || !empty($allowPage) || ($controllerName == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || !empty($url['page']) || $this->group_id == 1 || $_allow ){
+			$is_show = true;
+		}else if(is_array($url) && !empty($controllerName) && !empty($actionName) && !empty($branchs)){
+			foreach ($branchs as $key => $branch_id) {
+				$allowed_module = !empty($this->_rule_link[$branch_id])?$this->_rule_link[$branch_id]:array();
+				$allowAction = !empty($allowed_module[$controllerName]['action'])?$allowed_module[$controllerName]['action']:array();
+				$allowPage = in_array($actionName, $allowAction)?true:false;
+				$extend_name = !empty($allowed_module[$controllerName]['extends'][$actionName])?$allowed_module[$controllerName]['extends'][$actionName]:false;
 				$extend_param = !empty($url[0]) ? $url[0] : '';
 
-				if(!empty($extend_param)){
-					if($url['controller'] == $controller_name && $url['action'] == $action_name && !empty($extend_name) && $extend_name == $extend_param && !empty($allow_module)){
+				if( !empty($extend_param) && !empty($extend_name) ) {
+					if( !empty($allowPage) && $extend_name == $extend_param ) {
 						$is_show = true;
-						break;
 					}
-				}else{
-					if($url['controller'] == $controller_name && $url['action'] == $action_name && $allow_module){
-						$is_show = true;
-						break;
-					}
+				} else if( !empty($allowPage) ){
+					$is_show = true;
 				}
 			}
 		}

@@ -7,15 +7,15 @@
     </div>
     <div class="box-body">
         <?php 
-            echo $this->Form->create('Leasing', array(
-                'url'=> $this->Html->url( array(
-                    'controller' => 'leasings',
-                    'action' => 'search',
-                    'index'
-                )), 
-                'role' => 'form',
-                'inputDefaults' => array('div' => false),
-            ));
+                echo $this->Form->create('Leasing', array(
+                    'url'=> $this->Html->url( array(
+                        'controller' => 'leasings',
+                        'action' => 'search',
+                        'index'
+                    )), 
+                    'role' => 'form',
+                    'inputDefaults' => array('div' => false),
+                ));
         ?>
         <div class="row">
             <div class="col-sm-6">
@@ -29,6 +29,14 @@
                             ));
                     ?>
                 </div>
+            </div>
+            <div class="col-sm-6">
+                <?php 
+                        // Custom Otorisasi
+                        if( !empty($list_branch) ) {
+                            echo $this->Common->getCheckboxBranch($list_branch);
+                        }
+                ?>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
@@ -37,6 +45,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'controller' => 'leasings', 
                                 'action' => 'index', 
                             ), array(
                                 'escape' => false, 

@@ -126,6 +126,16 @@ class Driver extends AppModel {
                 'message' => 'Tgl Penerimaan tidak benar'
             ),
         ),
+        'branch_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Cabang harap dipilih'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'Cabang harap dipilih'
+            ),
+        ),
 	);
 
 	var $hasOne = array(
@@ -138,6 +148,13 @@ class Driver extends AppModel {
             'foreignKey' => 'driver_relation_id',
         ),
 	);
+
+    var $belongsTo = array(
+        'City' => array(
+            'className' => 'City',
+            'foreignKey' => 'branch_id',
+        ),
+    );
 
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
@@ -162,10 +179,10 @@ class Driver extends AppModel {
 
 	function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
+
         $default_options = array(
-            'conditions'=> array(
-                'Driver.group_branch_id' => Configure::read('__Site.config_branch_id'),
-            ),
+            'conditions'=> array(),
             'order'=> array(
                 'Driver.name' => 'ASC'
             ),
@@ -186,6 +203,10 @@ class Driver extends AppModel {
             default:
                 $default_options['conditions']['Driver.status'] = 1;
                 break;
+        }
+
+        if( !empty($branch) ) {
+            $default_options['conditions']['Driver.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         if( !empty($options) && $is_merge ){
@@ -225,6 +246,8 @@ class Driver extends AppModel {
                     'Driver.id' => $id,
                     'Driver.is_resign' => 0,
                 )
+            ), true, array(
+                'branch' => false,
             ));
 
             if(!empty($data_merge)){

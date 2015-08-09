@@ -59,6 +59,12 @@
                             ));
                     ?>
                 </div>
+                <?php 
+                        // Custom Otorisasi
+                        if( !empty($list_branch) ) {
+                            echo $this->Common->getCheckboxBranch($list_branch);
+                        }
+                ?>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(

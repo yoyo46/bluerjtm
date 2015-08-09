@@ -272,6 +272,7 @@
 <div class="box-footer text-center action">
 	<?php
     		echo $this->Html->link(__('Kembali'), array(
+                'controller' => 'revenues', 
 				'action' => 'invoices', 
 			), array(
 				'class'=> 'btn btn-default',

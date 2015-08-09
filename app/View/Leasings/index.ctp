@@ -1,4 +1,38 @@
 <?php 
+        $dataColumns = array(
+            'branch' => array(
+                'no_contract' => __('No Kontrak'),
+                'field_model' => 'Leasing.no_contract',
+                'display' => true,
+            ),
+            'company' => array(
+                'name' => __('Perusahaan'),
+                'field_model' => 'LeasingCompany.name',
+                'display' => true,
+            ),
+            'installment' => array(
+                'name' => __('Cicilan PerBln'),
+                'field_model' => 'Leasing.installment',
+                'display' => true,
+            ),
+            'paid_date' => array(
+                'name' => __('Tgl Bayar PerBln'),
+                'field_model' => 'Leasing.paid_date',
+                'display' => true,
+            ),
+            'status' => array(
+                'name' => __('Status'),
+                'field_model' => 'Leasing.status',
+                'display' => true,
+            ),
+            'action' => array(
+                'name' => __('Action'),
+                'field_model' => false,
+                'display' => true,
+            ),
+        );
+        $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
+
         $this->Html->addCrumb($sub_module_title);
         echo $this->element('blocks/leasings/search_index');
 ?>
@@ -13,13 +47,13 @@
             <?php
                     echo $this->Html->link('<i class="fa fa-plus"></i> Perusahaan Leasing', array(
                         'controller' => 'leasings',
-                        'action' => 'leasing_companies'
+                        'action' => 'leasing_companies',
                     ), array(
                         'escape' => false,
                         'class' => 'btn btn-app btn-success pull-right'
                     ));
                     
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Kontrak', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
                         'controller' => 'leasings',
                         'action' => 'add'
                     ), array(
@@ -32,45 +66,38 @@
     </div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
-            <tr>
-                <?php 
-                        echo $this->Html->tag('th', $this->Paginator->sort('Leasing.no_contract', __('No Kontrak'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('LeasingCompany.name', __('Perusahaan'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Leasing.installment', __('Cicilan PerBln'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Leasing.paid_date', __('Tgl Bayar PerBln'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Leasing.status', __('Status'), array(
-                            'escape' => false
-                        )));
-                ?>
-                <th>Action</th>
-            </tr>
+            <thead>
+                <tr>
+                    <?php
+                            if( !empty($fieldColumn) ) {
+                                echo $fieldColumn;
+                            }
+                    ?>
+                </tr>
+            </thead>
+            <tbody>
             <?php
                     if(!empty($leasings)){
                         foreach ($leasings as $key => $value) {
-                            $value_leasing = $value['Leasing'];
-                            $id = $value_leasing['id'];
+                            $id = $this->Common->filterEmptyField($value, 'Leasing', 'id');
+                            $no_contract = $this->Common->filterEmptyField($value, 'Leasing', 'no_contract');
+                            $installment = $this->Common->filterEmptyField($value, 'Leasing', 'installment');
+                            $paid_date = $this->Common->filterEmptyField($value, 'Leasing', 'paid_date');
+                            $status = $this->Common->filterEmptyField($value, 'Leasing', 'status');
+                            $company = $this->Common->filterEmptyField($value, 'LeasingCompany', 'name');
             ?>
             <tr>
-                <td><?php echo $value['Leasing']['no_contract'];?></td>
-                <td><?php echo $value['LeasingCompany']['name'];?></td>
-                <td><?php echo $this->Number->currency($value['Leasing']['installment'], Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></td>
-                <td><?php echo date('d M Y', strtotime($value['Leasing']['paid_date']));?></td>
+                <td><?php echo $no_contract;?></td>
+                <td><?php echo $company;?></td>
+                <td><?php echo $this->Number->currency($installment, Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></td>
+                <td><?php echo date('d M Y', strtotime($paid_date));?></td>
                 <td>
                     <?php 
-                        if(!empty($value_leasing['status'])){
-                            echo '<span class="label label-success">Active</span>'; 
-                        }else{
-                            echo '<span class="label label-danger">Non Active</span>';  
-                        }
-                        
+                            if(!empty($status)){
+                                echo '<span class="label label-success">Active</span>'; 
+                            }else{
+                                echo '<span class="label label-danger">Non Active</span>';  
+                            }
                     ?>
                 </td>
                 <td class="action">
@@ -83,7 +110,7 @@
                                 'class' => 'btn btn-primary btn-xs'
                             ));
 
-                            if(!empty($value_leasing['status'])){
+                            if(!empty($status)){
                                 echo $this->Html->link('Void', array(
                                     'controller' => 'leasings',
                                     'action' => 'toggle',
@@ -114,6 +141,7 @@
                         )));
                     }
             ?>
+            </tbody>
         </table>
     </div><!-- /.box-body -->
     <?php echo $this->element('pagination');?>

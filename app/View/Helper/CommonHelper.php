@@ -1316,53 +1316,57 @@ class CommonHelper extends AppHelper {
         return false;
     }
 
-    function branchForm($model, $branches, $type_position = 'vertical', $class_label = 'col-sm-2', $class_content = 'col-sm-8'){
-        $title = __('Cabang *');
+    function branchForm($model, $branches, $type_position = 'vertical', $title = false, $class_label = 'col-sm-2', $class_content = 'col-sm-8'){
+        $title = !empty($title)?$title:__('Cabang *');
 
         if($type_position == 'vertical'){
             $content = $this->Form->input($model.'.branch_id',array(
                 'label' => $title,
                 'empty' => __('Pilih Cabang --'),
                 'required' => false,
-                'class' => 'form-control',
+                'class' => 'form-control change-branch',
                 'options' => $branches
-            ));
-
-            return $this->Html->tag('div', $content, array(
-                'class' => 'form-group'
             ));
         }else{
             $label = $this->Form->label($model.'.branch_id', $title, array(
                 'class'=>'control-label '.$class_label
             )); 
 
-            $content = $this->Html->tag('div', $this->Form->input('branch_id',array(
+            $content = $label.$this->Html->tag('div', $this->Form->input('branch_id',array(
                 'label'=>false,
                 'empty' => __('Pilih Cabang --'),
                 'required' => false,
-                'class' => 'form-control',
+                'class' => 'form-control change-branch',
                 'options' => $branches
             )), array(
                 'class' => $class_content
             ));
-            return $this->Html->tag('div', $label.$content, array(
-                'class' => 'form-group'
-            ));
         }
+
+        $content .= $this->Form->hidden('Default.branch_id', array(
+            'class' => 'default-branch-id',
+            'value' => !empty($this->request->data[$model]['branch_id'])?$this->request->data[$model]['branch_id']:false,
+        ));
+
+        return $this->Html->tag('div', $content, array(
+            'class' => 'form-group'
+        ));
     }
 
     function allowMenu ( $dataMenu, $_allowModule, $group_id ) {
         $allow = false;
+        $branch_id = Configure::read('__Site.config_branch_id');
 
         if( $group_id == 1 ) {
             $allow = true;
         } else if( !empty($dataMenu) ) {
-            foreach ($dataMenu as $controller => $action) {
-                $allowController = !empty($_allowModule['controller'])?$_allowModule['controller']:array();
-                $allowAction = !empty($_allowModule['action'])?$_allowModule['action']:array();
 
-                if( in_array($controller, $allowController) ) {
-                    $result = array_intersect($action, $allowAction);
+            foreach ($dataMenu as $controller => $action) {
+                $findArr = $action;
+
+                if( !empty($_allowModule[$branch_id][$controller]['action']) ) {
+                    $allowAction = $_allowModule[$branch_id][$controller]['action'];
+                    $result = array_intersect($findArr, $allowAction);
 
                     if( !empty($result) ) {
                         $allow = true;
@@ -1384,5 +1388,57 @@ class CommonHelper extends AppHelper {
         return $this->Html->tag($tag, $content, array(
             'class' => $addClass,
         ));
+    }
+
+    function allowPage ( $branch_id, $controllerName, $actionName ) {
+        $moduleAllow = Configure::read('__Site.config_allow_module');
+        $branchAllow = Configure::read('__Site.config_allow_branch_id');
+        $branchAllow = array_keys($branchAllow);
+
+        if( !empty($moduleAllow[$branch_id]) && in_array($branch_id, $branchAllow) ) {
+            if( !empty($moduleAllow[$branch_id][$controllerName]['action']) ) {
+                if( in_array($actionName, $moduleAllow[$branch_id][$controllerName]['action']) ) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    function getCheckboxBranch ( $branches ) {
+        $result = '';
+        $controllerName = !empty($this->params['controller'])?$this->params['controller']:false;
+        $actionName = $this->action;
+
+        if( !empty($branches) && count($branches) > 1 ) {
+            $tmpArr = array();
+
+            foreach ($branches as $branch_id => $city_name) {
+                if( $this->allowPage( $branch_id, $controllerName, $actionName ) ) {
+                    $tmpArr[] = $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('GroupBranch.group_branch.'.$branch_id, array(
+                        'type' => 'checkbox',
+                        'label'=> false,
+                        'required' => false,
+                        'value' => $branch_id,
+                        'div' => false,
+                    )).$city_name), array(
+                        'class' => 'checkbox',
+                    )), array(
+                        'class' => 'col-sm-12 col-md-6',
+                    ));
+                }
+            }
+
+            if( !empty($tmpArr) && count($tmpArr) > 1 ) {
+                $result = $this->Html->tag('div', $this->Html->tag('div', implode('', $tmpArr), array(
+                    'class' => 'row',
+                )), array(
+                    'class' => 'form-group',
+                ));
+            }
+        }
+
+        return $result;
     }
 }

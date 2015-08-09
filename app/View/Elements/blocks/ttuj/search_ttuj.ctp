@@ -104,7 +104,7 @@
                     ?>
                 </div>
                 <div class="row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-6 col-md-4">
                         <?php 
                                 echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_draft', array(
                                     'type' => 'checkbox',
@@ -117,7 +117,7 @@
                                 ));
                         ?>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-6 col-md-4">
                         <?php 
                                 echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_commit', array(
                                     'type' => 'checkbox',
@@ -130,7 +130,7 @@
                                 ));
                         ?>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-6 col-md-4">
                         <?php 
                                 echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_arrive', array(
                                     'type' => 'checkbox',
@@ -143,7 +143,7 @@
                                 ));
                         ?>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-6 col-md-4">
                         <?php 
                                 echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_bongkaran', array(
                                     'type' => 'checkbox',
@@ -156,7 +156,7 @@
                                 ));
                         ?>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-6 col-md-4">
                         <?php 
                                 echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_balik', array(
                                     'type' => 'checkbox',
@@ -169,7 +169,7 @@
                                 ));
                         ?>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-6 col-md-4">
                         <?php 
                                 echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_pool', array(
                                     'type' => 'checkbox',
@@ -182,7 +182,7 @@
                                 ));
                         ?>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-6 col-md-4">
                         <?php 
                                 echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_sj_not_completed', array(
                                     'type' => 'checkbox',
@@ -195,7 +195,7 @@
                                 ));
                         ?>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-6 col-md-4">
                         <?php 
                                 echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_sj_completed', array(
                                     'type' => 'checkbox',
@@ -208,7 +208,7 @@
                                 ));
                         ?>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-6 col-md-4">
                         <?php 
                                 echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_revenue', array(
                                     'type' => 'checkbox',
@@ -221,7 +221,7 @@
                                 ));
                         ?>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-12 col-md-6">
                         <?php 
                                 echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_not_revenue', array(
                                     'type' => 'checkbox',

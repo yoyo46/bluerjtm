@@ -35,6 +35,7 @@
                         'type' => 'submit',
                     ));
                     echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                        'controller' => 'settings', 
                         'action' => 'customer_types', 
                     ), array(
                         'escape' => false, 

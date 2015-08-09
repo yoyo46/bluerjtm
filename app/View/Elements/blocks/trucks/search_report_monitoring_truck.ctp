@@ -96,6 +96,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'controller' => 'trucks', 
                                 'action' => 'monitoring_truck', 
                             ), array(
                                 'escape' => false, 

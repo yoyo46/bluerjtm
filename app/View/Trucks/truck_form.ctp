@@ -37,6 +37,9 @@
 		        </div>
 		        <?php 
 		        		}
+
+		    			// Custom Otorisasi
+						echo $this->Common->branchForm('Truck', $allowBranch, 'vertical');
 		        ?>
 		    	<div class="form-group">
 		        	<?php 

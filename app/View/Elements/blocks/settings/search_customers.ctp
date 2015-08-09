@@ -21,36 +21,42 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                        echo $this->Form->input('name',array(
-                            'label'=> __('Nama Customer'),
-                            'class'=>'form-control',
-                            'required' => false,
-                            'placeholder' => __('Nama Customer')
-                        ));
+                            echo $this->Form->input('name',array(
+                                'label'=> __('Nama Customer'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Nama Customer')
+                            ));
                     ?>
                 </div>
                 <div class="form-group">
                     <?php 
-                        echo $this->Form->input('Customer.customer_type_id',array(
-                            'label'=> __('Tipe Customer'),
-                            'class'=>'form-control',
-                            'required' => false,
-                            'empty' => __('Pilih Tipe Customer'),
-                        ));
+                            echo $this->Form->input('Customer.customer_type_id',array(
+                                'label'=> __('Tipe Customer'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Tipe Customer'),
+                            ));
                     ?>
                 </div>
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                        echo $this->Form->input('Customer.customer_group_id',array(
-                            'label'=> __('Grup Customer'),
-                            'class'=>'form-control',
-                            'required' => false,
-                            'empty' => __('Pilih Grup Customer'),
-                        ));
+                            echo $this->Form->input('Customer.customer_group_id',array(
+                                'label'=> __('Grup Customer'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Grup Customer'),
+                            ));
                     ?>
                 </div>
+                <?php 
+                        // Custom Otorisasi
+                        if( !empty($list_branch) ) {
+                            echo $this->Common->getCheckboxBranch($list_branch);
+                        }
+                ?>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
@@ -59,6 +65,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'controller' => 'settings', 
                                 'action' => 'customers', 
                             ), array(
                                 'escape' => false, 

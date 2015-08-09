@@ -18,10 +18,12 @@
         if(!empty($tarif)){
             $price = $tarif;
         }else{
-            $link = $this->Html->link(__('disini'), 
-                array('controller' => 'settings', 'action' => 'tarif_angkutan_add'),
-                array('target' => 'blank')
-            );
+            $link = $this->Html->link(__('disini'), array(
+                'controller' => 'settings',
+                'action' => 'tarif_angkutan_add'
+            ), array(
+                'target' => 'blank'
+            ));
             $price = sprintf(__('Tarif tidak ditemukan, silahkan buat tarif angkutan %s'), $link);
         }
 

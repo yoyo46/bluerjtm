@@ -6,13 +6,13 @@ class User extends AppModel {
             'className' => 'Group',
             'foreignKey' => 'group_id',
         ),
-        'City' => array(
-            'className' => 'City',
-            'foreignKey' => 'branch_id',
-            'conditions' => array(
-                'City.is_branch' => 1,
-            ),
-        ),
+        // 'City' => array(
+        //     'className' => 'City',
+        //     'foreignKey' => 'branch_id',
+        //     'conditions' => array(
+        //         'City.is_branch' => 1,
+        //     ),
+        // ),
         'Employe' => array(
             'className' => 'Employe',
             'foreignKey' => 'employe_id',
@@ -20,12 +20,12 @@ class User extends AppModel {
     );
     
     var $validate = array(
-        'branch_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Cabang harap dipilih'
-            ),
-        ),
+        // 'branch_id' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Cabang harap dipilih'
+        //     ),
+        // ),
         'employe_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

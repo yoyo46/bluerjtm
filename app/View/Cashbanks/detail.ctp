@@ -306,6 +306,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link(__('Kembali'), array(
+                                'controller' => 'cashbanks', 
                                 'action' => 'index', 
                             ), array(
                                 'class'=> 'btn btn-default',

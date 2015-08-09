@@ -7,7 +7,7 @@ class BranchActionModule extends AppModel {
         'BranchModule' => array(
             'className' => 'BranchModule',
             'foreignKey' => 'branch_module_id'
-        )
+        ),
     );
 
 	function getData($find, $options = false){

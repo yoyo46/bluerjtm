@@ -59,18 +59,22 @@ class BranchModule extends AppModel {
     function validateAction($data){
         $key = key($data);
 
-        if( empty($data[$key]) && !empty($this->data['BranchModule']['parent_id']) ){
-            return false;
-        }else{
-            if(empty($this->data['BranchModule']['parent_id'])){
-                return true;
+        if( empty($this->data['BranchModule']['is_parent']) ) {
+            if( empty($data[$key]) && !empty($this->data['BranchModule']['parent_id']) ){
+                return false;
             }else{
-                if(!empty($data[$key])){
+                if(empty($this->data['BranchModule']['parent_id'])){
                     return true;
                 }else{
-                    return false;
+                    if(!empty($data[$key])){
+                        return true;
+                    }else{
+                        return false;
+                    }
                 }
             }
+        } else {
+            return true;
         }
     }
 

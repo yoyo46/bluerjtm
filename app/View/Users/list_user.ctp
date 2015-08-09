@@ -10,7 +10,7 @@
             ),
             'branch' => array(
                 'name' => __('Cabang'),
-                'field_model' => 'City.name',
+                'field_model' => false,
                 'display' => true,
             ),
             'group' => array(

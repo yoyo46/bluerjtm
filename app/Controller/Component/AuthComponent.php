@@ -8,11 +8,45 @@ App::uses('CakeSession', 'Model/Datasource');
 App::uses('BaseAuthorize', 'Controller/Component/Auth');
 App::uses('BaseAuthenticate', 'Controller/Component/Auth');
 class AuthComponent extends Component {
+	// Default Global
+	// public $authorize = false;
+	// public $loginAction = array(
+	// 	'controller' => 'users',
+	// 	'action' => 'login',
+	// 	'plugin' => null
+	// );
+	// public $logoutRedirect = null;
+	// public $loginRedirect = null;
+
+	// Custom Global
+    public $userModel = 'User';
+	public $authorize = array(
+        'Controller',
+        'Actions' => array('actionPath' => 'controllers')
+    );
+	public $loginAction = array(
+        'controller' => 'users',
+        'action' => 'login',
+        'admin' => false,
+        'plugin' => false
+    );
+    public $logoutRedirect = array(
+        'controller' => 'users',
+        'action' => 'login',
+        'admin' => false,
+        'plugin' => false
+    );
+    public $loginRedirect = array(
+        'controller' => 'pages',
+        'action' => 'dashboard',
+        'admin' => false,
+        'plugin' => false
+    );
+
 	const ALL = 'all';
 	public $components = array('Session', 'RequestHandler');
 	public $authenticate = array('Form');
 	protected $_authenticateObjects = array();
-	public $authorize = false;
 	protected $_authorizeObjects = array();
 	public $ajaxLogin = null;
 	public $flash = array(
@@ -22,14 +56,7 @@ class AuthComponent extends Component {
 	);
 	public static $sessionKey = 'Auth.User';
 	protected static $_user = array();
-	public $loginAction = array(
-		'controller' => 'users',
-		'action' => 'login',
-		'plugin' => null
-	);
-	public $loginRedirect = null;
 	public $loginAdminRedirect = null;
-	public $logoutRedirect = null;
 	public $authError = null;
 	public $unauthorizedRedirect = true;
 	public $changeEmail = null;

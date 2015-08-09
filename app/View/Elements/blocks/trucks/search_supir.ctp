@@ -17,30 +17,41 @@
                 'inputDefaults' => array('div' => false),
             ));
         ?>
-        <div class="form-group">
-            <?php 
-                echo $this->Form->input('name',array(
-                    'label'=> __('Nama Supir'),
-                    'class'=>'form-control',
-                    'required' => false,
-                    'placeholder' => __('Nama Supir')
-                ));
-            ?>
-        </div>
-        <div class="form-group action">
-            <?php
-                    echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
-                        'div' => false, 
-                        'class'=> 'btn btn-success btn-sm',
-                        'type' => 'submit',
-                    ));
-                    echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                        'action' => 'drivers', 
-                    ), array(
-                        'escape' => false, 
-                        'class'=> 'btn btn-default btn-sm',
-                    ));
-            ?>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                        echo $this->Form->input('name',array(
+                            'label'=> __('Nama Supir'),
+                            'class'=>'form-control',
+                            'required' => false,
+                            'placeholder' => __('Nama Supir')
+                        ));
+                    ?>
+                </div>
+                <div class="form-group action">
+                    <?php
+                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
+                                'div' => false, 
+                                'class'=> 'btn btn-success btn-sm',
+                                'type' => 'submit',
+                            ));
+                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'action' => 'drivers', 
+                            ), array(
+                                'escape' => false, 
+                                'class'=> 'btn btn-default btn-sm',
+                            ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <?php 
+                        if( !empty($list_branch) ) {
+                            echo $this->Common->getCheckboxBranch($list_branch);
+                        }
+                ?>
+            </div>
         </div>
         <?php 
             echo $this->Form->end();

@@ -392,13 +392,7 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-							echo $this->Form->input('group_branch_id',array(
-								'label'=> __('Cabang Penerimaan *'), 
-								'class'=>'form-control',
-								'required' => false,
-								'empty' => __('Pilih Cabang'),
-								'options' => $branches,
-							));
+							echo $this->Common->branchForm('Driver', $allowBranch, 'vertical', __('Cabang Penerimaan *'));
 					?>
 		        </div>
 		    </div>

@@ -17,7 +17,10 @@
 		        <h3 class="box-title"><?php echo __('Informasi Customer'); ?></h3>
 		    </div>
 		    <div class="box-body">
-		    	<?php 
+		    	<?php
+		    			// Custom Otorisasi
+						echo $this->Common->branchForm('Customer', $allowBranch, 'vertical');
+
 						echo $this->Html->tag('div', $this->Form->input('code',array(
 							'label'=> __('Kode Customer *'), 
 							'class'=>'form-control',
