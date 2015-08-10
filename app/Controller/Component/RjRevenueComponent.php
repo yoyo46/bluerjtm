@@ -191,5 +191,17 @@ class RjRevenueComponent extends Component {
 
 		return $parameters;
 	}
+
+	function getTtujConditionBrach ( $conditions, $action_type ) {
+        if( in_array($action_type, array( 'truk_tiba', 'bongkaran', 'balik' )) ) {
+            $conditions['Ttuj.to_city_id'] = Configure::read('__Site.config_branch_id');
+        } else if( in_array($action_type, array( 'pool' )) ) {
+            $conditions['Ttuj.from_city_id'] = Configure::read('__Site.config_branch_id');
+        } else {
+            $conditions['Ttuj.branch_id'] = Configure::read('__Site.config_branch_id');
+        }
+
+        return $conditions;
+	}
 }
 ?>

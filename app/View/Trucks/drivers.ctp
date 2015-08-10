@@ -6,11 +6,11 @@
         echo $this->element('blocks/trucks/search_supir');
 
         $dataColumns = array(
-            'cabang' => array(
-                'name' => __('Cabang'),
-                'field_model' => 'City.id',
-                'display' => true,
-            ),
+            // 'cabang' => array(
+            //     'name' => __('Cabang'),
+            //     'field_model' => 'City.id',
+            //     'display' => true,
+            // ),
             'no_id' => array(
                 'name' => __('No. ID'),
                 'field_model' => 'Driver.no_id',
@@ -64,7 +64,7 @@
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Supir', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
                         'controller' => 'trucks',
                         'action' => 'driver_add'
                     ), array(
@@ -98,7 +98,7 @@
                             $status = $this->Common->filterEmptyField($value, 'Driver', 'status');
                             $created = $this->Common->filterEmptyField($value, 'Driver', 'created');
                             $is_resign = $this->Common->filterEmptyField($value, 'Driver', 'is_resign');
-                            $city = $this->Common->filterEmptyField($value, 'City', 'name');
+                            // $city = $this->Common->filterEmptyField($value, 'City', 'name');
                             $branch_id = $this->Common->filterEmptyField($value, 'Driver', 'branch_id');
                             $activate = array(
                                 'controller' => 'trucks',
@@ -107,7 +107,7 @@
                             );
             ?>
             <tr>
-                <td><?php echo $city;?></td>
+                <!-- <td><?php // echo $city;?></td> -->
                 <td><?php echo $no_id;?></td>
                 <td><?php echo $name;?></td>
                 <td><?php echo $alias;?></td>
@@ -118,20 +118,18 @@
                 <td class="text-center">
                     <?php 
                             if(!empty($status)){
-                                echo $this->Html->link($this->Common->icon('check'), $activate, array(
-                                    'escape' => false,
+                                echo $this->Html->tag('div', $this->Common->icon('check'), array(
                                     'class' => 'btn btn-success btn-xs',
-                                ), __('Apakah Anda yakin akan non-aktifkan data ini?'));
+                                ));
                             }else{
                                 if(!empty($is_resign)){
                                     echo $this->Html->tag('span', __('Resign'), array(
                                         'class' => 'label label-danger',
                                     ));;
                                 }else{
-                                    echo $this->Html->link($this->Common->icon('times'), $activate, array(
-                                        'escape' => false,
+                                    echo $this->Html->tag('div', $this->Common->icon('times'), array(
                                         'class' => 'btn btn-danger btn-xs',
-                                    ), __('Apakah Anda yakin akan aktifkan data ini?')); 
+                                    )); 
                                 }
                             }
                     ?>
@@ -144,18 +142,18 @@
                                 $id
                             ), array(
                                 'class' => 'btn btn-primary btn-xs',
-                                'branch_id' => $branch_id,
+                                // 'branch_id' => $branch_id,
                             ));
 
                             if(!empty($status)){
                                 echo $this->Html->link(__('Non-Aktif'), $activate, array(
                                     'class' => 'btn btn-danger btn-xs',
-                                    'branch_id' => $branch_id,
+                                    // 'branch_id' => $branch_id,
                                 ), __('Apakah Anda yakin akan non-aktifkan data ini?'));
                             }else{
                                 echo $this->Html->link(__('Aktifkan'), $activate, array(
                                     'class' => 'btn btn-success btn-xs',
-                                    'branch_id' => $branch_id,
+                                    // 'branch_id' => $branch_id,
                                 ), __('Apakah Anda yakin akan aktifkan data ini?'));
                             }
                     ?>

@@ -19,7 +19,7 @@
 		    <div class="box-body">
 		    	<?php
 		    			// Custom Otorisasi
-						echo $this->Common->branchForm('Customer', $allowBranch, 'vertical');
+						// echo $this->Common->branchForm('Customer', $allowBranch, 'vertical');
 
 						echo $this->Html->tag('div', $this->Form->input('code',array(
 							'label'=> __('Kode Customer *'), 

@@ -1003,9 +1003,9 @@ class AjaxController extends AppController {
                 $conditions['Driver.phone LIKE '] = '%'.$phone.'%';
             }
 
-            if( !empty($data['GroupBranch']) ) {
-            	$conditions = $this->MkCommon->getConditionGroupBranch( $data['GroupBranch'], 'Driver', $conditions, 'conditions' );
-            }
+            // if( !empty($data['GroupBranch']) ) {
+            // 	$conditions = $this->MkCommon->getConditionGroupBranch( $data['GroupBranch'], 'Driver', $conditions, 'conditions' );
+            // }
         }
 
         if( !empty($id)) {
@@ -1048,6 +1048,7 @@ class AjaxController extends AppController {
 
 	function getTrucks ( $action_type = false, $action_id = false ) {
 		$this->loadModel('Truck');
+
 		$title = __('Data Truk');
 		$data_action = 'browse-form';
 		$data_change = 'truckID';
@@ -1084,9 +1085,11 @@ class AjaxController extends AppController {
         }
 
         if(!empty($this->request->data)){
-            if(!empty($this->request->data['Truck']['nopol'])){
-                $nopol = urldecode($this->request->data['Truck']['nopol']);
-                $typeTruck = !empty($this->request->data['Truck']['type'])?$this->request->data['Truck']['type']:1;
+        	$data = $this->request->data;
+
+            if(!empty($data['Truck']['nopol'])){
+                $nopol = urldecode($data['Truck']['nopol']);
+                $typeTruck = !empty($data['Truck']['type'])?$data['Truck']['type']:1;
 
                 if( $typeTruck == 2 ) {
                 	$conditionsNopol = array(
@@ -1106,22 +1109,30 @@ class AjaxController extends AppController {
             	));
                 $options['conditions']['Truck.id'] = $truckSearch;
             }
-            if(!empty($this->request->data['Driver']['name'])){
-                $name = urldecode($this->request->data['Driver']['name']);
+            if(!empty($data['Driver']['name'])){
+                $name = urldecode($data['Driver']['name']);
                 $options['conditions']['Driver.name LIKE '] = '%'.$name.'%';
             }
+
+            // if( !empty($data['GroupBranch']) ) {
+            // 	$options = $this->MkCommon->getConditionGroupBranch( $data['GroupBranch'], 'Truck', $options );
+            // }
         }
 
 		$this->paginate = $this->Truck->getData('paginate', $options);
         $trucks = $this->paginate('Truck');
 
         if(!empty($trucks)){
+        	$this->loadModel('City');
+
             foreach ($trucks as $key => $truck) {
                 $data = $truck['Truck'];
+                $branch_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'branch_id');
 
                 $truck = $this->Truck->TruckCategory->getMerge($truck, $data['truck_category_id']);
                 $truck = $this->Truck->TruckBrand->getMerge($truck, $data['truck_brand_id']);
                 $truck = $this->Truck->Company->getMerge($truck, $data['company_id']);
+                $truck = $this->City->getMerge($truck, $branch_id);
 
                 $trucks[$key] = $truck;
             }
@@ -1436,6 +1447,14 @@ class AjaxController extends AppController {
             }
         }
 
+        if( in_array($action_type, array( 'pool' )) ) {
+            $conditions['Ttuj.from_city_id'] = Configure::read('__Site.config_branch_id');
+        } else if( in_array($action_type, array( 'truk_tiba', 'bongkaran', 'balik' )) ) {
+            $conditions['Ttuj.to_city_id'] = Configure::read('__Site.config_branch_id');
+        } else {
+            $conditions['Ttuj.branch_id'] = Configure::read('__Site.config_branch_id');
+        }
+
         switch ($action_type) {
             case 'bongkaran':
                 $conditions['Ttuj.is_arrive'] = 1;
@@ -1499,6 +1518,8 @@ class AjaxController extends AppController {
             'conditions' => $conditions,
             'order' => $orders,
             'limit' => Configure::read('__Site.config_pagination'),
+        ), true, array(
+        	'branch' => false,
         ));
         $ttujs = $this->paginate('Ttuj');
 

@@ -64,7 +64,7 @@ class RevenueDetail extends AppModel {
 
         $default_options = array(
             'conditions'=> array(
-                'Revenue.group_branch_id' => Configure::read('__Site.config_branch_id'),
+                'Revenue.branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(),
             'group'=> array(),

@@ -21,12 +21,13 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                        echo $this->Form->input('name',array(
-                            'label'=> __('Nama Supir'),
-                            'class'=>'form-control',
-                            'required' => false,
-                            'placeholder' => __('Nama Supir')
-                        ));
+                            echo $this->Form->input('no_id',array(
+                                'type' => 'text',
+                                'label'=> __('Id Supir'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Id Supir')
+                            ));
                     ?>
                 </div>
                 <div class="form-group action">
@@ -46,10 +47,18 @@
                 </div>
             </div>
             <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('name',array(
+                                'label'=> __('Nama Supir'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Nama Supir')
+                            ));
+                    ?>
+                </div>
                 <?php 
-                        if( !empty($list_branch) ) {
-                            echo $this->Common->getCheckboxBranch($list_branch);
-                        }
+                        // echo $this->Common->getCheckboxBranch();
                 ?>
             </div>
         </div>

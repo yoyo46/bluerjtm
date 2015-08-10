@@ -57,9 +57,7 @@
 </div>
 <?php 
         // Custom Otorisasi
-        if( !empty($list_branch) ) {
-            echo $this->Common->getCheckboxBranch($list_branch);
-        }
+        // echo $this->Common->getCheckboxBranch();
 ?>
 <div class="form-group action">
     <?php

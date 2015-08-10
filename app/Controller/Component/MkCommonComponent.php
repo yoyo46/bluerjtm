@@ -576,8 +576,9 @@ class MkCommonComponent extends Component {
         Configure::write('__Site.dimension', $dimensionArr);
     }
 
-    function allowPage ( $branchs ) {
+    function allowPage ( $branchs, $no_exact = false ) {
         $result = true;
+        $resultExact = false;
 
         if( !is_array($branchs) ) {
             $branchs = array( $branchs );
@@ -585,8 +586,8 @@ class MkCommonComponent extends Component {
 
         if( is_array($branchs) ) {
             $moduleAllow = Configure::read('__Site.config_allow_module');
-            $branchAllow = Configure::read('__Site.config_allow_branch_id');
-            $branchAllow = array_keys($branchAllow);
+            $branchAllow = Configure::read('__Site.config_list_branch_id');
+            // $branchAllow = array_keys($branchAllow);
             $branchs = array_values($branchs);
             $controllerName = !empty($this->controller->params['controller'])?$this->controller->params['controller']:false;
             $actionName = $this->controller->action;
@@ -598,6 +599,8 @@ class MkCommonComponent extends Component {
                         if( !empty($moduleAllow[$branch_id][$controllerName]['action']) ) {
                             if( !in_array($actionName, $moduleAllow[$branch_id][$controllerName]['action']) ) {
                                 $result = false;
+                            } else {
+                                $resultExact = true;
                             }
                         } else {
                             $result = false;
@@ -613,7 +616,14 @@ class MkCommonComponent extends Component {
             $result = false;
         }
 
-        if( empty($result) ) {
+        if( !empty($no_exact) ) {
+            if( empty($resultExact) ) {
+                $this->setCustomFlash('Anda tidak mempunyai hak mengakses konten tersebut.', 'error');
+                $this->controller->redirect($this->controller->referer());
+            } else {
+                return true;
+            }
+        } else if( empty($result) ) {
             $this->setCustomFlash('Anda tidak mempunyai hak mengakses konten tersebut.', 'error');
             $this->controller->redirect($this->controller->referer());
         } else {
@@ -621,7 +631,7 @@ class MkCommonComponent extends Component {
         }
     }
 
-    function allowBranch ( $branchs ) {
+    function allowBranch ( $branchs, $controllerName = false, $actionName = false, $key = false ) {
         $result = true;
 
         if( !is_array($branchs) ) {
@@ -630,10 +640,15 @@ class MkCommonComponent extends Component {
 
         if( is_array($branchs) ) {
             $moduleAllow = Configure::read('__Site.config_allow_module');
-            $branchAllow = Configure::read('__Site.config_allow_branch_id');
-            $branchAllow = array_keys($branchAllow);
-            $controllerName = !empty($this->controller->params['controller'])?$this->controller->params['controller']:false;
-            $actionName = $this->controller->action;
+            $branchAllow = Configure::read('__Site.config_list_branch_id');
+            // $branchAllow = array_keys($branchAllow);
+
+            if( empty($controllerName) ) {
+                $controllerName = $this->controller->params['controller'];
+            }
+            if( empty($actionName) ) {
+                $actionName = $this->controller->action;
+            }
 
             if( !empty($branchs) ) {
                 foreach ($branchs as $branch_id => $branch_name) {
@@ -658,6 +673,10 @@ class MkCommonComponent extends Component {
             }
         } else {
             $branchs = false;
+        }
+
+        if( !empty($key) ) {
+            $branchs = array_keys($branchs);
         }
 
         return $branchs;

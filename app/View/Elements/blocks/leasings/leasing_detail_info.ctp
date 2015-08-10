@@ -27,8 +27,9 @@
                             $count = count($this->request->data['LeasingDetail']);
                         }
                         $total = 0;
+
                         for ($i=0; $i < $count; $i++) { 
-                            $price = (isset($this->request->data['LeasingDetail'][$i]['price']) && !empty($this->request->data['LeasingDetail'][$i]['price'])) ? $this->request->data['LeasingDetail'][$i]['price'] : 0;
+                            $price = ( !empty($this->request->data['LeasingDetail'][$i]['price']) ) ? $this->Common->convertPriceToString($this->request->data['LeasingDetail'][$i]['price'], 0) : 0;
 
                             if(!empty($price)){
                                 $total += $price;

@@ -49,9 +49,11 @@ class Kir extends AppModel {
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
+
         $default_options = array(
             'conditions'=> array(
-                'Kir.group_branch_id' => Configure::read('__Site.config_branch_id'),
+                'Kir.branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'Kir.status' => 'DESC',
@@ -78,6 +80,11 @@ class Kir extends AppModel {
             default:
                 $default_options['conditions']['Kir.status'] = 1;
                 break;
+        }
+
+        // Custom Otorisasi
+        if( !empty($branch) ) {
+            $default_options['conditions']['Kir.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         if(!empty($options) && $is_merge){

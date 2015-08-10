@@ -1,4 +1,41 @@
 <?php 
+        $dataColumns = array(
+            'name' => array(
+                'name' => __('Kota'),
+                'field_model' => 'City.name',
+                'display' => true,
+            ),
+            'branch' => array(
+                'name' => __('Cabang'),
+                'field_model' => 'City.is_branch',
+                'class' => 'text-center',
+                'display' => true,
+            ),
+            'pool' => array(
+                'name' => __('Pool'),
+                'field_model' => 'City.is_pool',
+                'class' => 'text-center',
+                'display' => true,
+            ),
+            'plant' => array(
+                'name' => __('Plant'),
+                'field_model' => 'City.is_plant',
+                'class' => 'text-center',
+                'display' => true,
+            ),
+            'modified' => array(
+                'name' => __('Diubah'),
+                'field_model' => 'City.modified',
+                'display' => true,
+            ),
+            'action' => array(
+                'name' => __('Action'),
+                'field_model' => false,
+                'display' => true,
+            ),
+        );
+        $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
+
         $this->Html->addCrumb($sub_module_title);
         echo $this->element('blocks/settings/search_cities');
 ?>
@@ -18,72 +55,87 @@
         </div>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
-        <table class="table table-hover">
-            <tr>
-                <th>Kota</th>
-                <?php
-                        echo $this->Html->tag('th', $this->Paginator->sort('City.is_branch', __('Cabang'), array(
-                            'escape' => false,
-                        )), array(
-                            'class' => 'text-center',
-                        ));
-                        echo $this->Html->tag('th', $this->Paginator->sort('City.is_pool', __('Pool'), array(
-                            'escape' => false,
-                        )), array(
-                            'class' => 'text-center',
-                        ));
-                ?>
-                <th>Dibuat</th>
-                <th>Action</th>
-            </tr>
+        <table class="table table-hover sorting">
+            <thead>
+                <tr>
+                    <?php
+                            if( !empty($fieldColumn) ) {
+                                echo $fieldColumn;
+                            }
+                    ?>
+                </tr>
+            </thead>
+            <tbody>
             <?php
-                    $i = 1;
                     if(!empty($cities)){
                         foreach ($cities as $key => $value) {
-                            $value_data = $value['City'];
-                            $id = $value_data['id'];
+                            $id = $this->Common->filterEmptyField($value, 'City', 'id');
+                            $name = $this->Common->filterEmptyField($value, 'City', 'name');
+                            $modified = $this->Common->filterEmptyField($value, 'City', 'modified');
+                            $branch = $this->Common->filterEmptyField($value, 'City', 'is_branch');
+                            $plant = $this->Common->filterEmptyField($value, 'City', 'is_plant');
+                            $pool = $this->Common->filterEmptyField($value, 'City', 'is_pool');
 
-                            $branch = $this->Common->safeTagPrint($value['City']['is_branch']);
-                            if($branch){
-                                $branch = '<span class="label label-success"><i class="fa fa-check"></i></span>';
+                            if( !empty($branch) ){
+                                $branch = $this->Html->tag('span', $this->Common->icon('check'), array(
+                                    'class' => 'label label-success',
+                                ));
                             }else{
-                                $branch = '<span class="label label-danger"><i class="fa fa-times"></i></span>';
+                                $branch = $this->Html->tag('span', $this->Common->icon('times'), array(
+                                    'class' => 'label label-danger',
+                                ));
                             }
 
-                            $pool = $this->Common->safeTagPrint($value['City']['is_pool']);
-                            if($pool){
-                                $pool = '<span class="label label-success"><i class="fa fa-check"></i></span>';
+                            if( !empty($pool) ){
+                                $pool = $this->Html->tag('span', $this->Common->icon('check'), array(
+                                    'class' => 'label label-success',
+                                ));
                             }else{
-                                $pool = '<span class="label label-danger"><i class="fa fa-times"></i></span>';
+                                $pool = $this->Html->tag('span', $this->Common->icon('times'), array(
+                                    'class' => 'label label-danger',
+                                ));
+                            }
+
+                            if( !empty($plant) ){
+                                $plant = $this->Html->tag('span', $this->Common->icon('check'), array(
+                                    'class' => 'label label-success',
+                                ));
+                            }else{
+                                $plant = $this->Html->tag('span', $this->Common->icon('times'), array(
+                                    'class' => 'label label-danger',
+                                ));
                             }
             ?>
             <tr>
-                <td><?php echo $value_data['name'];?></td>
+                <td><?php echo $name;?></td>
                 <td class="text-center">
                     <?php 
-                        echo $this->Html->link($branch, array(
-                            'controller' => 'settings',
-                            'action' => 'toggle_city',
-                            $id,
-                            'branch'
-                        ), array(
-                            'escape' => false
-                        ));
+                            // echo $this->Html->link($branch, array(
+                            //     'controller' => 'settings',
+                            //     'action' => 'toggle_city',
+                            //     $id,
+                            //     'branch'
+                            // ), array(
+                            //     'escape' => false
+                            // ));
+                            echo $branch;
                     ?>
                 </td>
                 <td class="text-center">
                     <?php 
-                        echo $this->Html->link($pool, array(
-                            'controller' => 'settings',
-                            'action' => 'toggle_city',
-                            $id,
-                            'pool'
-                        ), array(
-                            'escape' => false
-                        ));
+                            // echo $this->Html->link($pool, array(
+                            //     'controller' => 'settings',
+                            //     'action' => 'toggle_city',
+                            //     $id,
+                            //     'pool'
+                            // ), array(
+                            //     'escape' => false
+                            // ));
+                            echo $pool;
                     ?>
                 </td>
-                <td><?php echo $this->Common->customDate($value_data['created']);?></td>
+                <td class="text-center"><?php echo $plant;?></td>
+                <td><?php echo $this->Time->niceShort($modified);?></td>
                 <td class="action">
                     <?php 
                             echo $this->Html->link('Edit', array(
@@ -100,7 +152,6 @@
                                 $id
                             ), array(
                                 'class' => 'btn btn-danger btn-xs',
-                                'title' => 'disable status brand'
                             ), __('Anda yakin ingin menghapus data Kota ini?'));
                     ?>
                 </td>
@@ -114,6 +165,7 @@
                         )));
                     }
             ?>
+            </tbody>
         </table>
     </div><!-- /.box-body -->
     <?php echo $this->element('pagination');?>

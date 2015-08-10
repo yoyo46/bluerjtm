@@ -92,9 +92,7 @@
                             $customer_id = $customer['Customer']['id'];
                             $totalMuatan = 0;
 
-                            echo $this->Html->tag('td', $this->Html->tag('div', $customer['Customer']['code'], array(
-                                'style' => 'width: 80px;',
-                            )));
+                            echo $this->Html->tag('td', $customer['Customer']['code']);
 
                             if( $data_type == 'retail' ) {
                                 $totalMuatan = !empty($dataTtuj[$customer_id])?$dataTtuj[$customer_id]:'-';

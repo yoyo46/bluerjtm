@@ -1,5 +1,6 @@
 <?php
-        $name = !empty($User['Employe']['full_name']) ? $User['Employe']['full_name'] : '';
+        $name = $this->Common->filterEmptyField($User, 'Employe', 'full_name');;
+        $branch_city_id = !empty($branch_city_id)?$branch_city_id:false;
 ?>
 <!-- Left side column. contains the logo and sidebar -->
 <aside class="left-side sidebar-offcanvas">
@@ -20,7 +21,7 @@
                     'label' => false,
                     'div' => false,
                     'onchange' => 'submit()',
-                    'value' => $group_branch_id
+                    'value' => $branch_city_id
                 ));
 
                 echo $this->Form->end();
@@ -42,7 +43,7 @@
                         ),
                     );
 
-                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
+                    if( $this->Common->allowMenu( $dataMenu ) ) {
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu['users']) ) {
                             $activeMenu = 'active';
                         }
@@ -102,7 +103,7 @@
                         ),
                     );
 
-                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
+                    if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeMenu = false;
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu['settings']) ) {
@@ -155,7 +156,7 @@
                         ),
                     );
 
-                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
+                    if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeMenu = false;
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu['settings']) ) {
@@ -218,7 +219,7 @@
                         ),
                     );
 
-                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
+                    if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeTruck = false;
                         $truckMenu = array(
                             'drivers', 'trucks', 'directions',
@@ -401,7 +402,7 @@
                         ),
                     );
 
-                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
+                    if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeTtuj = false;
                         $ttujMenu = array(
                             'ttuj', 'truk_tiba', 'bongkaran',
@@ -513,7 +514,7 @@
                         ),
                     );
 
-                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
+                    if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
                             'index', 'tarif_angkutan', 'invoices',
@@ -639,7 +640,7 @@
                         ),
                     );
 
-                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId  ) ) {
+                    if( $this->Common->allowMenu( $dataMenu  ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
                             'lkus', 'ksus'
@@ -686,7 +687,7 @@
                         ),
                     );
 
-                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
+                    if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
                             'lakas'
@@ -743,7 +744,7 @@
                         ),
                     );
 
-                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId  ) ) {
+                    if( $this->Common->allowMenu( $dataMenu  ) ) {
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
                             $activeSetting = 'active';
                         }
@@ -897,7 +898,7 @@
                         ),
                     );
 
-                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
+                    if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeSetting = false;
                         $settingMenu = array(
                             'internal', 'product_categories', 'product_brands'
@@ -956,7 +957,7 @@
                         ),
                     );
 
-                    if( $this->Common->allowMenu( $dataMenu, $_allowModule, $GroupId ) ) {
+                    if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeSetting = false;
                         $settingMenu = array(
                             'cities', 'vendors', 'companies',

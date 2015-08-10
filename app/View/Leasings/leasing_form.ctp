@@ -16,6 +16,9 @@
         <h3 class="box-title"><?php echo $sub_module_title?></h3>
     </div>
     <div class="box-body">
+    	<?php 
+				echo $this->Common->branchForm('Leasing', $allowBranch, 'vertical');
+    	?>
         <div class="form-group">
         	<?php 
 					echo $this->Form->input('no_contract',array(
@@ -140,13 +143,13 @@
 ?>
 <div class="box-footer text-center action">
 	<?php
-			// if( !empty($data_local['Leasing']['status']) ) {
+			if( !empty($data_local['Leasing']['status']) ) {
 	    		echo $this->Form->button(__('Simpan'), array(
 					'div' => false, 
 					'class'=> 'btn btn-success',
 					'type' => 'submit',
 				));
-	    	// }
+	    	}
 	    	
     		echo $this->Html->link(__('Kembali'), array(
 				'action' => 'index', 

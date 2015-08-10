@@ -1,10 +1,10 @@
 <?php 
         $dataColumns = array(
-            'branch' => array(
-                'name' => __('Cabang'),
-                'field_model' => false,
-                'display' => true,
-            ),
+            // 'branch' => array(
+            //     'name' => __('Cabang'),
+            //     'field_model' => false,
+            //     'display' => true,
+            // ),
             'code' => array(
                 'name' => __('Kode'),
                 'field_model' => 'Customer.code',
@@ -104,7 +104,7 @@
                             $created = $this->Common->filterEmptyField($value, 'Customer', 'created');
                             $branch_id = $this->Common->filterEmptyField($value, 'Customer', 'branch_id');
                             $status = $this->Common->filterEmptyField($value, 'Customer', 'status');
-                            $city = $this->Common->filterEmptyField($value, 'City', 'name');
+                            // $city = $this->Common->filterEmptyField($value, 'City', 'name');
                             $activate = array(
                                 'controller' => 'settings',
                                 'action' => 'customer_toggle',
@@ -112,7 +112,7 @@
                             );
             ?>
                 <tr>
-                    <td><?php echo $city;?></td>
+                    <!-- <td><?php // echo $city;?></td> -->
                     <td><?php echo $code;?></td>
                     <td><?php echo $code;?></td>
                     <td><?php echo $type;?></td>
@@ -128,15 +128,13 @@
                     <td class="text-center">
                         <?php 
                                 if(!empty($status)){
-                                    echo $this->Html->link($this->Common->icon('check'), $activate, array(
-                                        'escape' => false,
+                                    echo $this->Html->tag('div', $this->Common->icon('check'), array(
                                         'class' => 'btn btn-success btn-xs',
-                                    ), __('Apakah Anda yakin akan non-aktifkan data ini?'));
+                                    ));
                                 }else{
-                                    echo $this->Html->link($this->Common->icon('times'), $activate, array(
-                                        'escape' => false,
+                                    echo $this->Html->tag('div', $this->Common->icon('times'), array(
                                         'class' => 'btn btn-danger btn-xs',
-                                    ), __('Apakah Anda yakin akan aktifkan data ini?'));
+                                    ));
                                 }
                         ?>
                     </td>
@@ -148,19 +146,19 @@
                                     $id
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs',
-                                    'branch_id' => $branch_id,
+                                    // 'branch_id' => $branch_id,
                                 ));
 
                                 // Custom Otorisasi
                                 if(!empty($status)){
                                     echo $this->Html->link(__('Non-Aktif'), $activate, array(
                                         'class' => 'btn btn-danger btn-xs',
-                                        'branch_id' => $branch_id,
+                                        // 'branch_id' => $branch_id,
                                     ), __('Apakah Anda yakin akan non-aktifkan data ini?'));
                                 }else{
                                     echo $this->Html->link(__('Aktifkan'), $activate, array(
                                         'class' => 'btn btn-success btn-xs',
-                                        'branch_id' => $branch_id,
+                                        // 'branch_id' => $branch_id,
                                     ), __('Apakah Anda yakin akan aktifkan data ini?'));
                                 }
                         ?>

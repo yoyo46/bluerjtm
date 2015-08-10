@@ -45,23 +45,29 @@
                             ));
                     ?>
                 </div>
+                <div class="col-sm-offset-4 col-sm-8">
+                    <?php 
+                            // Custom Otorisasi
+                            // echo $this->Common->getCheckboxBranch();
+                    ?>
+                    <div class="form-group action">
+                        <?php
+                                echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
+                                    'div' => false, 
+                                    'class'=> 'btn btn-success btn-sm',
+                                    'type' => 'submit',
+                                ));
+                                echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                    'controller' => 'trucks', 
+                                    'action' => 'kir', 
+                                ), array(
+                                    'escape' => false, 
+                                    'class'=> 'btn btn-default btn-sm',
+                                ));
+                        ?>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="form-group action">
-            <?php
-                    echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
-                        'div' => false, 
-                        'class'=> 'btn btn-success btn-sm',
-                        'type' => 'submit',
-                    ));
-                    echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                        'controller' => 'trucks', 
-                        'action' => 'kir', 
-                    ), array(
-                        'escape' => false, 
-                        'class'=> 'btn btn-default btn-sm',
-                    ));
-            ?>
         </div>
         <?php
                 echo $this->Form->end();

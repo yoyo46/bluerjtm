@@ -2,12 +2,6 @@
 class Revenue extends AppModel {
 	var $name = 'Revenue';
 	var $validate = array(
-        'group_branch_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Cabang harap dipilih'
-            ),
-        ),
         'ttuj_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -82,7 +76,7 @@ class Revenue extends AppModel {
         $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'Revenue.group_branch_id' => Configure::read('__Site.config_branch_id'),
+                'Revenue.branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'Revenue.created' => 'DESC',
@@ -561,7 +555,7 @@ class Revenue extends AppModel {
 
         $dataRevenue['Revenue']['total'] = $total_revenue;
         $dataRevenue['Revenue']['total_without_tax'] = $totalWithoutTax;
-        $dataRevenue['Revenue']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+        $dataRevenue['Revenue']['branch_id'] = Configure::read('__Site.config_branch_id');
 
         $this->set($dataRevenue);
         $validate_qty = true;

@@ -59,7 +59,7 @@ class LkuPayment extends AppModel {
         $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'LkuPayment.group_branch_id' => Configure::read('__Site.config_branch_id'),
+                'LkuPayment.branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'LkuPayment.created' => 'DESC',

@@ -187,7 +187,7 @@ class LkusController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
-            $data['Lku']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['Lku']['branch_id'] = Configure::read('__Site.config_branch_id');
             
             if($id && $data_local){
                 $this->Lku->id = $id;
@@ -554,7 +554,7 @@ class LkusController extends AppController {
             }
             
             $data['LkuPayment']['tgl_bayar'] = (!empty($data['LkuPayment']['tgl_bayar'])) ? $this->MkCommon->getDate($data['LkuPayment']['tgl_bayar']) : '';
-            $data['LkuPayment']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['LkuPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
             $total_price = 0;
 
             $validate_lku_detail = true;
@@ -1299,7 +1299,7 @@ class LkusController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
-            $data['Ksu']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['Ksu']['branch_id'] = Configure::read('__Site.config_branch_id');
             
             if($id && $data_local){
                 $this->Ksu->id = $id;
@@ -1661,7 +1661,7 @@ class LkusController extends AppController {
             }
             
             $data['KsuPayment']['tgl_bayar'] = (!empty($data['KsuPayment']['tgl_bayar'])) ? $this->MkCommon->getDate($data['KsuPayment']['tgl_bayar']) : '';
-            $data['KsuPayment']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['KsuPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
             $total_price = 0;
 
             $validate_ksu_detail = true;

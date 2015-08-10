@@ -204,16 +204,16 @@ class SettingsController extends AppController {
         $customerTypes  = $this->Customer->CustomerType->getData('list', false, true);
         $customerGroups  = $this->CustomerGroup->getData('list');
 
-        if( !empty($truck_customers) ) {
-            $this->loadModel('City');
+        // if( !empty($truck_customers) ) {
+        //     $this->loadModel('City');
 
-            foreach ($truck_customers as $key => $value) {
-                // Custom Otorisasi
-                $branch_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'branch_id');
-                $value = $this->City->getMerge($value, $branch_id);
-                $truck_customers[$key] = $value;
-            }
-        }
+        //     foreach ($truck_customers as $key => $value) {
+        //         // Custom Otorisasi
+        //         $branch_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'branch_id');
+        //         $value = $this->City->getMerge($value, $branch_id);
+        //         $truck_customers[$key] = $value;
+        //     }
+        // }
 
         $this->set('active_menu', 'customers');
         $this->set('module_title', __('Data Master'));
@@ -239,7 +239,7 @@ class SettingsController extends AppController {
             ),
         ), true, array(
             'status' => 'all',
-            'branch' => false,
+            // 'branch' => false,
         ));
 
         if(!empty($customer)){
@@ -269,6 +269,7 @@ class SettingsController extends AppController {
                         
             $data['Customer']['bank_id'] = !empty($data['Customer']['bank_id'])?$data['Customer']['bank_id']:0;
             $data['Customer']['billing_id'] = !empty($data['Customer']['billing_id'])?$data['Customer']['billing_id']:0;
+            $data['Customer']['branch_id'] = Configure::read('__Site.config_branch_id');
             $this->Customer->set($data);
 
             if($this->Customer->validates($data)){
@@ -335,7 +336,7 @@ class SettingsController extends AppController {
             )
         ), true, array(
             'status' => 'all',
-            'branch' => false,
+            // 'branch' => false,
         ));
 
         if( !empty($locale) ){
@@ -535,7 +536,7 @@ class SettingsController extends AppController {
     function doVendor($id = false, $data_local = false){
         if(!empty($this->request->data)){
             $data = $this->request->data;
-            $data['Vendor']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['Vendor']['branch_id'] = Configure::read('__Site.config_branch_id');
             
             if($id && $data_local){
                 $this->Vendor->id = $id;
@@ -1185,7 +1186,7 @@ class SettingsController extends AppController {
             $data['UangJalan']['group_classification_2_id'] = !empty($data['UangJalan']['group_classification_2_id'])?$data['UangJalan']['group_classification_2_id']:0;
             $data['UangJalan']['group_classification_3_id'] = !empty($data['UangJalan']['group_classification_3_id'])?$data['UangJalan']['group_classification_3_id']:0;
             $data['UangJalan']['group_classification_4_id'] = !empty($data['UangJalan']['group_classification_4_id'])?$data['UangJalan']['group_classification_4_id']:0;
-            $data['UangJalan']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['UangJalan']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             if( !empty($data['UangJalan']['uang_jalan_per_unit']) ) {
                 $data['UangJalan']['uang_jalan_2'] = 0;
@@ -2958,7 +2959,7 @@ class SettingsController extends AppController {
             $data['TarifAngkutan']['group_motor_id'] = !empty($data['TarifAngkutan']['group_motor_id'])?$data['TarifAngkutan']['group_motor_id']:0;
             $data['TarifAngkutan']['tarif'] = !empty($data['TarifAngkutan']['tarif'])?str_replace(',', '', $data['TarifAngkutan']['tarif']):false;
             $data['TarifAngkutan']['capacity'] = !empty($data['TarifAngkutan']['capacity'])?$data['TarifAngkutan']['capacity']:0;
-            $data['TarifAngkutan']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['TarifAngkutan']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             if(!empty($data['TarifAngkutan']['from_city_id'])){
                 $city = $this->City->getData('first', array(
@@ -3963,7 +3964,7 @@ class SettingsController extends AppController {
                                             'uang_jalan_extra' => !empty($uang_jalan_extra)?str_replace(array('.', ',', '* '), array('', '', ''), $uang_jalan_extra):0,
                                             'uang_jalan_extra_per_unit' => !empty($uang_jalan_extra_per_unit)?$uang_jalan_extra_per_unit:0,
                                             'min_capacity' => !empty($min_kapasitas_ujalan_extra)?$min_kapasitas_ujalan_extra:0,
-                                            'group_branch_id' => Configure::read('__Site.config_branch_id'),
+                                            'branch_id' => Configure::read('__Site.config_branch_id'),
                                         ),
                                     );
                                     
@@ -4593,7 +4594,7 @@ class SettingsController extends AppController {
                                             'jenis_unit' => !empty($jenis_tarif)?strtolower($jenis_tarif):false,
                                             'tarif' => !empty($tarif_angkutan)?str_replace(array('.', ',', '* '), array('', '', ''), $tarif_angkutan):false,
                                             'group_motor_id' => !empty($group_motor_id)?$group_motor_id:0,
-                                            'group_branch_id' => Configure::read('__Site.config_branch_id'),
+                                            'branch_id' => Configure::read('__Site.config_branch_id'),
                                         ),
                                     );
                                 }

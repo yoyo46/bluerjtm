@@ -2,16 +2,16 @@
 class Truck extends AppModel {
 	var $name = 'Truck';
 	var $validate = array(
-        'branch_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Cabang harap dipilih'
-            ),
-            'numeric' => array(
-                'rule' => array('numeric'),
-                'message' => 'Cabang harap dipilih'
-            ),
-        ),
+        // 'branch_id' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Cabang harap dipilih'
+        //     ),
+        //     'numeric' => array(
+        //         'rule' => array('numeric'),
+        //         'message' => 'Cabang harap dipilih'
+        //     ),
+        // ),
         'nopol' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -402,7 +402,7 @@ class Truck extends AppModel {
         return $data;
     }
 
-    function getListTruck ( $include_this_truck_id = false, $only_bind = false, $nopol = false ) {
+    function getListTruck ( $include_this_truck_id = false, $only_bind = false, $nopol = false, $branch_id = false ) {
         $this->bindModel(array(
             'hasOne' => array(
                 'Ttuj' => array(
@@ -429,6 +429,10 @@ class Truck extends AppModel {
             $conditions = array(
                 'Ttuj.id' => NULL,
             );
+        }
+
+        if( !empty($branch_id) ) {
+            $conditions['Truck.branch_id'] = $branch_id;
         }
 
         if( empty($only_bind) ) {

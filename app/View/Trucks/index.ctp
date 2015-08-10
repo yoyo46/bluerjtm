@@ -5,11 +5,11 @@
                 'field_model' => 'Truck.id',
                 'display' => true,
             ),
-            'cabang' => array(
-                'name' => __('Cabang'),
-                'field_model' => false,
-                'display' => true,
-            ),
+            // 'cabang' => array(
+            //     'name' => __('Cabang'),
+            //     'field_model' => false,
+            //     'display' => true,
+            // ),
             'nopol' => array(
                 'name' => __('Nopol'),
                 'field_model' => 'Truck.nopol',
@@ -118,12 +118,12 @@
                         if(!empty($trucks)){
                             foreach ($trucks as $key => $value) {
                                 $id = $this->Common->filterEmptyField($value, 'Truck', 'id');
-                                $city = $this->Common->filterEmptyField($value, 'City', 'name');
+                                // $city = $this->Common->filterEmptyField($value, 'City', 'name');
                                 $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
                                 $capacity = $this->Common->filterEmptyField($value, 'Truck', 'capacity');
                                 $is_asset = $this->Common->filterEmptyField($value, 'Truck', 'is_asset');
                                 $sold = $this->Common->filterEmptyField($value, 'Truck', 'sold');
-                                $branch_id = $this->Common->filterEmptyField($value, 'Truck', 'branch_id');
+                                // $branch_id = $this->Common->filterEmptyField($value, 'Truck', 'branch_id');
                                 $brand = $this->Common->filterEmptyField($value, 'TruckBrand', 'name', '-');
                                 $category = $this->Common->filterEmptyField($value, 'TruckCategory', 'name', '-');
                                 $company = $this->Common->filterEmptyField($value, 'Company', 'name', '-');
@@ -133,7 +133,7 @@
                 ?>
                 <tr>
                     <td><?php echo $id;?></td>
-                    <td><?php echo $city;?></td>
+                    <!-- <td><?php // echo $city;?></td> -->
                     <td><?php echo $nopol;?></td>
                     <td><?php echo $brand;?></td>
                     <td><?php echo $category;?></td>
@@ -181,7 +181,7 @@
                                     $id
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs',
-                                    'branch_id' => $branch_id,
+                                    // 'branch_id' => $branch_id,
                                 ));
 
                                 echo $this->Html->link(__('Hapus'), array(
@@ -190,7 +190,7 @@
                                     $id
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs',
-                                    'branch_id' => $branch_id,
+                                    // 'branch_id' => $branch_id,
                                 ), sprintf(__('Apakah Anda yakin akan menghapus truk dengan nopol %s?'), $nopol));
                         ?>
                     </td>

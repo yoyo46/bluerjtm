@@ -76,7 +76,7 @@ class Invoice extends AppModel {
         $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'Invoice.group_branch_id' => Configure::read('__Site.config_branch_id'),
+                'Invoice.branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'Invoice.id' => 'DESC'

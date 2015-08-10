@@ -297,7 +297,7 @@
                                     'class' => 'btn btn-info btn-xs'
                                 ));
 
-                                echo $this->Html->link('Ubah', array(
+                                echo $this->Html->link(__('Edit'), array(
                                     'controller' => 'revenues',
                                     'action' => 'ttuj_lanjutan_edit',
                                     $active_menu,
@@ -316,7 +316,7 @@
                                     'title' => 'disable status brand'
                                 ), __('Apakah Anda yakin akan menghapus data ini?'));
                             } else {
-                                $labelEdit = __('Ubah');
+                                $labelEdit = __('Edit');
                                 echo $this->Html->link(__('Surat Jalan'), array(
                                     'controller' => 'revenues',
                                     'action' => 'surat_jalan',

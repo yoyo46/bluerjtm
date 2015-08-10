@@ -70,6 +70,7 @@
 													'class' => 'from_city'
 												),
 												'id' => 'getKotaTujuan',
+												'options' => !empty($cities)?$cities:false,
 											));
 									?>
 								</div>
@@ -516,7 +517,7 @@
 									</div>
 								</div>
 							</div>
-				    		<div class="col-sm-6 wrapper_min_capacity <?php echo (isset($this->request->data['Ttuj']['min_capacity']) && !$this->request->data['Ttuj']['min_capacity'])?'hide':''; ?>">
+				    		<div class="col-sm-6 wrapper_min_capacity <?php echo ( !empty($this->request->data['Ttuj']['uang_jalan_extra']) )?'':'hide'; ?>">
 						    	<div class="form-group">
 							    	<?php 
 											echo $this->Form->input('min_capacity',array(

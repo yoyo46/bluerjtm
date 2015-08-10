@@ -80,7 +80,7 @@ class Stnk extends AppModel {
         $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'Stnk.group_branch_id' => Configure::read('__Site.config_branch_id'),
+                'Stnk.branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'Stnk.created' => 'DESC'

@@ -214,7 +214,7 @@ class UangJalan extends AppModel {
         $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'UangJalan.group_branch_id' => Configure::read('__Site.config_branch_id'),
+                'UangJalan.branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'UangJalan.title' => 'DESC'

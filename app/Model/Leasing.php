@@ -2,6 +2,16 @@
 class Leasing extends AppModel {
 	var $name = 'Leasing';
 	var $validate = array(
+        // 'branch_id' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Cabang harap dipilih'
+        //     ),
+        //     'numeric' => array(
+        //         'rule' => array('numeric'),
+        //         'message' => 'Cabang harap dipilih'
+        //     ),
+        // ),
         'installment' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

@@ -18,6 +18,9 @@
 		        <h3 class="box-title"><?php echo __('Informasi KIR'); ?></h3>
 		    </div>
 		    <div class="box-body">
+		    	<?php 
+						echo $this->Common->branchForm('Kir', $allowBranch, 'vertical');
+		    	?>
 		        <div class="form-group">
         			<?php 
         					if( !empty($kir) && empty($kir['Kir']['status']) ) {

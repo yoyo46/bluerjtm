@@ -190,7 +190,7 @@ class CashbanksController extends AppController {
             $document_no = !empty($data['CashBank']['nodoc'])?$data['CashBank']['nodoc']:false;
             $document_coa_id = !empty($data['CashBank']['coa_id'])?$data['CashBank']['coa_id']:false;
             $data['CashBank']['is_revised'] = 0;
-            $data['CashBank']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['CashBank']['branch_id'] = Configure::read('__Site.config_branch_id');
             $data['CashBank']['user_id'] = $this->user_id;
 
             if($id && $data_local){

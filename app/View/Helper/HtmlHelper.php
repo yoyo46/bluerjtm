@@ -349,7 +349,8 @@ class HtmlHelper extends AppHelper {
 		// $controller_allowed = Configure::read('__Site.allowed_controller');
 		// $action_allowed = Configure::read('__Site.allowed_action');
 		$allowness_extend = Configure::read('__Site.allowed_extend');
-		$branch_city_id = Configure::read('__Site.config_list_branch_id');
+		// $branch_city_id = Configure::read('__Site.config_list_branch_id');
+		$branch_city_id = Configure::read('__Site.config_branch_id');
 
 		$is_show = false;
 
@@ -362,8 +363,10 @@ class HtmlHelper extends AppHelper {
 		}
 
 		$actionName = !empty($url['action'])?$url['action']:false;
-		$branchs = !empty($options['branch_id'])?$options['branch_id']:false;
 		$_allow = !empty($options['allow'])?$options['allow']:false;
+		$group_id = Configure::read('__Site.config_group_id');
+		$branchs = Configure::read('__Site.config_branch_id');
+		// $branchs = !empty($options['branch_id'])?$options['branch_id']:false;
 
 		$allowAction = !empty($allowed_module[$controllerName])?$allowed_module[$controllerName]:array();
 		$allowPage = in_array($actionName, $allowAction)?true:false;
@@ -376,12 +379,14 @@ class HtmlHelper extends AppHelper {
 			$branchs = array( $branchs );
 		}
 
-		// if( in_array($url, array('/', 'javascript:')) || (in_array($actionName, $action_allowed)) || (in_array($controllerName, $controller_allowed) && in_array($actionName, $action_allowed)) || ($controllerName == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || !empty($url['page']) || $this->group_id == 1 ){
-		if( in_array($url, array('/', 'javascript:', '#')) || !empty($allowPage) || ($controllerName == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || !empty($url['page']) || $this->group_id == 1 || $_allow ){
+		// if( in_array($url, array('/', 'javascript:')) || (in_array($actionName, $action_allowed)) || (in_array($controllerName, $controller_allowed) && in_array($actionName, $action_allowed)) || ($controllerName == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || !empty($url['page']) || $group_id == 1 ){
+		if( in_array($url, array('/', 'javascript:', '#')) || !empty($allowPage) || ($controllerName == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || !empty($url['page']) || $group_id == 1 || $_allow ){
 			$is_show = true;
 		}else if(is_array($url) && !empty($controllerName) && !empty($actionName) && !empty($branchs)){
 			foreach ($branchs as $key => $branch_id) {
-				$allowed_module = !empty($this->_rule_link[$branch_id])?$this->_rule_link[$branch_id]:array();
+				$allowed_module = Configure::read('__Site.config_allow_module');
+				$allowed_module = !empty($allowed_module[$branch_id])?$allowed_module[$branch_id]:array();
+
 				$allowAction = !empty($allowed_module[$controllerName]['action'])?$allowed_module[$controllerName]['action']:array();
 				$allowPage = in_array($actionName, $allowAction)?true:false;
 				$extend_name = !empty($allowed_module[$controllerName]['extends'][$actionName])?$allowed_module[$controllerName]['extends'][$actionName]:false;
@@ -396,6 +401,7 @@ class HtmlHelper extends AppHelper {
 				}
 			}
 		}
+
 		/*end custom*/
 
 		if($is_show){

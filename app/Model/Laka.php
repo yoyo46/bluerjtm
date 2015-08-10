@@ -167,7 +167,7 @@ class Laka extends AppModel {
         $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'Laka.group_branch_id' => Configure::read('__Site.config_branch_id'),
+                'Laka.branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'Laka.created' => 'DESC',

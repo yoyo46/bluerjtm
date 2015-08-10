@@ -473,7 +473,7 @@ class RevenuesController extends AppController {
             $data['Ttuj']['arrive_lead_time'] = !empty($uangJalan['UangJalan']['arrive_lead_time'])?$uangJalan['UangJalan']['arrive_lead_time']:0;
             $data['Ttuj']['back_lead_time'] = !empty($uangJalan['UangJalan']['back_lead_time'])?$uangJalan['UangJalan']['back_lead_time']:0;
             $data['Ttuj']['tgljam_berangkat'] = '';
-            $data['Ttuj']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['Ttuj']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             if( !empty($data['Ttuj']['getting_sj']) ) {
                 $data['Ttuj']['date_sj'] = $this->MkCommon->getDate($data['Ttuj']['date_sj']);
@@ -616,7 +616,7 @@ class RevenuesController extends AppController {
                                             'ppn' => 0,
                                             'pph' => 0,
                                             'revenue_tarif_type' => !empty($tarifDefault['jenis_unit'])?$tarifDefault['jenis_unit']:'per_unit',
-                                            'group_branch_id' => Configure::read('__Site.config_branch_id'),
+                                            'branch_id' => Configure::read('__Site.config_branch_id'),
                                         );
 
                                         if( !empty($tarifDefault['jenis_unit']) && $tarifDefault['jenis_unit'] == 'per_truck' ) {
@@ -974,9 +974,18 @@ class RevenuesController extends AppController {
             $customerConditions['Customer.customer_type_id'] = 1;
         }
 
+        $is_plant = Configure::read('__Site.config_branch_plant');
         $ttuj_truck_id = !empty($data_local['Ttuj']['truck_id'])?$data_local['Ttuj']['truck_id']:false;
         $ttuj_truck_nopol = !empty($data_local['Ttuj']['nopol'])?$data_local['Ttuj']['nopol']:false;
         $driver_penganti_id = !empty($data_local['Ttuj']['driver_penganti_id'])?$data_local['Ttuj']['driver_penganti_id']:false;
+        $curr_branch_id = Configure::read('__Site.config_branch_id');
+
+        if( !empty($is_plant) &&!empty($this->list_branch[$curr_branch_id]) ) {
+            $cities[$curr_branch_id] = $this->list_branch[$curr_branch_id];
+        } else {
+            $cities = $this->City->getData('list');
+        }
+
         $trucks = $this->Truck->getListTruck($ttuj_truck_id, false, $ttuj_truck_nopol);
         $customers = $this->Ttuj->Customer->getData('list', array(
             'conditions' => $customerConditions,
@@ -1015,13 +1024,6 @@ class RevenuesController extends AppController {
                 'ColorMotor.id', 'ColorMotor.name',
             ),
         ));
-        $cities = $this->City->getData('list', array(
-            'conditions' => array(
-                'City.status' => 1,
-                // 'City.is_asal' => 1,
-            ),
-        ));
-
         $branches = $this->City->branchCities();
 
         $this->set('module_title', __('TTUJ'));
@@ -1147,13 +1149,17 @@ class RevenuesController extends AppController {
 
     public function truk_tiba() {
         $this->loadModel('Ttuj');
-        $this->set('module_title', __('TTUJ'));
-        $this->set('active_menu', 'truk_tiba');
-        $this->set('sub_module_title', __('Truk Tiba'));
-        $this->set('label_tgl', __('Tgl Tiba'));
+
+        $action_type = 'truk_tiba';
         $conditions = array(
             'Ttuj.is_arrive' => 1,
         );
+        $conditions = $this->RjRevenue->getTtujConditionBrach( $conditions, $action_type );
+
+        $this->set('module_title', __('TTUJ'));
+        $this->set('active_menu', $action_type);
+        $this->set('sub_module_title', __('Truk Tiba'));
+        $this->set('label_tgl', __('Tgl Tiba'));
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -1193,6 +1199,8 @@ class RevenuesController extends AppController {
 
         $this->paginate = $this->Ttuj->getData('paginate', array(
             'conditions' => $conditions
+        ), true, array(
+            'branch' => false,
         ));
         $ttujs = $this->paginate('Ttuj');
 
@@ -1239,6 +1247,7 @@ class RevenuesController extends AppController {
                 'Ttuj.is_draft' => 0,
                 'Ttuj.status' => 1,
             );
+            $conditionsDataLocal = $this->RjRevenue->getTtujConditionBrach( $conditionsDataLocal, $action_type );
 
             switch ($action_type) {
                 case 'bongkaran':
@@ -1265,6 +1274,8 @@ class RevenuesController extends AppController {
             }
             $data_local = $this->Ttuj->getData('first', array(
                 'conditions' => $conditionsDataLocal
+            ), true, array(
+                'branch' => false,
             ));
 
             if( !empty($data_local) ) {
@@ -1412,6 +1423,7 @@ class RevenuesController extends AppController {
             'Ttuj.is_draft' => 0,
             'Ttuj.is_laka' => 0,
         );
+        $conditionsTtuj = $this->RjRevenue->getTtujConditionBrach( $conditionsTtuj, $action_type );
 
         switch ($action_type) {
             case 'bongkaran':
@@ -1493,6 +1505,8 @@ class RevenuesController extends AppController {
             'fields' => array(
                 'Ttuj.id', 'Ttuj.no_ttuj'
             ),
+        ), true, array(
+            'branch' => false,
         ));
         $perlengkapans = $this->Perlengkapan->getData('list', array(
             'fields' => array(
@@ -1533,6 +1547,7 @@ class RevenuesController extends AppController {
             'Ttuj.is_draft' => 0,
             'Ttuj.status' => 1,
         );
+        $conditions = $this->RjRevenue->getTtujConditionBrach( $conditions, $action_type );
 
         switch ($action_type) {
             case 'bongkaran':
@@ -1569,6 +1584,8 @@ class RevenuesController extends AppController {
         $data_action = false;
         $data_local = $this->Ttuj->getData('first', array(
             'conditions' => $conditions
+        ), true, array(
+            'branch' => false,
         ));
 
         if( !empty($data_local) ){
@@ -1641,14 +1658,18 @@ class RevenuesController extends AppController {
 
     public function bongkaran() {
         $this->loadModel('Ttuj');
-        $this->set('module_title', __('TTUJ'));
-        $this->set('active_menu', 'bongkaran');
-        $this->set('sub_module_title', __('Bongkaran'));
-        $this->set('label_tgl', __('Tgl Bongkaran'));
+
+        $action_type = 'bongkaran';
         $conditions = array(
             'Ttuj.is_arrive' => 1,
             'Ttuj.is_bongkaran' => 1,
         );
+        $conditions = $this->RjRevenue->getTtujConditionBrach( $conditions, $action_type );
+
+        $this->set('module_title', __('TTUJ'));
+        $this->set('active_menu', $action_type);
+        $this->set('sub_module_title', __('Bongkaran'));
+        $this->set('label_tgl', __('Tgl Bongkaran'));
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -1688,6 +1709,8 @@ class RevenuesController extends AppController {
 
         $this->paginate = $this->Ttuj->getData('paginate', array(
             'conditions' => $conditions
+        ), true, array(
+            'branch' => false,
         ));
         $ttujs = $this->paginate('Ttuj');
 
@@ -1704,14 +1727,18 @@ class RevenuesController extends AppController {
 
     public function balik() {
         $this->loadModel('Ttuj');
-        $this->set('module_title', __('TTUJ'));
-        $this->set('active_menu', 'balik');
-        $this->set('sub_module_title', __('Balik'));
-        $this->set('label_tgl', __('Tgl Balik'));
+
+        $action_type = 'balik';
         $conditions = array(
             'Ttuj.is_balik' => 1,
             'Ttuj.is_bongkaran' => 1,
         );
+        $conditions = $this->RjRevenue->getTtujConditionBrach( $conditions, $action_type );
+
+        $this->set('module_title', __('TTUJ'));
+        $this->set('active_menu', $action_type);
+        $this->set('sub_module_title', __('Balik'));
+        $this->set('label_tgl', __('Tgl Balik'));
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -1751,6 +1778,8 @@ class RevenuesController extends AppController {
 
         $this->paginate = $this->Ttuj->getData('paginate', array(
             'conditions' => $conditions
+        ), true, array(
+            'branch' => false,
         ));
         $ttujs = $this->paginate('Ttuj');
 
@@ -1767,16 +1796,20 @@ class RevenuesController extends AppController {
 
     public function pool() {
         $this->loadModel('Ttuj');
-        $this->set('module_title', __('TTUJ'));
-        $this->set('active_menu', 'pool');
-        $this->set('sub_module_title', __('Sampai di Pool'));
-        $this->set('label_tgl', __('Tgl Sampai Pool'));
+
+        $action_type = 'pool';
         $conditions = array(
             'Ttuj.is_balik' => 1,
             'Ttuj.is_bongkaran' => 1,
             'Ttuj.is_balik' => 1,
             'Ttuj.is_pool' => 1,
         );
+        $conditions = $this->RjRevenue->getTtujConditionBrach( $conditions, $action_type );
+
+        $this->set('module_title', __('TTUJ'));
+        $this->set('active_menu', $action_type);
+        $this->set('sub_module_title', __('Sampai di Pool'));
+        $this->set('label_tgl', __('Tgl Sampai Pool'));
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -1816,6 +1849,8 @@ class RevenuesController extends AppController {
 
         $this->paginate = $this->Ttuj->getData('paginate', array(
             'conditions' => $conditions
+        ), true, array(
+            'branch' => false,
         ));
         $ttujs = $this->paginate('Ttuj');
 
@@ -2904,7 +2939,7 @@ class RevenuesController extends AppController {
         if(!empty($this->request->data)){
             $data = $this->request->data;
             $data['Revenue']['date_revenue'] = $this->MkCommon->getDate($data['Revenue']['date_revenue']);
-            $data['Revenue']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['Revenue']['branch_id'] = Configure::read('__Site.config_branch_id');
             $resultSave = $this->Revenue->saveRevenue($id, $data_local, $data);
             $statusSave = !empty($resultSave['status'])?$resultSave['status']:false;
             $msgSave = !empty($resultSave['msg'])?$resultSave['msg']:false;
@@ -3505,7 +3540,7 @@ class RevenuesController extends AppController {
             $data['Invoice']['period_from'] = $this->MkCommon->getDate($data['Invoice']['period_from']);
             $data['Invoice']['period_to'] = $this->MkCommon->getDate($data['Invoice']['period_to']);
             $data['Invoice']['invoice_date'] = $this->MkCommon->getDate($data['Invoice']['invoice_date']);
-            $data['Invoice']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['Invoice']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             $customer = $this->Customer->getData('first', array(
                 'conditions' => array(
@@ -4133,7 +4168,7 @@ class RevenuesController extends AppController {
             }
 
             $data['InvoicePayment']['date_payment'] = !empty($data['InvoicePayment']['date_payment']) ? $this->MkCommon->getDate($data['InvoicePayment']['date_payment']) : '';
-            $data['InvoicePayment']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['InvoicePayment']['branch_id'] = Configure::read('__Site.config_branch_id');
             $total = 0;
             $validate_price_pay = true;
 
@@ -6129,7 +6164,7 @@ class RevenuesController extends AppController {
             $data = $this->request->data;
             $data['TtujPayment']['date_payment'] = !empty($data['TtujPayment']['date_payment']) ? $this->MkCommon->getDate($data['TtujPayment']['date_payment']) : '';
             $data['TtujPayment']['type'] = $action_type;
-            $data['TtujPayment']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['TtujPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
             $dataAmount = !empty($data['TtujPayment']['amount_payment'])?$data['TtujPayment']['amount_payment']:false;
             $flagTtujPaymentDetail = $this->doTtujPaymentDetail($dataAmount, $data);
 
@@ -6497,7 +6532,7 @@ class RevenuesController extends AppController {
                                                 'pph' => $pph,
                                                 'revenue_tarif_type' => $jenis_tarif,
                                                 'additional_charge' => $additional_charge,
-                                                'group_branch_id' => Configure::read('__Site.config_branch_id'),
+                                                'branch_id' => Configure::read('__Site.config_branch_id'),
                                             );
 
                                             if( !empty($dataRevenue['RevenueDetail']) && empty($tarifNotFound) ) {

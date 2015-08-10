@@ -2,16 +2,16 @@
 class Customer extends AppModel {
 	var $name = 'Customer';
 	var $validate = array(
-        'branch_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Cabang harap dipilih'
-            ),
-            'numeric' => array(
-                'rule' => array('numeric'),
-                'message' => 'Cabang harap dipilih'
-            ),
-        ),
+        // 'branch_id' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Cabang harap dipilih'
+        //     ),
+        //     'numeric' => array(
+        //         'rule' => array('numeric'),
+        //         'message' => 'Cabang harap dipilih'
+        //     ),
+        // ),
         'code' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

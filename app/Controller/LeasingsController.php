@@ -15,15 +15,17 @@ class LeasingsController extends AppController {
 
     function search( $index = 'index' ){
         $refine = array();
+
         if(!empty($this->request->data)) {
             $data = $this->request->data;
             $refine = $this->RjLeasing->processRefine($data);
             $params = $this->RjLeasing->generateSearchURL($refine);
-            $params = $this->MkCommon->getRefineGroupBranch($params, $data);
+            // $params = $this->MkCommon->getRefineGroupBranch($params, $data);
             $params['action'] = $index;
 
             $this->redirect($params);
         }
+
         $this->redirect('/');
     }
 
@@ -42,7 +44,7 @@ class LeasingsController extends AppController {
             }
 
             // Custom Otorisasi
-            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Leasing', $conditions, 'conditions' );
+            // $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Leasing', $conditions, 'conditions' );
         }
 
         $this->paginate = $this->Leasing->getData('paginate', array(
@@ -101,16 +103,16 @@ class LeasingsController extends AppController {
             ),
             'contain' => array(
                 'LeasingDetail'
-            )
+            ),
         ), true, array(
             'status' => 'all',
-            'branch' => false,
+            // 'branch' => false,
         ));
 
         if(!empty($value)){
             // Custom Otorisasi
-            $branch_id = $this->MkCommon->filterEmptyField($value, 'Leasing', 'branch_id');
-            $this->MkCommon->allowPage($branch_id);
+            // $branch_id = $this->MkCommon->filterEmptyField($value, 'Leasing', 'branch_id');
+            // $this->MkCommon->allowPage($branch_id);
 
             $this->doLeasing($id, $value);
         }else{
@@ -126,31 +128,24 @@ class LeasingsController extends AppController {
         $this->loadModel('Truck');
         $this->loadModel('LeasingDetail');
 
-        $trucks = $this->Truck->getData('list', array(
-            'conditions' => array(
-                'Truck.status' => 1,
-            ),
+        // $allowBranch = $this->MkCommon->allowBranch($this->list_branch, 'trucks', 'index', true);
+        $leasingDetails = $this->LeasingDetail->getData('list', array(
             'fields' => array(
-                'Truck.id', 'Truck.nopol'
-            )
-        ));
-
-        $truck_leasing = $this->LeasingDetail->find('list', array(
-            'fields' => array(
-                'LeasingDetail.truck_id'
+                'LeasingDetail.truck_id', 'LeasingDetail.truck_id',
             ),
             'group' => array(
                 'LeasingDetail.truck_id'
-            )
+            ),
         ));
-
-        if(!empty($truck_leasing)){
-            foreach ($trucks as $key => $value) {
-                if( in_array($key, $truck_leasing) ){
-                    unset($trucks[$key]);
-                }
-            }
-        }
+        $trucks = $this->Truck->getData('list', array(
+            'conditions' => array(
+                'Truck.id NOT' => $leasingDetails,
+                // 'Truck.branch_id' => $allowBranch,
+            ),
+            'fields' => array(
+                'Truck.id', 'Truck.nopol'
+            ),
+        ));
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -168,10 +163,10 @@ class LeasingsController extends AppController {
             $data['Leasing']['date_first_installment'] = (!empty($data['Leasing']['date_first_installment'])) ? $this->MkCommon->getDate($data['Leasing']['date_first_installment']) : '';
             $data['Leasing']['date_last_installment'] = (!empty($data['Leasing']['date_last_installment'])) ? $this->MkCommon->getDate($data['Leasing']['date_last_installment']) : '';
 
-            $data['Leasing']['down_payment'] = !empty($data['Leasing']['down_payment']) ? str_replace(',', '', $data['Leasing']['down_payment']) : 0;
-            $data['Leasing']['installment'] = !empty($data['Leasing']['installment']) ? str_replace(',', '', $data['Leasing']['installment']) : 0;
-            $data['Leasing']['installment_rate'] = !empty($data['Leasing']['installment_rate']) ? str_replace(',', '', $data['Leasing']['installment_rate']) : '';
-            $data['Leasing']['denda'] = !empty($data['Leasing']['denda']) ? str_replace(',', '', $data['Leasing']['denda']) : 0;
+            $data['Leasing']['down_payment'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'down_payment'), 0);
+            $data['Leasing']['installment'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'installment'), 0);
+            $data['Leasing']['installment_rate'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'installment_rate'), 0);
+            $data['Leasing']['denda'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'denda'), 0);
 
             $data['Leasing']['total_biaya'] = $data['Leasing']['installment'] + $data['Leasing']['denda'];
             $data['Leasing']['branch_id'] = Configure::read('__Site.config_branch_id');
@@ -181,17 +176,19 @@ class LeasingsController extends AppController {
             $total_price = 0;
             $truck_collect = array();
             $truck_same = true;
+
             if(!empty($data['LeasingDetail']['truck_id'])){
                 foreach ($data['LeasingDetail']['truck_id'] as $key => $value) {
                     if( !empty($value) && !in_array($value, $truck_collect)){
                         $truck_collect[] = $value;
                         $data_detail['LeasingDetail'] = array(
                             'truck_id' => $value,
-                            'price' => (!empty($data['LeasingDetail']['price'][$key])) ? str_replace(',', '', $data['LeasingDetail']['price'][$key]) : '',
+                            'price' => (!empty($data['LeasingDetail']['price'][$key])) ? $this->MkCommon->convertPriceToString($data['LeasingDetail']['price'][$key], 0) : 0,
                         );
                         
                         $temp_detail[] = $data_detail;
                         $this->LeasingDetail->set($data_detail);
+
                         if( !$this->LeasingDetail->validates() ){
                             $validate_leasing_detail = false;
                             break;
@@ -249,9 +246,9 @@ class LeasingsController extends AppController {
                 $this->MkCommon->setCustomFlash($text, 'error');
             }
         }else{
-            
             if($id && $data_local){
                 $this->request->data = $data_local;
+
                 if(!empty($data_local['LeasingDetail'])){
                     foreach ($data_local['LeasingDetail'] as $key => $value) {
                         $truck = $this->Truck->getData('first', array(
@@ -404,14 +401,14 @@ class LeasingsController extends AppController {
             )
         ), true, array(
             'status' => 'all',
-            'branch' => false,
+            // 'branch' => false,
         ));
 
         if( !empty($locale) ){
             $value = true;
             // Custom Otorisasi
-            $branch_id = $this->MkCommon->filterEmptyField($locale, 'Leasing', 'branch_id');            
-            $this->MkCommon->allowPage($branch_id);
+            // $branch_id = $this->MkCommon->filterEmptyField($locale, 'Leasing', 'branch_id');            
+            // $this->MkCommon->allowPage($branch_id);
 
             if( !empty($locale['Leasing']['status']) ){
                 $value = false;

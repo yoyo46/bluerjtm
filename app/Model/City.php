@@ -35,6 +35,10 @@ class City extends AppModel {
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $plant = isset($elements['plant'])?$elements['plant']:false;
+        $branch = isset($elements['branch'])?$elements['branch']:false;
+        $pool = isset($elements['pool'])?$elements['pool']:false;
+
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
@@ -56,6 +60,16 @@ class City extends AppModel {
             default:
                 $default_options['conditions']['City.status'] = 1;
                 break;
+        }
+
+        if( !empty($plant) ) {
+            $default_options['conditions']['City.is_plant'] = 1;
+        }
+        if( !empty($pool) ) {
+            $default_options['conditions']['City.is_pool'] = 1;
+        }
+        if( !empty($branch) ) {
+            $default_options['conditions']['City.is_branch'] = 1;
         }
 
         if( !empty($options) && $is_merge ){

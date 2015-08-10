@@ -51,7 +51,7 @@ class Siup extends AppModel {
         $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(
-                'Siup.group_branch_id' => Configure::read('__Site.config_branch_id'),
+                'Siup.branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
                 'Siup.rejected' => 'ASC',

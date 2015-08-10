@@ -60,7 +60,11 @@ class AppController extends Controller {
 		$list_branch = array();
 		$allowBranch = array();
 		$this->allowBranch = false;
-		$key_branch = false;
+		$key_branch = array();
+		$paramController = $this->params['controller'];
+		$paramAction = $this->params['action'];
+
+		$this->Auth->authError = __('Anda tidak mempunyai hak mengakses konten tersebut.');
 
 	    if($logged_in){
 			$this->user_id = $this->Auth->user('id');
@@ -91,6 +95,9 @@ class AppController extends Controller {
 				'leasings' => array(
 					'search',
 				),
+				'revenues' => array(
+					'search',
+				),
 			);
 			// $controller_allowed = array(
 			// 	'users', 'pages', 'settings'
@@ -107,6 +114,7 @@ class AppController extends Controller {
 			// Configure::write('__Site.allowed_controller', $controller_allowed);
 			// Configure::write('__Site.allowed_action', $action_allowed);
 			Configure::write('__Site.allowed_extend', $allowness_extend);
+			Configure::write('__Site.config_group_id', $GroupId);
 
 			$conditionsBranch = array();
 
@@ -124,22 +132,23 @@ class AppController extends Controller {
 			));
 
 			$group_branch_id = '';
-			$this->branch_city_id = $branch_city_id = '';
+			$branch_city_id = '';
+			$branch_city_plant = false;
 			$is_allow = false;
-			$paramController = $this->params['controller'];
-			$paramAction = $this->params['action'];
 
 			if(!empty($_branches)){
 				foreach ($_branches as $key => $value) {
 					$branch_id = $this->MkCommon->filterEmptyField($User, 'Employe', 'branch_id');
 					$city_id = $this->MkCommon->filterEmptyField($value, 'City', 'id');
 					$city_name = $this->MkCommon->filterEmptyField($value, 'City', 'name');
+					$city_plant = $this->MkCommon->filterEmptyField($value, 'City', 'is_plant');
 					$group_branch_city_id = $this->MkCommon->filterEmptyField($value, 'GroupBranch', 'city_id');
 					$id_group_branch = $this->MkCommon->filterEmptyField($value, 'GroupBranch', 'id');
 
 					if($group_branch_city_id == $branch_id){
 						$group_branch_id = $value['GroupBranch']['id'];
-						$this->branch_city_id = $branch_city_id = $city_id;
+						$branch_city_plant = $city_plant;
+						$branch_city_id = $city_id;
 					}
 
 					$branchActionModule = $this->BranchActionModule->getData('all', array(
@@ -192,27 +201,33 @@ class AppController extends Controller {
 				}
 
 				$user_branch = $this->Session->read('user_branch');
-				$group_branch_id = !empty($user_branch)?$user_branch:$group_branch_id;
-			}
-			
-			Configure::write('__Site.config_allow_module', $_allowModule);
-			Configure::write('__Site.config_branch_id', $branch_city_id);
-			Configure::write('__Site.config_allow_branch_id', $list_branch);
-			$this->helpers['Html']['group_id'] = $GroupId;
-			$allowBranch = $this->MkCommon->allowBranch($list_branch);
-
-			if( !empty($allowBranch) ) {
-                $this->allowBranch = array_keys($allowBranch);
+				// $group_branch_id = !empty($user_branch)?$user_branch:$group_branch_id;
+				$branch_city_id = !empty($user_branch)?$user_branch:$branch_city_id;
 			}
 
 			if( !empty($list_branch) ) {
 				$key_branch = array_keys($list_branch);
-                Configure::write('__Site.config_list_branch_id', $key_branch);
+			}
+
+			Configure::write('__Site.config_allow_module', $_allowModule);
+			Configure::write('__Site.config_branch_id', $branch_city_id);
+			Configure::write('__Site.config_branch_plant', $branch_city_plant);
+            Configure::write('__Site.config_list_branch_id', $key_branch);
+			// Configure::write('__Site.config_allow_branch_id', $list_branch);
+
+			$this->list_branch = $list_branch;
+			// $this->helpers['Html']['group_id'] = $GroupId;
+			$allowBranch = $this->MkCommon->allowBranch($list_branch);
+
+			if( !empty($allowBranch) ) {
+                // $this->allowBranch = array_keys($allowBranch);
+				// Configure::write('__Site.config_branch_id', $this->allowBranch);
+				Configure::write('__Site.config_allow_branchs', $allowBranch);
 			}
 			
-			if(!empty($_allowModule)){
-				$this->helpers['Html']['rule_link'] = $_allowModule;
-			}
+			// if(!empty($_allowModule)){
+			// 	$this->helpers['Html']['rule_link'] = $_allowModule;
+			// }
 
 			$allowAction = !empty($_allowedModule[$paramController])?$_allowedModule[$paramController]:array();
 			$allowPage = in_array($paramAction, $allowAction)?true:false;
@@ -221,7 +236,8 @@ class AppController extends Controller {
 			if( !empty($allowPage) || $paramController == 'ajax' || $GroupId == 1 ){
 				$is_allow = true;
 			}else {
-				$allowPage = $this->MkCommon->allowPage( $key_branch );
+				// $allowPage = $this->MkCommon->allowPage( $key_branch, true );
+				$allowPage = $this->MkCommon->allowPage( $branch_city_id, true );
 				$extend_name = !empty($allowed_module[$paramController]['extends'][$paramAction])?$allowed_module[$paramController]['extends'][$paramAction]:false;
 				$extend_param = !empty($this->params['pass'][0]) ? $this->params['pass'][0] : '';
 
@@ -241,7 +257,7 @@ class AppController extends Controller {
 			}
 			
 			if(!$is_allow){
-				$this->MkCommon->setCustomFlash('Anda tidak mempunyai hak mengakses konten tersebut.', 'error');
+				$this->MkCommon->setCustomFlash($this->Auth->authError, 'error');
 				$this->redirect('/');
 			}
 			/*End Auth*/
@@ -356,6 +372,9 @@ class AppController extends Controller {
 					'Notification.read' => 0
 				)
 			));
+		} else if( $paramAction != 'login' && $paramController == 'users' ) {
+			$this->MkCommon->setCustomFlash($this->Auth->authError, 'error');
+			$this->redirect('/');
 		}
 
 		$invStatus = array(
@@ -367,10 +386,10 @@ class AppController extends Controller {
 
 	    $this->set(compact(
 	    	'logged_in', 'GroupId', 'User',
-	    	'invStatus', '_allowModule',
+	    	'invStatus',
 	    	'another_rule', 'notifications',
 	    	'list_branch', 'group_branch_id',
-	    	'allowBranch'
+	    	'allowBranch', 'branch_city_id'
     	));
 	}
 

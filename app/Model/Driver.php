@@ -126,16 +126,16 @@ class Driver extends AppModel {
                 'message' => 'Tgl Penerimaan tidak benar'
             ),
         ),
-        'branch_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Cabang harap dipilih'
-            ),
-            'numeric' => array(
-                'rule' => array('numeric'),
-                'message' => 'Cabang harap dipilih'
-            ),
-        ),
+        // 'branch_id' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Cabang harap dipilih'
+        //     ),
+        //     'numeric' => array(
+        //         'rule' => array('numeric'),
+        //         'message' => 'Cabang harap dipilih'
+        //     ),
+        // ),
 	);
 
 	var $hasOne = array(
@@ -334,6 +334,18 @@ class Driver extends AppModel {
             );
         }
 
+        $branch_plant_id = false;
+        $is_plant = Configure::read('__Site.config_branch_plant');
+        $conditions['Truck.id'] = NULL;
+
+        if( !empty($is_plant) ) {
+            $cityBranchs = $this->City->getData('list', false, true, array(
+                'plant' => true,
+            ));
+            $branch_plant_id = array_keys($cityBranchs);
+            $conditions['Driver.branch_id'] = $branch_plant_id;
+        }
+
         if( empty($only_bind) ) {
             $drivers = $this->getData('list', array(
                 'conditions' => $conditions,
@@ -341,7 +353,8 @@ class Driver extends AppModel {
                     'Driver.id', 'Driver.driver_name'
                 ),
                 'contain' => array(
-                    'Ttuj'
+                    'Ttuj',
+                    'Truck',
                 ),
             ));
 

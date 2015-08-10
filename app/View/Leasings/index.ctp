@@ -1,7 +1,12 @@
 <?php 
         $dataColumns = array(
             'branch' => array(
-                'no_contract' => __('No Kontrak'),
+                'name' => __('Cabang'),
+                'field_model' => false,
+                'display' => true,
+            ),
+            'no_contract' => array(
+                'name' => __('No Kontrak'),
                 'field_model' => 'Leasing.no_contract',
                 'display' => true,
             ),
@@ -84,9 +89,12 @@
                             $installment = $this->Common->filterEmptyField($value, 'Leasing', 'installment');
                             $paid_date = $this->Common->filterEmptyField($value, 'Leasing', 'paid_date');
                             $status = $this->Common->filterEmptyField($value, 'Leasing', 'status');
+                            $branch_id = $this->Common->filterEmptyField($value, 'Leasing', 'branch_id');
                             $company = $this->Common->filterEmptyField($value, 'LeasingCompany', 'name');
+                            $branch = $this->Common->filterEmptyField($value, 'City', 'name');
             ?>
             <tr>
+                <td><?php echo $branch;?></td>
                 <td><?php echo $no_contract;?></td>
                 <td><?php echo $company;?></td>
                 <td><?php echo $this->Number->currency($installment, Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></td>
@@ -94,31 +102,38 @@
                 <td>
                     <?php 
                             if(!empty($status)){
-                                echo '<span class="label label-success">Active</span>'; 
+                                echo $this->Html->tag('span', __('Active'), array(
+                                    'class' => 'label label-success',
+                                ));
+                                $labelBtn = __('Edit');
                             }else{
-                                echo '<span class="label label-danger">Non Active</span>';  
+                                echo $this->Html->tag('span', __('Void'), array(
+                                    'class' => 'label label-danger',
+                                ));
+                                $labelBtn = __('Detail');
                             }
                     ?>
                 </td>
                 <td class="action">
                     <?php
-                            echo $this->Html->link('Rubah', array(
+                            echo $this->Html->link($labelBtn, array(
                                 'controller' => 'leasings',
                                 'action' => 'edit',
                                 $id
                             ), array(
-                                'class' => 'btn btn-primary btn-xs'
+                                'class' => 'btn btn-primary btn-xs',
+                                'branch_id' => $branch_id,
                             ));
 
                             if(!empty($status)){
-                                echo $this->Html->link('Void', array(
+                                echo $this->Html->link(__('Void'), array(
                                     'controller' => 'leasings',
                                     'action' => 'toggle',
                                     $id
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs',
-                                    'title' => 'disable status brand'
-                                ), __('Apakah Anda yakin akan menon-aktifkan kontrak ini?'));
+                                    'branch_id' => $branch_id,
+                                ), __('Apakah Anda yakin akan void kontrak ini?'));
                             }else{
                                 // echo $this->Html->link('Enable', array(
                                 //     'controller' => 'leasings',

@@ -147,7 +147,7 @@ class LakasController extends AppController {
         if(!empty($this->request->data)){
             $data = $this->request->data;
             $ttuj_data = array();
-            $data['Laka']['group_branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['Laka']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             if($id && $data_local){
                 $this->Laka->id = $id;

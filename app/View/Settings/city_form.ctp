@@ -100,6 +100,15 @@
 	            </div>
 	        </div>
 	    </div>
+	    <div class="form-group">
+	        <div class="checkbox-options">
+	        	<div class="checkbox">
+	                <label>
+	                	<?php echo $this->Form->checkbox('is_plant').' Plant?';?>
+	                </label>
+	            </div>
+	        </div>
+	    </div>
     </div>
 
     <div class="box-footer text-center action">
