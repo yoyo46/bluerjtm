@@ -3057,15 +3057,15 @@ var action_child_module = function(obj){
         var parent = $(this).parents('.box-body');
         var id = self.attr('action-id');
         var branch_id = self.attr('branch-id');
+        var parent_div = self.parents('.action-link-auth');
 
         $.ajax({
             url: '/ajax/auth_action_child_module/'+branch_id+'/'+id+'/',
             type: 'POST',
             success: function(response, status) {
-                self.parents('.action-link-auth').html(response);
+                parent_div.html(response);
 
-                action_child_module($('.list-auth-action div[rel="'+id+'"] .action-child-module'));
-
+                action_child_module(parent_div.children('.action-child-module'));
                 parent.find('.trigger-collapse').click();
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
