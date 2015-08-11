@@ -977,15 +977,35 @@ class AjaxController extends AppController {
 		));
 	}
 
-	function getDrivers ( $id = false ) {
+	function getDrivers ( $id = false, $action_type = false ) {
 		$this->loadModel('Driver');
 
 		$title = __('Supir Truk');
 		$data_action = 'browse-form';
 		$data_change = 'driverID';
-		$conditions = array(
-            'Truck.id' => NULL,
+		$contain = array(
+            'Truck'
         );
+
+        switch ($action_type) {
+        	case 'pengganti':
+        		$conditions = $this->Driver->getListDriverPenganti($id, true);
+        		$contain[] = 'Ttuj';
+        		break;
+        	
+        	default:
+		        if( !empty($id)) {
+		            $conditions['OR'] = array(
+		                'Truck.id' => NULL,
+		                'Driver.id' => $id,
+		            );
+		        } else {
+					$conditions = array(
+			            'Truck.id' => NULL,
+			        );
+		        }
+        		break;
+        }
 
         if(!empty($this->request->data)){
         	$data = $this->request->data;
@@ -1012,23 +1032,9 @@ class AjaxController extends AppController {
             // }
         }
 
-        if( !empty($id)) {
-            unset($conditions['Truck.id']);
-            $conditions['OR'] = array(
-                'Truck.id' => NULL,
-                'Driver.id' => $id,
-            );
-        }
-
 		$this->paginate = $this->Driver->getData('paginate', array(
             'conditions' => $conditions,
-            'order' => array(
-                'Driver.status' => 'DESC',
-                'Driver.name' => 'ASC',
-            ),
-            'contain' => array(
-                'Truck'
-            ),
+            'contain' => $contain,
             'limit' => 10,
         ));
         $drivers = $this->paginate('Driver');
@@ -2336,6 +2342,8 @@ class AjaxController extends AppController {
             		'fields' => array(
             			'Driver.id', 'Driver.id'
         			),
+            	), true, array(
+            		'branch' => false,
             	));
                 $conditions['AND']['OR'] = array(
                 	'Ttuj.driver_id' => $driverId,

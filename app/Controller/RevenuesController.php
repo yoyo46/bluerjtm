@@ -5308,6 +5308,7 @@ class RevenuesController extends AppController {
             )
         ), true, array(
             'status' => 'all',
+            'branch' => false,
         ));
 
         if( !empty($driver) ) {
@@ -5323,6 +5324,8 @@ class RevenuesController extends AppController {
                     'Ttuj.created' => 'DESC',
                     'Ttuj.id' => 'DESC',
                 ),
+            ), true, array(
+                'branch' => false,
             ));
 
             if( !empty($ttujs) ) {

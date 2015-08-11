@@ -203,16 +203,43 @@
 				        	?>
 				        </div>
 				        <div class="form-group">
-				        	<?php 
-									echo $this->Form->input('driver_penganti_id',array(
-										'label'=> sprintf(__('Supir Pengganti %s'), $this->Html->tag('small', '', array(
-											'class' => 'sj_outstanding_pengganti'
-										))), 
-										'class'=>'form-control driver-penganti',
-										'required' => false,
-										'empty' => __('Pilih Supir Pengganti --'),
-									));
+		        			<?php 
+		                            $attrBrowse = array(
+		                                'class' => 'ajaxModal visible-xs',
+		                                'escape' => false,
+										'title' => __('Supir Pengganti'),
+										'data-action' => 'browse-form',
+										'data-change' => 'driverID',
+		                            );
+		                            $urlBrowse = array(
+		                                'controller'=> 'ajax', 
+										'action' => 'getDrivers',
+										!empty($data_local['Ttuj']['driver_penganti_id'])?$data_local['Ttuj']['driver_penganti_id']:0,
+										'pengganti',
+		                            );
+									echo $this->Form->label('driver_penganti_id', sprintf(__('Supir Pengganti %s'), $this->Html->tag('small', '', array(
+										'class' => 'sj_outstanding_pengganti'
+									))).$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 							?>
+				        	<div class="row">
+				        		<div class="col-sm-10">
+						        	<?php 
+											echo $this->Form->input('driver_penganti_id',array(
+												'label'=> false, 
+												'class'=>'form-control driver-penganti',
+												'required' => false,
+												'empty' => __('Pilih Supir Pengganti --'),
+												'id' => 'driverID',
+											));
+									?>
+				        		</div>
+		        				<div class="col-sm-2 hidden-xs">
+			                        <?php 
+		        							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+			                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+			                        ?>
+			                    </div>
+				        	</div>
 				        </div>
 				        <div class="form-group">
 				        	<?php 

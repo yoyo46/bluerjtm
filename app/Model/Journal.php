@@ -41,6 +41,7 @@ class Journal extends AppModel {
                 'debit' => $debit,
                 'credit' => $credit,
                 'type' => $type,
+                'branch_id' => Configure::read('__Site.config_branch_id'),
             );
             $this->create();
             $this->set($data);
@@ -66,6 +67,7 @@ class Journal extends AppModel {
                     'debit' => $debit,
                     'credit' => $credit,
                     'type' => $type,
+                    'branch_id' => Configure::read('__Site.config_branch_id'),
                 );
                 $this->create();
                 $this->set($data);

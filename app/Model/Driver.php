@@ -184,7 +184,8 @@ class Driver extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'Driver.name' => 'ASC'
+                'Driver.status' => 'DESC',
+                'Driver.name' => 'ASC',
             ),
             'contain' => array(),
             'fields' => array(),
