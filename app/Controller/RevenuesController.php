@@ -39,6 +39,7 @@ class RevenuesController extends AppController {
     public function ttuj() {
         $this->loadModel('Ttuj');
         $this->loadModel('SuratJalan');
+
         $this->set('module_title', __('TTUJ'));
         $this->set('active_menu', 'ttuj');
         $this->set('sub_module_title', __('TTUJ'));
@@ -70,6 +71,9 @@ class RevenuesController extends AppController {
                         'Truck.nopol LIKE' => '%'.$nopol.'%',
                     );
                 }
+
+                $this->loadModel('City');
+                $conditionsNopol = $this->City->getCityIdPlants( $conditionsNopol );
 
                 $truckSearch = $this->Ttuj->Truck->getData('list', array(
                     'conditions' => $conditionsNopol,
@@ -270,7 +274,7 @@ class RevenuesController extends AppController {
 
                 if( !empty($dataRevenue) ) {
                     if( !empty($tipe_motor_id) ) {
-                        $groupMotor = $this->TipeMotor->getData('first', array(
+                        $groupMotor = $this->TtujTipeMotor->TipeMotor->getData('first', array(
                             'conditions' => array(
                                 'TipeMotor.id' => $tipe_motor_id,
                                 'TipeMotor.status' => 1,
@@ -391,11 +395,8 @@ class RevenuesController extends AppController {
 
     function doTTUJ($data_action = false, $id = false, $data_local = false){
         $this->loadModel('City');
-        $this->loadModel('UangJalan');
-        $this->loadModel('TipeMotor');
         $this->loadModel('Perlengkapan');
         $this->loadModel('Truck');
-        $this->loadModel('ColorMotor');
         $this->loadModel('TarifAngkutan');
         $this->loadModel('Revenue');
         $this->loadModel('RevenueDetail');
@@ -403,7 +404,9 @@ class RevenuesController extends AppController {
         $this->loadModel('TtujTipeMotor');
 
         $is_draft = isset($data_local['Ttuj']['is_draft'])?$data_local['Ttuj']['is_draft']:true;
+        $is_plant = Configure::read('__Site.config_branch_plant');
         $allowUpdate = false;
+        $plantCityId = $this->City->getCityIdPlants();
 
         if( !empty($this->request->data) ) {
             $is_draft = true;
@@ -425,7 +428,7 @@ class RevenuesController extends AppController {
             $to_city_id = !empty($data['Ttuj']['to_city_id'])?$data['Ttuj']['to_city_id']:false;
             $truck_id = !empty($data['Ttuj']['truck_id'])?$data['Ttuj']['truck_id']:false;
 
-            $uangJalan = $this->UangJalan->getData('first', array(
+            $uangJalan = $this->Ttuj->UangJalan->getData('first', array(
                 'conditions' => array(
                     'UangJalan.from_city_id' => $from_city_id,
                     'UangJalan.to_city_id' => $to_city_id,
@@ -436,10 +439,16 @@ class RevenuesController extends AppController {
                     'Customer.id' => $customer_id,
                 ),
             ));
+            $conditionsTruck = array(
+                'Truck.id' => $truck_id,
+            );
+
+            if( !empty($plantCityId) ) {
+                $conditionsTruck['Truck.branch_id'] = $plantCityId;
+            }
+
             $truck = $this->Truck->getData('first', array(
-                'conditions' => array(
-                    'Truck.id' => $truck_id,
-                ),
+                'conditions' => $conditionsTruck,
                 'fields' => array(
                     'Truck.id', 'Truck.nopol',
                     'Truck.capacity'
@@ -660,14 +669,14 @@ class RevenuesController extends AppController {
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj'), $msg), 'error');
             }
 
-            $fromCities = $this->UangJalan->getKotaAsal();
+            $fromCities = $this->Ttuj->UangJalan->getKotaAsal();
 
             if( !empty($data['Ttuj']['from_city_id']) ) {
-                $toCities = $this->UangJalan->getKotaTujuan($data['Ttuj']['from_city_id']);
+                $toCities = $this->Ttuj->UangJalan->getKotaTujuan($data['Ttuj']['from_city_id']);
 
                 if( !empty($data['Ttuj']['to_city_id']) ) {
                     if( !empty($truck['Truck']['capacity']) ) {
-                        $dataTruck = $this->UangJalan->getNopol($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $truck['Truck']['capacity']);
+                        $dataTruck = $this->Ttuj->UangJalan->getNopol($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $truck['Truck']['capacity']);
                         $uangKuli = $this->UangKuli->getUangKuli( $data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $truck['Truck']['capacity'] );
                         $uangJalan['UangJalan']['uang_kuli_muat_per_unit'] = 1;
 
@@ -749,7 +758,7 @@ class RevenuesController extends AppController {
                                         $tipe_motor_id = !empty($data['TtujTipeMotor']['tipe_motor_id'][$key])?$data['TtujTipeMotor']['tipe_motor_id'][$key]:false;
                                         $group_motor_id = 0;
                                         $totalMuatan += $qty;
-                                        $groupMotor = $this->TipeMotor->find('first', array(
+                                        $groupMotor = $this->TtujTipeMotor->TipeMotor->find('first', array(
                                             'conditions' => array(
                                                 'TipeMotor.id' => $tipe_motor_id,
                                                 'TipeMotor.status' => 1,
@@ -882,9 +891,8 @@ class RevenuesController extends AppController {
                             $this->request->data['Ttuj']['uang_jalan_extra_per_unit'] = !empty($uangJalan['UangJalan']['uang_jalan_extra_per_unit'])?$uangJalan['UangJalan']['uang_jalan_extra_per_unit']:0;
 
                             if( !empty($data['Ttuj']['truck_id']) ) {
-                                $truckInfo = $this->Truck->getInfoTruck($data['Ttuj']['truck_id']);
+                                $truckInfo = $this->Truck->getInfoTruck($data['Ttuj']['truck_id'], $plantCityId);
                                 $this->request->data['Ttuj']['driver_name'] = !empty($truckInfo['Driver']['name'])?$truckInfo['Driver']['name']:false;
-                                $this->request->data['Ttuj']['truck_capacity'] = !empty($truckInfo['Truck']['capacity'])?$truckInfo['Truck']['capacity']:false;
                                 $this->request->data['Ttuj']['truck_capacity'] = !empty($truckInfo['Truck']['capacity'])?$truckInfo['Truck']['capacity']:false;
                             }
                         }
@@ -959,10 +967,10 @@ class RevenuesController extends AppController {
                 }
             }
 
-            $fromCities = $this->UangJalan->getKotaAsal();
+            $fromCities = $this->Ttuj->UangJalan->getKotaAsal();
 
             if( !empty($this->request->data['Ttuj']['from_city_id']) ) {
-                $toCities = $this->UangJalan->getKotaTujuan($this->request->data['Ttuj']['from_city_id']);
+                $toCities = $this->Ttuj->UangJalan->getKotaTujuan($this->request->data['Ttuj']['from_city_id']);
             }
         }
 
@@ -974,19 +982,18 @@ class RevenuesController extends AppController {
             $customerConditions['Customer.customer_type_id'] = 1;
         }
 
-        $is_plant = Configure::read('__Site.config_branch_plant');
         $ttuj_truck_id = !empty($data_local['Ttuj']['truck_id'])?$data_local['Ttuj']['truck_id']:false;
         $ttuj_truck_nopol = !empty($data_local['Ttuj']['nopol'])?$data_local['Ttuj']['nopol']:false;
         $driver_penganti_id = !empty($data_local['Ttuj']['driver_penganti_id'])?$data_local['Ttuj']['driver_penganti_id']:false;
         $curr_branch_id = Configure::read('__Site.config_branch_id');
 
-        if( !empty($is_plant) &&!empty($this->list_branch[$curr_branch_id]) ) {
+        if( !empty($is_plant) && !empty($this->list_branch[$curr_branch_id]) ) {
             $cities[$curr_branch_id] = $this->list_branch[$curr_branch_id];
         } else {
             $cities = $this->City->getData('list');
         }
 
-        $trucks = $this->Truck->getListTruck($ttuj_truck_id, false, $ttuj_truck_nopol);
+        $trucks = $this->Truck->getListTruck($ttuj_truck_id, false, $ttuj_truck_nopol, $plantCityId);
         $customers = $this->Ttuj->Customer->getData('list', array(
             'conditions' => $customerConditions,
             'fields' => array(
@@ -1006,7 +1013,7 @@ class RevenuesController extends AppController {
 
         $tipeMotors = array();
         $groupTipeMotors = array();
-        $tipeMotorTemps = $this->TipeMotor->getData('all', array(
+        $tipeMotorTemps = $this->TtujTipeMotor->TipeMotor->getData('all', array(
             'fields' => array(
                 'TipeMotor.id', 'TipeMotor.name', 'GroupMotor.id',
             ),
@@ -1019,7 +1026,7 @@ class RevenuesController extends AppController {
             }
         }
 
-        $colors = $this->ColorMotor->getData('list', array(
+        $colors = $this->TtujTipeMotor->ColorMotor->getData('list', array(
             'fields' => array(
                 'ColorMotor.id', 'ColorMotor.name',
             ),
@@ -2387,6 +2394,8 @@ class RevenuesController extends AppController {
             'group' => array(
                 'Ttuj.customer_id'
             ),
+        ), true, array(
+            'branch' => false,
         ));
         $events = $this->CalendarEvent->getData('all', array(
             'conditions' => $conditionEvents,
@@ -2717,6 +2726,8 @@ class RevenuesController extends AppController {
     function index(){
         $this->loadModel('Revenue');
         $this->loadModel('Ttuj');
+        $this->loadModel('City');
+
         $this->set('active_menu', 'revenues');
         $this->set('sub_module_title', __('Revenue'));
 
@@ -2786,6 +2797,7 @@ class RevenuesController extends AppController {
                     );
                 }
 
+                $conditionsNopol = $this->City->getCityIdPlants( $conditionsNopol );
                 $truckSearch = $this->Ttuj->Truck->getData('list', array(
                     'conditions' => $conditionsNopol,
                     'fields' => array(
@@ -2835,7 +2847,6 @@ class RevenuesController extends AppController {
         $revenues = $this->paginate('Revenue');
 
         if(!empty($revenues)){
-            $this->loadModel('City');
             $this->loadModel('Truck');
 
             foreach ($revenues as $key => $value) {
@@ -2847,7 +2858,6 @@ class RevenuesController extends AppController {
 
                     $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
                     $value = $this->City->getMerge($value, $to_city_id);
-                    $value = $this->Truck->getMerge($value, $value['Revenue']['truck_id']);
                     $value = $this->Ttuj->Customer->getMerge($value, $value['Revenue']['customer_id']);
                 } else {
                     $value = $this->Ttuj->Customer->getMerge($value, $value['Ttuj']['customer_id']);
@@ -3295,6 +3305,7 @@ class RevenuesController extends AppController {
                 $truck_category_id = !empty($truk['Truck']['truck_category_id'])?$truk['Truck']['truck_category_id']:false;
                 $truck_facility_id = !empty($truk['Truck']['truck_facility_id'])?$truk['Truck']['truck_facility_id']:false;
                 $driver_id = !empty($truk['Truck']['driver_id'])?$truk['Truck']['driver_id']:false;
+
                 $truk = $this->Customer->getMerge($truk, $customer_id);
                 $truk = $this->Truck->TruckBrand->getMerge($truk, $truck_brand_id);
                 $truk = $this->Truck->TruckCategory->getMerge($truk, $truck_category_id);
@@ -3305,6 +3316,8 @@ class RevenuesController extends AppController {
                         'Ttuj.truck_id' => $id,
                         'Ttuj.is_pool' => 1,
                     )
+                ), true, array(
+                    'branch' => false,
                 ));
                 $ttuj_id = $this->Ttuj->getData('list', array(
                     'conditions' => array(
@@ -3314,6 +3327,8 @@ class RevenuesController extends AppController {
                     'fields' => array(
                         'Ttuj.id', 'Ttuj.id',
                     ),
+                ), true, array(
+                    'branch' => false,
                 ));
 
                 if(!empty($ttuj_id)){
@@ -3377,6 +3392,8 @@ class RevenuesController extends AppController {
                         'Ttuj.tgljam_balik' => 'ASC',
                         'Ttuj.tgljam_pool' => 'ASC'
                     )
+                ), true, array(
+                    'branch' => false,
                 ));
                 $truk_ritase = $this->paginate('Ttuj');
                 $total_lku = 0;

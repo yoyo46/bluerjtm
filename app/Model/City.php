@@ -206,5 +206,25 @@ class City extends AppModel {
 
         return $data;
     }
+
+    function getCityIdPlants ( $conditions = false, $fieldName = 'Truck.branch_id' ) {
+        $is_plant = Configure::read('__Site.config_branch_plant');
+        $result = false;
+        $plantCityId = false;
+
+        if( !empty($is_plant) ) {
+            $cityPlants = $this->getData('list', false, true, array(
+                'plant' => true,
+            ));
+            $result = $plantCityId = array_keys($cityPlants);
+        }
+
+        if( !empty($conditions) && !empty($result) ) {
+            $result = $conditions;
+            $result[$fieldName] = $plantCityId;
+        }
+
+        return $result;
+    }
 }
 ?>

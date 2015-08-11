@@ -32,13 +32,17 @@ class AjaxController extends AppController {
 	}
 
 	function getInfoTruck( $from_city_id = false, $to_city_id = false, $truck_id = false, $customer_id = false ) {
-		$this->loadModel('UangKuli');
-		$this->loadModel('UangJalan');
 		$this->loadModel('Truck');
-		$this->loadModel('Ttuj');
-		$result = $this->Truck->getInfoTruck($truck_id);
+		$this->loadModel('City');
+
+        $plantCityId = $this->City->getCityIdPlants();
+		$result = $this->Truck->getInfoTruck($truck_id, $plantCityId);
 
 		if( !empty($result) ) {
+			$this->loadModel('UangJalan');
+			$this->loadModel('UangKuli');
+			$this->loadModel('Ttuj');
+
 			if( !empty($result['Truck']['driver_id']) ) {
 				$sjOutstanding = $this->Ttuj->getSJOutstanding( $result['Truck']['driver_id'] );
 			}
@@ -1048,6 +1052,7 @@ class AjaxController extends AppController {
 
 	function getTrucks ( $action_type = false, $action_id = false ) {
 		$this->loadModel('Truck');
+    	$this->loadModel('City');
 
 		$title = __('Data Truk');
 		$data_action = 'browse-form';
@@ -1066,6 +1071,8 @@ class AjaxController extends AppController {
         switch ($action_type) {
         	case 'ttuj':
 				$this->loadModel('Ttuj');
+
+        		$plantCityId = $this->City->getCityIdPlants();
         		$ttuj = $this->Ttuj->getData('first', array(
                     'conditions' => array(
                         'Ttuj.id' => $action_id,
@@ -1074,10 +1081,11 @@ class AjaxController extends AppController {
 					'status' => 'all',
 				));
         		$ttuj_truck_id = !empty($ttuj['Ttuj']['truck_id'])?$ttuj['Ttuj']['truck_id']:false;
-				$addConditions = $this->Truck->getListTruck( $ttuj_truck_id, true );
+				$addConditions = $this->Truck->getListTruck( $ttuj_truck_id, true, false, $plantCityId );
 
                 $options['contain'][] = 'Ttuj';
                 $options['conditions'] = array_merge($options['conditions'], $addConditions);
+                $options['conditions']['Truck.branch_id'] = $plantCityId;
         		break;
         	case 'laka':
         		$data_change = 'laka-driver-change';
@@ -1092,22 +1100,10 @@ class AjaxController extends AppController {
                 $typeTruck = !empty($data['Truck']['type'])?$data['Truck']['type']:1;
 
                 if( $typeTruck == 2 ) {
-                	$conditionsNopol = array(
-	            		'Truck.id' => $nopol,
-	        		);
+                	$options['conditions']['Truck.id'] = $nopol;
                 } else {
-                	$conditionsNopol = array(
-	            		'Truck.nopol LIKE' => '%'.$nopol.'%',
-	        		);
+                	$options['conditions']['Truck.nopol LIKE'] = '%'.$nopol.'%';
                 }
-
-                $truckSearch = $this->Truck->getData('list', array(
-                	'conditions' => $conditionsNopol,
-            		'fields' => array(
-            			'Truck.id', 'Truck.id',
-        			),
-            	));
-                $options['conditions']['Truck.id'] = $truckSearch;
             }
             if(!empty($data['Driver']['name'])){
                 $name = urldecode($data['Driver']['name']);
@@ -1123,8 +1119,6 @@ class AjaxController extends AppController {
         $trucks = $this->paginate('Truck');
 
         if(!empty($trucks)){
-        	$this->loadModel('City');
-
             foreach ($trucks as $key => $truck) {
                 $data = $truck['Truck'];
                 $branch_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'branch_id');
@@ -1398,6 +1392,9 @@ class AjaxController extends AppController {
 	            		'Truck.nopol LIKE' => '%'.$nopol.'%',
 	        		);
                 }
+
+                $this->loadModel('City');
+                $conditionsNopol = $this->City->getCityIdPlants( $conditionsNopol );
                 
                 $truckSearch = $this->Ttuj->Truck->getData('list', array(
                 	'conditions' => $conditionsNopol,
@@ -2321,6 +2318,7 @@ class AjaxController extends AppController {
 	        		);
                 }
 
+                $conditionsNopol = $this->City->getCityIdPlants( $conditionsNopol );
                 $truckSearch = $this->Ttuj->Truck->getData('list', array(
                 	'conditions' => $conditionsNopol,
             		'fields' => array(

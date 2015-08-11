@@ -370,11 +370,17 @@ class Truck extends AppModel {
         return $truck;
     }
 
-    function getInfoTruck( $truck_id ) {
+    function getInfoTruck( $truck_id, $branch_id = false ) {
+        $conditions = array(
+            'Truck.id' => $truck_id,
+        );
+
+        if( !empty($branch_id) ) {
+            $conditions['Truck.branch_id'] = $branch_id;
+        }
+
         $result = $this->getData('first', array(
-            'conditions' => array(
-                'Truck.id' => $truck_id,
-            ),
+            'conditions' => $conditions,
             'contain' => array(
                 'Driver'
             ),

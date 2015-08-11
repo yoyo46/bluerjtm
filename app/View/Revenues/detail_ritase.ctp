@@ -192,6 +192,7 @@
 		        	<div class="col-sm-3">
 		        		<ul class="second-revenue">
 		        			<?php
+		        					$total_unit = !empty($total_unit)?$total_unit:0;
 			        				$label = $this->Html->tag('label', 'Total Ritase');
 				        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $total_ritase));
 
@@ -268,10 +269,15 @@
 			        				if(!empty($value['qty_lku'])){
 			        					$lku = $this->Html->tag('span', 'NG', array('class' => 'label label-danger'));
 			        				}else if( $value['Ttuj']['is_arrive'] && $value['Ttuj']['is_bongkaran'] ){
-			        					$lku = $this->Html->tag('span', 'SB', array('class' => 'label label-success'));
+			        					$lku = $this->Html->tag('span', 'SB', array('class' => 'label label-info'));
 			        				}else if( $value['Ttuj']['is_arrive'] && !$value['Ttuj']['is_bongkaran'] ){
 			        					$lku = $this->Html->tag('span', 'BB', array('class' => 'label label-warning'));
+			        				}else if( !empty($value['Ttuj']['is_pool']) ){
+			        					$lku = $this->Html->tag('span', 'POOL', array('class' => 'label label-success'));
+			        				} else {
+			        					$lku = '-';
 			        				}
+
 			        				echo $this->Html->tag('td', $lku);
 
 			        				echo $this->Html->tag('td', $this->Common->customDate($value['Ttuj']['tgljam_tiba'], 'd M y h:i', '-'));
