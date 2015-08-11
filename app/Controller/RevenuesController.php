@@ -1978,7 +1978,9 @@ class RevenuesController extends AppController {
                 $conditionsTtuj['Ttuj.truck_id'] = $truck['Truck']['id'];
 
                 $total = $this->Ttuj->getData('count', array(
-                    'conditions' => $conditionsTtuj
+                    'conditions' => $conditionsTtuj,
+                ), true, array(
+                    'branch' => false,
                 ));
                 $truck['Total'] = $total;
 
@@ -1986,6 +1988,8 @@ class RevenuesController extends AppController {
                 $overTimeOptions['Ttuj.arrive_over_time <>'] = 0;
                 $overTime = $this->Ttuj->getData('count', array(
                     'conditions' => $overTimeOptions
+                ), true, array(
+                    'branch' => false,
                 ));
                 $truck['OverTime'] = $overTime;
 
@@ -2000,6 +2004,8 @@ class RevenuesController extends AppController {
                             'COUNT(Ttuj.id) as cnt',
                             'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') as dt',
                         ),
+                    ), true, array(
+                        'branch' => false,
                     ));
                     $truck['City'] = $cities;
                 }
@@ -2035,6 +2041,7 @@ class RevenuesController extends AppController {
                 ),
             ), true, array(
                 'status' => 'all',
+                'branch' => false,
             ));
         }
 

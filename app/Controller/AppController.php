@@ -373,7 +373,6 @@ class AppController extends Controller {
 				)
 			));
 		} else if( $paramAction != 'login' && $paramController == 'users' ) {
-			$this->MkCommon->setCustomFlash($this->Auth->authError, 'error');
 			$this->redirect('/');
 		}
 

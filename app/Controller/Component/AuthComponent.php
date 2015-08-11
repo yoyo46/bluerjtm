@@ -102,7 +102,7 @@ class AuthComponent extends Component {
 			return true;
 		}
 
-		$this->Session->setFlash($this->authError, $this->flashElement, array(), 'error');
+		// $this->Session->setFlash($this->authError, $this->flashElement, array(), 'error');
 		$controller->redirect('/');
 	}
 	protected function _isAllowed(Controller $controller) {
@@ -126,7 +126,7 @@ class AuthComponent extends Component {
 		}
 
 		if (!$controller->request->is('ajax')) {
-			$this->flash($this->authError);
+			// $this->flash($this->authError);
 			$this->Session->write('Auth.redirect', $controller->request->here(false));
 			$controller->redirect($this->loginAction);
 			return false;
@@ -163,7 +163,7 @@ class AuthComponent extends Component {
 			throw new ForbiddenException($this->authError);
 		}
 
-		$this->flash($this->authError);
+		// $this->flash($this->authError);
 		if ($this->unauthorizedRedirect === true) {
 			$default = '/';
 			if (!empty($this->loginRedirect)) {

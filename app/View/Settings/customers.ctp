@@ -114,9 +114,9 @@
                 <tr>
                     <!-- <td><?php // echo $city;?></td> -->
                     <td><?php echo $code;?></td>
-                    <td><?php echo $code;?></td>
                     <td><?php echo $type;?></td>
                     <td><?php echo $group;?></td>
+                    <td><?php echo $name;?></td>
                     <td><?php echo $address;?></td>
                     <td>
                         <?php 

@@ -362,6 +362,12 @@ class HtmlHelper extends AppHelper {
 			$controllerName = false;
 		}
 
+		if( !empty($url['action']) ) {
+			$actionName = $url['action'];
+		} else {
+			$actionName = $this->action;
+		}
+
 		$actionName = !empty($url['action'])?$url['action']:false;
 		$_allow = !empty($options['allow'])?$options['allow']:false;
 		$group_id = Configure::read('__Site.config_group_id');
