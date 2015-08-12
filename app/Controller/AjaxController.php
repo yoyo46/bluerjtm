@@ -2785,7 +2785,9 @@ class AjaxController extends AppController {
 			            }
 	            	}
 		            
-		            $this->set(compact('branch_modules'));
+		            $this->set(compact(
+		            	'branch_modules', 'group_branch_id'
+	            	));
 		        }
             }
 		}

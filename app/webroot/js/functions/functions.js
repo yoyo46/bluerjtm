@@ -3115,7 +3115,7 @@ function check_full_auth(parent, group_id, val, attr){
                     parent.find('.trigger-collapse').attr('rel', 'times').html('<i class="fa fa-minus"></i>');
 
                     parent.find('.delete-custom-field').attr('group-branch-id', $(response).filter('#group_branch_id').html());
-                    action_child_module();
+                    action_child_module( parent.find('.action-child-module') );
                     branch_module_check();
                 }
             },
