@@ -2470,44 +2470,47 @@ var change_customer_revenue = function(){
 
 var getNopol = function () {
     var self = $('#truckID');
-    var from_city_id = $('.from_city #getKotaTujuan').val();
-    var to_city_id = $('.to_city #getTruck').val();
-    var customer_id = $('#getKotaAsal').val();
 
-    if( self.val() != '' ) {
-        $.ajax({
-            url: '/ajax/getInfoTruck/' + from_city_id + '/' + to_city_id + '/' + self.val() + '/' + customer_id + '/',
-            type: 'POST',
-            success: function(response, status) {
-                getUangjalan( response );
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
-                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                return false;
+    if( $('.from_city #getKotaTujuan').length > 0 ) {
+        var from_city_id = $('.from_city #getKotaTujuan').val();
+        var to_city_id = $('.to_city #getTruck').val();
+        var customer_id = $('#getKotaAsal').val();
+
+        if( self.val() != '' ) {
+            $.ajax({
+                url: '/ajax/getInfoTruck/' + from_city_id + '/' + to_city_id + '/' + self.val() + '/' + customer_id + '/',
+                type: 'POST',
+                success: function(response, status) {
+                    getUangjalan( response );
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        } else {
+            $('.driver_name').val('');
+            $('.driver_id').val('');
+            $('.truck_capacity').val('');
+            $('#biaya-uang-jalan input').val('');
+
+            var qtyLen = $('#ttujDetail tbody tr').length;
+            var total_muatan = 0;
+
+            for (var i = 0; i < qtyLen; i++) {
+                var qtyMuatan = parseInt($('#ttujDetail tbody tr .qty-muatan[rel="'+i+'"]').val());
+
+                if( isNaN(qtyMuatan) ) {
+                    qtyMuatan = 0;
+                }
+                total_muatan += qtyMuatan;
+            };
+
+            if( isNaN( total_muatan ) || total_muatan == 0 ) {
+                total_muatan = 1;
             }
-        });
-    } else {
-        $('.driver_name').val('');
-        $('.driver_id').val('');
-        $('.truck_capacity').val('');
-        $('#biaya-uang-jalan input').val('');
-
-        var qtyLen = $('#ttujDetail tbody tr').length;
-        var total_muatan = 0;
-
-        for (var i = 0; i < qtyLen; i++) {
-            var qtyMuatan = parseInt($('#ttujDetail tbody tr .qty-muatan[rel="'+i+'"]').val());
-
-            if( isNaN(qtyMuatan) ) {
-                qtyMuatan = 0;
-            }
-            total_muatan += qtyMuatan;
-        };
-
-        if( isNaN( total_muatan ) || total_muatan == 0 ) {
-            total_muatan = 1;
+            $('.total-unit-muatan').html(total_muatan);
         }
-        $('.total-unit-muatan').html(total_muatan);
     }
 }
 
@@ -3389,42 +3392,44 @@ $(function() {
     });
 
     $('#getTruck').change(function() {
-        var self = $(this);
-        var from_city_id = $('.from_city #getKotaTujuan').val();
-        var nopol = $('#truckID').val();
-        var customer_id = $('#getKotaAsal').val();
-        var lenCity = $('.city-retail-id').length;
-        var cityRetail = $('.city-retail-id');
+        if( $('.from_city #getKotaTujuan').length > 0 ) {
+            var self = $(this);
+            var from_city_id = $('.from_city #getKotaTujuan').val();
+            var nopol = $('#truckID').val();
+            var customer_id = $('#getKotaAsal').val();
+            var lenCity = $('.city-retail-id').length;
+            var cityRetail = $('.city-retail-id');
 
-        if( self.val() != '' ) {
-            $('#truckID,#truckBrowse').attr('disabled', false);
-            
-            for (i = 0; i < lenCity; i++) {
-                if( cityRetail[i].value == '' ) {
-                    cityRetail[i].value = self.val();
-                }
-            };
-            
-            if( nopol != '' ) {
-                $.ajax({
-                    url: '/ajax/getInfoTruck/' + from_city_id + '/' + self.val() + '/' + nopol + '/' + customer_id + '/',
-                    type: 'POST',
-                    success: function(response, status) {
-                        getUangjalan( response );
-                    },
-                    error: function(XMLHttpRequest, textStatus, errorThrown) {
-                        alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                        return false;
+            if( self.val() != '' ) {
+                $('#truckID,#truckBrowse').attr('disabled', false);
+                
+                for (i = 0; i < lenCity; i++) {
+                    if( cityRetail[i].value == '' ) {
+                        cityRetail[i].value = self.val();
                     }
-                });
+                };
+                
+                if( nopol != '' ) {
+                    $.ajax({
+                        url: '/ajax/getInfoTruck/' + from_city_id + '/' + self.val() + '/' + nopol + '/' + customer_id + '/',
+                        type: 'POST',
+                        success: function(response, status) {
+                            getUangjalan( response );
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                            return false;
+                        }
+                    });
+                }
+            } else {
+                $('#truckID').val('').attr('disabled', true);
+                $('#truckBrowse').attr('disabled', true);
+                $('.driver_name').val('');
+                $('.driver_id').val('');
+                $('.truck_capacity').val('');
+                $('#biaya-uang-jalan input').val('');
             }
-        } else {
-            $('#truckID').val('').attr('disabled', true);
-            $('#truckBrowse').attr('disabled', true);
-            $('.driver_name').val('');
-            $('.driver_id').val('');
-            $('.truck_capacity').val('');
-            $('#biaya-uang-jalan input').val('');
         }
     });
 

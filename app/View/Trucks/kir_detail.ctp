@@ -4,6 +4,8 @@
             'action' => 'kir_payments'
         ));
         $this->Html->addCrumb($sub_module_title);
+        
+        $coa_name = $this->Common->filterEmptyField($kir, 'Coa', 'coa_name', '-');
 ?>
 <div class="row">
     <div class="col-sm-6">
@@ -15,6 +17,8 @@
                 <dl class="dl-horizontal">
                     <dt><?php echo __('No. Pol')?></dt>
                     <dd><?php echo $kir['Kir']['no_pol'];?></dd>
+                    <dt><?php echo __('Account Kas/Bank')?></dt>
+                    <dd><?php echo $coa_name;?></dd>
                     <dt><?php echo __('Tgl Perpanjang')?></dt>
                     <dd><?php echo $this->Common->customDate($kir['Kir']['tgl_kir']);?></dd>
                     <dt><?php echo __('Tgl Berakhir KIR')?></dt>

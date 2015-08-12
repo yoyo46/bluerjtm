@@ -51,6 +51,18 @@
 					));
 			?>
         </div>
+        <?php 
+				echo $this->Html->tag('div', $this->Form->input('coa_id',array(
+					'label'=> __('Account Kas/Bank *'), 
+					'class'=>'form-control',
+					'required' => false,
+					'empty' => __('Pilih Kas/Bank '),
+					'options' => !empty($coas)?$coas:false,
+					'disabled' => $disabled,
+				)), array(
+					'class' => 'form-group'
+				));
+        ?>
         <div class="form-group">
             <?php 
                     echo $this->Form->input('date_payment', array(

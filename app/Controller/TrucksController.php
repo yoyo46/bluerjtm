@@ -1212,18 +1212,9 @@ class TrucksController extends AppController {
         }
 
         $this->loadModel('Truck');
-        // $allowBranch = $this->MkCommon->allowBranch($this->list_branch, 'trucks', 'index', true);
-        $truck_id = $this->MkCommon->filterEmptyField($kir, 'Kir', 'truck_id');
         $trucks = $this->Truck->getData('list', array(
             'fields' => array(
                 'Truck.id', 'Truck.nopol'
-            ),
-            'conditions' => array(
-                'Truck.id' => $truck_id,
-                // 'OR' => array(
-                //     'Truck.branch_id' => $allowBranch,
-                //     'Truck.id' => $truck_id,
-                // ),
             ),
         ));
 
@@ -1282,6 +1273,7 @@ class TrucksController extends AppController {
     }
 
     function kir_payment_add( $kir_id = false ){
+        $this->loadModel('KirPayment');
         $this->loadModel('Kir');
         $kir = false;
         
@@ -1324,6 +1316,9 @@ class TrucksController extends AppController {
         ));
 
         if( !empty($kir) ) {
+            $coa_id = $this->MkCommon->filterEmptyField($kir, 'KirPayment', 'coa_id');
+            $kir = $this->KirPayment->Coa->getMerge( $kir, $coa_id );
+
             $this->doKirPayment($id, $kir);
             $this->set('sub_module_title', __('Detail Pembayaran KIR'));
         } else {
@@ -1337,7 +1332,6 @@ class TrucksController extends AppController {
             if( !empty($this->request->data['KirPayment']['kir_id']) && !empty($kir) ){
                 $kir_id = $this->request->data['KirPayment']['kir_id'];
 
-                $this->loadModel('KirPayment');
                 $this->KirPayment->create();
                 $data = $this->request->data;
 
@@ -1395,16 +1389,25 @@ class TrucksController extends AppController {
         } else if( !empty($kir) ) {
             $this->request->data['KirPayment']['kir_id'] = $id;
             $this->request->data['KirPayment']['tgl_kir'] = $this->MkCommon->customDate($kir['Kir']['tgl_kir'], 'd/m/Y', '');
-            $this->request->data['KirPayment']['from_date'] = date('d/m/Y', strtotime($kir['Kir']['from_date']));
-            $this->request->data['KirPayment']['to_date'] = date('d/m/Y', strtotime($kir['Kir']['to_date']));
+            $this->request->data['KirPayment']['from_date'] = !empty($kir['Kir']['from_date'])?date('d/m/Y', strtotime($kir['Kir']['from_date'])):false;
+            $this->request->data['KirPayment']['to_date'] = !empty($kir['Kir']['to_date'])?date('d/m/Y', strtotime($kir['Kir']['to_date'])):false;
             $this->request->data['KirPayment']['price'] = $kir['Kir']['price'];
             $this->request->data['KirPayment']['price_estimate'] = $this->MkCommon->convertPriceToString($kir['Kir']['price_estimate']);
             $this->request->data['KirPayment']['denda'] = $this->MkCommon->convertPriceToString($kir['Kir']['denda']);
         }
 
+        $coas = $this->KirPayment->Coa->getData('list', array(
+            'fields' => array(
+                'Coa.id', 'Coa.coa_name'
+            ),
+        ), true, array(
+            'status' => 'cash_bank_child',
+        ));
+
         $this->set('active_menu', 'kir_payments');
         $this->set(compact(
-            'id', 'kir', 'sub_module_title'
+            'id', 'kir', 'sub_module_title',
+            'coas'
         ));
     }
 
@@ -1703,6 +1706,7 @@ class TrucksController extends AppController {
     }
 
     function siup_payment_add( $siup_id = false ){
+        $this->loadModel('SiupPayment');
         $this->loadModel('Siup');
         $siup = false;
         
@@ -1745,6 +1749,9 @@ class TrucksController extends AppController {
         ));
 
         if( !empty($siup) ) {
+            $coa_id = $this->MkCommon->filterEmptyField($siup, 'SiupPayment', 'coa_id');
+            $siup = $this->SiupPayment->Coa->getMerge( $siup, $coa_id );
+
             $this->doSiupPayment($id, $siup);
             $this->set('sub_module_title', __('Detail Pembayaran Ijin Usaha'));
         } else {
@@ -1758,13 +1765,13 @@ class TrucksController extends AppController {
             if( !empty($this->request->data['SiupPayment']['siup_id']) && !empty($siup) ){
                 $siup_id = $this->request->data['SiupPayment']['siup_id'];
 
-                $this->loadModel('SiupPayment');
                 $this->SiupPayment->create();
                 $data = $this->request->data;
 
                 $data['SiupPayment']['user_id'] = $this->user_id;
                 $data['SiupPayment']['siup_id'] = $siup_id;
                 $data['SiupPayment']['siup_payment_date'] = (!empty($data['SiupPayment']['siup_payment_date'])) ? $this->MkCommon->getDate($data['SiupPayment']['siup_payment_date']) : '';
+
                 $data['Truck']['tgl_siup'] = (!empty($siup['Siup']['to_date'])) ? $this->MkCommon->getDate($siup['Siup']['to_date']) : '';
 
                 if( !empty($data['SiupPayment']['rejected']) ) {
@@ -1816,16 +1823,25 @@ class TrucksController extends AppController {
         } else if( !empty($siup) ) {
             $this->request->data['SiupPayment']['siup_id'] = $id;
             $this->request->data['SiupPayment']['tgl_siup'] = $this->MkCommon->customDate($siup['Siup']['tgl_siup'], 'd/m/Y', '');
-            $this->request->data['SiupPayment']['from_date'] = date('d/m/Y', strtotime($siup['Siup']['from_date']));
-            $this->request->data['SiupPayment']['to_date'] = date('d/m/Y', strtotime($siup['Siup']['to_date']));
+            $this->request->data['SiupPayment']['from_date'] = !empty($siup['Siup']['from_date'])?date('d/m/Y', strtotime($siup['Siup']['from_date'])):false;
+            $this->request->data['SiupPayment']['to_date'] = !empty($siup['Siup']['to_date'])?date('d/m/Y', strtotime($siup['Siup']['to_date'])):false;
             $this->request->data['SiupPayment']['price'] = $siup['Siup']['price'];
             $this->request->data['SiupPayment']['price_estimate'] = $this->MkCommon->convertPriceToString($siup['Siup']['price_estimate']);
             $this->request->data['SiupPayment']['denda'] = $this->MkCommon->convertPriceToString($siup['Siup']['denda']);
         }
 
+        $coas = $this->SiupPayment->Coa->getData('list', array(
+            'fields' => array(
+                'Coa.id', 'Coa.coa_name'
+            ),
+        ), true, array(
+            'status' => 'cash_bank_child',
+        ));
+
         $this->set('active_menu', 'siup_payments');
         $this->set(compact(
-            'id', 'siup', 'sub_module_title'
+            'id', 'siup', 'sub_module_title',
+            'coas'
         ));
     }
 
@@ -2458,7 +2474,7 @@ class TrucksController extends AppController {
                 if( !empty($truck) ) {
                     $this->request->data['Stnk']['from_date'] = $this->MkCommon->customDate($truck['Truck']['tgl_stnk'], 'd/m/Y', '');
                     $this->request->data['Stnk']['plat_from_date'] = $this->MkCommon->customDate($truck['Truck']['tgl_stnk_plat'], 'd/m/Y', '');
-                    $this->request->data['Stnk']['price_estimate'] = $this->MkCommon->convertPriceToString($truck['Truck']['bbnkb']+$truck['Truck']['pkb']);
+                    $this->request->data['Stnk']['price_estimate'] = $this->MkCommon->convertPriceToString($truck['Truck']['bbnkb']+$truck['Truck']['pkb'], 0);
 
                     if( !empty($this->request->data['Stnk']['from_date']) ) {
                         $toDate = date('d/m/Y', strtotime('+1 year', strtotime($truck['Truck']['tgl_stnk'])) );
@@ -2505,7 +2521,7 @@ class TrucksController extends AppController {
                 unset($data['Stnk']['plat_to_date']);
             }
 
-            $data['Stnk']['price_estimate'] = !empty($truck['Truck'])?$this->MkCommon->convertPriceToString($truck['Truck']['bbnkb']+$truck['Truck']['pkb']):false;
+            $data['Stnk']['price_estimate'] = !empty($truck['Truck'])?$this->MkCommon->convertPriceToString($truck['Truck']['bbnkb']+$truck['Truck']['pkb'], 0):0;
             $data['Stnk']['price'] = $this->MkCommon->convertPriceToString($data['Stnk']['price']);
             $data['Stnk']['denda'] = (!empty($data['Stnk']['denda'])) ? $this->MkCommon->convertPriceToString($data['Stnk']['denda']) : 0;
             $data['Stnk']['branch_id'] = Configure::read('__Site.config_branch_id');
@@ -2694,6 +2710,7 @@ class TrucksController extends AppController {
     }
 
     function stnk_payment_add( $stnk_id = false ){
+        $this->loadModel('StnkPayment');
         $this->loadModel('Stnk');
         $stnk = false;
         
@@ -2736,6 +2753,9 @@ class TrucksController extends AppController {
         ));
 
         if( !empty($stnk) ) {
+            $coa_id = $this->MkCommon->filterEmptyField($stnk, 'StnkPayment', 'coa_id');
+            $stnk = $this->StnkPayment->Coa->getMerge( $stnk, $coa_id );
+
             $this->doStnkPayment($id, $stnk);
             $this->set('sub_module_title', __('Detail Pembayaran STNK'));
         } else {
@@ -2749,7 +2769,6 @@ class TrucksController extends AppController {
             if( !empty($this->request->data['StnkPayment']['stnk_id']) && !empty($stnk) ){
                 $stnk_id = $this->request->data['StnkPayment']['stnk_id'];
 
-                $this->loadModel('StnkPayment');
                 $this->StnkPayment->create();
                 $data = $this->request->data;
 
@@ -2823,9 +2842,18 @@ class TrucksController extends AppController {
             }
         }
 
+        $coas = $this->StnkPayment->Coa->getData('list', array(
+            'fields' => array(
+                'Coa.id', 'Coa.coa_name'
+            ),
+        ), true, array(
+            'status' => 'cash_bank_child',
+        ));
+
         $this->set('active_menu', 'stnk_payments');
         $this->set(compact(
-            'id', 'stnk', 'sub_module_title'
+            'id', 'stnk', 'sub_module_title',
+            'coas'
         ));
     }
 

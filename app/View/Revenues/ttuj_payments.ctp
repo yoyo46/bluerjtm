@@ -17,7 +17,7 @@
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                echo $this->Html->link(sprintf('<i class="fa fa-plus"></i> Tambah Pembayaran %s', $labelAdd), array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
                     'controller' => 'revenues',
                     'action' => 'ttuj_payment_add',
                     $action_type,

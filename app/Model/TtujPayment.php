@@ -18,6 +18,12 @@ class TtujPayment extends AppModel {
                 'message' => 'No. Dokumen telah terdaftar',
             ),
         ),
+        'coa_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Account Kas/Bank harap dipilih'
+            ),
+        ),
         'total_payment' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -40,6 +46,13 @@ class TtujPayment extends AppModel {
                 'TtujPaymentDetail.status' => 1,
             ),
         ),
+    );
+
+    var $belongsTo = array(
+        'Coa' => array(
+            'className' => 'Coa',
+            'foreignKey' => 'coa_id',
+        )
     );
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){

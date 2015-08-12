@@ -81,6 +81,7 @@ class Stnk extends AppModel {
         $default_options = array(
             'conditions'=> array(
                 'Stnk.branch_id' => Configure::read('__Site.config_branch_id'),
+                'Stnk.no_pol <>' => '',
             ),
             'order'=> array(
                 'Stnk.created' => 'DESC'

@@ -6060,9 +6060,19 @@ class RevenuesController extends AppController {
                 }
             }
 
+            $this->loadModel('Coa');
+            
+            $coas = $this->Coa->getData('list', array(
+                'fields' => array(
+                    'Coa.id', 'Coa.coa_name'
+                ),
+            ), true, array(
+                'status' => 'cash_bank_child',
+            ));
+
             $this->set(compact(
                 'invoice', 'sub_module_title', 'title_for_layout',
-                'drivers', 'action_type', 'module_title'
+                'drivers', 'action_type', 'module_title', 'coas'
             ));
 
             $this->render('ttuj_payment_form');
@@ -6241,8 +6251,18 @@ class RevenuesController extends AppController {
              $this->request->data = $data_local;
         }
 
+        $this->loadModel('Coa');
+
+        $coas = $this->Coa->getData('list', array(
+            'fields' => array(
+                'Coa.id', 'Coa.coa_name'
+            ),
+        ), true, array(
+            'status' => 'cash_bank_child',
+        ));
+
         $this->set(compact(
-            'action_type'
+            'action_type', 'coas'
         ));
         $this->render('ttuj_payment_form');
     }

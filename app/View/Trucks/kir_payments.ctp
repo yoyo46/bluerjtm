@@ -11,7 +11,7 @@
         ?>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Bayar KIR', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
                     'controller' => 'trucks',
                     'action' => 'kir_payment_add'
                 ), array(

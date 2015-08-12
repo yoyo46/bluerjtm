@@ -219,108 +219,97 @@ class AjaxController extends AppController {
 	}
 
 	function getTtujCustomerInfo($customer_id = false){
-		$this->loadModel('Ttuj');
 		$this->loadModel('Lku');
 
-		$default_conditions = array(
-			'Ttuj.customer_id' => $customer_id,
-		);
-		$ttuj_id = $this->Ttuj->getData('list', array(
-			'conditions' => $default_conditions,
-			'group' => array(
-				'Ttuj.customer_id'
-			),
-			'fields' => array(
-				'Ttuj.id'
-			),
-			'contain' => false,
-		));
 		$lku_condition = array(
-			'Lku.ttuj_id' => $ttuj_id,
+			'Ttuj.customer_id' => $customer_id,
 			'Lku.complete_paid' => 0
 		);
 		$lku_details = array();
 
-		if(!empty($ttuj_id)){
-			if(!empty($this->request->data['Lku']['date_from']) || !empty($this->request->data['Lku']['date_to'])){
-				if(!empty($this->request->data['Lku']['date_from'])){
-					$lku_condition['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') >='] = $this->MkCommon->getDate($this->request->data['Lku']['date_from']);
-				}
-				if(!empty($this->request->data['Lku']['date_to'])){
-					$lku_condition['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') <='] = $this->MkCommon->getDate($this->request->data['Lku']['date_to']);
-				}
+		if(!empty($this->request->data['Lku']['date_from']) || !empty($this->request->data['Lku']['date_to'])){
+			if(!empty($this->request->data['Lku']['date_from'])){
+				$lku_condition['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') >='] = $this->MkCommon->getDate($this->request->data['Lku']['date_from']);
 			}
-
-			if(!empty($this->request->data['Lku']['no_doc'])){
-				$lku_condition['Lku.no_doc LIKE '] = '%'.$this->request->data['Lku']['no_doc'].'%';
-			}
-
-			$lkus = $this->Lku->getData('all', array(
-				'conditions' => $lku_condition,
-			));
-
-			if(!empty($lkus)){
-				$this->loadModel('LkuDetail');
-				
-				$lku_id = Set::extract('/Lku/id', $lkus);
-				$this->paginate = $this->LkuDetail->getData('paginate', array(
-					'conditions' => array(
-						'LkuDetail.lku_id' => $lku_id,
-						'LkuDetail.complete_paid' => 0
-					),
-					'contain' => array(
-						'Lku'
-					)
-				));
-				
-				$lku_details = $this->paginate('LkuDetail');
+			if(!empty($this->request->data['Lku']['date_to'])){
+				$lku_condition['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') <='] = $this->MkCommon->getDate($this->request->data['Lku']['date_to']);
 			}
 		}
+
+		if(!empty($this->request->data['Lku']['no_doc'])){
+			$lku_condition['Lku.no_doc LIKE '] = '%'.$this->request->data['Lku']['no_doc'].'%';
+		}
+
+		$lku_id = $this->Lku->getData('list', array(
+			'conditions' => $lku_condition,
+			'contain' => array(
+				'Ttuj',
+			),
+		));
+
+		if(!empty($lku_id)){
+			$this->loadModel('LkuDetail');
+			$this->paginate = $this->LkuDetail->getData('paginate', array(
+				'conditions' => array(
+					'LkuDetail.lku_id' => $lku_id,
+					'LkuDetail.complete_paid' => 0
+				),
+				'contain' => array(
+					'Lku'
+				)
+			));
+			
+			$lku_details = $this->paginate('LkuDetail');
 		
-		if(!empty($lku_details)){
-			$this->loadModel('LkuPaymentDetail');
-			$this->loadModel('PartsMotor');
-			$this->loadModel('TipeMotor');
+			if(!empty($lku_details)){
+				$this->loadModel('PartsMotor');
+				$this->loadModel('TipeMotor');
+				$this->loadModel('LkuPaymentDetail');
 
-			foreach ($lku_details as $key => $value) {
-				$lku_has_paid = $this->LkuPaymentDetail->getData('first', array(
-					'conditions' => array(
-						'LkuPaymentDetail.lku_detail_id' => $value['LkuDetail']['id'],
-						'LkuPaymentDetail.status' => 1
-					),
-					'fields' => array(
-						'SUM(LkuPaymentDetail.total_biaya_klaim) as lku_has_paid'
-					),
-				));
-				$lku_details[$key]['LkuDetail']['lku_has_paid'] = $lku_has_paid[0]['lku_has_paid'];
+				foreach ($lku_details as $key => $value) {
+					$part_motor = array();
+					$tipe_motor = array();
+					$part_motor_id = $this->MkCommon->filterEmptyField($value, 'LkuDetail', 'part_motor_id');
+					$tipe_motor_id = $this->MkCommon->filterEmptyField($value, 'LkuDetail', 'tipe_motor_id');
 
-				$ttuj = $this->Ttuj->getData('first', array(
-					'conditions' => array(
-						'Ttuj.id' => $value['Lku']['ttuj_id']
-					),
-					'contain' => false,
-				));
-				$lku_details[$key]['Ttuj'] = !empty($ttuj['Ttuj']) ? $ttuj['Ttuj'] : array();
-
-				$part_motor = array();
-				if(!empty($value['LkuDetail']['part_motor_id'])){
-					$part_motor = $this->PartsMotor->getData('first', array(
+					$lku_has_paid = $this->LkuPaymentDetail->getData('first', array(
 						'conditions' => array(
-							'PartsMotor.id' => $value['LkuDetail']['part_motor_id']
-						)
+							'LkuPaymentDetail.lku_detail_id' => $value['LkuDetail']['id'],
+							'LkuPaymentDetail.status' => 1
+						),
+						'fields' => array(
+							'SUM(LkuPaymentDetail.total_biaya_klaim) as lku_has_paid'
+						),
 					));
-				}
-				$lku_details[$key]['LkuDetail']['PartsMotor'] = !empty($part_motor['PartsMotor']) ? $part_motor['PartsMotor'] : array();
+					$value['LkuDetail']['lku_has_paid'] = !empty($lku_has_paid[0]['lku_has_paid'])?$lku_has_paid[0]['lku_has_paid']:0;
 
-				$tipe_motor = array();
-				if(!empty($value['LkuDetail']['tipe_motor_id'])){
-					$tipe_motor = $this->TipeMotor->getData('first', array(
+					$ttuj = $this->Lku->Ttuj->getData('first', array(
 						'conditions' => array(
-							'TipeMotor.id' => $value['LkuDetail']['tipe_motor_id']
-						)
+							'Ttuj.id' => $value['Lku']['ttuj_id'],
+						),
+						'contain' => false,
 					));
+					$value['Ttuj'] = !empty($ttuj['Ttuj']) ? $ttuj['Ttuj'] : array();
+
+					if(!empty($part_motor_id)){
+						$part_motor = $this->LkuDetail->PartsMotor->getData('first', array(
+							'conditions' => array(
+								'PartsMotor.id' => $part_motor_id,
+							)
+						));
+					}
+					$value['LkuDetail']['PartsMotor'] = !empty($part_motor['PartsMotor']) ? $part_motor['PartsMotor'] : array();
+
+					if(!empty($tipe_motor_id)){
+						$tipe_motor = $this->LkuDetail->TipeMotor->getData('first', array(
+							'conditions' => array(
+								'TipeMotor.id' => $tipe_motor_id,
+							)
+						));
+					}
+					$value['LkuDetail']['TipeMotor'] = !empty($tipe_motor['TipeMotor']) ? $tipe_motor['TipeMotor'] : array();
+					$lku_details[$key] = $value;
 				}
-				$lku_details[$key]['LkuDetail']['TipeMotor'] = !empty($tipe_motor['TipeMotor']) ? $tipe_motor['TipeMotor'] : array();
 			}
 		}
 		
@@ -334,105 +323,95 @@ class AjaxController extends AppController {
 	}
 
 	function getTtujCustomerInfoKsu($customer_id = false){
-		$this->loadModel('Ttuj');
 		$this->loadModel('Ksu');
 
-		$default_conditions = array(
-			'Ttuj.customer_id' => $customer_id
-		);
-		$ttuj_id = $this->Ttuj->getData('list', array(
-			'conditions' => $default_conditions,
-			'group' => array(
-				'Ttuj.customer_id'
-			),
-			'fields' => array(
-				'Ttuj.id'
-			),
-			'contain' => false,
-		));
 		$ksu_condition = array(
-			'Ksu.ttuj_id' => $ttuj_id,
+			'Ttuj.customer_id' => $customer_id,
 			'Ksu.complete_paid' => 0,
 			'Ksu.kekurangan_atpm' => 0
 		);
-
 		$ksu_details = array();
-		if(!empty($ttuj_id)){
-			if(!empty($this->request->data['Ksu']['date_from']) || !empty($this->request->data['Ksu']['date_to'])){
-				if(!empty($this->request->data['Ksu']['date_from'])){
-					$ksu_condition['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') >='] = $this->MkCommon->getDate($this->request->data['Ksu']['date_from']);
-				}
-				if(!empty($this->request->data['Ksu']['date_to'])){
-					$ksu_condition['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') <='] = $this->MkCommon->getDate($this->request->data['Ksu']['date_to']);
-				}
-			}
 
-			if(!empty($this->request->data['Ksu']['no_doc'])){
-				$ksu_condition['Ksu.no_doc LIKE '] = '%'.$this->request->data['Ksu']['no_doc'].'%';
+		if(!empty($this->request->data['Ksu']['date_from']) || !empty($this->request->data['Ksu']['date_to'])){
+			if(!empty($this->request->data['Ksu']['date_from'])){
+				$ksu_condition['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') >='] = $this->MkCommon->getDate($this->request->data['Ksu']['date_from']);
 			}
+			if(!empty($this->request->data['Ksu']['date_to'])){
+				$ksu_condition['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') <='] = $this->MkCommon->getDate($this->request->data['Ksu']['date_to']);
+			}
+		}
 
-			$ksus = $this->Ksu->getData('all', array(
-				'conditions' => $ksu_condition
+		if(!empty($this->request->data['Ksu']['no_doc'])){
+			$ksu_condition['Ksu.no_doc LIKE '] = '%'.$this->request->data['Ksu']['no_doc'].'%';
+		}
+
+		$ksu_id = $this->Ksu->getData('list', array(
+			'conditions' => $ksu_condition,
+			'contain' => array(
+				'Ttuj',
+			),
+		));
+		
+		if(!empty($ksu_id)){
+			$this->loadModel('KsuDetail');
+
+			$this->paginate = $this->KsuDetail->getData('paginate', array(
+				'conditions' => array(
+					'KsuDetail.ksu_id' => $ksu_id,
+					'KsuDetail.complete_paid' => 0
+				),
+				'contain' => array(
+					'Ksu'
+				)
 			));
-			
-			if(!empty($ksus)){
-				$this->loadModel('KsuDetail');
-				$ksu_id = Set::extract('/Ksu/id', $ksus);
-				$this->paginate = $this->KsuDetail->getData('paginate', array(
-					'conditions' => array(
-						'KsuDetail.ksu_id' => $ksu_id,
-						'KsuDetail.complete_paid' => 0
-					),
-					'contain' => array(
-						'Ksu'
-					)
-				));
-				
-				$ksu_details = $this->paginate('KsuDetail');
-			}
-		}
+			$ksu_details = $this->paginate('KsuDetail');
 		
-		if(!empty($ksu_details)){
-			$this->loadModel('KsuPaymentDetail');
-			$this->loadModel('Perlengkapan');
+			if(!empty($ksu_details)){
+				$this->loadModel('KsuPaymentDetail');
+				$this->loadModel('Perlengkapan');
 
-			foreach ($ksu_details as $key => $value) {
-				$ksu_has_paid = $this->KsuPaymentDetail->getData('first', array(
-					'conditions' => array(
-						'KsuPaymentDetail.ksu_detail_id' => $value['KsuDetail']['id'],
-						'KsuPaymentDetail.status' => 1
-					),
-					'fields' => array(
-						'SUM(KsuPaymentDetail.total_biaya_klaim) as ksu_has_paid'
-					),
-				));
-				$ttuj = $this->Ttuj->getData('first', array(
-					'conditions' => array(
-						'Ttuj.id' => $value['Ksu']['ttuj_id']
-					),
-					'contain' => false,
-				));
+				foreach ($ksu_details as $key => $value) {
+					$Perlengkapan = array();
 
-				$ksu_details[$key]['Ttuj'] = !empty($ttuj['Ttuj']) ? $ttuj['Ttuj'] : array();
-				$ksu_details[$key]['KsuDetail']['ksu_has_paid'] = $ksu_has_paid[0]['ksu_has_paid'];
-
-				$Perlengkapan = array();
-				if(!empty($value['KsuDetail']['perlengkapan_id'])){
-					$Perlengkapan = $this->Perlengkapan->getData('first', array(
+					$ksu_has_paid = $this->KsuPaymentDetail->getData('first', array(
 						'conditions' => array(
-							'Perlengkapan.id' => $value['KsuDetail']['perlengkapan_id']
-						)
+							'KsuPaymentDetail.ksu_detail_id' => $value['KsuDetail']['id'],
+							'KsuPaymentDetail.status' => 1
+						),
+						'fields' => array(
+							'SUM(KsuPaymentDetail.total_biaya_klaim) as ksu_has_paid'
+						),
 					));
+					$ttuj = $this->Ksu->Ttuj->getData('first', array(
+						'conditions' => array(
+							'Ttuj.id' => $value['Ksu']['ttuj_id']
+						),
+						'contain' => false,
+					));
+
+					if(!empty($value['KsuDetail']['perlengkapan_id'])){
+						$Perlengkapan = $this->Perlengkapan->getData('first', array(
+							'conditions' => array(
+								'Perlengkapan.id' => $value['KsuDetail']['perlengkapan_id']
+							)
+						));
+					}
+
+					$value['Ttuj'] = !empty($ttuj['Ttuj']) ? $ttuj['Ttuj'] : array();
+					$value['KsuDetail']['ksu_has_paid'] = !empty($ksu_has_paid[0]['ksu_has_paid'])?$ksu_has_paid[0]['ksu_has_paid']:0;
+					$value['KsuDetail']['Perlengkapan'] = !empty($Perlengkapan['Perlengkapan']) ? $Perlengkapan['Perlengkapan'] : array();
+					$ksu_details[$key] = $value;
 				}
-				$ksu_details[$key]['KsuDetail']['Perlengkapan'] = !empty($Perlengkapan['Perlengkapan']) ? $Perlengkapan['Perlengkapan'] : array();
 			}
 		}
 		
-		$this->set('ksus', $ksus);
 		$data_change = 'browse-invoice';
 		$data_action = 'getTtujCustomerInfo';
 		$title = 'Pembayaran LKU Customer';
-		$this->set(compact('customer_id', 'data_change', 'data_action', 'title', 'ksu_details'));
+		$this->set(compact(
+			'customer_id', 'data_change', 
+			'data_action', 'title', 'ksu_details'
+		));
 	}
 
 	function getTtujInfoLku($lku_id){

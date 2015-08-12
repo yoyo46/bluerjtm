@@ -20,13 +20,23 @@ class SiupPayment extends AppModel {
                 'message' => 'Tgl dibayar harap dipilih'
             ),
         ),
+        'coa_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Account Kas/Bank harap dipilih'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(
 		'Siup' => array(
 			'className' => 'Siup',
 			'foreignKey' => 'siup_id',
-		)
+		),
+        'Coa' => array(
+            'className' => 'Coa',
+            'foreignKey' => 'coa_id',
+        ),
 	);
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){

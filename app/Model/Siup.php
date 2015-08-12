@@ -52,6 +52,7 @@ class Siup extends AppModel {
         $default_options = array(
             'conditions'=> array(
                 'Siup.branch_id' => Configure::read('__Site.config_branch_id'),
+                'Siup.no_pol <>' => '',
             ),
             'order'=> array(
                 'Siup.rejected' => 'ASC',

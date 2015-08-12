@@ -114,6 +114,11 @@ class LkusController extends AppController {
             $Lku = $this->Lku->getLku($id);
             
             if(!empty($Lku)){
+                $this->loadModel('Customer');
+
+                $customer_id = $this->MkCommon->filterEmptyField($Lku, 'Ttuj', 'customer_id');
+                $Lku = $this->Customer->getMerge($Lku, $customer_id);
+
                 if(!empty($Lku['LkuDetail'])){
                     $this->loadModel('PartsMotor');
                     $this->loadModel('TipeMotor');
@@ -715,7 +720,7 @@ class LkusController extends AppController {
                     $this->Log->logActivity( sprintf(__('Gagal %s Pembayaran LKU #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
                 }
             }else{
-                $text = sprintf(__('Gagal %s Pembayaran Invoice'), $msg);
+                $text = sprintf(__('Gagal %s pembayaran lku'), $msg);
 
                 if( !$validate_lku_detail ){
                     $text .= ', mohon isi field pembayaran';
@@ -868,6 +873,16 @@ class LkusController extends AppController {
                 }
             }
         }
+
+        $this->loadModel('Coa');
+        
+        $coas = $this->Coa->getData('list', array(
+            'fields' => array(
+                'Coa.id', 'Coa.coa_name'
+            ),
+        ), true, array(
+            'status' => 'cash_bank_child',
+        ));
 
         $this->set('active_menu', 'lku_payments');
         $this->set(compact(
@@ -1239,6 +1254,11 @@ class LkusController extends AppController {
             $Ksu = $this->Ksu->getKsu($id);
 
             if(!empty($Ksu)){
+                $this->loadModel('Customer');
+
+                $customer_id = $this->MkCommon->filterEmptyField($Ksu, 'Ttuj', 'customer_id');
+                $Ksu = $this->Customer->getMerge($Ksu, $customer_id);
+
                 if(!empty($Ksu['KsuDetail'])){
                     $this->loadModel('Perlengkapan');
                     foreach ($Ksu['KsuDetail'] as $key => $value) {
@@ -1845,7 +1865,7 @@ class LkusController extends AppController {
                     $this->Log->logActivity( sprintf(__('Gagal %s Pembayaran LKU #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
                 }
             }else{
-                $text = sprintf(__('Gagal %s Pembayaran Invoice'), $msg);
+                $text = sprintf(__('Gagal %s pembayaran ksu'), $msg);
 
                 if( !$validate_ksu_detail ){
                     $text .= ', mohon isi field pembayaran';
@@ -2020,14 +2040,21 @@ class LkusController extends AppController {
             }
         }
 
-        $this->set(compact(
-            'list_customer', 'id', 'action',
-            'coas'
+        $this->loadModel('Coa');
+        
+        $coas = $this->Coa->getData('list', array(
+            'fields' => array(
+                'Coa.id', 'Coa.coa_name'
+            ),
+        ), true, array(
+            'status' => 'cash_bank_child',
         ));
 
+        $this->set(compact(
+            'list_customer', 'id', 'action',
+            'coas', 'ttujs'
+        ));
         $this->set('active_menu', 'ksu_payments');
-        $this->set('id', $id);
-        $this->set('ttujs', $ttujs);
         $this->render('ksu_payment_form');
     }
 
@@ -2196,8 +2223,11 @@ class LkusController extends AppController {
             $this->loadModel('TipeMotor');
 
             $LkuPayment = $this->LkuPayment->getLkuPayment($id);
-            
+
             if(!empty($LkuPayment)){
+                $coa_id = $this->MkCommon->filterEmptyField($LkuPayment, 'LkuPayment', 'coa_id');
+                $LkuPayment = $this->LkuPayment->Coa->getMerge( $LkuPayment, $coa_id );
+
                 if(!empty($LkuPayment['LkuPaymentDetail'])){
                     foreach ($LkuPayment['LkuPaymentDetail'] as $key => $value) {
                         $lku = $this->LkuPayment->LkuPaymentDetail->LkuDetail->getData('first', array(
@@ -2257,6 +2287,9 @@ class LkusController extends AppController {
             $KsuPayment = $this->KsuPayment->getKsuPayment($id);
             
             if(!empty($KsuPayment)){
+                $coa_id = $this->MkCommon->filterEmptyField($KsuPayment, 'KsuPayment', 'coa_id');
+                $KsuPayment = $this->KsuPayment->Coa->getMerge( $KsuPayment, $coa_id );
+
                 if(!empty($KsuPayment['KsuPaymentDetail'])){
                     foreach ($KsuPayment['KsuPaymentDetail'] as $key => $value) {
                         $ksu = $this->KsuPayment->KsuPaymentDetail->KsuDetail->getData('first', array(
@@ -2286,7 +2319,7 @@ class LkusController extends AppController {
                 
                 $sub_module_title = __('Detail Pembayaran KSU');
                 $this->set(compact('KsuPayment', 'sub_module_title'));
-                $this->set('active_menu', 'lku_payments');
+                $this->set('active_menu', 'ksu_payments');
             }else{
                 $this->MkCommon->setCustomFlash(__('Pembayaran KSU tidak ditemukan.'), 'error');
                 $this->redirect($this->referer());

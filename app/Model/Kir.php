@@ -54,6 +54,7 @@ class Kir extends AppModel {
         $default_options = array(
             'conditions'=> array(
                 'Kir.branch_id' => Configure::read('__Site.config_branch_id'),
+                'Kir.no_pol <>' => '',
             ),
             'order'=> array(
                 'Kir.status' => 'DESC',

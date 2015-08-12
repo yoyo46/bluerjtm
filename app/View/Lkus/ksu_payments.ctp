@@ -37,7 +37,7 @@
                             'escape' => false
                         )));
 
-                        echo $this->Html->tag('th', $this->Paginator->sort('Customer.name', __('Nama Customer'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Customer.name', __('Customer'), array(
                             'escape' => false
                         )));
 

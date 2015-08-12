@@ -59,22 +59,25 @@
     ?>
 </div>
 <?php 
-    echo $this->Form->end();
+        echo $this->Form->end();
 ?>
 <div class="box-body table-responsive">
+    <?php 
+            if(!empty($ksu_details)){
+    ?>
     <table class="table table-hover">
         <thead>
             <tr>
                 <?php
-                    $input_all = $this->Form->checkbox('checkbox_all', array(
-                        'class' => 'checkAll'
-                    ));
-                    echo $this->Html->tag('th', $input_all);
+                        $input_all = $this->Form->checkbox('checkbox_all', array(
+                            'class' => 'checkAll'
+                        ));
+                        echo $this->Html->tag('th', $input_all);
                 ?>
                 <th width="20%"><?php echo __('No KSU');?></th>
                 <th><?php echo __('Tgl KSU');?></th>
                 <th><?php echo __('TTUJ');?></th>
-                <th><?php echo __('Nopol Truk');?></th>
+                <th><?php echo __('Nopol');?></th>
                 <th><?php echo __('Perlengkapan');?></th>
                 <th><?php echo __('Total');?></th>
                 <th><?php echo __('Telah Dibayar');?></th>
@@ -82,9 +85,8 @@
         </thead>
         <tbody class="ttuj-info-table">
             <?php
-                $total = $i = 0;
+                    $total = 0;
 
-                if(!empty($ksu_details)){
                     foreach ($ksu_details as $key => $value) {
                         $ksu = $value['Ksu'];
             ?>
@@ -185,18 +187,18 @@
             </tr>
             <?php
                     }
-                }else{
-                    echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan')) );
-                }
             ?>
         </tbody>
     </table>
+    <?php 
+                echo $this->element('pagination', array(
+                    'options' => array(
+                        'data-action' => $data_action,
+                        'class' => 'ajaxModal',
+                    ),
+                ));
+            }else{
+                echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan')) );
+            }
+    ?>
 </div>
-<?php
-        echo $this->element('pagination', array(
-            'options' => array(
-                'data-action' => $data_action,
-                'class' => 'ajaxModal',
-            ),
-        ));
-?>

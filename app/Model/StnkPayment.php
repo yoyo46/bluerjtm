@@ -20,13 +20,23 @@ class StnkPayment extends AppModel {
                 'message' => 'Tgl dibayar harap dipilih'
             ),
         ),
+        'coa_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Account Kas/Bank harap dipilih'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(
 		'Stnk' => array(
 			'className' => 'Stnk',
 			'foreignKey' => 'stnk_id',
-		)
+		),
+        'Coa' => array(
+            'className' => 'Coa',
+            'foreignKey' => 'coa_id',
+        ),
 	);
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){

@@ -12,6 +12,12 @@ class KsuPayment extends AppModel {
                 'message' => 'No Dokumen telah terdaftar',
             ),
         ),
+        'coa_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Account Kas/Bank harap dipilih'
+            ),
+        ),
         'type_lku' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -41,6 +47,10 @@ class KsuPayment extends AppModel {
         'Customer' => array(
             'className' => 'Customer',
             'foreignKey' => 'customer_id',
+        ),
+        'Coa' => array(
+            'className' => 'Coa',
+            'foreignKey' => 'coa_id',
         ),
     );
 

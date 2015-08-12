@@ -1,3 +1,6 @@
+<?php 
+		$customer_name = $this->Common->filterEmptyField($Ksu, 'Customer', 'customer_name_code');
+?>
 <div class="row">
     <div class="col-sm-12">
         <div class="box box-primary">
@@ -17,6 +20,10 @@
 					<tr>
 						<th width="30%"><?php echo __('Ttuj');?></th>
 						<td><?php echo $Ksu['Ttuj']['no_ttuj'];?></td>
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Customer');?></th>
+						<td><?php echo $customer_name;?></td>
 					</tr>
 					<tr>
 						<th width="30%"><?php echo __('Tgl KSU');?></th>

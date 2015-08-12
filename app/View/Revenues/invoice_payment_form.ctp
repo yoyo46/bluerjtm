@@ -50,7 +50,7 @@
 	        <div class="form-group">
 	        	<?php 
 						echo $this->Form->input('coa_id',array(
-							'label'=> __('Account *'), 
+							'label'=> __('Account Kas/Bank *'), 
 							'class'=>'form-control',
 							'required' => false,
 							'empty' => __('Pilih Kas/Bank'),

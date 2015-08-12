@@ -4,6 +4,8 @@
 			'action' => 'payments'
 		));
 		$this->Html->addCrumb($sub_module_title);
+
+		$coa_name = $this->Common->filterEmptyField($LkuPayment, 'Coa', 'coa_name', '-');
 ?>
 <div class="box">
     <div class="box-header">
@@ -19,10 +21,10 @@
 				<th><?php echo __('Customer');?></th>
 				<td><?php echo !empty($LkuPayment['CustomerNoType']['name'])?$LkuPayment['CustomerNoType']['name']:false;?></td>
 			</tr>
-			<!-- <tr>
-				<th><?php // echo __('Account');?></th>
-				<td><?php // echo !empty($LkuPayment['Coa']['name'])?$LkuPayment['Coa']['name']:false;?></td>
-			</tr> -->
+			<tr>
+				<th><?php echo __('Account Kas/Bank');?></th>
+				<td><?php echo $coa_name;?></td>
+			</tr>
 			<tr>
 				<th><?php echo __('Tgl Pembayaran');?></th>
 				<td><?php echo $this->Common->customDate($LkuPayment['LkuPayment']['tgl_bayar']);?></td>

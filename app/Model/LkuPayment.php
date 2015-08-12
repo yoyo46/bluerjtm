@@ -12,6 +12,12 @@ class LkuPayment extends AppModel {
                 'message' => 'No Dokumen telah terdaftar',
             ),
         ),
+        'coa_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Account Kas/Bank harap dipilih'
+            ),
+        ),
         'tgl_bayar' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
