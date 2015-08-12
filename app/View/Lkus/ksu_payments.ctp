@@ -14,7 +14,7 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Pembayaran KSU', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
                         'controller' => 'lkus',
                         'action' => 'ksu_payment_add'
                     ), array(
@@ -45,7 +45,7 @@
                             'escape' => false
                         )));
 
-                        echo $this->Html->tag('th', $this->Paginator->sort('KsuPayment.paid', __('Status Pembayaran'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('KsuPayment.paid', __('Status'), array(
                             'escape' => false
                         )));
 
