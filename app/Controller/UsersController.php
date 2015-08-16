@@ -1013,17 +1013,7 @@ class UsersController extends AppController {
                 }
 
                 /*supporting data*/
-                $branches = $this->City->getData('list', array(
-                    'conditions' => array(
-                        'OR' => array(
-                            array('City.is_branch' => 1),
-                            array('City.is_plant' => 1)
-                        )
-                    ),
-                    'fields' => array(
-                        'City.id', 'City.name'
-                    )
-                ));
+                $branches = $this->City->branchCities('list');
 
                 foreach ($parent_modules as $key => $value) {
                     $parent_modules[$key]['child'] = $this->BranchModule->getData('all', array(

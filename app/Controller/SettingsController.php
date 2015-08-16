@@ -44,6 +44,16 @@ class SettingsController extends AppController {
                 $this->request->data['City']['name'] = $name;
                 $options['conditions']['City.name LIKE '] = '%'.$name.'%';
             }
+            if(!empty($refine['branch'])){
+                $value = urldecode($refine['branch']);
+                $this->request->data['City']['is_branch'] = $value;
+                $options['conditions']['City.is_branch'] = $value;
+            }
+            if(!empty($refine['plant'])){
+                $value = urldecode($refine['plant']);
+                $this->request->data['City']['is_plant'] = $value;
+                $options['conditions']['City.is_plant'] = $value;
+            }
         }
 
         $this->paginate = $this->City->getData('paginate', $options);
