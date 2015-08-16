@@ -1204,8 +1204,12 @@ class RevenuesController extends AppController {
             }
         }
 
+        $this->Ttuj->virtualFields['to_city_branch_id'] = 'CASE WHEN ToCity.is_branch = 0 THEN Ttuj.from_city_id ELSE Ttuj.to_city_id END';
         $this->paginate = $this->Ttuj->getData('paginate', array(
-            'conditions' => $conditions
+            'conditions' => $conditions,
+            'contain' => array(
+                'ToCity',
+            ),
         ), true, array(
             'branch' => false,
         ));
@@ -1225,10 +1229,21 @@ class RevenuesController extends AppController {
         $this->loadModel('Ttuj');
         $this->set('active_menu', 'truk_tiba');
 
+        $conditions = array(
+            'Ttuj.id' => $id,
+            'Ttuj.is_draft' => 0,
+            'Ttuj.status' => 1,
+        );
+        $conditions = $this->RjRevenue->getTtujConditionBrach( $conditions, $action_type );
+
+        $this->Ttuj->virtualFields['to_city_branch_id'] = 'CASE WHEN ToCity.is_branch = 0 THEN Ttuj.from_city_id ELSE Ttuj.to_city_id END';
         $ttuj = $this->Ttuj->getData('first', array(
-            'conditions' => array(
-                'Ttuj.id' => $id,
-            )
+            'conditions' => $conditions,
+            'contain' => array(
+                'ToCity',
+            ),
+        ), true, array(
+            'branch' => false,
         ));
 
         if( !empty($ttuj) ) {
@@ -1243,8 +1258,12 @@ class RevenuesController extends AppController {
         $this->loadModel('Perlengkapan');
         $this->loadModel('Truck');
         $this->loadModel('ColorMotor');
+
         $module_title = __('Truk Tiba');
         $data_action = false;
+
+        $this->Ttuj->virtualFields['to_city_branch_id'] = 'CASE WHEN ToCity.is_branch = 0 THEN Ttuj.from_city_id ELSE Ttuj.to_city_id END';
+
         $this->set('module_title', __('TTUJ'));
 
         if( !empty($this->params['named']['no_ttuj']) ) {
@@ -1280,7 +1299,10 @@ class RevenuesController extends AppController {
                     break;
             }
             $data_local = $this->Ttuj->getData('first', array(
-                'conditions' => $conditionsDataLocal
+                'conditions' => $conditionsDataLocal,
+                'contain' => array(
+                    'ToCity',
+                ),
             ), true, array(
                 'branch' => false,
             ));
@@ -1512,6 +1534,9 @@ class RevenuesController extends AppController {
             'fields' => array(
                 'Ttuj.id', 'Ttuj.no_ttuj'
             ),
+            'contain' => array(
+                'ToCity',
+            ),
         ), true, array(
             'branch' => false,
         ));
@@ -1589,8 +1614,12 @@ class RevenuesController extends AppController {
         }
 
         $data_action = false;
+        $this->Ttuj->virtualFields['to_city_branch_id'] = 'CASE WHEN ToCity.is_branch = 0 THEN Ttuj.from_city_id ELSE Ttuj.to_city_id END';
         $data_local = $this->Ttuj->getData('first', array(
-            'conditions' => $conditions
+            'conditions' => $conditions,
+            'contain' => array(
+                'ToCity',
+            ),
         ), true, array(
             'branch' => false,
         ));
@@ -1714,8 +1743,12 @@ class RevenuesController extends AppController {
             }
         }
 
+        $this->Ttuj->virtualFields['to_city_branch_id'] = 'CASE WHEN ToCity.is_branch = 0 THEN Ttuj.from_city_id ELSE Ttuj.to_city_id END';
         $this->paginate = $this->Ttuj->getData('paginate', array(
-            'conditions' => $conditions
+            'conditions' => $conditions,
+            'contain' => array(
+                'ToCity',
+            ),
         ), true, array(
             'branch' => false,
         ));
@@ -1783,8 +1816,12 @@ class RevenuesController extends AppController {
             }
         }
 
+        $this->Ttuj->virtualFields['to_city_branch_id'] = 'CASE WHEN ToCity.is_branch = 0 THEN Ttuj.from_city_id ELSE Ttuj.to_city_id END';
         $this->paginate = $this->Ttuj->getData('paginate', array(
-            'conditions' => $conditions
+            'conditions' => $conditions,
+            'contain' => array(
+                'ToCity',
+            ),
         ), true, array(
             'branch' => false,
         ));
