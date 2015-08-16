@@ -37,7 +37,7 @@ class City extends AppModel {
         $status = isset($elements['status'])?$elements['status']:'active';
         $plant = isset($elements['plant'])?$elements['plant']:false;
         $branch = isset($elements['branch'])?$elements['branch']:false;
-        $pool = isset($elements['pool'])?$elements['pool']:false;
+        // $pool = isset($elements['pool'])?$elements['pool']:false;
 
         $default_options = array(
             'conditions'=> array(),
@@ -65,9 +65,9 @@ class City extends AppModel {
         if( !empty($plant) ) {
             $default_options['conditions']['City.is_plant'] = 1;
         }
-        if( !empty($pool) ) {
-            $default_options['conditions']['City.is_pool'] = 1;
-        }
+        // if( !empty($pool) ) {
+        //     $default_options['conditions']['City.is_pool'] = 1;
+        // }
         if( !empty($branch) ) {
             $default_options['conditions']['City.is_branch'] = 1;
         }
@@ -135,14 +135,14 @@ class City extends AppModel {
         return $data;
     }
 
-    function poolCities(){
-        return $this->getData('list', array(
-            'conditions' => array(
-                'City.status' => 1,
-                'City.is_pool' => 1,
-            ),
-        ));
-    }
+    // function poolCities(){
+    //     return $this->getData('list', array(
+    //         'conditions' => array(
+    //             'City.status' => 1,
+    //             'City.is_pool' => 1,
+    //         ),
+    //     ));
+    // }
     
     function branchCities($id = false){
         return $this->getData('list', array(

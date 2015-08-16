@@ -11,12 +11,12 @@
                 'class' => 'text-center',
                 'display' => true,
             ),
-            'pool' => array(
-                'name' => __('Pool'),
-                'field_model' => 'City.is_pool',
-                'class' => 'text-center',
-                'display' => true,
-            ),
+            // 'pool' => array(
+            //     'name' => __('Pool'),
+            //     'field_model' => 'City.is_pool',
+            //     'class' => 'text-center',
+            //     'display' => true,
+            // ),
             'plant' => array(
                 'name' => __('Plant'),
                 'field_model' => 'City.is_plant',
@@ -74,7 +74,7 @@
                             $modified = $this->Common->filterEmptyField($value, 'City', 'modified');
                             $branch = $this->Common->filterEmptyField($value, 'City', 'is_branch');
                             $plant = $this->Common->filterEmptyField($value, 'City', 'is_plant');
-                            $pool = $this->Common->filterEmptyField($value, 'City', 'is_pool');
+                            // $pool = $this->Common->filterEmptyField($value, 'City', 'is_pool');
 
                             if( !empty($branch) ){
                                 $branch = $this->Html->tag('span', $this->Common->icon('check'), array(
@@ -86,15 +86,15 @@
                                 ));
                             }
 
-                            if( !empty($pool) ){
-                                $pool = $this->Html->tag('span', $this->Common->icon('check'), array(
-                                    'class' => 'label label-success',
-                                ));
-                            }else{
-                                $pool = $this->Html->tag('span', $this->Common->icon('times'), array(
-                                    'class' => 'label label-danger',
-                                ));
-                            }
+                            // if( !empty($pool) ){
+                            //     $pool = $this->Html->tag('span', $this->Common->icon('check'), array(
+                            //         'class' => 'label label-success',
+                            //     ));
+                            // }else{
+                            //     $pool = $this->Html->tag('span', $this->Common->icon('times'), array(
+                            //         'class' => 'label label-danger',
+                            //     ));
+                            // }
 
                             if( !empty($plant) ){
                                 $plant = $this->Html->tag('span', $this->Common->icon('check'), array(
@@ -121,7 +121,7 @@
                             echo $branch;
                     ?>
                 </td>
-                <td class="text-center">
+                <!-- <td class="text-center">
                     <?php 
                             // echo $this->Html->link($pool, array(
                             //     'controller' => 'settings',
@@ -131,9 +131,9 @@
                             // ), array(
                             //     'escape' => false
                             // ));
-                            echo $pool;
+                            // echo $pool;
                     ?>
-                </td>
+                </td> -->
                 <td class="text-center"><?php echo $plant;?></td>
                 <td><?php echo $this->Time->niceShort($modified);?></td>
                 <td class="action">

@@ -91,15 +91,15 @@
 	            </div>
 	        </div>
 	    </div>
-	    <div class="form-group">
+	    <!-- <div class="form-group">
 	        <div class="checkbox-options">
 	        	<div class="checkbox">
 	                <label>
-	                	<?php echo $this->Form->checkbox('is_pool').' Pool?';?>
+	                	<?php // echo $this->Form->checkbox('is_pool').' Pool?';?>
 	                </label>
 	            </div>
 	        </div>
-	    </div>
+	    </div> -->
 	    <div class="form-group">
 	        <div class="checkbox-options">
 	        	<div class="checkbox">

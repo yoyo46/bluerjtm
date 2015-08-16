@@ -1017,7 +1017,7 @@ class UsersController extends AppController {
                     'conditions' => array(
                         'OR' => array(
                             array('City.is_branch' => 1),
-                            array('City.is_pool' => 1)
+                            array('City.is_plant' => 1)
                         )
                     ),
                     'fields' => array(
