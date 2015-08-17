@@ -3907,6 +3907,11 @@ class SettingsController extends AppController {
                                 }
 
                                 if(array_filter($datavar)) {
+                                    $branch = $this->City->getData('first', array(
+                                        'conditions' => array(
+                                            'City.name' => $cabang,
+                                        ),
+                                    ));
                                     $fromCity = $this->City->getData('first', array(
                                         'conditions' => array(
                                             'City.name' => $dari,
@@ -3944,6 +3949,7 @@ class SettingsController extends AppController {
                                         $uang_jalan_kedua = 0;
                                     }
 
+                                    $branch_id = !empty($branch['City']['id'])?$branch['City']['id']:false;
                                     $requestData['ROW'.($x-1)] = array(
                                         'UangJalan' => array(
                                             'title' => !empty($nama)?$nama:false,
@@ -3974,7 +3980,7 @@ class SettingsController extends AppController {
                                             'uang_jalan_extra' => !empty($uang_jalan_extra)?str_replace(array('.', ',', '* '), array('', '', ''), $uang_jalan_extra):0,
                                             'uang_jalan_extra_per_unit' => !empty($uang_jalan_extra_per_unit)?$uang_jalan_extra_per_unit:0,
                                             'min_capacity' => !empty($min_kapasitas_ujalan_extra)?$min_kapasitas_ujalan_extra:0,
-                                            'branch_id' => Configure::read('__Site.config_branch_id'),
+                                            'branch_id' => $branch_id,
                                         ),
                                     );
                                     
@@ -4547,6 +4553,11 @@ class SettingsController extends AppController {
                                 }
 
                                 if(array_filter($datavar)) {
+                                    $branch = $this->City->getData('first', array(
+                                        'conditions' => array(
+                                            'City.name' => $cabang,
+                                        ),
+                                    ));
                                     $fromCity = $this->City->getData('first', array(
                                         'conditions' => array(
                                             'City.name' => $dari,
@@ -4591,6 +4602,7 @@ class SettingsController extends AppController {
                                         $group_motor_id = $groupMotor['GroupMotor']['id'];
                                     }
 
+                                    $branch_id = !empty($branch['City']['id'])?$branch['City']['id']:false;
                                     $requestData['ROW'.($x-1)] = array(
                                         'TarifAngkutan' => array(
                                             'type' => !empty($tipe_tarif)?strtolower($tipe_tarif):'',
@@ -4604,7 +4616,7 @@ class SettingsController extends AppController {
                                             'jenis_unit' => !empty($jenis_tarif)?strtolower($jenis_tarif):false,
                                             'tarif' => !empty($tarif_angkutan)?str_replace(array('.', ',', '* '), array('', '', ''), $tarif_angkutan):false,
                                             'group_motor_id' => !empty($group_motor_id)?$group_motor_id:0,
-                                            'branch_id' => Configure::read('__Site.config_branch_id'),
+                                            'branch_id' => $branch_id,
                                         ),
                                     );
                                 }
@@ -4662,7 +4674,7 @@ class SettingsController extends AppController {
                 $field = 'is_'.$type;
 
                 $text = 'pool';
-                if($type == 'branch'){
+                if($tyep == 'branch'){
                     $text = 'cabang';
                 }
 

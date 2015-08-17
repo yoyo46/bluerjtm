@@ -3906,11 +3906,11 @@ $(function() {
 
     $('.completed-handle').click(function(){
         if($('.completed-handle input').is(':checked')) {
-            $('#desc-laka-complete').removeClass('hide');
-            $('#date-laka-complete').removeClass('hide');
+            $('#desc-complete').removeClass('hide');
+            $('#date-complete').removeClass('hide');
         }else{
-            $('#desc-laka-complete').addClass('hide');
-            $('#date-laka-complete').addClass('hide');
+            $('#desc-complete').addClass('hide');
+            $('#date-complete').addClass('hide');
         }
     });
 

@@ -75,6 +75,9 @@ class RjRevenueComponent extends Component {
 				if( !empty($refine['Ttuj']['is_not_revenue']) ) {
 					$refine_conditions['Ttuj']['is_not_revenue'] = urlencode($refine['Ttuj']['is_not_revenue']);
 				}
+				if( !empty($refine['Ttuj']['is_completed']) ) {
+					$refine_conditions['Ttuj']['is_completed'] = urlencode($refine['Ttuj']['is_completed']);
+				}
 				if( !empty($refine['Ttuj']['receiver_name']) ) {
 					$refine_conditions['Ttuj']['receiver_name'] = urlencode($refine['Ttuj']['receiver_name']);
 				}
@@ -196,7 +199,15 @@ class RjRevenueComponent extends Component {
         if( in_array($action_type, array( 'truk_tiba', 'bongkaran', 'balik' )) ) {
             $conditions['Ttuj.to_city_branch_id'] = Configure::read('__Site.config_branch_id');
         } else if( in_array($action_type, array( 'pool' )) ) {
-            $conditions['Ttuj.from_city_id'] = Configure::read('__Site.config_branch_id');
+        	$is_plant = Configure::read('__Site.config_branch_plant');
+
+        	if( !empty($is_plant) ) {
+				$this->City = ClassRegistry::init('City');
+	        	$plantCityId = $this->City->getCityIdPlants();
+	            $conditions['Ttuj.from_city_id'] = $plantCityId;
+	        } else {
+            	$conditions['Ttuj.from_city_id'] = Configure::read('__Site.config_branch_id');
+	        }
         } else {
             $conditions['Ttuj.branch_id'] = Configure::read('__Site.config_branch_id');
         }

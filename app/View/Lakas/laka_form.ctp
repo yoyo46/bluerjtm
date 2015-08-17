@@ -659,7 +659,7 @@
 		                        </label>
 		                    </div>
 				    	</div>
-	                    <div id="desc-laka-complete" class="<?php echo !empty($this->request->data['Laka']['completed']) ? '' : 'hide';?>">
+	                    <div id="desc-complete" class="<?php echo !empty($this->request->data['Laka']['completed']) ? '' : 'hide';?>">
 				    		<div class="form-group">
 		                    	<?php 
 										echo $this->Form->input('completed_date',array(

@@ -5,7 +5,7 @@ class AjaxController extends AppController {
 	public $name = 'Ajax';
 	public $uses = array();
 	public $components = array(
-		'RjLku'
+		'RjLku', 'RjRevenue'
 	);
 	
 	function beforeFilter() {
@@ -1353,11 +1353,14 @@ class AjaxController extends AppController {
 		$conditions = array(
             'Ttuj.is_draft' => 0,
             'Ttuj.is_laka' => 0,
+            'Ttuj.completed' => 0,
         );
         $orders = array(
             'Ttuj.created' => 'DESC',
             'Ttuj.id' => 'DESC',
         );
+		$this->Ttuj->virtualFields['to_city_branch_id'] = 'CASE WHEN ToCity.is_branch = 0 THEN Ttuj.from_city_id ELSE Ttuj.to_city_id END';
+        $conditions = $this->RjRevenue->getTtujConditionBrach( $conditions, $action_type );
 
         if(!empty($this->request->data)){
             if(!empty($this->request->data['Ttuj']['nottuj'])){
@@ -1429,14 +1432,6 @@ class AjaxController extends AppController {
             }
         }
 
-        if( in_array($action_type, array( 'pool' )) ) {
-            $conditions['Ttuj.from_city_id'] = Configure::read('__Site.config_branch_id');
-        } else if( in_array($action_type, array( 'truk_tiba', 'bongkaran', 'balik' )) ) {
-            $conditions['Ttuj.to_city_id'] = Configure::read('__Site.config_branch_id');
-        } else {
-            $conditions['Ttuj.branch_id'] = Configure::read('__Site.config_branch_id');
-        }
-
         switch ($action_type) {
             case 'bongkaran':
                 $conditions['Ttuj.is_arrive'] = 1;
@@ -1500,6 +1495,9 @@ class AjaxController extends AppController {
             'conditions' => $conditions,
             'order' => $orders,
             'limit' => Configure::read('__Site.config_pagination'),
+            'contain' => array(
+            	'ToCity',
+        	),
         ), true, array(
         	'branch' => false,
         ));

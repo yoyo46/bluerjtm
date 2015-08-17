@@ -151,6 +151,11 @@
                                 break;
 
                             case 'pool':
+                                echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.branch_id', __('Cabang'), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => 'text-center',
+                                ));
                                 echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.tgljam_balik', __('Tgl Balik'), array(
                                     'escape' => false
                                 )), array(
@@ -183,6 +188,7 @@
                             ));
                         }
 
+                        echo $this->Html->tag('th', __('Closing'));
                         echo $this->Html->tag('th', __('Status'));
 
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.created', __('Dibuat'), array(
@@ -240,6 +246,10 @@
                                 break;
 
                             case 'pool':
+                                $branch = $this->Common->filterEmptyField($value, 'City', 'name', '-');
+                                echo $this->Html->tag('td', $branch, array(
+                                    'class' => 'text-left',
+                                ));
                                 echo $this->Html->tag('td', date('d M Y - H:i', strtotime($value['Ttuj']['tgljam_balik'])), array(
                                     'class' => 'text-center',
                                 ));
@@ -265,6 +275,21 @@
                                 'class' => 'text-center',
                             ));
                         }
+                ?>
+                <td class="text-center">
+                    <?php 
+                            if( !empty($value['Ttuj']['completed']) ){
+                                echo $this->Html->tag('span', $this->Common->icon('check'), array(
+                                    'class' => 'label label-success',
+                                ));
+                            }else{
+                                echo $this->Html->tag('span', $this->Common->icon('times'), array(
+                                    'class' => 'label label-danger',
+                                ));
+                            }
+                    ?>
+                </td>
+                <?php
                         
                         if(empty($value['Ttuj']['status'])){
                             echo $this->Html->tag('td', '<span class="label label-danger">Void</span>');

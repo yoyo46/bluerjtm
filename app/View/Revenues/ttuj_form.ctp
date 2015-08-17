@@ -12,6 +12,11 @@
     		'autocomplete'=> 'off', 
     		'novalidate' => true,
 		));
+
+		$datForm = !empty($this->request->data)?$this->request->data:false;
+		$ttujDate = (!empty($datForm['Ttuj']['ttuj_date'])) ? $datForm['Ttuj']['ttuj_date'] : date('d/m/Y');
+		$tglBerangkat = (!empty($datForm['Ttuj']['tgl_berangkat'])) ? $datForm['Ttuj']['tgl_berangkat'] : date('d/m/Y');
+		$completedDate = (!empty($datForm['Ttuj']['completed_date'])) ? $datForm['Ttuj']['completed_date'] : date('d/m/Y');
 ?>
 <div class="ttuj-form">
 	<div id="step1">
@@ -39,7 +44,7 @@
 										'class'=>'form-control custom-date',
 										'required' => false,
 										'type' => 'text',
-										'value' => (!empty($this->request->data['Ttuj']['ttuj_date'])) ? $this->request->data['Ttuj']['ttuj_date'] : date('d/m/Y')
+										'value' => $ttujDate,
 									));
 							?>
 				        </div>
@@ -76,7 +81,7 @@
 								</div>
 								<div class="col-sm-6">
 									<?php 
-											$disabled = !empty($this->request->data['Ttuj']['from_city_id'])?false:true;
+											$disabled = !empty($datForm['Ttuj']['from_city_id'])?false:true;
 											echo $this->Form->input('to_city_id',array(
 												'label'=> false, 
 												'class'=>'form-control',
@@ -114,7 +119,7 @@
 		                    <div class="row">
 		                        <div class="col-sm-10">
 						        	<?php 
-											$disabled = !empty($this->request->data['Ttuj']['to_city_id'])?false:true;
+											$disabled = !empty($datForm['Ttuj']['to_city_id'])?false:true;
 											echo $this->Form->input('truck_id',array(
 												'label'=> false, 
 												'class'=>'form-control',
@@ -173,7 +178,7 @@
 												'class'=>'form-control custom-date',
 												'required' => false,
 												'type' => 'text',
-												'value' => (!empty($this->request->data['Ttuj']['tgl_berangkat'])) ? $this->request->data['Ttuj']['tgl_berangkat'] : date('d/m/Y')
+												'value' => $tglBerangkat,
 											));
 									?>
 				        		</div>
@@ -275,7 +280,7 @@
 								?>
 			                </label>
 			            </div>
-			            <div class="sj-date <?php echo (!empty($this->request->data['Ttuj']['getting_sj'])) ? '' : 'hide'; ?>">
+			            <div class="sj-date <?php echo (!empty($datForm['Ttuj']['getting_sj'])) ? '' : 'hide'; ?>">
 							<div class="row">
 								<div class="col-sm-9">
 									<div class="form-group">
@@ -349,16 +354,16 @@
 							</thead>
 							<tbody>
 								<?php 
-										if( !empty($this->request->data['TtujTipeMotor']['tipe_motor_id']) ) {
-											foreach ($this->request->data['TtujTipeMotor']['tipe_motor_id'] as $key => $tipe_motor_id) {
-												$qty = !empty($this->request->data['TtujTipeMotor']['qty'][$key])?$this->request->data['TtujTipeMotor']['qty'][$key]:false;
-												$color_motor_id = !empty($this->request->data['TtujTipeMotor']['color_motor_id'][$key])?$this->request->data['TtujTipeMotor']['color_motor_id'][$key]:false;
+										if( !empty($datForm['TtujTipeMotor']['tipe_motor_id']) ) {
+											foreach ($datForm['TtujTipeMotor']['tipe_motor_id'] as $key => $tipe_motor_id) {
+												$qty = !empty($datForm['TtujTipeMotor']['qty'][$key])?$datForm['TtujTipeMotor']['qty'][$key]:false;
+												$color_motor_id = !empty($datForm['TtujTipeMotor']['color_motor_id'][$key])?$datForm['TtujTipeMotor']['color_motor_id'][$key]:false;
 												$totalUnitMuatan += $qty;
 								?>
 								<tr>
 									<?php
 											if( $data_action == 'retail' ) {
-												$city_id = !empty($this->request->data['TtujTipeMotor']['city_id'][$key])?$this->request->data['TtujTipeMotor']['city_id'][$key]:false;
+												$city_id = !empty($datForm['TtujTipeMotor']['city_id'][$key])?$datForm['TtujTipeMotor']['city_id'][$key]:false;
 
 												echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.city_id.',array(
 													'label'=> false, 
@@ -446,7 +451,7 @@
 												'label'=> false, 
 												'required' => false,
 												'class' => 'form-control',
-												'value' => !empty($this->request->data['TtujPerlengkapan'][$perlengkapanid])?$this->request->data['TtujPerlengkapan'][$perlengkapanid]:false,
+												'value' => !empty($datForm['TtujPerlengkapan'][$perlengkapanid])?$datForm['TtujPerlengkapan'][$perlengkapanid]:false,
 											));
 											echo $this->Form->hidden('TtujPerlengkapan.id.'.$i,array(
 												'value' => $perlengkapanid,
@@ -498,7 +503,7 @@
 									</div>
 								</div>
 							</div>
-				    		<div class="col-sm-6 wrapper_uang_jalan_2 <?php echo (isset($this->request->data['Ttuj']['uang_jalan_2']) && empty($this->request->data['Ttuj']['uang_jalan_2']))?'hide':''; ?>">
+				    		<div class="col-sm-6 wrapper_uang_jalan_2 <?php echo (isset($datForm['Ttuj']['uang_jalan_2']) && empty($datForm['Ttuj']['uang_jalan_2']))?'hide':''; ?>">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_jalan_2', __('Uang Jalan Kedua'));
@@ -519,7 +524,7 @@
 									</div>
 								</div>
 							</div>
-				    		<div class="col-sm-6 wrapper_uang_jalan_extra <?php echo (isset($this->request->data['Ttuj']['uang_jalan_extra']) && !$this->request->data['Ttuj']['uang_jalan_extra'])?'hide':''; ?>">
+				    		<div class="col-sm-6 wrapper_uang_jalan_extra <?php echo (isset($datForm['Ttuj']['uang_jalan_extra']) && !$datForm['Ttuj']['uang_jalan_extra'])?'hide':''; ?>">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_jalan_extra', __('Uang Jalan Extra'));
@@ -544,7 +549,7 @@
 									</div>
 								</div>
 							</div>
-				    		<div class="col-sm-6 wrapper_min_capacity <?php echo ( !empty($this->request->data['Ttuj']['uang_jalan_extra']) )?'':'hide'; ?>">
+				    		<div class="col-sm-6 wrapper_min_capacity <?php echo ( !empty($datForm['Ttuj']['uang_jalan_extra']) )?'':'hide'; ?>">
 						    	<div class="form-group">
 							    	<?php 
 											echo $this->Form->input('min_capacity',array(
@@ -558,7 +563,7 @@
 									?>
 								</div>
 							</div>
-				    		<div class="col-sm-6 wrapper_uang_kuli_muat <?php echo (isset($this->request->data['Ttuj']['uang_kuli_muat']) && !$this->request->data['Ttuj']['uang_kuli_muat'])?'hide':''; ?>">
+				    		<div class="col-sm-6 wrapper_uang_kuli_muat <?php echo (isset($datForm['Ttuj']['uang_kuli_muat']) && !$datForm['Ttuj']['uang_kuli_muat'])?'hide':''; ?>">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_kuli_muat', __('Uang Kuli Muat'));
@@ -583,7 +588,7 @@
 									</div>
 								</div>
 				    		</div>
-				    		<div class="col-sm-6 wrapper_uang_kuli_bongkar <?php echo (isset($this->request->data['Ttuj']['uang_kuli_bongkar']) && !$this->request->data['Ttuj']['uang_kuli_bongkar'])?'hide':''; ?>">
+				    		<div class="col-sm-6 wrapper_uang_kuli_bongkar <?php echo (isset($datForm['Ttuj']['uang_kuli_bongkar']) && !$datForm['Ttuj']['uang_kuli_bongkar'])?'hide':''; ?>">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_kuli_bongkar', __('Uang Kuli Bongkar'));
@@ -608,7 +613,7 @@
 									</div>
 								</div>
 							</div>
-				    		<div class="col-sm-6 wrapper_asdp <?php echo (isset($this->request->data['Ttuj']['asdp']) && !$this->request->data['Ttuj']['asdp'])?'hide':''; ?>">
+				    		<div class="col-sm-6 wrapper_asdp <?php echo (isset($datForm['Ttuj']['asdp']) && !$datForm['Ttuj']['asdp'])?'hide':''; ?>">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('asdp', __('Uang Penyebrangan'));
@@ -633,7 +638,7 @@
 									</div>
 								</div>
 							</div>
-				    		<div class="col-sm-6 wrapper_uang_kawal <?php echo (isset($this->request->data['Ttuj']['uang_kawal']) && !$this->request->data['Ttuj']['uang_kawal'])?'hide':''; ?>">
+				    		<div class="col-sm-6 wrapper_uang_kawal <?php echo (isset($datForm['Ttuj']['uang_kawal']) && !$datForm['Ttuj']['uang_kawal'])?'hide':''; ?>">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_kawal', __('Uang Kawal'));
@@ -658,7 +663,7 @@
 									</div>
 								</div>
 							</div>
-				    		<div class="col-sm-6 wrapper_uang_keamanan <?php echo (isset($this->request->data['Ttuj']['uang_keamanan']) && !$this->request->data['Ttuj']['uang_keamanan'])?'hide':''; ?>">
+				    		<div class="col-sm-6 wrapper_uang_keamanan <?php echo (isset($datForm['Ttuj']['uang_keamanan']) && !$datForm['Ttuj']['uang_keamanan'])?'hide':''; ?>">
 						    	<div class="form-group">
 						    		<?php 
 						    				echo $this->Form->label('uang_keamanan', __('Uang Keamanan'));
@@ -696,6 +701,64 @@
 				</div>
 				<div id="informasi-sj"></div>
 			</div>
+			<?php 
+					if(!empty($id)){
+			?>
+			<div class="col-sm-6">
+				<div class="box box-primary">
+				    <div class="box-header">
+				        <h3 class="box-title"><?php echo __('Closing Ttuj'); ?></h3>
+				    </div>
+				    <div class="box-body">
+				    	<?php 
+				    		echo $this->Html->tag('p', __('Closing digunakan jika proses Ttuj sudah selesai atau sampai pool.'));
+				    	?>
+				    	<div class="form-group">
+				    		<div class="checkbox">
+		                        <label class="completed-handle">
+		                        	<?php 
+		                        		echo $this->Form->checkbox('completed').' Proses Ttuj sudah selesai?';
+		                        	?>
+		                        </label>
+		                    </div>
+				    	</div>
+	                    <div id="desc-complete" class="<?php echo !empty($datForm['Ttuj']['completed']) ? '' : 'hide';?>">
+				    		<div class="form-group">
+		                    	<?php 
+										echo $this->Form->input('completed_date',array(
+											'label'=> __('Tgl Selesai *'), 
+											'class'=>'form-control custom-date',
+											'required' => false,
+											'type' => 'text',
+											'value' => $completedDate,
+										));
+
+										if ($this->Form->isFieldError('completed')) {
+										    echo $this->Form->error('completed');
+										}
+								?>
+	                    	</div>
+				    		<div class="form-group">
+		                    	<?php 
+										echo $this->Form->input('complete_desc',array(
+											'label'=> __('Keterangan *'), 
+											'class'=>'form-control',
+											'required' => false,
+											'type' => 'textarea'
+										));
+
+										if ($this->Form->isFieldError('completed')) {
+										    echo $this->Form->error('completed');
+										}
+								?>
+	                    	</div>
+	                    </div>
+				    </div>
+				</div>
+			</div>
+			<?php
+					}
+			?>
 		</div>
 		<div class="box-footer text-center action">
 			<?php
