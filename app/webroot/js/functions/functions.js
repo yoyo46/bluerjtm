@@ -4164,4 +4164,15 @@ $(function() {
 
         $('.default-branch-id').val(val);
     });
+
+    if( $('.input_price_min').length > 0 ) {
+        $('.input_price_min').priceFormat({
+            allowNegative: true,
+            doneFunc: function(obj, val) {
+                currencyVal = val;
+                currencyVal = currencyVal.replace(/,/gi, "")
+                obj.next(".input_hidden").val(currencyVal);
+            }
+        });
+    }
 });

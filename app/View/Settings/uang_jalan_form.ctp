@@ -295,11 +295,12 @@
 					    				));
 										echo $this->Form->input('uang_jalan_extra',array(
 											'label'=> false, 
-											'class'=>'form-control input_price',
+											'class'=>'form-control input_price_min',
 											'required' => false,
 											'placeholder' => __('Uang Jalan Extra'),
 											'type' => 'text',
 											'error' => false,
+											'data-allow-negative' => true,
 										));
 								?>
 							</div>

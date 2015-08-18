@@ -851,7 +851,10 @@ class CommonHelper extends AppHelper {
         }
 
         if( $format_currency ) {
-            return $this->Number->currency($total, '', array('places' => 0));
+            return $this->Number->currency($total, '', array(
+                'places' => 0,
+                'negative' => '-',
+            ));
         } else {
             return $total;
         }
@@ -1465,5 +1468,25 @@ class CommonHelper extends AppHelper {
         }
 
         return $result;
+    }
+
+    function getCheckStatus ( $status, $url = false ) {
+        if( !empty($status) ){
+            $content = $this->Html->tag('span', $this->icon('check'), array(
+                'class' => 'label label-success',
+            ));
+        }else{
+            $content = $this->Html->tag('span', $this->icon('times'), array(
+                'class' => 'label label-danger',
+            ));
+        }
+
+        if( !empty($url) ) {
+            $content = $this->Html->link($content, $url, array(
+                'escape' => false,
+            ));
+        }
+
+        return $content;
     }
 }
