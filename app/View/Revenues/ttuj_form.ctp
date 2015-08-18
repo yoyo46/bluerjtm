@@ -52,7 +52,7 @@
 				        	<?php 
 									echo $this->Form->input('customer_id',array(
 										'label'=> __('Customer *'), 
-										'class'=>'form-control customer',
+										'class'=>'form-control customer chosen-select',
 										'required' => false,
 										'empty' => __('Pilih Customer --'),
 										'id' => 'getKotaAsal',
@@ -68,7 +68,7 @@
 									<?php 
 											echo $this->Form->input('from_city_id',array(
 												'label'=> false, 
-												'class'=>'form-control',
+												'class'=>'form-control chosen-select',
 												'required' => false,
 												'empty' => __('Dari Kota --'),
 												'div' => array(
@@ -82,9 +82,15 @@
 								<div class="col-sm-6">
 									<?php 
 											$disabled = !empty($datForm['Ttuj']['from_city_id'])?false:true;
+											$toCityClass = '';
+
+											if( !$disabled ) {
+												$toCityClass = 'chosen-select';
+											}
+
 											echo $this->Form->input('to_city_id',array(
 												'label'=> false, 
-												'class'=>'form-control',
+												'class'=>'form-control '.$toCityClass,
 												'required' => false,
 												'empty' => __('Kota Tujuan --'),
 												'readonly' => $disabled,
@@ -122,7 +128,7 @@
 											$disabled = !empty($datForm['Ttuj']['to_city_id'])?false:true;
 											echo $this->Form->input('truck_id',array(
 												'label'=> false, 
-												'class'=>'form-control',
+												'class'=>'form-control chosen-select',
 												'required' => false,
 												'empty' => __('Pilih No. Pol --'),
 												'disabled' => $disabled,
@@ -231,7 +237,7 @@
 						        	<?php 
 											echo $this->Form->input('driver_penganti_id',array(
 												'label'=> false, 
-												'class'=>'form-control driver-penganti',
+												'class'=>'form-control driver-penganti chosen-select',
 												'required' => false,
 												'empty' => __('Pilih Supir Pengganti --'),
 												'id' => 'driverID',

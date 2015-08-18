@@ -1051,6 +1051,12 @@ class RevenuesController extends AppController {
             ),
         ));
         $branches = $this->City->branchCities();
+        $layout_js = array(
+            'select2.full',
+        );
+        $layout_css = array(
+            'select2.min',
+        );
 
         $this->set('module_title', __('TTUJ'));
         $this->set('active_menu', 'ttuj');
@@ -1061,7 +1067,7 @@ class RevenuesController extends AppController {
             'truckInfo', 'data_local', 'data_action',
             'cities', 'colors', 'tipeMotorTemps',
             'groupTipeMotors', 'uangKuli', 'branches',
-            'id'
+            'id', 'layout_js', 'layout_css'
         ));
         $this->render('ttuj_form');
     }

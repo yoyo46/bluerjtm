@@ -2218,6 +2218,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
 
                         if( type_action == 'browse-check-docs' ) {
                             input_price($('#myModal .modal-body .input_price'));
+                            input_price_min($('#myModal .modal-body .input_price_min'));
                             sisa_ttuj($('#myModal .modal-body .sisa-ttuj'));
                             popup_checkbox();
                             daterangepicker( $('#myModal .modal-body .date-range') );
@@ -2454,6 +2455,23 @@ var input_price = function ( obj ) {
             obj.next(".input_hidden").val(currencyVal);
         }
     });
+}
+
+var input_price_min = function ( obj ) {
+    if( typeof obj == 'undefined' ) {
+        obj = $('.input_price_min');
+    }
+
+    if( obj.length > 0 ) {
+        obj.priceFormat({
+            allowNegative: true,
+            doneFunc: function(obj, val) {
+                currencyVal = val;
+                currencyVal = currencyVal.replace(/,/gi, "")
+                obj.next(".input_hidden").val(currencyVal);
+            }
+        });
+    }
 }
 
 var change_customer_revenue = function(){
@@ -2695,6 +2713,7 @@ var check_all_checkbox = function(){
                 $('.child-'+rel_id).find('.checkbox-detail').remove();
 
                 input_price($('.child-'+rel_id+' .input_price'));
+                input_price_min($('.child-'+rel_id+' .input_price_min'));
                 delete_custom_field($('.child-'+rel_id+' .delete-custom-field'));
 
                 invoice_price_payment();
@@ -2720,6 +2739,7 @@ var check_all_checkbox = function(){
                 $('.child-'+rel_id).find('.checkbox-detail').remove();
 
                 input_price($('.child-'+rel_id+' .input_price'));
+                input_price_min($('.child-'+rel_id+' .input_price_min'));
                 delete_custom_field($('.child-'+rel_id+' .delete-custom-field'));
             }
         }else{
@@ -2763,6 +2783,7 @@ var popup_checkbox = function(){
                     $('.action-biaya-ttuj').removeClass('hide');
 
                     input_price( $('.child-'+id+' .input_price') );
+                    input_price_min( $('.child-'+id+' .input_price_min') );
                     sisa_ttuj($('#checkbox-info-table .child-'+id+' .sisa-ttuj'));
                     delete_biaya_ttuj($('#checkbox-info-table .child-'+id+' .ttuj-payment-action a'));
                 }
@@ -3214,6 +3235,23 @@ var branch_module_check = function(obj){
     });
 }
 
+var choosen_select = function(obj, init){
+    if( typeof obj == 'undefined' ) {
+        obj = $('.chosen-select');
+    }
+    if( typeof init == 'undefined' ) {
+        init = false;
+    }
+
+    if( obj.length > 0 ) {
+        if( init == false ) {
+            obj.select2();
+        } else {
+            obj.select2(init);
+        }
+    }
+}
+
 $(function() {
     leasing_action();
     laka_ttuj_change();
@@ -3374,6 +3412,7 @@ $(function() {
                 type: 'POST',
                 success: function(response, status) {
                     $('.to_city #getTruck').attr('readonly', false).html($(response).filter('#to_city_id').html());
+                    choosen_select( $('.to_city #getTruck') );
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
@@ -3388,6 +3427,7 @@ $(function() {
             $('.driver_id').val('');
             $('.truck_capacity').val('');
             $('#biaya-uang-jalan input').val('');
+            choosen_select( $('#getTruck'), 'destroy' );
         }
     });
 
@@ -4165,14 +4205,6 @@ $(function() {
         $('.default-branch-id').val(val);
     });
 
-    if( $('.input_price_min').length > 0 ) {
-        $('.input_price_min').priceFormat({
-            allowNegative: true,
-            doneFunc: function(obj, val) {
-                currencyVal = val;
-                currencyVal = currencyVal.replace(/,/gi, "")
-                obj.next(".input_hidden").val(currencyVal);
-            }
-        });
-    }
+    input_price_min();
+    choosen_select();
 });

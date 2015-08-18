@@ -67,7 +67,7 @@
                 $sisaAmount = $this->Common->getBiayaTtuj( $ttuj, $data_type );
     			echo $this->Form->input('TtujPayment.amount_payment.',array(
                     'label'=> false,
-                    'class'=>'form-control input_price sisa-ttuj text-right',
+                    'class'=>'form-control input_price_min sisa-ttuj text-right',
                     'required' => false,
                     'value' => !empty($this->request->data['TtujPayment']['amount_payment'][$idx])?$this->request->data['TtujPayment']['amount_payment'][$idx]:$sisaAmount,
                 ));
