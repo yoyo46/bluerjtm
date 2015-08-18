@@ -135,6 +135,7 @@ class AppController extends Controller {
 			$branch_city_id = '';
 			$branch_city_plant = false;
 			$is_allow = false;
+			$first_branch_id = false;
 
 			if(!empty($_branches)){
 				foreach ($_branches as $key => $value) {
@@ -144,6 +145,10 @@ class AppController extends Controller {
 					$city_plant = $this->MkCommon->filterEmptyField($value, 'City', 'is_plant');
 					$group_branch_city_id = $this->MkCommon->filterEmptyField($value, 'GroupBranch', 'city_id');
 					$id_group_branch = $this->MkCommon->filterEmptyField($value, 'GroupBranch', 'id');
+
+					if( empty($key) ) {
+						$first_branch_id = $group_branch_city_id;
+					}
 
 					if($group_branch_city_id == $branch_id){
 						$group_branch_id = $value['GroupBranch']['id'];
@@ -198,6 +203,10 @@ class AppController extends Controller {
 					}
 
 					$list_branch[$city_id] = $city_name;
+				}
+
+				if( empty($branch_city_id) ) {
+					$branch_city_id = $first_branch_id;
 				}
 
 				$user_branch = $this->Session->read('user_branch');
