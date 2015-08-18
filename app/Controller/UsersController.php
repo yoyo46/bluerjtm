@@ -480,11 +480,7 @@ class UsersController extends AppController {
         $this->loadModel('City');
         $this->loadModel('Employe');
 
-        $groups = $this->Group->find('list', array(
-            'conditions' => array(
-                'id <>' => 3
-            )
-        ));
+        $groups = $this->Group->find('list');
         $branches = $this->City->branchCities();
         $employes = $this->Employe->getData('all', array(
             'conditions' => array(

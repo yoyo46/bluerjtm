@@ -3943,7 +3943,7 @@ class TrucksController extends AppController {
                                     if( !empty($driver) ) {
                                         $driver_id = $driver['Driver']['id'];
                                     }
-                                    $city_id = $this->MkCommon->filterEmptyField($city, 'City', 'name');
+                                    $city_id = $this->MkCommon->filterEmptyField($city, 'City', 'id');
 
                                     $requestData['ROW'.($x-1)] = array(
                                         'Truck' => array(
