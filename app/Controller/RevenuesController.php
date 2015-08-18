@@ -226,6 +226,9 @@ class RevenuesController extends AppController {
             'conditions' => array(
                 'Ttuj.id' => $id,
             ),
+            'contain' => array(
+                'UangJalan'
+            ),
         ), true, array(
             'status' => 'all',
         ));

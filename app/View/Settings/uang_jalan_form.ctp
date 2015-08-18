@@ -300,7 +300,6 @@
 											'placeholder' => __('Uang Jalan Extra'),
 											'type' => 'text',
 											'error' => false,
-											'data-allow-negative' => true,
 										));
 								?>
 							</div>

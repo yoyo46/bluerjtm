@@ -536,7 +536,7 @@
 							    				));
 												echo $this->Form->input('uang_jalan_extra',array(
 													'label'=> false, 
-													'class'=>'form-control input_price uang_jalan_extra',
+													'class'=>'form-control input_price_min uang_jalan_extra',
 													'required' => false,
 													'empty' => __('Uang Jalan Extra'),
 													'type' => 'text',
