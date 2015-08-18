@@ -35,31 +35,30 @@ class UsersController extends AppController {
 
     	if(!$this->MkCommon->loggedIn()){
 			if(!empty($this->request->data)){
-                // get Ip
-                $emailCache = $this->RequestHandler->getClientIP();
-
                 // Set Session Name
-                $session_name_ip = 'Login.Auth.'.$emailCache;
-                $session_try_login = 'Login.'.$emailCache;
+                $session_name_ip = 'Login.Auth.Block';
+                $session_try_login = 'Login.Try';
 
                 // Login Failed
+
                 $session_error = $this->Cookie->read($session_name_ip);
+                $get_cookie_session = $this->Cookie->read($session_try_login);
+                $get_cookie_session = !empty($get_cookie_session)?$get_cookie_session:0;
                 $msgFailedLogin = __('Gagal melakukan login, Anda sudah melakukan 3x percobaan login, silahkan tunggu 1 jam kemudian untuk melakukan login kembali.');
 
                 if( !empty($session_error) ) {
                     $this->MkCommon->setCustomFlash($msgFailedLogin, 'error');
                 } else if($this->Auth->login()){
+                    $this->Cookie->write($session_name_ip, 0, '1 hour');
+                    $this->Cookie->write($session_try_login, 0);
                     $this->redirect($this->Auth->redirect());   
                 }else{
-                    $get_cookie_session = $this->Cookie->read($session_try_login);
-                    $get_cookie_session = !empty($get_cookie_session)?$get_cookie_session:0;
-
                     if($get_cookie_session >= 3){
                         $this->Cookie->write($session_name_ip, 1, '1 hour');
                         $this->MkCommon->setCustomFlash($msgFailedLogin, 'error');
                     }else{
-                        $this->MkCommon->setCustomFlash(__('Gagal melakukan login, username atau password Anda tidak valid.'), 'error');
                         $get_cookie_session++;
+                        $this->MkCommon->setCustomFlash(__('Gagal melakukan login, username atau password Anda tidak valid.'), 'error');
                         $this->Cookie->write($session_try_login, $get_cookie_session);
                     }
                 }
