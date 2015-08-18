@@ -26,7 +26,7 @@ class City extends AppModel {
         )
 	);
 
-	var $belongsTo = array(
+	var $hasMany = array(
 		'TruckAlocation' => array(
 			'className' => 'TruckAlocation',
 			'foreignKey' => 'city_id',

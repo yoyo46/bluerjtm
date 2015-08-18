@@ -608,67 +608,7 @@ body > .header .logo .icon {
 .right-side > .content-header > .breadcrumb > li + li:before {
   content: '>\00a0';
 }
-@media screen and (max-width: 767px) {
-  .right-side > .content-header > .breadcrumb {
-    position: relative;
-    margin-top: 5px;
-    top: 0;
-    right: 0;
-    float: none;
-    background: #efefef;
-  }
 
-  .range-text:before {
-    top: -11px;
-    left: 50%;
-  }
-
-  body > .header .logo img {
-    max-height: 30px;
-  }
-}
-@media (max-width: 767px) {
-  .navbar .navbar-nav > li {
-    float: left;
-  }
-  .navbar-nav {
-    margin: 0;
-    float: left;
-  }
-  .navbar-nav > li > a {
-    padding-top: 15px;
-    padding-bottom: 15px;
-    line-height: 20px;
-  }
-  .navbar .navbar-right {
-    float: right;
-  }
-
-  label .visible-xs {
-    display: inline-block !important;
-  }
-}
-@media screen and (max-width: 560px) {
-  body > .header {
-    position: relative;
-  }
-  body > .header .logo,
-  body > .header .navbar {
-    width: 100%;
-    float: none;
-    position: relative!important;
-  }
-  body > .header .navbar {
-    margin: 0;
-  }
-  body.fixed > .header {
-    position: fixed;
-  }
-  body.fixed > .wrapper,
-  body.fixed .sidebar-offcanvas {
-    margin-top: 100px!important;
-  }
-}
 /*
     Component: Sidebar
 --------------------------
@@ -4097,4 +4037,75 @@ table.sorting thead th a {
 }
 #auth-box .box-title .branch-action{
   float: left;
+}
+
+@media screen and (max-width: 767px) {
+  .right-side > .content-header > .breadcrumb {
+    position: relative;
+    margin-top: 5px;
+    top: 0;
+    right: 0;
+    float: none;
+    background: #efefef;
+  }
+
+  .range-text:before {
+    top: -11px;
+    left: 50%;
+  }
+
+  body > .header .logo img {
+    max-height: 30px;
+  }
+
+  #ajaxLoading {
+    width: 150px;
+    padding: 5px 10px;
+  }
+
+  #ajaxLoading span {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .navbar .navbar-nav > li {
+    float: left;
+  }
+  .navbar-nav {
+    margin: 0;
+    float: left;
+  }
+  .navbar-nav > li > a {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    line-height: 20px;
+  }
+  .navbar .navbar-right {
+    float: right;
+  }
+
+  label .visible-xs {
+    display: inline-block !important;
+  }
+}
+@media screen and (max-width: 560px) {
+  body > .header {
+    position: relative;
+  }
+  body > .header .logo,
+  body > .header .navbar {
+    width: 100%;
+    float: none;
+    position: relative!important;
+  }
+  body > .header .navbar {
+    margin: 0;
+  }
+  body.fixed > .header {
+    position: fixed;
+  }
+  body.fixed > .wrapper,
+  body.fixed .sidebar-offcanvas {
+    margin-top: 100px!important;
+  }
 }

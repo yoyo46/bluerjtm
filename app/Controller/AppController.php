@@ -134,15 +134,20 @@ class AppController extends Controller {
 			$group_branch_id = '';
 			$branch_city_id = '';
 			$branch_city_plant = false;
+			$branch_city_head_office = false;
 			$is_allow = false;
 			$first_branch_id = false;
 
 			if(!empty($_branches)){
+				$branch_id = $this->MkCommon->filterEmptyField($User, 'Employe', 'branch_id');
+				$user_branch = $this->Session->read('user_branch');
+				$branch_id = $branch_city_id = !empty($user_branch)?$user_branch:$branch_id;
+
 				foreach ($_branches as $key => $value) {
-					$branch_id = $this->MkCommon->filterEmptyField($User, 'Employe', 'branch_id');
 					$city_id = $this->MkCommon->filterEmptyField($value, 'City', 'id');
 					$city_name = $this->MkCommon->filterEmptyField($value, 'City', 'name');
 					$city_plant = $this->MkCommon->filterEmptyField($value, 'City', 'is_plant');
+					$city_head_office = $this->MkCommon->filterEmptyField($value, 'City', 'is_head_office');
 					$group_branch_city_id = $this->MkCommon->filterEmptyField($value, 'GroupBranch', 'city_id');
 					$id_group_branch = $this->MkCommon->filterEmptyField($value, 'GroupBranch', 'id');
 
@@ -152,8 +157,9 @@ class AppController extends Controller {
 
 					if($group_branch_city_id == $branch_id){
 						$group_branch_id = $value['GroupBranch']['id'];
-						$branch_city_plant = $city_plant;
 						$branch_city_id = $city_id;
+						$branch_city_plant = $city_plant;
+						$branch_city_head_office = $city_head_office;
 					}
 
 					$branchActionModule = $this->BranchActionModule->getData('all', array(
@@ -209,7 +215,6 @@ class AppController extends Controller {
 					$branch_city_id = $first_branch_id;
 				}
 
-				$user_branch = $this->Session->read('user_branch');
 				// $group_branch_id = !empty($user_branch)?$user_branch:$group_branch_id;
 				$branch_city_id = !empty($user_branch)?$user_branch:$branch_city_id;
 			}
@@ -222,6 +227,7 @@ class AppController extends Controller {
 			Configure::write('__Site.config_branch_id', $branch_city_id);
 			Configure::write('__Site.config_branch_plant', $branch_city_plant);
             Configure::write('__Site.config_list_branch_id', $key_branch);
+			Configure::write('__Site.config_branch_city_head_office', $branch_city_head_office);
 			// Configure::write('__Site.config_allow_branch_id', $list_branch);
 
 			$this->list_branch = $list_branch;

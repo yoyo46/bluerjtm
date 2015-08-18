@@ -46,42 +46,18 @@
 					));
 			?>
         </div>
-        <!-- <div class="form-group">
+        <div class="form-group">
 	        <div class="checkbox aset-handling">
                 <label>
                     <?php 
-							// echo $this->Form->checkbox('is_branch',array(
-							// 	'label'=> false, 
-							// 	'required' => false,
-							// )).__('Cabang ?');
+							echo $this->Form->checkbox('is_head_office',array(
+								'label'=> false, 
+								'required' => false,
+							)).sprintf(__('Head Office ? %s'), $this->Html->tag('small', __('( Fitur ini hanya berlaku untuk satu kota yg dipilih )')));
 					?>
                 </label>
             </div>
-        </div> -->
-        <!-- <div class="form-group">
-	        <div class="checkbox aset-handling">
-                <label>
-                    <?php 
-							// echo $this->Form->checkbox('is_asal',array(
-							// 	'label'=> false, 
-							// 	'required' => false,
-							// )).__('Kota Asal ?');
-					?>
-                </label>
-            </div>
-        </div> -->
-        <!-- <div class="form-group">
-	        <div class="checkbox aset-handling">
-                <label>
-                    <?php 
-							// echo $this->Form->checkbox('is_tujuan',array(
-							// 	'label'=> false, 
-							// 	'required' => false,
-							// )).__('Kota Tujuan ?');
-					?>
-                </label>
-            </div>
-        </div> -->
+        </div>
         <div class="form-group">
 	        <div class="checkbox-options">
 	        	<div class="checkbox">
@@ -91,15 +67,6 @@
 	            </div>
 	        </div>
 	    </div>
-	    <!-- <div class="form-group">
-	        <div class="checkbox-options">
-	        	<div class="checkbox">
-	                <label>
-	                	<?php // echo $this->Form->checkbox('is_pool').' Pool?';?>
-	                </label>
-	            </div>
-	        </div>
-	    </div> -->
 	    <div class="form-group">
 	        <div class="checkbox-options">
 	        	<div class="checkbox">

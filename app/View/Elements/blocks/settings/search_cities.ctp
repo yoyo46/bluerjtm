@@ -37,6 +37,19 @@
                 <div class="row">
                     <div class="col-sm-6 col-md-4">
                         <?php 
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_head_office', array(
+                                    'type' => 'checkbox',
+                                    'label'=> false,
+                                    'required' => false,
+                                    'value' => 1,
+                                    'div' => false,
+                                )).__('Head Office')), array(
+                                    'class' => 'checkbox',
+                                ));
+                        ?>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <?php 
                                 echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_branch', array(
                                     'type' => 'checkbox',
                                     'label'=> false,

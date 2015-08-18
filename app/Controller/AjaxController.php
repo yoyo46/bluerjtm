@@ -2214,6 +2214,7 @@ class AjaxController extends AppController {
 		$conditions = array(
             'Ttuj.is_draft' => 0,
         );
+        $head_office = Configure::read('__Site.config_branch_city_head_office');
 
         switch ($action_type) {
         	case 'biaya_ttuj':

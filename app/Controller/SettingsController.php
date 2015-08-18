@@ -54,6 +54,11 @@ class SettingsController extends AppController {
                 $this->request->data['City']['is_plant'] = $value;
                 $options['conditions']['City.is_plant'] = $value;
             }
+            if(!empty($refine['head_office'])){
+                $value = urldecode($refine['head_office']);
+                $this->request->data['City']['is_head_office'] = $value;
+                $options['conditions']['City.is_head_office'] = $value;
+            }
         }
 
         $this->paginate = $this->City->getData('paginate', $options);
@@ -99,6 +104,8 @@ class SettingsController extends AppController {
     function docity($id = false, $data_local = false){
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $head_office = $this->MkCommon->filterEmptyField($data, 'City', 'is_head_office');
+
             if($id && $data_local){
                 $this->City->id = $id;
                 $msg = 'merubah';
@@ -107,12 +114,23 @@ class SettingsController extends AppController {
                 $this->City->create();
                 $msg = 'menambah';
             }
+
             $this->City->set($data);
 
             if($this->City->validates($data)){
                 if($this->City->save($data)){
+                    $id = $this->City->id;
+
+                    if( !empty($head_office) ) {
+                        $this->City->updateAll( array(
+                            'City.is_head_office' => 0,
+                        ), array(
+                            'City.id NOT' => $id,
+                        ));
+                    }
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Kota'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Kota #%s'), $msg, $this->City->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Kota #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params );
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'cities'
