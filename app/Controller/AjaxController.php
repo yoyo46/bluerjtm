@@ -1053,28 +1053,31 @@ class AjaxController extends AppController {
             'limit' => 10,
         );
 
-        switch ($action_type) {
-        	case 'ttuj':
-				$this->loadModel('Ttuj');
+        if( in_array($action_type, array( 'ttuj', 'revenue' )) ) {
+			$this->loadModel('Ttuj');
 
-        		$plantCityId = $this->City->getCityIdPlants();
-        		$ttuj = $this->Ttuj->getData('first', array(
-                    'conditions' => array(
-                        'Ttuj.id' => $action_id,
-                    ),
-		        ), true, array(
-					'status' => 'all',
-				));
-        		$ttuj_truck_id = !empty($ttuj['Ttuj']['truck_id'])?$ttuj['Ttuj']['truck_id']:false;
-				$addConditions = $this->Truck->getListTruck( $ttuj_truck_id, true, false, $plantCityId );
+    		$ttuj = $this->Ttuj->getData('first', array(
+                'conditions' => array(
+                    'Ttuj.id' => $action_id,
+                ),
+	        ), true, array(
+				'status' => 'all',
+			));
+    		$ttuj_truck_id = !empty($ttuj['Ttuj']['truck_id'])?$ttuj['Ttuj']['truck_id']:false;
 
-                $options['contain'][] = 'Ttuj';
-                $options['conditions'] = array_merge($options['conditions'], $addConditions);
-                $options['conditions']['Truck.branch_id'] = $plantCityId;
-        		break;
-        	case 'laka':
-        		$data_change = 'laka-driver-change';
-        		break;
+            $options['contain'][] = 'Ttuj';
+
+            if( $action_type == 'ttuj' ) {
+    			$plantCityId = $this->City->getCityIdPlants();
+            	$options['conditions']['Truck.branch_id'] = $plantCityId;
+            } else {
+            	$plantCityId = false;
+            }
+
+			$addConditions = $this->Truck->getListTruck( $ttuj_truck_id, true, false, $plantCityId );
+            $options['conditions'] = array_merge($options['conditions'], $addConditions);
+		} else if( $action_type == 'laka' ) {
+    		$data_change = 'laka-driver-change';
         }
 
         if(!empty($this->request->data)){
@@ -1125,16 +1128,14 @@ class AjaxController extends AppController {
 
 	function getDataTruck ( $truck_id = false ) {
 		$this->loadModel('Truck');
-		$this->loadModel('City');
-
-        $plantCityId = $this->City->getCityIdPlants();
 		$options = array(
             'conditions' => array(
 	            'Truck.id' => $truck_id,
-                'Truck.branch_id' => $plantCityId,
 	        ),
         );
-        $result = $this->Truck->getData('first', $options);
+        $result = $this->Truck->getData('first', $options, true, array(
+        	'branch' => false,
+    	));
         $this->set(compact(
         	'result'
     	));
@@ -1357,7 +1358,6 @@ class AjaxController extends AppController {
 		$conditions = array(
             'Ttuj.is_draft' => 0,
             'Ttuj.is_laka' => 0,
-            'Ttuj.completed' => 0,
         );
         $orders = array(
             'Ttuj.created' => 'DESC',

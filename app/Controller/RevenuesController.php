@@ -3324,12 +3324,10 @@ class RevenuesController extends AppController {
                     )
                 )
             ), false);
-            $plantCityId = $this->City->getCityIdPlants();
 
             $trucks = $this->Truck->getData('list', array(
                 'conditions' => array(
                     'Ttuj.id' => NULL,
-                    'Truck.branch_id' => $plantCityId,
                 ),
                 'fields' => array(
                     'Truck.id', 'Truck.nopol'
