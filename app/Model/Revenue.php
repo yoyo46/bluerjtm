@@ -2,6 +2,12 @@
 class Revenue extends AppModel {
 	var $name = 'Revenue';
 	var $validate = array(
+        'branch_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Cabang harap dipilih'
+            ),
+        ),
         'ttuj_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

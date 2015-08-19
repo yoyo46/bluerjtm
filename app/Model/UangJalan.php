@@ -2,6 +2,12 @@
 class UangJalan extends AppModel {
 	var $name = 'UangJalan';
 	var $validate = array(
+        'branch_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Cabang harap dipilih'
+            ),
+        ),
         'title' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -279,14 +285,18 @@ class UangJalan extends AppModel {
         $min_capacity = !empty($this->data['UangJalan']['min_capacity'])?$this->data['UangJalan']['min_capacity']:false;
         $uang_jalan_extra_per_unit = !empty($this->data['UangJalan']['uang_jalan_extra_per_unit'])?$this->data['UangJalan']['uang_jalan_extra_per_unit']:false;
 
-        if( !empty($uang_jalan_extra_per_unit) && ( empty($uang_jalan_extra) || empty($min_capacity) ) ) {
+        // if( !empty($uang_jalan_extra_per_unit) && ( empty($uang_jalan_extra) || empty($min_capacity) ) ) {
+        if( !empty($uang_jalan_extra_per_unit) && ( empty($uang_jalan_extra) ) ) {
             return false;
-        } else if( !empty($uang_jalan_extra) || !empty($min_capacity) ) {
+        // } else if( !empty($uang_jalan_extra) || !empty($min_capacity) ) {
+        } else if( !empty($uang_jalan_extra) ) {
             if( empty($uang_jalan_extra) ) {
                 return false;
-            } else if( empty($min_capacity) ) {
-                return false;
-            } else {
+            } 
+            // else if( empty($min_capacity) ) {
+            //     return false;
+            // } 
+            else {
                 return true; 
             }
         } else {

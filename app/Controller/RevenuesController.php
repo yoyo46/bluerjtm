@@ -861,7 +861,8 @@ class RevenuesController extends AppController {
                                 $commission = $commission_tipe_motor;
                             }
 
-                            if( !empty($uangJalan['UangJalan']['uang_jalan_extra']) && !empty($uangJalan['UangJalan']['min_capacity']) ) {
+                            // if( !empty($uangJalan['UangJalan']['uang_jalan_extra']) && !empty($uangJalan['UangJalan']['min_capacity']) ) {
+                            if( !empty($uangJalan['UangJalan']['uang_jalan_extra']) ) {
                                 if( $totalMuatan > $uangJalan['UangJalan']['min_capacity'] ) {
                                     if( !empty($uangJalan['UangJalan']['uang_jalan_extra_per_unit']) ) {
                                         $capacityCost = $totalMuatan - $uangJalan['UangJalan']['min_capacity'];
@@ -3318,14 +3319,17 @@ class RevenuesController extends AppController {
                             'Ttuj.is_pool' => 0,
                             'Ttuj.id <>' => $id,
                             'Ttuj.is_laka' => 0,
+                            'Ttuj.completed' => 0,
                         ),
                     )
                 )
             ), false);
+            $plantCityId = $this->City->getCityIdPlants();
 
             $trucks = $this->Truck->getData('list', array(
                 'conditions' => array(
                     'Ttuj.id' => NULL,
+                    'Truck.branch_id' => $plantCityId,
                 ),
                 'fields' => array(
                     'Truck.id', 'Truck.nopol'
@@ -3438,7 +3442,10 @@ class RevenuesController extends AppController {
                 $total_ritase = $this->Ttuj->getData('count', array(
                     'conditions' => array(
                         'Ttuj.truck_id' => $id,
-                        'Ttuj.is_pool' => 1,
+                        'OR' => array(
+                            'Ttuj.is_pool' => 1,
+                            'Ttuj.completed' => 1,
+                        ),
                     )
                 ), true, array(
                     'branch' => false,

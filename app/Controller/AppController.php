@@ -291,13 +291,21 @@ class AppController extends Controller {
 						'Ttuj.is_arrive' => 1,
 						'Ttuj.arrive_over_time >' => 0,
 						'Ttuj.is_pool' => 0,
+						'Ttuj.completed' => 0,
 					),
 				));
 				$overlead_time_pool = $this->Ttuj->getData('all', array(
 					'conditions' => array(
-						'Ttuj.is_arrive' => 1,
 						'Ttuj.back_orver_time >' => 0,
-						'Ttuj.is_pool' => 1,
+						'OR' => array(
+							array(
+								'Ttuj.is_arrive' => 1,
+								'Ttuj.is_pool' => 1,
+							),
+							array(
+								'Ttuj.completed' => 1,
+							),
+						),
 					),
 					'fields' => array(
 						'Ttuj.id', 'Ttuj.nopol', 'Ttuj.no_ttuj'

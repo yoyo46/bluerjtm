@@ -277,6 +277,7 @@ class Ttuj extends AppModel {
     function getTruckStatus ( $data, $truck_id ) {
         $truckAway = $this->getData('paginate', array(
             'conditions' => array(
+                'Ttuj.completed' => 0,
                 'Ttuj.is_pool' => 0,
                 'Ttuj.truck_id' => $truck_id,
             ),

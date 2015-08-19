@@ -217,6 +217,8 @@ class City extends AppModel {
                 'plant' => true,
             ));
             $result = $plantCityId = array_keys($cityPlants);
+        } else {
+            $result = $plantCityId = Configure::read('__Site.config_branch_id');
         }
 
         if( !empty($conditions) && !empty($result) ) {

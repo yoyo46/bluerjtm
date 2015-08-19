@@ -2,16 +2,12 @@
 class Truck extends AppModel {
 	var $name = 'Truck';
 	var $validate = array(
-        // 'branch_id' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'Cabang harap dipilih'
-        //     ),
-        //     'numeric' => array(
-        //         'rule' => array('numeric'),
-        //         'message' => 'Cabang harap dipilih'
-        //     ),
-        // ),
+        'branch_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Cabang harap dipilih'
+            ),
+        ),
         'nopol' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -418,6 +414,7 @@ class Truck extends AppModel {
                         'Ttuj.status' => 1,
                         'Ttuj.is_pool' => 0,
                         'Ttuj.is_laka' => 0,
+                        'Ttuj.completed' => 0,
                     ),
                 )
             )

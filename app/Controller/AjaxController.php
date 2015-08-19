@@ -1125,9 +1125,13 @@ class AjaxController extends AppController {
 
 	function getDataTruck ( $truck_id = false ) {
 		$this->loadModel('Truck');
+		$this->loadModel('City');
+
+        $plantCityId = $this->City->getCityIdPlants();
 		$options = array(
             'conditions' => array(
 	            'Truck.id' => $truck_id,
+                'Truck.branch_id' => $plantCityId,
 	        ),
         );
         $result = $this->Truck->getData('first', $options);

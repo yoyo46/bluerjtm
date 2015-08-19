@@ -316,6 +316,7 @@ class Driver extends AppModel {
                         'Ttuj.status' => 1,
                         'Ttuj.is_pool' => 0,
                         'Ttuj.is_laka' => 0,
+                        'Ttuj.completed' => 0,
                     ),
                 )
             )

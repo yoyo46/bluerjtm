@@ -92,6 +92,7 @@ class TrucksController extends AppController {
                                 'conditions' => array(
                                     'Ttuj.status' => 1,
                                     'Ttuj.is_pool' => 0,
+                                    'Ttuj.completed' => 0,
                                 ),
                             ),
                         )
