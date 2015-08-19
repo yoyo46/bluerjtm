@@ -453,7 +453,7 @@ var add_custom_field = function( obj ){
                     var contentOptionCities = $('#data-cities-options select').html();
 
                     additionalField = '<td> \
-                        <select name="data[TtujTipeMotor][city_id][]" class="form-control city-retail-id"> \
+                        <select name="data[TtujTipeMotor][city_id][]" class="form-control city-retail-id chosen-select"> \
                         ' + contentOptionCities +
                         '</select> \
                     </td>';
@@ -475,8 +475,8 @@ var add_custom_field = function( obj ){
                     <td> \
                         <input name="data[TtujTipeMotor][qty][]" class="form-control qty-muatan" type="text" rel="'+idx+'"> \
                     </td> \
-                    <td> \
-                        <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="ttuj"><i class="fa fa-times"></i> Hapus</a> \
+                    <td class="text-center"> \
+                        <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="ttuj"><i class="fa fa-times"></i></a> \
                     </td> \
                 </tr>');
 
@@ -488,6 +488,7 @@ var add_custom_field = function( obj ){
                 qtyMuatanPress( $('#ttujDetail tbody tr:last-child .qty-muatan') );
                 
                 choosen_select($('#ttujDetail tbody tr:last-child .chosen-select'));
+
                 $('#ttujDetail tbody tr:last-child .tipe_motor_id').change(function() {
                     getNopol();
                 });

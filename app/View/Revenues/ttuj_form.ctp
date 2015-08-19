@@ -349,12 +349,20 @@
 								<tr>
 									<?php 
 											if( $data_action == 'retail' ) {
-												echo $this->Html->tag('th', __('Tujuan'));
+												echo $this->Html->tag('th', __('Tujuan'), array(
+													'width' => '30%',
+												));
 											}
 											echo $this->Html->tag('th', __('Tipe Motor'));
-											echo $this->Html->tag('th', __('Warna Motor'));
-											echo $this->Html->tag('th', __('Jumlah Unit'));
-											echo $this->Html->tag('th', __('Action'));
+											echo $this->Html->tag('th', __('Warna Motor'), array(
+												'width' => '20%',
+											));
+											echo $this->Html->tag('th', __('Jumlah'), array(
+												'width' => '15%',
+											));
+											echo $this->Html->tag('th', __('Action'), array(
+												'width' => '5%',
+											));
 									?>
 								</tr>
 							</thead>
@@ -373,7 +381,7 @@
 
 												echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.city_id.',array(
 													'label'=> false, 
-													'class'=>'form-control city-retail-id',
+													'class'=>'form-control city-retail-id chosen-select',
 													'required' => false,
 													'empty' => __('Pilih Tujuan --'),
 													'options' => !empty($tmpCities)?$tmpCities:false,
@@ -393,7 +401,7 @@
 											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.color_motor_id.', array(
 												'class' => 'form-control',
 												'label' => false,
-												'empty' => __('Pilih Warna Motor --'),
+												'empty' => __('Warna Motor'),
 												'options' => $colors,
 												'value' => $color_motor_id,
 												'required' => false,
@@ -407,11 +415,13 @@
 												'value' => $qty,
 												'rel' => $key,
 											)));
-											echo $this->Html->tag('td', $this->Html->link('<i class="fa fa-times"></i> '.__('Hapus'), 'javascript:', array(
+											echo $this->Html->tag('td', $this->Html->link('<i class="fa fa-times"></i> ', 'javascript:', array(
 												'class' => 'delete-custom-field btn btn-danger btn-xs',
 												'action_type' => 'ttuj',
 												'escape' => false
-											)));
+											)), array(
+												'class' => 'text-center',
+											));
 									?>
 								</tr>
 								<?php
@@ -883,7 +893,7 @@
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'empty' => __('Pilih Warna Motor --'),
+					'empty' => __('Warna Motor'),
 					'options' => $colors
 				));
 		?>
