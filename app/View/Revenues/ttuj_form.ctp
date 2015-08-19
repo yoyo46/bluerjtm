@@ -376,15 +376,15 @@
 													'class'=>'form-control city-retail-id',
 													'required' => false,
 													'empty' => __('Pilih Tujuan --'),
-													'options' => $cities,
+													'options' => !empty($tmpCities)?$tmpCities:false,
 													'value' => $city_id,
 												)));
 											}
 
 											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.tipe_motor_id.', array(
-												'class' => 'form-control tipe_motor_id',
+												'class' => 'form-control tipe_motor_id chosen-select',
 												'label' => false,
-												'empty' => __('Pilih Tipe Motor --'),
+												'empty' => __('Tipe Motor'),
 												'options' => $tipeMotors,
 												'value' => $tipe_motor_id,
 												'required' => false,
@@ -861,7 +861,7 @@
 					'label'=> false, 
 					'class'=>'form-control',
 					'required' => false,
-					'empty' => __('Pilih Tipe Motor --'),
+					'empty' => __('Tipe Motor'),
 					'options' => $tipeMotors
 				));
 		?>
@@ -895,7 +895,7 @@
 					'class'=>'form-control',
 					'required' => false,
 					'empty' => __('Tujuan --'),
-					'options' => $cities
+					'options' => !empty($tmpCities)?$tmpCities:false,
 				));
 		?>
 	</div>

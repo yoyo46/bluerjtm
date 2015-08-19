@@ -1000,6 +1000,7 @@ class RevenuesController extends AppController {
 
         if( $data_action == 'retail' ) {
             $customerConditions['Customer.customer_type_id'] = 1;
+            $tmpCities = $this->City->getData('list');
         }
 
         $ttuj_truck_id = !empty($data_local['Ttuj']['truck_id'])?$data_local['Ttuj']['truck_id']:false;
@@ -1068,7 +1069,8 @@ class RevenuesController extends AppController {
             'truckInfo', 'data_local', 'data_action',
             'cities', 'colors', 'tipeMotorTemps',
             'groupTipeMotors', 'uangKuli', 'branches',
-            'id', 'layout_js', 'layout_css'
+            'id', 'layout_js', 'layout_css',
+            'tmpCities'
         ));
         $this->render('ttuj_form');
     }

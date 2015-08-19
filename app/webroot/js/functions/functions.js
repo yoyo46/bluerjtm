@@ -463,7 +463,7 @@ var add_custom_field = function( obj ){
                 <tr rel="'+idx+'"> \
                     '+ additionalField +
                     '<td> \
-                        <select name="data[TtujTipeMotor][tipe_motor_id][]" class="form-control tipe_motor_id" rel="'+idx+'"> \
+                        <select name="data[TtujTipeMotor][tipe_motor_id][]" class="form-control tipe_motor_id chosen-select" rel="'+idx+'"> \
                         ' + optionTipeMotor +
                         '</select> \
                     </td> \
@@ -486,6 +486,8 @@ var add_custom_field = function( obj ){
 
                 delete_custom_field( $('#ttujDetail tbody tr:last-child .delete-custom-field') );
                 qtyMuatanPress( $('#ttujDetail tbody tr:last-child .qty-muatan') );
+                
+                choosen_select($('#ttujDetail tbody tr:last-child .chosen-select'));
                 $('#ttujDetail tbody tr:last-child .tipe_motor_id').change(function() {
                     getNopol();
                 });
