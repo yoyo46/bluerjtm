@@ -1,11 +1,11 @@
-<div class="box box-primary">
+<div class="box box-primary collapsed-box">
     <div class="box-header">
         <h3 class="box-title">Pencarian</h3>
         <div class="box-tools pull-right">
-            <button class="btn btn-default btn-sm" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-default btn-sm" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
         </div>
     </div>
-    <div class="box-body">
+    <div class="box-body" style="display: none;">
         <?php 
                 echo $this->Form->create('Ttuj', array(
                     'url'=> $this->Html->url( array(
