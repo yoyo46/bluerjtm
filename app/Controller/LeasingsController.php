@@ -20,7 +20,6 @@ class LeasingsController extends AppController {
             $data = $this->request->data;
             $refine = $this->RjLeasing->processRefine($data);
             $params = $this->RjLeasing->generateSearchURL($refine);
-            // $params = $this->MkCommon->getRefineGroupBranch($params, $data);
             $params['action'] = $index;
 
             $this->redirect($params);
@@ -42,9 +41,6 @@ class LeasingsController extends AppController {
                 $this->request->data['Leasing']['no_contract'] = $no_contract;
                 $conditions['Leasing.no_contract LIKE '] = '%'.$no_contract.'%';
             }
-
-            // Custom Otorisasi
-            // $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Leasing', $conditions, 'conditions' );
         }
 
         $this->paginate = $this->Leasing->getData('paginate', array(
@@ -128,7 +124,6 @@ class LeasingsController extends AppController {
         $this->loadModel('Truck');
         $this->loadModel('LeasingDetail');
 
-        // $allowBranch = $this->MkCommon->allowBranch($this->list_branch, 'trucks', 'index', true);
         $leasingDetails = $this->LeasingDetail->getData('list', array(
             'fields' => array(
                 'LeasingDetail.truck_id', 'LeasingDetail.truck_id',

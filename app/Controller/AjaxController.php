@@ -35,7 +35,7 @@ class AjaxController extends AppController {
 		$this->loadModel('Truck');
 		$this->loadModel('City');
 
-        $plantCityId = $this->City->getCityIdPlants();
+        $plantCityId = Configure::read('__Site.Branch.Plant.id');
 		$result = $this->Truck->getInfoTruck($truck_id, $plantCityId);
 
 		if( !empty($result) ) {
@@ -1005,10 +1005,6 @@ class AjaxController extends AppController {
                 $phone = urldecode($data['Driver']['phone']);
                 $conditions['Driver.phone LIKE '] = '%'.$phone.'%';
             }
-
-            // if( !empty($data['GroupBranch']) ) {
-            // 	$conditions = $this->MkCommon->getConditionGroupBranch( $data['GroupBranch'], 'Driver', $conditions, 'conditions' );
-            // }
         }
 
 		$this->paginate = $this->Driver->getData('paginate', array(
@@ -1068,7 +1064,7 @@ class AjaxController extends AppController {
             $options['contain'][] = 'Ttuj';
 
             if( $action_type == 'ttuj' ) {
-    			$plantCityId = $this->City->getCityIdPlants();
+        		$plantCityId = Configure::read('__Site.Branch.Plant.id');
             	$options['conditions']['Truck.branch_id'] = $plantCityId;
             } else {
             	$plantCityId = false;
@@ -1097,10 +1093,6 @@ class AjaxController extends AppController {
                 $name = urldecode($data['Driver']['name']);
                 $options['conditions']['Driver.name LIKE '] = '%'.$name.'%';
             }
-
-            // if( !empty($data['GroupBranch']) ) {
-            // 	$options = $this->MkCommon->getConditionGroupBranch( $data['GroupBranch'], 'Truck', $options );
-            // }
         }
 
 		$this->paginate = $this->Truck->getData('paginate', $options);
@@ -1363,8 +1355,6 @@ class AjaxController extends AppController {
             'Ttuj.created' => 'DESC',
             'Ttuj.id' => 'DESC',
         );
-		$this->Ttuj->virtualFields['to_city_branch_id'] = 'CASE WHEN ToCity.is_branch = 0 THEN Ttuj.from_city_id ELSE Ttuj.to_city_id END';
-        $conditions = $this->RjRevenue->getTtujConditionBrach( $conditions, $action_type );
 
         if(!empty($this->request->data)){
             if(!empty($this->request->data['Ttuj']['nottuj'])){
@@ -1385,14 +1375,13 @@ class AjaxController extends AppController {
 	        		);
                 }
 
-                $this->loadModel('City');
-                $conditionsNopol = $this->City->getCityIdPlants( $conditionsNopol );
-                
                 $truckSearch = $this->Ttuj->Truck->getData('list', array(
                 	'conditions' => $conditionsNopol,
             		'fields' => array(
             			'Truck.id', 'Truck.id',
         			),
+            	), true, array(
+            		'branch' => false,
             	));
                 $conditions['Ttuj.truck_id'] = $truckSearch;
             }
@@ -1411,6 +1400,7 @@ class AjaxController extends AppController {
         			),
             	), true, array(
                     'status' => 'all',
+            		'branch' => false,
                 ));
                 $conditions['Ttuj.customer_id'] = $customers;
             }
@@ -1440,12 +1430,14 @@ class AjaxController extends AppController {
             case 'bongkaran':
                 $conditions['Ttuj.is_arrive'] = 1;
                 $conditions['Ttuj.is_bongkaran <>'] = 1;
+        		$conditions = $this->Ttuj->_callConditionBranch( $conditions );
                 break;
 
             case 'balik':
                 $conditions['Ttuj.is_arrive'] = 1;
                 $conditions['Ttuj.is_bongkaran'] = 1;
                 $conditions['Ttuj.is_balik <>'] = 1;
+        		$conditions = $this->Ttuj->_callConditionBranch( $conditions );
                 break;
 
             case 'pool':
@@ -1453,6 +1445,7 @@ class AjaxController extends AppController {
                 $conditions['Ttuj.is_bongkaran'] = 1;
                 $conditions['Ttuj.is_balik'] = 1;
                 $conditions['Ttuj.is_pool <>'] = 1;
+        		$conditions = $this->Ttuj->_callConditionTtujPool( $conditions );
                 break;
 
             case 'revenues':
@@ -1492,6 +1485,7 @@ class AjaxController extends AppController {
             
             default:
                 $conditions['Ttuj.is_arrive'] = 0;
+        		$conditions = $this->Ttuj->_callConditionBranch( $conditions );
                 break;
         }
 
@@ -1499,9 +1493,6 @@ class AjaxController extends AppController {
             'conditions' => $conditions,
             'order' => $orders,
             'limit' => Configure::read('__Site.config_pagination'),
-            'contain' => array(
-            	'ToCity',
-        	),
         ), true, array(
         	'branch' => false,
         ));
@@ -2218,7 +2209,7 @@ class AjaxController extends AppController {
 		$conditions = array(
             'Ttuj.is_draft' => 0,
         );
-        $head_office = Configure::read('__Site.config_branch_city_head_office');
+        $head_office = Configure::read('__Site.config_branch_head_office');
 
         switch ($action_type) {
         	case 'biaya_ttuj':
@@ -2504,35 +2495,40 @@ class AjaxController extends AppController {
 		));
 	}
 
-	function auth_action_module($group_id = false, $city_id = false, $checkall = false){
-		if( !empty($city_id) && !empty($group_id) ){
+	function auth_action_module($group_id = false, $branch_id = false, $checkall = false){
+		if( !empty($branch_id) && !empty($group_id) ){
 			$this->loadModel('BranchModule');
 			$this->loadModel('BranchActionModule');
-			$this->loadModel('GroupBranch');
 			$this->loadModel('BranchParentModule');
 
+			$tmp_group_branch_id = !empty($this->params['named']['id'])?$this->params['named']['id']:false;
         	$parent_modules = $this->BranchParentModule->getData('all');
 
         	if(!empty($parent_modules)){
         		$GroupBranch = $this->GroupBranch->find('first', array(
 					'conditions' => array(
 						'GroupBranch.group_id' => $group_id,
-						'GroupBranch.city_id' => $city_id,
+						'GroupBranch.branch_id' => $branch_id,
 					)
 				));
 
 				$group_branch_id = '';
+
 				if(!empty($GroupBranch)){
 					$group_branch_id = $GroupBranch['GroupBranch']['id'];
 				}else{
 					$this->GroupBranch->create();
 					$this->GroupBranch->set(array(
 						'group_id' => $group_id,
-						'city_id' => $city_id,
+						'branch_id' => $branch_id,
 					));
 					
 					if($this->GroupBranch->save()){
 						$group_branch_id = $this->GroupBranch->id;
+
+						if( !empty($tmp_group_branch_id) ) {
+							$this->GroupBranch->delete($tmp_group_branch_id);
+						}
 					}
 				}
 
@@ -2698,7 +2694,7 @@ class AjaxController extends AppController {
 		}
 	}
 
-	function check_per_branch($group_id = false, $city_id = false, $parent_id = false, $type = false){
+	function check_per_branch($group_id = false, $branch_id = false, $parent_id = false, $type = false){
 		if(!empty($group_id) && !empty($parent_id) && !empty($type)){
 			$this->loadModel('BranchActionModule');
 			$this->loadModel('BranchModule');
@@ -2707,7 +2703,7 @@ class AjaxController extends AppController {
 			$GroupBranch = $this->GroupBranch->find('first', array(
 				'conditions' => array(
 					'GroupBranch.group_id' => $group_id,
-					'GroupBranch.city_id' => $city_id,
+					'GroupBranch.branch_id' => $branch_id,
 				)
 			));
 

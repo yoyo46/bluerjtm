@@ -56,10 +56,6 @@
         </div>
     </div>
 </div>
-<?php 
-        // Custom Otorisasi
-        // echo $this->Common->getCheckboxBranch();
-?>
 <div class="form-group action">
     <?php
             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(

@@ -23,7 +23,6 @@ class TrucksController extends AppController {
             $data = $this->request->data;
             $refine = $this->RjTruck->processRefine($data);
             $params = $this->RjTruck->generateSearchURL($refine);
-            // $params = $this->MkCommon->getRefineGroupBranch($params, $data);
             $params['action'] = $index;
 
             $this->redirect($params);
@@ -137,8 +136,6 @@ class TrucksController extends AppController {
                 $this->request->data['Truck']['category'] = $data;
                 $contain[] = 'TruckCategory';
             }
-
-            // $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Truck', $conditions, 'conditions' );
         }
 
         $this->paginate = $this->Truck->getData('paginate', array(
@@ -256,10 +253,8 @@ class TrucksController extends AppController {
 
     function doTruck($id = false, $data_local = false){
         $this->loadModel('Driver');
-        // $allowBranch = $this->MkCommon->allowBranch($this->list_branch, 'trucks', 'drivers', true);
         $driverConditions = array(
             'Truck.id' => NULL,
-            // 'Driver.branch_id' => $allowBranch,
         );
 
         if(!empty($this->request->data)){
@@ -787,8 +782,6 @@ class TrucksController extends AppController {
                 $this->request->data['Driver']['no_id'] = $value;
                 $conditions['Driver.no_id LIKE '] = '%'.$value.'%';
             }
-
-            // $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Driver', $conditions, 'conditions' );
         }
 
         $this->paginate = $this->Driver->getData('paginate', array(
@@ -797,9 +790,6 @@ class TrucksController extends AppController {
                 'Driver.status' => 'DESC',
                 'Driver.name' => 'ASC',
             ),
-            // 'contain' => array(
-            //     'City',
-            // ),
         ), true, array(
             'status' => 'all',
         ));
@@ -949,7 +939,6 @@ class TrucksController extends AppController {
         }
 
         $this->loadModel('DriverRelation');
-        $this->loadModel('GroupBranch');
         $this->loadModel('JenisSim');
 
         $driverRelations = $this->DriverRelation->find('list', array(
@@ -959,17 +948,6 @@ class TrucksController extends AppController {
             'fields' => array(
                 'DriverRelation.id', 'DriverRelation.name'
             )
-        ));
-        $branches = $this->GroupBranch->getData('list', array(
-            'contain' => array(
-                'City',
-            ),
-            'fields' => array(
-                'GroupBranch.id', 'City.name',
-            ),
-            'order' => array(
-                'City.name'
-            ),
         ));
         $jenisSims = $this->JenisSim->find('list', array(
             'conditions' => array(
@@ -982,7 +960,7 @@ class TrucksController extends AppController {
 
         $this->set('active_menu', 'drivers');
         $this->set(compact(
-            'driverRelations', 'branches', 'jenisSims', 'id'
+            'driverRelations', 'jenisSims', 'id'
         ));
         $this->render('driver_form');
     }
@@ -1056,8 +1034,6 @@ class TrucksController extends AppController {
                 ));
                 $conditions['Kir.truck_id'] = $truckSearch;
             }
-
-            // $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Kir', $conditions, 'conditions' );
         }
         $this->paginate = $this->Kir->getData('paginate', array(
             'conditions' => $conditions,

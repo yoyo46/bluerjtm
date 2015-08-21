@@ -4,9 +4,13 @@ class GroupBranch extends AppModel {
 	var $validate = array();
 
     var $belongsTo = array(
-        'City' => array(
-            'className' => 'City',
-            'foreignKey' => 'city_id',
+        'Branch' => array(
+            'className' => 'Branch',
+            'foreignKey' => 'branch_id',
+        ),
+        'Branch' => array(
+            'className' => 'Branch',
+            'foreignKey' => 'branch_id',
         ),
     );
 
@@ -20,7 +24,9 @@ class GroupBranch extends AppModel {
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(),
-            'order'=> array(),
+            'order'=> array(
+                'GroupBranch.id' => 'ASC',
+            ),
             'contain' => array(),
             'fields' => array(),
         );

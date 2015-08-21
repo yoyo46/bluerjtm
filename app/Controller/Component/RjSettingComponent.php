@@ -1,6 +1,10 @@
 <?php
 App::uses('Sanitize', 'Utility');
 class RjSettingComponent extends Component {
+
+	function initialize(Controller $controller, $settings = array()) {
+		$this->controller = $controller;
+	}
 	
 	function processRefine($refine = false, $default_conditions = array()) {
 		if(!$refine) {
@@ -72,9 +76,9 @@ class RjSettingComponent extends Component {
 					$refine_conditions['Perlengkapan']['name'] = $refine['Perlengkapan']['name'];
 				}
 			
-				// if( !empty($refine['Branch']['name']) ) {
-				// 	$refine_conditions['Branch']['name'] = $refine['Branch']['name'];
-				// }
+				if( !empty($refine['Branch']['name']) ) {
+					$refine_conditions['Branch']['name'] = $refine['Branch']['name'];
+				}
 			
 				if( !empty($refine['CustomerGroup']['name']) ) {
 					$refine_conditions['CustomerGroup']['name'] = $refine['CustomerGroup']['name'];
@@ -285,5 +289,40 @@ class RjSettingComponent extends Component {
 
 		return $parameters;
 	}
+	
+    public function _processRefine( $conditions = false, $params = false ) {
+        if( is_array($conditions) ) {
+            if(!empty($params['named'])) {
+                $refine = $params['named'];
+
+                if(!empty($refine['name'])) {
+                    $value = urldecode($refine['name']);
+                    $conditions['Branch.name LIKE'] = '%'.$value.'%';
+                    $this->controller->request->data['Branch']['name'] = $value;
+                }
+
+                if(!empty($refine['city'])) {
+                    $value = urldecode($refine['city']);
+                    $conditions['City.name LIKE'] = '%'.$value.'%';
+                    $this->controller->request->data['City']['name'] = $value;
+                }
+            }
+
+        }
+
+        return $conditions;
+    }
+    
+    public function processRequest( $data = false ) {
+        $params = array();
+
+        if(!empty($data['Branch'])) {
+            $value = $data['Branch'];
+            $params['name'] = !empty($value['name'])?urlencode($value['name']):false;
+            $params['city'] = !empty($value['city'])?urlencode($value['city']):false;
+        }
+
+        return $params;
+    }
 }
 ?>

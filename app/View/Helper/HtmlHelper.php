@@ -346,12 +346,7 @@ class HtmlHelper extends AppHelper {
 
 		/*custom*/
 		$allowed_module = Configure::read('__Site.allowed_module');
-		// $controller_allowed = Configure::read('__Site.allowed_controller');
-		// $action_allowed = Configure::read('__Site.allowed_action');
-		$allowness_extend = Configure::read('__Site.allowed_extend');
-		// $branch_city_id = Configure::read('__Site.config_list_branch_id');
-		$branch_city_id = Configure::read('__Site.config_branch_id');
-
+		$current_branch_id = Configure::read('__Site.config_branch_id');
 		$is_show = false;
 
 		if( !empty($url['controller']) ) {
@@ -371,40 +366,27 @@ class HtmlHelper extends AppHelper {
 		$actionName = !empty($url['action'])?$url['action']:false;
 		$_allow = !empty($options['allow'])?$options['allow']:false;
 		$group_id = Configure::read('__Site.config_group_id');
-		$branchs = Configure::read('__Site.config_branch_id');
-		// $branchs = !empty($options['branch_id'])?$options['branch_id']:false;
 
 		$allowAction = !empty($allowed_module[$controllerName])?$allowed_module[$controllerName]:array();
 		$allowPage = in_array($actionName, $allowAction)?true:false;
 
-		if( empty($branchs) ) {
-			$branchs = $branch_city_id;
-		}
-
-		if( !is_array($branchs) ) {
-			$branchs = array( $branchs );
-		}
-
-		// if( in_array($url, array('/', 'javascript:')) || (in_array($actionName, $action_allowed)) || (in_array($controllerName, $controller_allowed) && in_array($actionName, $action_allowed)) || ($controllerName == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || !empty($url['page']) || $group_id == 1 ){
 		if( in_array($url, array('/', 'javascript:', '#')) || !empty($allowPage) || ($controllerName == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || !empty($url['page']) || $group_id == 1 || $_allow ){
 			$is_show = true;
-		}else if(is_array($url) && !empty($controllerName) && !empty($actionName) && !empty($branchs)){
-			foreach ($branchs as $key => $branch_id) {
-				$allowed_module = Configure::read('__Site.config_allow_module');
-				$allowed_module = !empty($allowed_module[$branch_id])?$allowed_module[$branch_id]:array();
+		}else if(is_array($url) && !empty($controllerName) && !empty($actionName) && !empty($current_branch_id)){
+			$allowed_module = Configure::read('__Site.config_allow_module');
+			$allowed_module = !empty($allowed_module[$current_branch_id])?$allowed_module[$current_branch_id]:array();
 
-				$allowAction = !empty($allowed_module[$controllerName]['action'])?$allowed_module[$controllerName]['action']:array();
-				$allowPage = in_array($actionName, $allowAction)?true:false;
-				$extend_name = !empty($allowed_module[$controllerName]['extends'][$actionName])?$allowed_module[$controllerName]['extends'][$actionName]:false;
-				$extend_param = !empty($url[0]) ? $url[0] : '';
+			$allowAction = !empty($allowed_module[$controllerName]['action'])?$allowed_module[$controllerName]['action']:array();
+			$allowPage = in_array($actionName, $allowAction)?true:false;
+			$extend_name = !empty($allowed_module[$controllerName]['extends'][$actionName])?$allowed_module[$controllerName]['extends'][$actionName]:false;
+			$extend_param = !empty($url[0]) ? $url[0] : '';
 
-				if( !empty($extend_param) && !empty($extend_name) ) {
-					if( !empty($allowPage) && $extend_name == $extend_param ) {
-						$is_show = true;
-					}
-				} else if( !empty($allowPage) ){
+			if( !empty($extend_param) && !empty($extend_name) ) {
+				if( !empty($allowPage) && $extend_name == $extend_param ) {
 					$is_show = true;
 				}
+			} else if( !empty($allowPage) ){
+				$is_show = true;
 			}
 		}
 

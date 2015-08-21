@@ -1138,6 +1138,30 @@ var add_custom_field = function( obj ){
                 accordion_toggle($('#auth-box div.box[rel="'+idx+'"] .trigger-collapse'));
                 branch_check($('#auth-box div.box[rel="'+idx+'"] .branch-check'));
                 break;
+            case 'branch_city':
+                var class_count = $('#box-branch-city .list-branch-city');
+                var length = parseInt(class_count.length);
+                var idx = length+1;
+
+                $('#box-branch-city').append('<div rel="'+(idx-1)+'" class="row list-branch-city"> \
+                    <div class="col-sm-10"> \
+                        <div class="form-group"> \
+                            <label>Cabang</label> \
+                            <select name="data[BranchCity][branch_city_id][]" class="form-control chosen-select"> \
+                                '+$('#branch_city_input select').html()+' \
+                            </select> \
+                        </div> \
+                    </div> \
+                    <div class="col-sm-2"> \
+                        <label class="block">&nbsp;</label> \
+                        <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="branch_city"> \
+                            <i class="fa fa-times"></i> Hapus \
+                        </a> \
+                    </div> \
+                </div>');
+                input_price( $('#box-branch-city .list-branch-city:last-child .input_price') );
+                delete_custom_field( $('#box-branch-city .list-branch-city:last-child .delete-custom-field') );
+              break;
         }
     });
 }
@@ -1282,6 +1306,9 @@ var delete_custom_field = function( obj ) {
                 }
 
                 return false;
+            } else if( action_type == 'branch_city' ) {
+                var parent = self.parents('.list-branch-city');
+                parent.remove();
             }
         }
 
@@ -3043,8 +3070,9 @@ var auth_form_open = function(obj){
         var parent = self.parents('.box');
         var val = self.val();
         var group_id = $('#group-id').val();
+        var group_branch_id = self.attr('data-id');
 
-        check_full_auth(parent, group_id, val, false);
+        check_full_auth(parent, group_id, val, false, group_branch_id);
 
         // if(val != ''){
         //     $.ajax({
@@ -3125,14 +3153,20 @@ var accordion_toggle = function(obj){
     });
 }
 
-function check_full_auth(parent, group_id, val, attr){
+function check_full_auth(parent, group_id, val, attr, group_branch_id){
     if(val != ''){
-        if(attr == false){
-            attr = '';
+        var url = '/ajax/auth_action_module/'+group_id+'/'+val+'/';
+
+        if(attr != false){
+            url += attr + '/';
+        }
+
+        if( typeof group_branch_id != 'undefined' ) {
+            url += 'id:'+group_branch_id+'/';
         }
 
         $.ajax({
-            url: '/ajax/auth_action_module/'+group_id+'/'+val+'/'+attr+'/',
+            url: url,
             type: 'POST',
             success: function(response, status) {
                 if( $(response).filter('#box-action-auth').html() != null ) {

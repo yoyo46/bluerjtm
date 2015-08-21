@@ -347,7 +347,6 @@ class UsersController extends AppController {
         $default_options = array(
             'contain' => array(
                 'Group',
-                // 'City',
             ),
         );
 
@@ -375,12 +374,12 @@ class UsersController extends AppController {
             'status' => 'all',
         ));
         $list_user = $this->paginate('User');
-        $cities = $this->User->Employe->City->branchCities();
+        $branches = $this->GroupBranch->Branch->getData('list');
 
         if( !empty($list_user) ) {
             foreach ($list_user as $key => $value) {
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Employe', 'branch_id');
-                $value = $this->User->Employe->City->getMerge($value, $branch_id);
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
                 $list_user[$key] = $value;
             }
         }
@@ -388,7 +387,7 @@ class UsersController extends AppController {
         $this->set('active_menu', 'list_user');
         $this->set('sub_module_title', 'User');
         $this->set(compact(
-            'list_user', 'cities'
+            'list_user', 'branches'
         ));
     }
 
@@ -481,11 +480,10 @@ class UsersController extends AppController {
         }
 
         $this->loadModel('Group');
-        $this->loadModel('City');
         $this->loadModel('Employe');
 
         $groups = $this->Group->find('list');
-        $branches = $this->City->branchCities();
+        $branches = $this->GroupBranch->Branch->getData('list');
         $employes = $this->Employe->getData('all', array(
             'conditions' => array(
                 'Employe.status' => 1,
@@ -716,12 +714,12 @@ class UsersController extends AppController {
                 'EmployePosition.id', 'EmployePosition.name'
             )
         ));
-        $cities = $this->Employe->City->branchCities();
+        $branches = $this->GroupBranch->Branch->getData('list');
 
         $this->set('active_menu', 'employes');
         $this->set('sub_module_title', 'Karyawan');
         $this->set(compact(
-            'employes', 'employe_positions', 'cities'
+            'employes', 'employe_positions', 'branches'
         ));
     }
 
@@ -793,11 +791,11 @@ class UsersController extends AppController {
                 'EmployePosition.id', 'EmployePosition.name'
             )
         ));
-        $cities = $this->Employe->City->branchCities();
-        
+        $branches = $this->GroupBranch->Branch->getData('list');
+
         $this->set('active_menu', 'employes');
         $this->set(compact(
-            'employe_positions', 'cities'
+            'employe_positions', 'branches'
         ));
         $this->render('employe_form');
     }
@@ -985,9 +983,7 @@ class UsersController extends AppController {
             ));
 
             if(!empty($group)){
-                $this->loadModel('City');
                 $this->loadModel('BranchModule');
-                $this->loadModel('GroupBranch');
 
                 $GroupBranches = $this->GroupBranch->find('all', array(
                     'conditions' => array(
@@ -995,7 +991,7 @@ class UsersController extends AppController {
                     ),
                     'contain' => array(
                         'BranchActionModule',
-                        'City'
+                        'Branch'
                     )
                 ));
 
@@ -1013,7 +1009,7 @@ class UsersController extends AppController {
                 }
 
                 /*supporting data*/
-                $branches = $this->City->branchCities('list');
+                $branches = $this->GroupBranch->Branch->getData('list');
 
                 foreach ($parent_modules as $key => $value) {
                     $parent_modules[$key]['child'] = $this->BranchModule->getData('all', array(

@@ -56,11 +56,8 @@ class AppController extends Controller {
 	    $this->user_id = false;
 	    $GroupId = false;
 	    $User = array();
+
 		$_allowModule = array();
-		$list_branch = array();
-		$allowBranch = array();
-		$this->allowBranch = false;
-		$key_branch = array();
 		$paramController = $this->params['controller'];
 		$paramAction = $this->params['action'];
 
@@ -69,13 +66,62 @@ class AppController extends Controller {
 	    if($logged_in){
 			$this->user_id = $this->Auth->user('id');
 			$GroupId = $this->Auth->user('group_id');
+			$user_branch = $this->Session->read('user_branch');
 			$User = $this->Auth->user();
 
 			if( !empty($User['employe_id']) ) {
 				$User = $this->User->Employe->getMerge($User, $User['employe_id']);
 			}
 
+			// Set Global Variable for User
 			$this->user_data = $User;
+			Configure::write('__Site.config_group_id', $GroupId);
+
+			// Set Variable Branch
+			$my_branch_id = $this->MkCommon->filterEmptyField($User, 'Employe', 'branch_id');
+			$my_branch_id = !empty($user_branch)?$user_branch:$my_branch_id;
+		    $list_branches = $this->GroupBranch->Branch->getData('list');
+		    $city_branches = $this->GroupBranch->Branch->getData('list', array(
+		    	'fields' => array(
+		    		'Branch.id', 'Branch.city_id',
+	    		),
+	    	));
+	    	
+	    	$city_branches = array_values($city_branches);
+
+			Configure::write('__Site.Data.Branch', $list_branches);
+			Configure::write('__Site.Data.Branch.City.id', $city_branches);
+            Configure::write('__Site.Data.Branch.id', array_keys($list_branches));
+
+		    if( !empty($list_branches) ) {
+			    if( !empty($list_branches[$my_branch_id]) ) {
+					$current_branch_id = $my_branch_id;
+			    } else {
+					$current_branch_id = key($list_branches);
+			    }
+
+			    $branch = $this->GroupBranch->Branch->getData('first', array(
+			    	'conditions' => array(
+			    		'Branch.id' => $current_branch_id,
+		    		),
+		    	));
+
+		    	if( !empty($branch) ){
+					$current_branch_plant = $this->MkCommon->filterEmptyField($branch, 'Branch', 'is_plant');
+					$current_branch_city_id = $this->MkCommon->filterEmptyField($branch, 'Branch', 'city_id');
+					$current_branch_head_office = $this->MkCommon->filterEmptyField($branch, 'Branch', 'is_head_office');
+					$branch_plants = $this->GroupBranch->Branch->getPlants($current_branch_plant);
+
+					$branch_cities = $this->GroupBranch->Branch->BranchCity->getMerge($branch, $current_branch_id, 'list');
+					$branch_cities = !empty($branch_cities['BranchCity'])?$branch_cities['BranchCity']:false;
+					
+                	Configure::write('__Site.Branch.City.Bongkar.id', $branch_cities);
+                	Configure::write('__Site.Branch.City.id', $current_branch_city_id);
+					Configure::write('__Site.config_branch_plant', $current_branch_plant);
+					Configure::write('__Site.config_branch_head_office', $current_branch_head_office);
+				}
+			}
+
 			/*Auth*/
 			$_allowedModule = array(
 				'users' => array(
@@ -99,175 +145,80 @@ class AppController extends Controller {
 					'search',
 				),
 			);
-			// $controller_allowed = array(
-			// 	'users', 'pages', 'settings'
-			// );
-			// $action_allowed = array(
-			// 	'change_branch', 'search', 'logout', 'login', 'dashboard', 'display', 'index',
-			// 	'authorization', 'profile'
-			// );
-			$allowness_extend = array(
-				'ttuj_payments', 'ttuj_payment_add', 'ttuj_payment_delete', 'detail_ttuj_payment'
+			Configure::write('__Site.allowed_module', $_allowedModule);
+
+			$conditionsBranch = array(
+				'GroupBranch.branch_id' => $current_branch_id,
 			);
 
-			Configure::write('__Site.allowed_module', $_allowedModule);
-			// Configure::write('__Site.allowed_controller', $controller_allowed);
-			// Configure::write('__Site.allowed_action', $action_allowed);
-			Configure::write('__Site.allowed_extend', $allowness_extend);
-			Configure::write('__Site.config_group_id', $GroupId);
-
-			$conditionsBranch = array();
-
 			if( $GroupId != 1 ) {
-				$conditionsBranch = array(
-					'GroupBranch.group_id' => $GroupId
-				);
+				$conditionsBranch['GroupBranch.group_id'] = $GroupId;
 			}
 
-			$_branches = $this->GroupBranch->getData('all', array(
+			$groupBranch = $this->GroupBranch->getData('first', array(
 				'conditions' => $conditionsBranch,
-				'contain' => array(
-					'City'
-				)
 			));
 
-			$group_branch_id = '';
-			$branch_city_id = '';
-			$branch_city_plant = false;
-			$branch_city_head_office = false;
+			$current_group_branch_id = $this->MkCommon->filterEmptyField($groupBranch, 'GroupBranch', 'id');
 			$is_allow = false;
-			$first_branch_id = false;
 
-			if(!empty($_branches)){
-				$branch_id = $this->MkCommon->filterEmptyField($User, 'Employe', 'branch_id');
-				$user_branch = $this->Session->read('user_branch');
-				$branch_id = $branch_city_id = !empty($user_branch)?$user_branch:$branch_id;
+			if( !empty($current_group_branch_id) ) {
+				$branchActionModule = $this->BranchActionModule->getData('all', array(
+					'conditions' => array(
+						'BranchActionModule.group_branch_id' => $current_group_branch_id,
+						'BranchActionModule.is_allow' => 1,
+						'BranchModule.status' => 1,
+					),
+					'contain' => array(
+						'BranchModule',
+					)
+				));
 
-				foreach ($_branches as $key => $value) {
-					$city_id = $this->MkCommon->filterEmptyField($value, 'City', 'id');
-					$city_name = $this->MkCommon->filterEmptyField($value, 'City', 'name');
-					$city_plant = $this->MkCommon->filterEmptyField($value, 'City', 'is_plant');
-					$city_head_office = $this->MkCommon->filterEmptyField($value, 'City', 'is_head_office');
-					$group_branch_city_id = $this->MkCommon->filterEmptyField($value, 'GroupBranch', 'city_id');
-					$id_group_branch = $this->MkCommon->filterEmptyField($value, 'GroupBranch', 'id');
+				if( !empty($branchActionModule) ) {
+					foreach ($branchActionModule as $key => $value) {
+						$controllerName = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'controller');
+						$actionName = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'action');
+						$extend_action = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'extend_action');
+						$allow_function = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'allow_function');
 
-					if( empty($key) ) {
-						$first_branch_id = $group_branch_city_id;
-					}
+						$_allowModule[$current_branch_id][$controllerName]['action'][] = $actionName;
 
-					if($group_branch_city_id == $branch_id){
-						$group_branch_id = $value['GroupBranch']['id'];
-						$branch_city_id = $city_id;
-						$branch_city_plant = $city_plant;
-						$branch_city_head_office = $city_head_office;
-					}
+						if( !empty($extend_action) ) {
+							$_allowModule[$current_branch_id][$controllerName]['extends'][$actionName] = $extend_action;
+						}
+						if( !empty($allow_function) ) {
+							$allow_function = explode(',', $allow_function);
+							
+							foreach ($allow_function as $key => $function) {
+								$functionArr = explode('-', $function);
+								$function = !empty($functionArr[0])?$functionArr[0]:$function;
+								$controllerName = !empty($functionArr[1])?$functionArr[1]:$controllerName;
 
-					$branchActionModule = $this->BranchActionModule->getData('all', array(
-						'conditions' => array(
-							'BranchActionModule.group_branch_id' => $id_group_branch,
-							'BranchActionModule.is_allow' => 1,
-							'BranchModule.status' => 1,
-						),
-						'contain' => array(
-							'BranchModule',
-						)
-					));
-
-					if( !empty($branchActionModule) ) {
-						foreach ($branchActionModule as $key => $value) {
-							$controllerName = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'controller');
-							$actionName = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'action');
-							$extend_action = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'extend_action');
-							$allow_function = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'allow_function');
-
-							// if( $controllerName == 'trucks' && $actionName == 'index' ) {
-							// 	debug($value);die();
-							// }
-
-							$_allowModule[$city_id][$controllerName]['action'][] = $actionName;
-
-							if( !empty($extend_action) ) {
-								$_allowModule[$city_id][$controllerName]['extends'][$actionName] = $extend_action;
-							}
-							if( !empty($allow_function) ) {
-								$allow_function = explode(',', $allow_function);
-								
-								foreach ($allow_function as $key => $function) {
-									$functionArr = explode('-', $function);
-									$function = !empty($functionArr[0])?$functionArr[0]:$function;
-									$controllerName = !empty($functionArr[1])?$functionArr[1]:$controllerName;
-
-									$_allowModule[$city_id][$controllerName]['action'][] = $function;
-								}
+								$_allowModule[$current_branch_id][$controllerName]['action'][] = $function;
 							}
 						}
 					}
-
-					if($paramController == 'revenues' && $paramAction == 'index'){
-						// 327 = module revenue
-						$another_rule = $this->BranchActionModule->getRuleByModule(327, $group_branch_id);
-					}
-
-					$list_branch[$city_id] = $city_name;
 				}
 
-				if( empty($branch_city_id) ) {
-					$branch_city_id = $first_branch_id;
+				if($paramController == 'revenues' && $paramAction == 'index'){
+					// 327 = module revenue
+					$another_rule = $this->BranchActionModule->getRuleByModule(327, $current_group_branch_id);
 				}
-
-				// $group_branch_id = !empty($user_branch)?$user_branch:$group_branch_id;
-				$branch_city_id = !empty($user_branch)?$user_branch:$branch_city_id;
-			}
-
-			if( !empty($list_branch) ) {
-				$key_branch = array_keys($list_branch);
 			}
 
 			Configure::write('__Site.config_allow_module', $_allowModule);
-			Configure::write('__Site.config_branch_id', $branch_city_id);
-			Configure::write('__Site.config_branch_plant', $branch_city_plant);
-            Configure::write('__Site.config_list_branch_id', $key_branch);
-			Configure::write('__Site.config_branch_city_head_office', $branch_city_head_office);
-			// Configure::write('__Site.config_allow_branch_id', $list_branch);
-
-			$this->list_branch = $list_branch;
-			// $this->helpers['Html']['group_id'] = $GroupId;
-			$allowBranch = $this->MkCommon->allowBranch($list_branch);
-
-			if( !empty($allowBranch) ) {
-                // $this->allowBranch = array_keys($allowBranch);
-				// Configure::write('__Site.config_branch_id', $this->allowBranch);
-				Configure::write('__Site.config_allow_branchs', $allowBranch);
-			}
+			Configure::write('__Site.config_branch_id', $current_branch_id);
 			
-			// if(!empty($_allowModule)){
-			// 	$this->helpers['Html']['rule_link'] = $_allowModule;
-			// }
-
 			$allowAction = !empty($_allowedModule[$paramController])?$_allowedModule[$paramController]:array();
 			$allowPage = in_array($paramAction, $allowAction)?true:false;
 
-			// if(in_array($paramController, $controller_allowed) && in_array($paramAction, $action_allowed) || $paramController == 'ajax' || $GroupId == 1){
 			if( !empty($allowPage) || $paramController == 'ajax' || $GroupId == 1 ){
 				$is_allow = true;
 			}else {
-				// $allowPage = $this->MkCommon->allowPage( $key_branch, true );
-				$allowPage = $this->MkCommon->allowPage( $branch_city_id, true );
-				$extend_name = !empty($allowed_module[$paramController]['extends'][$paramAction])?$allowed_module[$paramController]['extends'][$paramAction]:false;
-				$extend_param = !empty($this->params['pass'][0]) ? $this->params['pass'][0] : '';
+				$allowPage = $this->MkCommon->allowPage( $current_branch_id, true );
 
-				if(!empty($extend_param) && !empty($allowPage) && $extend_name == $extend_param ) {
+				if( !empty($allowPage) ){
 					$is_allow = true;
-				} else if( !empty($allowPage) ){
-					$is_allow = true;
-				}
-			}
-
-			if( !empty($this->request->data['Default']['branch_id']) ) {
-				$change_branch = $this->request->data['Default']['branch_id'];
-
-				if( empty($allowBranch[$change_branch]) ) {
-					$is_allow = false;
 				}
 			}
 			
@@ -408,10 +359,8 @@ class AppController extends Controller {
 
 	    $this->set(compact(
 	    	'logged_in', 'GroupId', 'User',
-	    	'invStatus',
-	    	'another_rule', 'notifications',
-	    	'list_branch', 'group_branch_id',
-	    	'allowBranch', 'branch_city_id'
+	    	'invStatus', 'another_rule', 'notifications',
+	    	'list_branches', 'current_branch_id'
     	));
 	}
 

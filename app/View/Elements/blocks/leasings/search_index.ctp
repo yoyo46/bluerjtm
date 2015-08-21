@@ -31,10 +31,6 @@
                 </div>
             </div>
             <div class="col-sm-6">
-                <?php 
-                        // Custom Otorisasi
-                        // echo $this->Common->getCheckboxBranch();
-                ?>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(

@@ -145,7 +145,7 @@ class TtujTipeMotor extends AppModel {
             if( !empty($ttujTipeMotor) && $list != 'first' ) {
                 $data['TtujTipeMotor'] = $ttujTipeMotor;
             } else {
-                $data = $ttujTipeMotor;
+                $data['TtujTipeMotor'] = $ttujTipeMotor;
             }
         }
 

@@ -75,7 +75,7 @@
 													'class' => 'from_city'
 												),
 												'id' => 'getKotaTujuan',
-												'options' => !empty($cities)?$cities:false,
+												'options' => !empty($fromCities)?$fromCities:false,
 											));
 									?>
 								</div>

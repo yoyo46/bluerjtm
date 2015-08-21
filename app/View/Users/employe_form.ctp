@@ -3,8 +3,6 @@
             'action' => 'employes',
         ));
         $this->Html->addCrumb($sub_module_title);
-
-        $cities = !empty($cities)?$cities:false;
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -56,7 +54,6 @@
 						'class'=>'form-control',
 						'required' => false,
 						'empty' => __('Pilih Cabang'),
-						'options' => $cities
 					));
 			?>
         </div>

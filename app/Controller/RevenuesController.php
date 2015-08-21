@@ -414,9 +414,10 @@ class RevenuesController extends AppController {
         $this->loadModel('TtujTipeMotor');
 
         $is_draft = isset($data_local['Ttuj']['is_draft'])?$data_local['Ttuj']['is_draft']:true;
-        $is_plant = Configure::read('__Site.config_branch_plant');
         $allowUpdate = false;
-        $plantCityId = $this->City->getCityIdPlants();
+
+        $is_plant = Configure::read('__Site.config_branch_plant');
+        $plantCityId = Configure::read('__Site.Branch.Plant.id');
 
         if( !empty($this->request->data) ) {
             $is_draft = true;
@@ -682,8 +683,6 @@ class RevenuesController extends AppController {
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj'), $msg), 'error');
             }
-
-            $fromCities = $this->Ttuj->UangJalan->getKotaAsal();
 
             if( !empty($data['Ttuj']['from_city_id']) ) {
                 $toCities = $this->Ttuj->UangJalan->getKotaTujuan($data['Ttuj']['from_city_id']);
@@ -987,8 +986,6 @@ class RevenuesController extends AppController {
                 }
             }
 
-            $fromCities = $this->Ttuj->UangJalan->getKotaAsal();
-
             if( !empty($this->request->data['Ttuj']['from_city_id']) ) {
                 $toCities = $this->Ttuj->UangJalan->getKotaTujuan($this->request->data['Ttuj']['from_city_id']);
             }
@@ -1003,25 +1000,23 @@ class RevenuesController extends AppController {
             $tmpCities = $this->City->getData('list');
         }
 
-        $ttuj_truck_id = !empty($data_local['Ttuj']['truck_id'])?$data_local['Ttuj']['truck_id']:false;
-        $ttuj_truck_nopol = !empty($data_local['Ttuj']['nopol'])?$data_local['Ttuj']['nopol']:false;
-        $driver_penganti_id = !empty($data_local['Ttuj']['driver_penganti_id'])?$data_local['Ttuj']['driver_penganti_id']:false;
-        $curr_branch_id = Configure::read('__Site.config_branch_id');
-
-        if( !empty($is_plant) && !empty($this->list_branch[$curr_branch_id]) ) {
-            $cities[$curr_branch_id] = $this->list_branch[$curr_branch_id];
-        } else {
-            $cities = $this->City->getData('list');
-        }
-
-        $trucks = $this->Truck->getListTruck($ttuj_truck_id, false, $ttuj_truck_nopol, $plantCityId);
         $customers = $this->Ttuj->Customer->getData('list', array(
             'conditions' => $customerConditions,
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             )
+        ), true, array(
+            'plant' => true,
         ));
+        $fromCities = $this->Ttuj->UangJalan->getKotaAsal();
+
+        $ttuj_truck_id = !empty($data_local['Ttuj']['truck_id'])?$data_local['Ttuj']['truck_id']:false;
+        $ttuj_truck_nopol = !empty($data_local['Ttuj']['nopol'])?$data_local['Ttuj']['nopol']:false;
+        $trucks = $this->Truck->getListTruck($ttuj_truck_id, false, $ttuj_truck_nopol, $plantCityId);
+
+        $driver_penganti_id = !empty($data_local['Ttuj']['driver_penganti_id'])?$data_local['Ttuj']['driver_penganti_id']:false;
         $driverPengantis = $this->Ttuj->Truck->Driver->getListDriverPenganti($driver_penganti_id);
+
         $perlengkapans = $this->Perlengkapan->getData('list', array(
             'fields' => array(
                 'Perlengkapan.id', 'Perlengkapan.name',
@@ -1052,13 +1047,7 @@ class RevenuesController extends AppController {
                 'ColorMotor.id', 'ColorMotor.name',
             ),
         ));
-        $branches = $this->City->branchCities();
-        $layout_js = array(
-            'select2.full',
-        );
-        $layout_css = array(
-            'select2.min',
-        );
+        $this->MkCommon->_layout_file('select');
 
         $this->set('module_title', __('TTUJ'));
         $this->set('active_menu', 'ttuj');
@@ -1067,10 +1056,9 @@ class RevenuesController extends AppController {
             'fromCities', 'toCities', 'uangJalan',
             'tipeMotors', 'perlengkapans',
             'truckInfo', 'data_local', 'data_action',
-            'cities', 'colors', 'tipeMotorTemps',
-            'groupTipeMotors', 'uangKuli', 'branches',
-            'id', 'layout_js', 'layout_css',
-            'tmpCities'
+            'colors', 'tipeMotorTemps',
+            'groupTipeMotors', 'uangKuli',
+            'id', 'tmpCities'
         ));
         $this->render('ttuj_form');
     }
@@ -1194,7 +1182,6 @@ class RevenuesController extends AppController {
         $conditions = array(
             'Ttuj.is_arrive' => 1,
         );
-        $conditions = $this->RjRevenue->getTtujConditionBrach( $conditions, $action_type );
 
         $this->set('module_title', __('TTUJ'));
         $this->set('active_menu', $action_type);
@@ -1237,12 +1224,9 @@ class RevenuesController extends AppController {
             }
         }
 
-        $this->Ttuj->virtualFields['to_city_branch_id'] = 'CASE WHEN ToCity.is_branch = 0 THEN Ttuj.from_city_id ELSE Ttuj.to_city_id END';
+        $conditions = $this->Ttuj->_callConditionBranch( $conditions );
         $this->paginate = $this->Ttuj->getData('paginate', array(
             'conditions' => $conditions,
-            'contain' => array(
-                'ToCity',
-            ),
             'order'=> array(
                 'Ttuj.tgljam_tiba' => 'DESC',
                 'Ttuj.id' => 'DESC',
@@ -1274,20 +1258,16 @@ class RevenuesController extends AppController {
 
         switch ($action_type) {
             case 'pool':
-                $conditions['Ttuj.pool_branch_id'] = Configure::read('__Site.config_branch_id');
+                $conditions = $this->Ttuj->_callConditionTtujPool( $conditions );
                 break;
             
             default:
-                $conditions = $this->RjRevenue->getTtujConditionBrach( $conditions, $action_type );
+                $conditions = $this->Ttuj->_callConditionBranch( $conditions );
                 break;
         }
 
-        $this->Ttuj->virtualFields['to_city_branch_id'] = 'CASE WHEN ToCity.is_branch = 0 THEN Ttuj.from_city_id ELSE Ttuj.to_city_id END';
         $ttuj = $this->Ttuj->getData('first', array(
             'conditions' => $conditions,
-            'contain' => array(
-                'ToCity',
-            ),
         ), true, array(
             'branch' => false,
         ));
@@ -1310,49 +1290,10 @@ class RevenuesController extends AppController {
         $this->loadModel('ColorMotor');
 
         $data_action = false;
-        $this->Ttuj->virtualFields['to_city_branch_id'] = 'CASE WHEN ToCity.is_branch = 0 THEN Ttuj.from_city_id ELSE Ttuj.to_city_id END';
 
         if( !empty($this->params['named']['no_ttuj']) ) {
             $no_ttuj_id = $this->params['named']['no_ttuj'];
-            $conditionsDataLocal = array(
-                'Ttuj.id' => $no_ttuj_id,
-                'Ttuj.is_draft' => 0,
-                'Ttuj.completed' => 0,
-                'Ttuj.status' => 1,
-            );
-            $conditionsDataLocal = $this->RjRevenue->getTtujConditionBrach( $conditionsDataLocal, $action_type );
-
-            switch ($action_type) {
-                case 'bongkaran':
-                    $conditionsDataLocal['Ttuj.is_arrive'] = 1;
-                    $conditionsDataLocal['Ttuj.is_bongkaran <>'] = 1;
-                    break;
-
-                case 'balik':
-                    $conditionsDataLocal['Ttuj.is_arrive'] = 1;
-                    $conditionsDataLocal['Ttuj.is_bongkaran'] = 1;
-                    $conditionsDataLocal['Ttuj.is_balik <>'] = 1;
-                    break;
-
-                case 'pool':
-                    $conditionsDataLocal['Ttuj.is_arrive'] = 1;
-                    $conditionsDataLocal['Ttuj.is_bongkaran'] = 1;
-                    $conditionsDataLocal['Ttuj.is_balik'] = 1;
-                    $conditionsDataLocal['Ttuj.is_pool <>'] = 1;
-                    break;
-                
-                default:
-                    $conditionsDataLocal['Ttuj.is_arrive'] = 0;
-                    break;
-            }
-            $data_local = $this->Ttuj->getData('first', array(
-                'conditions' => $conditionsDataLocal,
-                'contain' => array(
-                    'ToCity',
-                ),
-            ), true, array(
-                'branch' => false,
-            ));
+            $data_local = $this->Ttuj->_callDataTtujConditions($no_ttuj_id, $action_type);
 
             if( !empty($data_local) ) {
                 $data_local = $this->Ttuj->getMergeContain( $data_local, $no_ttuj_id );
@@ -1499,105 +1440,7 @@ class RevenuesController extends AppController {
             $this->request->data['Ttuj']['no_ttuj'] = $this->params['named']['no_ttuj'];
         }
 
-        $conditionsTtuj = array(
-            'Ttuj.is_draft' => 0,
-            'Ttuj.completed' => 0,
-            'Ttuj.is_laka' => 0,
-        );
-        $conditionsTtuj = $this->RjRevenue->getTtujConditionBrach( $conditionsTtuj, $action_type );
-
-        switch ($action_type) {
-            case 'bongkaran':
-                // $sub_module_title = __('Bongkaran');
-
-                if( !empty($id) ) {
-                    $conditionsTtuj['OR'] = array(
-                        array(
-                            'Ttuj.id' => $id,
-                        ),
-                        array(
-                            'Ttuj.is_arrive' => 1,
-                            'Ttuj.is_bongkaran <>' => 1,
-                        ),
-                    );
-                } else {
-                    $conditionsTtuj['Ttuj.is_arrive'] = 1;
-                    $conditionsTtuj['Ttuj.is_bongkaran <>'] = 1;
-                }
-                break;
-
-            case 'balik':
-                // $sub_module_title = __('Truk Balik');
-
-                if( !empty($id) ) {
-                    $conditionsTtuj['OR'] = array(
-                        array(
-                            'Ttuj.id' => $id,
-                        ),
-                        array(
-                            'Ttuj.is_arrive' => 1,
-                            'Ttuj.is_bongkaran' => 1,
-                            'Ttuj.is_balik <>' => 1,
-                        ),
-                    );
-                } else {
-                    $conditionsTtuj['Ttuj.is_arrive'] = 1;
-                    $conditionsTtuj['Ttuj.is_bongkaran'] = 1;
-                    $conditionsTtuj['Ttuj.is_balik <>'] = 1;
-                }
-                break;
-
-            case 'pool':
-                // $sub_module_title = __('Sampai Pool');
-
-                if( !empty($id) ) {
-                    $conditionsTtuj['OR'] = array(
-                        array(
-                            'Ttuj.id' => $id,
-                        ),
-                        array(
-                            'Ttuj.is_arrive' => 1,
-                            'Ttuj.is_bongkaran' => 1,
-                            'Ttuj.is_balik' => 1,
-                            'Ttuj.is_pool <>' => 1,
-                        ),
-                    );
-                } else {
-                    $conditionsTtuj['Ttuj.is_arrive'] = 1;
-                    $conditionsTtuj['Ttuj.is_bongkaran'] = 1;
-                    $conditionsTtuj['Ttuj.is_balik'] = 1;
-                    $conditionsTtuj['Ttuj.is_pool <>'] = 1;
-                }
-                break;
-            
-            default:
-                // $sub_module_title = __('Truk Tiba');
-                if( !empty($id) ) {
-                    $conditionsTtuj['OR'] = array(
-                        array(
-                            'Ttuj.id' => $id,
-                        ),
-                        array(
-                            'Ttuj.is_arrive' => 0,
-                        ),
-                    );
-                } else {
-                    $conditionsTtuj['Ttuj.is_arrive'] = 0;
-                }
-                break;
-        }
-
-        $ttujs = $this->Ttuj->getData('list', array(
-            'conditions' => $conditionsTtuj,
-            'fields' => array(
-                'Ttuj.id', 'Ttuj.no_ttuj'
-            ),
-            'contain' => array(
-                'ToCity',
-            ),
-        ), true, array(
-            'branch' => false,
-        ));
+        $ttujs = $this->Ttuj->getTtujAfterLeave($id, $action_type);
         $perlengkapans = $this->Perlengkapan->getData('list', array(
             'fields' => array(
                 'Perlengkapan.id', 'Perlengkapan.name',
@@ -1639,12 +1482,13 @@ class RevenuesController extends AppController {
             'Ttuj.is_draft' => 0,
             'Ttuj.status' => 1,
         );
-        $conditions = $this->RjRevenue->getTtujConditionBrach( $conditions, $action_type );
 
         switch ($action_type) {
             case 'bongkaran':
                 $conditions['Ttuj.is_arrive'] = 1;
                 $conditions['Ttuj.is_bongkaran'] = 1;
+                $conditions = $this->Ttuj->_callConditionBranch( $conditions );
+                
                 $module_title = __('Info Bongkaran');
                 $this->set('active_menu', 'bongkaran');
                 break;
@@ -1653,6 +1497,8 @@ class RevenuesController extends AppController {
                 $conditions['Ttuj.is_arrive'] = 1;
                 $conditions['Ttuj.is_bongkaran'] = 1;
                 $conditions['Ttuj.is_balik'] = 1;
+                $conditions = $this->Ttuj->_callConditionBranch( $conditions );
+
                 $module_title = __('Info Truk Balik');
                 $this->set('active_menu', 'balik');
                 break;
@@ -1662,24 +1508,24 @@ class RevenuesController extends AppController {
                 $conditions['Ttuj.is_bongkaran'] = 1;
                 $conditions['Ttuj.is_balik'] = 1;
                 $conditions['Ttuj.is_pool'] = 1;
+                $conditions = $this->Ttuj->_callConditionTtujPool( $conditions );
+
                 $module_title = __('Info Sampai Pool');
                 $this->set('active_menu', 'pool');
                 break;
             
             default:
                 $conditions['Ttuj.is_arrive'] = 1;
+                $conditions = $this->Ttuj->_callConditionBranch( $conditions );
+
                 $module_title = __('Info Truk Tiba');
                 $this->set('active_menu', 'truk_tiba');
                 break;
         }
 
         $data_action = false;
-        $this->Ttuj->virtualFields['to_city_branch_id'] = 'CASE WHEN ToCity.is_branch = 0 THEN Ttuj.from_city_id ELSE Ttuj.to_city_id END';
         $data_local = $this->Ttuj->getData('first', array(
             'conditions' => $conditions,
-            'contain' => array(
-                'ToCity',
-            ),
         ), true, array(
             'branch' => false,
         ));
@@ -1760,7 +1606,7 @@ class RevenuesController extends AppController {
             'Ttuj.is_arrive' => 1,
             'Ttuj.is_bongkaran' => 1,
         );
-        $conditions = $this->RjRevenue->getTtujConditionBrach( $conditions, $action_type );
+        $conditions = $this->Ttuj->_callConditionBranch( $conditions );
 
         $this->set('module_title', __('TTUJ'));
         $this->set('active_menu', $action_type);
@@ -1803,12 +1649,8 @@ class RevenuesController extends AppController {
             }
         }
 
-        $this->Ttuj->virtualFields['to_city_branch_id'] = 'CASE WHEN ToCity.is_branch = 0 THEN Ttuj.from_city_id ELSE Ttuj.to_city_id END';
         $this->paginate = $this->Ttuj->getData('paginate', array(
             'conditions' => $conditions,
-            'contain' => array(
-                'ToCity',
-            ),
             'order'=> array(
                 'Ttuj.tgljam_bongkaran' => 'DESC',
                 'Ttuj.id' => 'DESC',
@@ -1837,7 +1679,7 @@ class RevenuesController extends AppController {
             'Ttuj.is_balik' => 1,
             'Ttuj.is_bongkaran' => 1,
         );
-        $conditions = $this->RjRevenue->getTtujConditionBrach( $conditions, $action_type );
+        $conditions = $this->Ttuj->_callConditionBranch( $conditions );
 
         $this->set('module_title', __('TTUJ'));
         $this->set('active_menu', $action_type);
@@ -1880,12 +1722,8 @@ class RevenuesController extends AppController {
             }
         }
 
-        $this->Ttuj->virtualFields['to_city_branch_id'] = 'CASE WHEN ToCity.is_branch = 0 THEN Ttuj.from_city_id ELSE Ttuj.to_city_id END';
         $this->paginate = $this->Ttuj->getData('paginate', array(
             'conditions' => $conditions,
-            'contain' => array(
-                'ToCity',
-            ),
             'order'=> array(
                 'Ttuj.tgljam_balik' => 'DESC',
                 'Ttuj.id' => 'DESC',
@@ -1916,8 +1754,8 @@ class RevenuesController extends AppController {
             'Ttuj.is_bongkaran' => 1,
             'Ttuj.is_balik' => 1,
             'Ttuj.is_pool' => 1,
-            'Ttuj.pool_branch_id' => Configure::read('__Site.config_branch_id'),
         );
+        $conditions = $this->Ttuj->_callConditionTtujPool($conditions);
 
         $this->set('module_title', __('TTUJ'));
         $this->set('active_menu', $action_type);

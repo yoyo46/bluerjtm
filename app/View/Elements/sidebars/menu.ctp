@@ -1,6 +1,7 @@
 <?php
         $name = $this->Common->filterEmptyField($User, 'Employe', 'full_name');;
-        $branch_city_id = !empty($branch_city_id)?$branch_city_id:false;
+        $current_branch_id = !empty($current_branch_id)?$current_branch_id:false;
+        $list_branches = !empty($list_branches)?$list_branches:false;
 ?>
 <!-- Left side column. contains the logo and sidebar -->
 <aside class="left-side sidebar-offcanvas">
@@ -16,12 +17,12 @@
                     'class' => 'sidebar-form'
                 ));
                 echo $this->Form->input('branch_id', array(
-                    'options' => $list_branch,
+                    'options' => $list_branches,
                     'class' => 'form-control',
                     'label' => false,
                     'div' => false,
                     'onchange' => 'submit()',
-                    'value' => $branch_city_id
+                    'value' => $current_branch_id
                 ));
 
                 echo $this->Form->end();
@@ -1016,13 +1017,22 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'cities' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Kota', array(
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Kota', array(
+                            //     'controller' => 'settings',
+                            //     'action' => 'city_import',
+                            // ), array(
+                            //     'escape' => false
+                            // )), array(
+                            //     'class' => ( !empty($active_menu) && $active_menu == 'cities' )?'active':'',
+                            // ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> '.__('Cabang'), array(
                                 'controller' => 'settings',
-                                'action' => 'city_import',
+                                'action' => 'branches',
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'cities' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'branches' )?'active':'',
                             ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Company', array(

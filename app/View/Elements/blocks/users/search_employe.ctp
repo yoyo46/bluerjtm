@@ -1,5 +1,4 @@
 <?php 
-        $cities = !empty($cities)?$cities:false;
         $employe_positions = !empty($employe_positions)?$employe_positions:false;
 ?>
 <div class="box box-primary">
@@ -63,7 +62,6 @@
                                 'class'=>'form-control',
                                 'required' => false,
                                 'empty' => __('Pilih Cabang'),
-                                'options' => $cities
                             ));
                     ?>
                 </div>

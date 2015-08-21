@@ -236,6 +236,7 @@ class UangJalan extends AppModel {
             //     'UangKeamananGroupMotor',
             // ),
             'fields'=> array(),
+            'group'=> array(),
         );
 
         switch ($status) {
@@ -269,6 +270,9 @@ class UangJalan extends AppModel {
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         }
 
@@ -354,7 +358,7 @@ class UangJalan extends AppModel {
     }
 
     function getKotaAsal () {
-        $fromCity = $this->getData('all', array(
+        return $this->getData('list', array(
             'group' => array(
                 'UangJalan.from_city_id'
             ),
@@ -365,19 +369,10 @@ class UangJalan extends AppModel {
                 'FromCity'
             ),
         ));
-        $resultCity = array();
-
-        if( !empty($fromCity) ) {
-            foreach ($fromCity as $key => $city) {
-                $resultCity[$city['UangJalan']['from_city_id']] = $city['FromCity']['name'];
-            }
-        }
-
-        return $resultCity;
     }
 
     function getKotaTujuan ( $from_city_id ) {
-        $toCity = $this->getData('all', array(
+        return $this->getData('list', array(
             'conditions' => array(
                 'UangJalan.from_city_id' => $from_city_id,
             ),
@@ -391,15 +386,6 @@ class UangJalan extends AppModel {
                 'ToCity'
             ),
         ));
-        $resultCity = array();
-
-        if( !empty($toCity) ) {
-            foreach ($toCity as $key => $city) {
-                $resultCity[$city['UangJalan']['to_city_id']] = $city['ToCity']['name'];
-            }
-        }
-
-        return $resultCity;
     }
 
     function getNopol ( $from_city_id, $to_city_id, $capacity ) {

@@ -16,9 +16,6 @@
         <h3 class="box-title"><?php echo $sub_module_title?></h3>
     </div>
     <div class="box-body">
-    	<?php 
-				echo $this->Common->branchForm('Leasing', $allowBranch, 'vertical');
-    	?>
         <div class="form-group">
         	<?php 
 					echo $this->Form->input('no_contract',array(

@@ -91,6 +91,10 @@ body > .header {
   line-height: 31px !important;
 }
 
+.block {
+  display: block;
+}
+
 @media screen and (min-width: 992px) {
   .left-side {
     top: 50px;

@@ -19,8 +19,8 @@ class SettingsController extends AppController {
         if(!empty($this->request->data)) {
             $data = $this->request->data;
             $refine = $this->RjSetting->processRefine($data);
-            $params = $this->RjSetting->generateSearchURL($refine);
-            $params = $this->MkCommon->getRefineGroupBranch($params, $data);
+            $params = $this->RjSetting->processRequest($data);
+            $params = array_merge($params, $this->RjSetting->generateSearchURL($refine));
             $params['action'] = $index;
 
             if( !empty($param_get) ) {
@@ -221,9 +221,6 @@ class SettingsController extends AppController {
                 $this->request->data['Customer']['customer_type_id'] = $customer_type_id;
                 $options['conditions']['Customer.customer_type_id '] = $customer_type_id;
             }
-
-            // Custom Otorisasi
-            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Customer', $options );
         }
         $this->paginate = $this->Customer->getData('paginate', $options, true, array(
             'status' => 'all',
@@ -231,17 +228,6 @@ class SettingsController extends AppController {
         $truck_customers = $this->paginate('Customer');
         $customerTypes  = $this->Customer->CustomerType->getData('list', false, true);
         $customerGroups  = $this->CustomerGroup->getData('list');
-
-        // if( !empty($truck_customers) ) {
-        //     $this->loadModel('City');
-
-        //     foreach ($truck_customers as $key => $value) {
-        //         // Custom Otorisasi
-        //         $branch_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'branch_id');
-        //         $value = $this->City->getMerge($value, $branch_id);
-        //         $truck_customers[$key] = $value;
-        //     }
-        // }
 
         $this->set('active_menu', 'customers');
         $this->set('module_title', __('Data Master'));
@@ -4970,5 +4956,91 @@ class SettingsController extends AppController {
         }
 
         $this->redirect($this->referer());
+    }
+
+    public function branches() {
+        $this->loadModel('Branch');
+        $conditions = $this->RjSetting->_processRefine(array(), $this->params);
+
+        $this->paginate = $this->Branch->getData('paginate', array(
+            'conditions' => $conditions,
+            'limit' => 10,
+        ));
+        $branchs = $this->paginate('Branch');
+
+        $this->set('active_menu', 'branches');
+        $this->set('sub_module_title', __('Cabang'));
+        $this->set('branchs', $branchs);
+    }
+
+    public function _callSupportBranch( $id = false ) {
+        $urlReferer = array(
+            'controller' => 'settings',
+            'action' => 'branches',
+            'admin' => false,
+        );
+
+        if( !empty($id) ) {
+            $value = $this->Branch->getData('first', array(
+                'conditions' => array(
+                    'Branch.id' => $id,
+                ),
+            ));
+
+            if( empty($value) ) {
+                $this->MkCommon->redirectReferer(__('Cabang tidak ditemukan'), 'error', $urlReferer);
+            }
+        } else {
+            $value = false;
+        }
+
+        $result = $this->Branch->doSave( $this->request->data, $value, $id );
+        $this->MkCommon->setProcessParams($result, $urlReferer);
+
+        $cities = $this->Branch->City->getData('list');
+        $coas = $this->Branch->Coa->getData('list', false, true, array(
+            'status' => 'cash_bank_child',
+        ));
+        $branch_cities = $this->Branch->getData('list', array(
+            'conditions' => array(
+                'Branch.id <>' => $id,
+            ),
+        ));
+        $this->MkCommon->_layout_file('select');
+
+        $this->set('active_menu', 'branches');
+        $this->set(compact(
+            'cities', 'coas', 'branch_cities'
+        ));
+        $this->render('branch_form');
+    }
+
+    public function branch_add() {
+        $this->loadModel('Branch');
+        $this->set('sub_module_title', __('Tambah Cabang'));
+        $this->_callSupportBranch();
+    }
+
+    public function branch_edit( $id = false ) {
+        $this->loadModel('Branch');
+        $this->set('sub_module_title', __('Edit Cabang'));
+        $this->_callSupportBranch( $id );
+    }
+
+    function branch_toggle( $id = false ){
+        $this->loadModel('Branch');
+
+        $value = $this->Branch->getData('first', array(
+            'conditions' => array(
+                'Branch.id' => $id
+            )
+        ));
+
+        if(!empty($value)){
+            $result = $this->Branch->doToggle( $id );
+            $this->MkCommon->setProcessParams($result);
+        }else{
+            $this->MkCommon->redirectReferer(__('Cabang tidak ditemukan'), 'error');
+        }
     }
 }

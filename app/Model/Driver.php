@@ -15,8 +15,8 @@ class Driver extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'No. ID harap diisi'
             ),
-            'isUnique' => array(
-                'rule' => array('isUnique'),
+            'checkUniq' => array(
+                'rule' => array('checkUniq'),
                 'message' => 'No. ID telah terdaftar',
             ),
         ),
@@ -336,15 +336,10 @@ class Driver extends AppModel {
             );
         }
 
-        $branch_plant_id = false;
-        $is_plant = Configure::read('__Site.config_branch_plant');
+        $branch_plant_id = Configure::read('__Site.Branch.Plant.id');
         $conditions['Truck.id'] = NULL;
 
-        if( !empty($is_plant) ) {
-            $cityBranchs = $this->City->getData('list', false, true, array(
-                'plant' => true,
-            ));
-            $branch_plant_id = array_keys($cityBranchs);
+        if( !empty($branch_plant_id) ) {
             $conditions['Driver.branch_id'] = $branch_plant_id;
         }
 
@@ -363,6 +358,21 @@ class Driver extends AppModel {
             return $drivers;
         } else {
             return $conditions;
+        }
+    }
+
+    function checkUniq () {
+        $no_id = !empty($this->data['Driver']['no_id'])?$this->data['Driver']['no_id']:false;
+        $driver = $this->getData('count', array(
+            'conditions' => array(
+                'Driver.no_id' => $no_id,
+            ),
+        ));
+        
+        if( !empty($driver) ) {
+            return false;
+        } else {
+            return true;
         }
     }
 }

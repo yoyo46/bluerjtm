@@ -89,7 +89,7 @@
             ?>
             <tr>
                 <td><?php echo $name;?></td>
-                <td><?php echo !empty($value['City']['name'])?$value['City']['name']:false;?></td>
+                <td><?php echo !empty($value['Branch']['name'])?$value['Branch']['name']:false;?></td>
                 <td><?php echo $group_name;?></td>
                 <td><?php echo $value_data['email'];?></td>
                 <td><?php echo $phone;?></td>

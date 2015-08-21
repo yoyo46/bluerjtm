@@ -63,8 +63,12 @@ class Employe extends AppModel {
             'className' => 'EmployePosition',
             'foreignKey' => 'employe_position_id',
         ),
-        'City' => array(
-            'className' => 'City',
+        // 'City' => array(
+        //     'className' => 'City',
+        //     'foreignKey' => 'branch_id',
+        // ),
+        'Branch' => array(
+            'className' => 'Branch',
             'foreignKey' => 'branch_id',
         ),
     );
@@ -81,7 +85,7 @@ class Employe extends AppModel {
             ),
             'contain' => array(
                 'EmployePosition',
-                'City',
+                'Branch',
             ),
             'fields' => array(),
             'group' => array(),

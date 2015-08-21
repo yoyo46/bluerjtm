@@ -1,6 +1,3 @@
-<?php 
-        $cities = !empty($cities)?$cities:false;
-?>
 <div class="box">
     <div class="box-header">
         <h3 class="box-title">Pencarian</h3>
@@ -39,7 +36,6 @@
                                 'class'=>'form-control',
                                 'required' => false,
                                 'empty' => __('Pilih Cabang'),
-                                'options' => $cities
                             ));
                     ?>
                 </div>

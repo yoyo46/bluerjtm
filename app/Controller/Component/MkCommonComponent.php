@@ -586,8 +586,8 @@ class MkCommonComponent extends Component {
 
         if( is_array($branchs) ) {
             $moduleAllow = Configure::read('__Site.config_allow_module');
-            $branchAllow = Configure::read('__Site.config_list_branch_id');
-            // $branchAllow = array_keys($branchAllow);
+            $branchAllow = Configure::read('__Site.Data.Branch.id');
+
             $branchs = array_values($branchs);
             $controllerName = !empty($this->controller->params['controller'])?$this->controller->params['controller']:false;
             $actionName = $this->controller->action;
@@ -618,14 +618,12 @@ class MkCommonComponent extends Component {
 
         if( !empty($no_exact) ) {
             if( empty($resultExact) ) {
-                $this->setCustomFlash('Anda tidak mempunyai hak mengakses konten tersebut.', 'error');
-                $this->controller->redirect($this->controller->referer());
+                $this->controller->redirect('/');
             } else {
                 return true;
             }
         } else if( empty($result) ) {
-            $this->setCustomFlash('Anda tidak mempunyai hak mengakses konten tersebut.', 'error');
-            $this->controller->redirect($this->controller->referer());
+            $this->controller->redirect('/');
         } else {
             return true;
         }
@@ -640,7 +638,7 @@ class MkCommonComponent extends Component {
 
         if( is_array($branchs) ) {
             $moduleAllow = Configure::read('__Site.config_allow_module');
-            $branchAllow = Configure::read('__Site.config_list_branch_id');
+            $branchAllow = Configure::read('__Site.Data.Branch.id');
             // $branchAllow = array_keys($branchAllow);
 
             if( empty($controllerName) ) {
@@ -682,58 +680,97 @@ class MkCommonComponent extends Component {
         return $branchs;
     }
     
-    function getRefineGroupBranch ( $data, $refine ) {
-        if(!empty($refine)) {
-            if( !empty($refine['GroupBranch']['group_branch']) ) {
-                if( is_array($refine['GroupBranch']['group_branch']) ) {
-                    $group_branch = $refine['GroupBranch']['group_branch'];
-                    $group_branch = array_filter($group_branch);
-                    $group_branch = array_unique($group_branch);
-                    $group_branch = implode(',', $group_branch);
-                } else {
-                    $group_branch = $refine['GroupBranch']['group_branch'];
-                }
+    // function getRefineGroupBranch ( $data, $refine ) {
+    //     if(!empty($refine)) {
+    //         if( !empty($refine['GroupBranch']['group_branch']) ) {
+    //             if( is_array($refine['GroupBranch']['group_branch']) ) {
+    //                 $group_branch = $refine['GroupBranch']['group_branch'];
+    //                 $group_branch = array_filter($group_branch);
+    //                 $group_branch = array_unique($group_branch);
+    //                 $group_branch = implode(',', $group_branch);
+    //             } else {
+    //                 $group_branch = $refine['GroupBranch']['group_branch'];
+    //             }
 
-                $refine_conditions['GroupBranch']['group_branch'] = $group_branch;
-            }
-        }
+    //             $refine_conditions['GroupBranch']['group_branch'] = $group_branch;
+    //         }
+    //     }
 
-        if(isset($refine_conditions['GroupBranch']) && !empty($refine_conditions['GroupBranch'])) {
-            foreach($refine_conditions['GroupBranch'] as $param => $value) {
-                if($value) {
-                    $data[trim($param)] = rawurlencode($value);
-                }
-            }
-        }
+    //     if(isset($refine_conditions['GroupBranch']) && !empty($refine_conditions['GroupBranch'])) {
+    //         foreach($refine_conditions['GroupBranch'] as $param => $value) {
+    //             if($value) {
+    //                 $data[trim($param)] = rawurlencode($value);
+    //             }
+    //         }
+    //     }
 
-        return $data;
-    }
+    //     return $data;
+    // }
 
 
     
-    function getConditionGroupBranch ( $refine, $modelName, $options = false, $type = 'options' ) {
-        if(!empty($refine['group_branch'])){
-            if( !is_array($refine['group_branch']) ) {
-                $value = urldecode($refine['group_branch']);
-                $value = explode(',', $value);
-                $value = array_combine(array_keys(array_flip($value)), $value);
-            } else {
-                $value = $refine['group_branch'];
-                $value = array_filter($value);
-            }
+    // function getConditionGroupBranch ( $refine, $modelName, $options = false, $type = 'options' ) {
+    //     if(!empty($refine['group_branch'])){
+    //         if( !is_array($refine['group_branch']) ) {
+    //             $value = urldecode($refine['group_branch']);
+    //             $value = explode(',', $value);
+    //             $value = array_combine(array_keys(array_flip($value)), $value);
+    //         } else {
+    //             $value = $refine['group_branch'];
+    //             $value = array_filter($value);
+    //         }
 
-            $this->controller->request->data['GroupBranch']['group_branch'] = $value;
-            $fieldName = sprintf('%s.branch_id', $modelName);
-            $this->allowPage( $value );
+    //         $this->controller->request->data['GroupBranch']['group_branch'] = $value;
+    //         $fieldName = sprintf('%s.branch_id', $modelName);
+    //         $this->allowPage( $value );
 
-            if( $type == 'options' ) {
-                $options['conditions'][$fieldName] = $value;
+    //         if( $type == 'options' ) {
+    //             $options['conditions'][$fieldName] = $value;
+    //         } else {
+    //             $options[$fieldName] = $value;
+    //         }
+    //     }
+
+    //     return $options;
+    // }
+
+    function redirectReferer ( $msg, $status = 'error', $urlRedirect = false ) {
+        $this->setCustomFlash($msg, $status);
+
+        if( !empty($urlRedirect) ) {
+            $this->controller->redirect($urlRedirect);
+        } else {
+            $this->controller->redirect($this->controller->referer());
+        }
+    }
+
+    function setProcessParams ( $data, $urlRedirect = false ) {
+        if ( !empty($data['msg']) && !empty($data['status']) ) {
+            if ( $data['status'] == 'success' ) {
+                $this->redirectReferer($data['msg'], $data['status'], $urlRedirect);
             } else {
-                $options[$fieldName] = $value;
+                $this->setCustomFlash($data['msg'], $data['status']);
             }
+        } else if ( !empty( $data['data'] ) ) {
+            $this->controller->request->data = $data['data'];
+        }
+    }
+
+    function _layout_file ( $type ) {
+        switch ($type) {
+            case 'select':
+                $layout_js = array(
+                    'select2.full',
+                );
+                $layout_css = array(
+                    'select2.min',
+                );
+                break;
         }
 
-        return $options;
+        $this->controller->set(compact(
+            'layout_js', 'layout_css'
+        ));
     }
 }
 ?>

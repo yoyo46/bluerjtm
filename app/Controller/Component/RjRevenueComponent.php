@@ -203,7 +203,7 @@ class RjRevenueComponent extends Component {
 
         	if( !empty($is_plant) ) {
 				$this->City = ClassRegistry::init('City');
-	        	$plantCityId = $this->City->getCityIdPlants();
+        		$plantCityId = Configure::read('__Site.Branch.Plant.id');
 	            $conditions['Ttuj.from_city_id'] = $plantCityId;
 	        } else {
             	$conditions['Ttuj.from_city_id'] = Configure::read('__Site.config_branch_id');

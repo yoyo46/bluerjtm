@@ -390,11 +390,6 @@
 							));
 		        	?>
 		        </div>
-		        <!-- <div class="form-group">
-		        	<?php 
-							// echo $this->Common->branchForm('Driver', $allowBranch, 'vertical', __('Cabang Penerimaan *'));
-					?>
-		        </div> -->
 		    </div>
 		</div>
 		<?php

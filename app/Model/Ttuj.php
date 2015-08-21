@@ -126,7 +126,9 @@ class Ttuj extends AppModel {
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
         $branch = isset($elements['branch'])?$elements['branch']:true;
-        
+        $plant = isset($elements['plant'])?$elements['plant']:false;
+
+        $branch_is_plant = Configure::read('__Site.config_branch_plant');
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
@@ -151,7 +153,9 @@ class Ttuj extends AppModel {
                 break;
         }
 
-        if( !empty($branch) ) {
+        if( !empty($plant) && !empty($branch_is_plant) ) {
+            $default_options['conditions']['Ttuj.branch_id'] = Configure::read('__Site.Branch.Plant.id');
+        } else if( !empty($branch) ) {
             $default_options['conditions']['Ttuj.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
@@ -269,6 +273,8 @@ class Ttuj extends AppModel {
                 'Ttuj.is_sj_completed' => 0,
             ),
             'contain' => false,
+        ), true, array(
+            'plant' => true,
         ));
 
         return $sjCount;
@@ -391,6 +397,182 @@ class Ttuj extends AppModel {
         $data = $this->TtujPerlengkapan->getMerge($data, $ttuj_id);
 
         return $data;
+    }
+
+    function _callConditionBranch ( $conditions ) {
+        $current_branch_id = Configure::read('__Site.config_branch_id');
+        $branch_city_id = Configure::read('__Site.Branch.City.id');
+        $branch_city_bongkar_id = Configure::read('__Site.Branch.City.Bongkar.id');
+        $data_branch_city_id = Configure::read('__Site.Data.Branch.City.id');
+
+        $conditions['OR'] = array(
+            array(
+                'Ttuj.to_city_id' => $branch_city_id,
+                'Ttuj.branch_id' => $branch_city_bongkar_id,
+            ),
+            array(
+                'Ttuj.to_city_id <>' => $data_branch_city_id,
+                'Ttuj.branch_id' => $current_branch_id,
+            ),
+        );
+
+        return $conditions;
+    }
+
+    function getTtujAfterLeave ( $id, $action_type ) {
+        $current_branch_id = Configure::read('__Site.config_branch_id');
+        $branch_city_id = Configure::read('__Site.Branch.City.id');
+        $branch_city_bongkar_id = Configure::read('__Site.Branch.City.Bongkar.id');
+        $data_branch_city_id = Configure::read('__Site.Data.Branch.City.id');
+        $conditionsTtuj = array(
+            'Ttuj.is_draft' => 0,
+            'Ttuj.completed' => 0,
+            'Ttuj.is_laka' => 0,
+        );
+
+        switch ($action_type) {
+            case 'bongkaran':
+                if( !empty($id) ) {
+                    $conditionsTtuj['OR'] = array(
+                        array(
+                            'Ttuj.id' => $id,
+                        ),
+                        array(
+                            'Ttuj.is_arrive' => 1,
+                            'Ttuj.is_bongkaran <>' => 1,
+                        ),
+                    );
+                } else {
+                    $conditionsTtuj['Ttuj.is_arrive'] = 1;
+                    $conditionsTtuj['Ttuj.is_bongkaran <>'] = 1;
+                }
+                $conditionsTtuj = $this->_callConditionBranch($conditionsTtuj);
+                break;
+
+            case 'balik':
+                if( !empty($id) ) {
+                    $conditionsTtuj['OR'] = array(
+                        array(
+                            'Ttuj.id' => $id,
+                        ),
+                        array(
+                            'Ttuj.is_arrive' => 1,
+                            'Ttuj.is_bongkaran' => 1,
+                            'Ttuj.is_balik <>' => 1,
+                        ),
+                    );
+                } else {
+                    $conditionsTtuj['Ttuj.is_arrive'] = 1;
+                    $conditionsTtuj['Ttuj.is_bongkaran'] = 1;
+                    $conditionsTtuj['Ttuj.is_balik <>'] = 1;
+                }
+                $conditionsTtuj = $this->_callConditionBranch($conditionsTtuj);
+                break;
+
+            case 'pool':
+                if( !empty($id) ) {
+                    $conditionsTtuj['OR'] = array(
+                        array(
+                            'Ttuj.id' => $id,
+                        ),
+                        array(
+                            'Ttuj.is_arrive' => 1,
+                            'Ttuj.is_bongkaran' => 1,
+                            'Ttuj.is_balik' => 1,
+                            'Ttuj.is_pool <>' => 1,
+                        ),
+                    );
+                } else {
+                    $conditionsTtuj['Ttuj.is_arrive'] = 1;
+                    $conditionsTtuj['Ttuj.is_bongkaran'] = 1;
+                    $conditionsTtuj['Ttuj.is_balik'] = 1;
+                    $conditionsTtuj['Ttuj.is_pool <>'] = 1;
+                }
+                $conditionsTtuj = $this->_callConditionTtujPool($conditionsTtuj);
+                break;
+            
+            default:
+                if( !empty($id) ) {
+                    $conditionsTtuj['OR'] = array(
+                        array(
+                            'Ttuj.id' => $id,
+                        ),
+                        array(
+                            'Ttuj.is_arrive' => 0,
+                        ),
+                    );
+                } else {
+                    $conditionsTtuj['Ttuj.is_arrive'] = 0;
+                }
+                $conditionsTtuj = $this->_callConditionBranch($conditionsTtuj);
+                break;
+        }
+
+        return $this->getData('list', array(
+            'conditions' => $conditionsTtuj,
+            'fields' => array(
+                'Ttuj.id', 'Ttuj.no_ttuj'
+            ),
+        ), true, array(
+            'branch' => false,
+        ));
+    }
+
+    function _callDataTtujConditions ( $id, $action_type ) {
+        $conditionsDataLocal = array(
+            'Ttuj.id' => $id,
+            'Ttuj.is_draft' => 0,
+            'Ttuj.completed' => 0,
+            'Ttuj.status' => 1,
+        );
+
+        switch ($action_type) {
+            case 'bongkaran':
+                $conditionsDataLocal['Ttuj.is_arrive'] = 1;
+                $conditionsDataLocal['Ttuj.is_bongkaran <>'] = 1;
+                $conditionsDataLocal = $this->_callConditionBranch($conditionsDataLocal);
+                break;
+
+            case 'balik':
+                $conditionsDataLocal['Ttuj.is_arrive'] = 1;
+                $conditionsDataLocal['Ttuj.is_bongkaran'] = 1;
+                $conditionsDataLocal['Ttuj.is_balik <>'] = 1;
+                $conditionsDataLocal = $this->_callConditionBranch($conditionsDataLocal);
+                break;
+
+            case 'pool':
+                $conditionsDataLocal['Ttuj.is_arrive'] = 1;
+                $conditionsDataLocal['Ttuj.is_bongkaran'] = 1;
+                $conditionsDataLocal['Ttuj.is_balik'] = 1;
+                $conditionsDataLocal['Ttuj.is_pool <>'] = 1;
+                $conditions = $this->_callConditionTtujPool( $conditionsDataLocal );
+                break;
+            
+            default:
+                $conditionsDataLocal['Ttuj.is_arrive'] = 0;
+                $conditionsDataLocal = $this->_callConditionBranch($conditionsDataLocal);
+                break;
+        }
+
+        return $this->getData('first', array(
+            'conditions' => $conditionsDataLocal,
+        ), true, array(
+            'branch' => false,
+        ));
+    }
+
+    function _callConditionTtujPool ( $conditions ) {
+        $current_branch_id = Configure::read('__Site.config_branch_id');
+        $current_branch_plant = Configure::read('__Site.config_branch_plant');
+        $branch_plant_id = Configure::read('__Site.Branch.Plant.id');
+
+        if( !empty($current_branch_plant) ) {
+            $conditions['Ttuj.branch_id'] = $branch_plant_id;
+        } else {
+            $conditions['Ttuj.branch_id'] = $current_branch_id;
+        }
+
+        return $conditions;
     }
 }
 ?>

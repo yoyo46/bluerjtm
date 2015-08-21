@@ -14,28 +14,28 @@
 		    <div class="box-header">
 		        <div class="box-title">
 		        	<?php
-		        		echo $this->Form->input('city_id.', array(
-							'label'=> false, 
-							'class'=>'form-control auth-form-open',
-							'required' => false,
-							'options' => $branches,
-							'empty' => __('Pilih Cabang'),
-							'div' => false
-						));
+			        		echo $this->Form->input('branch_id.', array(
+								'label'=> false, 
+								'class'=>'form-control auth-form-open',
+								'required' => false,
+								'options' => $branches,
+								'empty' => __('Pilih Cabang'),
+								'div' => false
+							));
 
-						$link_check = $this->Html->link('checkall', 'javascript:', array(
-							'class' => 'branch-check',
-							'type-action' => 'checkall'
-						));
+							$link_check = $this->Html->link('checkall', 'javascript:', array(
+								'class' => 'branch-check',
+								'type-action' => 'checkall'
+							));
 
-						$link_uncheck = $this->Html->link('uncheckall', 'javascript:', array(
-							'class' => 'branch-check',
-							'type-action' => 'uncheckall'
-						));
+							$link_uncheck = $this->Html->link('uncheckall', 'javascript:', array(
+								'class' => 'branch-check',
+								'type-action' => 'uncheckall'
+							));
 
-						echo $this->Html->tag('div', sprintf('%s / %s', $link_check, $link_uncheck), array(
-							'class' => 'branch-action'
-						));
+							echo $this->Html->tag('div', sprintf('%s / %s', $link_check, $link_uncheck), array(
+								'class' => 'branch-action'
+							));
 		        	?>
 		        </div>
 		        <div class="box-tools pull-right">
@@ -62,29 +62,30 @@
 		    <div class="box-header">
 		        <div class="box-title">
 		        	<?php
-		        		echo $this->Form->input('city_id.',array(
-							'label'=> false, 
-							'class'=>'form-control auth-form-open',
-							'required' => false,
-							'options' => $branches,
-							'empty' => __('Pilih Cabang'),
-							'value' => $value['GroupBranch']['city_id'],
-							'div' => false
-						));
+			        		echo $this->Form->input('branch_id.',array(
+								'label'=> false, 
+								'class'=>'form-control auth-form-open',
+								'required' => false,
+								'options' => $branches,
+								'empty' => __('Pilih Cabang'),
+								'value' => $value['GroupBranch']['branch_id'],
+								'data-id' => $group_branch_id,
+								'div' => false,
+							));
 
-						$link_check = $this->Html->link('checkall', 'javascript:', array(
-							'class' => 'branch-check',
-							'type-action' => 'checkall'
-						));
+							$link_check = $this->Html->link('checkall', 'javascript:', array(
+								'class' => 'branch-check',
+								'type-action' => 'checkall'
+							));
 
-						$link_uncheck = $this->Html->link('uncheckall', 'javascript:', array(
-							'class' => 'branch-check',
-							'type-action' => 'uncheckall'
-						));
+							$link_uncheck = $this->Html->link('uncheckall', 'javascript:', array(
+								'class' => 'branch-check',
+								'type-action' => 'uncheckall'
+							));
 
-						echo $this->Html->tag('div', sprintf('%s / %s', $link_check, $link_uncheck), array(
-							'class' => 'branch-action'
-						));
+							echo $this->Html->tag('div', sprintf('%s / %s', $link_check, $link_uncheck), array(
+								'class' => 'branch-action'
+							));
 		        	?>
 		        </div>
 		        <div class="box-tools pull-right">
@@ -128,7 +129,7 @@
 ?>
 <div class="hide" id="temp-auth">
     <?php 
-			echo $this->Form->input('city_id.',array(
+			echo $this->Form->input('branch_id.',array(
 				'label'=> false, 
 				'class'=>'form-control auth-form-open',
 				'required' => false,

@@ -15,7 +15,7 @@
             ),
             'cabang' => array(
                 'name' => __('Cabang'),
-                'field_model' => 'City.name',
+                'field_model' => 'Branch.name',
                 'display' => true,
             ),
             'address' => array(
@@ -90,7 +90,7 @@
                             $created = $this->Common->filterEmptyField($value, 'Employe', 'created');
                             $status = $this->Common->filterEmptyField($value, 'Employe', 'status');
                             $position_name = $this->Common->filterEmptyField($value, 'EmployePosition', 'name');
-                            $branch_name = $this->Common->filterEmptyField($value, 'City', 'name');
+                            $branch_name = $this->Common->filterEmptyField($value, 'Branch', 'name');
                             $activate = array(
                                 'controller' => 'users',
                                 'action' => 'employe_toggle',

@@ -44,7 +44,7 @@
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Kota', array(
+                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
                     'controller' => 'settings',
                     'action' => 'city_add'
                 ), array(

@@ -57,9 +57,6 @@
                             ));
                     ?>
                 </div>
-                <?php 
-                        // echo $this->Common->getCheckboxBranch();
-                ?>
             </div>
         </div>
         <?php 

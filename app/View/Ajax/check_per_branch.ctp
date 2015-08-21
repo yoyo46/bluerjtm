@@ -2,22 +2,6 @@
 		if(!empty($branch_modules)){
 			$content_module = '';
 			foreach ($branch_modules as $key => $value_module) {
-				// $icon = '<i class="fa fa-times"></i>';
-				// if(!empty($data_auth[$value['BranchModule']['id']]) && $data_auth[$value['BranchModule']['id']] == $value['BranchModule']['id']){
-				// 	$icon = '<i class="fa fa-check"></i>';
-				// }
-
-				// $link_action = $this->Html->link(sprintf('%s %s', $icon, $value['BranchModule']['name']), 'javascript:', array(
-				// 	'action-id' => $value['BranchModule']['id'],
-				// 	'branch-id' => $group_branch_id,
-				// 	'class' => 'action-child-module',
-				// 	'escape' => false
-				// ));
-
-				// $list .= $this->Html->tag('li', $link_action, array(
-				// 	'rel' => $value['BranchModule']['id']
-				// ));
-
 				$content = $this->Html->tag('div', $this->Html->tag('label', $value_module['BranchModule']['name']), array(
 					'class' => 'col-sm-3'
 				) );

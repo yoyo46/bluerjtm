@@ -1133,8 +1133,18 @@ class CommonHelper extends AppHelper {
         ));
     }
 
-    function filterEmptyField ( $value, $modelName, $fieldName, $empty = false ) {
-        return !empty($value[$modelName][$fieldName])?$this->safeTagPrint($value[$modelName][$fieldName]):$empty;
+    function filterEmptyField ( $value, $modelName, $fieldName = false, $empty = false ) {
+        $result = '';
+        
+        if( empty($modelName) ) {
+            $result = !empty($value)?$value:$empty;
+        } else if( empty($fieldName) ) {
+            $result = !empty($value[$modelName])?$value[$modelName]:$empty;
+        } else {
+            $result = !empty($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
+        }
+
+        return $this->safeTagPrint($result);
     }
 
     function getMergePrepayment ( $prepayment, $class = false ) {
@@ -1358,7 +1368,6 @@ class CommonHelper extends AppHelper {
 
     function allowMenu ( $dataMenu ) {
         $allow = false;
-        // $branchs = Configure::read('__Site.config_list_branch_id');
         $branchs = Configure::read('__Site.config_branch_id');
         $_allowModule = Configure::read('__Site.config_allow_module');
         $group_id = Configure::read('__Site.config_group_id');
@@ -1393,9 +1402,7 @@ class CommonHelper extends AppHelper {
 
     function allowPage ( $branchs, $controllerName, $actionName ) {
         $moduleAllow = Configure::read('__Site.config_allow_module');
-        $branchAllow = Configure::read('__Site.config_list_branch_id');
-        // $branchAllow = Configure::read('__Site.config_allow_branch_id');
-        // $branchAllow = array_keys($branchAllow);
+        $branchAllow = Configure::read('__Site.Data.Branch.id');
         $result = false;
 
         if( !is_array($branchs) ) {
@@ -1425,38 +1432,38 @@ class CommonHelper extends AppHelper {
         return $result;
     }
 
-    function getCheckboxBranch () {
-        $result = '';
-        $branches = Configure::read('__Site.config_allow_branchs');
+    // function getCheckboxBranch () {
+    //     $result = '';
+    //     $branches = Configure::read('__Site.config_allow_branchs');
 
-        if( !empty($branches) && count($branches) > 1 ) {
-            $tmpArr = array();
+    //     if( !empty($branches) && count($branches) > 1 ) {
+    //         $tmpArr = array();
 
-            foreach ($branches as $branch_id => $city_name) {
-                $tmpArr[] = $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('GroupBranch.group_branch.'.$branch_id, array(
-                    'type' => 'checkbox',
-                    'label'=> false,
-                    'required' => false,
-                    'value' => $branch_id,
-                    'div' => false,
-                )).$city_name), array(
-                    'class' => 'checkbox',
-                )), array(
-                    'class' => 'col-sm-12 col-md-6',
-                ));
-            }
+    //         foreach ($branches as $branch_id => $city_name) {
+    //             $tmpArr[] = $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('GroupBranch.group_branch.'.$branch_id, array(
+    //                 'type' => 'checkbox',
+    //                 'label'=> false,
+    //                 'required' => false,
+    //                 'value' => $branch_id,
+    //                 'div' => false,
+    //             )).$city_name), array(
+    //                 'class' => 'checkbox',
+    //             )), array(
+    //                 'class' => 'col-sm-12 col-md-6',
+    //             ));
+    //         }
 
-            if( !empty($tmpArr) && count($tmpArr) > 1 ) {
-                $result = $this->Html->tag('div', $this->Html->tag('div', implode('', $tmpArr), array(
-                    'class' => 'row',
-                )), array(
-                    'class' => 'form-group',
-                ));
-            }
-        }
+    //         if( !empty($tmpArr) && count($tmpArr) > 1 ) {
+    //             $result = $this->Html->tag('div', $this->Html->tag('div', implode('', $tmpArr), array(
+    //                 'class' => 'row',
+    //             )), array(
+    //                 'class' => 'form-group',
+    //             ));
+    //         }
+    //     }
 
-        return $result;
-    }
+    //     return $result;
+    // }
 
     function convertPriceToString ( $price, $result = '' ) {
         if( !empty($price) ) {
@@ -1488,5 +1495,124 @@ class CommonHelper extends AppHelper {
         }
 
         return $content;
+    }
+
+    function buildForm ( $fieldName, $fieldLabel, $options = array(), $position = 'vertical' ) {
+        $result = '';
+        $labelText = false;
+        $fieldDiv = false;
+        $id_form = $this->filterEmptyField($options, 'id');
+        $size = $this->filterEmptyField($options, 'size');
+        $type = $this->filterEmptyField($options, 'type');
+        $error = $this->filterEmptyField($options, 'error', false, true);
+        $_options = $this->filterEmptyField($options, 'options');
+        $description = $this->filterEmptyField($options, 'description');
+        $empty = $this->filterEmptyField($options, 'empty');
+        $readonly = $this->filterEmptyField($options, 'readonly');
+        $placeholder = $this->filterEmptyField($options, 'placeholder');
+        $addClass = $this->filterEmptyField($options, 'class');
+        $classSize = false;
+
+        switch ($size) {
+            case 'small':
+                $classSize = 'col-sm-3';
+                break;
+
+            case 'medium':
+                $classSize = 'col-sm-6';
+                break;
+        }
+
+        switch ($position) {
+            case 'horizontal':
+                $result .= $this->Form->label($fieldName, $fieldLabel, array(
+                    'class' => 'col-sm-3 text-right',
+                ));
+                $classSize = $this->filterEmptyField($classSize, false, false, 'col-sm-9');
+
+                $fieldDiv = array(
+                    'class' => $classSize,
+                );
+                break;
+            
+            default:
+                $labelText = $fieldLabel;
+                break;
+        }
+
+        $default_options = array(
+            'id' => $id_form,
+            'label' => $labelText,
+            'required' => false,
+            'div' => $fieldDiv,
+            'empty' => $empty,
+            'readonly' => $readonly,
+            'placeholder' => $placeholder,
+            'class' => 'form-control '.$addClass,
+        );
+
+        if( !empty($type) ) {
+            if( $type == 'checkbox' ) {
+                $default_options['class'] = '';
+            }
+
+            $default_options['type'] = $type;
+        }
+
+        if( !is_array($options) ) {
+            $default_options = array_merge_recursive($default_options, $options);
+        }
+
+        switch ($type) {
+            case 'radio':
+                $inputContent = $this->_View->element('blocks/common/forms/multiple_radio', array(
+                    'options' => $_options,
+                    'fieldName' => $fieldName,
+                    'error' => $error,
+                    'label' => $labelText,
+                ));
+
+                if( $position == 'horizontal' ) {
+                    $result =  $this->Html->tag('div', $result.$this->Html->tag('div', $inputContent, array(
+                        'class' => $classSize,
+                    )), array(
+                        'class' => 'form-group',
+                    ));
+                } else {
+                    $result =  $this->Html->tag('div', $inputContent, array(
+                        'class' => 'form-group',
+                    ));
+                }
+                break;
+            
+            default:
+                if( !empty($_options) ) {
+                    $default_options['options'] = $_options;
+                }
+
+                if( !empty($fieldDiv) && !empty($description) ) {
+                    $default_options['div'] = false;
+                    $inputContent = $this->Html->tag('div', $this->Form->input($fieldName, $default_options).$description, array(
+                        'class' => $fieldDiv,
+                    ));
+                } else {
+                    $inputContent = $this->Form->input($fieldName, $default_options).$description;
+                }
+
+                $result =  $this->Html->tag('div', $result.$inputContent, array(
+                    'class' => 'form-group',
+                ));
+                break;
+        }
+
+        if( $position == 'vertical' && !empty($classSize) ) {
+            $result = $this->Html->tag('div', $this->Html->tag('div', $result, array(
+                'class' => $classSize,
+            )), array(
+                'class' => 'row',
+            ));
+        }
+
+        return $result;
     }
 }
