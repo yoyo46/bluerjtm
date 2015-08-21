@@ -2,6 +2,16 @@
 class Branch extends AppModel {
 	var $name = 'Branch';
 	var $validate = array(
+        'code' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Kode cabang harap diisi'
+            ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'Kode cabang telah terdaftar',
+            ),
+        ),
         'name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

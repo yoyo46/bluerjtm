@@ -1,5 +1,10 @@
 <?php 
         $dataColumns = array(
+            'code' => array(
+                'name' => __('Kode'),
+                'field_model' => 'Branch.code',
+                'display' => true,
+            ),
             'name' => array(
                 'name' => __('Nama'),
                 'field_model' => 'Branch.name',
@@ -76,6 +81,7 @@
                     if(!empty($branchs)){
                         foreach ($branchs as $key => $value) {
                             $id = $this->Common->filterEmptyField($value, 'Branch', 'id');
+                            $code = $this->Common->filterEmptyField($value, 'Branch', 'code');
                             $name = $this->Common->filterEmptyField($value, 'Branch', 'name');
                             $city = $this->Common->filterEmptyField($value, 'City', 'name');
                             $address = $this->Common->filterEmptyField($value, 'Branch', 'address');
@@ -88,6 +94,7 @@
                             $head_office = $this->Common->getCheckStatus( $head_office );
             ?>
             <tr>
+                <td><?php echo $code;?></td>
                 <td><?php echo $name;?></td>
                 <td><?php echo $city;?></td>
                 <td><?php echo $address;?></td>

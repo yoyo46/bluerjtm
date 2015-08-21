@@ -22,6 +22,7 @@
 		    </div>
 		    <div class="box-body">
     			<?php 
+		    			echo $this->Common->buildForm('code', __('Kode Cabang *'));
 		    			echo $this->Common->buildForm('name', __('Nama Cabang *'));
 		    			echo $this->Common->buildForm('city_id', __('Kota *'), array(
 		    				'class' => 'chosen-select',
