@@ -59,7 +59,7 @@ class TruckCustomer extends AppModel {
             ),
             'contain' => array(),
             'fields' => array(),
-            'groups' => array(),
+            'group' => array(),
 		);
 
         if( !empty($options) && $is_merge ){
@@ -79,6 +79,9 @@ class TruckCustomer extends AppModel {
             }
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
+            }
+            if(!empty($options['groups'])){
+                $default_options['groups'] = $options['groups'];
             }
         } else if( !empty($options) ) {
             $default_options = $options;

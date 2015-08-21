@@ -2,6 +2,12 @@
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $text = __('Semua Truk');
         $dataColumns = array(
+            'branch' => array(
+                'name' => __('Cabang'),
+                'field_model' => 'Branch.name',
+                'sorting' => false,
+                'display' => true,
+            ),
             'nomor_id' => array(
                 'name' => __('No. ID'),
                 'field_model' => 'Truck.id',
@@ -153,11 +159,16 @@
                 <?php
                     if(!empty($trucks)){
                         foreach ($trucks as $key => $truck) {
+                            $branch = !empty($truck['Branch']['name'])?$truck['Branch']['name']:false;
                             $driver_name = !empty($truck['Driver']['driver_name'])?$truck['Driver']['driver_name']:false;
                             $brand_name = !empty($truck['TruckBrand']['name'])?$truck['TruckBrand']['name']:false;
                             $facility_name = !empty($truck['TruckFacility']['name'])?$truck['TruckFacility']['name']:false;
                             
-                            $content = $this->Common->_getDataColumn(str_pad($truck['Truck']['id'], 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
+                            $content = $this->Common->_getDataColumn($branch, 'Branch', 'name', array(
+                                'style' => 'text-align: left;',
+                                'class' => 'branch',
+                            ));
+                            $content .= $this->Common->_getDataColumn(str_pad($truck['Truck']['id'], 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
                                 'class' => 'hide nomor_id',
                                 'style' => 'text-align: left;',
                             ));
@@ -271,12 +282,16 @@
 
         if(!empty($trucks)){
             foreach ($trucks as $truck):
+                $branch = !empty($truck['Branch']['name'])?$truck['Branch']['name']:false;
                 $driver_name = !empty($truck['Driver']['driver_name'])?$truck['Driver']['driver_name']:false;
                 $customer_code = !empty($truck['CustomerNoType']['code'])?$truck['CustomerNoType']['code']:false;
                 $truck_facility = !empty($truck['TruckFacility']['name'])?$truck['TruckFacility']['name']:false;
                 $brand_name = !empty($truck['TruckBrand']['name'])?$truck['TruckBrand']['name']:false;
 
-                $content = $this->Common->_getDataColumn(str_pad($truck['Truck']['id'], 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
+                $content = $this->Common->_getDataColumn($branch, 'Branch', 'name', array(
+                    'style' => 'text-align: left;',
+                ));
+                $content .= $this->Common->_getDataColumn(str_pad($truck['Truck']['id'], 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
                     'style' => 'text-align: left;',
                 ));
                 $content .= $this->Common->_getDataColumn($truck['Truck']['nopol'], 'Truck', 'nopol', array(

@@ -23,6 +23,7 @@ class TrucksController extends AppController {
             $data = $this->request->data;
             $refine = $this->RjTruck->processRefine($data);
             $params = $this->RjTruck->generateSearchURL($refine);
+            $params = $this->MkCommon->getRefineGroupBranch($params, $data);
             $params['action'] = $index;
 
             $this->redirect($params);
@@ -341,6 +342,7 @@ class TrucksController extends AppController {
                             }
                             $data_customer[$key]['TruckCustomer']['customer_id'] = $value;
                             $data_customer[$key]['TruckCustomer']['truck_id'] = $truck_id;
+                            $data_customer[$key]['TruckCustomer']['branch_id'] = Configure::read('__Site.config_branch_id');
                         }
                     }
                     $this->Truck->TruckCustomer->saveMany($data_customer);
@@ -2837,8 +2839,11 @@ class TrucksController extends AppController {
     function reports($data_action = false) {
         $this->set('active_menu', 'reports');
         $this->set('sub_module_title', __('Laporan Truk'));
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         
-        $defaul_condition = array();
+        $defaul_condition = array(
+            'Truck.branch_id' => $allow_branch_id,
+        );
         $from_date = '';
         $to_date = '';
 
@@ -2903,6 +2908,9 @@ class TrucksController extends AppController {
                 $defaul_condition['CustomerNoType.code LIKE'] = '%'.$data.'%';
                 $this->request->data['Truck']['alokasi'] = $data;
             }
+
+            // Custom Otorisasi
+            $defaul_condition = $this->MkCommon->getConditionGroupBranch( $refine, 'Truck', $defaul_condition, 'conditions' );
         }
 
         if(!empty($from_date)){
@@ -2943,7 +2951,9 @@ class TrucksController extends AppController {
                 'TruckCategory',
                 'TruckCustomer',
                 'CustomerNoType',
-            )
+            ),
+        ), true, array(
+            'branch' => false,
         ));
 
         if( !empty($data_action) ) {
@@ -2957,6 +2967,7 @@ class TrucksController extends AppController {
 
         if( !empty($trucks) ) {
             foreach ($trucks as $key => $truck) {
+                $branch_id = !empty($truck['Truck']['branch_id'])?$truck['Truck']['branch_id']:false;
                 $driver_id = !empty($truck['Truck']['driver_id'])?$truck['Truck']['driver_id']:false;
                 $truck_brand_id = !empty($truck['Truck']['truck_brand_id'])?$truck['Truck']['truck_brand_id']:false;
                 $truck_facility_id = !empty($truck['Truck']['truck_facility_id'])?$truck['Truck']['truck_facility_id']:false;
@@ -2964,6 +2975,7 @@ class TrucksController extends AppController {
                 $truck = $this->Truck->Driver->getMerge( $truck, $driver_id );
                 $truck = $this->Truck->TruckBrand->getMerge($truck, $truck_brand_id);
                 $truck = $this->Truck->TruckFacility->getMerge($truck, $truck_facility_id);
+                $truck = $this->GroupBranch->Branch->getMerge($truck, $branch_id);
                 $trucks[$key] = $truck;
             }
         }
@@ -3103,8 +3115,30 @@ class TrucksController extends AppController {
         $this->loadModel('Customer');
         $this->set('active_menu', 'capacity_report');
         $this->set('sub_module_title', __('Laporan Truk Per Kapasitas'));
+
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        $conditions = array(
+            'Customer.branch_id' => $allow_branch_id,
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['code'])){
+                $value = urldecode($refine['code']);
+                $this->request->data['Truck']['customer_code'] = $value;
+                $conditions['Customer.code LIKE'] = '%'.$value.'%';
+            }
+
+            // Custom Otorisasi
+            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Customer', $conditions, 'conditions' );
+        }
         
-        $options = $this->Customer->getData('paginate');
+        $options = $this->Customer->getData('paginate', array(
+            'conditions' => $conditions,
+        ), true, array(
+            'branch' => false,
+        ));
 
         if( !empty($data_action) ) {
             $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
@@ -3150,6 +3184,8 @@ class TrucksController extends AppController {
                     'TruckCustomer.customer_id',
                     'COUNT(Truck.id) AS cnt',
                 ),
+            ), true, array(
+                'branch' => false,
             ));
 
             if( !empty($trucks) ) {
@@ -3160,6 +3196,12 @@ class TrucksController extends AppController {
                         $truckArr[$customer_id][$capacity] = $truck[0]['cnt'];
                     }
                 }
+            }
+
+            foreach ($customers as $key => $value) {
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'branch_id');
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                $customers[$key] = $value;
             }
         }
 
@@ -3225,6 +3267,11 @@ class TrucksController extends AppController {
         $this->loadModel('CustomerTargetUnitDetail');
         $this->set('active_menu', 'point_perday_report');
         $this->set('sub_module_title', __('Laporan Pencapaian Per Point Per Day'));
+
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        $conditions = array(
+            'Customer.branch_id' => $allow_branch_id,
+        );
         
         if( !empty($this->params['named']) ) {
             $refine = $this->params['named'];
@@ -3241,11 +3288,18 @@ class TrucksController extends AppController {
                     }
                 }
             }
+
+            // Custom Otorisasi
+            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Customer', $conditions, 'conditions' );
         }
 
         $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
         $lastDay = date('t', strtotime($currentMonth));
-        $options = $this->Customer->getData('paginate');
+        $options = $this->Customer->getData('paginate', array(
+            'conditions' => $conditions,
+        ), true, array(
+            'branch' => false,
+        ));
 
         if( !empty($data_action) ) {
             $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
@@ -3255,6 +3309,14 @@ class TrucksController extends AppController {
 
         $this->paginate = $options;
         $customers = $this->paginate('Customer');
+
+        if( !empty($customers) ) {
+            foreach ($customers as $key => $value) {
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'branch_id');
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                $customers[$key] = $value;
+            }
+        }
 
         $customerArr = Set::extract('/Customer/id', $customers);
         $ttujs = $this->TtujTipeMotor->getData('all', array(
@@ -3353,6 +3415,12 @@ class TrucksController extends AppController {
         $this->loadModel('Customer');
         $this->loadModel('CustomerTargetUnitDetail');
         $this->set('sub_module_title', __('Laporan Pencapaian Per Point Per Plant'));
+
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        $conditionsCustomer = array(
+            'Customer.customer_type_id' => 2,
+            'Customer.branch_id' => $allow_branch_id,
+        );
         
         if( !empty($this->params['named']) ) {
             $refine = $this->params['named'];
@@ -3369,13 +3437,13 @@ class TrucksController extends AppController {
                     }
                 }
             }
+
+            // Custom Otorisasi
+            $conditionsCustomer = $this->MkCommon->getConditionGroupBranch( $refine, 'Customer', $conditionsCustomer, 'conditions' );
         }
 
         $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
         $lastDay = date('t', strtotime($currentMonth));
-        $conditionsCustomer = array(
-            'Customer.customer_type_id' => 2,
-        );
 
         if( $data_type == 'retail' ) {
             $conditionsCustomer['Customer.customer_type_id'] = 1;
@@ -3393,8 +3461,18 @@ class TrucksController extends AppController {
             $options['limit'] = 20;
         }
 
-        $this->paginate = $this->Customer->getData('paginate', $options);
+        $this->paginate = $this->Customer->getData('paginate', $options, true, array(
+            'branch' => false,
+        ));
         $customers = $this->paginate('Customer');
+
+        if( !empty($customers) ) {
+            foreach ($customers as $key => $value) {
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'branch_id');
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                $customers[$key] = $value;
+            }
+        }
         
         $customerArr = Set::extract('/Customer/id', $customers);
         $group = array(
@@ -3502,7 +3580,11 @@ class TrucksController extends AppController {
         $this->loadModel('Truck');
         $this->loadModel('Customer');
 
-        $conditions = array();
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        $conditions = array(
+            'Truck.branch_id' => $allow_branch_id,
+        );
+
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
 
@@ -3572,6 +3654,8 @@ class TrucksController extends AppController {
                 $conditions['TruckCustomer.customer_id'] = $data;
                 $this->request->data['TruckCustomer']['customer_id'] = $data;
             }
+            
+            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Truck', $conditions, 'conditions' );
         }
         
         $this->Truck->unBindModel(array(
@@ -3600,15 +3684,30 @@ class TrucksController extends AppController {
                 )
             ),
             'limit' => 10
+        ), true, array(
+            'branch' => false,
         ));
 
         $trucks = $this->paginate('Truck');
+
+        if( !empty($trucks) ) {
+            foreach ($trucks as $key => $value) {
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'branch_id');
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                $trucks[$key] = $value;
+            }
+        }
 
         $this->loadModel('Customer');
         $customers = $this->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
+            'conditions' => array(
+                'Customer.branch_id' => $allow_branch_id,
+            ),
+        ), true, array(
+            'branch' => false,
         ));
         $this->set('active_menu', 'licenses_report');
         $sub_module_title = __('Laporan Surat-surat Truk');

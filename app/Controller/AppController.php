@@ -86,7 +86,7 @@ class AppController extends Controller {
 		    		'Branch.id', 'Branch.city_id',
 	    		),
 	    	));
-	    	
+
 	    	$city_branches = array_values($city_branches);
 
 			Configure::write('__Site.Data.Branch', $list_branches);
@@ -147,70 +147,85 @@ class AppController extends Controller {
 			);
 			Configure::write('__Site.allowed_module', $_allowedModule);
 
-			$conditionsBranch = array(
-				'GroupBranch.branch_id' => $current_branch_id,
-			);
+			$is_allow = false;
+			$current_group_branch_id = false;
+			$conditionsBranch = array();
+			$group_branches = array();
 
 			if( $GroupId != 1 ) {
 				$conditionsBranch['GroupBranch.group_id'] = $GroupId;
 			}
 
-			$groupBranch = $this->GroupBranch->getData('first', array(
-				'conditions' => $conditionsBranch,
-			));
+	    	$groupBranch = $this->GroupBranch->_callAllowListBranch($conditionsBranch);
 
-			$current_group_branch_id = $this->MkCommon->filterEmptyField($groupBranch, 'GroupBranch', 'id');
-			$is_allow = false;
+	    	if( !empty($groupBranch) ) {
+	    		foreach ($groupBranch as $key => $value) {
+					$_group_branch_id = $this->MkCommon->filterEmptyField($value, 'GroupBranch', 'id');
+					$_branch_id = $this->MkCommon->filterEmptyField($value, 'GroupBranch', 'branch_id');
+					$_branch_name = $this->MkCommon->filterEmptyField($value, 'Branch', 'name');
+					$group_branches[$_branch_id] = $_branch_name;
 
-			if( !empty($current_group_branch_id) ) {
-				$branchActionModule = $this->BranchActionModule->getData('all', array(
-					'conditions' => array(
-						'BranchActionModule.group_branch_id' => $current_group_branch_id,
-						'BranchActionModule.is_allow' => 1,
-						'BranchModule.status' => 1,
-					),
-					'contain' => array(
-						'BranchModule',
-					)
-				));
+					if( $_branch_id == $current_branch_id ) {
+						$current_group_branch_id = $_group_branch_id ;
+					}
 
-				if( !empty($branchActionModule) ) {
-					foreach ($branchActionModule as $key => $value) {
-						$controllerName = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'controller');
-						$actionName = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'action');
-						$extend_action = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'extend_action');
-						$allow_function = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'allow_function');
+					if( !empty($_group_branch_id) ) {
+						$branchActionModule = $this->BranchActionModule->getData('all', array(
+							'conditions' => array(
+								'BranchActionModule.group_branch_id' => $_group_branch_id,
+								'BranchActionModule.is_allow' => 1,
+								'BranchModule.status' => 1,
+							),
+							'contain' => array(
+								'BranchModule',
+							)
+						));
 
-						$_allowModule[$current_branch_id][$controllerName]['action'][] = $actionName;
+						if( !empty($branchActionModule) ) {
+							foreach ($branchActionModule as $key => $value) {
+								$controllerName = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'controller');
+								$actionName = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'action');
+								$extend_action = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'extend_action');
+								$allow_function = $this->MkCommon->filterEmptyField($value, 'BranchModule', 'allow_function');
 
-						if( !empty($extend_action) ) {
-							$_allowModule[$current_branch_id][$controllerName]['extends'][$actionName] = $extend_action;
-						}
-						if( !empty($allow_function) ) {
-							$allow_function = explode(',', $allow_function);
-							
-							foreach ($allow_function as $key => $function) {
-								$functionArr = explode('-', $function);
-								$function = !empty($functionArr[0])?$functionArr[0]:$function;
-								$controllerName = !empty($functionArr[1])?$functionArr[1]:$controllerName;
+								$_allowModule[$_branch_id][$controllerName]['action'][] = $actionName;
 
-								$_allowModule[$current_branch_id][$controllerName]['action'][] = $function;
+								if( !empty($extend_action) ) {
+									$_allowModule[$_branch_id][$controllerName]['extends'][$actionName] = $extend_action;
+								}
+								if( !empty($allow_function) ) {
+									$allow_function = explode(',', $allow_function);
+									
+									foreach ($allow_function as $key => $function) {
+										$functionArr = explode('-', $function);
+										$function = !empty($functionArr[0])?$functionArr[0]:$function;
+										$controllerName = !empty($functionArr[1])?$functionArr[1]:$controllerName;
+
+										$_allowModule[$_branch_id][$controllerName]['action'][] = $function;
+									}
+								}
 							}
 						}
 					}
-				}
+	    		}
+	    	}
 
-				if($paramController == 'revenues' && $paramAction == 'index'){
-					// 327 = module revenue
-					$another_rule = $this->BranchActionModule->getRuleByModule(327, $current_group_branch_id);
-				}
+
+			if($paramController == 'revenues' && $paramAction == 'index'){
+				// 327 = module revenue
+				$another_rule = $this->BranchActionModule->getRuleByModule(327, $current_group_branch_id);
 			}
 
+            Configure::write('__Site.Data.Group.Branch', $group_branches);
 			Configure::write('__Site.config_allow_module', $_allowModule);
 			Configure::write('__Site.config_branch_id', $current_branch_id);
 			
+			$allowBranch = $this->MkCommon->allowBranch($group_branches);
 			$allowAction = !empty($_allowedModule[$paramController])?$_allowedModule[$paramController]:array();
 			$allowPage = in_array($paramAction, $allowAction)?true:false;
+
+			Configure::write('__Site.config_allow_branchs', $allowBranch);
+			Configure::write('__Site.config_allow_branch_id', array_keys($allowBranch));
 
 			if( !empty($allowPage) || $paramController == 'ajax' || $GroupId == 1 ){
 				$is_allow = true;
@@ -219,6 +234,14 @@ class AppController extends Controller {
 
 				if( !empty($allowPage) ){
 					$is_allow = true;
+				}
+			}
+
+			if( !empty($this->request->data['Default']['branch_id']) ) {
+				$change_branch = $this->request->data['Default']['branch_id'];
+
+				if( empty($allowBranch[$change_branch]) ) {
+					$is_allow = false;
 				}
 			}
 			

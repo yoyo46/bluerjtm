@@ -56,6 +56,7 @@
             <thead>
                 <tr>
                     <?php
+                            echo $this->Html->tag('th', __('Cabang'));
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.nopol', __('Nopol')));
                             echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.name', __('Alokasi')));
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_stnk', __('STNK 1TH')));
@@ -71,8 +72,10 @@
                         foreach ($trucks as $key => $truck) {
                         	$now_date = date('Y-m-d');
                         	$raw_now_date = strtotime($now_date);
+                            $branch = $this->Common->filterEmptyField($truck, 'Branch', 'name');
 
-                            $content = $this->Html->tag('td', $truck['Truck']['nopol']);
+                            $content = $this->Html->tag('td', $branch);
+                            $content .= $this->Html->tag('td', $truck['Truck']['nopol']);
                             $customer = '-';
                             if(!empty($truck['TruckCustomer']['CustomerNoType']['name'])){
                             	$customer = $truck['TruckCustomer']['CustomerNoType']['name'];
@@ -181,7 +184,7 @@
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data Tidak Ditemukan.'), array(
                             'class' => 'alert-danger text-center',
-                            'colspan' => 6
+                            'colspan' => 7
                         )));
                     }
                 ?>
@@ -232,7 +235,6 @@
         $table = 'width:100%;font-size: 24px; border: 1px solid #CCC; border-collapse: collapse; padding: 0; margin: 0;';
         
         $each_loop_message = '';
-        $no = 1;
         $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
             'style' => 'font-size: 24px;font-style: italic;margin-top: 10px;'
         ));
@@ -241,8 +243,9 @@
             foreach ($trucks as $truck):
                 $now_date = date('Y-m-d');
                 $raw_now_date = strtotime($now_date);
+                $branch = $this->Common->filterEmptyField($truck, 'Branch', 'name');
 
-                $content = $this->Html->tag('td', $no);
+                $content = $this->Html->tag('td', $branch);
                 $content .= $this->Html->tag('td', $truck['Truck']['nopol']);
 
                 $customer = '-';
@@ -337,7 +340,6 @@
                 $content .= $this->Html->tag('td', $label_siup);
 
                 $each_loop_message .= $this->Html->tag('tr', $content);
-                $no++;
             endforeach;
         }else{
             $each_loop_message .= '<tr>
@@ -353,7 +355,6 @@ $tbl = <<<EOD
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <tbody>
             <tr style="$table_tr_head">
-                <th>No. </th>
                 <th>Nopol</th>
                 <th>Alokasi</th>
                 <th>STNK 1TH</th>

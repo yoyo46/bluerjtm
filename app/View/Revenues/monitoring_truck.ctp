@@ -52,6 +52,9 @@
             <thead frozen="true">
                 <tr>
                     <?php 
+                            echo $this->Html->tag('th', __('Cabang'), array(
+                                'style' => 'text-align: center;min-width: 100px;',
+                            ));
                             echo $this->Html->tag('th', __('Truk'), array(
                                 'style' => 'text-align: center;min-width: 100px;',
                             ));
@@ -73,8 +76,10 @@
                             foreach ($trucks as $key => $truck) {
                                 $nopol = $truck['Truck']['nopol'];
                                 $truck_id = $truck['Truck']['id'];
+                                $branch = $this->Common->filterEmptyField($truck, 'Branch', 'name');
 
                                 echo '<tr>';
+                                echo $this->Html->tag('td', $branch);
                                 echo $this->Html->tag('td', $nopol, array(
                                     'class' => 'text-center',
                                 ));

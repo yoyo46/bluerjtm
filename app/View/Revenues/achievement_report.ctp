@@ -91,7 +91,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'ritase_report', 
+                                'action' => 'achievement_report', 
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',
@@ -127,6 +127,12 @@
                             ?>
                         </div>
                     </div>
+                    <div class="col-sm-12">
+                        <?php 
+                                // Custom Otorisasi
+                                echo $this->Common->getCheckboxBranch();
+                        ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -142,14 +148,18 @@
     <div class="row no-print print-action">
         <div class="col-xs-12 action">
             <?php
-                    $urlExcel = $this->passedArgs;
+                    $urlDefault = $this->passedArgs;
+                    $urlDefault['controller'] = 'revenues';
+                    $urlDefault['action'] = 'achievement_report';
+
+                    $urlExcel = $urlDefault;
                     $urlExcel[] = 'excel';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
                         'escape' => false,
                         'class' => 'btn btn-success pull-right'
                     ));
 
-                    $urlPdf = $this->passedArgs;
+                    $urlPdf = $urlDefault;
                     $urlPdf[] = 'pdf';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
                         'escape' => false,
@@ -166,9 +176,14 @@
             <thead frozen="true">
                 <tr>
                     <?php 
+                            echo $this->Html->tag('th', __('Cabang'), array(
+                                'style' => 'text-align: center;width: 150px;',
+                                'data-options' => 'field:\'branch\',width:120',
+                                'rowspan' => $headerRowspan,
+                            ));
                             echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.code', __('ALOKASI')), array(
                                 'style' => 'text-align: center;width: 150px;',
-                                'data-options' => 'field:\'customer_code\',width:150,sortable:true',
+                                'data-options' => 'field:\'customer_code\',width:150,',
                                 'rowspan' => $headerRowspan,
                             ));
 
@@ -241,11 +256,15 @@
                             foreach ($ttujs as $key => $value) {
                                 $id = $value['CustomerNoType']['id'];
                                 $customer_name = !empty($value['CustomerNoType']['code'])?$value['CustomerNoType']['code']:'-';
+                                $customer_name = !empty($value['CustomerNoType']['code'])?$value['CustomerNoType']['code']:'-';
+                                $branch = $this->Common->filterEmptyField($value, 'Branch', 'name');
+
                                 $totalSidePencapaian = 0;
                                 $totalSideTarget = 0;
                 ?>
                 <tr>
                     <?php 
+                            echo $this->Html->tag('td', $branch);
                             echo $this->Html->tag('td', $customer_name);
 
                             if( !empty($totalCnt) ) {
@@ -300,7 +319,10 @@
                 ?>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('td', __('Total'));
+                            echo $this->Html->tag('td', '&nbsp;');
+                            echo $this->Html->tag('td', __('Total'), array(
+                                'style' => 'font-weight: bold;'
+                            ));
 
                             if( !empty($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {
@@ -382,11 +404,13 @@
 
                 foreach ($ttujs as $key => $value) {
                     $id = $value['CustomerNoType']['id'];
+                    $branch = $this->Common->filterEmptyField($value, 'Branch', 'name');
                     $customer_name = !empty($value['CustomerNoType']['code'])?$value['CustomerNoType']['code']:'-';
                     $totalSidePencapaian = 0;
                     $totalSideTarget = 0;
 
                     $content = $this->Html->tag('td', $no);
+                    $content .= $this->Html->tag('td', $branch);
                     $content .= $this->Html->tag('td', $customer_name);
 
                     if( !empty($totalCnt) ) {
@@ -560,6 +584,7 @@ $tbl = <<<EOD
             <thead>
                 <tr style="$table_tr_head">
                     <th rowspan="2">No. </th>
+                    <th rowspan="2">Cabang</th>
                     <th rowspan="2">ALOKASI</th>
                     $topHeader
                 </tr>

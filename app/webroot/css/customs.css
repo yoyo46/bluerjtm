@@ -164,10 +164,6 @@ ul.list-calendar {
 .monitoring td {
 	height: 47px;
 }
-
-.list-report-monitoring .checkbox:first-child {
-	margin-top: -5px;
-}
 /*
 **	END Truck
 */

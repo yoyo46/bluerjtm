@@ -639,7 +639,6 @@ class MkCommonComponent extends Component {
         if( is_array($branchs) ) {
             $moduleAllow = Configure::read('__Site.config_allow_module');
             $branchAllow = Configure::read('__Site.Data.Branch.id');
-            // $branchAllow = array_keys($branchAllow);
 
             if( empty($controllerName) ) {
                 $controllerName = $this->controller->params['controller'];
@@ -680,59 +679,59 @@ class MkCommonComponent extends Component {
         return $branchs;
     }
     
-    // function getRefineGroupBranch ( $data, $refine ) {
-    //     if(!empty($refine)) {
-    //         if( !empty($refine['GroupBranch']['group_branch']) ) {
-    //             if( is_array($refine['GroupBranch']['group_branch']) ) {
-    //                 $group_branch = $refine['GroupBranch']['group_branch'];
-    //                 $group_branch = array_filter($group_branch);
-    //                 $group_branch = array_unique($group_branch);
-    //                 $group_branch = implode(',', $group_branch);
-    //             } else {
-    //                 $group_branch = $refine['GroupBranch']['group_branch'];
-    //             }
+    function getRefineGroupBranch ( $data, $refine ) {
+        if(!empty($refine)) {
+            if( !empty($refine['GroupBranch']['group_branch']) ) {
+                if( is_array($refine['GroupBranch']['group_branch']) ) {
+                    $group_branch = $refine['GroupBranch']['group_branch'];
+                    $group_branch = array_filter($group_branch);
+                    $group_branch = array_unique($group_branch);
+                    $group_branch = implode(',', $group_branch);
+                } else {
+                    $group_branch = $refine['GroupBranch']['group_branch'];
+                }
 
-    //             $refine_conditions['GroupBranch']['group_branch'] = $group_branch;
-    //         }
-    //     }
+                $refine_conditions['GroupBranch']['group_branch'] = $group_branch;
+            }
+        }
 
-    //     if(isset($refine_conditions['GroupBranch']) && !empty($refine_conditions['GroupBranch'])) {
-    //         foreach($refine_conditions['GroupBranch'] as $param => $value) {
-    //             if($value) {
-    //                 $data[trim($param)] = rawurlencode($value);
-    //             }
-    //         }
-    //     }
+        if(isset($refine_conditions['GroupBranch']) && !empty($refine_conditions['GroupBranch'])) {
+            foreach($refine_conditions['GroupBranch'] as $param => $value) {
+                if($value) {
+                    $data[trim($param)] = rawurlencode($value);
+                }
+            }
+        }
 
-    //     return $data;
-    // }
+        return $data;
+    }
 
 
     
-    // function getConditionGroupBranch ( $refine, $modelName, $options = false, $type = 'options' ) {
-    //     if(!empty($refine['group_branch'])){
-    //         if( !is_array($refine['group_branch']) ) {
-    //             $value = urldecode($refine['group_branch']);
-    //             $value = explode(',', $value);
-    //             $value = array_combine(array_keys(array_flip($value)), $value);
-    //         } else {
-    //             $value = $refine['group_branch'];
-    //             $value = array_filter($value);
-    //         }
+    function getConditionGroupBranch ( $refine, $modelName, $options = false, $type = 'options' ) {
+        if(!empty($refine['group_branch'])){
+            if( !is_array($refine['group_branch']) ) {
+                $value = urldecode($refine['group_branch']);
+                $value = explode(',', $value);
+                $value = array_combine(array_keys(array_flip($value)), $value);
+            } else {
+                $value = $refine['group_branch'];
+                $value = array_filter($value);
+            }
 
-    //         $this->controller->request->data['GroupBranch']['group_branch'] = $value;
-    //         $fieldName = sprintf('%s.branch_id', $modelName);
-    //         $this->allowPage( $value );
+            $this->controller->request->data['GroupBranch']['group_branch'] = $value;
+            $fieldName = sprintf('%s.branch_id', $modelName);
+            $this->allowPage( $value );
 
-    //         if( $type == 'options' ) {
-    //             $options['conditions'][$fieldName] = $value;
-    //         } else {
-    //             $options[$fieldName] = $value;
-    //         }
-    //     }
+            if( $type == 'options' ) {
+                $options['conditions'][$fieldName] = $value;
+            } else {
+                $options[$fieldName] = $value;
+            }
+        }
 
-    //     return $options;
-    // }
+        return $options;
+    }
 
     function redirectReferer ( $msg, $status = 'error', $urlRedirect = false ) {
         $this->setCustomFlash($msg, $status);

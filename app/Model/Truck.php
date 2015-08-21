@@ -296,7 +296,7 @@ class Truck extends AppModel {
             ),
             'contain' => array(),
             'fields' => array(),
-            'groups' => array(),
+            'group' => array(),
         );
 
         switch ($status) {
@@ -334,6 +334,9 @@ class Truck extends AppModel {
             }
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         } else if( !empty($options) ) {
             $default_options = $options;

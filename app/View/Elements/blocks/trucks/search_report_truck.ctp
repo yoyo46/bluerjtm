@@ -101,6 +101,10 @@
                             ));
                     ?>
                 </div>
+                <?php 
+                        // Custom Otorisasi
+                        echo $this->Common->getCheckboxBranch();
+                ?>
             </div>
         </div>
         <div class="row">

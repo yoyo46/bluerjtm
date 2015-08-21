@@ -18,7 +18,7 @@
                 ));
         ?>
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->month('month', array(
@@ -32,7 +32,7 @@
                     ?>
                 </div>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->year('year', 1949, date('Y') + 5, array(
@@ -46,7 +46,13 @@
                     ?>
                 </div>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-6">
+                <?php 
+                        // Custom Otorisasi
+                        echo $this->Common->getCheckboxBranch();
+                ?>
+            </div>
+            <div class="col-sm-12">
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(

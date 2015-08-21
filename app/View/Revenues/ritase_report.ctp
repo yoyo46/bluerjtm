@@ -136,6 +136,10 @@
                             ));
                     ?>
                 </div>
+                <?php 
+                        // Custom Otorisasi
+                        echo $this->Common->getCheckboxBranch();
+                ?>
             </div>
         </div>
         <?php 
@@ -191,13 +195,17 @@
             <?php
                     }
                     
-                    $urlExcel = $this->passedArgs;
+                    $urlDefault = $this->passedArgs;
+                    $urlDefault['controller'] = 'revenues';
+                    $urlDefault['action'] = 'ritase_report';
+
+                    $urlExcel = $urlDefault;
                     $urlExcel['data_action'] = 'excel';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
                         'escape' => false,
                         'class' => 'btn btn-success pull-right'
                     ));
-                    $urlPdf = $this->passedArgs;
+                    $urlPdf = $urlDefault;
                     $urlPdf['data_action'] = 'pdf';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
                         'escape' => false,
@@ -217,6 +225,11 @@
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.nopol', __('NO. POL')), array(
                                 'style' => 'text-align: center;width: 120px;vertical-align: middle;',
                                 'data-options' => 'field:\'nopol\',width:120',
+                                'rowspan' => $headerRowspan,
+                            ));
+                            echo $this->Html->tag('th', __('Cabang'), array(
+                                'style' => 'text-align: center;width: 100px;vertical-align: middle;',
+                                'data-options' => 'field:\'branch\',width:100',
                                 'rowspan' => $headerRowspan,
                             ));
                             echo $this->Html->tag('th', __('Supir'), array(
@@ -314,6 +327,7 @@
                                 $cityArr = Set::extract('/City/Ttuj/to_city_id', $value);
                                 $total = !empty($value['Total'])?$value['Total']:0;
                                 $overTime = !empty($value['OverTime'])?$value['OverTime']:0;
+                                $branch = $this->Common->filterEmptyField($value, 'Branch', 'name');
                                 $qLt = 0;
 
                                 if( !empty($overTime) ) {
@@ -336,6 +350,7 @@
                                 $id
                             ));
                             echo $this->Html->tag('td', $link_truck);
+                            echo $this->Html->tag('td', $branch);
                             echo $this->Html->tag('td', !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:false);
                             echo $this->Html->tag('td', $value['Truck']['capacity'], array(
                                 'style' => 'text-align:center;',
@@ -437,6 +452,7 @@
 
             if(!empty($trucks)){
                 foreach ($trucks as $key => $value) {
+                    $branch = $this->Common->filterEmptyField($value, 'Branch', 'name');
                     $cityArr = Set::extract('/City/Ttuj/to_city_id', $value);
                     $total = !empty($value['Total'])?$value['Total']:0;
 
@@ -450,6 +466,7 @@
 
                     $content = $this->Html->tag('td', $no);
                     $content .= $this->Html->tag('td', $value['Truck']['nopol']);
+                    $content .= $this->Html->tag('td', $branch);
                     $content .= $this->Html->tag('td', !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:false);
                     $content .= $this->Html->tag('td', $value['Truck']['capacity']);
                     $content .= $this->Html->tag('td', !empty($value['CustomerNoType']['code'])?$value['CustomerNoType']['code']:'-');
@@ -497,13 +514,14 @@ $tbl = <<<EOD
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <thead>
                 <tr style="$table_tr_head">
-                    <th rowspan="2">No. </th>
-                    <th rowspan="2">NO. POL</th>
-                    <th rowspan="2">Supir</th>
-                    <th rowspan="2">Kapasitas</th>
-                    <th rowspan="2">Alokasi</th>
-                    <th rowspan="2">Total</th>
-                    <th rowspan="2">Target RIT</th>
+                    <th>No. </th>
+                    <th>NO. POL</th>
+                    <th>Cabang</th>
+                    <th>Supir</th>
+                    <th>Kapasitas</th>
+                    <th>Alokasi</th>
+                    <th>Total</th>
+                    <th>Target RIT</th>
                     <th colspan="$cityCnt" style="text-align:center;">Tujuan</th>
                 </tr>
                 <tr style="$table_tr_head">

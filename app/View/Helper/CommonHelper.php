@@ -463,10 +463,10 @@ class CommonHelper extends AppHelper {
         }
     }
 
-    function getSorting ( $model = false,  $label = false, $is_print = false ) {
+    function getSorting ( $model = false,  $label = false, $is_print = false, $sorting = true ) {
         $named = $this->params['named'];
         
-        if( !empty($model) && $this->Paginator->hasPage() && empty($is_print) ) {
+        if( !empty($sorting) && !empty($model) && $this->Paginator->hasPage() && empty($is_print) ) {
             return $this->Paginator->sort($model, $label, array(
                 'escape' => false
             ));
@@ -882,6 +882,8 @@ class CommonHelper extends AppHelper {
 
             foreach ($dataColumns as $key_field => $dataColumn) {
                 $field_model = !empty($dataColumn['field_model'])?$dataColumn['field_model']:false;
+                $sorting = isset($dataColumn['sorting'])?$dataColumn['sorting']:true;
+
                 // Get Data Model
                 $data_model = explode('.', $field_model);
                 $data_model = array_filter($data_model);
@@ -938,7 +940,7 @@ class CommonHelper extends AppHelper {
                                 $data_options = false;
                             }
 
-                            $content = $this->Html->tag('th', $this->getSorting($field_model, $name, $is_print), array(
+                            $content = $this->Html->tag('th', $this->getSorting($field_model, $name, $is_print, $sorting), array(
                                 'class' => sprintf('%s %s %s %s', $addClass, $key_field, $class, $_class),
                                 'style' => $style,
                                 'colspan' => $colspan,
@@ -1432,38 +1434,38 @@ class CommonHelper extends AppHelper {
         return $result;
     }
 
-    // function getCheckboxBranch () {
-    //     $result = '';
-    //     $branches = Configure::read('__Site.config_allow_branchs');
+    function getCheckboxBranch () {
+        $result = '';
+        $branches = Configure::read('__Site.config_allow_branchs');
 
-    //     if( !empty($branches) && count($branches) > 1 ) {
-    //         $tmpArr = array();
+        if( !empty($branches) && count($branches) > 1 ) {
+            $tmpArr = array();
 
-    //         foreach ($branches as $branch_id => $city_name) {
-    //             $tmpArr[] = $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('GroupBranch.group_branch.'.$branch_id, array(
-    //                 'type' => 'checkbox',
-    //                 'label'=> false,
-    //                 'required' => false,
-    //                 'value' => $branch_id,
-    //                 'div' => false,
-    //             )).$city_name), array(
-    //                 'class' => 'checkbox',
-    //             )), array(
-    //                 'class' => 'col-sm-12 col-md-6',
-    //             ));
-    //         }
+            foreach ($branches as $branch_id => $city_name) {
+                $tmpArr[] = $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('GroupBranch.group_branch.'.$branch_id, array(
+                    'type' => 'checkbox',
+                    'label'=> false,
+                    'required' => false,
+                    'value' => $branch_id,
+                    'div' => false,
+                )).$city_name), array(
+                    'class' => 'checkbox',
+                )), array(
+                    'class' => 'col-sm-12 col-md-6',
+                ));
+            }
 
-    //         if( !empty($tmpArr) && count($tmpArr) > 1 ) {
-    //             $result = $this->Html->tag('div', $this->Html->tag('div', implode('', $tmpArr), array(
-    //                 'class' => 'row',
-    //             )), array(
-    //                 'class' => 'form-group',
-    //             ));
-    //         }
-    //     }
+            if( !empty($tmpArr) && count($tmpArr) > 1 ) {
+                $result = $this->Html->tag('div', $this->Html->tag('div', implode('', $tmpArr), array(
+                    'class' => 'row',
+                )), array(
+                    'class' => 'form-group',
+                ));
+            }
+        }
 
-    //     return $result;
-    // }
+        return $result;
+    }
 
     function convertPriceToString ( $price, $result = '' ) {
         if( !empty($price) ) {

@@ -1,26 +1,13 @@
 <?php 
         $dataColumns = array(
+            'code' => array(
+                'name' => __('Kode'),
+                'field_model' => 'City.code',
+                'display' => true,
+            ),
             'name' => array(
                 'name' => __('Kota'),
                 'field_model' => 'City.name',
-                'display' => true,
-            ),
-            'head_office' => array(
-                'name' => __('Head Office'),
-                'field_model' => 'City.is_head_office',
-                'class' => 'text-center',
-                'display' => true,
-            ),
-            'branch' => array(
-                'name' => __('Cabang'),
-                'field_model' => 'City.is_branch',
-                'class' => 'text-center',
-                'display' => true,
-            ),
-            'plant' => array(
-                'name' => __('Plant'),
-                'field_model' => 'City.is_plant',
-                'class' => 'text-center',
                 'display' => true,
             ),
             'modified' => array(
@@ -70,29 +57,13 @@
                     if(!empty($cities)){
                         foreach ($cities as $key => $value) {
                             $id = $this->Common->filterEmptyField($value, 'City', 'id');
+                            $code = $this->Common->filterEmptyField($value, 'City', 'code');
                             $name = $this->Common->filterEmptyField($value, 'City', 'name');
                             $modified = $this->Common->filterEmptyField($value, 'City', 'modified');
-                            $branch = $this->Common->filterEmptyField($value, 'City', 'is_branch');
-                            $plant = $this->Common->filterEmptyField($value, 'City', 'is_plant');
-                            $head_office = $this->Common->filterEmptyField($value, 'City', 'is_head_office');
-
-                            $branch = $this->Common->getCheckStatus( $branch );
-                            $plant = $this->Common->getCheckStatus( $plant );
-                            $head_office = $this->Common->getCheckStatus( $head_office );
             ?>
             <tr>
+                <td><?php echo $code;?></td>
                 <td><?php echo $name;?></td>
-                <td class="text-center">
-                    <?php 
-                            echo $head_office;
-                    ?>
-                </td>
-                <td class="text-center">
-                    <?php 
-                            echo $branch;
-                    ?>
-                </td>
-                <td class="text-center"><?php echo $plant;?></td>
                 <td><?php echo $this->Time->niceShort($modified);?></td>
                 <td class="action">
                     <?php 

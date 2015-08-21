@@ -56,5 +56,17 @@ class GroupBranch extends AppModel {
         }
         return $result;
     }
+
+    public function _callAllowListBranch( $conditions ) {
+        return $this->getData('all', array(
+            'conditions' => $conditions,
+            'contain' => array(
+                'Branch',
+            ),
+            'order' => array(
+                'Branch.name' => 'ASC',
+            ),
+        ));
+    }
 }
 ?>

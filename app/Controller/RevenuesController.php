@@ -20,8 +20,10 @@ class RevenuesController extends AppController {
     function search( $index = 'index', $id = false, $data_action = false ){
         $refine = array();
         if(!empty($this->request->data)) {
-            $refine = $this->RjRevenue->processRefine($this->request->data);
+            $data = $this->request->data;
+            $refine = $this->RjRevenue->processRefine($data);
             $params = $this->RjRevenue->generateSearchURL($refine);
+            $params = $this->MkCommon->getRefineGroupBranch($params, $data);
 
             if(!empty($id)){
                 array_push($params, $id);
@@ -1834,11 +1836,14 @@ class RevenuesController extends AppController {
         $this->loadModel('Ttuj');
         $this->loadModel('Ttuj');
         $this->loadModel('CustomerNoType');
+
         $dateFrom = date('Y-m-d', strtotime('-1 month'));
         $dateTo = date('Y-m-d');
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $conditions = array(
             'Truck.status'=> 1,
             'TruckCustomer.primary'=> 1,
+            'TruckCustomer.branch_id' => $allow_branch_id,
         );
         $data_action = false;
 
@@ -1882,6 +1887,9 @@ class RevenuesController extends AppController {
                 }
                 $this->request->data['Ttuj']['date'] = $dateStr;
             }
+
+            // Custom Otorisasi
+            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'TruckCustomer', $conditions, 'conditions' );
 
             if(!empty($refine['data_action'])){
                 $data_action = $refine['data_action'];
@@ -1941,11 +1949,14 @@ class RevenuesController extends AppController {
 
         if( !empty($trucks) ) {
             foreach ($trucks as $key => $truck) {
+                $branch_id = $this->MkCommon->filterEmptyField($truck, 'TruckCustomer', 'branch_id');
                 $conditionCustomers = array(
                     'TruckCustomer.truck_id'=> $truck['Truck']['id'],
                 );
 
                 $truck = $this->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
+                $truck = $this->GroupBranch->Branch->getMerge($truck, $branch_id);
+
                 $conditionsTtuj = $defaultConditionsTtuj;
                 $conditionsTtuj['Ttuj.truck_id'] = $truck['Truck']['id'];
 
@@ -2046,6 +2057,8 @@ class RevenuesController extends AppController {
         $this->loadModel('TtujTipeMotor');
         $this->loadModel('CustomerNoType');
         $this->set('active_menu', 'achievement_report');
+
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $fromMonth = date('m');
         $fromYear = date('Y');
         $toMonth = 12;
@@ -2058,6 +2071,7 @@ class RevenuesController extends AppController {
         $options = array(
             'conditions' => array(
                 'CustomerNoType.status' => 1,
+                'CustomerNoType.branch_id' => $allow_branch_id,
             ),
         );
 
@@ -2079,6 +2093,9 @@ class RevenuesController extends AppController {
                 $toMonth = urldecode($refine['toMonth']);
                 $toYear = urldecode($refine['toYear']);
             }
+
+            // Custom Otorisasi
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'CustomerNoType', $options );
         }
 
         $conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') >='] = date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear));
@@ -2111,6 +2128,10 @@ class RevenuesController extends AppController {
 
         if( !empty($ttujs) ) {
             foreach ($ttujs as $key => $ttuj) {
+                $branch_id = $this->MkCommon->filterEmptyField($ttuj, 'CustomerNoType', 'branch_id');
+
+                $ttuj = $this->GroupBranch->Branch->getMerge($ttuj, $branch_id);
+
                 $conditions['Ttuj.customer_id'] = $ttuj['CustomerNoType']['id'];
                 $ttujTipeMotor = $this->TtujTipeMotor->find('first', array(
                     'conditions' => $conditions,
@@ -2201,9 +2222,13 @@ class RevenuesController extends AppController {
         $this->loadModel('Setting');
         $this->set('active_menu', 'monitoring_truck');
         $this->set('sub_module_title', __('Monitoring Truk'));
+
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $default_conditions = array();
         $default_conditionsLaka = array();
-        $default_conditionsTruck = array();
+        $default_conditionsTruck = array(
+            'Truck.branch_id' => $allow_branch_id,
+        );
         $default_conditionsEvent = array();
 
         if( !empty($this->params['named']) ) {
@@ -2253,6 +2278,9 @@ class RevenuesController extends AppController {
                 $default_conditionsTruck['Truck.id'] = $truckSearch;
                 $default_conditionsEvent['CalendarEvent.truck_id'] = $truckSearch;
             }
+
+            // Custom Otorisasi
+            $default_conditionsTruck = $this->MkCommon->getConditionGroupBranch( $refine, 'Truck', $default_conditionsTruck, 'conditions' );
         }
 
         $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
@@ -2346,10 +2374,20 @@ class RevenuesController extends AppController {
                 'Truck.nopol' => 'ASC',
             ),
             'limit' => 20,
+        ), true, array(
+            'branch' => false,
         ));
         $trucks = $this->paginate('Truck');
         $truckList = Set::extract('/Truck/id', $trucks);
         $conditions['Ttuj.truck_id'] = $truckList;
+
+        if( !empty($trucks) ) {
+            foreach ($trucks as $key => $value) {
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'branch_id');
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                $trucks[$key] = $value;
+            }
+        }
 
         $ttujs = $this->Ttuj->getData('all', array(
             'conditions' => $conditions,

@@ -1,5 +1,10 @@
 <?php 
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
+        $currentUrl = array(
+            'controller' => 'trucks', 
+            'action' => 'capacity_report', 
+        );
+
         if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
             $this->Html->addCrumb($sub_module_title);
             $tdStyle = '';
@@ -12,6 +17,62 @@
                 $tdStyle = 'text-align: center;';
             }
 ?>
+<div class="box box-primary">
+    <div class="box-header">
+        <h3 class="box-title">Pencarian</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-default btn-sm" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+        </div>
+    </div>
+    <div class="box-body">
+        <?php 
+            echo $this->Form->create('Truck', array(
+                'url'=> $this->Html->url( array(
+                    'controller' => 'trucks',
+                    'action' => 'search',
+                    'capacity_report'
+                )), 
+                'role' => 'form',
+                'inputDefaults' => array('div' => false),
+            ));
+        ?>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('customer_code',array(
+                                'label'=> __('Alokasi'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group action">
+                    <?php
+                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
+                                'div' => false, 
+                                'class'=> 'btn btn-success btn-sm',
+                                'type' => 'submit',
+                            ));
+                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), $currentUrl, array(
+                                'escape' => false, 
+                                'class'=> 'btn btn-default btn-sm',
+                            ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <?php 
+                        // Custom Otorisasi
+                        echo $this->Common->getCheckboxBranch();
+                ?>
+            </div>
+        </div>
+        <?php 
+                echo $this->Form->end();
+        ?>
+    </div>
+</div>
 <section class="content invoice">
     <?php 
             if( $data_action != 'excel' ) {
@@ -22,13 +83,17 @@
     <div class="row no-print print-action">
         <div class="col-xs-12 action">
             <?php
-                    $urlExcel = $this->passedArgs;
+                    $urlDefault = $this->passedArgs;
+                    $urlDefault['controller'] = 'trucks';
+                    $urlDefault['action'] = 'capacity_report';
+
+                    $urlExcel = $urlDefault;
                     $urlExcel[] = 'excel';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
                         'escape' => false,
                         'class' => 'btn btn-success pull-right'
                     ));
-                    $urlPdf = $this->passedArgs;
+                    $urlPdf = $urlDefault;
                     $urlPdf[] = 'pdf';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
                         'escape' => false,
@@ -45,6 +110,11 @@
             <thead>
                 <tr>
                     <?php 
+                            echo $this->Html->tag('th', __('Cabang'), array(
+                                'rowspan' => 2,
+                                'class' => 'text-middle text-center',
+                                'style' => $tdStyle,
+                            ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('ALOKASI')), array(
                                 'rowspan' => 2,
                                 'class' => 'text-middle text-center',
@@ -85,10 +155,12 @@
                             $total = array();
 
                             foreach ($customers as $key => $customer) {
+                                $branch = $this->Common->filterEmptyField($customer, 'Branch', 'name');
+                                $customer_id = $customer['Customer']['id'];
                 ?>
                 <tr>
                     <?php
-                            $customer_id = $customer['Customer']['id'];
+                            echo $this->Html->tag('td', $branch);
                             echo $this->Html->tag('td', $customer['Customer']['code'], array(
                                 'style' => $tdStyle,
                             ));
@@ -133,8 +205,9 @@
                 <tr>
                     <?php
                             $customer_id = 0;
-                            echo $this->Html->tag('td', '-', array(
-                                'style' => $tdStyle,
+                            echo $this->Html->tag('td', __('-'), array(
+                                'colspan' => 2,
+                                'style' => $tdStyle.'font-weight:bold;text-align:right;',
                             ));
 
                             if( !empty($capacities) ) {
@@ -170,7 +243,6 @@
                 <?php
                         }
 
-
                         if( empty($capacities) || empty($truckWithoutAlocations) ) {
                             echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan'), array(
                                 'colspan' => '7'
@@ -181,6 +253,7 @@
                     <?php 
                             echo $this->Html->tag('th', __('Jumlah'), array(
                                 'class' => 'text-center',
+                                'colspan' => 2,
                                 'style' => $tdStyle,
                             ));
 
@@ -246,11 +319,15 @@
 
         if(!empty($customers)){
             foreach ($customers as $customer):
+                $branch = $this->Common->filterEmptyField($customer, 'Branch', 'name');
                 $content = $this->Html->tag('td', $no, array(
                     'style' => 'text-align: center;',
                 ));
                 
                 $customer_id = $customer['Customer']['id'];
+                $content .= $this->Html->tag('td', $branch, array(
+                    'style' => 'text-align: left;',
+                ));
                 $content .= $this->Html->tag('td', $customer['Customer']['code'], array(
                     'style' => 'text-align: center;',
                 ));
@@ -355,7 +432,11 @@
             $each_loop_message .= $this->Html->tag('tr', $content);
         }
 
-        $header = $this->Html->tag('th', __('Alokasi'), array(
+        $header = $this->Html->tag('th', __('Cabang'), array(
+            'rowspan' => 2,
+            'style' => 'text-align: center;',
+        ));
+        $header .= $this->Html->tag('th', __('Alokasi'), array(
             'rowspan' => 2,
             'style' => 'text-align: center;',
         ));

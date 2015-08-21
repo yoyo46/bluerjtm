@@ -46,36 +46,6 @@
 					));
 			?>
         </div>
-        <div class="form-group">
-	        <div class="checkbox aset-handling">
-                <label>
-                    <?php 
-							echo $this->Form->checkbox('is_head_office',array(
-								'label'=> false, 
-								'required' => false,
-							)).sprintf(__('Head Office ? %s'), $this->Html->tag('small', __('( Fitur ini hanya berlaku untuk satu kota yg dipilih )')));
-					?>
-                </label>
-            </div>
-        </div>
-        <div class="form-group">
-	        <div class="checkbox-options">
-	        	<div class="checkbox">
-	                <label>
-	                	<?php echo $this->Form->checkbox('is_branch').' Cabang?';?>
-	                </label>
-	            </div>
-	        </div>
-	    </div>
-	    <div class="form-group">
-	        <div class="checkbox-options">
-	        	<div class="checkbox">
-	                <label>
-	                	<?php echo $this->Form->checkbox('is_plant').' Plant?';?>
-	                </label>
-	            </div>
-	        </div>
-	    </div>
     </div>
 
     <div class="box-footer text-center action">

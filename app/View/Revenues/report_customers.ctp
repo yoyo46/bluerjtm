@@ -125,14 +125,18 @@
     <div class="row no-print print-action">
         <div class="col-xs-12 action">
             <?php
-                    $urlExcel = $this->passedArgs;
+                    $urlDefault = $this->passedArgs;
+                    $urlDefault['controller'] = 'revenues';
+                    $urlDefault['action'] = 'report_customers';
+
+                    $urlExcel = $urlDefault;
                     $urlExcel[] = 'excel';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
                         'escape' => false,
                         'class' => 'btn btn-success pull-right'
                     ));
 
-                    $urlPdf = $this->passedArgs;
+                    $urlPdf = $urlDefault;
                     $urlPdf[] = 'pdf';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
                         'escape' => false,

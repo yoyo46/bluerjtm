@@ -189,7 +189,7 @@ class Driver extends AppModel {
             ),
             'contain' => array(),
             'fields' => array(),
-            'groups' => array(),
+            'group' => array(),
         );
 
         switch ($status) {
@@ -227,6 +227,9 @@ class Driver extends AppModel {
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         } else if( !empty($options) ) {
             $default_options = $options;

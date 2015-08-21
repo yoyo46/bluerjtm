@@ -24,13 +24,17 @@
     <div class="row no-print print-action">
         <div class="col-xs-12 action">
             <?php
-                    $urlExcel = $this->passedArgs;
+                    $urlDefault = $this->passedArgs;
+                    $urlDefault['controller'] = 'trucks';
+                    $urlDefault['action'] = 'point_perplant_report';
+
+                    $urlExcel = $urlDefault;
                     $urlExcel[] = 'excel';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
                         'escape' => false,
                         'class' => 'btn btn-success pull-right'
                     ));
-                    $urlPdf = $this->passedArgs;
+                    $urlPdf = $urlDefault;
                     $urlPdf[] = 'pdf';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
                         'escape' => false,
@@ -47,6 +51,10 @@
             <thead>
                 <tr>
                     <?php 
+                            echo $this->Html->tag('th', __('Cabang'), array(
+                                'class' => 'text-middle text-center',
+                                'style' => $tdStyle,
+                            ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Customer.customer_name', __('ALOKASI')), array(
                                 'class' => 'text-middle text-center',
                                 'style' => $tdStyle,
@@ -86,12 +94,14 @@
                             $total = array();
 
                             foreach ($customers as $key => $customer) {
+                                $branch = $this->Common->filterEmptyField($customer, 'Branch', 'name');
                 ?>
                 <tr>
                     <?php
                             $customer_id = $customer['Customer']['id'];
                             $totalMuatan = 0;
 
+                            echo $this->Html->tag('td', $branch);
                             echo $this->Html->tag('td', $customer['Customer']['code']);
 
                             if( $data_type == 'retail' ) {
@@ -178,17 +188,15 @@
         $table = 'width:100%;font-size: 24px; border: 1px solid #CCC; border-collapse: collapse; padding: 0; margin: 0;';
         
         $each_loop_message = '';
-        $no = 1;
 
         if(!empty($customers)){
             foreach ($customers as $customer):
-                $content = $this->Html->tag('td', $no, array(
-                    'style' => 'text-align: center;',
-                ));
+                $branch = $this->Common->filterEmptyField($customer, 'Branch', 'name');
                 
                 $customer_id = $customer['Customer']['id'];
                 $totalMuatan = 0;
 
+                $content = $this->Html->tag('td', $branch);
                 $content .= $this->Html->tag('td', $customer['Customer']['code']);
 
                 if( $data_type == 'retail' ) {
@@ -216,7 +224,6 @@
                 ));
 
                 $each_loop_message .= $this->Html->tag('tr', $content);
-                $no++;
             endforeach;
         }else{
             $each_loop_message .= '<tr>
@@ -224,7 +231,11 @@
             </tr>';
         }
 
-        $header = $this->Html->tag('th', __('Alokasi'), array(
+        $header = $this->Html->tag('th', __('Cabang'), array(
+            'rowspan' => 2,
+            'style' => 'text-align: center;',
+        ));
+        $header .= $this->Html->tag('th', __('Alokasi'), array(
             'rowspan' => 2,
             'style' => 'text-align: center;',
         ));
@@ -264,7 +275,6 @@ $tbl = <<<EOD
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <thead>
                 <tr style="$table_tr_head">
-                    <th rowspan="2" style="text-align: center;">No. </th>
                     $header
                 </tr>
             </thead>
