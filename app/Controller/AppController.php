@@ -210,7 +210,6 @@ class AppController extends Controller {
 	    		}
 	    	}
 
-
 			if($paramController == 'revenues' && $paramAction == 'index'){
 				// 327 = module revenue
 				$another_rule = $this->BranchActionModule->getRuleByModule(327, $current_group_branch_id);
@@ -218,9 +217,15 @@ class AppController extends Controller {
 
             Configure::write('__Site.Data.Group.Branch', $group_branches);
 			Configure::write('__Site.config_allow_module', $_allowModule);
-			Configure::write('__Site.config_branch_id', $current_branch_id);
+
+			if( $GroupId == 1 ) {
+				Configure::write('__Site.config_branch_id', array_keys($group_branches));
+				$allowBranch = $group_branches;
+			} else {
+				Configure::write('__Site.config_branch_id', $current_branch_id);
+				$allowBranch = $this->MkCommon->allowBranch($group_branches);
+			}
 			
-			$allowBranch = $this->MkCommon->allowBranch($group_branches);
 			$allowAction = !empty($_allowedModule[$paramController])?$_allowedModule[$paramController]:array();
 			$allowPage = in_array($paramAction, $allowAction)?true:false;
 

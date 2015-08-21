@@ -1065,7 +1065,10 @@ class AjaxController extends AppController {
 
             if( $action_type == 'ttuj' ) {
         		$plantCityId = Configure::read('__Site.Branch.Plant.id');
-            	$options['conditions']['Truck.branch_id'] = $plantCityId;
+
+        		if( !empty($plantCityId) ) {
+            		$options['conditions']['Truck.branch_id'] = $plantCityId;
+            	}
             } else {
             	$plantCityId = false;
             }

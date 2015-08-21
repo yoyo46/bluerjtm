@@ -66,11 +66,19 @@ class BranchCity extends AppModel {
 
     function getMerge($data, $id, $find = 'all'){
         if(empty($data['BranchCity'])){
-            $value = $this->getData($find, array(
+            $options = array(
                 'conditions' => array(
                     'BranchCity.branch_id' => $id
                 )
-            ));
+            );
+
+            if( $find == 'list' ) {
+                $options['fields'] = array(
+                    'BranchCity.id', 'BranchCity.branch_city_id',
+                );
+            }
+
+            $value = $this->getData($find, $options);
 
             if(!empty($value)){
                 $data['BranchCity'] = $value;

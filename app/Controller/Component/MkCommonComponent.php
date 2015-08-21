@@ -579,51 +579,56 @@ class MkCommonComponent extends Component {
     function allowPage ( $branchs, $no_exact = false ) {
         $result = true;
         $resultExact = false;
+        $group_id = Configure::read('__Site.config_group_id');
 
-        if( !is_array($branchs) ) {
-            $branchs = array( $branchs );
-        }
+        if( $group_id != 1 ) {
+            if( !is_array($branchs) ) {
+                $branchs = array( $branchs );
+            }
 
-        if( is_array($branchs) ) {
-            $moduleAllow = Configure::read('__Site.config_allow_module');
-            $branchAllow = Configure::read('__Site.Data.Branch.id');
+            if( is_array($branchs) ) {
+                $moduleAllow = Configure::read('__Site.config_allow_module');
+                $branchAllow = Configure::read('__Site.Data.Branch.id');
 
-            $branchs = array_values($branchs);
-            $controllerName = !empty($this->controller->params['controller'])?$this->controller->params['controller']:false;
-            $actionName = $this->controller->action;
-            $allowBranch = array_intersect($branchs, $branchAllow);
+                $branchs = array_values($branchs);
+                $controllerName = !empty($this->controller->params['controller'])?$this->controller->params['controller']:false;
+                $actionName = $this->controller->action;
+                $allowBranch = array_intersect($branchs, $branchAllow);
 
-            if( !empty($allowBranch) && !empty($branchs) ) {
-                foreach ($branchs as $key => $branch_id) {
-                    if( !empty($moduleAllow[$branch_id]) ) {
-                        if( !empty($moduleAllow[$branch_id][$controllerName]['action']) ) {
-                            if( !in_array($actionName, $moduleAllow[$branch_id][$controllerName]['action']) ) {
-                                $result = false;
+                if( !empty($allowBranch) && !empty($branchs) ) {
+                    foreach ($branchs as $key => $branch_id) {
+                        if( !empty($moduleAllow[$branch_id]) ) {
+                            if( !empty($moduleAllow[$branch_id][$controllerName]['action']) ) {
+                                if( !in_array($actionName, $moduleAllow[$branch_id][$controllerName]['action']) ) {
+                                    $result = false;
+                                } else {
+                                    $resultExact = true;
+                                }
                             } else {
-                                $resultExact = true;
+                                $result = false;
                             }
                         } else {
                             $result = false;
                         }
-                    } else {
-                        $result = false;
                     }
+                } else {
+                    $result = false;
                 }
             } else {
                 $result = false;
             }
-        } else {
-            $result = false;
-        }
 
-        if( !empty($no_exact) ) {
-            if( empty($resultExact) ) {
+            if( !empty($no_exact) ) {
+                if( empty($resultExact) ) {
+                    $this->controller->redirect('/');
+                } else {
+                    return true;
+                }
+            } else if( empty($result) ) {
                 $this->controller->redirect('/');
             } else {
                 return true;
             }
-        } else if( empty($result) ) {
-            $this->controller->redirect('/');
         } else {
             return true;
         }

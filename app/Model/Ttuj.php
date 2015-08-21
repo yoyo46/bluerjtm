@@ -545,7 +545,7 @@ class Ttuj extends AppModel {
                 $conditionsDataLocal['Ttuj.is_bongkaran'] = 1;
                 $conditionsDataLocal['Ttuj.is_balik'] = 1;
                 $conditionsDataLocal['Ttuj.is_pool <>'] = 1;
-                $conditions = $this->_callConditionTtujPool( $conditionsDataLocal );
+                $conditionsDataLocal = $this->_callConditionTtujPool( $conditionsDataLocal );
                 break;
             
             default:
