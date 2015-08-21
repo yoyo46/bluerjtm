@@ -69,6 +69,21 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group action">
+                    <?php
+                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
+                                'div' => false, 
+                                'class'=> 'btn btn-success btn-sm',
+                                'type' => 'submit',
+                            ));
+                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'action' => 'reports', 
+                            ), array(
+                                'escape' => false, 
+                                'class'=> 'btn btn-default btn-sm',
+                            ));
+                    ?>
+                </div>
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
@@ -105,25 +120,6 @@
                         // Custom Otorisasi
                         echo $this->Common->getCheckboxBranch();
                 ?>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="form-group action">
-                    <?php
-                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
-                                'div' => false, 
-                                'class'=> 'btn btn-success btn-sm',
-                                'type' => 'submit',
-                            ));
-                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'reports', 
-                            ), array(
-                                'escape' => false, 
-                                'class'=> 'btn btn-default btn-sm',
-                            ));
-                    ?>
-                </div>
             </div>
         </div>
         <?php 

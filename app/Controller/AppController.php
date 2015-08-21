@@ -219,8 +219,8 @@ class AppController extends Controller {
 			Configure::write('__Site.config_allow_module', $_allowModule);
 
 			if( $GroupId == 1 ) {
-				Configure::write('__Site.config_branch_id', array_keys($group_branches));
-				$allowBranch = $group_branches;
+				Configure::write('__Site.config_branch_id', array_keys($list_branches));
+				$allowBranch = $list_branches;
 			} else {
 				Configure::write('__Site.config_branch_id', $current_branch_id);
 				$allowBranch = $this->MkCommon->allowBranch($group_branches);
