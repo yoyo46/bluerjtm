@@ -4252,7 +4252,7 @@ class TrucksController extends AppController {
 
             // Custom Otorisasi
             $defaul_condition = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $defaul_condition, 'conditions' );
-            $allow_branch = $this->MkCommon->getBranchNameFilter( $refine );
+            // $allow_branch = $this->MkCommon->getBranchNameFilter( $refine );
         }
 
         $defaul_condition = array_merge($defaul_condition, array(
@@ -4278,18 +4278,25 @@ class TrucksController extends AppController {
 
         $this->paginate = $options;
         $ttujs = $this->paginate('Ttuj');
+        $allow_branch = array();
 
         if( !empty($ttujs) ) {
             $this->loadModel('Driver');
 
             foreach ($ttujs as $key => $value) {
                 $id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'branch_id');
                 $driver_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_id');
                 $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
 
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
                 $value = $this->Driver->getMerge($value, $driver_id);
                 $value = $this->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
                 $value['Ttuj']['total_unit'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $id );
+
+                $branch_name = $this->MkCommon->filterEmptyField($value, 'Branch', 'name');
+                $allow_branch[$branch_id] = $branch_name;
+
                 $ttujs[$key] = $value;
             }
         }
