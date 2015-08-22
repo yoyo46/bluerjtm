@@ -53,8 +53,6 @@
             </div>
             <div class="col-sm-6">
                 <?php 
-                        echo $this->Form->label('branch', __('Cabang'));
-                        // Custom Otorisasi
                         echo $this->Common->getCheckboxBranch();
                 ?>
             </div>

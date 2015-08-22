@@ -4186,7 +4186,7 @@ $(function() {
         });
     });
 
-    $('#columnDropdown').on({
+    $('.columnDropdown').on({
         "shown.bs.dropdown": function() { this.closable = false; },
         "click":             function(e) { 
             var target = $(e.target);
@@ -4202,8 +4202,8 @@ $(function() {
     $(document).click(function(e){
         var target = $(e.target);
         
-        if( target.parents('#columnDropdown').length == 0 ) {
-            $('#columnDropdown').removeClass('open');
+        if( target.parents('.columnDropdown').length == 0 ) {
+            $('.columnDropdown').removeClass('open');
         }
     });
 

@@ -18,32 +18,39 @@
                 ));
         ?>
         <div class="row">
-            <div class="col-sm-3">
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->month('month', array(
-                                'label'=> false, 
-                                'class'=>'form-control',
-                                'required' => false,
-                                'empty' => false,
-                                'name' => 'data[Truck][month]',
-                                'empty' => __('Pilih Bulan'),
-                            ));
-                    ?>
-                </div>
-            </div>
-            <div class="col-sm-3">
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->year('year', 1949, date('Y') + 5, array(
-                                'label'=> false, 
-                                'class'=>'form-control',
-                                'required' => false,
-                                'empty' => false,
-                                'name' => 'data[Truck][year]',
-                                'empty' => __('Pilih Tahun'),
-                            ));
-                    ?>
+            <div class="col-sm-6">
+                <?php
+                        echo $this->Html->tag('label', __('Periode'));
+                ?>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <?php 
+                                    echo $this->Form->month('month', array(
+                                        'label'=> false, 
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                        'empty' => false,
+                                        'name' => 'data[Truck][month]',
+                                        'empty' => __('Pilih Bulan'),
+                                    ));
+                            ?>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <?php 
+                                    echo $this->Form->year('year', 1949, date('Y') + 5, array(
+                                        'label'=> false, 
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                        'empty' => false,
+                                        'name' => 'data[Truck][year]',
+                                        'empty' => __('Pilih Tahun'),
+                                    ));
+                            ?>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-6">

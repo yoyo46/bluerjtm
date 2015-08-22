@@ -2878,6 +2878,8 @@ class TrucksController extends AppController {
                     'fields' => array(
                         'Truck.id', 'Truck.id',
                     ),
+                ), true, array(
+                    'branch' => false,
                 ));
                 $defaul_condition['Truck.id'] = $truckSearch;
                 $this->request->data['Truck']['nopol'] = $data;
@@ -3607,6 +3609,8 @@ class TrucksController extends AppController {
                     'fields' => array(
                         'Truck.id', 'Truck.id',
                     ),
+                ), true, array(
+                    'branch' => false,
                 ));
                 $conditions['Truck.id'] = $truckSearch;
                 $this->request->data['Truck']['nopol'] = $data;
@@ -3819,6 +3823,7 @@ class TrucksController extends AppController {
             foreach ($data['TruckCustomer']['customer_id'] as $key => $customer_id) {
                 $dataValidate['TruckCustomer']['customer_id'] = $customer_id;
                 $dataValidate['TruckCustomer']['primary'] = !empty($data['TruckCustomer']['primary'][$key])?$data['TruckCustomer']['primary'][$key]:false;
+                $dataValidate['TruckCustomer']['branch_id'] = !empty($data['TruckCustomer']['branch_id'][$key])?$data['TruckCustomer']['branch_id'][$key]:false;
                 
                 $this->Truck->TruckCustomer->set($dataValidate);
 
@@ -3969,9 +3974,9 @@ class TrucksController extends AppController {
                                 }
 
                                 if(array_filter($datavar)) {
-                                    $city = $this->City->getData('first', array(
+                                    $branch = $this->GroupBranch->Branch->getData('first', array(
                                         'conditions' => array(
-                                            'City.name' => $cabang,
+                                            'Branch.code' => $kode_cabang,
                                         ),
                                     ));
                                     $truckBrand = $this->Truck->TruckBrand->getData('first', array(
@@ -4019,7 +4024,7 @@ class TrucksController extends AppController {
                                     if( !empty($driver) ) {
                                         $driver_id = $driver['Driver']['id'];
                                     }
-                                    $city_id = $this->MkCommon->filterEmptyField($city, 'City', 'id');
+                                    $branch_id = $this->MkCommon->filterEmptyField($branch, 'Branch', 'id');
 
                                     $requestData['ROW'.($x-1)] = array(
                                         'Truck' => array(
@@ -4052,7 +4057,7 @@ class TrucksController extends AppController {
                                             'tgl_stnk_plat' => !empty($tgl_perpanjang_stnk_5thn)?$tgl_perpanjang_stnk_5thn:false,
                                             'tgl_siup' => !empty($tgl_perpanjang_siup)?$tgl_perpanjang_siup:false,
                                             'tgl_kir' => !empty($tgl_perpanjang_kir)?$tgl_perpanjang_kir:false,
-                                            'branch_id' => $city_id,
+                                            'branch_id' => $branch_id,
                                         ),
                                     );
                                     
@@ -4073,6 +4078,7 @@ class TrucksController extends AppController {
 
                                             if( !empty($customer) ) {
                                                 $requestData['ROW'.($x-1)]['TruckCustomer']['customer_id'][$i] = $customer['Customer']['id'];
+                                                $requestData['ROW'.($x-1)]['TruckCustomer']['branch_id'][$i] = $branch_id;
                                             }
 
                                             if( $i == 1 ) {
@@ -4084,7 +4090,7 @@ class TrucksController extends AppController {
                                         }
                                         $i++;
                                     }
-                                    
+
                                     $i = 1;
                                     $idx = 0;
                                     $flag = true;

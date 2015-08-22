@@ -1046,8 +1046,7 @@ class CommonHelper extends AppHelper {
 
         // Set Content
         $content .= $this->Html->tag('div', $this->Html->tag('div', $contentDiv, array(
-            'class' => 'btn-group',
-            'id' => 'columnDropdown',
+            'class' => 'btn-group columnDropdown',
         )), array(
             'class' => 'list-field pull-left',
         ));
@@ -1442,7 +1441,7 @@ class CommonHelper extends AppHelper {
             $tmpArr = array();
 
             foreach ($branches as $branch_id => $city_name) {
-                $tmpArr[] = $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('GroupBranch.group_branch.'.$branch_id, array(
+                $tmpArr[] = $this->Html->tag('li', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('GroupBranch.group_branch.'.$branch_id, array(
                     'type' => 'checkbox',
                     'label'=> false,
                     'required' => false,
@@ -1450,16 +1449,32 @@ class CommonHelper extends AppHelper {
                     'div' => false,
                 )).$city_name), array(
                     'class' => 'checkbox',
-                )), array(
-                    'class' => 'col-sm-12 col-md-6',
-                ));
+                )));
             }
 
             if( !empty($tmpArr) && count($tmpArr) > 1 ) {
-                $result = $this->Html->tag('div', $this->Html->tag('div', implode('', $tmpArr), array(
-                    'class' => 'row',
+                $btn = $this->Form->button(__('Pilih Cabang ').$this->Html->tag('div', '', array(
+                    'class' => 'caret',
                 )), array(
-                    'class' => 'form-group',
+                    'class' => 'btn btn-default dropdown-toggle',
+                    'data-toggle' => 'dropdown',
+                ));
+                $headLabel = $this->Html->tag('label', __('Cabang'), array(
+                    'class' => 'block'
+                ));
+                $headLi = $this->Html->tag('li', __('Cabang'));
+                $divider = $this->Html->tag('li', '', array(
+                    'class' => 'divider',
+                ));
+                $ulContent = $this->Html->tag('ul', $headLi.$divider.implode('', $tmpArr), array(
+                    'class' => 'dropdown-menu',
+                    'role' => 'menu',
+                ));
+
+                $result =  $this->Html->tag('div', $headLabel.$this->Html->tag('div', $btn.$ulContent, array(
+                    'class' => 'btn-group columnDropdown',
+                )), array(
+                    'class' => 'list-field',
                 ));
             }
         }

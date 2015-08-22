@@ -2272,6 +2272,8 @@ class RevenuesController extends AppController {
                     'fields' => array(
                         'Truck.id', 'Truck.id',
                     ),
+                ), true, array(
+                    'branch' => false,
                 ));
                 $default_conditionsLaka['Laka.truck_id'] = $truckSearch;
                 $default_conditions['Ttuj.truck_id'] = $truckSearch;
@@ -6452,9 +6454,9 @@ class RevenuesController extends AppController {
                                     }
 
                                     if(array_filter($datavar)) {
-                                        $branch = $this->City->getData('first', array(
+                                        $branch = $this->GroupBranch->Branch->getData('first', array(
                                             'conditions' => array(
-                                                'City.name' => $cabang,
+                                                'Branch.code' => $kode_cabang,
                                             ),
                                         ));
                                         $customer = $this->CustomerNoType->find('first', array(
@@ -6482,7 +6484,7 @@ class RevenuesController extends AppController {
                                             ),
                                         ));
 
-                                        $branch_id = !empty($branch['City']['id'])?$branch['City']['id']:false;
+                                        $branch_id = !empty($branch['Branch']['id'])?$branch['Branch']['id']:false;
                                         $customer_id = !empty($customer['CustomerNoType']['id'])?$customer['CustomerNoType']['id']:false;
                                         $truck_id = !empty($truck['Truck']['id'])?$truck['Truck']['id']:false;
                                         $truck_capacity = !empty($truck['Truck']['capacity'])?$truck['Truck']['capacity']:false;

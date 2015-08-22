@@ -3901,9 +3901,9 @@ class SettingsController extends AppController {
                                 }
 
                                 if(array_filter($datavar)) {
-                                    $branch = $this->City->getData('first', array(
+                                    $branch = $this->GroupBranch->Branch->getData('first', array(
                                         'conditions' => array(
-                                            'City.name' => $cabang,
+                                            'Branch.code' => $kode_cabang,
                                         ),
                                     ));
                                     $fromCity = $this->City->getData('first', array(
@@ -3943,7 +3943,7 @@ class SettingsController extends AppController {
                                         $uang_jalan_kedua = 0;
                                     }
 
-                                    $branch_id = !empty($branch['City']['id'])?$branch['City']['id']:false;
+                                    $branch_id = !empty($branch['Branch']['id'])?$branch['Branch']['id']:false;
                                     $requestData['ROW'.($x-1)] = array(
                                         'UangJalan' => array(
                                             'title' => !empty($nama)?$nama:false,
@@ -4547,9 +4547,9 @@ class SettingsController extends AppController {
                                 }
 
                                 if(array_filter($datavar)) {
-                                    $branch = $this->City->getData('first', array(
+                                    $branch = $this->GroupBranch->Branch->getData('first', array(
                                         'conditions' => array(
-                                            'City.name' => $cabang,
+                                            'Branch.code' => $kode_cabang,
                                         ),
                                     ));
                                     $fromCity = $this->City->getData('first', array(
@@ -4596,7 +4596,7 @@ class SettingsController extends AppController {
                                         $group_motor_id = $groupMotor['GroupMotor']['id'];
                                     }
 
-                                    $branch_id = !empty($branch['City']['id'])?$branch['City']['id']:false;
+                                    $branch_id = !empty($branch['Branch']['id'])?$branch['Branch']['id']:false;
                                     $requestData['ROW'.($x-1)] = array(
                                         'TarifAngkutan' => array(
                                             'type' => !empty($tipe_tarif)?strtolower($tipe_tarif):'',

@@ -59,10 +59,6 @@
             <thead frozen="true">
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', __('Cabang'), array(
-                                'style' => 'text-align: center;',
-                                'data-options' => 'field:\'branch\',width:120',
-                            ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Customer.customer_name', __('ALOKASI')), array(
                                 'style' => 'text-align: center;',
                                 'data-options' => 'field:\'customer_name\',width:120',
@@ -105,12 +101,10 @@
                         if(!empty($customers)){
                             foreach ($customers as $key => $customer) {
                                 $customer_id = $customer['Customer']['id'];
-                                $branch = $this->Common->filterEmptyField($customer, 'Branch', 'name');
                                 $totalMuatan = 0;
                 ?>
                 <tr>
                     <?php
-                            echo $this->Html->tag('td', $branch);
                             echo $this->Html->tag('td', $customer['Customer']['code']);
 
                             for ($i=1; $i <= $lastDay; $i++) {
@@ -191,13 +185,11 @@
 
         if(!empty($customers)){
             foreach ($customers as $customer):
-                $branch = $this->Common->filterEmptyField($customer, 'Branch', 'name');
 
                 $customer_id = $customer['Customer']['id'];
                 $totalMuatan = 0;
 
-                $content = $this->Html->tag('td', $branch);
-                $content .= $this->Html->tag('td', $customer['Customer']['code']);
+                $content = $this->Html->tag('td', $customer['Customer']['code']);
 
                 for ($i=1; $i <= $lastDay; $i++) {
                     $muatan = !empty($dataTtuj[$customer_id][date('d', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth))))])?$dataTtuj[$customer_id][date('d', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth))))]:'-';
@@ -224,11 +216,7 @@
             </tr>';
         }
 
-        $header = $this->Html->tag('th', __('Cabang'), array(
-            'rowspan' => 2,
-            'style' => 'text-align: center;',
-        ));
-        $header .= $this->Html->tag('th', __('Alokasi'), array(
+        $header = $this->Html->tag('th', __('Alokasi'), array(
             'rowspan' => 2,
             'style' => 'text-align: center;',
         ));
