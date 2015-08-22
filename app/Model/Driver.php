@@ -296,6 +296,8 @@ class Driver extends AppModel {
             'fields' => array(
                 'Driver.no_id'
             )
+        ), true, array(
+            'branch' => false,
         ));
 
         if(!empty($last_data['Driver']['no_id'])){
@@ -372,6 +374,8 @@ class Driver extends AppModel {
                 'Driver.no_id' => $no_id,
                 'Driver.id <>' => $id,
             ),
+        ), true, array(
+            'branch' => false,
         ));
         
         if( !empty($driver) ) {
