@@ -2521,8 +2521,34 @@ var change_customer_revenue = function(){
 
 var getNopol = function () {
     var self = $('#truckID');
+    var action_type = self.attr('data-action');
+    var truck_id = self.val();
 
-    if( $('.from_city #getKotaTujuan').length > 0 ) {
+    if( action_type == 'truck-mutation' ) {
+        $.ajax({
+            url: '/ajax/getDataTruck/' + truck_id + '/',
+            type: 'POST',
+            success: function(response, status) {
+                var branch_name = $(response).filter('#branch_name').html();
+                var category_name = $(response).filter('#category_name').html();
+                var facility_name = $(response).filter('#facility_name').html();
+                var driver_name = $(response).filter('#driver_name').html();
+                var truck_capacity = $(response).filter('#truck_capacity').html();
+                var truck_customers = $(response).filter('#truck_customers').html();
+
+                $('#branch_name').val(branch_name);
+                $('#truck_category').val(category_name);
+                $('#truck_facility').val(facility_name);
+                $('#driver_name').val(driver_name);
+                $('#truck_capacity').val(truck_capacity);
+                $('#truck_customers').html(truck_customers);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    } else if( $('.from_city #getKotaTujuan').length > 0 ) {
         var from_city_id = $('.from_city #getKotaTujuan').val();
         var to_city_id = $('.to_city #getTruck').val();
         var customer_id = $('#getKotaAsal').val();
@@ -4243,6 +4269,20 @@ $(function() {
         var val = $(this).val();
 
         $('.default-branch-id').val(val);
+    });
+
+    $('.active-field').click(function(){
+        var self = $(this);
+        var val = self.attr('data-active');
+        var fieldName = $('.'+val);
+
+        if( fieldName.is(":disabled") ) {
+            fieldName.attr('disabled', false);
+            self.html('<i class="fa fa-angle-double-left "></i>');
+        } else {
+            fieldName.attr('disabled', true);
+            self.html('<i class="fa fa-angle-double-right "></i>');
+        }
     });
 
     input_price_min();

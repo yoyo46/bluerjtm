@@ -369,8 +369,13 @@ class HtmlHelper extends AppHelper {
 
 		$allowAction = !empty($allowed_module[$controllerName])?$allowed_module[$controllerName]:array();
 		$allowPage = in_array($actionName, $allowAction)?true:false;
+		$allowPagination = false;
 
-		if( in_array($url, array('/', 'javascript:', '#')) || !empty($allowPage) || ($controllerName == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || array_key_exists('page', $url) || $group_id == 1 || $_allow ){
+		if( is_array($url) ) {
+			$allowPagination = array_key_exists('page', $url);
+		}
+
+		if( in_array($url, array('/', 'javascript:', '#')) || !empty($allowPage) || ($controllerName == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || $allowPagination || $group_id == 1 || $_allow ){
 			$is_show = true;
 		}else if(is_array($url) && !empty($controllerName) && !empty($actionName) && !empty($current_branch_id)){
 			$allowed_module = Configure::read('__Site.config_allow_module');

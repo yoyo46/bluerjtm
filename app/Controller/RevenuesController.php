@@ -2073,6 +2073,10 @@ class RevenuesController extends AppController {
                 'CustomerNoType.status' => 1,
                 'CustomerNoType.branch_id' => $allow_branch_id,
             ),
+            'order' => array(
+                'CustomerNoType.order_sort' => 'ASC',
+                'CustomerNoType.order' => 'ASC',
+            ),
         );
 
         if(!empty($this->params['named'])){

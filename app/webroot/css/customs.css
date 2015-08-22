@@ -191,3 +191,12 @@ tr.complete {
 /*
 **	END Prepayment
 */
+
+/*Mutation*/
+.icon-mutasi {
+	position: absolute;
+    top: 28px;
+    font-size: 18px;
+    font-weight: bold;
+    left: -29px;
+}

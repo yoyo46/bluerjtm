@@ -263,16 +263,16 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Truk', array(
-                                'controller' => 'trucks',
-                                'action' => 'add_import',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'truck_import' )?'active':'',
-                            ));
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Truk', array(
+                            //     'controller' => 'trucks',
+                            //     'action' => 'add_import',
+                            // ), array(
+                            //     'escape' => false
+                            // )), array(
+                            //     'class' => ( !empty($active_menu) && $active_menu == 'truck_import' )?'active':'',
+                            // ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Mutasi Kendaraan', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Mutasi Truk', array(
                                 'controller' => 'trucks',
                                 'action' => 'mutations',
                             ), array(
@@ -399,7 +399,7 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'licenses_report' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Harian Kendaraan', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Harian Truk', array(
                                 'controller' => 'trucks',
                                 'action' => 'daily_report',
                             ), array(

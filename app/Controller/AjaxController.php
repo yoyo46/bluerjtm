@@ -1127,10 +1127,24 @@ class AjaxController extends AppController {
             'conditions' => array(
 	            'Truck.id' => $truck_id,
 	        ),
+	        'contain' => array(
+	        	'TruckCategory',
+	        	'TruckFacility'
+        	),
         );
         $result = $this->Truck->getData('first', $options, true, array(
         	'branch' => false,
     	));
+
+        if( !empty($result) ) {
+    		$branch_id = $this->MkCommon->filterEmptyField($result, 'Truck', 'branch_id');
+    		$driver_id = $this->MkCommon->filterEmptyField($result, 'Truck', 'driver_id');
+
+    		$result = $this->GroupBranch->Branch->getMerge($result, $branch_id);
+    		$result = $this->Truck->Driver->getMerge($result, $driver_id);
+    		$result = $this->Truck->TruckCustomer->getMergeTruckCustomer($result);
+        }
+
         $this->set(compact(
         	'result'
     	));

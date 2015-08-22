@@ -65,62 +65,14 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-puzzle-piece"></i> Fasilitas Truk', array(
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
                         'controller' => 'trucks',
-                        'action' => 'facilities'
+                        'action' => 'mutation_add',
                     ), array(
                         'escape' => false,
-                        'class' => 'btn btn-app pull-right'
+                        'class' => 'btn btn-app btn-success pull-right'
                     ));
-                    echo $this->Html->link('<i class="fa fa-list-alt"></i> Jenis Truk', array(
-                        'controller' => 'trucks',
-                        'action' => 'categories'
-                    ), array(
-                        'escape' => false,
-                        'class' => 'btn btn-app pull-right'
-                    ));
-                    echo $this->Html->link('<i class="fa fa-truck"></i> Merek Truk', array(
-                        'controller' => 'trucks',
-                        'action' => 'brands'
-                    ), array(
-                        'escape' => false,
-                        'class' => 'btn btn-app pull-right'
-                    ));
-                    // echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Truk', array(
-                    //     'controller' => 'trucks',
-                    //     'action' => 'add'
-                    // ), array(
-                    //     'escape' => false,
-                    //     'class' => 'btn btn-app btn-success pull-right'
-                    // ));
             ?>
-            <div class="btn-group pull-right">
-                <?php 
-                        echo $this->Html->tag('button', '<i class="fa fa-plus"></i> Tambah', array(
-                            'data-toggle' => 'dropdown',
-                            'class' => 'btn btn-app btn-success dropdown-toggle'
-                        ));
-                ?>
-                <ul class="dropdown-menu" role="menu">
-                    <?php 
-                            echo $this->Html->tag('li', $this->Html->link(__('Truk'), array(
-                                'controller' => 'trucks',
-                                'action' => 'add'
-                            ), array(
-                                'escape' => false,
-                            )));
-                            echo $this->Html->tag('li', '', array(
-                                'class' => 'divider',
-                            ));
-                            echo $this->Html->tag('li', $this->Html->link(__('Import Excel'), array(
-                                'controller' => 'trucks',
-                                'action' => 'add_import',
-                            ), array(
-                                'escape' => false,
-                            )));
-                    ?>
-                </ul>
-            </div>
             <div class="clear"></div>
         </div>
     </div>

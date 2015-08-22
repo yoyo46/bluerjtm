@@ -366,7 +366,7 @@
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('LakaDetail.type_transport',array(
-										'label'=> __('Jenis Kendaraan'), 
+										'label'=> __('Jenis Truk'), 
 										'class'=>'form-control',
 										'required' => false,
 										'type' => 'text'
@@ -386,7 +386,7 @@
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('LakaDetail.condition_transport',array(
-										'label'=> __('Kondisi Kendaraan'), 
+										'label'=> __('Kondisi Truk'), 
 										'class'=>'form-control',
 										'required' => false,
 										'type' => 'text'

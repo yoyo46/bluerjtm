@@ -3896,7 +3896,7 @@ class TrucksController extends AppController {
             $this->loadModel('Perlengkapan');
             App::import('Vendor', 'excelreader'.DS.'excel_reader2');
 
-            $this->set('active_menu', 'truck_import');
+            $this->set('active_menu', 'trucks');
             $this->set('sub_module_title', __('Import Truk'));
 
             if(!empty($this->request->data)) { 
@@ -4216,7 +4216,7 @@ class TrucksController extends AppController {
 
         $dateFrom = date('Y-m-d', strtotime('-1 month'));
         $dateTo = date('Y-m-d');
-        $sub_module_title = __('Laporan Harian Kendaraan');
+        $sub_module_title = __('Laporan Harian Truk');
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $allow_branch = Configure::read('__Site.config_allow_branchs');
         $defaul_condition = array(
@@ -4334,5 +4334,75 @@ class TrucksController extends AppController {
         }else if($data_action == 'excel'){
             $this->layout = 'ajax';
         }
+    }
+
+    public function mutations() {
+        $this->loadModel('TruckMutation');
+
+        $options = array();
+        
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $this->request->data['Truck']['nopol'] = $nopol;
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                $this->request->data['Truck']['type'] = $typeTruck;
+
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $nopol,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$nopol.'%',
+                    );
+                }
+                
+                $truckSearch = $this->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.id',
+                    ),
+                ));
+                $conditions['Truck.id'] = $truckSearch;
+            }
+            if(!empty($refine['name'])){
+                $data = urldecode($refine['name']);
+                $conditions['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$data.'%';
+                $this->request->data['Driver']['name'] = $data;
+            }
+        }
+
+        $this->paginate = $this->TruckMutation->getData('paginate', $options);
+        $truckMutation = $this->paginate('TruckMutation');
+
+        $this->set('active_menu', 'mutations');
+        $this->set('sub_module_title', __('Data Mutasi Truk'));
+        $this->set(compact(
+            'truckMutation'
+        ));
+    }
+
+    public function mutation_add() {
+        $this->loadModel('Customer');
+        $this->set('sub_module_title', __('Tambah Mutasi Truk'));
+
+        $trucks = $this->Truck->getData('list', array(
+            'fields' => array(
+                'Truck.id', 'Truck.nopol'
+            ),
+        ));
+        $customers = $this->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+
+        $this->set(compact(
+            'trucks', 'customers'
+        ));
+        $this->render('mutation_form');
     }
 }
