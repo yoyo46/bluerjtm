@@ -210,7 +210,7 @@
                             'kir', 'stnk', 'siup', 'reports',
                             'capacity_report', 'point_perday_report',
                             'point_perplant_report', 'licenses_report',
-                            'daily_report'
+                            'daily_report', 'mutations'
                         ),
                         'leasings' => array(
                             'index'
@@ -230,7 +230,7 @@
                             'monitoring_truck', 'capacity_report',
                             'point_perday_report', 'point_perplant_report',
                             'view_leasing', 'licenses_report', 'truck_import',
-                            'daily_report'
+                            'daily_report', 'mutations'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -270,6 +270,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'truck_import' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Mutasi Kendaraan', array(
+                                'controller' => 'trucks',
+                                'action' => 'mutations',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'mutations' )?'active':'',
                             ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Leasing', array(

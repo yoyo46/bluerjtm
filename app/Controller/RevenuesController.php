@@ -2860,10 +2860,12 @@ class RevenuesController extends AppController {
                 if( empty($value['Revenue']['ttuj_id']) ) {
                     $from_city_id = !empty($value['Revenue']['from_city_id'])?$value['Revenue']['from_city_id']:false;
                     $to_city_id = !empty($value['Revenue']['to_city_id'])?$value['Revenue']['to_city_id']:false;
+                    $truck_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'truck_id');
 
                     $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
                     $value = $this->City->getMerge($value, $to_city_id);
                     $value = $this->Ttuj->Customer->getMerge($value, $value['Revenue']['customer_id']);
+                    $value = $this->Truck->getMerge($value, $truck_id);
                 } else {
                     $value = $this->Ttuj->Customer->getMerge($value, $value['Ttuj']['customer_id']);
                 }
@@ -6500,8 +6502,8 @@ class RevenuesController extends AppController {
                                         // $jml_unit = !empty($tarif['jml_unit'])?$tarif['jml_unit']:false;
                                         // $is_charge = !empty($tarif['is_charge'])?$tarif['is_charge']:false;
                                         // $harga_unit = !empty($tarif['harga_unit'])?$tarif['harga_unit']:false;
-                                        $ppn = !empty($ppn)?$ppn:0;
-                                        $pph = !empty($pph)?$pph:0;
+                                        $ppn = !empty($ppn)?$this->MkCommon->convertPriceToString($ppn):0;
+                                        $pph = !empty($pph)?$this->MkCommon->convertPriceToString($pph):0;
                                         $dataRevenue = array();
 
                                         if( !empty($tarif) ) {
@@ -6526,11 +6528,11 @@ class RevenuesController extends AppController {
                                                     $group_motor_string = sprintf('group_motor_%s', $i);
                                                     $group_motor_detail = $$group_motor_string;
                                                     $jml_unit_string = sprintf('jml_unit_%s', $i);
-                                                    $jml_unit_detail = ( !empty($$jml_unit_string) && is_numeric($$jml_unit_string) )?$$jml_unit_string:0;
+                                                    $jml_unit_detail = !empty($$jml_unit_string)?$this->MkCommon->convertPriceToString($$jml_unit_string):0;
                                                     $is_charge_string = sprintf('is_charge_%s', $i);
                                                     $is_charge_detail = !empty($$is_charge_string)?$$is_charge_string:0;
                                                     $harga_unit_string = sprintf('harga_unit_%s', $i);
-                                                    $harga_unit_detail = ( !empty($$harga_unit_string) && is_numeric($$harga_unit_string) )?$$harga_unit_string:0;
+                                                    $harga_unit_detail = !empty($$harga_unit_string)?$this->MkCommon->convertPriceToString($$harga_unit_string):0;
                                                     $toCityDetail = $this->City->getData('first', array(
                                                         'conditions' => array(
                                                             'City.name' => $tujuan_detail,

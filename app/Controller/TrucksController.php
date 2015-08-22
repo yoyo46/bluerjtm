@@ -4046,15 +4046,15 @@ class TrucksController extends AppController {
                                             'truck_facility_id' => !empty($truck_facility_id)?$truck_facility_id:false,
                                             'driver_id' => !empty($driver_id)?$driver_id:false,
                                             'nopol' => !empty($nopol)?$nopol:false,
-                                            'kir' => !empty($biaya_kir)?str_replace(array('.', ',', '* '), array('', '', ''), $biaya_kir):0,
-                                            'siup' => !empty($biaya_siup)?str_replace(array('.', ',', '* '), array('', '', ''), $biaya_siup):0,
-                                            'bpkb' => !empty($bpkb)?str_replace(array('.', ',', '* '), array('', '', ''), $bpkb):0,
+                                            'kir' => !empty($biaya_kir)?$this->MkCommon->convertPriceToString($biaya_kir):0,
+                                            'siup' => !empty($biaya_siup)?$this->MkCommon->convertPriceToString($biaya_siup):0,
+                                            'bpkb' => !empty($bpkb)?$this->MkCommon->convertPriceToString($bpkb):0,
                                             'atas_nama' => !empty($atas_nama)?$atas_nama:false,
                                             'no_stnk' => !empty($no_stnk)?$no_stnk:false,
                                             'no_rangka' => !empty($no_rangka)?$no_rangka:false,
-                                            'bbnkb' => !empty($biaya_bbnkb)?str_replace(array('.', ',', '* '), array('', '', ''), $biaya_bbnkb):0,
-                                            'pkb' => !empty($biaya_pkb)?str_replace(array('.', ',', '* '), array('', '', ''), $biaya_pkb):0,
-                                            'swdkllj' => !empty($biaya_swdkllj)?str_replace(array('.', ',', '* '), array('', '', ''), $biaya_swdkllj):0,
+                                            'bbnkb' => !empty($biaya_bbnkb)?$this->MkCommon->convertPriceToString($biaya_bbnkb):0,
+                                            'pkb' => !empty($biaya_pkb)?$this->MkCommon->convertPriceToString($biaya_pkb):0,
+                                            'swdkllj' => !empty($biaya_swdkllj)?$this->MkCommon->convertPriceToString($biaya_swdkllj):0,
                                             'no_machine' => !empty($no_mesin)?$no_mesin:false,
                                             'capacity' => !empty($kapasitas)?$kapasitas:false,
                                             'tahun' => !empty($tahun)?$tahun:false,
@@ -4110,7 +4110,7 @@ class TrucksController extends AppController {
 
                                         if( !empty($$varGroup) ) {
                                             $varJml = sprintf('jumlah_perlengkapan_%s', $i);
-                                            $varJml = !empty($$varJml)?$$varJml:false;
+                                            $varJml = !empty($$varJml)?$this->MkCommon->convertPriceToString($$varJml):false;
                                             $perlengkapan = !empty($$varGroup)?$$varGroup:'';
                                             $perlengkapan = $this->Perlengkapan->getData('first', array(
                                                 'conditions' => array(

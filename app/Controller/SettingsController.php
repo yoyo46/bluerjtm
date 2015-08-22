@@ -3957,21 +3957,21 @@ class SettingsController extends AppController {
                                             'capacity' => !empty($kapasitas)?$kapasitas:false,
                                             'arrive_lead_time' => !empty($lead_time_sampai_tujuan)?$lead_time_sampai_tujuan:false,
                                             'back_lead_time' => !empty($lead_time_ke_pool)?$lead_time_ke_pool:false,
-                                            'uang_jalan_1' => !empty($uang_jalan_pertama)?str_replace(array('.', ',', '* '), array('', '', ''), $uang_jalan_pertama):false, // Borongan
-                                            'uang_jalan_2' => !empty($uang_jalan_kedua)?str_replace(array('.', ',', '* '), array('', '', ''), $uang_jalan_kedua):0,
+                                            'uang_jalan_1' => !empty($uang_jalan_pertama)?$this->MkCommon->convertPriceToString($uang_jalan_pertama):false, // Borongan
+                                            'uang_jalan_2' => !empty($uang_jalan_kedua)?$this->MkCommon->convertPriceToString($uang_jalan_kedua):0,
                                             'uang_jalan_per_unit' => !empty($uang_jalan_per_unit)?$uang_jalan_per_unit:0,
-                                            'commission' => !empty($komisi)?str_replace(array('.', ',', '* '), array('', '', ''), $komisi):0,
+                                            'commission' => !empty($komisi)?$this->MkCommon->convertPriceToString($komisi):0,
                                             'commission_per_unit' => !empty($komisi_per_unit)?$komisi_per_unit:0,
-                                            'commission_extra' => !empty($komisi_extra)?str_replace(array('.', ',', '* '), array('', '', ''), $komisi_extra):0,
+                                            'commission_extra' => !empty($komisi_extra)?$this->MkCommon->convertPriceToString($komisi_extra):0,
                                             'commission_extra_per_unit' => !empty($komisi_extra_per_unit)?$komisi_extra_per_unit:0,
                                             'commission_min_qty' => !empty($min_kapasitas_komisi_extra)?$min_kapasitas_komisi_extra:0,
-                                            'asdp' => !empty($uang_penyebrangan)?str_replace(array('.', ',', '* '), array('', '', ''), $uang_penyebrangan):0,
+                                            'asdp' => !empty($uang_penyebrangan)?$this->MkCommon->convertPriceToString($uang_penyebrangan):0,
                                             'asdp_per_unit' => !empty($uang_penyebrangan_per_unit)?$uang_penyebrangan_per_unit:0,
-                                            'uang_kawal' => !empty($uang_kawal)?str_replace(array('.', ',', '* '), array('', '', ''), $uang_kawal):0,
+                                            'uang_kawal' => !empty($uang_kawal)?$this->MkCommon->convertPriceToString($uang_kawal):0,
                                             'uang_kawal_per_unit' => !empty($uang_kawal_per_unit)?$uang_kawal_per_unit:0,
-                                            'uang_keamanan' => !empty($uang_keamanan)?str_replace(array('.', ',', '* '), array('', '', ''), $uang_keamanan):0,
+                                            'uang_keamanan' => !empty($uang_keamanan)?$this->MkCommon->convertPriceToString($uang_keamanan):0,
                                             'uang_keamanan_per_unit' => !empty($uang_keamanan_per_unit)?$uang_keamanan_per_unit:0,
-                                            'uang_jalan_extra' => !empty($uang_jalan_extra)?str_replace(array('.', ',', '* '), array('', '', ''), $uang_jalan_extra):0,
+                                            'uang_jalan_extra' => !empty($uang_jalan_extra)?$this->MkCommon->convertPriceToString($uang_jalan_extra):0,
                                             'uang_jalan_extra_per_unit' => !empty($uang_jalan_extra_per_unit)?$uang_jalan_extra_per_unit:0,
                                             'min_capacity' => !empty($min_kapasitas_ujalan_extra)?$min_kapasitas_ujalan_extra:0,
                                             'branch_id' => $branch_id,
@@ -3988,7 +3988,7 @@ class SettingsController extends AppController {
                                         if( !empty($$varGroup) ) {
                                             $varBiaya = sprintf('biaya_uang_jalan_per_group_%s', $i);
                                             $group_motor_id = !empty($groupMotors[strtolower($$varGroup)])?$groupMotors[strtolower($$varGroup)]:'';
-                                            $biaya = !empty($$varBiaya)?$$varBiaya:'';
+                                            $biaya = !empty($$varBiaya)?$this->MkCommon->convertPriceToString($$varBiaya):'';
                                             $requestData['ROW'.($x-1)]['UangJalanTipeMotor']['group_motor_id'][$i] = $group_motor_id;
                                             $requestData['ROW'.($x-1)]['UangJalanTipeMotor']['uang_jalan_1'][$i] = $biaya;
                                             $idx++;
@@ -4008,7 +4008,7 @@ class SettingsController extends AppController {
                                         if( !empty($$varGroup) ) {
                                             $varBiaya = sprintf('biaya_komisi_per_group_%s', $i);
                                             $group_motor_id = !empty($groupMotors[strtolower($$varGroup)])?$groupMotors[strtolower($$varGroup)]:'';
-                                            $biaya = !empty($$varBiaya)?$$varBiaya:'';
+                                            $biaya = !empty($$varBiaya)?$this->MkCommon->convertPriceToString($$varBiaya):'';
                                             $requestData['ROW'.($x-1)]['CommissionGroupMotor']['group_motor_id'][$i] = $group_motor_id;
                                             $requestData['ROW'.($x-1)]['CommissionGroupMotor']['commission'][$i] = $biaya;
                                             $idx++;
@@ -4017,7 +4017,7 @@ class SettingsController extends AppController {
                                         }
                                         $i++;
                                     }
-                                    
+
                                     $i = 1;
                                     $idx = 0;
                                     $flag = true;
@@ -4028,7 +4028,7 @@ class SettingsController extends AppController {
                                         if( !empty($$varGroup) ) {
                                             $varBiaya = sprintf('biaya_uang_penyebrangan_per_group_%s', $i);
                                             $group_motor_id = !empty($groupMotors[strtolower($$varGroup)])?$groupMotors[strtolower($$varGroup)]:'';
-                                            $biaya = !empty($$varBiaya)?$$varBiaya:'';
+                                            $biaya = !empty($$varBiaya)?$this->MkCommon->convertPriceToString($$varBiaya):'';
                                             $requestData['ROW'.($x-1)]['AsdpGroupMotor']['group_motor_id'][$i] = $group_motor_id;
                                             $requestData['ROW'.($x-1)]['AsdpGroupMotor']['asdp'][$i] = $biaya;
                                             $idx++;
@@ -4048,7 +4048,7 @@ class SettingsController extends AppController {
                                         if( !empty($$varGroup) ) {
                                             $varBiaya = sprintf('biaya_uang_kawal_per_group_%s', $i);
                                             $group_motor_id = !empty($groupMotors[strtolower($$varGroup)])?$groupMotors[strtolower($$varGroup)]:'';
-                                            $biaya = !empty($$varBiaya)?$$varBiaya:'';
+                                            $biaya = !empty($$varBiaya)?$this->MkCommon->convertPriceToString($$varBiaya):'';
                                             $requestData['ROW'.($x-1)]['UangKawalGroupMotor']['group_motor_id'][$i] = $group_motor_id;
                                             $requestData['ROW'.($x-1)]['UangKawalGroupMotor']['uang_kawal'][$i] = $biaya;
                                             $idx++;
@@ -4068,7 +4068,7 @@ class SettingsController extends AppController {
                                         if( !empty($$varGroup) ) {
                                             $varBiaya = sprintf('biaya_uang_keamanan_per_group_%s', $i);
                                             $group_motor_id = !empty($groupMotors[strtolower($$varGroup)])?$groupMotors[strtolower($$varGroup)]:'';
-                                            $biaya = !empty($$varBiaya)?$$varBiaya:'';
+                                            $biaya = !empty($$varBiaya)?$this->MkCommon->convertPriceToString($$varBiaya):'';
                                             $requestData['ROW'.($x-1)]['UangKeamananGroupMotor']['group_motor_id'][$i] = $group_motor_id;
                                             $requestData['ROW'.($x-1)]['UangKeamananGroupMotor']['uang_keamanan'][$i] = $biaya;
                                             $idx++;
@@ -4608,7 +4608,7 @@ class SettingsController extends AppController {
                                             'customer_id' => !empty($customer_id)?$customer_id:'',
                                             'capacity' => !empty($kapasitas)?$kapasitas:false,
                                             'jenis_unit' => !empty($jenis_tarif)?strtolower($jenis_tarif):false,
-                                            'tarif' => !empty($tarif_angkutan)?str_replace(array('.', ',', '* '), array('', '', ''), $tarif_angkutan):false,
+                                            'tarif' => !empty($tarif_angkutan)?$this->MkCommon->convertPriceToString($tarif_angkutan):false,
                                             'group_motor_id' => !empty($group_motor_id)?$group_motor_id:0,
                                             'branch_id' => $branch_id,
                                         ),
