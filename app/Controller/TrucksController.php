@@ -4288,10 +4288,21 @@ class TrucksController extends AppController {
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'branch_id');
                 $driver_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_id');
                 $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
+                $is_retail = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'is_retail');
 
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
                 $value = $this->Driver->getMerge($value, $driver_id);
                 $value = $this->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
+
+                if( !empty($is_retail) ) {
+                    $value = $this->Ttuj->TtujTipeMotor->getMergeTtujTipeMotor( $value, $id );
+                    $value['Ttuj']['to_city_name'] = Set::extract('/TtujTipeMotor/City/name', $value);
+
+                    if( !empty($value['Ttuj']['to_city_name']) ) {
+                        $value['Ttuj']['to_city_name'] = implode(', ', $value['Ttuj']['to_city_name']);
+                    }
+                }
+
                 $value['Ttuj']['total_unit'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $id );
 
                 $branch_name = $this->MkCommon->filterEmptyField($value, 'Branch', 'name');
