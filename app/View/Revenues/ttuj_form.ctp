@@ -16,7 +16,7 @@
 		$datForm = !empty($this->request->data)?$this->request->data:false;
 		$ttujDate = (!empty($datForm['Ttuj']['ttuj_date'])) ? $datForm['Ttuj']['ttuj_date'] : date('d/m/Y');
 		$tglBerangkat = (!empty($datForm['Ttuj']['tgl_berangkat'])) ? $datForm['Ttuj']['tgl_berangkat'] : date('d/m/Y');
-		$completedDate = (!empty($datForm['Ttuj']['completed_date'])) ? $datForm['Ttuj']['completed_date'] : date('d/m/Y');
+		$completedDate = (!empty($datForm['Ttuj']['completed_date'])) ? $this->Common->formatDate($datForm['Ttuj']['completed_date'], 'd/m/Y', date('d/m/Y')) : date('d/m/Y');
 ?>
 <div class="ttuj-form">
 	<div id="step1">

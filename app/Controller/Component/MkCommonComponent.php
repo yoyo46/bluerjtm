@@ -92,7 +92,7 @@ class MkCommonComponent extends Component {
     	$dtString = false;
         $date = trim($date);
 
-    	if( !empty($date) ) {
+    	if( !empty($date) && $date != '0000-00-00' ) {
             if($reverse){
                 $dtString = date('d/m/Y', strtotime($date));
             }else{

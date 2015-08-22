@@ -1277,12 +1277,12 @@ class CommonHelper extends AppHelper {
     *   @param string $format : format tanggal
     *   @return string tanggal
     */
-    function formatDate($dateString, $format = false) {
+    function formatDate($dateString, $format = false, $separator = '-') {
         App::uses('TimeHelper', 'View/Helper');
         $this->Time = new TimeHelper(new View(null));
 
         if( empty($dateString) || $dateString == '0000-00-00' || $dateString == '0000-00-00 00:00:00') {
-            return '-';
+            return $separator;
         } else {
             if( !empty($format) ) {
                 return date($format, strtotime($dateString));
