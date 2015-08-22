@@ -184,9 +184,10 @@ class TrucksController extends AppController {
             ));
 
             if(!empty($truck)){
-                // $branch_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'branch_id');
+                $branch_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'branch_id');
                 // $this->MkCommon->allowPage($branch_id);
 
+                $truck = $this->GroupBranch->Branch->getMerge($truck, $branch_id);
                 $truck = $this->TruckCustomer->getMergeTruckCustomer($truck);
                 $truckPerlengkapans = $this->TruckPerlengkapan->getData('all', array(
                     'conditions' => array(
@@ -2259,7 +2260,7 @@ class TrucksController extends AppController {
                 $branch_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'branch_id');
                 // $this->MkCommon->allowPage($branch_id);
                 
-                $truck = $this->City->getMerge($truck, $branch_id);
+                $truck = $this->GroupBranch->Branch->getMerge($truck, $branch_id);
                 $truckPerlengkapans = $this->TruckPerlengkapan->getData('all', array(
                     'conditions' => array(
                         'TruckPerlengkapan.truck_id' => $truck_id

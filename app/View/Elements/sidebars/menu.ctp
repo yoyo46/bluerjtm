@@ -209,7 +209,8 @@
                             'drivers', 'index', 'add_import',
                             'kir', 'stnk', 'siup', 'reports',
                             'capacity_report', 'point_perday_report',
-                            'point_perplant_report', 'licenses_report'
+                            'point_perplant_report', 'licenses_report',
+                            'daily_report'
                         ),
                         'leasings' => array(
                             'index'
@@ -965,7 +966,8 @@
                             'cities', 'companies', 'vendors',
                             'jenis_sim', 'classifications',
                             'calendar_colors', 'calendar_icons',
-                            'parts_motor', 'index', 'approval_setting'
+                            'parts_motor', 'index', 'approval_setting',
+                            'branches'
                         ),
                     );
 
