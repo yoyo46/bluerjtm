@@ -110,11 +110,6 @@
             <thead>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', __('Cabang'), array(
-                                'rowspan' => 2,
-                                'class' => 'text-middle text-center',
-                                'style' => $tdStyle,
-                            ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('ALOKASI')), array(
                                 'rowspan' => 2,
                                 'class' => 'text-middle text-center',
@@ -127,13 +122,11 @@
                                 'style' => $tdStyle,
                             ));
 
-                            if( !empty($capacities) ) {
-                                echo $this->Html->tag('th', __('Total'), array(
-                                    'class' => 'text-center',
-                                    'style' => $tdStyle,
-                                    'rowspan' => 2,
-                                ));
-                            }
+                            echo $this->Html->tag('th', __('Total'), array(
+                                'class' => 'text-center',
+                                'style' => $tdStyle,
+                                'rowspan' => 2,
+                            ));
                     ?>
                 </tr>
                 <tr>
@@ -155,18 +148,16 @@
                             $total = array();
 
                             foreach ($customers as $key => $customer) {
-                                $branch = $this->Common->filterEmptyField($customer, 'Branch', 'name');
                                 $customer_id = $customer['Customer']['id'];
                 ?>
                 <tr>
                     <?php
-                            echo $this->Html->tag('td', $branch);
-                            echo $this->Html->tag('td', $customer['Customer']['code'], array(
-                                'style' => $tdStyle,
-                            ));
-
                             if( !empty($capacities) ) {
                                 $totalRit = 0;
+
+                                echo $this->Html->tag('td', $customer['Customer']['code'], array(
+                                    'style' => $tdStyle,
+                                ));
 
                                 foreach ($capacities as $key => $capacity) {
                                     $kapasitas = 0;
@@ -206,7 +197,6 @@
                     <?php
                             $customer_id = 0;
                             echo $this->Html->tag('td', __('-'), array(
-                                'colspan' => 2,
                                 'style' => $tdStyle.'font-weight:bold;text-align:right;',
                             ));
 
@@ -253,7 +243,6 @@
                     <?php 
                             echo $this->Html->tag('th', __('Jumlah'), array(
                                 'class' => 'text-center',
-                                'colspan' => 2,
                                 'style' => $tdStyle,
                             ));
 
@@ -317,22 +306,18 @@
         $each_loop_message = '';
         $no = 1;
 
-        if(!empty($customers)){
-            foreach ($customers as $customer):
-                $branch = $this->Common->filterEmptyField($customer, 'Branch', 'name');
-                $content = $this->Html->tag('td', $no, array(
-                    'style' => 'text-align: center;',
-                ));
-                
-                $customer_id = $customer['Customer']['id'];
-                $content .= $this->Html->tag('td', $branch, array(
-                    'style' => 'text-align: left;',
-                ));
-                $content .= $this->Html->tag('td', $customer['Customer']['code'], array(
-                    'style' => 'text-align: center;',
-                ));
+        if( !empty($capacities) ) {
+            if(!empty($customers)){
+                foreach ($customers as $customer):
+                    $content = $this->Html->tag('td', $no, array(
+                        'style' => 'text-align: center;',
+                    ));
+                    
+                    $customer_id = $customer['Customer']['id'];
+                    $content .= $this->Html->tag('td', $customer['Customer']['code'], array(
+                        'style' => 'text-align: center;',
+                    ));
 
-                if( !empty($capacities) ) {
                     $totalRit = 0;
 
                     foreach ($capacities as $key => $capacity) {
@@ -357,57 +342,54 @@
                     $content .= $this->Html->tag('th', $totalRit, array(
                         'style' => 'text-align: center;',
                     ));
-                }
 
-                $each_loop_message .= $this->Html->tag('tr', $content);
-                $no++;
-            endforeach;
-        }
-
-        if(!empty($truckWithoutAlocations)){
-            $content = $this->Html->tag('td', $no, array(
-                'style' => 'text-align: center;',
-            ));
-            
-            $customer_id = 0;
-            $content .= $this->Html->tag('td', '-', array(
-                'style' => 'text-align: center;',
-            ));
-
-            if( !empty($capacities) ) {
-                $totalRit = 0;
-
-                foreach ($capacities as $key => $capacity) {
-                    $kapasitas = 0;
-
-                    if( !empty($truckArr[$customer_id][$capacity]) ) {
-                        $kapasitas = $truckArr[$customer_id][$capacity];
-                    }
-
-                    if( !empty($total[$capacity]) ) {
-                        $total[$capacity] += $kapasitas;
-                    } else {
-                        $total[$capacity] = $kapasitas;
-                    }
-
-                    $totalRit += $kapasitas;
-                    $content .= $this->Html->tag('th', $kapasitas, array(
-                        'style' => 'text-align: center;',
-                    ));
-                }
-
-                $content .= $this->Html->tag('th', $totalRit, array(
-                    'style' => 'text-align: center;',
-                ));
+                    $each_loop_message .= $this->Html->tag('tr', $content);
+                    $no++;
+                endforeach;
             }
 
-            $each_loop_message .= $this->Html->tag('tr', $content);
+            if(!empty($truckWithoutAlocations)){
+                if( !empty($capacities) ) {
+                    $content = $this->Html->tag('td', $no, array(
+                        'style' => 'text-align: center;',
+                    ));
+                    
+                    $customer_id = 0;
+                    $content .= $this->Html->tag('td', '-', array(
+                        'style' => 'text-align: center;',
+                    ));
+
+                    $totalRit = 0;
+
+                    foreach ($capacities as $key => $capacity) {
+                        $kapasitas = 0;
+
+                        if( !empty($truckArr[$customer_id][$capacity]) ) {
+                            $kapasitas = $truckArr[$customer_id][$capacity];
+                        }
+
+                        if( !empty($total[$capacity]) ) {
+                            $total[$capacity] += $kapasitas;
+                        } else {
+                            $total[$capacity] = $kapasitas;
+                        }
+
+                        $totalRit += $kapasitas;
+                        $content .= $this->Html->tag('th', $kapasitas, array(
+                            'style' => 'text-align: center;',
+                        ));
+                    }
+
+                    $content .= $this->Html->tag('th', $totalRit, array(
+                        'style' => 'text-align: center;',
+                    ));
+                    $each_loop_message .= $this->Html->tag('tr', $content);
+                }
+            }
         }
 
         if( empty($capacities) || empty($truckWithoutAlocations) ) {
-            $each_loop_message .= '<tr>
-                <td colspan="7">data tidak tersedia</td>
-            </tr>';
+            $each_loop_message .= '<tr><td colspan="4">data tidak tersedia</td></tr>';
         } else {
             $content = $this->Html->tag('th', __('Jumlah'), array(
                 'style' => 'text-align: center;font-weight:bold;',
@@ -432,11 +414,7 @@
             $each_loop_message .= $this->Html->tag('tr', $content);
         }
 
-        $header = $this->Html->tag('th', __('Cabang'), array(
-            'rowspan' => 2,
-            'style' => 'text-align: center;',
-        ));
-        $header .= $this->Html->tag('th', __('Alokasi'), array(
+        $header = $this->Html->tag('th', __('Alokasi'), array(
             'rowspan' => 2,
             'style' => 'text-align: center;',
         ));
@@ -446,21 +424,20 @@
             'style' => 'text-align: center;',
         ));
 
-        if( !empty($capacities) ) {
-            $header .= $this->Html->tag('th', __('Total'), array(
-                'style' => 'text-align: center;',
-                'rowspan' => 2,
-            ));
-        }
+        $header .= $this->Html->tag('th', __('Total'), array(
+            'style' => 'text-align: center;',
+            'rowspan' => 2,
+        ));
 
         $date_title = $sub_module_title;
-        $totalCustomer = count($customers);
         $subHeader = '';
+        $totalCustomer = 0;
         $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
             'style' => 'font-size: 24px;font-style: italic;margin-top: 10px;'
         ));
 
         if( !empty($capacities) ) {
+            $totalCustomer = count($customers);
             $totalRit = 0;
 
             foreach ($capacities as $key => $capacity) {
@@ -469,6 +446,10 @@
                     'style' => 'text-align: center;',
                 ));
             }
+
+            $subHeader = $this->Html->tag('tr', $subHeader, array(
+                'style' => $table_tr_head,
+            ));
         }
 
 $tbl = <<<EOD
@@ -483,9 +464,7 @@ $tbl = <<<EOD
                     <th rowspan="2" style="text-align: center;">No. </th>
                     $header
                 </tr>
-                <tr style="$table_tr_head">
-                    $subHeader
-                </tr>
+                $subHeader
             </thead>
             <tbody>
                 $each_loop_message
