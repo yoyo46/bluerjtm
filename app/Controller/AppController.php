@@ -68,6 +68,7 @@ class AppController extends Controller {
 			$GroupId = $this->Auth->user('group_id');
 			$user_branch = $this->Session->read('user_branch');
 			$User = $this->Auth->user();
+			$current_branch_id = false;
 
 			if( !empty($User['employe_id']) ) {
 				$User = $this->User->Employe->getMerge($User, $User['employe_id']);
@@ -249,7 +250,10 @@ class AppController extends Controller {
 			$allowPage = in_array($paramAction, $allowAction)?true:false;
 
 			Configure::write('__Site.config_allow_branchs', $allowBranch);
-			Configure::write('__Site.config_allow_branch_id', array_keys($allowBranch));
+			
+			if( !empty($allowBranch) ) {
+				Configure::write('__Site.config_allow_branch_id', array_keys($allowBranch));
+			}
 
 			if( !empty($allowPage) || $paramController == 'ajax' || $GroupId == 1 ){
 				$is_allow = true;
