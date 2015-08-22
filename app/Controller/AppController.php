@@ -80,7 +80,6 @@ class AppController extends Controller {
 			// Set Variable Branch
 			$my_branch_id = $this->MkCommon->filterEmptyField($User, 'Employe', 'branch_id');
 			$my_branch_id = !empty($user_branch)?$user_branch:$my_branch_id;
-		    $list_branches = $this->GroupBranch->Branch->getData('list');
 		    $city_branches = $this->GroupBranch->Branch->getData('list', array(
 		    	'fields' => array(
 		    		'Branch.id', 'Branch.city_id',
@@ -88,6 +87,25 @@ class AppController extends Controller {
 	    	));
 
 	    	$city_branches = array_values($city_branches);
+
+	    	if( $GroupId == 1 ) {
+		    	$list_branches = $this->GroupBranch->Branch->getData('list');
+	    	} else {
+		    	$list_branches = $this->GroupBranch->getData('list', array(
+		    		'conditions' => array(
+		    			'GroupBranch.group_id' => $GroupId,
+	    			),
+	    			'contain' => array(
+	    				'Branch',
+    				),
+    				'fields' => array(
+    					'GroupBranch.branch_id', 'Branch.name'
+					),
+					'group' => array(
+						'GroupBranch.branch_id',
+					),
+	    		));
+	    	}
 
 			Configure::write('__Site.Data.Branch', $list_branches);
 			Configure::write('__Site.Data.Branch.City.id', $city_branches);

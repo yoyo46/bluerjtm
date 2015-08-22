@@ -29,6 +29,7 @@ class GroupBranch extends AppModel {
             ),
             'contain' => array(),
             'fields' => array(),
+            'group' => array(),
         );
 
         if(!empty($options)){
@@ -46,6 +47,9 @@ class GroupBranch extends AppModel {
             }
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         }
 
