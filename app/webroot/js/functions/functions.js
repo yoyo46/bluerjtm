@@ -2291,6 +2291,7 @@ var ajaxLink = function ( obj, prettyPhoto ) {
         var alert_msg = vthis.attr('alert');
         var getData = vthis.attr('data-request');
         var form = $(getData);
+        var urlAction = form.attr('action');
         var data = false;
 
         if( alert_msg != null ) {
@@ -2303,6 +2304,8 @@ var ajaxLink = function ( obj, prettyPhoto ) {
             data = form.serialize();
             form.attr('action', url);
             form.submit();
+
+            form.attr('action', urlAction);
         }
 
         return false;

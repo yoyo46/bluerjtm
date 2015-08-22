@@ -51,10 +51,6 @@
             <thead>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', __('Cabang'), array(
-                                'class' => 'text-middle text-center',
-                                'style' => $tdStyle,
-                            ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Customer.customer_name', __('ALOKASI')), array(
                                 'class' => 'text-middle text-center',
                                 'style' => $tdStyle,
@@ -66,9 +62,9 @@
                                     'style' => $tdStyle,
                                 ));
                             } else {
-                                if( !empty($cities) ) {
-                                    foreach ($cities as $key => $city) {
-                                        echo $this->Html->tag('th', $city, array(
+                                if( !empty($branches) ) {
+                                    foreach ($branches as $key => $branch) {
+                                        echo $this->Html->tag('th', $branch, array(
                                             'class' => 'text-center',
                                             'style' => 'width: 100px;',
                                         ));
@@ -94,14 +90,12 @@
                             $total = array();
 
                             foreach ($customers as $key => $customer) {
-                                $branch = $this->Common->filterEmptyField($customer, 'Branch', 'name');
                 ?>
                 <tr>
                     <?php
                             $customer_id = $customer['Customer']['id'];
                             $totalMuatan = 0;
 
-                            echo $this->Html->tag('td', $branch);
                             echo $this->Html->tag('td', $customer['Customer']['code']);
 
                             if( $data_type == 'retail' ) {
@@ -112,9 +106,9 @@
                                     'style' => $tdStyle,
                                 ));
                             } else {
-                                if( !empty($cities) ) {
-                                    foreach ($cities as $city_id => $city) {
-                                        $muatan = !empty($dataTtuj[$customer_id][$city_id])?$dataTtuj[$customer_id][$city_id]:'-';
+                                if( !empty($branches) ) {
+                                    foreach ($branches as $branch_id => $branch) {
+                                        $muatan = !empty($dataTtuj[$customer_id][$branch_id])?$dataTtuj[$customer_id][$branch_id]:'-';
                                         $totalMuatan += $muatan;
 
                                         echo $this->Html->tag('td', $muatan, array(
@@ -191,20 +185,17 @@
 
         if(!empty($customers)){
             foreach ($customers as $customer):
-                $branch = $this->Common->filterEmptyField($customer, 'Branch', 'name');
-                
                 $customer_id = $customer['Customer']['id'];
                 $totalMuatan = 0;
 
-                $content = $this->Html->tag('td', $branch);
-                $content .= $this->Html->tag('td', $customer['Customer']['code']);
+                $content = $this->Html->tag('td', $customer['Customer']['code']);
 
                 if( $data_type == 'retail' ) {
                     $totalMuatan = !empty($dataTtuj[$customer_id])?$dataTtuj[$customer_id]:'-';
                 } else {
-                    if( !empty($cities) ) {
-                        foreach ($cities as $city_id => $city) {
-                            $muatan = !empty($dataTtuj[$customer_id][$city_id])?$dataTtuj[$customer_id][$city_id]:'-';
+                    if( !empty($branches) ) {
+                        foreach ($branches as $branch_id => $branch) {
+                            $muatan = !empty($dataTtuj[$customer_id][$branch_id])?$dataTtuj[$customer_id][$branch_id]:'-';
                             $totalMuatan += $muatan;
 
                             $content .= $this->Html->tag('td', $muatan, array(
@@ -231,11 +222,7 @@
             </tr>';
         }
 
-        $header = $this->Html->tag('th', __('Cabang'), array(
-            'rowspan' => 2,
-            'style' => 'text-align: center;',
-        ));
-        $header .= $this->Html->tag('th', __('Alokasi'), array(
+        $header = $this->Html->tag('th', __('Alokasi'), array(
             'rowspan' => 2,
             'style' => 'text-align: center;',
         ));
@@ -245,9 +232,9 @@
                 'style' => 'text-align: center;',
             ));
         } else {
-            if( !empty($cities) ) {
-                foreach ($cities as $key => $city) {
-                    $header .= $this->Html->tag('th', $city, array(
+            if( !empty($branches) ) {
+                foreach ($branches as $key => $branch) {
+                    $header .= $this->Html->tag('th', $branch, array(
                         'style' => 'text-align: center;',
                     ));
                 }

@@ -228,7 +228,8 @@
                             'siup', 'achievement_report',
                             'monitoring_truck', 'capacity_report',
                             'point_perday_report', 'point_perplant_report',
-                            'view_leasing', 'licenses_report', 'truck_import'
+                            'view_leasing', 'licenses_report', 'truck_import',
+                            'daily_report'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -386,6 +387,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'licenses_report' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Harian Kendaraan', array(
+                                'controller' => 'trucks',
+                                'action' => 'daily_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'daily_report' )?'active':'',
                             ));
                     ?>
                 </ul>

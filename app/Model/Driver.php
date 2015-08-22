@@ -365,10 +365,12 @@ class Driver extends AppModel {
     }
 
     function checkUniq () {
+        $id = !empty($this->data['Driver']['id'])?$this->data['Driver']['id']:false;
         $no_id = !empty($this->data['Driver']['no_id'])?$this->data['Driver']['no_id']:false;
         $driver = $this->getData('count', array(
             'conditions' => array(
                 'Driver.no_id' => $no_id,
+                'Driver.id <>' => $id,
             ),
         ));
         

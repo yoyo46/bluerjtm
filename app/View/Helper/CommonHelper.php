@@ -985,6 +985,7 @@ class CommonHelper extends AppHelper {
 
     function _getDataColumn ( $value, $modelName, $fieldName, $options = false ) {
         $default_style = !empty($options['style'])?$options['style']:false;
+        $currency = !empty($options['data-currency'])?$options['data-currency']:false;
         $style = false;
         $result = false;
 
@@ -1001,6 +1002,8 @@ class CommonHelper extends AppHelper {
 
             if( !empty($options['options']) ) {
                 $value = !empty($options['options'][$value])?$options['options'][$value]:$value;
+            } else if( !empty($currency) ) {
+                $value = $this->getCurrencyPrice($value);
             }
 
             $result = $this->Html->tag('td', $value, $options);
@@ -1631,5 +1634,9 @@ class CommonHelper extends AppHelper {
         }
 
         return $result;
+    }
+
+    function getCurrencyPrice ($price) {
+        return $this->Number->currency($price, Configure::read('__Site.config_currency_code'), array('places' => 0));
     }
 }

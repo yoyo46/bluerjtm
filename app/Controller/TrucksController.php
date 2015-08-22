@@ -3489,6 +3489,14 @@ class TrucksController extends AppController {
             $this->set('active_menu', 'point_perplant_report');
         }
 
+        $branch_plant_id = $this->GroupBranch->Branch->getData('list', array(
+            'conditions' => array(
+                'Branch.is_plant' => 1,
+            ),
+            'fields' => array(
+                'Branch.id', 'Branch.id',
+            ),
+        ));
         $ttujs = $this->TtujTipeMotor->getData('all', array(
             'conditions' => array(
                 'TtujTipeMotor.status'=> 1,
@@ -3497,6 +3505,7 @@ class TrucksController extends AppController {
                 'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')' => $currentMonth,
                 'Ttuj.customer_id' => $customerArr,
                 'Ttuj.is_retail' => 0,
+                'Ttuj.branch_id' => $branch_plant_id,
             ),
             'contain' => array(
                 'Ttuj',
@@ -3505,14 +3514,14 @@ class TrucksController extends AppController {
                 'Ttuj.customer_name' => 'ASC', 
             ),
             'fields' => array(
-                'Ttuj.id', 'Ttuj.from_city_id',
+                'Ttuj.id', 'Ttuj.branch_id',
                 'Ttuj.customer_id', 'SUM(TtujTipeMotor.qty) cnt'
             ),
             'group' => $group,
         ), false);
         $dataTtuj = array();
         $targetUnit = array();
-        $cities = array();
+        $branches = array();
         $customerTargetUnits = $this->CustomerTargetUnitDetail->find('all', array(
             'conditions' => array(
                 'CustomerTargetUnit.status' => 1,
@@ -3538,13 +3547,13 @@ class TrucksController extends AppController {
             foreach ($ttujs as $key => $value) {
                 $totalMuatan = 0;
                 $customer_id = $value['Ttuj']['customer_id'];
-                $from_city_id = $value['Ttuj']['from_city_id'];
+                $branch_id = $value['Ttuj']['branch_id'];
 
-                if( empty($cities[$from_city_id]) ) {
-                    $value = $this->City->getMerge( $value, $from_city_id );
+                if( empty($branches[$branch_id]) ) {
+                    $value = $this->GroupBranch->Branch->getMerge( $value, $branch_id );
 
                     if( !empty($value['City']['name']) ) {
-                        $cities[$from_city_id] = $value['City']['name'];
+                        $branches[$branch_id] = $value['City']['name'];
                     }
                 }
 
@@ -3555,7 +3564,7 @@ class TrucksController extends AppController {
                 if( $data_type == 'retail' ) {
                     $dataTtuj[$customer_id] = $totalMuatan;
                 } else {
-                    $dataTtuj[$customer_id][$from_city_id] = $totalMuatan;
+                    $dataTtuj[$customer_id][$branch_id] = $totalMuatan;
                 }
             }
         }
@@ -3568,7 +3577,7 @@ class TrucksController extends AppController {
         $this->set(compact(
             'customers', 'data_action',
             'lastDay', 'currentMonth', 'dataTtuj',
-            'targetUnit', 'cities', 'data_type'
+            'targetUnit', 'branches', 'data_type'
         ));
 
         if($data_action == 'pdf'){
@@ -4198,6 +4207,111 @@ class TrucksController extends AppController {
                 }
                 $this->redirect(array('action'=>'add_import'));
             }
+        }
+    }
+
+    function daily_report($data_action = false) {
+        $this->loadModel('Ttuj');
+
+        $dateFrom = date('Y-m-d', strtotime('-1 month'));
+        $dateTo = date('Y-m-d');
+        $sub_module_title = __('Laporan Harian Kendaraan');
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        $defaul_condition = array(
+            'Ttuj.branch_id' => $allow_branch_id,
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
+
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                }
+                $this->request->data['Ttuj']['date'] = $dateStr;
+            }
+            if(!empty($refine['nopol'])){
+                $data = urldecode($refine['nopol']);
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+
+                if( $typeTruck == 2 ) {
+                    $defaul_condition['Ttuj.truck_id'] = $data;
+                } else {
+                    $defaul_condition['Ttuj.nopol LIKE'] = '%'.$data.'%';
+                }
+                $this->request->data['Truck']['nopol'] = $data;
+                $this->request->data['Truck']['type'] = $typeTruck;
+            }
+
+            // Custom Otorisasi
+            $defaul_condition = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $defaul_condition, 'conditions' );
+        }
+
+        $defaul_condition = array_merge($defaul_condition, array(
+            'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='=> $dateFrom,
+            'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <=' => $dateTo,
+        ));
+
+        $options = $this->Ttuj->getData('paginate', array(
+            'conditions' => $defaul_condition,
+            'order' => array(
+                'Ttuj.ttuj_date' => 'DESC',
+                'Ttuj.id' => 'DESC',
+            ),
+        ), true, array(
+            'branch' => false,
+        ));
+
+        if( !empty($data_action) ) {
+            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+        } else {
+            $options['limit'] = 20;
+        }
+
+        $this->paginate = $options;
+        $ttujs = $this->paginate('Ttuj');
+
+        if( !empty($ttujs) ) {
+            $this->loadModel('Driver');
+
+            foreach ($ttujs as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
+                $driver_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_id');
+                $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
+
+                $value = $this->Driver->getMerge($value, $driver_id);
+                $value = $this->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
+                $value['Ttuj']['total_unit'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $id );
+                $ttujs[$key] = $value;
+            }
+        }
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $this->request->data['Truck']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
+            $periode = sprintf(' Periode %s - %s', date('d M Y', strtotime($dateFrom)), date('d M Y', strtotime($dateTo)));
+        } else {
+            $periode = '';
+        }
+
+        $this->set('active_menu', 'daily_report');
+        $this->set('sub_module_title', $sub_module_title);
+        $this->set('header_module_title', sprintf(__('%s, %s'), $sub_module_title, $periode));
+
+        $this->set(compact(
+            'ttujs', 'from_date', 'to_date', 
+            'data_action', 'header_module_title'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
         }
     }
 }
