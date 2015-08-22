@@ -1,5 +1,9 @@
 <?php 
         if(!empty($ttujs)){
+            $grandtotal_uang_jalan = 0;
+            $grandtotal_uang_jalan_extra = 0;
+            $grandtotal_total_uang_jalan = 0;
+
             foreach ($ttujs as $key => $value) {
                 $ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
                 $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
@@ -11,6 +15,10 @@
                 $uang_jalan = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_1', 0) + $uang_jalan_2;
                 $uang_jalan_extra = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_extra', 0);
                 $total_uang_jalan = $uang_jalan + $uang_jalan_extra;
+
+                $grandtotal_uang_jalan += $uang_jalan;
+                $grandtotal_uang_jalan_extra += $uang_jalan_extra;
+                $grandtotal_total_uang_jalan += $total_uang_jalan;
 
                 $content = $this->Common->_getDataColumn($this->Common->customDate($ttuj_date), 'Ttuj', 'ttuj_date', array(
                     'style' => 'text-align: center;',
@@ -47,5 +55,23 @@
 
                 echo $this->Html->tag('tr', $content);
             }
+
+            $content = $this->Html->tag('td', __('Total'), array(
+                'style' => 'text-align: right;',
+                'colspan' => 5,
+            ));
+            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_jalan), array(
+                'style' => 'text-align: right;',
+            ));
+            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_jalan_extra), array(
+                'style' => 'text-align: right;',
+            ));
+            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_total_uang_jalan), array(
+                'style' => 'text-align: right;',
+            ));
+
+            echo $this->Html->tag('tr', $content, array(
+                'style' => 'font-weight: bold;'
+            ));
         }
 ?>

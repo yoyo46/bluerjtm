@@ -4217,6 +4217,7 @@ class TrucksController extends AppController {
         $dateTo = date('Y-m-d');
         $sub_module_title = __('Laporan Harian Kendaraan');
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        $allow_branch = Configure::read('__Site.config_allow_branchs');
         $defaul_condition = array(
             'Ttuj.branch_id' => $allow_branch_id,
         );
@@ -4251,6 +4252,7 @@ class TrucksController extends AppController {
 
             // Custom Otorisasi
             $defaul_condition = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $defaul_condition, 'conditions' );
+            $allow_branch = $this->MkCommon->getBranchNameFilter( $refine );
         }
 
         $defaul_condition = array_merge($defaul_condition, array(
@@ -4294,18 +4296,18 @@ class TrucksController extends AppController {
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
             $this->request->data['Truck']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
-            $periode = sprintf(' Periode %s - %s', date('d M Y', strtotime($dateFrom)), date('d M Y', strtotime($dateTo)));
+            $periode = sprintf('%s - %s', date('d M Y', strtotime($dateFrom)), date('d M Y', strtotime($dateTo)));
         } else {
-            $periode = '';
+            $periode = '-';
         }
 
         $this->set('active_menu', 'daily_report');
         $this->set('sub_module_title', $sub_module_title);
-        $this->set('header_module_title', sprintf(__('%s, %s'), $sub_module_title, $periode));
 
         $this->set(compact(
             'ttujs', 'from_date', 'to_date', 
-            'data_action', 'header_module_title'
+            'data_action', 'header_module_title',
+            'periode', 'allow_branch'
         ));
 
         if($data_action == 'pdf'){

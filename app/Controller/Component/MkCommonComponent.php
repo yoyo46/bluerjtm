@@ -710,8 +710,6 @@ class MkCommonComponent extends Component {
 
         return $data;
     }
-
-
     
     function getConditionGroupBranch ( $refine, $modelName, $options = false, $type = 'options' ) {
         if(!empty($refine['group_branch'])){
@@ -736,6 +734,30 @@ class MkCommonComponent extends Component {
         }
 
         return $options;
+    }
+    
+    function getBranchNameFilter ( $refine ) {
+        $data = array();
+
+        if(!empty($refine['group_branch'])){
+            if( !is_array($refine['group_branch']) ) {
+                $value = urldecode($refine['group_branch']);
+                $value = explode(',', $value);
+                $value = array_combine(array_keys(array_flip($value)), $value);
+            } else {
+                $value = $refine['group_branch'];
+                $value = array_filter($value);
+            }
+
+            $this->Branch = ClassRegistry::init('Branch'); 
+            $data = $this->Branch->getData('list', array(
+                'conditions' => array(
+                    'Branch.id' => $value,
+                ),
+            ));
+        }
+
+        return $data;
     }
 
     function redirectReferer ( $msg, $status = 'error', $urlRedirect = false ) {

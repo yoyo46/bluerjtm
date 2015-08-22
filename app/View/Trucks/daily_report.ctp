@@ -69,8 +69,17 @@
 ?>
 <section class="content invoice">
     <h2 class="page-header">
-        <i class="fa fa-globe"></i> <?php echo $header_module_title;?>
+        <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
     </h2>
+    <dl class="dl-horizontal">
+        <?php 
+                $allow_branch = !empty($allow_branch)?$allow_branch:array();
+        ?>
+        <dt style="text-align: left;"><?php echo __('Cabang:')?></dt>
+        <dd><?php echo implode(', ', $allow_branch);?></dd>
+        <dt style="text-align: left;"><?php echo __('Periode:')?></dt>
+        <dd><?php echo $periode;?></dd>
+    </dl>
     <?php 
             if( $data_action != 'excel' ) {
                 echo $this->Common->_getPrint(array(
