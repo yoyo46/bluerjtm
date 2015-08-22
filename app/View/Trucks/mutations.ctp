@@ -1,48 +1,23 @@
 <?php 
         $dataColumns = array(
-            'id' => array(
-                'name' => __('ID'),
-                'field_model' => 'Truck.id',
+            'nodoc' => array(
+                'name' => __('No. Dokumen'),
+                'field_model' => 'TruckMutation.no_doc',
+                'display' => true,
+            ),
+            'date' => array(
+                'name' => __('Tgl Mutasi'),
+                'field_model' => 'TruckMutation.mutation_date',
                 'display' => true,
             ),
             'nopol' => array(
                 'name' => __('Nopol'),
-                'field_model' => 'Truck.nopol',
-                'display' => true,
-            ),
-            'merek' => array(
-                'name' => __('Merek'),
-                'field_model' => false,
-                'display' => true,
-            ),
-            'jenis' => array(
-                'name' => __('Jenis'),
-                'field_model' => false,
-                'display' => true,
-            ),
-            'kapasitas' => array(
-                'name' => __('Kapasitas'),
-                'field_model' => 'Truck.capacity',
-                'display' => true,
-            ),
-            'pemilik' => array(
-                'name' => __('Pemilik'),
-                'field_model' => false,
-                'display' => true,
-            ),
-            'supir' => array(
-                'name' => __('Supir'),
-                'field_model' => 'Driver.driver_name',
-                'display' => true,
-            ),
-            'aset' => array(
-                'name' => __('Aset'),
-                'field_model' => 'Truck.is_asset',
+                'field_model' => 'TruckMutation.nopol',
                 'display' => true,
             ),
             'status' => array(
                 'name' => __('Status'),
-                'field_model' => 'Truck.status',
+                'field_model' => 'TruckMutation.status',
                 'display' => true,
             ),
             'action' => array(
@@ -89,78 +64,37 @@
             </thead>
             <tbody>
                 <?php
-                        if(!empty($trucks)){
-                            foreach ($trucks as $key => $value) {
-                                $id = $this->Common->filterEmptyField($value, 'Truck', 'id');
-                                $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
-                                $capacity = $this->Common->filterEmptyField($value, 'Truck', 'capacity');
-                                $is_asset = $this->Common->filterEmptyField($value, 'Truck', 'is_asset');
-                                $sold = $this->Common->filterEmptyField($value, 'Truck', 'sold');
-                                $brand = $this->Common->filterEmptyField($value, 'TruckBrand', 'name', '-');
-                                $category = $this->Common->filterEmptyField($value, 'TruckCategory', 'name', '-');
-                                $company = $this->Common->filterEmptyField($value, 'Company', 'name', '-');
-                                $driver_name = $this->Common->filterEmptyField($value, 'Driver', 'driver_name', '-');
-                                $laka_id = $this->Common->filterEmptyField($value, 'Laka', 'id');
-                                $ttuj_id = $this->Common->filterEmptyField($value, 'Ttuj', 'id');
+                        if(!empty($truckMutations)){
+                            foreach ($truckMutations as $key => $value) {
+                                $id = $this->Common->filterEmptyField($value, 'TruckMutation', 'id');
+                                $no_doc = $this->Common->filterEmptyField($value, 'TruckMutation', 'no_doc');
+                                $mutation_date = $this->Common->filterEmptyField($value, 'TruckMutation', 'mutation_date');
+                                $nopol = $this->Common->filterEmptyField($value, 'TruckMutation', 'nopol');
+                                $created = $this->Common->filterEmptyField($value, 'TruckMutation', 'created');
                 ?>
                 <tr>
-                    <td><?php echo $id;?></td>
+                    <td><?php echo $no_doc;?></td>
+                    <td><?php echo $this->Common->customDate($mutation_date);?></td>
                     <td><?php echo $nopol;?></td>
-                    <td><?php echo $brand;?></td>
-                    <td><?php echo $category;?></td>
-                    <td><?php echo $capacity;?></td>
-                    <td><?php echo $company;?></td>
-                    <td><?php echo $driver_name;?></td>
-                    <td>
-                        <?php 
-                                if(!empty($is_asset)){
-                                    echo '<span class="label label-success"><i class="fa fa-check"></i></span>'; 
-                                }else{
-                                    echo '<span class="label label-danger"><i class="fa fa-times"></i></span>';  
-                                }
-                        ?>
-                    </td>
-                    <td>
-                        <?php 
-                                $status = '<span class="label label-success">AVAILABLE</span>';
-
-                                if( !empty($laka_id) ){
-                                    $status = '<span class="label label-danger">LAKA</span>';
-                                } else if( !empty($sold) ){
-                                    $status = '<span class="label label-warning">SOLD</span>';
-                                } else if( !empty($ttuj_id) ){
-                                    $status = '<span class="label label-primary">Away</span>';
-                                }
-
-                                echo $status;
-                        ?>
-                    </td>
+                    <td><?php echo $this->Time->niceShort($created);?></td>
                     <td class="action">
                         <?php
                                 echo $this->Html->link('Detail', array(
                                     'controller' => 'trucks',
-                                    'action' => 'detail',
+                                    'action' => 'mutation_detail',
                                     $id,
                                 ), array(
                                     'class' => 'btn btn-info btn-xs',
                                     'allow' => true,
                                 ));
 
-                                echo $this->Html->link('Edit', array(
+                                echo $this->Html->link(__('Void'), array(
                                     'controller' => 'trucks',
-                                    'action' => 'edit',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs',
-                                ));
-
-                                echo $this->Html->link(__('Hapus'), array(
-                                    'controller' => 'trucks',
-                                    'action' => 'toggle',
+                                    'action' => 'mutation_toggle',
                                     $id
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs',
-                                ), sprintf(__('Apakah Anda yakin akan menghapus truk dengan nopol %s?'), $nopol));
+                                ), __('Apakah Anda yakin akan menghapus data ini?'));
                         ?>
                     </td>
                 </tr>

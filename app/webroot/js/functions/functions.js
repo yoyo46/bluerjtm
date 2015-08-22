@@ -4286,5 +4286,6 @@ $(function() {
     });
 
     input_price_min();
+    datepicker();
     choosen_select();
 });

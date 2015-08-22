@@ -3269,7 +3269,7 @@ class TrucksController extends AppController {
         $this->loadModel('Customer');
         $this->loadModel('CustomerTargetUnitDetail');
         $this->set('active_menu', 'point_perday_report');
-        $this->set('sub_module_title', __('Laporan Pencapaian Per Point Per Day'));
+        $this->set('sub_module_title', __('Laporan Pencapaian Per Customer Per Hari'));
 
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $conditions = array(
@@ -4376,33 +4376,77 @@ class TrucksController extends AppController {
         }
 
         $this->paginate = $this->TruckMutation->getData('paginate', $options);
-        $truckMutation = $this->paginate('TruckMutation');
+        $truckMutations = $this->paginate('TruckMutation');
 
         $this->set('active_menu', 'mutations');
         $this->set('sub_module_title', __('Data Mutasi Truk'));
         $this->set(compact(
-            'truckMutation'
+            'truckMutations'
         ));
     }
 
-    public function mutation_add() {
+    function getDataMutation () {
         $this->loadModel('Customer');
-        $this->set('sub_module_title', __('Tambah Mutasi Truk'));
 
+        $branches = $this->GroupBranch->Branch->getData('list');
+        $truckCategories = $this->Truck->TruckCategory->getData('list');
+        $truckFacilities = $this->Truck->TruckFacility->getData('list');
         $trucks = $this->Truck->getData('list', array(
             'fields' => array(
                 'Truck.id', 'Truck.nopol'
             ),
+        ), true, array(
+            'branch' => false,
         ));
         $customers = $this->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
+        ), true, array(
+            'branch' => false,
+        ));
+        $drivers = $this->Truck->Driver->getData('list', array(
+            'conditions' => array(
+                'Truck.id' => NULL,
+            ),
+            'fields' => array(
+                'Driver.id', 'Driver.driver_name'
+            ),
+            'contain' => array(
+                'Truck'
+            ),
+        ), true, array(
+            'branch' => false,
         ));
 
         $this->set(compact(
-            'trucks', 'customers'
+            'trucks', 'customers', 'branches',
+            'truckCategories', 'truckFacilities',
+            'drivers'
         ));
         $this->render('mutation_form');
+    }
+
+    public function mutation_add() {
+        $this->loadModel('TruckMutation');
+        $this->set('sub_module_title', __('Tambah Mutasi Truk'));
+        $data = $this->request->data;
+
+        if( !empty($data['TruckMutation']['mutation_date']) ) {
+            $data['TruckMutation']['mutation_date'] = $this->MkCommon->getDate($data['TruckMutation']['mutation_date']);
+        }
+
+        $result = $this->TruckMutation->doSave($data);
+        $this->MkCommon->setProcessParams($result, array(
+            'controller' => 'trucks',
+            'action' => 'mutations',
+            'admin' => false,
+        ));
+
+        if( !empty($data['TruckMutation']['mutation_date']) ) {
+            $this->request->data['TruckMutation']['mutation_date'] = $this->MkCommon->getDate($data['TruckMutation']['mutation_date'], true);
+        }
+
+        $this->getDataMutation();
     }
 }

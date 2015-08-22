@@ -1007,11 +1007,21 @@ class AjaxController extends AppController {
             }
         }
 
-		$this->paginate = $this->Driver->getData('paginate', array(
+        $options = array(
             'conditions' => $conditions,
             'contain' => $contain,
             'limit' => 10,
-        ));
+        );
+
+        if( $action_type == 'mutation' ) {
+			$filterBranch = false;
+		} else {
+			$filterBranch = true;
+		}
+
+		$this->paginate = $this->Driver->getData('paginate', $options, true, array(
+			'branch' => $filterBranch,
+		));
         $drivers = $this->paginate('Driver');
 
         if( !empty($drivers) ) {

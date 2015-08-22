@@ -1,5 +1,10 @@
 <?php 
 		$data_changes = !empty($data_changes)?$data_changes:false;
+		$branches = !empty($branches)?$branches:false;
+		$truckCategories = !empty($truckCategories)?$truckCategories:false;
+		$truckFacilities = !empty($truckFacilities)?$truckFacilities:false;
+		$drivers = !empty($drivers)?$drivers:false;
+
 		$disabled = true;
 		$disabledChange = true;
 
@@ -11,7 +16,7 @@
     <?php 
     		if( !empty($data_changes) ) {
     			$fieldClass = 'change-nopol';
-				echo $this->Form->input('change_nopol',array(
+				echo $this->Form->input('DataMutation.change_nopol',array(
 					'label'=> __('No. Pol'), 
 					'class'=>'form-control '.$fieldClass,
 					'required' => false,
@@ -40,7 +45,7 @@
     <div class="row">
         <div class="col-sm-10">
         	<?php 
-					echo $this->Form->input('truck_id',array(
+					echo $this->Form->input('Truck.truck_id',array(
 						'label'=> false, 
 						'class'=>'form-control chosen-select',
 						'required' => false,
@@ -61,6 +66,7 @@
         ?>
     </div>
     <?php 
+    			echo $this->Form->error('truck_id');
     		}
     ?>
 </div>
@@ -78,11 +84,12 @@
 				$options['class'] .= ' '.$fieldClass;
 				$options['disabled'] = $disabledChange;
 				$options['empty'] = __('Pilih Cabang');
-				$fieldName = 'change_branch_id';
+				$options['options'] = $branches;
+				$fieldName = 'DataMutation.change_branch_id';
 			} else {
 				$options['id'] = 'branch_name';
 				$options['type'] = 'text';
-				$fieldName = 'old_driver_id';
+				$fieldName = 'Truck.old_driver_id';
 			}
 
 			echo $this->Form->input($fieldName, $options);
@@ -106,11 +113,12 @@
 				$options['class'] .= ' '.$fieldClass;
 				$options['disabled'] = $disabledChange;
 				$options['empty'] = __('Pilih Jenis Truk');
-				$fieldName = 'change_truck_category_id';
+				$options['options'] = $truckCategories;
+				$fieldName = 'DataMutation.change_truck_category_id';
 			} else {
 				$options['id'] = 'truck_category';
 				$options['type'] = 'text';
-				$fieldName = 'category';
+				$fieldName = 'Truck.category';
 			}
 
 			echo $this->Form->input($fieldName, $options);
@@ -134,11 +142,12 @@
 				$options['class'] .= ' '.$fieldClass;
 				$options['disabled'] = $disabledChange;
 				$options['empty'] = __('Pilih Fasilitas Truk');
-				$fieldName = 'change_truck_facility_id';
+				$options['options'] = $truckFacilities;
+				$fieldName = 'DataMutation.change_truck_facility_id';
 			} else {
 				$options['id'] = 'truck_facility';
 				$options['type'] = 'text';
-				$fieldName = 'facility';
+				$fieldName = 'Truck.facility';
 			}
 
 			echo $this->Form->input($fieldName, $options);
@@ -162,19 +171,22 @@
 	            $urlBrowse = array(
 	                'controller'=> 'ajax', 
 					'action' => 'getDrivers',
+					0,
+					'mutation'
 	            );
 				echo $this->Form->label('old_driver_id', __('Supir Truk ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 	?>
 	<div class="row">
 		<div class="col-sm-10">
 			<?php 
-					echo $this->Form->input('change_driver_id',array(
+					echo $this->Form->input('DataMutation.change_driver_id',array(
 						'label'=> false, 
 						'class'=>'form-control '.$fieldClass,
 						'required' => false,
 						'empty' => __('Pilih Supir Truk'),
 						'id' => 'driverID',
 						'disabled' => $disabledChange,
+						'options' => $drivers,
 					));
 			?>
 		</div>
@@ -193,7 +205,7 @@
 					'data_changes' => $data_changes,
 				));
 			} else {
-				echo $this->Form->input('driver_name',array(
+				echo $this->Form->input('Truck.driver_name',array(
 					'label'=> __('Supir'), 
 					'class'=>'form-control',
 					'required' => false,
@@ -218,10 +230,10 @@
 			if( !empty($data_changes) ) {
 				$options['class'] .= ' '.$fieldClass;
 				$options['disabled'] = $disabledChange;
-				$fieldName = 'change_capacity';
+				$fieldName = 'DataMutation.change_capacity';
 			} else {
 				$options['id'] = 'truck_capacity';
-				$fieldName = 'capacity';
+				$fieldName = 'Truck.capacity';
 			}
 
 			echo $this->Form->input($fieldName, $options);

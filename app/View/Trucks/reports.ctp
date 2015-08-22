@@ -2,12 +2,6 @@
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $text = __('Semua Truk');
         $dataColumns = array(
-            'branch' => array(
-                'name' => __('Cabang'),
-                'field_model' => 'Branch.name',
-                'sorting' => false,
-                'display' => true,
-            ),
             'nomor_id' => array(
                 'name' => __('No. ID'),
                 'field_model' => 'Truck.id',
@@ -93,6 +87,12 @@
                 'field_model' => 'Truck.emergency_call',
                 'display' => false,
             ),
+            'branch' => array(
+                'name' => __('Cabang'),
+                'field_model' => 'Branch.name',
+                'sorting' => false,
+                'display' => true,
+            ),
         );
         $showHideColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'show-hide' );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table', $data_action );
@@ -164,11 +164,7 @@
                             $brand_name = !empty($truck['TruckBrand']['name'])?$truck['TruckBrand']['name']:false;
                             $facility_name = !empty($truck['TruckFacility']['name'])?$truck['TruckFacility']['name']:false;
                             
-                            $content = $this->Common->_getDataColumn($branch, 'Branch', 'name', array(
-                                'style' => 'text-align: left;',
-                                'class' => 'branch',
-                            ));
-                            $content .= $this->Common->_getDataColumn(str_pad($truck['Truck']['id'], 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
+                            $content = $this->Common->_getDataColumn(str_pad($truck['Truck']['id'], 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
                                 'class' => 'hide nomor_id',
                                 'style' => 'text-align: left;',
                             ));
@@ -226,6 +222,10 @@
                             ));
                             $content .= $this->Common->_getDataColumn($truck['Truck']['emergency_call'], 'Truck', 'emergency_call', array(
                                 'class' => 'hide emergency_call',
+                            ));
+                            $content .= $this->Common->_getDataColumn($branch, 'Branch', 'name', array(
+                                'style' => 'text-align: left;',
+                                'class' => 'branch',
                             ));
 
                             echo $this->Html->tag('tr', $content);
@@ -288,10 +288,7 @@
                 $truck_facility = !empty($truck['TruckFacility']['name'])?$truck['TruckFacility']['name']:false;
                 $brand_name = !empty($truck['TruckBrand']['name'])?$truck['TruckBrand']['name']:false;
 
-                $content = $this->Common->_getDataColumn($branch, 'Branch', 'name', array(
-                    'style' => 'text-align: left;',
-                ));
-                $content .= $this->Common->_getDataColumn(str_pad($truck['Truck']['id'], 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
+                $content = $this->Common->_getDataColumn(str_pad($truck['Truck']['id'], 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
                     'style' => 'text-align: left;',
                 ));
                 $content .= $this->Common->_getDataColumn($truck['Truck']['nopol'], 'Truck', 'nopol', array(
@@ -321,6 +318,9 @@
                 ));
                 $content .= $this->Common->_getDataColumn($truck['Truck']['emergency_name'], 'Truck', 'emergency_name');
                 $content .= $this->Common->_getDataColumn($truck['Truck']['emergency_call'], 'Truck', 'emergency_call');
+                $content .= $this->Common->_getDataColumn($branch, 'Branch', 'name', array(
+                    'style' => 'text-align: left;',
+                ));
 
                 $each_loop_message .= $this->Html->tag('tr', $content);
             endforeach;

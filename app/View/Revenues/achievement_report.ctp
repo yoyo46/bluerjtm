@@ -62,10 +62,9 @@
                         <div class="form-group">
                             <?php 
                                     echo $this->Form->input('customer',array(
-                                        'label'=> __('Alokasi'),
+                                        'label'=> __('Customer'),
                                         'class'=>'form-control',
                                         'required' => false,
-                                        'placeholder' => __('Alokasi')
                                     ));
                             ?>
                         </div>
@@ -176,12 +175,7 @@
             <thead frozen="true">
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', __('Cabang'), array(
-                                'style' => 'text-align: center;width: 150px;',
-                                'data-options' => 'field:\'branch\',width:120',
-                                'rowspan' => $headerRowspan,
-                            ));
-                            echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.code', __('ALOKASI')), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.code', __('Customer')), array(
                                 'style' => 'text-align: center;width: 150px;',
                                 'data-options' => 'field:\'customer_code\',width:150,',
                                 'rowspan' => $headerRowspan,
@@ -257,14 +251,12 @@
                                 $id = $value['CustomerNoType']['id'];
                                 $customer_name = !empty($value['CustomerNoType']['code'])?$value['CustomerNoType']['code']:'-';
                                 $customer_name = !empty($value['CustomerNoType']['code'])?$value['CustomerNoType']['code']:'-';
-                                $branch = $this->Common->filterEmptyField($value, 'Branch', 'name');
 
                                 $totalSidePencapaian = 0;
                                 $totalSideTarget = 0;
                 ?>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('td', $branch);
                             echo $this->Html->tag('td', $customer_name);
 
                             if( !empty($totalCnt) ) {
@@ -404,13 +396,11 @@
 
                 foreach ($ttujs as $key => $value) {
                     $id = $value['CustomerNoType']['id'];
-                    $branch = $this->Common->filterEmptyField($value, 'Branch', 'name');
                     $customer_name = !empty($value['CustomerNoType']['code'])?$value['CustomerNoType']['code']:'-';
                     $totalSidePencapaian = 0;
                     $totalSideTarget = 0;
 
                     $content = $this->Html->tag('td', $no);
-                    $content .= $this->Html->tag('td', $branch);
                     $content .= $this->Html->tag('td', $customer_name);
 
                     if( !empty($totalCnt) ) {
@@ -584,8 +574,7 @@ $tbl = <<<EOD
             <thead>
                 <tr style="$table_tr_head">
                     <th rowspan="2">No. </th>
-                    <th rowspan="2">Cabang</th>
-                    <th rowspan="2">ALOKASI</th>
+                    <th rowspan="2">Customer</th>
                     $topHeader
                 </tr>
                 <tr style="$table_tr_head">

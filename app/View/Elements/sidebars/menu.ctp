@@ -372,7 +372,7 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'capacity_report' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Point Per Day', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per Customer Per Hari', array(
                                 'controller' => 'trucks',
                                 'action' => 'point_perday_report',
                             ), array(

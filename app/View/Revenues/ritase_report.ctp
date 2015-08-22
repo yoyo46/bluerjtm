@@ -154,6 +154,7 @@
     <div class="row no-print print-action">
         <div class="col-xs-12 action">
             <?php 
+                    /*
                     if( !empty($cities) ) {
             ?>
             <div class="list-field">
@@ -194,6 +195,7 @@
             </div>
             <?php
                     }
+                    */
                     
                     $urlDefault = $this->passedArgs;
                     $urlDefault['controller'] = 'revenues';
@@ -227,11 +229,15 @@
                                 'data-options' => 'field:\'nopol\',width:120',
                                 'rowspan' => $headerRowspan,
                             ));
-                            echo $this->Html->tag('th', __('Cabang'), array(
-                                'style' => 'text-align: center;width: 100px;vertical-align: middle;',
-                                'data-options' => 'field:\'branch\',width:100',
-                                'rowspan' => $headerRowspan,
-                            ));
+
+                            if( $data_type == 'retail' ) {
+                                echo $this->Html->tag('th', __('Cabang'), array(
+                                    'style' => 'text-align: center;width: 100px;vertical-align: middle;',
+                                    'data-options' => 'field:\'branch\',width:100',
+                                    'rowspan' => $headerRowspan,
+                                ));
+                            }
+
                             echo $this->Html->tag('th', __('Supir'), array(
                                 'style' => 'text-align: center;width: 120px;vertical-align: middle;',
                                 'data-options' => 'field:\'driver\',width:120',
@@ -350,7 +356,11 @@
                                 $id
                             ));
                             echo $this->Html->tag('td', $link_truck);
-                            echo $this->Html->tag('td', $branch);
+
+                            if( $data_type == 'retail' ) {
+                                echo $this->Html->tag('td', $branch);
+                            }
+
                             echo $this->Html->tag('td', !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:false);
                             echo $this->Html->tag('td', $value['Truck']['capacity'], array(
                                 'style' => 'text-align:center;',
@@ -464,14 +474,26 @@
                         $target_rit = 0;
                     }
 
-                    $content = $this->Html->tag('td', $no);
+                    $content = $this->Html->tag('td', $no, array(
+                        'style' => 'text-align: center;'
+                    ));
                     $content .= $this->Html->tag('td', $value['Truck']['nopol']);
-                    $content .= $this->Html->tag('td', $branch);
+
+                    if( $data_type == 'retail' ) {
+                        $content .= $this->Html->tag('td', $branch);
+                    }
+
                     $content .= $this->Html->tag('td', !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:false);
-                    $content .= $this->Html->tag('td', $value['Truck']['capacity']);
+                    $content .= $this->Html->tag('td', $value['Truck']['capacity'], array(
+                        'style' => 'text-align: center;'
+                    ));
                     $content .= $this->Html->tag('td', !empty($value['CustomerNoType']['code'])?$value['CustomerNoType']['code']:'-');
-                    $content .= $this->Html->tag('td', $total);
-                    $content .= $this->Html->tag('td', $target_rit);
+                    $content .= $this->Html->tag('td', $total, array(
+                        'style' => 'text-align: center;'
+                    ));
+                    $content .= $this->Html->tag('td', $target_rit, array(
+                        'style' => 'text-align: center;'
+                    ));
 
                     if( !empty($cities) ) {
                         foreach ($cities as $key => $city) {
@@ -482,7 +504,9 @@
                                 $cnt = $value['City'][$keyCity][0]['cnt'];
                             }
 
-                            $content .= $this->Html->tag('td', $cnt);
+                            $content .= $this->Html->tag('td', $cnt, array(
+                                'style' => 'text-align: center;'
+                            ));
                         }
                     }
 
@@ -506,6 +530,12 @@
             $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
                 'style' => 'font-size: 24px;font-style: italic;margin-top: 10px;'
             ));
+
+            if( $data_type == 'retail' ) {
+                $addFieldTh = '<thh rowspan="2">Cabang</th>';
+            } else {
+                $addFieldTh = '';
+            }
 $tbl = <<<EOD
 
       <div class="clearfix container_16" id="content">
@@ -514,15 +544,15 @@ $tbl = <<<EOD
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <thead>
                 <tr style="$table_tr_head">
-                    <th>No. </th>
-                    <th>NO. POL</th>
-                    <th>Cabang</th>
-                    <th>Supir</th>
-                    <th>Kapasitas</th>
-                    <th>Alokasi</th>
-                    <th>Total</th>
-                    <th>Target RIT</th>
+                    <th rowspan="2" style="text-align: center;">No. </th>
+                    <th rowspan="2" style="text-align: center;">NO. POL</th>
+                    $addFieldTh
+                    <th rowspan="2" style="text-align: center;">Supir</th>
+                    <th rowspan="2" style="text-align: center;">Kapasitas</th>
+                    <th rowspan="2" style="text-align: center;">Alokasi</th>
                     <th colspan="$cityCnt" style="text-align:center;">Tujuan</th>
+                    <th rowspan="2" style="text-align: center;">Total</th>
+                    <th rowspan="2" style="text-align: center;">Target RIT</th>
                 </tr>
                 <tr style="$table_tr_head">
                     $cityHeader

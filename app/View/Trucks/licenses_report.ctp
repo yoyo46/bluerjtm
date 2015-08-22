@@ -56,13 +56,13 @@
             <thead>
                 <tr>
                     <?php
-                            echo $this->Html->tag('th', __('Cabang'));
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.nopol', __('Nopol')));
                             echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.name', __('Alokasi')));
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_stnk', __('STNK 1TH')));
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_stnk_plat', __('STNK 5TH')));
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_kir', __('KIR')));
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_siup', __('IJIN USAHA')));
+                            echo $this->Html->tag('th', __('Cabang'));
                     ?>
                 </tr>
             </thead>
@@ -74,11 +74,10 @@
                         	$raw_now_date = strtotime($now_date);
                             $branch = $this->Common->filterEmptyField($truck, 'Branch', 'name');
 
-                            $content = $this->Html->tag('td', $branch);
-                            $content .= $this->Html->tag('td', $truck['Truck']['nopol']);
+                            $content = $this->Html->tag('td', $truck['Truck']['nopol']);
                             $customer = '-';
-                            if(!empty($truck['TruckCustomer']['CustomerNoType']['name'])){
-                            	$customer = $truck['TruckCustomer']['CustomerNoType']['name'];
+                            if(!empty($truck['TruckCustomer']['CustomerNoType']['code'])){
+                            	$customer = $truck['TruckCustomer']['CustomerNoType']['code'];
                             }
                             $content .= $this->Html->tag('td', $customer);
 
@@ -178,6 +177,7 @@
                                 }
                             }
                             $content .= $this->Html->tag('td', $label_siup);
+                            $content .= $this->Html->tag('td', $branch);
 
                             echo $this->Html->tag('tr', $content);
                         }

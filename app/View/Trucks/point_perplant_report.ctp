@@ -51,7 +51,7 @@
             <thead>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.customer_name', __('ALOKASI')), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.customer_name', __('Customer')), array(
                                 'class' => 'text-middle text-center',
                                 'style' => $tdStyle,
                             ));
@@ -222,7 +222,7 @@
             </tr>';
         }
 
-        $header = $this->Html->tag('th', __('Alokasi'), array(
+        $header = $this->Html->tag('th', __('Customer'), array(
             'rowspan' => 2,
             'style' => 'text-align: center;',
         ));

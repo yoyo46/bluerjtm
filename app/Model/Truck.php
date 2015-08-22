@@ -210,6 +210,10 @@ class Truck extends AppModel {
             'className' => 'TruckFacility',
             'foreignKey' => 'truck_facility_id',
         ),
+        'Branch' => array(
+            'className' => 'Branch',
+            'foreignKey' => 'branch_id',
+        ),
     );
 
     var $hasMany = array(
@@ -235,11 +239,13 @@ class Truck extends AppModel {
         ),
     );
 
-    function uniqueUpdate($data){
+    function uniqueUpdate($data, $id = false){
         $result = false;
+        $id = !empty($this->data['Truck']['id'])?$this->data['Truck']['id']:$id;
+
         $find = $this->find('count', array(
             'conditions' => array(
-                'Truck.id NOT' => $this->data['Truck']['id'],
+                'Truck.id NOT' => $id,
                 'Truck.nopol' => $data['nopol']
             )
         ));
