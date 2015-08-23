@@ -415,8 +415,21 @@ class RevenuesController extends AppController {
         $this->loadModel('UangKuli');
         $this->loadModel('TtujTipeMotor');
 
+        $paramController = $this->params['controller'];
+        $paramAction = $this->params['action'];
         $is_draft = isset($data_local['Ttuj']['is_draft'])?$data_local['Ttuj']['is_draft']:true;
+        $current_branch_id = Configure::read('__Site.config_branch_id');
+        $_allowModule = Configure::read('__Site.config_allow_module');
         $allowUpdate = false;
+        $allowEditTtujBranch = false;
+
+        if( !empty($_allowModule[$current_branch_id][$paramController]['action']) ) {
+            $allowAction = $_allowModule[$current_branch_id][$paramController]['action'];
+
+            if( in_array('ttuj_edit_branch', $allowAction) ) {
+                $allowEditTtujBranch = true;
+            }
+        }
 
         $is_plant = Configure::read('__Site.config_branch_plant');
         $plantCityId = Configure::read('__Site.Branch.Plant.id');
@@ -495,7 +508,10 @@ class RevenuesController extends AppController {
             $data['Ttuj']['arrive_lead_time'] = !empty($uangJalan['UangJalan']['arrive_lead_time'])?$uangJalan['UangJalan']['arrive_lead_time']:0;
             $data['Ttuj']['back_lead_time'] = !empty($uangJalan['UangJalan']['back_lead_time'])?$uangJalan['UangJalan']['back_lead_time']:0;
             $data['Ttuj']['tgljam_berangkat'] = '';
-            $data['Ttuj']['branch_id'] = Configure::read('__Site.config_branch_id');
+
+            if( empty($data['Ttuj']['branch_id']) || empty($allowEditTtujBranch) ) {
+                $data['Ttuj']['branch_id'] = $current_branch_id;
+            }
 
             if( !empty($data['Ttuj']['getting_sj']) ) {
                 $data['Ttuj']['date_sj'] = $this->MkCommon->getDate($data['Ttuj']['date_sj']);
@@ -642,7 +658,7 @@ class RevenuesController extends AppController {
                                             'ppn' => 0,
                                             'pph' => 0,
                                             'revenue_tarif_type' => !empty($tarifDefault['jenis_unit'])?$tarifDefault['jenis_unit']:'per_unit',
-                                            'branch_id' => Configure::read('__Site.config_branch_id'),
+                                            'branch_id' => $current_branch_id,
                                         );
 
                                         if( !empty($tarifDefault['jenis_unit']) && $tarifDefault['jenis_unit'] == 'per_truck' ) {
@@ -993,6 +1009,8 @@ class RevenuesController extends AppController {
             }
         }
 
+        $customer_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'customer_id');
+        $from_city_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'from_city_id');
         $customerConditions = array(
             'Customer.customer_type_id' => 2,
         );
@@ -1002,15 +1020,8 @@ class RevenuesController extends AppController {
             $tmpCities = $this->City->getData('list');
         }
 
-        $customers = $this->Ttuj->Customer->getData('list', array(
-            'conditions' => $customerConditions,
-            'fields' => array(
-                'Customer.id', 'Customer.customer_name_code'
-            )
-        ), true, array(
-            'plant' => true,
-        ));
-        $fromCities = $this->Ttuj->UangJalan->getKotaAsal();
+        $customers = $this->Ttuj->Customer->getInclude($customerConditions, $customer_id);
+        $fromCities = $this->Ttuj->UangJalan->getKotaAsal( $from_city_id );
 
         $ttuj_truck_id = !empty($data_local['Ttuj']['truck_id'])?$data_local['Ttuj']['truck_id']:false;
         $ttuj_truck_nopol = !empty($data_local['Ttuj']['nopol'])?$data_local['Ttuj']['nopol']:false;
@@ -1049,6 +1060,7 @@ class RevenuesController extends AppController {
                 'ColorMotor.id', 'ColorMotor.name',
             ),
         ));
+        $branches = Configure::read('__Site.config_allow_branchs');
         $this->MkCommon->_layout_file('select');
 
         $this->set('module_title', __('TTUJ'));
@@ -1060,7 +1072,8 @@ class RevenuesController extends AppController {
             'truckInfo', 'data_local', 'data_action',
             'colors', 'tipeMotorTemps',
             'groupTipeMotors', 'uangKuli',
-            'id', 'tmpCities'
+            'id', 'tmpCities', 'branches',
+            'allowEditTtujBranch'
         ));
         $this->render('ttuj_form');
     }

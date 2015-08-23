@@ -105,14 +105,6 @@ class BranchCity extends AppModel {
                 if( $flagSave ) {
                     if( empty($validate) ) {
                         $id = $this->id;
-
-                        $this->updateAll(array( 
-                            'BranchCity.status' => 0,
-                        ), array( 
-                            'BranchCity.id <>' => $id,
-                            'BranchCity.branch_id' => $branch_id,
-                            'BranchCity.status' => 1,
-                        ));
                     }
 
                     $result = array(

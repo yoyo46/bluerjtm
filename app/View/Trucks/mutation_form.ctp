@@ -11,6 +11,7 @@
 			'inputDefaults' => array('div' => false),
 			'type' => 'file'
 		));
+		$mutationDate = (!empty($this->request->data['TruckMutation']['mutation_date'])) ? $this->request->data['TruckMutation']['mutation_date'] : date('d/m/Y');
 ?>
 <div class="row">
 	<div class="col-sm-6">
@@ -36,6 +37,7 @@
 								'class'=>'form-control custom-date',
 								'required' => false,
 								'type' => 'text',
+								'value' => $mutationDate,
 							));
 					?>
 		        </div>

@@ -4991,11 +4991,7 @@ class SettingsController extends AppController {
         $coas = $this->Branch->Coa->getData('list', false, true, array(
             'status' => 'cash_bank_child',
         ));
-        $branch_cities = $this->Branch->getData('list', array(
-            'conditions' => array(
-                'Branch.id <>' => $id,
-            ),
-        ));
+        $branch_cities = $this->Branch->getData('list');
         $this->MkCommon->_layout_file('select');
 
         $this->set('active_menu', 'branches');

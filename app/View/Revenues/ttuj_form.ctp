@@ -17,6 +17,7 @@
 		$ttujDate = (!empty($datForm['Ttuj']['ttuj_date'])) ? $datForm['Ttuj']['ttuj_date'] : date('d/m/Y');
 		$tglBerangkat = (!empty($datForm['Ttuj']['tgl_berangkat'])) ? $datForm['Ttuj']['tgl_berangkat'] : date('d/m/Y');
 		$completedDate = (!empty($datForm['Ttuj']['completed_date'])) ? $datForm['Ttuj']['completed_date'] : date('d/m/Y');
+		$branches = !empty($branches)?$branches:false;
 ?>
 <div class="ttuj-form">
 	<div id="step1">
@@ -37,6 +38,22 @@
 									));
 							?>
 				        </div>
+				        <?php 
+				        		if( !empty($id) && !empty($allowEditTtujBranch) ) {
+				        ?>
+				        <div class="form-group">
+				        	<?php 
+									echo $this->Form->input('branch_id',array(
+										'label'=> __('Cabang *'), 
+										'class'=>'form-control',
+										'required' => false,
+										'options' => $branches,
+									));
+							?>
+				        </div>
+				        <?php 
+				        		}
+				        ?>
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('ttuj_date',array(

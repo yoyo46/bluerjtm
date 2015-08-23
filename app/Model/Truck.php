@@ -436,10 +436,17 @@ class Truck extends AppModel {
                     'Truck.id' => $include_this_truck_id,
                     'Ttuj.id' => NULL,
                 ),
+                'AND' => array(
+                    'OR' => array(
+                        'Truck.id' => $include_this_truck_id,
+                        'Truck.branch_id' => Configure::read('__Site.config_branch_id'),
+                    ),
+                ),
             );
         } else {
             $conditions = array(
                 'Ttuj.id' => NULL,
+                'Truck.branch_id' => Configure::read('__Site.config_branch_id'),
             );
         }
 
@@ -459,7 +466,7 @@ class Truck extends AppModel {
                 'order' => array(
                     'Truck.nopol'
                 ),
-            ));
+            ), false);
 
             if( !empty($nopol) && !empty($trucks[$include_this_truck_id]) ) {
                 $trucks[$include_this_truck_id] = $nopol;

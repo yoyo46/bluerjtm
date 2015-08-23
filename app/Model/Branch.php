@@ -122,6 +122,15 @@ class Branch extends AppModel {
         $validateBranchCity = true;
 
         if( !empty($data['BranchCity']['branch_city_id']) ) {
+            if( empty($validate) ) {
+                $this->BranchCity->updateAll(array( 
+                    'BranchCity.status' => 0,
+                ), array( 
+                    'BranchCity.branch_id' => $id,
+                    'BranchCity.status' => 1,
+                ));
+            }
+
             foreach ($data['BranchCity']['branch_city_id'] as $key => $branch_city_id) {
                 $dataBranchCity = array(
                     'BranchCity' => array(

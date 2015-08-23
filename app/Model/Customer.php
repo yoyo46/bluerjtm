@@ -198,6 +198,7 @@ class Customer extends AppModel {
             ), true, array(
                 'status' => 'all',
                 'branch' => false,
+                'plant' => false,
             ));
 
             if(!empty($data_merge)){
@@ -206,6 +207,32 @@ class Customer extends AppModel {
         }
 
         return $data;
+    }
+
+    function getInclude ( $customerConditions, $customer_id = false ) {
+        $branch_is_plant = Configure::read('__Site.config_branch_plant');
+
+        if( !empty($branch_is_plant) ) {
+            $customerConditions['OR'] = array(
+                'Customer.branch_id' => Configure::read('__Site.Branch.Plant.id'),
+                'Customer.id' => $customer_id,
+            );
+        } else {
+            $customerConditions['OR'] = array(
+                'Customer.branch_id' => Configure::read('__Site.config_branch_id'),
+                'Customer.id' => $customer_id,
+            );
+        }
+
+        return $this->getData('list', array(
+            'conditions' => $customerConditions,
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            )
+        ), true, array(
+            'plant' => false,
+            'branch' => false,
+        ));
     }
 }
 ?>

@@ -4219,7 +4219,7 @@ class TrucksController extends AppController {
 
         $dateFrom = date('Y-m-d', strtotime('-1 month'));
         $dateTo = date('Y-m-d');
-        $sub_module_title = __('Laporan Harian Truk');
+        $sub_module_title = __('Laporan Harian Kendaraan');
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $allow_branch = Configure::read('__Site.config_allow_branchs');
         $defaul_condition = array(
@@ -4507,6 +4507,10 @@ class TrucksController extends AppController {
             $this->request->data = $truckMutation;
             $this->request->data['Truck'] = $truckMutation['TruckMutation'];
             $this->request->data['DataMutation'] = $truckMutation['TruckMutation'];
+
+            if( !empty($this->request->data['TruckMutation']['mutation_date']) ) {
+                $this->request->data['TruckMutation']['mutation_date'] = $this->MkCommon->getDate($this->request->data['TruckMutation']['mutation_date'], true);
+            }
         }
 
         $this->set(compact(

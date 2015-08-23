@@ -218,10 +218,10 @@ class UangJalan extends AppModel {
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
+
         $default_options = array(
-            'conditions'=> array(
-                'UangJalan.branch_id' => Configure::read('__Site.config_branch_id'),
-            ),
+            'conditions'=> array(),
             'order'=> array(
                 'UangJalan.title' => 'DESC'
             ),
@@ -251,6 +251,10 @@ class UangJalan extends AppModel {
             default:
                 $default_options['conditions']['UangJalan.status'] = 1;
                 break;
+        }
+
+        if( !empty($branch) ) {
+            $default_options['UangJalan.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         if(!empty($options)){
@@ -357,7 +361,7 @@ class UangJalan extends AppModel {
         }
     }
 
-    function getKotaAsal () {
+    function getKotaAsal ( $include_this_city = false ) {
         return $this->getData('list', array(
             'group' => array(
                 'UangJalan.from_city_id'
@@ -368,6 +372,14 @@ class UangJalan extends AppModel {
             'contain' => array(
                 'FromCity'
             ),
+            'conditions' => array(
+                'OR' => array(
+                    'UangJalan.branch_id' => Configure::read('__Site.config_branch_id'),
+                    'UangJalan.id' => $include_this_city,
+                ),
+            )
+        ), true, array(
+            'branch' => false,
         ));
     }
 
