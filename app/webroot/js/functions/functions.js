@@ -4285,6 +4285,18 @@ $(function() {
         }
     });
 
+    $('.check-all').click(function(){
+        var self = $(this);
+        var parent = self.parents('.parent-check-branch');
+        var target = parent.find('.check-branch');
+
+        if(self.is(':checked')){
+            target.attr('checked', true);
+        } else {
+            target.attr('checked', false);
+        }
+    });
+
     input_price_min();
     datepicker();
     choosen_select();

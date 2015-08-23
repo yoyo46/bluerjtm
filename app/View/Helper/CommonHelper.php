@@ -1450,6 +1450,7 @@ class CommonHelper extends AppHelper {
                     'required' => false,
                     'value' => $branch_id,
                     'div' => false,
+                    'class' => 'check-branch',
                 )).$city_name), array(
                     'class' => 'checkbox',
                 )));
@@ -1465,12 +1466,20 @@ class CommonHelper extends AppHelper {
                 $headLabel = $this->Html->tag('label', __('Cabang'), array(
                     'class' => 'block'
                 ));
-                $headLi = $this->Html->tag('li', __('Cabang'));
+                $headLi = $this->Html->tag('li', $this->Html->tag('li', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('GroupBranch.group_branch.'.$branch_id, array(
+                    'type' => 'checkbox',
+                    'label'=> false,
+                    'required' => false,
+                    'div' => false,
+                    'class' => 'check-all',
+                )).__('Check/Uncheck All')), array(
+                    'class' => 'checkbox',
+                ))));
                 $divider = $this->Html->tag('li', '', array(
                     'class' => 'divider',
                 ));
                 $ulContent = $this->Html->tag('ul', $headLi.$divider.implode('', $tmpArr), array(
-                    'class' => 'dropdown-menu',
+                    'class' => 'dropdown-menu parent-check-branch',
                     'role' => 'menu',
                 ));
 

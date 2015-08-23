@@ -1997,7 +1997,7 @@ class RevenuesController extends AppController {
             }
         }
 
-        $module_title = __('Laporan Ritase Truk');
+        $module_title = sprintf(__('Laporan Ritase - %s'), ucwords($data_type));
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
             $this->request->data['Ttuj']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
