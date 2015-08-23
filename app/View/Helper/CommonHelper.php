@@ -1639,4 +1639,8 @@ class CommonHelper extends AppHelper {
     function getCurrencyPrice ($price) {
         return $this->Number->currency($price, Configure::read('__Site.config_currency_code'), array('places' => 0));
     }
+
+    function getFormatDesc ( $value ) {
+        return str_replace(PHP_EOL, '<br>', $value);
+    }
 }

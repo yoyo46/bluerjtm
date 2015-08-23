@@ -36,6 +36,16 @@
                         ?>
                     </div>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('description',array(
+                                'label'=> __('Keterangan'),
+                                'type'=>'text',
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(

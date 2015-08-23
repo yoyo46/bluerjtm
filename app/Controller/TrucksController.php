@@ -4377,6 +4377,11 @@ class TrucksController extends AppController {
                 $options['conditions']['TruckMutation.no_doc LIKE'] = '%'.$value.'%';
                 $this->request->data['Truck']['no_doc'] = $value;
             }
+            if(!empty($refine['description'])){
+                $value = urldecode($refine['description']);
+                $options['conditions']['TruckMutation.description LIKE'] = '%'.$value.'%';
+                $this->request->data['Truck']['description'] = $value;
+            }
         }
 
         $options['conditions'] = array_merge($options['conditions'], array(

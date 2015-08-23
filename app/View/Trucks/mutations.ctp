@@ -3,31 +3,33 @@
             'nodoc' => array(
                 'name' => __('No. Doc'),
                 'field_model' => 'TruckMutation.no_doc',
-                'style' => 'width: 10%;',
                 'display' => true,
             ),
             'date' => array(
                 'name' => __('Tgl Mutasi'),
                 'field_model' => 'TruckMutation.mutation_date',
                 'display' => true,
-                'style' => 'width: 10%;',
             ),
             'nopol' => array(
                 'name' => __('No. Pol'),
                 'field_model' => 'TruckMutation.nopol',
-                'style' => 'width: 10%;',
                 'display' => true,
             ),
-            'truck' => array(
-                'name' => __('Data Truk'),
-                'field_model' => false,
+            'description' => array(
+                'name' => __('Keterangan'),
+                'field_model' => 'TruckMutation.description',
                 'display' => true,
             ),
-            'mutation' => array(
-                'name' => __('Data Mutasi'),
-                'field_model' => false,
-                'display' => true,
-            ),
+            // 'truck' => array(
+            //     'name' => __('Data Truk'),
+            //     'field_model' => false,
+            //     'display' => true,
+            // ),
+            // 'mutation' => array(
+            //     'name' => __('Data Mutasi'),
+            //     'field_model' => false,
+            //     'display' => true,
+            // ),
             'created' => array(
                 'name' => __('Dibuat'),
                 'field_model' => 'TruckMutation.created',
@@ -91,6 +93,7 @@
                                 $created = $this->Common->filterEmptyField($value, 'TruckMutation', 'created');
                                 $status = $this->Common->filterEmptyField($value, 'TruckMutation', 'status');
                                 $void_date = $this->Common->filterEmptyField($value, 'TruckMutation', 'void_date');
+                                $description = $this->Common->filterEmptyField($value, 'TruckMutation', 'description');
                                 
                                 $iconStatus = $this->Common->getCheckStatus( $status );
                 ?>
@@ -98,22 +101,23 @@
                     <td><?php echo $no_doc;?></td>
                     <td><?php echo $this->Common->customDate($mutation_date, 'd M Y');?></td>
                     <td><?php echo $nopol;?></td>
-                    <td>
+                    <td><?php echo $this->Common->getFormatDesc($description);?></td>
+                    <!-- <td>
                         <?php
-                                echo $this->element('blocks/trucks/tables/data_mutation', array(
-                                    'truck' => $value,
-                                    'type' => 'truck',
-                                ));
+                                // echo $this->element('blocks/trucks/tables/data_mutation', array(
+                                //     'truck' => $value,
+                                //     'type' => 'truck',
+                                // ));
                         ?>
-                    </td>
-                    <td>
+                    </td> -->
+                    <!-- <td>
                         <?php
-                                echo $this->element('blocks/trucks/tables/data_mutation', array(
-                                    'truck' => $value,
-                                    'type' => 'mutation',
-                                ));
+                                // echo $this->element('blocks/trucks/tables/data_mutation', array(
+                                //     'truck' => $value,
+                                //     'type' => 'mutation',
+                                // ));
                         ?>
-                    </td>
+                    </td> -->
                     <td><?php echo $this->Time->niceShort($created);?></td>
                     <td>
                         <?php
