@@ -4291,9 +4291,9 @@ $(function() {
         var target = parent.find('.check-branch');
 
         if(self.is(':checked')){
-            target.attr('checked', true);
+            target.prop('checked', true);
         } else {
-            target.attr('checked', false);
+            target.prop('checked', false);
         }
     });
 

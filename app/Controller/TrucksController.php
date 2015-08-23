@@ -467,7 +467,7 @@ class TrucksController extends AppController {
                 'Truck'
             ),
         ), true, array(
-            // 'branch' => false,
+            'branch' => false,
         ));
         $branches = $this->City->branchCities();
 
@@ -475,6 +475,9 @@ class TrucksController extends AppController {
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
+        ), true, array(
+            'branch' => false,
+            'plant' => false,
         ));
 
         $now_year = date('Y');
@@ -4438,6 +4441,7 @@ class TrucksController extends AppController {
             ),
         ), true, array(
             'branch' => false,
+            'plant' => false,
         ));
         $drivers = $this->Truck->Driver->getData('list', array(
             'conditions' => array(
@@ -4453,6 +4457,7 @@ class TrucksController extends AppController {
             'branch' => false,
         ));
 
+        $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'mutations');
         $this->set(compact(
             'trucks', 'customers', 'branches',
@@ -4492,6 +4497,8 @@ class TrucksController extends AppController {
             'conditions' => array(
                 'TruckMutation.id' => $id,
             ),
+        ), true, array(
+            'status' => false,
         ));
 
         if( !empty($truckMutation) ) {

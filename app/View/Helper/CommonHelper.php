@@ -1451,6 +1451,7 @@ class CommonHelper extends AppHelper {
                     'value' => $branch_id,
                     'div' => false,
                     'class' => 'check-branch',
+                    'checked' => true,
                 )).$city_name), array(
                     'class' => 'checkbox',
                 )));
@@ -1472,6 +1473,7 @@ class CommonHelper extends AppHelper {
                     'required' => false,
                     'div' => false,
                     'class' => 'check-all',
+                    'checked' => true,
                 )).__('Check/Uncheck All')), array(
                     'class' => 'checkbox',
                 ))));
