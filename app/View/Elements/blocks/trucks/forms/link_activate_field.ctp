@@ -1,7 +1,9 @@
 <?php 
 		if( !empty($data_changes) ) {
 			$fieldClass = !empty($fieldClass)?$fieldClass:false;
-			$arrow = $this->Common->icon('angle-double-right');
+			$fieldIcon = !empty($fieldIcon)?$fieldIcon:'angle-double-right';
+
+			$arrow = $this->Common->icon($fieldIcon);
 
 			echo $this->Html->tag('div', $this->Html->link($arrow, 'javascript:', array(
 				'class' => 'active-field',

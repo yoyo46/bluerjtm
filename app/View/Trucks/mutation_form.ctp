@@ -52,8 +52,8 @@
 		        	<?php 
 							echo $this->Form->input('description',array(
 								'type' => 'textarea',
-								'label'=> __('Keterangan'), 
-								'class'=>'form-control',
+								'label'=> __('Keterangan *'), 
+								'class'=>'form-control description-mutation',
 								'required' => false,
 							));
 					?>
@@ -93,15 +93,38 @@
 			<div class="box-header">
 		        <h3 class="box-title"><?php echo __('Alokasi Truk')?></h3>
 		    </div>
-		    <div class="box-body" id="truck_customers"></div>
+		    <div class="box-body" id="truck_customers">
+		    	<?php 
+		    			if( !empty($id) ) {
+			    			if( !empty($truckMutation['TruckMutationOldCustomer']) ) {
+			    				echo $this->element('blocks/trucks/alokasi_truck', array(
+									'truckCustomers' => $truckMutation['TruckMutationOldCustomer'],
+								));
+			    			} else {
+			    				echo '-';
+			    			}
+			    		}else if(!empty($truckCustomers['TruckCustomer'])){
+							echo $this->element('blocks/trucks/alokasi_truck', array(
+								'truckCustomers' => $truckCustomers['TruckCustomer'],
+							));
+			            }
+		    	?>
+		    </div>
 		</div>
 	</div>
 	<div class="col-sm-6">
 		<div class="box box-success">
 			<div class="box-header">
-		        <h3 class="box-title"><?php echo __('Alokasi Truk')?></h3>
+		        <h3 class="box-title"><?php echo __('Mutasi Alokasi Truk')?></h3>
 		    </div>
 		    <div class="box-body">
+		    	<?php 
+		    			if( !empty($truckMutation['TruckMutationCustomer']) ) {
+		    				echo $this->element('blocks/trucks/alokasi_truck', array(
+								'truckCustomers' => $truckMutation['TruckMutationCustomer'],
+							));
+		    			} else {
+		    	?>
 		        <div class="form-group">
 		        	<?php
 			        		echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah Alokasi'), 'javascript:', array(
@@ -187,17 +210,23 @@
 			        		}
 		        	?>
 		        </div>
+		        <?php 
+		        		}
+		        ?>
 		   	</div>
 		</div>
 	</div>
 </div>
 <div class="box-footer text-center action">
 	<?php
-    		echo $this->Form->button(__('Simpan'), array(
-				'div' => false, 
-				'class'=> 'btn btn-success',
-				'type' => 'submit',
-			));
+			if( empty($id) ) {
+	    		echo $this->Form->button(__('Simpan'), array(
+					'div' => false, 
+					'class'=> 'btn btn-success',
+					'type' => 'submit',
+				));
+	    	}
+
     		echo $this->Html->link(__('Kembali'), array(
 				'action' => 'mutations', 
 			), array(

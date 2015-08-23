@@ -200,3 +200,15 @@ tr.complete {
     font-weight: bold;
     left: -29px;
 }
+
+.list-mutation {
+	padding-left: 15px;
+}
+
+.list-mutation ul {
+	padding-left: 15px;
+}
+
+textarea.form-control.description-mutation {
+	height: 108px;
+}

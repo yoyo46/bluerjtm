@@ -1,18 +1,36 @@
 <?php 
         $dataColumns = array(
             'nodoc' => array(
-                'name' => __('No. Dokumen'),
+                'name' => __('No. Doc'),
                 'field_model' => 'TruckMutation.no_doc',
+                'style' => 'width: 10%;',
                 'display' => true,
             ),
             'date' => array(
                 'name' => __('Tgl Mutasi'),
                 'field_model' => 'TruckMutation.mutation_date',
                 'display' => true,
+                'style' => 'width: 10%;',
             ),
             'nopol' => array(
-                'name' => __('Nopol'),
+                'name' => __('No. Pol'),
                 'field_model' => 'TruckMutation.nopol',
+                'style' => 'width: 10%;',
+                'display' => true,
+            ),
+            'truck' => array(
+                'name' => __('Data Truk'),
+                'field_model' => false,
+                'display' => true,
+            ),
+            'mutation' => array(
+                'name' => __('Data Mutasi'),
+                'field_model' => false,
+                'display' => true,
+            ),
+            'created' => array(
+                'name' => __('Dibuat'),
+                'field_model' => 'TruckMutation.created',
                 'display' => true,
             ),
             'status' => array(
@@ -29,7 +47,7 @@
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
         $this->Html->addCrumb($sub_module_title);
-        echo $this->element('blocks/trucks/search_truck');
+        echo $this->element('blocks/trucks/searchs/truck_mutation');
 ?>
 <div class="box box-success">
     <div class="box-header">
@@ -68,15 +86,45 @@
                             foreach ($truckMutations as $key => $value) {
                                 $id = $this->Common->filterEmptyField($value, 'TruckMutation', 'id');
                                 $no_doc = $this->Common->filterEmptyField($value, 'TruckMutation', 'no_doc');
-                                $mutation_date = $this->Common->filterEmptyField($value, 'TruckMutation', 'mutation_date');
                                 $nopol = $this->Common->filterEmptyField($value, 'TruckMutation', 'nopol');
+                                $mutation_date = $this->Common->filterEmptyField($value, 'TruckMutation', 'mutation_date');
                                 $created = $this->Common->filterEmptyField($value, 'TruckMutation', 'created');
+                                $status = $this->Common->filterEmptyField($value, 'TruckMutation', 'status');
+                                $void_date = $this->Common->filterEmptyField($value, 'TruckMutation', 'void_date');
+                                
+                                $iconStatus = $this->Common->getCheckStatus( $status );
                 ?>
                 <tr>
                     <td><?php echo $no_doc;?></td>
-                    <td><?php echo $this->Common->customDate($mutation_date);?></td>
+                    <td><?php echo $this->Common->customDate($mutation_date, 'd M Y');?></td>
                     <td><?php echo $nopol;?></td>
+                    <td>
+                        <?php
+                                echo $this->element('blocks/trucks/tables/data_mutation', array(
+                                    'truck' => $value,
+                                    'type' => 'truck',
+                                ));
+                        ?>
+                    </td>
+                    <td>
+                        <?php
+                                echo $this->element('blocks/trucks/tables/data_mutation', array(
+                                    'truck' => $value,
+                                    'type' => 'mutation',
+                                ));
+                        ?>
+                    </td>
                     <td><?php echo $this->Time->niceShort($created);?></td>
+                    <td>
+                        <?php
+                                echo $iconStatus;
+
+                                if( !empty($void_date) ) {
+                                    echo '<br>';
+                                    echo $this->Common->customDate($void_date, 'd/m/Y');
+                                }
+                        ?>
+                    </td>
                     <td class="action">
                         <?php
                                 echo $this->Html->link('Detail', array(
@@ -88,13 +136,16 @@
                                     'allow' => true,
                                 ));
 
-                                echo $this->Html->link(__('Void'), array(
-                                    'controller' => 'trucks',
-                                    'action' => 'mutation_toggle',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs',
-                                ), __('Apakah Anda yakin akan menghapus data ini?'));
+                                if( !empty($status) ) {
+                                    echo $this->Html->link(__('Void'), array(
+                                        'controller' => 'trucks',
+                                        'action' => 'mutation_toggle',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-danger btn-xs ajaxModal',
+                                        'data-action' => 'submit_form',
+                                    ), __('Apakah Anda yakin akan menghapus data ini?'));
+                                }
                         ?>
                     </td>
                 </tr>

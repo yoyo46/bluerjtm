@@ -30,18 +30,8 @@
 		}
 
 		if( !empty($result['TruckCustomer']) ) {
-			$content = '';
-
-			foreach ($result['TruckCustomer'] as $key => $value) {
-				$content .= $this->Html->tag('div', $value['Customer']['customer_name_code'], array(
-					'class' => 'col-sm-12',
-				));
-			}
-
-			echo $this->Html->tag('div', $this->Html->tag('div', $content, array(
-				'class' => 'row',
-			)), array(
-				'id' => 'truck_customers',
+			echo $this->element('blocks/trucks/alokasi_truck', array(
+				'truckCustomers' => $result['TruckCustomer'],
 			));
 		} else {
 			echo $this->Html->tag('div', __('Tidak memiliki alokasi'), array(

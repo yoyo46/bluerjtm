@@ -4339,44 +4339,68 @@ class TrucksController extends AppController {
     public function mutations() {
         $this->loadModel('TruckMutation');
 
-        $options = array();
+        $options = array(
+            'conditions' => array(),
+        );
+        $dateFrom = date('Y-m-d', strtotime('-1 month'));
+        $dateTo = date('Y-m-d');
         
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
 
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
+
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                }
+                $this->request->data['Truck']['date'] = $dateStr;
+            }
             if(!empty($refine['nopol'])){
-                $nopol = urldecode($refine['nopol']);
-                $this->request->data['Truck']['nopol'] = $nopol;
+                $data = urldecode($refine['nopol']);
                 $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                $this->request->data['Truck']['type'] = $typeTruck;
 
                 if( $typeTruck == 2 ) {
-                    $conditionsNopol = array(
-                        'Truck.id' => $nopol,
-                    );
+                    $options['conditions']['TruckMutation.truck_id'] = $data;
                 } else {
-                    $conditionsNopol = array(
-                        'Truck.nopol LIKE' => '%'.$nopol.'%',
-                    );
+                    $options['conditions']['TruckMutation.nopol LIKE'] = '%'.$data.'%';
                 }
-                
-                $truckSearch = $this->Truck->getData('list', array(
-                    'conditions' => $conditionsNopol,
-                    'fields' => array(
-                        'Truck.id', 'Truck.id',
-                    ),
-                ));
-                $conditions['Truck.id'] = $truckSearch;
+                $this->request->data['Truck']['nopol'] = $data;
+                $this->request->data['Truck']['type'] = $typeTruck;
             }
-            if(!empty($refine['name'])){
-                $data = urldecode($refine['name']);
-                $conditions['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$data.'%';
-                $this->request->data['Driver']['name'] = $data;
+            if(!empty($refine['no_doc'])){
+                $value = urldecode($refine['no_doc']);
+                $options['conditions']['TruckMutation.no_doc LIKE'] = '%'.$value.'%';
+                $this->request->data['Truck']['no_doc'] = $value;
             }
         }
 
-        $this->paginate = $this->TruckMutation->getData('paginate', $options);
+        $options['conditions'] = array_merge($options['conditions'], array(
+            'DATE_FORMAT(TruckMutation.mutation_date, \'%Y-%m-%d\') >='=> $dateFrom,
+            'DATE_FORMAT(TruckMutation.mutation_date, \'%Y-%m-%d\') <=' => $dateTo,
+        ));
+
+        $this->paginate = $this->TruckMutation->getData('paginate', $options, true, array(
+            'status' => 'all',
+        ));
         $truckMutations = $this->paginate('TruckMutation');
+
+        if( !empty($truckMutations) ) {
+            foreach ($truckMutations as $key => $value) {
+                $truck_mutation_id = $this->MkCommon->filterEmptyField($value, 'TruckMutation', 'id');
+                $value = $this->TruckMutation->TruckMutationCustomer->getMerge($value, $truck_mutation_id);
+                $value = $this->TruckMutation->TruckMutationOldCustomer->getMerge($value, $truck_mutation_id);
+                $truckMutations[$key] = $value;
+            }
+        }
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $this->request->data['Truck']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
+        }
 
         $this->set('active_menu', 'mutations');
         $this->set('sub_module_title', __('Data Mutasi Truk'));
@@ -4387,6 +4411,11 @@ class TrucksController extends AppController {
 
     function getDataMutation () {
         $this->loadModel('Customer');
+
+        if( !empty($this->request->data) ) {
+            $truck_id = !empty($this->request->data['Truck']['truck_id'])?$this->request->data['Truck']['truck_id']:false;
+            $truckCustomers = $this->Truck->TruckCustomer->getMergeTruckCustomer(array(), $truck_id);
+        }
 
         $branches = $this->GroupBranch->Branch->getData('list');
         $truckCategories = $this->Truck->TruckCategory->getData('list');
@@ -4419,10 +4448,11 @@ class TrucksController extends AppController {
             'branch' => false,
         ));
 
+        $this->set('active_menu', 'mutations');
         $this->set(compact(
             'trucks', 'customers', 'branches',
             'truckCategories', 'truckFacilities',
-            'drivers'
+            'drivers', 'truckCustomers'
         ));
         $this->render('mutation_form');
     }
@@ -4448,5 +4478,86 @@ class TrucksController extends AppController {
         }
 
         $this->getDataMutation();
+    }
+
+    public function mutation_detail( $id = false ) {
+        $this->loadModel('TruckMutation');
+        $this->set('sub_module_title', __('Edit Mutasi Truk'));
+        $truckMutation = $this->TruckMutation->getData('first', array(
+            'conditions' => array(
+                'TruckMutation.id' => $id,
+            ),
+        ));
+
+        if( !empty($truckMutation) ) {
+            $truckMutation = $this->TruckMutation->TruckMutationCustomer->getMerge($truckMutation, $id);
+            $truckMutation = $this->TruckMutation->TruckMutationOldCustomer->getMerge($truckMutation, $id);
+            $this->request->data = $truckMutation;
+            $this->request->data['Truck'] = $truckMutation['TruckMutation'];
+            $this->request->data['DataMutation'] = $truckMutation['TruckMutation'];
+        }
+
+        $this->set(compact(
+            'truckMutation', 'id'
+        ));
+        $this->getDataMutation();
+    }
+
+    function mutation_toggle($id = false){
+        $this->loadModel('TruckMutation');
+        $is_ajax = $this->RequestHandler->isAjax();
+        $modelName = 'TruckMutation';
+        $action_type = 'mutation';
+        $msg = array(
+            'msg' => '',
+            'type' => 'error'
+        );
+        $truckMutation = $this->TruckMutation->getData('first', array(
+            'conditions' => array(
+                'TruckMutation.id' => $id,
+            ),
+        ));
+
+        if( !empty($truckMutation) ){
+            if(!empty($this->request->data)){
+                if(!empty($this->request->data['TruckMutation']['canceled_date'])){
+                    $this->request->data['TruckMutation']['void_date'] = $this->MkCommon->getDate($this->request->data['TruckMutation']['canceled_date']);
+                    $this->request->data['TruckMutation']['status'] = 0;
+
+                    $this->TruckMutation->id = $id;
+                    $this->TruckMutation->set($this->request->data);
+
+                    if($this->TruckMutation->save()){
+                        $msg = array(
+                            'msg' => __('Berhasil melakukan void'),
+                            'type' => 'success'
+                        );
+                        $this->MkCommon->setCustomFlash( $msg['msg'], $msg['type']);  
+                        $this->Log->logActivity( sprintf(__('Berhasil melakukan void mutasi truk #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
+                    }else{
+                        $this->Log->logActivity( sprintf(__('Gagal melakukan void mutasi truk #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    }
+                }else{
+                    $msg = array(
+                        'msg' => __('Harap masukkan tanggal pembatalan'),
+                        'type' => 'error'
+                    );
+                }
+            }
+
+            $this->set('truckMutation', $truckMutation);
+        }else{
+            $msg = array(
+                'msg' => __('Mutasi truk tidak ditemukan'),
+                'type' => 'error'
+            );
+        }
+
+        $canceled_date = $this->MkCommon->filterEmptyField($this->request->data, 'TruckMutation', 'void_date');
+        $this->set(compact(
+            'msg', 'is_ajax', 'action_type',
+            'canceled_date', 'modelName'
+        ));
+        $this->render('/Elements/blocks/common/form_delete');
     }
 }

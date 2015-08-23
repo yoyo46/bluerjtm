@@ -17,7 +17,11 @@ class TruckCustomer extends AppModel {
 		),
 	);
 
-	function getMergeTruckCustomer ( $data = false ) {
+	function getMergeTruckCustomer ( $data = false, $truck_id = false ) {
+		if( !empty($truck_id) ) {
+			$data['Truck']['id'] = $truck_id;
+		}
+
 		if( !empty($data['Truck']['id']) && empty($data['TruckCustomer']) ) {
 			$truckCustomers = $this->find('all', array(
 				'conditions' => array(
@@ -187,5 +191,71 @@ class TruckCustomer extends AppModel {
 		
 		return $result;
 	}
+
+    function doSave( $datas, $value = false, $id = false, $truck_id, $is_validate = false ) {
+        $result = false;
+
+        if ( !empty($datas) ) {
+            if( !empty($truck_id) ) {
+                $this->deleteAll(array(
+                    'truck_id' => $truck_id
+                ));
+            }
+            
+            foreach ($datas as $key => $customer_id) {
+                if( empty($id) ) {
+                    $this->create();
+                } else {
+                    $this->id = $id;
+                }
+
+                $data['TruckCustomer'] = array(
+                	'customer_id' => $customer_id,
+            	);
+
+                if( !empty($truck_id) ) {
+                    $data['TruckCustomer']['truck_id'] = $truck_id;
+                }
+
+                $this->set($data);
+
+                if( $this->validates() ) {
+                    if( $is_validate ) {
+                        $flagSave = true;
+                    } else {
+                        $flagSave = $this->save($data);
+                    }
+
+                    if( $flagSave ) {
+                        $result = array(
+                            'msg' => __('Berhasil menyimpan alokasi customer'),
+                            'status' => 'success',
+                        );
+                    } else {
+	                    $result = array(
+	                        'msg' => __('Gagal menyimpan alokasi customer'),
+	                        'status' => 'error',
+	                    );
+	                }
+                } else {
+                    $result = array(
+                        'msg' => __('Gagal menyimpan alokasi customer'),
+                        'status' => 'error',
+                    );
+                }
+            }
+
+            if( empty($result) ) {
+                $result = array(
+                    'msg' => __('Gagal menyimpan alokasi customer'),
+                    'status' => 'error',
+                );
+            }
+        } else if( !empty($value) ) {
+            $result['data'] = $value;
+        }
+
+        return $result;
+    }
 }
 ?>
