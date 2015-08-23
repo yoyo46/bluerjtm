@@ -375,7 +375,7 @@ class UangJalan extends AppModel {
             'conditions' => array(
                 'OR' => array(
                     'UangJalan.branch_id' => Configure::read('__Site.config_branch_id'),
-                    'UangJalan.id' => $include_this_city,
+                    'UangJalan.from_city_id' => $include_this_city,
                 ),
             )
         ), true, array(

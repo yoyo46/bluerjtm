@@ -418,8 +418,11 @@ class RevenuesController extends AppController {
         $paramController = $this->params['controller'];
         $paramAction = $this->params['action'];
         $is_draft = isset($data_local['Ttuj']['is_draft'])?$data_local['Ttuj']['is_draft']:true;
+
         $current_branch_id = Configure::read('__Site.config_branch_id');
         $_allowModule = Configure::read('__Site.config_allow_module');
+        $group_id = Configure::read('__Site.config_group_id');
+
         $allowUpdate = false;
         $allowEditTtujBranch = false;
 
@@ -429,6 +432,9 @@ class RevenuesController extends AppController {
             if( in_array('ttuj_edit_branch', $allowAction) ) {
                 $allowEditTtujBranch = true;
             }
+        }
+        if( $group_id == 1 ) {
+            $allowEditTtujBranch = true;
         }
 
         $is_plant = Configure::read('__Site.config_branch_plant');
