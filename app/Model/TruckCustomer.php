@@ -211,7 +211,12 @@ class TruckCustomer extends AppModel {
 
                 $data['TruckCustomer'] = array(
                 	'customer_id' => $customer_id,
+                	'branch_id' => Configure::read('__Site.config_branch_id'),
             	);
+
+            	if( empty($key) ) {
+            		$data['TruckCustomer']['primary']= 1;
+            	}
 
                 if( !empty($truck_id) ) {
                     $data['TruckCustomer']['truck_id'] = $truck_id;

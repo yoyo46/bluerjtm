@@ -3824,7 +3824,10 @@ class RevenuesController extends AppController {
         $this->set('active_menu', 'revenue');
         $this->set('sub_module_title', __('Account Receivable Aging Report'));
 
-        $default_conditions = array();
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        $default_conditions = array(
+            'Customer.branch_id' => $allow_branch_id,
+        );
         $invoice_conditions = array();
         $customer_id = '';
         $customer_collect_id = array();
@@ -3954,18 +3957,18 @@ class RevenuesController extends AppController {
         if(empty($data_action)){
             $this->paginate = $this->Customer->getData('paginate', array(
                 'conditions' => $default_conditions,
-                'order' => array(
-                    'Customer.order_sort' => 'ASC',
-                ),
+            ), array(
+                'plant' => false,
+                'branch' => false,
             ));
 
             $customers = $this->paginate('Customer');
         }else{
             $customers = $this->Customer->getData('all', array(
                 'conditions' => $default_conditions,
-                'order' => array(
-                    'Customer.order_sort' => 'ASC',
-                ),
+            ), array(
+                'plant' => false,
+                'branch' => false,
             ));
         }
 
@@ -3983,6 +3986,8 @@ class RevenuesController extends AppController {
                 'fields' => array(
                     'SUM(Invoice.total) as total_pituang'
                 )
+            ), true, array(
+                'branch' => false,
             ));
 
             $default_conditions = array(
@@ -3999,6 +4004,8 @@ class RevenuesController extends AppController {
                 'fields' => array(
                     'SUM(Invoice.total) as current_rev1to15'
                 )
+            ), true, array(
+                'branch' => false,
             ));
             $default_conditions = array(
                 'Invoice.paid' => 0,
@@ -4014,6 +4021,8 @@ class RevenuesController extends AppController {
                 'fields' => array(
                     'SUM(Invoice.total) as current_rev16to30'
                 )
+            ), true, array(
+                'branch' => false,
             ));
 
             $default_conditions = array(
@@ -4024,11 +4033,13 @@ class RevenuesController extends AppController {
             if(!empty($invoice_conditions)){
                 $default_conditions = array_merge($default_conditions, $invoice_conditions);
             }
-            $customers[$key]['current_rev30'] = $this->Invoice->getData('all', array(
+            $customers[$key]['current_rev30'] = $this->Invoice->getData('paginate', array(
                 'conditions' => $default_conditions,
                 'fields' => array(
                     'SUM(Invoice.total) as current_rev30'
                 )
+            ), true, array(
+                'branch' => false,
             ));
         }
         $this->set('active_menu', 'invoice_reports');
@@ -4037,6 +4048,12 @@ class RevenuesController extends AppController {
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
+            'conditions' => array(
+                'Customer.branch_id' => $allow_branch_id,
+            ),
+        ), true, array(
+            'branch' => false,
+            'plant' => false,
         ));
 
         if($data_action == 'pdf'){

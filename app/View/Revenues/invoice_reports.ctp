@@ -72,7 +72,7 @@
                                 $total_rev30 += $current_rev30;
                 ?>
                 <tr>
-                    <td><?php echo $value['Customer']['customer_code'];?></td>
+                    <td><?php echo $value['Customer']['customer_name_code'];?></td>
                     <td class="text-right"><?php echo $this->Number->currency($total_pituang, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                     <td class="text-right"><?php echo $this->Number->currency($current, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                     <td class="text-right"><?php echo $this->Number->currency($current_rev1to15, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
@@ -164,7 +164,7 @@
                     $total_rev16to30 += $current_rev16to30;
                     $total_rev30 += $current_rev30;
 
-                    $content = $this->Html->tag('td', $value['Customer']['customer_code'], array(
+                    $content = $this->Html->tag('td', $value['Customer']['customer_name_code'], array(
                         'style' => 'text-align: left; width: 120px;'
                     ));
                     $content .= $this->Html->tag('td', $this->Number->currency($total_pituang, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
