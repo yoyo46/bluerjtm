@@ -321,8 +321,11 @@ class TrucksController extends AppController {
 
             $this->Truck->set($data);
             $check_alokasi = false;
+            $allowSaveTruckCustomer = (!empty($id) && !empty($data_local['TruckCustomer']))?true:false;
 
-            if( !empty($data['TruckCustomer']['customer_id']) ){
+            if( !empty($allowSaveTruckCustomer) ) {
+                $check_alokasi = true;
+            } else if( !empty($data['TruckCustomer']['customer_id']) ){
                 foreach ($data['TruckCustomer']['customer_id'] as $key => $value) {
                     if($value){
                         $check_alokasi = true;
@@ -346,23 +349,25 @@ class TrucksController extends AppController {
                 if($this->Truck->save($data)){
                     $truck_id = $this->Truck->id;
                     
-                    /*Begin Alokasi*/
-                    $this->Truck->TruckCustomer->deleteAll(array(
-                        'truck_id' => $truck_id
-                    ));
-                    $data_customer = array();
-                    foreach ($data['TruckCustomer']['customer_id'] as $key => $value) {
-                        if(!empty($value)){
-                            if( empty($key) ) {
-                                $data_customer[$key]['TruckCustomer']['primary'] = 1;
+                    if( empty($allowSaveTruckCustomer) ) {
+                        /*Begin Alokasi*/
+                        $this->Truck->TruckCustomer->deleteAll(array(
+                            'truck_id' => $truck_id
+                        ));
+                        $data_customer = array();
+                        foreach ($data['TruckCustomer']['customer_id'] as $key => $value) {
+                            if(!empty($value)){
+                                if( empty($key) ) {
+                                    $data_customer[$key]['TruckCustomer']['primary'] = 1;
+                                }
+                                $data_customer[$key]['TruckCustomer']['customer_id'] = $value;
+                                $data_customer[$key]['TruckCustomer']['truck_id'] = $truck_id;
+                                $data_customer[$key]['TruckCustomer']['branch_id'] = Configure::read('__Site.config_branch_id');
                             }
-                            $data_customer[$key]['TruckCustomer']['customer_id'] = $value;
-                            $data_customer[$key]['TruckCustomer']['truck_id'] = $truck_id;
-                            $data_customer[$key]['TruckCustomer']['branch_id'] = Configure::read('__Site.config_branch_id');
                         }
+                        $this->Truck->TruckCustomer->saveMany($data_customer);
+                        /*End Alokasi*/
                     }
-                    $this->Truck->TruckCustomer->saveMany($data_customer);
-                    /*End Alokasi*/
 
                     /*Begin Leasing*/
                     $data['Leasing']['truck_id'] = $truck_id;
@@ -4232,7 +4237,7 @@ class TrucksController extends AppController {
     function daily_report($data_action = false) {
         $this->loadModel('Ttuj');
 
-        $dateFrom = date('Y-m-d', strtotime('-1 month'));
+        $dateFrom = date('Y-m-d');
         $dateTo = date('Y-m-d');
         $sub_module_title = __('Laporan Harian Kendaraan');
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');

@@ -3,6 +3,7 @@
             $grandtotal_uang_jalan = 0;
             $grandtotal_uang_jalan_extra = 0;
             $grandtotal_total_uang_jalan = 0;
+            $grandtotal_unit = 0;
 
             foreach ($ttujs as $key => $value) {
                 $ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
@@ -19,6 +20,7 @@
                 $grandtotal_uang_jalan += $uang_jalan;
                 $grandtotal_uang_jalan_extra += $uang_jalan_extra;
                 $grandtotal_total_uang_jalan += $total_uang_jalan;
+                $grandtotal_unit += $total_unit;
 
                 $content = $this->Common->_getDataColumn($this->Common->customDate($ttuj_date), 'Ttuj', 'ttuj_date', array(
                     'style' => 'text-align: center;',
@@ -58,7 +60,10 @@
 
             $content = $this->Html->tag('td', __('Total'), array(
                 'style' => 'text-align: right;',
-                'colspan' => 5,
+                'colspan' => 4,
+            ));
+            $content .= $this->Html->tag('td', $grandtotal_unit, array(
+                'style' => 'text-align: center;',
             ));
             $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_jalan), array(
                 'style' => 'text-align: right;',
