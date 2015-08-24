@@ -4304,6 +4304,7 @@ class TrucksController extends AppController {
 
                     if( !empty($value['Ttuj']['to_city_name']) ) {
                         $value['Ttuj']['to_city_name'] = implode(', ', $value['Ttuj']['to_city_name']);
+                        $value['Ttuj']['to_city_name'] = array_unique($value['Ttuj']['to_city_name']);
                     }
                 }
 
