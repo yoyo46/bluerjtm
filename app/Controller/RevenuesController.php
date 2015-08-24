@@ -534,9 +534,9 @@ class RevenuesController extends AppController {
                 }
             }
 
-            if( !empty($data['Ttuj']['completed_date']) ) {
-                $data['Ttuj']['completed_date'] = $this->MkCommon->getDate($data['Ttuj']['completed_date']);
-            }
+            // if( !empty($data['Ttuj']['completed_date']) ) {
+            //     $data['Ttuj']['completed_date'] = $this->MkCommon->getDate($data['Ttuj']['completed_date']);
+            // }
 
             if( $data_action == 'retail' ) {
                 $data['Ttuj']['is_retail'] = 1;
@@ -968,9 +968,9 @@ class RevenuesController extends AppController {
                     $data_local['Ttuj']['jam_berangkat'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_berangkat']));
                 }
 
-                if( !empty($data_local['Ttuj']['completed_date']) ) {
-                    $data_local['Ttuj']['completed_date'] = $this->MkCommon->getDate($data_local['Ttuj']['completed_date'], true);
-                }
+                // if( !empty($data_local['Ttuj']['completed_date']) ) {
+                //     $data_local['Ttuj']['completed_date'] = $this->MkCommon->getDate($data_local['Ttuj']['completed_date'], true);
+                // }
 
                 $this->request->data = $data_local;
 
@@ -1944,18 +1944,18 @@ class RevenuesController extends AppController {
             ),
         ));
         $defaultConditionsTtuj = array(
-            'OR' => array(
-                array(
+            // 'OR' => array(
+            //     array(
                     'Ttuj.is_pool'=> 1,
                     'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='=> $dateFrom,
                     'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <=' => $dateTo,
-                ),
-                array(
-                    'Ttuj.completed'=> 1,
-                    'DATE_FORMAT(Ttuj.completed_date, \'%Y-%m-%d\') >='=> $dateFrom,
-                    'DATE_FORMAT(Ttuj.completed_date, \'%Y-%m-%d\') <=' => $dateTo,
-                ),
-            ),
+            //     ),
+            //     array(
+            //         'Ttuj.completed'=> 1,
+            //         'DATE_FORMAT(Ttuj.completed_date, \'%Y-%m-%d\') >='=> $dateFrom,
+            //         'DATE_FORMAT(Ttuj.completed_date, \'%Y-%m-%d\') <=' => $dateTo,
+            //     ),
+            // ),
         );
 
         if( !empty($data_action) ) {
