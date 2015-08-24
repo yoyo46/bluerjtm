@@ -11,6 +11,12 @@
 			'inputDefaults' => array('div' => false),
 			'type' => 'file'
 		));
+
+		if( !empty($id) ) {
+			$disabled = true;
+		} else {
+			$disabled = false;
+		}
 ?>
 <div class="row">
 	<div class="col-sm-6">
@@ -28,7 +34,6 @@
 								'label'=> __('Nomor ID'), 
 								'class'=>'form-control',
 								'required' => false,
-								'placeholder' => __('Nomor ID'),
 								'type' => 'text',
 								'disabled' => true,
 								'value' => str_pad($data_local['Truck']['id'], 4, '0', STR_PAD_LEFT),
@@ -40,91 +45,52 @@
 		        ?>
 		    	<div class="form-group">
 		        	<?php 
-						echo $this->Form->label('nopol',__('Nopol *')); 
-
-						echo $this->Form->input('nopol',array(
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'placeholder' => __('Nopol')
-						));
+		    				echo $this->Common->buildForm('nopol', __('Nopol *'), array(
+		    					'disabled' => $disabled,
+	    					));
 					?>
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('truck_brand_id',__('Merek Truk *')); 
-
-						echo $this->Form->input('truck_brand_id',array(
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'empty' => __('Pilih Merek Truk'),
-							'options' => $truck_brands
-						));
+		    				echo $this->Common->buildForm('truck_brand_id', __('Merek Truk *'), array(
+								'options' => $truck_brands,
+								'empty' => __('Pilih Merek Truk'),
+	    					));
 					?>
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('truck_category_id',__('Jenis Truk *')); 
-
-						echo $this->Form->input('truck_category_id',array(
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'empty' => __('Pilih Jenis Truk'),
-							'options' => $truck_categories
-						));
+		    				echo $this->Common->buildForm('truck_category_id', __('Jenis Truk *'), array(
+								'options' => $truck_categories,
+								'empty' => __('Pilih Jenis Truk'),
+		    					'disabled' => $disabled,
+	    					));
 					?>
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('truck_facility_id',__('Fasilitas Truk *')); 
-
-						echo $this->Form->input('truck_facility_id',array(
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'empty' => __('Pilih Fasilitas Truk'),
-							'options' => $truck_facilities
-						));
+		    				echo $this->Common->buildForm('truck_facility_id', __('Fasilitas Truk *'), array(
+								'options' => $truck_facilities,
+								'empty' => __('Pilih Fasilitas Truk'),
+		    					'disabled' => $disabled,
+	    					));
 					?>
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('no_rangka',__('No Rangka *')); 
-
-						echo $this->Form->input('no_rangka',array(
-							'type' => 'text',
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'placeholder' => __('No Rangka')
-						));
+		    				echo $this->Common->buildForm('no_rangka', __('No Rangka *'));
 					?>
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('no_machine',__('No Mesin *')); 
-
-						echo $this->Form->input('no_machine',array(
-							'type' => 'text',
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'placeholder' => __('No Mesin')
-						));
+		    				echo $this->Common->buildForm('no_machine', __('No Mesin *'));
 					?>
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('company_id',__('Pemilik Truk *')); 
-
-						echo $this->Form->input('company_id',array(
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'empty' => __('Pilih Pemilik Truk'),
-						));
+		    				echo $this->Common->buildForm('company_id', __('Pemilik Truk *'), array(
+								'empty' => __('Pilih Pemilik Truk'),
+	    					));
 					?>
 		        </div>
 		        <div class="form-group">
@@ -146,14 +112,12 @@
 		        	<div class="row">
 		        		<div class="col-sm-10">
 		        			<?php 
-									echo $this->Form->input('driver_id',array(
-										'label'=> false, 
-										'class'=>'form-control',
-										'required' => false,
-										'empty' => __('Pilih Supir Truk'),
+				    				echo $this->Common->buildForm('driver_id', false, array(
 										'options' => $drivers,
+										'empty' => __('Pilih Supir Truk'),
 										'id' => 'driverID',
-									));
+				    					'disabled' => $disabled,
+			    					));
 							?>
 		        		</div>
         				<div class="col-sm-2 hidden-xs">
@@ -166,39 +130,28 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('capacity',__('Kapasitas *')); 
-
-						echo $this->Form->input('capacity',array(
-							'type' => 'text',
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'placeholder' => __('Kapasitas')
-						));
+		    				echo $this->Common->buildForm('capacity', __('Kapasitas *'), array(
+		    					'disabled' => $disabled,
+	    					));
 					?>
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('tahun',__('Tahun *')); 
-
-						echo $this->Form->input('tahun',array(
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'empty' => __('Pilih Tahun'),
-							'options' => $years
-						));
+		    				echo $this->Common->buildForm('tahun', __('Tahun *'), array(
+								'options' => $years,
+								'empty' => __('Pilih Tahun'),
+	    					));
 					?>
 		        </div>
 		        <div class="form-group">
 			        <div class="checkbox aset-handling">
 		                <label>
 		                    <?php 
-								echo $this->Form->checkbox('is_asset',array(
-									'label'=> false, 
-									'required' => false,
-									'class' => 'aset-handling-form',
-								)).__('ini adalah aset?');
+									echo $this->Form->checkbox('is_asset',array(
+										'label'=> false, 
+										'required' => false,
+										'class' => 'aset-handling-form',
+									)).__('ini adalah aset?');
 							?>
 		                </label>
 		            </div>
@@ -269,7 +222,6 @@
 							'label'=> false, 
 							'class'=>'form-control',
 							'required' => false,
-							'placeholder' => __('Atas Nama')
 						));
 					?>
 		        </div>
@@ -281,7 +233,6 @@
 							'label'=> false, 
 							'class'=>'form-control',
 							'required' => false,
-							'placeholder' => __('BPKB')
 						));
 					?>
 		        </div>
@@ -294,7 +245,6 @@
 							'label'=> false, 
 							'class'=>'form-control custom-date',
 							'required' => false,
-							'placeholder' => __('Tgl BPKB')
 						));
 					?>
 		        </div>
@@ -306,7 +256,6 @@
 							'label'=> false, 
 							'class'=>'form-control',
 							'required' => false,
-							'placeholder' => __('No STNK')
 						));
 					?>
 		        </div>
@@ -316,7 +265,6 @@
 							'label'=> __('Tgl Perpanjang STNK 1Thn'), 
 							'class'=>'form-control custom-date',
 							'required' => false,
-							'placeholder' => __('Tgl Perpanjang STNK 1Thn'),
 							'type' => 'text',
 						));
 					?>
@@ -327,7 +275,6 @@
 								'label'=> __('Tgl Perpanjang STNK 5Thn'), 
 								'class'=>'form-control custom-date',
 								'required' => false,
-								'placeholder' => __('Tgl Perpanjang STNK 5Thn'),
 								'type' => 'text',
 							));
 					?>
@@ -338,7 +285,6 @@
 								'label'=> __('Biaya BBNKB'), 
 								'class'=>'form-control input_price',
 								'required' => false,
-								'placeholder' => __('Biaya BBNKB'),
 								'type' => 'text',
 							));
 					?>
@@ -349,7 +295,6 @@
 								'label'=> __('Biaya PKB'), 
 								'class'=>'form-control input_price',
 								'required' => false,
-								'placeholder' => __('Biaya PKB'),
 								'type' => 'text',
 							));
 					?>
@@ -360,7 +305,6 @@
 								'label'=> __('Biaya SWDKLLJ'), 
 								'class'=>'form-control input_price',
 								'required' => false,
-								'placeholder' => __('Biaya SWDKLLJ'),
 								'type' => 'text',
 							));
 					?>
@@ -371,7 +315,6 @@
 							'label'=> __('Tgl Perpanjang Ijin Usaha'), 
 							'class'=>'form-control custom-date',
 							'required' => false,
-							'placeholder' => __('Tgl Perpanjang Ijin Usaha'),
 							'type' => 'text',
 						));
 					?>
@@ -382,7 +325,6 @@
 								'label'=> __('Biaya Ijin Usaha'), 
 								'class'=>'form-control input_price',
 								'required' => false,
-								'placeholder' => __('Biaya Ijin Usaha'),
 								'type' => 'text',
 							));
 					?>
@@ -393,7 +335,6 @@
 							'label'=> __('Tgl Perpanjang KIR'), 
 							'class'=>'form-control custom-date',
 							'required' => false,
-							'placeholder' => __('Tgl Perpanjang tgl_kir'),
 							'type' => 'text',
 						));
 					?>
@@ -404,7 +345,6 @@
 								'label'=> __('Biaya KIR'), 
 								'class'=>'form-control input_price',
 								'required' => false,
-								'placeholder' => __('Biaya KIR'),
 								'type' => 'text',
 							));
 					?>
@@ -533,7 +473,6 @@
 							'label'=> false, 
 							'class'=>'form-control',
 							'required' => false,
-							'placeholder' => __('Nama Panggilan darurat')
 						));
 					?>
 		        </div>
@@ -545,7 +484,6 @@
 							'label'=> false, 
 							'class'=>'form-control',
 							'required' => false,
-							'placeholder' => __('Telepon darurat'),
 							'type' => 'text',
 						));
 					?>

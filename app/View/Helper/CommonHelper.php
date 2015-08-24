@@ -370,7 +370,11 @@ class CommonHelper extends AppHelper {
 	*	@return string
 	*/
 	function safeTagPrint($string){
-		return strip_tags($string);
+        if( is_string($string) ) {
+		  return strip_tags($string);
+        } else {
+          return $string;
+        }
 	}
 
 	function generateCoaTree ( $coas, $level = false, $parent = false ) {
@@ -1540,6 +1544,7 @@ class CommonHelper extends AppHelper {
         $description = $this->filterEmptyField($options, 'description');
         $empty = $this->filterEmptyField($options, 'empty');
         $readonly = $this->filterEmptyField($options, 'readonly');
+        $disabled = $this->filterEmptyField($options, 'disabled');
         $placeholder = $this->filterEmptyField($options, 'placeholder');
         $addClass = $this->filterEmptyField($options, 'class');
         $classSize = false;
@@ -1580,6 +1585,7 @@ class CommonHelper extends AppHelper {
             'readonly' => $readonly,
             'placeholder' => $placeholder,
             'class' => 'form-control '.$addClass,
+            'disabled' => $disabled,
         );
 
         if( !empty($type) ) {
