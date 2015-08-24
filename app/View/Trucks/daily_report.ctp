@@ -52,6 +52,7 @@
             ),
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table', $data_action );
+        $allow_branch = !empty($allow_branch)?$allow_branch:array();
 
         if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
             $tdStyle = '';
@@ -72,9 +73,6 @@
         <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
     </h2>
     <dl class="dl-horizontal">
-        <?php 
-                $allow_branch = !empty($allow_branch)?$allow_branch:array();
-        ?>
         <dt style="text-align: left;"><?php echo __('Cabang:')?></dt>
         <dd><?php echo implode(', ', $allow_branch);?></dd>
         <dt style="text-align: left;"><?php echo __('Periode:')?></dt>
@@ -156,10 +154,15 @@
 $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
     'style' => 'font-size: 24px;font-style: italic;margin-top: 10px;'
 ));
+$listCabang = implode(', ', $allow_branch);
 $tbl = <<<EOD
 
       <div class="clearfix container_16" id="content">
         <h2 class="grid_8" style="text-align: center;">$header_module_title</h2>
+        <h2 style="text-align: center;">$sub_module_title</h2>
+        <p style="text-align: left;font-size: 24px;">
+        Cabang: $listCabang<br>
+        Periode: $periode</p>
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <tbody>
                 <tr style="$table_tr_head">
