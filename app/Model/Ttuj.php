@@ -404,17 +404,27 @@ class Ttuj extends AppModel {
         $branch_city_id = Configure::read('__Site.Branch.City.id');
         $branch_city_bongkar_id = Configure::read('__Site.Branch.City.Bongkar.id');
         $data_branch_city_id = Configure::read('__Site.Data.Branch.City.id');
+        $branch_plant_id = Configure::read('__Site.Branch.Plant.id');
+        $is_plant = Configure::read('__Site.config_branch_plant');
 
         $conditions['OR'] = array(
             array(
                 'Ttuj.to_city_id' => $branch_city_id,
                 'Ttuj.branch_id' => $branch_city_bongkar_id,
             ),
-            array(
+        );
+
+        if( $is_plant ) {
+            $conditions['OR'][] = array(
+                'Ttuj.to_city_id <>' => $data_branch_city_id,
+                'Ttuj.branch_id' => $branch_plant_id,
+            );
+        } else {
+            $conditions['OR'][] = array(
                 'Ttuj.to_city_id <>' => $data_branch_city_id,
                 'Ttuj.branch_id' => $current_branch_id,
-            ),
-        );
+            );
+        }
 
         return $conditions;
     }
