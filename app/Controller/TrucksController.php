@@ -4303,8 +4303,8 @@ class TrucksController extends AppController {
                     $value['Ttuj']['to_city_name'] = Set::extract('/TtujTipeMotor/City/name', $value);
 
                     if( !empty($value['Ttuj']['to_city_name']) ) {
-                        $value['Ttuj']['to_city_name'] = implode(', ', $value['Ttuj']['to_city_name']);
                         $value['Ttuj']['to_city_name'] = array_unique($value['Ttuj']['to_city_name']);
+                        $value['Ttuj']['to_city_name'] = implode(', ', $value['Ttuj']['to_city_name']);
                     }
                 }
 
