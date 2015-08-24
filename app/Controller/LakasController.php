@@ -27,9 +27,13 @@ class LakasController extends AppController {
 
 	public function index() {
         $this->loadModel('Laka');
+
 		$this->set('active_menu', 'lakas');
 		$this->set('sub_module_title', __('Data LAKA'));
+
         $conditions = array();
+        $dateFrom = date('Y-m-d', strtotime('-6 month'));
+        $dateTo = date('Y-m-d');
         
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -70,10 +74,7 @@ class LakasController extends AppController {
                     $dateStr = sprintf('%s-%s', $date[0], $date[1]);
                     $dateFrom = $this->MkCommon->getDate($date[0]);
                     $dateTo = $this->MkCommon->getDate($date[1]);
-                    $conditions['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') >='] = $dateFrom;
-                    $conditions['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') <='] = $dateTo;
                 }
-                $this->request->data['Laka']['date'] = $dateStr;
             }
 
             if(!empty($refine['no_ttuj'])){
@@ -83,6 +84,11 @@ class LakasController extends AppController {
             }
         }
 
+        $conditions = array_merge($conditions, array(
+            'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') >='=> $dateFrom,
+            'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') <=' => $dateTo,
+        ));
+
         $this->paginate = $this->Laka->getData('paginate', array(
             'conditions' => $conditions,
             'contain' => array(
@@ -90,6 +96,10 @@ class LakasController extends AppController {
             )
         ));
         $Lakas = $this->paginate('Laka');
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $this->request->data['Laka']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
+        }
 
         $this->set('Lakas', $Lakas);
 	}
