@@ -798,5 +798,21 @@ class MkCommonComponent extends Component {
             'layout_js', 'layout_css'
         ));
     }
+
+    function unsetArr( $data, $unsetData ) {
+        foreach ($unsetData as $key => $value) {
+            if( is_array($value) ) {
+                foreach ($value as $key2 => $value2) {
+                    if( isset($data[$key][$value2]) ) {
+                        unset($data[$key][$value2]);
+                    }
+                }
+            } else {
+                unset($data[$key]);
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

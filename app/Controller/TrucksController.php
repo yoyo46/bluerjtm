@@ -291,7 +291,6 @@ class TrucksController extends AppController {
             $data['Truck']['emergency_call'] = (!empty($data['Truck']['emergency_call'])) ? $data['Truck']['emergency_call'] : '';
             $data['Truck']['emergency_name'] = (!empty($data['Truck']['emergency_name'])) ? $data['Truck']['emergency_name'] : '';
             $data['Truck']['is_gps'] = (!empty($data['Truck']['is_gps'])) ? $data['Truck']['is_gps'] : 0;
-            $data['Truck']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             if(!empty($data['Truck']['photo']['name']) && is_array($data['Truck']['photo'])){
                 $temp_image = $data['Truck']['photo'];
@@ -305,8 +304,24 @@ class TrucksController extends AppController {
                 }
             }
 
+            if( !empty($id) ) {
+                $data = $this->MkCommon->unsetArr($data, array(
+                    'Truck' => array(
+                        'nopol',
+                        'branch_id',
+                        'truck_category_id',
+                        'truck_facility_id',
+                        'driver_id',
+                        'capacity',
+                    ),
+                ));
+            } else {
+                $data['Truck']['branch_id'] = Configure::read('__Site.config_branch_id');
+            }
+
             $this->Truck->set($data);
             $check_alokasi = false;
+
             if( !empty($data['TruckCustomer']['customer_id']) ){
                 foreach ($data['TruckCustomer']['customer_id'] as $key => $value) {
                     if($value){
