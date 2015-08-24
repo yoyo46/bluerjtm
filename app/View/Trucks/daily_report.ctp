@@ -20,6 +20,12 @@
                 'style' => 'text-align: center',
                 'display' => true,
             ),
+            'from_city' => array(
+                'name' => __('Dari'),
+                'field_model' => 'Ttuj.from_city_name',
+                'style' => 'text-align: center',
+                'display' => true,
+            ),
             'to_city' => array(
                 'name' => __('Tujuan'),
                 'field_model' => 'Ttuj.to_city_name',

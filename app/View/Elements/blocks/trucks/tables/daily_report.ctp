@@ -10,6 +10,7 @@
                 $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
                 $driver_pengganti = $this->Common->filterEmptyField($value, 'DriverPenganti', 'driver_name');
                 $driver = $this->Common->filterEmptyField($value, 'Driver', 'driver_name', $driver_pengganti);
+                $from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
                 $to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
                 $total_unit = $this->Common->filterEmptyField($value, 'Ttuj', 'total_unit', '-');
                 $uang_jalan_2 = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_2', 0);
@@ -31,6 +32,9 @@
                 ));
                 $content .= $this->Common->_getDataColumn($driver, 'Driver', 'driver_name', array(
                     'class' => 'driver',
+                ));
+                $content .= $this->Common->_getDataColumn($from_city, 'Ttuj', 'from_city_name', array(
+                    'class' => 'from_city',
                 ));
                 $content .= $this->Common->_getDataColumn($to_city, 'Ttuj', 'to_city_name', array(
                     'class' => 'to_city',
@@ -60,7 +64,7 @@
 
             $content = $this->Html->tag('td', __('Total'), array(
                 'style' => 'text-align: right;',
-                'colspan' => 4,
+                'colspan' => 5,
             ));
             $content .= $this->Html->tag('td', $grandtotal_unit, array(
                 'style' => 'text-align: center;',
