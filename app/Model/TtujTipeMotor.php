@@ -127,6 +127,7 @@ class TtujTipeMotor extends AppModel {
                 'group' => array(
                     'TipeMotor.group_motor_id',
                     'TtujTipeMotor.city_id',
+                    'TtujTipeMotor.color_motor_id',
                 ),
                 'order' => array(
                     'TtujTipeMotor.id' => 'ASC',
