@@ -409,8 +409,7 @@ class Ttuj extends AppModel {
 
         $conditions['OR'] = array(
             array(
-                'Ttuj.to_city_id' => $branch_city_id,
-                'Ttuj.branch_id' => $branch_city_bongkar_id,
+                'Ttuj.to_city_id' => $data_branch_city_id,
             ),
             array(
                 'Ttuj.to_city_id <>' => $data_branch_city_id,
@@ -517,14 +516,31 @@ class Ttuj extends AppModel {
                 break;
         }
 
-        return $this->getData('list', array(
+        $ttujs = $this->getData('all', array(
             'conditions' => $conditionsTtuj,
-            'fields' => array(
-                'Ttuj.id', 'Ttuj.no_ttuj'
-            ),
+            // 'fields' => array(
+            //     'Ttuj.id', 'Ttuj.no_ttuj'
+            // ),
         ), true, array(
             'branch' => false,
         ));
+        $ttujList = array();
+
+        if( !empty($ttujs) ) {
+            $this->Branch = ClassRegistry::init('Branch');
+
+            foreach ($ttujs as $key => $value) {
+                $ttuj_id = !empty($value['Ttuj']['id'])?$value['Ttuj']['id']:false;
+                $to_city_id = !empty($value['Ttuj']['to_city_id'])?$value['Ttuj']['to_city_id']:false;
+                $no_ttuj = !empty($value['Ttuj']['no_ttuj'])?$value['Ttuj']['no_ttuj']:false;
+
+                if( $this->validateTtujAfterLeave( $to_city_id, $this->Branch ) ) {
+                    $ttujList[$ttuj_id] = $no_ttuj;
+                }
+            }
+        }
+
+        return $ttujList;
     }
 
     function _callDataTtujConditions ( $id, $action_type ) {
@@ -563,11 +579,19 @@ class Ttuj extends AppModel {
                 break;
         }
 
-        return $this->getData('first', array(
+        $this->Branch = ClassRegistry::init('Branch');
+        $ttuj = $this->getData('first', array(
             'conditions' => $conditionsDataLocal,
         ), true, array(
             'branch' => false,
         ));
+        $to_city_id = !empty($ttuj['Ttuj']['to_city_id'])?$ttuj['Ttuj']['to_city_id']:false;
+
+        if( $this->validateTtujAfterLeave( $to_city_id, $this->Branch ) ) {
+            return $ttuj;
+        } else {
+            return array();
+        }
     }
 
     function _callConditionTtujPool ( $conditions ) {
@@ -582,6 +606,26 @@ class Ttuj extends AppModel {
         }
 
         return $conditions;
+    }
+
+    function validateTtujAfterLeave ( $to_city_id, $objBranch ) {
+        $current_branch_id = Configure::read('__Site.config_branch_id');
+        $data_branch_city_id = Configure::read('__Site.Data.Branch.City.id');
+
+        if( in_array($to_city_id, $data_branch_city_id) ) {
+            $value = $objBranch->getBranch($to_city_id);
+            $branch_id = !empty($value['Branch']['id'])?$value['Branch']['id']:false;
+
+            $value = $objBranch->BranchCity->getMerge($value, $value, 'list');
+
+            if( !empty($value['BranchCity']) && in_array($current_branch_id, $value['BranchCity']) ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
     }
 }
 ?>

@@ -1542,12 +1542,19 @@ class AjaxController extends AppController {
         	$this->loadModel('Driver');
 
         	foreach ($ttujs as $key => $ttuj) {
+				$ttuj_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'id');
+				$to_city_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'to_city_id');
+
         		if( !empty($ttuj['Ttuj']['driver_penganti_id']) ) {
 					$driver_penganti_id = $ttuj['Ttuj']['driver_penganti_id'];
 					$ttuj = $this->Driver->getMerge($ttuj, $driver_penganti_id, 'DriverPenganti');
 				}
 
-				$ttujs[$key] = $ttuj;
+				if( $this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
+					$ttujs[$key] = $ttuj;
+                } else {
+					unset($ttujs[$key]);
+				}
         	}
         }
 

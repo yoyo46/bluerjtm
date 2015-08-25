@@ -263,5 +263,16 @@ class Branch extends AppModel {
             }
         }
     }
+
+    function getBranch ( $city_id ) {
+        return $this->getData('list', array(
+            'conditions' => array(
+                'Branch.city_id' => $city_id,
+            ),
+            'fields' => array(
+                'Branch.id', 'Branch.id'
+            ),
+        ));
+    }
 }
 ?>
