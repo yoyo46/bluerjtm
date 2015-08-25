@@ -1412,13 +1412,15 @@ class RevenuesController extends AppController {
                     $dataTiba['Ttuj']['is_bongkaran'] = 1;
                     $dataTiba['Ttuj']['tgljam_bongkaran'] = '';
                     $dataTiba['Ttuj']['note_bongkaran'] = !empty($data['Ttuj']['note_bongkaran'])?$data['Ttuj']['note_bongkaran']:'';
+                    $dataTiba['Ttuj']['tgljam_berangkat'] = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'tgljam_berangkat');
+                    $dataTiba['Ttuj']['tgljam_tiba'] = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'tgljam_tiba');
 
                     if( !empty($data['Ttuj']['tgl_bongkaran']) ) {
                         $data['Ttuj']['tgl_bongkaran'] = $this->MkCommon->getDate($data['Ttuj']['tgl_bongkaran']);
 
                         if( !empty($data['Ttuj']['jam_bongkaran']) ) {
                             $data['Ttuj']['jam_bongkaran'] = date('H:i', strtotime($data['Ttuj']['jam_bongkaran']));
-                            $dataTiba['Ttuj']['tgljam_bongkaran'] = sprintf('%s %s', $data['Ttuj']['tgl_bongkaran'], $data['Ttuj']['jam_bongkaran']);
+                            $data['Ttuj']['tgljam_bongkaran'] = $dataTiba['Ttuj']['tgljam_bongkaran'] = sprintf('%s %s', $data['Ttuj']['tgl_bongkaran'], $data['Ttuj']['jam_bongkaran']);
                         }
                     }
                     $referer = 'bongkaran';
@@ -1428,13 +1430,16 @@ class RevenuesController extends AppController {
                     $dataTiba['Ttuj']['is_balik'] = 1;
                     $dataTiba['Ttuj']['tgljam_balik'] = '';
                     $dataTiba['Ttuj']['note_balik'] = !empty($data['Ttuj']['note_balik'])?$data['Ttuj']['note_balik']:'';
+                    $dataTiba['Ttuj']['tgljam_berangkat'] = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'tgljam_berangkat');
+                    $dataTiba['Ttuj']['tgljam_tiba'] = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'tgljam_tiba');
+                    $dataTiba['Ttuj']['tgljam_bongkaran'] = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'tgljam_bongkaran');
 
                     if( !empty($data['Ttuj']['tgl_balik']) ) {
                         $data['Ttuj']['tgl_balik'] = $this->MkCommon->getDate($data['Ttuj']['tgl_balik']);
 
                         if( !empty($data['Ttuj']['jam_balik']) ) {
                             $data['Ttuj']['jam_balik'] = date('H:i', strtotime($data['Ttuj']['jam_balik']));
-                            $dataTiba['Ttuj']['tgljam_balik'] = sprintf('%s %s', $data['Ttuj']['tgl_balik'], $data['Ttuj']['jam_balik']);
+                            $data['Ttuj']['tgljam_balik'] = $dataTiba['Ttuj']['tgljam_balik'] = sprintf('%s %s', $data['Ttuj']['tgl_balik'], $data['Ttuj']['jam_balik']);
                         }
                     }
                     $referer = 'balik';
@@ -1445,13 +1450,17 @@ class RevenuesController extends AppController {
                     $dataTiba['Ttuj']['tgljam_pool'] = '';
                     $dataTiba['Ttuj']['note_pool'] = !empty($data['Ttuj']['note_pool'])?$data['Ttuj']['note_pool']:'';
                     $dataTiba['Ttuj']['pool_branch_id'] = Configure::read('__Site.config_branch_id');
+                    $dataTiba['Ttuj']['tgljam_berangkat'] = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'tgljam_berangkat');
+                    $dataTiba['Ttuj']['tgljam_tiba'] = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'tgljam_tiba');
+                    $dataTiba['Ttuj']['tgljam_bongkaran'] = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'tgljam_bongkaran');
+                    $dataTiba['Ttuj']['tgljam_balik'] = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'tgljam_balik');
 
                     if( !empty($data['Ttuj']['tgl_pool']) ) {
                         $data['Ttuj']['tgl_pool'] = $this->MkCommon->getDate($data['Ttuj']['tgl_pool']);
 
                         if( !empty($data['Ttuj']['jam_pool']) ) {
                             $data['Ttuj']['jam_pool'] = date('H:i', strtotime($data['Ttuj']['jam_pool']));
-                            $dataTiba['Ttuj']['tgljam_pool'] = sprintf('%s %s', $data['Ttuj']['tgl_pool'], $data['Ttuj']['jam_pool']);
+                            $data['Ttuj']['tgljam_pool'] = $dataTiba['Ttuj']['tgljam_pool'] = sprintf('%s %s', $data['Ttuj']['tgl_pool'], $data['Ttuj']['jam_pool']);
                         }
                     }
                     $referer = 'pool';
@@ -1465,15 +1474,17 @@ class RevenuesController extends AppController {
                     $dataTiba['Ttuj']['is_arrive'] = 1;
                     $dataTiba['Ttuj']['tgljam_tiba'] = '';
                     $dataTiba['Ttuj']['note_tiba'] = !empty($data['Ttuj']['note_tiba'])?$data['Ttuj']['note_tiba']:'';
+                    $dataTiba['Ttuj']['tgljam_berangkat'] = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'tgljam_berangkat');
 
                     if( !empty($data['Ttuj']['tgl_tiba']) ) {
                         $data['Ttuj']['tgl_tiba'] = $this->MkCommon->getDate($data['Ttuj']['tgl_tiba']);
 
                         if( !empty($data['Ttuj']['jam_tiba']) ) {
                             $data['Ttuj']['jam_tiba'] = date('H:i', strtotime($data['Ttuj']['jam_tiba']));
-                            $dataTiba['Ttuj']['tgljam_tiba'] = sprintf('%s %s', $data['Ttuj']['tgl_tiba'], $data['Ttuj']['jam_tiba']);
+                            $data['Ttuj']['tgljam_tiba'] = $dataTiba['Ttuj']['tgljam_tiba'] = sprintf('%s %s', $data['Ttuj']['tgl_tiba'], $data['Ttuj']['jam_tiba']);
                         }
                     }
+
                     $referer = 'truk_tiba';
                     $fromTime = 'tgljam_berangkat';
                     $toTime = 'tgljam_tiba';
@@ -1508,6 +1519,8 @@ class RevenuesController extends AppController {
                     $this->Log->logActivity( sprintf(__('Gagal merubah TTUJ #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
                 }
             }
+
+            $this->request->data = $data;
         } else if( !empty($ttuj) ) {
             $this->request->data = $data_local = $ttuj;
         }
@@ -1515,6 +1528,11 @@ class RevenuesController extends AppController {
         if( !empty($data_local) ){
             $data_local = $this->MkCommon->getTtujTipeMotor($data_local);
             $data_local = $this->MkCommon->getTtujPerlengkapan($data_local);
+
+            if( !empty($this->request->data['Ttuj']) ) {
+                $data_local['Ttuj'] = array_merge($data_local['Ttuj'], $this->request->data['Ttuj']);
+            }
+
             $data_local = $this->MkCommon->generateDateTTUJ($data_local);
             $this->request->data = $data_local;
 

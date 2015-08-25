@@ -65,6 +65,40 @@ class Ttuj extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Tgl & Jam Tiba harap dipilih'
             ),
+            'validateDateTtuj' => array(
+                'rule' => array('validateDateTtuj', 'tgljam_berangkat', 'tgljam_tiba'),
+                'message' => 'Tgl & Jam Tiba harus lebih besar daripada tgl & jam berangkat'
+            ),
+        ),
+        'tgljam_bongkaran' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl & Jam Bongkar harap dipilih'
+            ),
+            'validateDateTtuj' => array(
+                'rule' => array('validateDateTtuj', 'tgljam_tiba', 'tgljam_bongkaran'),
+                'message' => 'Tgl & Jam Tiba harus lebih besar daripada tgl & jam berangkat'
+            ),
+        ),
+        'tgljam_balik' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl & Jam Bongkar harap dipilih'
+            ),
+            'validateDateTtuj' => array(
+                'rule' => array('validateDateTtuj', 'tgljam_bongkaran', 'tgljam_balik'),
+                'message' => 'Tgl & Jam Balik harus lebih besar daripada tgl & jam bongkaran'
+            ),
+        ),
+        'tgljam_pool' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl & Jam Bongkar harap dipilih'
+            ),
+            'validateDateTtuj' => array(
+                'rule' => array('validateDateTtuj', 'tgljam_balik', 'tgljam_pool'),
+                'message' => 'Tgl & Jam sampai pool harus lebih besar daripada tgl & jam balik'
+            ),
         ),
         'uang_jalan_1' => array(
             'notempty' => array(
@@ -122,6 +156,18 @@ class Ttuj extends AppModel {
             ),
         ),
     );
+
+    function validateDateTtuj ( $data, $target_date, $input_date ) {
+        if( !empty($this->data['Ttuj'][$target_date]) && !empty($this->data['Ttuj'][$input_date]) ) {
+            if( $this->data['Ttuj'][$input_date] > $this->data['Ttuj'][$target_date] ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
