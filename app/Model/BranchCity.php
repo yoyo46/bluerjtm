@@ -11,7 +11,7 @@ class BranchCity extends AppModel {
         'branch_city_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Akses kota TTUJ bongkar harap dipilih'
+                'message' => 'Mohon pilih tujuan bongkar dari cabang?'
             ),
         ),
 	);

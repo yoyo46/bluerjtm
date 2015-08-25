@@ -74,7 +74,7 @@
 	<div class="col-sm-6 branch-list-city">
 		<div class="box box-success">
 			<div class="box-header">
-		        <h3 class="box-title"><?php echo __('Akses Kota TTUJ Bongkar'); ?></h3>
+		        <h3 class="box-title"><?php echo __('Tujuan bongkar dari cabang?'); ?></h3>
 		    </div>
 		    <div class="box-body">
 		        <div class="form-group">

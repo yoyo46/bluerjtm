@@ -196,7 +196,7 @@ class Branch extends AppModel {
                 }
             } else {
                 if( empty($validateBranchCity) ) {
-                    $msg = __('Mohon pilih akses kota TTUJ bongkar terlebih dahulu');
+                    $msg = __('Mohon pilih tujuan bongkar dari cabang?');
                 } else {
                     $msg = sprintf(__('Gagal %s, mohon lengkapi semua data yang diperlukan'), $default_msg);
                 }
