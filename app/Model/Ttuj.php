@@ -77,13 +77,13 @@ class Ttuj extends AppModel {
             ),
             'validateDateTtuj' => array(
                 'rule' => array('validateDateTtuj', 'tgljam_tiba', 'tgljam_bongkaran'),
-                'message' => 'Tgl & Jam Tiba harus lebih besar daripada tgl & jam berangkat'
+                'message' => 'Tgl & Jam bongkaran harus lebih besar daripada tgl & jam tiba'
             ),
         ),
         'tgljam_balik' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Tgl & Jam Bongkar harap dipilih'
+                'message' => 'Tgl & Jam balik harap dipilih'
             ),
             'validateDateTtuj' => array(
                 'rule' => array('validateDateTtuj', 'tgljam_bongkaran', 'tgljam_balik'),
@@ -93,7 +93,7 @@ class Ttuj extends AppModel {
         'tgljam_pool' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Tgl & Jam Bongkar harap dipilih'
+                'message' => 'Tgl & Jam sampai pool harap dipilih'
             ),
             'validateDateTtuj' => array(
                 'rule' => array('validateDateTtuj', 'tgljam_balik', 'tgljam_pool'),
