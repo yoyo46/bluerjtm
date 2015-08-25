@@ -54,10 +54,10 @@ class InvoicePayment extends AppModel {
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
+
         $default_options = array(
-            'conditions'=> array(
-                'InvoicePayment.branch_id' => Configure::read('__Site.config_branch_id'),
-            ),
+            'conditions'=> array(),
             'order'=> array(
                 'InvoicePayment.id' => 'DESC'
             ),
@@ -78,6 +78,10 @@ class InvoicePayment extends AppModel {
             default:
                 $default_options['conditions']['InvoicePayment.status'] = 1;
                 break;
+        }
+
+        if( !empty($branch) ) {
+            $default_options['conditions']['InvoicePayment.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         if( !empty($options) && $is_merge ){

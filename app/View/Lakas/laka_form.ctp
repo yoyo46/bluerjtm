@@ -52,7 +52,7 @@
 						        	<?php 
 											echo $this->Form->input('truck_id',array(
 												'label'=> false, 
-												'class'=>'form-control',
+												'class'=>'form-control chosen-select',
 												'required' => false,
 												'empty' => __('Pilih Nopol Truk'),
 												'options' => $trucks,

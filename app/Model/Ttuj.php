@@ -412,17 +412,16 @@ class Ttuj extends AppModel {
                 'Ttuj.to_city_id' => $branch_city_id,
                 'Ttuj.branch_id' => $branch_city_bongkar_id,
             ),
+            array(
+                'Ttuj.to_city_id <>' => $data_branch_city_id,
+                'Ttuj.branch_id' => $current_branch_id,
+            ),
         );
 
         if( $is_plant ) {
             $conditions['OR'][] = array(
                 'Ttuj.to_city_id <>' => $data_branch_city_id,
                 'Ttuj.branch_id' => $branch_plant_id,
-            );
-        } else {
-            $conditions['OR'][] = array(
-                'Ttuj.to_city_id <>' => $data_branch_city_id,
-                'Ttuj.branch_id' => $current_branch_id,
             );
         }
 

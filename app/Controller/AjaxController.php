@@ -193,6 +193,8 @@ class AjaxController extends AppController {
                 'Ttuj.is_draft' => 0,
 			),
 			'contain' => false,
+		), true, array(
+			'plant' => true,
 		));
 
 		if( !empty($data_ttuj) ) {
@@ -1087,6 +1089,16 @@ class AjaxController extends AppController {
             $options['conditions'] = array_merge($options['conditions'], $addConditions);
 		} else if( $action_type == 'laka' ) {
     		$data_change = 'laka-driver-change';
+        	$options['conditions'] = $this->MkCommon->_callConditionPlant($options['conditions'], 'Truck');
+            $options['conditions']['OR'] = array(
+                array(
+                    'Laka.id' => NULL
+                ),
+                array(
+                    'Laka.truck_id' => $action_id,
+                )
+            );
+            $options['contain'][] = 'Laka';
         }
 
         if(!empty($this->request->data)){
@@ -1498,6 +1510,7 @@ class AjaxController extends AppController {
                 $conditions['Ttuj.is_pool <>'] = 1;
                 $conditions['Ttuj.truck_id'] = $ttuj_id;
 				$data_change = 'laka-ttuj-change';
+        		$conditions = $this->MkCommon->_callConditionPlant($conditions, 'Ttuj');
                 break;
 
             case 'uang_jalan_payment':
@@ -1659,14 +1672,8 @@ class AjaxController extends AppController {
 				'Driver'
 			)
 		));
-		$driver_name = '';
-		$no_sim = '';
-		
-		if(!empty($driver)){
-			$driver_name = $driver['Driver']['name'];
-			$no_sim = $driver['Driver']['no_sim'];
-		}
-
+		$driver_name = $this->MkCommon->filterEmptyField($driver, 'Driver', 'name');
+		$no_sim = $this->MkCommon->filterEmptyField($driver, 'Driver', 'no_sim');
 		$ttujs = $this->Ttuj->getData('list', array(
             'conditions' => array(
                 'Ttuj.truck_id' => $id,
@@ -1678,6 +1685,8 @@ class AjaxController extends AppController {
                 'Ttuj.id', 'Ttuj.no_ttuj'
             ),
             'contain' => false,
+        ), true, array(
+        	'plant' => true,
         ));
 
 		$this->set(compact('driver_name', 'no_sim', 'ttujs'));

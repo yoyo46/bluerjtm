@@ -154,6 +154,8 @@ class LakasController extends AppController {
         $this->loadModel('Ttuj');
         $this->loadModel('City');
 
+        $driver_penganti_id = $this->MkCommon->filterEmptyField($data_local, 'Laka', 'change_driver_id');
+
         if(!empty($this->request->data)){
             $data = $this->request->data;
             $ttuj_data = array();
@@ -173,6 +175,8 @@ class LakasController extends AppController {
                     'conditions' => array(
                         'Truck.id' => $data['Laka']['truck_id']
                     )
+                ), true, array(
+                    'plant' => true,
                 ));
 
                 if(!empty($truck)){
@@ -195,21 +199,22 @@ class LakasController extends AppController {
                     ),
                 ), true, array(
                     'status' => 'all',
+                    'plant' => true,
                 ));
+                $driver_penganti_id = $this->MkCommon->filterEmptyField($ttuj_data, 'Ttuj', 'driver_penganti_id');
+                $driver_name = $this->MkCommon->filterEmptyField($ttuj_data, 'Ttuj', 'driver_name');
+                $data['Laka']['change_driver_id'] = $driver_penganti_id;
 
-                if(!empty($ttuj_data['Ttuj']['driver_name'])){
-                    $data['Laka']['driver_name'] = $ttuj_data['Ttuj']['driver_name'];
+                if(!empty($driver_name)){
+                    $data['Laka']['driver_name'] = $driver_name;
                 }
-                if(!empty($ttuj_data['Ttuj']['driver_penganti_id'])){
-                    $driver = $this->Ttuj->Truck->Driver->getData('first', array(
-                        'conditions' => array(
-                            'Driver.id' => $ttuj_data['Ttuj']['driver_penganti_id'],
-                        )
-                    ));
+
+                if(!empty($driver_penganti_id)){
+                    $driver = $this->Ttuj->Truck->Driver->getMerge(array(), $driver_penganti_id);
 
                     if(!empty($driver)){
-                        $data['Laka']['change_driver_id'] = $ttuj_data['Ttuj']['driver_penganti_id'];
-                        $data['Laka']['change_driver_name'] = $driver['Driver']['driver_name'];
+                        $driver_name = $this->MkCommon->filterEmptyField($driver, 'Driver', 'driver_name');
+                        $data['Laka']['change_driver_name'] = $driver_name;
                     }
                 }
             }
@@ -354,51 +359,43 @@ class LakasController extends AppController {
         $this->loadModel('LakaMaterial');
         $this->loadModel('LakaInsurance');
 
-        $this->Truck->bindModel(array(
-            'hasOne' => array(
-                'Laka' => array(
-                    'className' => 'Laka',
-                    'foreignKey' => 'truck_id',
-                    'conditions' => array(
-                        'Laka.status' => 1,
-                        'Laka.completed' => 0
-                    )
+        $conditionsTruck = array(
+            'OR' => array(
+                array(
+                    'Laka.id' => NULL
+                ),
+                array(
+                    'Laka.truck_id' => !empty($data_local['Laka']['truck_id']) ? $data_local['Laka']['truck_id'] : false
                 )
             )
-        ));
+        );
         $trucks = $this->Truck->getData('all', array(
-            'fields' => array(
-                'Truck.id', 'Truck.nopol', 'Driver.name'
-            ),
-            'conditions' => array(
-                'OR' => array(
-                    array(
-                        'Laka.id' => NULL
-                    ),
-                    array(
-                        'Laka.truck_id' => !empty($data_local['Laka']['truck_id']) ? $data_local['Laka']['truck_id'] : false
-                    )
-                )
-            ),
+            'conditions' => $conditionsTruck,
             'contain' => array(
-                'Driver',
                 'Laka'
             ),
             'order' => array(
                 'Truck.nopol' => 'ASC',
             ),
+        ), true, array(
+            'plant' => true,
         ));
         $result = array();
 
         if(!empty($trucks)){
             foreach ($trucks as $key => $value) {
-                $truckName = $value['Truck']['nopol'];
+                $truck_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'id');
+                $driver_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'driver_id');
+                $truckName = $this->MkCommon->filterEmptyField($value, 'Truck', 'nopol');
 
-                if( !empty($value['Driver']['name']) ) {
-                    $truckName = sprintf('%s (%s)', $truckName, $value['Driver']['name']);
+                $value = $this->Truck->Driver->getMerge($value, $driver_id);
+                $driver_name = $this->MkCommon->filterEmptyField($value, 'Driver', 'name');
+
+                if( !empty($driver_name) ) {
+                    $truckName = sprintf('%s (%s)', $truckName, $driver_name);
                 }
 
-                $result[$value['Truck']['id']] = $truckName;
+                $result[$truck_id] = $truckName;
             }
         }
 
@@ -406,9 +403,12 @@ class LakasController extends AppController {
         $trucks = $result;
         $material = $this->LakaMaterial->find('list');
         $insurance = $this->LakaInsurance->find('list');
-        $driverPengantis = $this->Ttuj->Truck->Driver->getData('list', array(
+        $driverPengantis = $this->Truck->Driver->getData('list', array(
             'conditions' => array(
-                'Truck.id <>' => NULL,
+                'OR' => array(
+                    'Driver.id' => $driver_penganti_id,
+                    'Truck.id <>' => NULL,
+                ),
             ),
             'fields' => array(
                 'Driver.id', 'Driver.driver_name'
@@ -416,8 +416,10 @@ class LakasController extends AppController {
             'contain' => array(
                 'Truck'
             )
+        ), true, array(
+            'plant' => true,
         ));
-        
+
         if(!empty($this->request->data['Laka']['truck_id'])){
             $ttujs = $this->Ttuj->getData('list', array(
                 'conditions' => array(
@@ -428,9 +430,12 @@ class LakasController extends AppController {
                 'fields' => array(
                     'Ttuj.id', 'Ttuj.no_ttuj'
                 ),
+            ), true, array(
+                'plant' => true,
             ));
         }
 
+        $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'lakas');
         $this->set(compact(
             'material', 'insurance', 'step', 

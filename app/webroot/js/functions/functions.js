@@ -2861,6 +2861,7 @@ var laka_ttuj_change = function(){
     $('#laka-ttuj-change').change(function(){
         var self = $(this);
         var val = self.val();
+        $('#laka-driver-change-id option:contains("")').text('Pilih No TTUJ');
         
         if(val != ''){
             $.ajax({
@@ -2870,8 +2871,14 @@ var laka_ttuj_change = function(){
                     $('#city-laka').html($(response).filter('#destination-laka').html());
 
                     if($(response).find('#laka-driver-change-id').val() != ''){
+                        var driver_name = $(response).find('#laka-driver-change-name').val();
                         $('#laka-driver-change-id').val($(response).find('#laka-driver-change-id').val());
                         $('#laka-driver-change-id').attr('disabled', true);
+
+                        if( $('#laka-driver-change-id').val() != $(response).find('#laka-driver-change-id').val() ) {
+                            $('#laka-driver-change-id').val('');
+                            $('#laka-driver-change-id option:contains("")').text(driver_name);
+                        }
                     }else{
                         $('#laka-driver-change-id').val('');
                         $('#laka-driver-change-id').attr('disabled', false);
@@ -3753,6 +3760,8 @@ $(function() {
                 $('#laka-no-sim').val($(response).filter('#data-no-sim').html());
                 $('#ttuj-form').html($(response).filter('#data-ttuj-form').html());
                 $('#laka-ttuj-change').attr('readonly', false);
+                $('#laka-driver-change-id').val('');
+                $('#laka-driver-change-id option:contains("")').text('Pilih No TTUJ');
 
                 laka_ttuj_change();
                 $('.supir-pengganti-val').val('');

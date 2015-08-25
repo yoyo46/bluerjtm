@@ -808,11 +808,25 @@ class MkCommonComponent extends Component {
                     }
                 }
             } else {
-                unset($data[$key]);
+                unset($data[$value]);
             }
         }
 
         return $data;
+    }
+
+    function _callConditionPlant ( $conditions, $fieldName ) {
+        $current_branch_id = Configure::read('__Site.config_branch_id');
+        $current_branch_plant = Configure::read('__Site.config_branch_plant');
+        $branch_plant_id = Configure::read('__Site.Branch.Plant.id');
+
+        if( !empty($current_branch_plant) ) {
+            $conditions[$fieldName.'.branch_id'] = $branch_plant_id;
+        } else {
+            $conditions[$fieldName.'.branch_id'] = $current_branch_id;
+        }
+
+        return $conditions;
     }
 }
 ?>

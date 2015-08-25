@@ -78,14 +78,6 @@ class TrucksController extends AppController {
                 if( in_array($data, array( 'laka', 'away', 'available' )) ) {
                     $this->Truck->bindModel(array(
                         'hasOne' => array(
-                            'Laka' => array(
-                                'className' => 'Laka',
-                                'foreignKey' => 'truck_id',
-                                'conditions' => array(
-                                    'Laka.status' => 1,
-                                    'Laka.completed' => 0,
-                                ),
-                            ),
                             'Ttuj' => array(
                                 'className' => 'Ttuj',
                                 'foreignKey' => 'truck_id',

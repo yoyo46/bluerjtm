@@ -31,33 +31,6 @@
                             ));
                     ?>
                 </div>
-                <div class="form-group action">
-                    <?php
-                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
-                                'div' => false, 
-                                'class'=> 'btn btn-success btn-sm',
-                                'type' => 'submit',
-                            ));
-                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'controller' => 'revenues', 
-                                'action' => 'invoice_reports', 
-                            ), array(
-                                'escape' => false, 
-                                'class'=> 'btn btn-default btn-sm',
-                            ));
-                    ?>
-                </div>
-            </div> 
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->input('date',array(
-                                'label'=> __('Tanggal Laporan'),
-                                'class'=>'form-control date-range',
-                                'required' => false,
-                            ));
-                    ?>
-                </div>
                 <div class="row">
                     <div class="col-sm-4">
                         <?php 
@@ -99,7 +72,38 @@
                         ?>
                     </div>
                 </div>
+            </div> 
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('date',array(
+                                'label'=> __('Tanggal Laporan'),
+                                'class'=>'form-control date-range',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <?php 
+                        // Custom Otorisasi
+                        echo $this->Common->getCheckboxBranch();
+                ?>
             </div>
+        </div>
+        <div class="form-group action">
+            <?php
+                    echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
+                        'div' => false, 
+                        'class'=> 'btn btn-success btn-sm',
+                        'type' => 'submit',
+                    ));
+                    echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                        'controller' => 'revenues', 
+                        'action' => 'invoice_reports', 
+                    ), array(
+                        'escape' => false, 
+                        'class'=> 'btn btn-default btn-sm',
+                    ));
+            ?>
         </div>
         <?php 
                 echo $this->Form->end();

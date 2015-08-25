@@ -361,11 +361,13 @@
 		    <div class="box-body">
 		        <div class="form-group">
 		        	<?php
-			        		echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah Alokasi'), 'javascript:', array(
-								'class' => 'add-custom-field btn btn-success btn-xs',
-								'action_type' => 'alocation',
-								'escape' => false,
-							));
+		        			if( empty($id) ) {
+				        		echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah Alokasi'), 'javascript:', array(
+									'class' => 'add-custom-field btn btn-success btn-xs',
+									'action_type' => 'alocation',
+									'escape' => false,
+								));
+				        	}
 		        	?>
 		        </div>
 		        <div id="box-field-input">
@@ -384,7 +386,8 @@
 													'required' => false,
 													'empty' => __('Pilih'),
 													'options' => $customers,
-													'value' => (!empty($this->request->data['TruckCustomer']['customer_id'][0])) ? $this->request->data['TruckCustomer']['customer_id'][0] : ''
+													'value' => (!empty($this->request->data['TruckCustomer']['customer_id'][0])) ? $this->request->data['TruckCustomer']['customer_id'][0] : '',
+													'disabled'=> $disabled, 
 												));
 										?>
 							        </div>
@@ -422,7 +425,8 @@
 											'required' => false,
 											'empty' => __('Pilih'),
 											'options' => $customers,
-											'value' => $value
+											'value' => $value,
+											'disabled'=> $disabled, 
 										));
 									?>
 						        </div>

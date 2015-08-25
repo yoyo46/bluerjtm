@@ -256,6 +256,49 @@ class RevenuesController extends AppController {
         }
     }
 
+    public function _callMergeTtujTipeMotor($dataTipeMotor, $data) {
+        $tempTipeMotorId = array();
+
+        if( !empty($dataTipeMotor) ) {
+            foreach ($dataTipeMotor as $key => $tipe_motor_id) {
+                $city_id = !empty($data['TtujTipeMotor']['city_id'][$key])?$data['TtujTipeMotor']['city_id'][$key]:0;
+                $color_motor_id = !empty($data['TtujTipeMotor']['color_motor_id'][$key])?$data['TtujTipeMotor']['color_motor_id'][$key]:false;
+                $qty = !empty($data['TtujTipeMotor']['qty'][$key])?$data['TtujTipeMotor']['qty'][$key]:false;
+
+                if( isset($tempTipeMotorId[$city_id][$tipe_motor_id][$color_motor_id]) ) {
+                    $idxData = $tempTipeMotorId[$city_id][$tipe_motor_id][$color_motor_id];
+
+                    if( !empty($data['TtujTipeMotor']['city_id'][$key]) ) {
+                        unset($data['TtujTipeMotor']['city_id'][$key]);
+                    }
+                    if( !empty($data['TtujTipeMotor']['tipe_motor_id'][$key]) ) {
+                        unset($data['TtujTipeMotor']['tipe_motor_id'][$key]);
+                    }
+                    if( !empty($data['TtujTipeMotor']['color_motor_id'][$key]) ) {
+                        unset($data['TtujTipeMotor']['color_motor_id'][$key]);
+                    }
+                    if( !empty($data['TtujTipeMotor']['qty'][$key]) ) {
+                        if( !empty($data['TtujTipeMotor']['qty'][$idxData]) ) {
+                            $data['TtujTipeMotor']['qty'][$idxData] += $data['TtujTipeMotor']['qty'][$key];
+                        }
+
+                        unset($data['TtujTipeMotor']['qty'][$key]);
+                    }
+                    if( !empty($dataTipeMotor[$key]) ) {
+                        unset($dataTipeMotor[$key]);
+                    }
+                } else {
+                    $tempTipeMotorId[$city_id][$tipe_motor_id][$color_motor_id] = $key;
+                }
+            }
+        }
+
+        return array(
+            'Data' => $data,
+            'DataTipeMotor' => $dataTipeMotor,
+        );
+    }
+
     function saveTtujTipeMotor ( $data_action, $dataTtujTipeMotor = false, $data = false, $dataRevenue = false, $ttuj_id = false, $revenue_id = false, $tarifDefault = false ) {
         $totalTarif = 0;
         $result = array(
@@ -559,6 +602,9 @@ class RevenuesController extends AppController {
                         $result_data_perlengkapan = array();
                         $validates_perlengkapan = true;
 
+                        $resultMergeTipeMotor = $this->_callMergeTtujTipeMotor($dataTtujTipeMotor, $data);
+                        $data = !empty($resultMergeTipeMotor['Data'])?$resultMergeTipeMotor['Data']:$data;
+                        $dataTtujTipeMotor = !empty($resultMergeTipeMotor['DataTipeMotor'])?$resultMergeTipeMotor['DataTipeMotor']:$dataTtujTipeMotor;
                         $resultTtujTipeMotor = $this->saveTtujTipeMotor($data_action, $dataTtujTipeMotor, $data, $dataRevenue);
 
                         if( !empty($dataTtujPerlengkapan) ) {
@@ -3965,6 +4011,9 @@ class RevenuesController extends AppController {
                 }
                 $this->request->data['Invoice']['date'] = $dateStr;
             }
+
+            // Custom Otorisasi
+            $default_conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Customer', $default_conditions, 'conditions' );
         }
 
         if(!empty($customer_collect_id)){
@@ -3976,6 +4025,7 @@ class RevenuesController extends AppController {
         if(empty($data_action)){
             $this->paginate = $this->Customer->getData('paginate', array(
                 'conditions' => $default_conditions,
+                'limit' => 20,
             ), array(
                 'plant' => false,
                 'branch' => false,
@@ -4091,6 +4141,17 @@ class RevenuesController extends AppController {
         $this->loadModel('Invoice');
         $fromYear = date('Y');
         $toMonth = 12;
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+
+        $conditions = array(
+            'Revenue.transaction_status <>' => 'invoiced',
+            'Revenue.branch_id' => $allow_branch_id,
+        );
+        $defaultConditionsInvoice = array(
+            'Invoice.paid'=> 0,
+            'Invoice.branch_id' => $allow_branch_id,
+        );
+        $totalAr = array();
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -4099,15 +4160,11 @@ class RevenuesController extends AppController {
                 $fromYear = urldecode($refine['fromYear']);
                 $this->request->data['Ttuj']['from']['year'] = $fromYear;
             }
-        }
 
-        $conditions = array(
-            'Revenue.transaction_status <>' => 'invoiced',
-        );
-        $defaultConditionsInvoice = array(
-            'Invoice.paid'=> 0,
-        );
-        $totalAr = array();
+            // Custom Otorisasi
+            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Revenue', $conditions, 'conditions' );
+            $defaultConditionsInvoice = $this->MkCommon->getConditionGroupBranch( $refine, 'Invoice', $defaultConditionsInvoice, 'conditions' );
+        }
 
         for ($i=1; $i <= $toMonth; $i++) {
             $month = date('Y-m', mktime(0, 0, 0, $i, 1, $fromYear));
@@ -4118,6 +4175,8 @@ class RevenuesController extends AppController {
                 'fields' => array(
                     'SUM(Revenue.total) total'
                 ),
+            ), true, array(
+                'branch' => false,
             ));
             $totalAr['AR'][$month] = !empty($revenues[0]['total'])?$revenues[0]['total']:0;
 
@@ -4128,6 +4187,8 @@ class RevenuesController extends AppController {
                 'fields' => array(
                     'SUM(Invoice.total) total'
                 ),
+            ), true, array(
+                'branch' => false,
             ));
             $totalAr['Invoice'][$month] = !empty($invoice[0]['total'])?$invoice[0]['total']:0;
 
@@ -4139,6 +4200,8 @@ class RevenuesController extends AppController {
                     'fields' => array(
                         'SUM(Invoice.total) total'
                     ),
+                ), true, array(
+                    'branch' => false,
                 ));
                 $totalAr['LastInvoice'][$month] = !empty($invoice[0]['total'])?$invoice[0]['total']:0;
             }
@@ -4628,9 +4691,34 @@ class RevenuesController extends AppController {
     public function list_kwitansi( $data_action = false ) {
         $this->loadModel('Invoice');
         $this->loadModel('Revenue');
-        $invoice_conditions = array();
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $start = 1;
         $limit = 30;
+
+        $invoice_conditions = array(
+            'Invoice.branch_id' => $allow_branch_id,
+        );
+        $invoiceUnpaidOption = array(
+            'Invoice.is_canceled' => 0,
+            'Invoice.complete_paid' => 0,
+            'Invoice.paid' => 0,
+            'Invoice.branch_id' => $allow_branch_id,
+        );
+        $invoicePaidOption = array(
+            'Invoice.is_canceled' => 0,
+            'Invoice.complete_paid' => 1,
+            'Invoice.branch_id' => $allow_branch_id,
+        );
+        $invoiceHalfPaidOption = array(
+            'Invoice.is_canceled' => 0,
+            'Invoice.complete_paid' => 0,
+            'Invoice.paid' => 1,
+            'Invoice.branch_id' => $allow_branch_id,
+        );
+        $invoiceVoidOption = array(
+            'Invoice.is_canceled' => 1,
+            'Invoice.branch_id' => $allow_branch_id,
+        );
 
         if( !empty($this->params['named']) ){
             $refine = $this->params['named'];
@@ -4692,6 +4780,13 @@ class RevenuesController extends AppController {
             if(!empty($refine['page'])){
                 $start = (($refine['page']-1)*$limit)+1;
             }
+
+            // Custom Otorisasi
+            $invoice_conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Invoice', $invoice_conditions, 'conditions' );
+            $invoiceUnpaidOption = $this->MkCommon->getConditionGroupBranch( $refine, 'Invoice', $invoiceUnpaidOption, 'conditions' );
+            $invoicePaidOption = $this->MkCommon->getConditionGroupBranch( $refine, 'Invoice', $invoicePaidOption, 'conditions' );
+            $invoiceHalfPaidOption = $this->MkCommon->getConditionGroupBranch( $refine, 'Invoice', $invoiceHalfPaidOption, 'conditions' );
+            $invoiceVoidOption = $this->MkCommon->getConditionGroupBranch( $refine, 'Invoice', $invoiceVoidOption, 'conditions' );
         }
 
         $options = array(
@@ -4713,23 +4808,7 @@ class RevenuesController extends AppController {
 
         $this->paginate = $options;
         $invoices = $this->paginate('Invoice');
-        $invoiceUnpaidOption = array(
-            'Invoice.is_canceled' => 0,
-            'Invoice.complete_paid' => 0,
-            'Invoice.paid' => 0,
-        );
-        $invoicePaidOption = array(
-            'Invoice.is_canceled' => 0,
-            'Invoice.complete_paid' => 1,
-        );
-        $invoiceHalfPaidOption = array(
-            'Invoice.is_canceled' => 0,
-            'Invoice.complete_paid' => 0,
-            'Invoice.paid' => 1,
-        );
-        $invoiceVoidOption = array(
-            'Invoice.is_canceled' => 1,
-        );
+
         $dataStatus['InvoiceUnpaid'] = $this->Invoice->getData('count', array(
             'conditions' => $invoiceUnpaidOption,
         ));

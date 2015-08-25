@@ -1446,17 +1446,23 @@ class CommonHelper extends AppHelper {
 
         if( !empty($branches) && count($branches) > 1 ) {
             $tmpArr = array();
+            $default_options = array(
+                'type' => 'checkbox',
+                'label'=> false,
+                'required' => false,
+                'div' => false,
+            );
+
+            if( empty($this->request->data['GroupBranch']['group_branch']) ) {
+                $default_options['checked'] = true;
+            }
 
             foreach ($branches as $branch_id => $city_name) {
-                $tmpArr[] = $this->Html->tag('li', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('GroupBranch.group_branch.'.$branch_id, array(
-                    'type' => 'checkbox',
-                    'label'=> false,
-                    'required' => false,
-                    'value' => $branch_id,
-                    'div' => false,
-                    'class' => 'check-branch',
-                    'checked' => true,
-                )).$city_name), array(
+                $branchCheckboxOptions = $default_options;
+                $branchCheckboxOptions['value'] = $branch_id;
+                $branchCheckboxOptions['class'] = 'check-branch';
+
+                $tmpArr[] = $this->Html->tag('li', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('GroupBranch.group_branch.'.$branch_id, $branchCheckboxOptions).$city_name), array(
                     'class' => 'checkbox',
                 )));
             }
@@ -1471,14 +1477,11 @@ class CommonHelper extends AppHelper {
                 $headLabel = $this->Html->tag('label', __('Cabang'), array(
                     'class' => 'block'
                 ));
-                $headLi = $this->Html->tag('li', $this->Html->tag('li', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('GroupBranch.group_branch.'.$branch_id, array(
-                    'type' => 'checkbox',
-                    'label'=> false,
-                    'required' => false,
-                    'div' => false,
-                    'class' => 'check-all',
-                    'checked' => true,
-                )).__('Check/Uncheck All')), array(
+
+                $branchCheckboxOptions = $default_options;
+                $branchCheckboxOptions['class'] = 'check-all';
+
+                $headLi = $this->Html->tag('li', $this->Html->tag('li', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('GroupBranch.group_branch.'.$branch_id, $branchCheckboxOptions).__('Check/Uncheck All')), array(
                     'class' => 'checkbox',
                 ))));
                 $divider = $this->Html->tag('li', '', array(

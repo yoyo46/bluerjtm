@@ -180,6 +180,8 @@ class Driver extends AppModel {
 	function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
         $branch = isset($elements['branch'])?$elements['branch']:true;
+        $plant = isset($elements['plant'])?$elements['plant']:false;
+        $branch_is_plant = Configure::read('__Site.config_branch_plant');
 
         $default_options = array(
             'conditions'=> array(),
@@ -206,7 +208,9 @@ class Driver extends AppModel {
                 break;
         }
 
-        if( !empty($branch) ) {
+        if( !empty($plant) && !empty($branch_is_plant) ) {
+            $default_options['conditions']['Driver.branch_id'] = Configure::read('__Site.Branch.Plant.id');
+        } else if( !empty($branch) ) {
             $default_options['conditions']['Driver.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
