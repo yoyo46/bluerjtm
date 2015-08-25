@@ -7,6 +7,7 @@
             $border = 0;
             $headerRowspan = false;
             $addClass = 'easyui-datagrid';
+            // $addClass = '';
 
             if( $data_action == 'excel' ) {
                 header('Content-type: application/ms-excel');
@@ -175,7 +176,12 @@
             <thead frozen="true">
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.code', __('Customer')), array(
+                            // echo $this->Html->tag('th', $this->Common->getSorting('Customer.customer_group_id', __('Group')), array(
+                            //     'style' => 'text-align: center;width: 150px;',
+                            //     'data-options' => 'field:\'group\',width:150,',
+                            //     'rowspan' => $headerRowspan,
+                            // ));
+                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Customer')), array(
                                 'style' => 'text-align: center;width: 150px;',
                                 'data-options' => 'field:\'customer_code\',width:150,',
                                 'rowspan' => $headerRowspan,
@@ -190,7 +196,7 @@
             <?php 
                     }
 
-                            if( !empty($totalCnt) ) {
+                            if( isset($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {
                                     $formatDate = 'F';
 
@@ -223,7 +229,7 @@
                 </tr>
                 <tr>
                     <?php 
-                            if( !empty($totalCnt) ) {
+                            if( isset($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {
                                     echo $this->Html->tag('th', __('TARGET UNIT'), array(
                                         'style' => 'text-align: center;',
@@ -246,23 +252,54 @@
                         if(!empty($ttujs)){
                             $grandTotalPencapaian = 0;
                             $grandTotalTarget = 0;
+                            $grandTotalPencapaianGroup = array();
+                            $grandTotalTargetGroup = array();
+                            $groupName = array();
+                            $totalPencapaianGroup = array();
+                            $totalTargetGroup = array();
+                            $temp_tye_id = false;
+                            $temp_group_id = false;
+                            $finishTotal = array();
 
                             foreach ($ttujs as $key => $value) {
-                                $id = $value['CustomerNoType']['id'];
-                                $customer_name = !empty($value['CustomerNoType']['code'])?$value['CustomerNoType']['code']:'-';
-                                $customer_name = !empty($value['CustomerNoType']['code'])?$value['CustomerNoType']['code']:'-';
+                                $id = $value['Customer']['id'];
+                                $customer_name = $this->Common->filterEmptyField($value, 'Customer', 'code', '-');
+                                $customer_group_id = $this->Common->filterEmptyField($value, 'Customer', 'customer_group_id', '-');
+                                $type = $this->Common->filterEmptyField($value, 'CustomerType', 'name');
+                                $type_id = $this->Common->filterEmptyField($value, 'CustomerType', 'id');
+                                $group_name = $this->Common->filterEmptyField($value, 'CustomerGroup', 'name');
 
                                 $totalSidePencapaian = 0;
                                 $totalSideTarget = 0;
+
+                                // if( !empty($temp_group_id) && !empty($temp_tye_id) && ( $temp_group_id != $customer_group_id || $temp_tye_id != $type_id ) ) {
+                                //     echo $this->element('blocks/revenues/tables/achievement_report', array(
+                                //         'type_id' => $temp_tye_id,
+                                //         'customer_group_id' => $temp_group_id,
+                                //         'groupName' => $groupName,
+                                //         'totalCnt' => $totalCnt,
+                                //         'totalTargetGroup' => $totalTargetGroup,
+                                //         'totalPencapaianGroup' => $totalPencapaianGroup,
+                                //         'grandTotalTargetGroup' => $grandTotalTargetGroup,
+                                //         'grandTotalPencapaianGroup' => $grandTotalPencapaianGroup,
+                                //     ));
+
+                                //     $finishTotal[$temp_tye_id][$temp_group_id] = true;
+                                // }
+
+                                $temp_group_id = $customer_group_id;
+                                $temp_tye_id = $type_id;
                 ?>
                 <tr>
                     <?php 
+                            // echo $this->Html->tag('td', $customer_group_id);
+                            // echo $this->Html->tag('td', $customer_name.' - '.$type);
                             echo $this->Html->tag('td', $customer_name);
 
-                            if( !empty($totalCnt) ) {
+                            if( isset($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {
-                                    $pencapaian = !empty($cntPencapaian[$value['CustomerNoType']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$cntPencapaian[$value['CustomerNoType']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
-                                    $target_rit = !empty($targetUnit[$value['CustomerNoType']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$targetUnit[$value['CustomerNoType']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
+                                    $pencapaian = !empty($cntPencapaian[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$cntPencapaian[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
+                                    $target_rit = !empty($targetUnit[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$targetUnit[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
                                     $nameVal = 'totalPencapaian'.$i;
                                     $nameValTarget = 'totalTarget'.$i;
 
@@ -291,6 +328,17 @@
                                         'class' => 'text-center',
                                         'style' => $tdStyle,
                                     ));
+
+                                    if( !empty($totalPencapaianGroup[$i][$type_id][$customer_group_id]) ) {
+                                        $totalPencapaianGroup[$i][$type_id][$customer_group_id] += $pencapaian;
+                                    } else {
+                                        $totalPencapaianGroup[$i][$type_id][$customer_group_id] = $pencapaian;
+                                    }
+                                    if( !empty($totalTargetGroup[$i][$type_id][$customer_group_id]) ) {
+                                        $totalTargetGroup[$i][$type_id][$customer_group_id] += $target_rit;
+                                    } else {
+                                        $totalTargetGroup[$i][$type_id][$customer_group_id] = $target_rit;
+                                    }
                                 }
                             }
 
@@ -307,16 +355,41 @@
                     ?>
                 </tr>
                 <?php
+
+                                if( !empty($grandTotalPencapaianGroup[$type_id][$customer_group_id]) ) {
+                                    $grandTotalPencapaianGroup[$type_id][$customer_group_id] += $totalSidePencapaian;
+                                } else {
+                                    $grandTotalPencapaianGroup[$type_id][$customer_group_id] = $totalSidePencapaian;
+                                }
+                                if( !empty($grandTotalTargetGroup[$type_id][$customer_group_id]) ) {
+                                    $grandTotalTargetGroup[$type_id][$customer_group_id] += $totalSideTarget;
+                                } else {
+                                    $grandTotalTargetGroup[$type_id][$customer_group_id] = $totalSideTarget;
+                                }
+
+                                $groupName[$type_id][$customer_group_id] = $group_name;
                             }
+
+                            // if( empty($finishTotal[$temp_tye_id][$temp_group_id]) ) {
+                            //     echo $this->element('blocks/revenues/tables/achievement_report', array(
+                            //         'type_id' => $temp_tye_id,
+                            //         'customer_group_id' => $temp_group_id,
+                            //         'groupName' => $groupName,
+                            //         'totalCnt' => $totalCnt,
+                            //         'totalTargetGroup' => $totalTargetGroup,
+                            //         'totalPencapaianGroup' => $totalPencapaianGroup,
+                            //         'grandTotalTargetGroup' => $grandTotalTargetGroup,
+                            //         'grandTotalPencapaianGroup' => $grandTotalPencapaianGroup,
+                            //     ));
+                            // }
                 ?>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('td', '&nbsp;');
                             echo $this->Html->tag('td', __('Total'), array(
                                 'style' => 'font-weight: bold;'
                             ));
 
-                            if( !empty($totalCnt) ) {
+                            if( isset($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {
                                     $totalPencapaian = 0;
                                     $totalTarget = 0;
@@ -395,18 +468,18 @@
                 $grandTotalTarget = 0;
 
                 foreach ($ttujs as $key => $value) {
-                    $id = $value['CustomerNoType']['id'];
-                    $customer_name = !empty($value['CustomerNoType']['code'])?$value['CustomerNoType']['code']:'-';
+                    $id = $value['Customer']['id'];
+                    $customer_name = !empty($value['Customer']['code'])?$value['Customer']['code']:'-';
                     $totalSidePencapaian = 0;
                     $totalSideTarget = 0;
 
                     $content = $this->Html->tag('td', $no);
                     $content .= $this->Html->tag('td', $customer_name);
 
-                    if( !empty($totalCnt) ) {
+                    if( ($totalCnt) ) {
                         for ($i=0; $i <= $totalCnt; $i++) {
-                            $pencapaian = !empty($cntPencapaian[$value['CustomerNoType']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$cntPencapaian[$value['CustomerNoType']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
-                            $target_rit = !empty($targetUnit[$value['CustomerNoType']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$targetUnit[$value['CustomerNoType']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
+                            $pencapaian = !empty($cntPencapaian[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$cntPencapaian[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
+                            $target_rit = !empty($targetUnit[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$targetUnit[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
                             $bgStyle = '';
 
                             if( is_numeric($pencapaian) && is_numeric($target_rit) ) {
@@ -473,7 +546,7 @@
                     'style' => 'text-align: right;font-weight: bold;'
                 ));
 
-                if( !empty($totalCnt) ) {
+                if( isset($totalCnt) ) {
                     for ($i=0; $i <= $totalCnt; $i++) {
                         $totalPencapaian = 0;
                         $totalTarget = 0;
@@ -526,7 +599,7 @@
             $topHeader = '';
             $cityHeader = '';
 
-            if( !empty($totalCnt) ) {
+            if( isset($totalCnt) ) {
                 for ($i=0; $i <= $totalCnt; $i++) {
                     $formatDate = 'F';
 
@@ -550,7 +623,7 @@
                 ));
             }
 
-            if( !empty($totalCnt) ) {
+            if( isset($totalCnt) ) {
                 for ($i=0; $i <= $totalCnt; $i++) {
                     $cityHeader .= $this->Html->tag('th', __('TARGET UNIT'), array(
                         'style' => 'text-align: center;'

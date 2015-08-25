@@ -2193,9 +2193,9 @@ class RevenuesController extends AppController {
         $this->set('active_menu', 'achievement_report');
 
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
-        $fromMonth = date('m');
+        $fromMonth = 01;
         $fromYear = date('Y');
-        $toMonth = 12;
+        $toMonth = date('m');
         $toYear = date('Y');
         $conditions = array(
             'TtujTipeMotor.status'=> 1,
@@ -2208,8 +2208,8 @@ class RevenuesController extends AppController {
                 'Customer.branch_id' => $allow_branch_id,
             ),
             'order' => array(
-                'Customer.customer_type_id' => 'DESC',
-                'Customer.customer_group_id' => 'ASC',
+                // 'Customer.customer_type_id' => 'DESC',
+                // 'Customer.customer_group_id' => 'ASC',
                 'Customer.order_sort' => 'ASC',
                 'Customer.order' => 'ASC',
             ),
