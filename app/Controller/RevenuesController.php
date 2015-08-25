@@ -1971,8 +1971,8 @@ class RevenuesController extends AppController {
         $this->loadModel('Ttuj');
         $this->loadModel('CustomerNoType');
 
-        $dateFrom = date('Y-m-d', strtotime('-1 month'));
-        $dateTo = date('Y-m-d');
+        $dateFrom = date('Y-m-01');
+        $dateTo = date('Y-m-t');
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $conditions = array(
             'Truck.status'=> 1,
@@ -2135,7 +2135,7 @@ class RevenuesController extends AppController {
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
             $this->request->data['Ttuj']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
-            $module_title .= sprintf(' Periode %s - %s', date('d M Y', strtotime($dateFrom)), date('d M Y', strtotime($dateTo)));
+            $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
         }
 
         $this->set('sub_module_title', $module_title);
