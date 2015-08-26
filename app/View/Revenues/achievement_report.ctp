@@ -3,7 +3,6 @@
         if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
             $this->Html->addCrumb($sub_module_title);
             $addStyle = '';
-            $tdStyle = '';
             $border = 0;
             $headerRowspan = false;
             $addClass = 'easyui-datagrid';
@@ -13,7 +12,6 @@
                 header('Content-type: application/ms-excel');
                 header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
-                $tdStyle = 'text-align: center;';
                 $addClass = '';
                 $headerRowspan = 2;
             }
@@ -172,15 +170,15 @@
         <?php 
                 }
         ?>
-        <table id="tt" class="table table-bordered <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true" border="<?php echo $border; ?>">
+        <table id="tt" class="table table-bordered <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true" border="<?php echo $border; ?>" data-options="rowStyler: rowColored">
             <thead frozen="true">
                 <tr>
                     <?php 
-                            // echo $this->Html->tag('th', $this->Common->getSorting('Customer.customer_group_id', __('Group')), array(
-                            //     'style' => 'text-align: center;width: 150px;',
-                            //     'data-options' => 'field:\'group\',width:150,',
-                            //     'rowspan' => $headerRowspan,
-                            // ));
+                            echo $this->Html->tag('th', __('Cabang'), array(
+                                'style' => 'text-align: center;width: 150px;',
+                                'data-options' => 'field:\'branch\',width:150,',
+                                'rowspan' => $headerRowspan,
+                            ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Customer')), array(
                                 'style' => 'text-align: center;width: 150px;',
                                 'data-options' => 'field:\'customer_code\',width:150,',
@@ -212,14 +210,14 @@
                                 }
                             }
 
-                            echo $this->Html->tag('th', __('Total Target'), array(
+                            echo $this->Html->tag('th', __('TOTAL Target'), array(
                                 'style' => 'text-align: center;',
                                 'data-options' => 'field:\'total_target_side\',width:100',
                                 'align' => 'center',
                                 'rowspan' => 2,
                             ));
 
-                            echo $this->Html->tag('th', __('Total Pencapaian'), array(
+                            echo $this->Html->tag('th', __('TOTAL Pencapaian'), array(
                                 'style' => 'text-align: center;',
                                 'data-options' => 'field:\'total_pencapaian_side\',width:100,styler:calcPencapaian',
                                 'align' => 'center',
@@ -248,171 +246,8 @@
                 </tr>
             </thead>
             <tbody>
-                <?php
-                        if(!empty($ttujs)){
-                            $grandTotalPencapaian = 0;
-                            $grandTotalTarget = 0;
-                            $grandTotalPencapaianGroup = array();
-                            $grandTotalTargetGroup = array();
-                            $groupName = array();
-                            $totalPencapaianGroup = array();
-                            $totalTargetGroup = array();
-                            $temp_tye_id = false;
-                            $temp_group_id = false;
-                            $finishTotal = array();
-
-                            foreach ($ttujs as $key => $value) {
-                                $id = $value['Customer']['id'];
-                                $customer_name = $this->Common->filterEmptyField($value, 'Customer', 'code', '-');
-                                $customer_group_id = $this->Common->filterEmptyField($value, 'Customer', 'customer_group_id', '-');
-                                $type = $this->Common->filterEmptyField($value, 'CustomerType', 'name');
-                                $type_id = $this->Common->filterEmptyField($value, 'CustomerType', 'id');
-                                $group_name = $this->Common->filterEmptyField($value, 'CustomerGroup', 'name');
-
-                                $totalSidePencapaian = 0;
-                                $totalSideTarget = 0;
-
-                                // if( !empty($temp_group_id) && !empty($temp_tye_id) && ( $temp_group_id != $customer_group_id || $temp_tye_id != $type_id ) ) {
-                                //     echo $this->element('blocks/revenues/tables/achievement_report', array(
-                                //         'type_id' => $temp_tye_id,
-                                //         'customer_group_id' => $temp_group_id,
-                                //         'groupName' => $groupName,
-                                //         'totalCnt' => $totalCnt,
-                                //         'totalTargetGroup' => $totalTargetGroup,
-                                //         'totalPencapaianGroup' => $totalPencapaianGroup,
-                                //         'grandTotalTargetGroup' => $grandTotalTargetGroup,
-                                //         'grandTotalPencapaianGroup' => $grandTotalPencapaianGroup,
-                                //     ));
-
-                                //     $finishTotal[$temp_tye_id][$temp_group_id] = true;
-                                // }
-
-                                $temp_group_id = $customer_group_id;
-                                $temp_tye_id = $type_id;
-                ?>
-                <tr>
-                    <?php 
-                            // echo $this->Html->tag('td', $customer_group_id);
-                            // echo $this->Html->tag('td', $customer_name.' - '.$type);
-                            echo $this->Html->tag('td', $customer_name);
-
-                            if( isset($totalCnt) ) {
-                                for ($i=0; $i <= $totalCnt; $i++) {
-                                    $pencapaian = !empty($cntPencapaian[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$cntPencapaian[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
-                                    $target_rit = !empty($targetUnit[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$targetUnit[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
-                                    $nameVal = 'totalPencapaian'.$i;
-                                    $nameValTarget = 'totalTarget'.$i;
-
-                                    if( empty($$nameVal) ) {
-                                        $$nameVal = 0;
-                                    }
-                                    if( empty($$nameValTarget) ) {
-                                        $$nameValTarget = 0;
-                                    }
-
-                                    if( is_numeric($pencapaian) ) {
-                                        $$nameVal += $pencapaian;
-                                        $totalSidePencapaian += $pencapaian;
-                                    }
-
-                                    if( is_numeric($target_rit) ) {
-                                        $$nameValTarget += $target_rit;
-                                        $totalSideTarget += $target_rit;
-                                    }
-
-                                    echo $this->Html->tag('td', $target_rit, array(
-                                        'class' => 'text-center',
-                                        'style' => $tdStyle,
-                                    ));
-                                    echo $this->Html->tag('td', $pencapaian, array(
-                                        'class' => 'text-center',
-                                        'style' => $tdStyle,
-                                    ));
-
-                                    if( !empty($totalPencapaianGroup[$i][$type_id][$customer_group_id]) ) {
-                                        $totalPencapaianGroup[$i][$type_id][$customer_group_id] += $pencapaian;
-                                    } else {
-                                        $totalPencapaianGroup[$i][$type_id][$customer_group_id] = $pencapaian;
-                                    }
-                                    if( !empty($totalTargetGroup[$i][$type_id][$customer_group_id]) ) {
-                                        $totalTargetGroup[$i][$type_id][$customer_group_id] += $target_rit;
-                                    } else {
-                                        $totalTargetGroup[$i][$type_id][$customer_group_id] = $target_rit;
-                                    }
-                                }
-                            }
-
-                            echo $this->Html->tag('td', $this->Number->format($totalSideTarget, false, array('places' => 0)), array(
-                                'class' => 'text-center',
-                                'style' => $tdStyle,
-                            ));
-                            echo $this->Html->tag('td', $this->Number->format($totalSidePencapaian, false, array('places' => 0)), array(
-                                'class' => 'text-center',
-                                'style' => $tdStyle,
-                            ));
-                            $grandTotalPencapaian += $totalSidePencapaian;
-                            $grandTotalTarget += $totalSideTarget;
-                    ?>
-                </tr>
-                <?php
-
-                                if( !empty($grandTotalPencapaianGroup[$type_id][$customer_group_id]) ) {
-                                    $grandTotalPencapaianGroup[$type_id][$customer_group_id] += $totalSidePencapaian;
-                                } else {
-                                    $grandTotalPencapaianGroup[$type_id][$customer_group_id] = $totalSidePencapaian;
-                                }
-                                if( !empty($grandTotalTargetGroup[$type_id][$customer_group_id]) ) {
-                                    $grandTotalTargetGroup[$type_id][$customer_group_id] += $totalSideTarget;
-                                } else {
-                                    $grandTotalTargetGroup[$type_id][$customer_group_id] = $totalSideTarget;
-                                }
-
-                                $groupName[$type_id][$customer_group_id] = $group_name;
-                            }
-
-                            // if( empty($finishTotal[$temp_tye_id][$temp_group_id]) ) {
-                            //     echo $this->element('blocks/revenues/tables/achievement_report', array(
-                            //         'type_id' => $temp_tye_id,
-                            //         'customer_group_id' => $temp_group_id,
-                            //         'groupName' => $groupName,
-                            //         'totalCnt' => $totalCnt,
-                            //         'totalTargetGroup' => $totalTargetGroup,
-                            //         'totalPencapaianGroup' => $totalPencapaianGroup,
-                            //         'grandTotalTargetGroup' => $grandTotalTargetGroup,
-                            //         'grandTotalPencapaianGroup' => $grandTotalPencapaianGroup,
-                            //     ));
-                            // }
-                ?>
-                <tr>
-                    <?php 
-                            echo $this->Html->tag('td', __('Total'), array(
-                                'style' => 'font-weight: bold;'
-                            ));
-
-                            if( isset($totalCnt) ) {
-                                for ($i=0; $i <= $totalCnt; $i++) {
-                                    $totalPencapaian = 0;
-                                    $totalTarget = 0;
-                                    $nameVal = 'totalPencapaian'.$i;
-                                    $nameValTarget = 'totalTarget'.$i;
-
-                                    if( !empty($$nameVal) ) {
-                                        $totalPencapaian = $$nameVal;
-                                    }
-                                    if( !empty($$nameValTarget) ) {
-                                        $totalTarget = $$nameValTarget;
-                                    }
-                                    echo $this->Html->tag('td', $this->Number->format($totalTarget, false, array('places' => 0)));
-                                    echo $this->Html->tag('td', $this->Number->format($totalPencapaian, false, array('places' => 0)));
-                                }
-                            }
-
-                            echo $this->Html->tag('td', $this->Number->format($grandTotalTarget, false, array('places' => 0)));
-                            echo $this->Html->tag('td', $this->Number->format($grandTotalPencapaian, false, array('places' => 0)));
-                    ?>
-                </tr>
-                <?php
-                        }
+                <?php 
+                        echo $this->element('blocks/revenues/tables/achievement_report_items');
                 ?>
             </tbody>
         </table>
@@ -433,9 +268,6 @@
             ));
 
             if( $data_action != 'excel' ) {
-                echo $this->Html->tag('div', $this->element('pagination'), array(
-                    'class' => 'pagination-report'
-                ));
     ?>
 </div>
 <?php
@@ -461,140 +293,7 @@
             $table = 'width:100%;font-size: 24px; border: 1px solid #CCC; border-collapse: collapse; padding: 0; margin: 0;';
         
             $no = 1;
-            $each_loop_message = '';
-
-            if(!empty($ttujs)){
-                $grandTotalPencapaian = 0;
-                $grandTotalTarget = 0;
-
-                foreach ($ttujs as $key => $value) {
-                    $id = $value['Customer']['id'];
-                    $customer_name = !empty($value['Customer']['code'])?$value['Customer']['code']:'-';
-                    $totalSidePencapaian = 0;
-                    $totalSideTarget = 0;
-
-                    $content = $this->Html->tag('td', $no);
-                    $content .= $this->Html->tag('td', $customer_name);
-
-                    if( ($totalCnt) ) {
-                        for ($i=0; $i <= $totalCnt; $i++) {
-                            $pencapaian = !empty($cntPencapaian[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$cntPencapaian[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
-                            $target_rit = !empty($targetUnit[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$targetUnit[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
-                            $bgStyle = '';
-
-                            if( is_numeric($pencapaian) && is_numeric($target_rit) ) {
-                                if( !empty($pencapaian) && $pencapaian >= $target_rit ) {
-                                    $bgStyle = 'background-color:#dff0d8;color:#3c763d;';
-                                } else {
-                                    $bgStyle = 'background-color:#f2dede;color:#a94442;';
-                                }
-                            }
-
-                            $content .= $this->Html->tag('td', $target_rit, array(
-                                'style' => 'text-align: center;'
-                            ));
-                            $content .= $this->Html->tag('td', $pencapaian, array(
-                                'style' => 'text-align: center;'.$bgStyle
-                            ));
-
-                            $nameVal = 'totalPencapaian'.$i;
-                            $nameValTarget = 'totalTarget'.$i;
-
-                            if( empty($$nameVal) ) {
-                                $$nameVal = 0;
-                            }
-                            if( empty($$nameValTarget) ) {
-                                $$nameValTarget = 0;
-                            }
-
-                            if( is_numeric($pencapaian) ) {
-                                $$nameVal += $pencapaian;
-                                $totalSidePencapaian += $pencapaian;
-                            }
-
-                            if( is_numeric($target_rit) ) {
-                                $$nameValTarget += $target_rit;
-                                $totalSideTarget += $target_rit;
-                            }
-                        }
-                        $bgStyle = '';
-
-                        if( is_numeric($totalSidePencapaian) && is_numeric($totalSideTarget) && !empty($totalSideTarget) ) {
-                            if( !empty($totalSidePencapaian) && $totalSidePencapaian >= $totalSideTarget ) {
-                                $bgStyle = 'background-color:#dff0d8;color:#3c763d;';
-                            } else {
-                                $bgStyle = 'background-color:#f2dede;color:#a94442;';
-                            }
-                        }
-
-                        $content .= $this->Html->tag('td', $this->Number->format($totalSideTarget, false, array('places' => 0)), array(
-                            'style' => 'text-align: right;'
-                        ));
-                        $content .= $this->Html->tag('td', $this->Number->format($totalSidePencapaian, false, array('places' => 0)), array(
-                            'style' => 'text-align: right;'.$bgStyle
-                        ));
-                        $grandTotalPencapaian += $totalSidePencapaian;
-                        $grandTotalTarget += $totalSideTarget;
-                    }
-
-                    $each_loop_message .= $this->Html->tag('tr', $content);
-                    $no++;
-                }
-
-                $content = $this->Html->tag('td', __('Total'), array(
-                    'colspan' => 2,
-                    'style' => 'text-align: right;font-weight: bold;'
-                ));
-
-                if( isset($totalCnt) ) {
-                    for ($i=0; $i <= $totalCnt; $i++) {
-                        $totalPencapaian = 0;
-                        $totalTarget = 0;
-                        $nameVal = 'totalPencapaian'.$i;
-                        $nameValTarget = 'totalTarget'.$i;
-                        $bgStyle = '';
-
-                        if( !empty($$nameVal) ) {
-                            $totalPencapaian = $$nameVal;
-                        }
-                        if( !empty($$nameValTarget) ) {
-                            $totalTarget = $$nameValTarget;
-                        }
-
-                        if( is_numeric($totalPencapaian) && is_numeric($totalTarget) ) {
-                            if( !empty($totalPencapaian) && $totalPencapaian >= $totalTarget ) {
-                                $bgStyle = 'background-color:#dff0d8;color:#3c763d;';
-                            } else {
-                                $bgStyle = 'background-color:#f2dede;color:#a94442;';
-                            }
-                        }
-
-                        $content .= $this->Html->tag('td', $this->Number->format($totalTarget, false, array('places' => 0)), array(
-                            'style' => 'text-align: center;font-weight: bold;'
-                        ));
-                        $content .= $this->Html->tag('td', $this->Number->format($totalPencapaian, false, array('places' => 0)), array(
-                            'style' => 'text-align: center;font-weight: bold;'.$bgStyle
-                        ));
-                    }
-                }
-                $bgStyle = '';
-
-                if( is_numeric($grandTotalPencapaian) && is_numeric($grandTotalTarget) ) {
-                    if( !empty($grandTotalPencapaian) && $grandTotalPencapaian >= $grandTotalTarget ) {
-                        $bgStyle = 'background-color:#dff0d8;color:#3c763d;';
-                    } else {
-                        $bgStyle = 'background-color:#f2dede;color:#a94442;';
-                    }
-                }
-
-                $content .= $this->Html->tag('td', $this->Number->format($grandTotalTarget, false, array('places' => 0)), array(
-                    'style' => 'text-align: center;font-weight: bold;'
-                ));
-                $content .= $this->Html->tag('td', $this->Number->format($grandTotalPencapaian, false, array('places' => 0)), array(
-                    'style' => 'text-align: center;font-weight: bold;'.$bgStyle
-                ));
-                $each_loop_message .= $this->Html->tag('tr', $content);
-            }
+            $each_loop_message = $this->element('blocks/revenues/tables/achievement_report_items');
 
             $topHeader = '';
             $cityHeader = '';
@@ -708,6 +407,14 @@ EOD;
             return 'background-color:#dff0d8;color:#3c763d;';
         } else {
             return 'background-color:#f2dede;color:#a94442;';
+        }
+    }
+
+    function rowColored (index,row) {
+        var value = row.customer_code.substr(0, 5).toLowerCase();
+
+        if( value == 'total' ) {
+            return 'background: #ffe48d;font-weight:bold;';
         }
     }
 </script>

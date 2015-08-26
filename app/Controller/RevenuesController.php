@@ -2208,8 +2208,9 @@ class RevenuesController extends AppController {
                 'Customer.branch_id' => $allow_branch_id,
             ),
             'order' => array(
-                // 'Customer.customer_type_id' => 'DESC',
-                // 'Customer.customer_group_id' => 'ASC',
+                'Customer.manual_group' => 'ASC',
+                'Customer.customer_type_id' => 'DESC',
+                'Customer.customer_group_id' => 'ASC',
                 'Customer.order_sort' => 'ASC',
                 'Customer.order' => 'ASC',
             ),
@@ -2258,14 +2259,7 @@ class RevenuesController extends AppController {
             ),
         ));
 
-        if( !empty($data_action) ) {
-            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
-        } else {
-            $options['limit'] = 20;
-        }
-
-        $this->paginate = $this->Customer->getData('paginate', $options);
-        $ttujs = $this->paginate('Customer');
+        $ttujs = $this->Customer->getData('all', $options);
         $cntPencapaian = array();
         $targetUnit = array();
 
