@@ -468,6 +468,7 @@ class Ttuj extends AppModel {
             $conditions['OR'][] = array(
                 'Ttuj.to_city_id <>' => $data_branch_city_id,
                 'Ttuj.branch_id' => $branch_plant_id,
+                'Ttuj.branch_id' => $branch_city_bongkar_id,
             );
         }
 

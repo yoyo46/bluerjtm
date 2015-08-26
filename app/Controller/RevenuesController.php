@@ -1132,12 +1132,25 @@ class RevenuesController extends AppController {
 
     function ttuj_toggle( $id, $action_type = 'status' ){
         $this->loadModel('Ttuj');
+
+        $conditions = array(
+            'Ttuj.id' => $id,
+        );
+        $branchFlag = false;
+
+        if( in_array($action_type, array( 'truk_tiba', 'bongkaran', 'balik' )) ) {
+            $conditions = $this->Ttuj->_callConditionBranch( $conditions );
+        } else if( $action_type == 'pool' ) {
+            $conditions = $this->Ttuj->_callConditionTtujPool($conditions);
+        } else {
+            $branchFlag = true;
+        }
+
         $locale = $this->Ttuj->getData('first', array(
-            'conditions' => array(
-                'Ttuj.id' => $id,
-            )
+            'conditions' => $conditions,
         ), true, array(
             'status' => 'all',
+            'branch' => $branchFlag,
         ));
 
         if($locale){
