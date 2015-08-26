@@ -1,10 +1,11 @@
 <?php 
-        if( !empty($groupName[$manual_group][$type_id][$customer_group_id]['cnt']) ) {
+        $name_depo = !empty($groupName[$manual_group][$type_id][$customer_group_id]['name_depo'])?$groupName[$manual_group][$type_id][$customer_group_id]['name_depo']:'-';
+        $name_retail = !empty($groupName[$manual_group][$type_id][$customer_group_id]['name_retail'])?$groupName[$manual_group][$type_id][$customer_group_id]['name_retail']:'-';
+
+        if( !empty($groupName[$manual_group][$type_id][$customer_group_id]['cnt']) && ( $name_depo != '-' || $manual_group ) ) {
 ?>
 <tr style="font-weight:bold;">
     <?php 
-            $name_depo = !empty($groupName[$manual_group][$type_id][$customer_group_id]['name_depo'])?$groupName[$manual_group][$type_id][$customer_group_id]['name_depo']:'-';
-            $name_retail = !empty($groupName[$manual_group][$type_id][$customer_group_id]['name_retail'])?$groupName[$manual_group][$type_id][$customer_group_id]['name_retail']:'-';
             $total_target = !empty($grandTotalTargetGroup[$manual_group][$type_id][$customer_group_id])?$grandTotalTargetGroup[$manual_group][$type_id][$customer_group_id]:'-';
             $total_pencapaian = !empty($grandTotalPencapaianGroup[$manual_group][$type_id][$customer_group_id])?$grandTotalPencapaianGroup[$manual_group][$type_id][$customer_group_id]:'-';
 

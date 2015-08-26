@@ -407,8 +407,9 @@ EOD;
 
     function rowColored (index,row) {
         var value = row.customer_code.substr(0, 5).toLowerCase();
+        var temp_value = row.customer_code;
 
-        if( value == 'total' ) {
+        if( value == 'total' || $.inArray( temp_value, [ 'MSK.SRG', 'KAISAR' ] ) != '-1' ) {
             return 'background: #f4f4f4;font-weight:bold;';
         }
     }

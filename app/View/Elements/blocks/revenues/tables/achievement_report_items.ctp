@@ -186,7 +186,7 @@
                     $groupName[$manual_group][$type_id][$customer_group_id]['cnt'] = 0;
                 }
 
-                if( !empty($totalGroupTarget[$total_group]['total']) ) {
+                if( isset($totalGroupTarget[$total_group]['total']) ) {
                     $totalGroupTarget[$total_group]['total'] += $totalSideTarget;
                     $totalGroupTarget[$total_group]['cnt']++;
                 } else {
@@ -200,7 +200,7 @@
                     $totalGroupPencapaian[$total_group]['total'] = $totalSidePencapaian;
                 }
 
-                if( !empty($totalDealerGroupTarget[$delear_group]['total']) ) {
+                if( isset($totalDealerGroupTarget[$delear_group]['total']) ) {
                     $totalDealerGroupTarget[$delear_group]['total'] += $totalSideTarget;
                     $totalDealerGroupTarget[$delear_group]['cnt']++;
                 } else {
