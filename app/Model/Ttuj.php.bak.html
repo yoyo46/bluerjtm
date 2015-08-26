@@ -65,40 +65,6 @@ class Ttuj extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Tgl & Jam Tiba harap dipilih'
             ),
-            'validateDateTtuj' => array(
-                'rule' => array('validateDateTtuj', 'tgljam_berangkat', 'tgljam_tiba'),
-                'message' => 'Tgl & Jam Tiba harus lebih besar daripada tgl & jam berangkat'
-            ),
-        ),
-        'tgljam_bongkaran' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tgl & Jam Bongkar harap dipilih'
-            ),
-            'validateDateTtuj' => array(
-                'rule' => array('validateDateTtuj', 'tgljam_tiba', 'tgljam_bongkaran'),
-                'message' => 'Tgl & Jam bongkaran harus lebih besar daripada tgl & jam tiba'
-            ),
-        ),
-        'tgljam_balik' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tgl & Jam balik harap dipilih'
-            ),
-            'validateDateTtuj' => array(
-                'rule' => array('validateDateTtuj', 'tgljam_bongkaran', 'tgljam_balik'),
-                'message' => 'Tgl & Jam Balik harus lebih besar daripada tgl & jam bongkaran'
-            ),
-        ),
-        'tgljam_pool' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tgl & Jam sampai pool harap dipilih'
-            ),
-            'validateDateTtuj' => array(
-                'rule' => array('validateDateTtuj', 'tgljam_balik', 'tgljam_pool'),
-                'message' => 'Tgl & Jam sampai pool harus lebih besar daripada tgl & jam balik'
-            ),
         ),
         'uang_jalan_1' => array(
             'notempty' => array(
@@ -156,18 +122,6 @@ class Ttuj extends AppModel {
             ),
         ),
     );
-
-    function validateDateTtuj ( $data, $target_date, $input_date ) {
-        if( !empty($this->data['Ttuj'][$target_date]) && !empty($this->data['Ttuj'][$input_date]) ) {
-            if( $this->data['Ttuj'][$input_date] > $this->data['Ttuj'][$target_date] ) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
@@ -450,12 +404,10 @@ class Ttuj extends AppModel {
         $branch_city_id = Configure::read('__Site.Branch.City.id');
         $branch_city_bongkar_id = Configure::read('__Site.Branch.City.Bongkar.id');
         $data_branch_city_id = Configure::read('__Site.Data.Branch.City.id');
-        $branch_plant_id = Configure::read('__Site.Branch.Plant.id');
-        $is_plant = Configure::read('__Site.config_branch_plant');
 
         $conditions['OR'] = array(
             array(
-                'Ttuj.to_city_id' => $data_branch_city_id,
+                'Ttuj.to_city_id' => $branch_city_id,
                 'Ttuj.branch_id' => $branch_city_bongkar_id,
             ),
             array(
@@ -463,13 +415,6 @@ class Ttuj extends AppModel {
                 'Ttuj.branch_id' => $current_branch_id,
             ),
         );
-
-        if( $is_plant ) {
-            $conditions['OR'][] = array(
-                'Ttuj.to_city_id <>' => $data_branch_city_id,
-                'Ttuj.branch_id' => $branch_plant_id,
-            );
-        }
 
         return $conditions;
     }
@@ -571,23 +516,6 @@ class Ttuj extends AppModel {
         ), true, array(
             'branch' => false,
         ));
-        // $ttujList = array();
-
-        // if( !empty($ttujs) ) {
-        //     $this->Branch = ClassRegistry::init('Branch');
-
-        //     foreach ($ttujs as $key => $value) {
-        //         $ttuj_id = !empty($value['Ttuj']['id'])?$value['Ttuj']['id']:false;
-        //         $to_city_id = !empty($value['Ttuj']['to_city_id'])?$value['Ttuj']['to_city_id']:false;
-        //         $no_ttuj = !empty($value['Ttuj']['no_ttuj'])?$value['Ttuj']['no_ttuj']:false;
-
-        //         if( $this->validateTtujAfterLeave( $to_city_id, $this->Branch ) ) {
-        //             $ttujList[$ttuj_id] = $no_ttuj;
-        //         }
-        //     }
-        // }
-
-        // return $ttujList;
     }
 
     function _callDataTtujConditions ( $id, $action_type ) {
@@ -626,19 +554,11 @@ class Ttuj extends AppModel {
                 break;
         }
 
-        // $this->Branch = ClassRegistry::init('Branch');
         return $this->getData('first', array(
             'conditions' => $conditionsDataLocal,
         ), true, array(
             'branch' => false,
         ));
-        // $to_city_id = !empty($ttuj['Ttuj']['to_city_id'])?$ttuj['Ttuj']['to_city_id']:false;
-
-        // if( $this->validateTtujAfterLeave( $to_city_id, $this->Branch ) ) {
-        //     return $ttuj;
-        // } else {
-        //     return array();
-        // }
     }
 
     function _callConditionTtujPool ( $conditions ) {
@@ -654,25 +574,5 @@ class Ttuj extends AppModel {
 
         return $conditions;
     }
-
-    // function validateTtujAfterLeave ( $to_city_id, $objBranch ) {
-    //     $current_branch_id = Configure::read('__Site.config_branch_id');
-    //     $data_branch_city_id = Configure::read('__Site.Data.Branch.City.id');
-
-    //     if( in_array($to_city_id, $data_branch_city_id) ) {
-    //         $value = $objBranch->getBranch($to_city_id);
-    //         $branch_id = !empty($value['Branch']['id'])?$value['Branch']['id']:false;
-
-    //         $value = $objBranch->BranchCity->getMerge($value, $value, 'list');
-
-    //         if( !empty($value['BranchCity']) && in_array($current_branch_id, $value['BranchCity']) ) {
-    //             return true;
-    //         } else {
-    //             return false;
-    //         }
-    //     } else {
-    //         return true;
-    //     }
-    // }
 }
 ?>

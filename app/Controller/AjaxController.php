@@ -1550,11 +1550,11 @@ class AjaxController extends AppController {
 					$ttuj = $this->Driver->getMerge($ttuj, $driver_penganti_id, 'DriverPenganti');
 				}
 
-				if( $this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
-					$ttujs[$key] = $ttuj;
-                } else {
-					unset($ttujs[$key]);
-				}
+				// if( $this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
+				// 	$ttujs[$key] = $ttuj;
+    //             } else {
+				// 	unset($ttujs[$key]);
+				// }
         	}
         }
 

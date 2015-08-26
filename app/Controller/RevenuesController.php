@@ -1303,17 +1303,17 @@ class RevenuesController extends AppController {
         ));
         $ttujs = $this->paginate('Ttuj');
 
-        if( !empty($ttujs) ) {
-            foreach ($ttujs as $key => $ttuj) {
-                $to_city_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'to_city_id');
+        // if( !empty($ttujs) ) {
+        //     foreach ($ttujs as $key => $ttuj) {
+        //         $to_city_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'to_city_id');
 
-                if( $this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
-                    $ttujs[$key] = $ttuj;
-                } else {
-                    unset($ttujs[$key]);
-                }
-            }
-        }
+        //         if( $this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
+        //             $ttujs[$key] = $ttuj;
+        //         } else {
+        //             unset($ttujs[$key]);
+        //         }
+        //     }
+        // }
 
         $this->set('ttujs', $ttujs);
         $this->render('ttuj');
@@ -1355,11 +1355,11 @@ class RevenuesController extends AppController {
             $ttuj = $this->Ttuj->getMergeContain( $ttuj, $id );
             $to_city_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'to_city_id');
 
-            if( !$this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
-                $this->redirect(array(
-                    'action' => $action_type,
-                ));
-            }
+            // if( !$this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
+            //     $this->redirect(array(
+            //         'action' => $action_type,
+            //     ));
+            // }
 
             $this->doTTUJLanjutan( $action_type, $id, $ttuj );
         } else {
@@ -1642,11 +1642,11 @@ class RevenuesController extends AppController {
             $data_local = $this->MkCommon->getTtujPerlengkapan($data_local);
             $to_city_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'to_city_id');
 
-            if( !$this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
-                $this->redirect(array(
-                    'action' => $action_type,
-                ));
-            } else {
+            // if( !$this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
+            //     $this->redirect(array(
+            //         'action' => $action_type,
+            //     ));
+            // } else {
                 if( !empty($data_local['Ttuj']['is_retail']) ) {
                     $module_title = __('Info Truk Tiba - RETAIL');
                     $data_action = 'retail';
@@ -1700,7 +1700,7 @@ class RevenuesController extends AppController {
                     'data_action', 'colors'
                 ));
                 $this->render('ttuj_lanjutan_form');
-            }
+            // }
         } else {
             $this->MkCommon->setCustomFlash(__('TTUJ tidak ditemukan'), 'error');  
             $this->redirect(array(
@@ -1772,17 +1772,17 @@ class RevenuesController extends AppController {
         ));
         $ttujs = $this->paginate('Ttuj');
 
-        if( !empty($ttujs) ) {
-            foreach ($ttujs as $key => $ttuj) {
-                $to_city_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'to_city_id');
+        // if( !empty($ttujs) ) {
+        //     foreach ($ttujs as $key => $ttuj) {
+        //         $to_city_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'to_city_id');
 
-                if( $this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
-                    $ttujs[$key] = $ttuj;
-                } else {
-                    unset($ttujs[$key]);
-                }
-            }
-        }
+        //         if( $this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
+        //             $ttujs[$key] = $ttuj;
+        //         } else {
+        //             unset($ttujs[$key]);
+        //         }
+        //     }
+        // }
 
         $this->set('ttujs', $ttujs);
         $this->render('ttuj');
@@ -1857,17 +1857,17 @@ class RevenuesController extends AppController {
         ));
         $ttujs = $this->paginate('Ttuj');
 
-        if( !empty($ttujs) ) {
-            foreach ($ttujs as $key => $ttuj) {
-                $to_city_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'to_city_id');
+        // if( !empty($ttujs) ) {
+        //     foreach ($ttujs as $key => $ttuj) {
+        //         $to_city_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'to_city_id');
 
-                if( $this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
-                    $ttujs[$key] = $ttuj;
-                } else {
-                    unset($ttujs[$key]);
-                }
-            }
-        }
+        //         if( $this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
+        //             $ttujs[$key] = $ttuj;
+        //         } else {
+        //             unset($ttujs[$key]);
+        //         }
+        //     }
+        // }
 
         $this->set('ttujs', $ttujs);
         $this->render('ttuj');
