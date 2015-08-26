@@ -1,15 +1,25 @@
+<?php 
+        if( !empty($groupName[$manual_group][$type_id][$customer_group_id]['cnt']) ) {
+?>
 <tr style="font-weight:bold;">
     <?php 
-            $group_name = !empty($groupName[$manual_group][$type_id][$customer_group_id])?$groupName[$manual_group][$type_id][$customer_group_id]:'-';
+            $name_depo = !empty($groupName[$manual_group][$type_id][$customer_group_id]['name_depo'])?$groupName[$manual_group][$type_id][$customer_group_id]['name_depo']:'-';
+            $name_retail = !empty($groupName[$manual_group][$type_id][$customer_group_id]['name_retail'])?$groupName[$manual_group][$type_id][$customer_group_id]['name_retail']:'-';
             $total_target = !empty($grandTotalTargetGroup[$manual_group][$type_id][$customer_group_id])?$grandTotalTargetGroup[$manual_group][$type_id][$customer_group_id]:'-';
             $total_pencapaian = !empty($grandTotalPencapaianGroup[$manual_group][$type_id][$customer_group_id])?$grandTotalPencapaianGroup[$manual_group][$type_id][$customer_group_id]:'-';
 
-            echo $this->Html->tag('td', '');
-
             if( !empty($manual_group) ) {
-                echo $this->Html->tag('td', __('TOTAL MPM [MD-DLR]'));
+                echo $this->Html->tag('td', __('TOTAL ').$manual_group);
             } else {
-                echo $this->Html->tag('td', __('TOTAL ').$group_name);
+                switch ($type_id) {
+                    case '1':
+                        echo $this->Html->tag('td', __('TOTAL ').$name_retail);
+                        break;
+                    
+                    default:
+                        echo $this->Html->tag('td', __('TOTAL ').$name_depo);
+                        break;
+                }
             }
 
             if( !empty($totalCnt) ) {
@@ -35,3 +45,6 @@
             ));
     ?>
 </tr>
+<?php 
+        }
+?>

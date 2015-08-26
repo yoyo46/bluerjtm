@@ -11,19 +11,35 @@
             $temp_group_id = false;
             $temp_manual_group = false;
             $finishTotal = array();
+            $temp_total_group = false;
+            $totalGroupTarget = array();
+            $totalGroupPencapaian = array();
+            $temp_total_delear_group = false;
+            $totalDealerGroupTarget = array();
+            $totalDealerGroupPencapaian = array();
+            $finishTotalGroup = array();
 
             foreach ($ttujs as $key => $value) {
                 $id = $this->Common->filterEmptyField($value, 'Customer', 'id');
                 $customer_name = $this->Common->filterEmptyField($value, 'Customer', 'code', '-');
                 $customer_group_id = $this->Common->filterEmptyField($value, 'Customer', 'customer_group_id', '-');
                 $manual_group = $this->Common->filterEmptyField($value, 'Customer', 'manual_group');
+                $total_group = $this->Common->filterEmptyField($value, 'Customer', 'total_group');
+                $delear_group = $this->Common->filterEmptyField($value, 'Customer', 'delear_group');
+
                 $type = $this->Common->filterEmptyField($value, 'CustomerType', 'name');
                 $type_id = $this->Common->filterEmptyField($value, 'CustomerType', 'id');
-                $group_name = $this->Common->filterEmptyField($value, 'CustomerGroup', 'name');
+                $group_name_depo = $this->Common->filterEmptyField($value, 'CustomerGroup', 'code_depo');
+                $group_name_retail = $this->Common->filterEmptyField($value, 'CustomerGroup', 'code_retail');
                 $branch_name = $this->Common->filterEmptyField($value, 'Branch', 'name');
 
                 $totalSidePencapaian = 0;
                 $totalSideTarget = 0;
+
+                if( !empty($temp_manual_group) && !empty($manual_group) ) {
+                    $customer_group_id = $temp_group_id;
+                    $type_id = $temp_tye_id;
+                }
 
                 if( !empty($temp_group_id) && !empty($temp_tye_id) && ( $temp_group_id != $customer_group_id || $temp_tye_id != $type_id || $temp_manual_group != $manual_group ) ) {
                     echo $this->element('blocks/revenues/tables/achievement_report', array(
@@ -40,14 +56,33 @@
 
                     $finishTotal[$manual_group][$temp_tye_id][$temp_group_id] = true;
                 }
+                if( !empty($temp_total_group) && $temp_total_group != $total_group ) {
+                    echo $this->element('blocks/revenues/tables/achievement_total_group', array(
+                        'total_group' => $temp_total_group,
+                        'totalTargetGroup' => $totalGroupTarget,
+                        'totalPencapaianGroup' => $totalGroupPencapaian,
+                    ));
+
+                    $finishTotalGroup['TotalGroup'][$temp_total_group] = true;
+                }
+                if( !empty($temp_total_delear_group) && $temp_total_delear_group != $delear_group ) {
+                    echo $this->element('blocks/revenues/tables/achievement_total_group', array(
+                        'total_group' => $temp_total_delear_group,
+                        'totalTargetGroup' => $totalDealerGroupTarget,
+                        'totalPencapaianGroup' => $totalDealerGroupPencapaian,
+                    ));
+
+                    $finishTotalGroup['DelearGroup'][$temp_total_delear_group] = true;
+                }
 
                 $temp_group_id = $customer_group_id;
                 $temp_tye_id = $type_id;
                 $temp_manual_group = $manual_group;
+                $temp_total_group = $total_group;
+                $temp_total_delear_group = $delear_group;
 ?>
 <tr>
     <?php 
-            echo $this->Html->tag('td', $branch_name);
             echo $this->Html->tag('td', $customer_name);
             // echo $this->Html->tag('td', $customer_name);
 
@@ -92,6 +127,30 @@
                     } else {
                         $totalTargetGroup[$i][$manual_group][$type_id][$customer_group_id] = $target_rit;
                     }
+
+                    if( !empty($totalGroupTarget[$total_group][$i]) ) {
+                        $totalGroupTarget[$total_group][$i] += $target_rit;
+                    } else {
+                        $totalGroupTarget[$total_group][$i] = $target_rit;
+                    }
+
+                    if( !empty($totalGroupPencapaian[$total_group][$i]) ) {
+                        $totalGroupPencapaian[$total_group][$i] += $pencapaian;
+                    } else {
+                        $totalGroupPencapaian[$total_group][$i] = $pencapaian;
+                    }
+
+                    if( !empty($totalDealerGroupTarget[$delear_group][$i]) ) {
+                        $totalDealerGroupTarget[$delear_group][$i] += $target_rit;
+                    } else {
+                        $totalDealerGroupTarget[$delear_group][$i] = $target_rit;
+                    }
+
+                    if( !empty($totalDealerGroupPencapaian[$delear_group][$i]) ) {
+                        $totalDealerGroupPencapaian[$delear_group][$i] += $pencapaian;
+                    } else {
+                        $totalDealerGroupPencapaian[$delear_group][$i] = $pencapaian;
+                    }
                 }
             }
 
@@ -118,10 +177,45 @@
                     $grandTotalTargetGroup[$manual_group][$type_id][$customer_group_id] = $totalSideTarget;
                 }
 
-                $groupName[$manual_group][$type_id][$customer_group_id] = $group_name;
+                $groupName[$manual_group][$type_id][$customer_group_id]['name_depo'] = $group_name_depo;
+                $groupName[$manual_group][$type_id][$customer_group_id]['name_retail'] = $group_name_retail;
+
+                if( isset($groupName[$manual_group][$type_id][$customer_group_id]['cnt']) ) {
+                    $groupName[$manual_group][$type_id][$customer_group_id]['cnt']++;
+                } else {
+                    $groupName[$manual_group][$type_id][$customer_group_id]['cnt'] = 0;
+                }
+
+                if( !empty($totalGroupTarget[$total_group]['total']) ) {
+                    $totalGroupTarget[$total_group]['total'] += $totalSideTarget;
+                    $totalGroupTarget[$total_group]['cnt']++;
+                } else {
+                    $totalGroupTarget[$total_group]['total'] = $totalSideTarget;
+                    $totalGroupTarget[$total_group]['cnt'] = 0;
+                }
+
+                if( !empty($totalGroupPencapaian[$total_group]['total']) ) {
+                    $totalGroupPencapaian[$total_group]['total'] += $totalSidePencapaian;
+                } else {
+                    $totalGroupPencapaian[$total_group]['total'] = $totalSidePencapaian;
+                }
+
+                if( !empty($totalDealerGroupTarget[$delear_group]['total']) ) {
+                    $totalDealerGroupTarget[$delear_group]['total'] += $totalSideTarget;
+                    $totalDealerGroupTarget[$delear_group]['cnt']++;
+                } else {
+                    $totalDealerGroupTarget[$delear_group]['total'] = $totalSideTarget;
+                    $totalDealerGroupTarget[$delear_group]['cnt'] = 0;
+                }
+
+                if( !empty($totalDealerGroupPencapaian[$delear_group]['total']) ) {
+                    $totalDealerGroupPencapaian[$delear_group]['total'] += $totalSidePencapaian;
+                } else {
+                    $totalDealerGroupPencapaian[$delear_group]['total'] = $totalSidePencapaian;
+                }
             }
 
-            if( empty($finishTotal[$manual_group][$temp_tye_id][$temp_group_id]) ) {
+            if( empty($finishTotal[$manual_group][$temp_tye_id][$temp_group_id]) && !empty($groupName[$manual_group][$temp_tye_id][$temp_group_id]['cnt']) ) {
                 echo $this->element('blocks/revenues/tables/achievement_report', array(
                     'manual_group' => $temp_manual_group,
                     'type_id' => $temp_tye_id,
@@ -134,12 +228,23 @@
                     'grandTotalPencapaianGroup' => $grandTotalPencapaianGroup,
                 ));
             }
+            if( !empty($finishTotalGroup['TotalGroup'][$temp_total_group]) ) {
+                echo $this->element('blocks/revenues/tables/achievement_total_group', array(
+                    'total_group' => $temp_total_group,
+                    'totalTargetGroup' => $totalGroupTarget,
+                    'totalPencapaianGroup' => $totalGroupPencapaian,
+                ));
+            }
+            if( !empty($finishTotalGroup['DelearGroup'][$temp_total_delear_group]) ) {
+                echo $this->element('blocks/revenues/tables/achievement_total_group', array(
+                    'total_group' => $temp_total_delear_group,
+                    'totalTargetGroup' => $totalDealerGroupTarget,
+                    'totalPencapaianGroup' => $totalDealerGroupPencapaian,
+                ));
+            }
 ?>
 <tr>
     <?php 
-            echo $this->Html->tag('td', '&nbsp;', array(
-                'style' => 'font-weight: bold;'
-            ));
             echo $this->Html->tag('td', __('TOTAL'), array(
                 'style' => 'font-weight: bold;'
             ));

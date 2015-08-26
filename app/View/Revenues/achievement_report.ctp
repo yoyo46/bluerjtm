@@ -174,11 +174,6 @@
             <thead frozen="true">
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', __('Cabang'), array(
-                                'style' => 'text-align: center;width: 150px;',
-                                'data-options' => 'field:\'branch\',width:150,',
-                                'rowspan' => $headerRowspan,
-                            ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Customer.code', __('Customer')), array(
                                 'style' => 'text-align: center;width: 150px;',
                                 'data-options' => 'field:\'customer_code\',width:150,',
@@ -414,7 +409,7 @@ EOD;
         var value = row.customer_code.substr(0, 5).toLowerCase();
 
         if( value == 'total' ) {
-            return 'background: #ffe48d;font-weight:bold;';
+            return 'background: #f4f4f4;font-weight:bold;';
         }
     }
 </script>
