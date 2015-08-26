@@ -246,7 +246,7 @@
                                 break;
 
                             case 'pool':
-                                $branch = $this->Common->filterEmptyField($value, 'City', 'name', '-');
+                                $branch = $this->Common->filterEmptyField($value, 'Branch', 'name', '-');
                                 echo $this->Html->tag('td', $branch, array(
                                     'class' => 'text-left',
                                 ));

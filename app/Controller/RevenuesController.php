@@ -1961,7 +1961,7 @@ class RevenuesController extends AppController {
         if( !empty($ttujs) ) {
             foreach ($ttujs as $key => $value) {
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'branch_id');
-                $value = $this->City->getMerge($value, $branch_id);
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
                 $ttujs[$key] = $value;
             }
         }
