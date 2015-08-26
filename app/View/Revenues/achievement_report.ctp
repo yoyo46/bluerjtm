@@ -409,8 +409,10 @@ EOD;
         var value = row.customer_code.substr(0, 5).toLowerCase();
         var temp_value = row.customer_code;
 
-        if( value == 'total' || $.inArray( temp_value, [ 'MSK.SRG', 'KAISAR' ] ) != '-1' ) {
-            return 'background: #f4f4f4;font-weight:bold;';
+        if( $.inArray( temp_value, [ 'MSK.SRG', 'KAISAR', 'SSP.JMB', 'HYT.PDG', 'SMG.JY', 'YIMM', 'YMMWJ' ] ) != '-1' ) {
+            return 'background: #f4f4f4;';
+        } else if( value == 'total' ) {
+            return 'background: rgba(221, 221, 221,0.5);font-weight:bold;';
         }
     }
 </script>
