@@ -194,7 +194,7 @@ class AjaxController extends AppController {
 			),
 			'contain' => false,
 		), true, array(
-			'plant' => true,
+			// 'plant' => true,
 		));
 
 		if( !empty($data_ttuj) ) {
@@ -1400,6 +1400,7 @@ class AjaxController extends AppController {
             'Ttuj.created' => 'DESC',
             'Ttuj.id' => 'DESC',
         );
+        $branchFlag = false;
 
         if(!empty($this->request->data)){
             if(!empty($this->request->data['Ttuj']['nottuj'])){
@@ -1516,7 +1517,8 @@ class AjaxController extends AppController {
                 $conditions['Ttuj.is_pool <>'] = 1;
                 $conditions['Ttuj.truck_id'] = $ttuj_id;
 				$data_change = 'laka-ttuj-change';
-        		$conditions = $this->MkCommon->_callConditionPlant($conditions, 'Ttuj');
+        		// $conditions = $this->MkCommon->_callConditionPlant($conditions, 'Ttuj');
+        		$branchFlag = true;
                 break;
 
             case 'uang_jalan_payment':
@@ -1540,7 +1542,7 @@ class AjaxController extends AppController {
             'order' => $orders,
             'limit' => Configure::read('__Site.config_pagination'),
         ), true, array(
-        	'branch' => false,
+        	'branch' => $branchFlag,
         ));
         $ttujs = $this->paginate('Ttuj');
 
@@ -1699,7 +1701,7 @@ class AjaxController extends AppController {
             ),
             'contain' => false,
         ), true, array(
-        	'plant' => true,
+        	// 'plant' => true,
         ));
 
 		$this->set(compact('driver_name', 'no_sim', 'ttujs'));
