@@ -38,7 +38,7 @@ class Log extends AppModel {
 	* 	@param array $options - options
 	* 	@return boolean result
 	*/
-	function logActivity( $info = NULL, $user = false, $requestHandler = false, $params = fase, $error = 0, $options = false ){
+	function logActivity( $info = NULL, $user = false, $requestHandler = false, $params = fase, $error = 0, $options = false, $transaction_id = false ){
 		$log = array();
 
 		if( !empty($options) ) {
@@ -53,6 +53,7 @@ class Log extends AppModel {
 			$info = sprintf('( %s ) %s', $user['User']['email'], $info);
 		}
 		
+		$log['Log']['transaction_id'] = $transaction_id;
 		$log['Log']['name'] = $info;
 		$log['Log']['model'] = $params['controller'];
 		$log['Log']['action'] = $params['action'];
@@ -73,6 +74,10 @@ class Log extends AppModel {
 				$log['Log']['os'] = '';
 			}
 			$log['Log']['from'] = $requestHandler->getReferer();
+		}
+
+		if( !empty($params['old_data']) ) {
+			$log['Log']['old_data'] = serialize( $params['old_data'] );
 		}
 
 		$log['Log']['data'] = serialize( $params['data'] );

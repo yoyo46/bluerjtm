@@ -556,7 +556,9 @@ class AjaxController extends AppController {
 		$truck = $this->Truck->getData('first', array(
 			'conditions' => array(
 				'Truck.nopol' => $nopol,
-			)
+			),
+		), true, array(
+			'branch' => false,
 		));
 
         $this->doEvent( $truck, $date );
@@ -598,10 +600,10 @@ class AjaxController extends AppController {
 
             if( !empty($id) ){
                 $this->CalendarEvent->id = $id;
-                $msg = 'merubah';
+                $msgText = 'merubah';
             }else{
                 $this->CalendarEvent->create();
-                $msg = 'menambah';
+                $msgText = 'menambah';
             }
 
             if( !empty($data['CalendarEvent']['from_date']) ) {
@@ -626,17 +628,21 @@ class AjaxController extends AppController {
 
             if($this->CalendarEvent->validates($data)){
                 if($this->CalendarEvent->save($data)){
+                	$transaction_id = $this->CalendarEvent->id;
+					$this->params['old_data'] = $data_local;
+					$this->params['data'] = $data;
+
                 	$msg = array(
 						'class' => 'success',
-						'text' => sprintf(__('Sukses %s Event'), $msg),
+						'text' => sprintf(__('Sukses %s Event'), $msgText),
 					);
-                    $this->Log->logActivity( sprintf(__('Sukses %s Event #%s'), $msg, $this->CalendarEvent->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Event #%s'), $msgText, $transaction_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $transaction_id );
                 }else{
                 	$msg = array(
 						'class' => 'error',
 						'text' => sprintf(__('Gagal %s Event'), $msg),
 					);
-                    $this->Log->logActivity( sprintf(__('Gagal %s Event #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Event #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
                 }
             }else{
             	$msg = array(
@@ -719,10 +725,10 @@ class AjaxController extends AppController {
 
             if($this->CalendarEvent->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses menghapus event.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses menghapus event ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
+                $this->Log->logActivity( sprintf(__('Sukses menghapus event ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal menghapus cevent.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal menghapus cevent ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                $this->Log->logActivity( sprintf(__('Gagal menghapus cevent ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Event tidak ditemukan.'), 'error');

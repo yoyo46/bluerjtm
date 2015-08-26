@@ -2221,11 +2221,11 @@ class RevenuesController extends AppController {
                 'Customer.branch_id' => $allow_branch_id,
             ),
             'order' => array(
+                'Customer.order_sort' => 'ASC',
+                'Customer.order' => 'ASC',
                 'Customer.manual_group' => 'ASC',
                 'Customer.customer_type_id' => 'DESC',
                 'Customer.customer_group_id' => 'ASC',
-                'Customer.order_sort' => 'ASC',
-                'Customer.order' => 'ASC',
             ),
             'contain' => array(
                 'CustomerGroup'

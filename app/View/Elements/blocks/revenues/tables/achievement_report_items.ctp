@@ -9,6 +9,7 @@
             $totalTargetGroup = array();
             $temp_tye_id = false;
             $temp_group_id = false;
+            $temp_manual_group = false;
             $finishTotal = array();
 
             foreach ($ttujs as $key => $value) {
@@ -24,9 +25,9 @@
                 $totalSidePencapaian = 0;
                 $totalSideTarget = 0;
 
-                if( !empty($temp_group_id) && !empty($temp_tye_id) && ( $temp_group_id != $customer_group_id || $temp_tye_id != $type_id ) ) {
+                if( !empty($temp_group_id) && !empty($temp_tye_id) && ( $temp_group_id != $customer_group_id || $temp_tye_id != $type_id || $temp_manual_group != $manual_group ) ) {
                     echo $this->element('blocks/revenues/tables/achievement_report', array(
-                        'manual_group' => $manual_group,
+                        'manual_group' => $temp_manual_group,
                         'type_id' => $temp_tye_id,
                         'customer_group_id' => $temp_group_id,
                         'groupName' => $groupName,
@@ -42,6 +43,7 @@
 
                 $temp_group_id = $customer_group_id;
                 $temp_tye_id = $type_id;
+                $temp_manual_group = $manual_group;
 ?>
 <tr>
     <?php 
@@ -121,7 +123,7 @@
 
             if( empty($finishTotal[$manual_group][$temp_tye_id][$temp_group_id]) ) {
                 echo $this->element('blocks/revenues/tables/achievement_report', array(
-                    'manual_group' => $manual_group,
+                    'manual_group' => $temp_manual_group,
                     'type_id' => $temp_tye_id,
                     'customer_group_id' => $temp_group_id,
                     'groupName' => $groupName,

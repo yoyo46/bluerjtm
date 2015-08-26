@@ -457,6 +457,7 @@ class Ttuj extends AppModel {
             array(
                 'Ttuj.to_city_id' => $data_branch_city_id,
                 'Ttuj.branch_id' => $branch_city_bongkar_id,
+                'Ttuj.to_city_id' => $branch_city_id,
             ),
             array(
                 'Ttuj.to_city_id <>' => $data_branch_city_id,

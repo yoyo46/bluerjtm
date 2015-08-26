@@ -324,15 +324,18 @@ class CashbanksController extends AppController {
                         }
                     }
 
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Kas/Bank'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Kas/Bank #%s'), $msg, $this->CashBank->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Kas/Bank #%s'), $msg, $this->CashBank->id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $cash_bank_id );
                     $this->redirect(array(
                         'controller' => 'cashbanks',
                         'action' => 'index'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Kas/Bank'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Kas/Bank #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                    $this->Log->logActivity( sprintf(__('Gagal %s Kas/Bank #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                 }
             }else{
                 $text = sprintf(__('Gagal %s Kas/Bank'), $msg);
@@ -493,10 +496,10 @@ class CashbanksController extends AppController {
                 }
 
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Kas/Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Kas/Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Kas/Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Kas/Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
@@ -723,10 +726,10 @@ class CashbanksController extends AppController {
                             }
 
                             $this->MkCommon->setCustomFlash('Berhasil melakukan Approval Kas/Bank.', 'success');
-                            $this->Log->logActivity( sprintf(__('Berhasil melakukan %s Kas/Bank #%s'), $status_document, $id), $this->user_data, $this->RequestHandler, $this->params );
+                            $this->Log->logActivity( sprintf(__('Berhasil melakukan %s Kas/Bank #%s'), $status_document, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
                         }else{
                             $this->MkCommon->setCustomFlash('Gagal melakukan Approval Kas/Bank.', 'error');
-                            $this->Log->logActivity( sprintf(__('Berhasil melakukan %s Kas/Bank #%s'), $status_document, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                            $this->Log->logActivity( sprintf(__('Berhasil melakukan %s Kas/Bank #%s'), $status_document, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                         }
                     }else{
                         $this->MkCommon->setCustomFlash('Silahkan pilih Status Approval', 'error');
@@ -936,11 +939,12 @@ class CashbanksController extends AppController {
                     $this->CashBankSetting->id = $value;
                     $this->CashBankSetting->set($data_arr);
                     $this->CashBankSetting->save();
+                    $transaction_id = $this->CashBankSetting->id;
 
                     if( $this->CashBankSetting->save() ) {
-                        $this->Log->logActivity( sprintf(__('Berhasil mengubah setting #%s'), $this->CashBankSetting->id), $this->user_data, $this->RequestHandler, $this->params );
+                        $this->Log->logActivity( sprintf(__('Berhasil mengubah setting #%s'), $transaction_id), $this->user_data,$this->RequestHandler, $this->params, 0, false, $transaction_id );
                     } else {
-                        $this->Log->logActivity( sprintf(__('Gagal mengubah setting #%s'), $value), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                        $this->Log->logActivity( sprintf(__('Gagal mengubah setting #%s'), $value), $this->user_data, $this->RequestHandler, $this->params, 1, false, $value );
                     }
                 }
             }
@@ -983,8 +987,9 @@ class CashbanksController extends AppController {
 
             if($this->CoaSetting->validates($data)){
                 if($this->CoaSetting->save($data)){
+                    $transaction_id = $this->CoaSetting->id;
                     $this->MkCommon->setCustomFlash(__('Sukses menyimpan pengaturan COA'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses menyimpan pengaturan COA #%s'), $this->CoaSetting->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Sukses menyimpan pengaturan COA #%s'), $transaction_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $transaction_id );
                     $this->redirect(array(
                         'controller' => 'cashbanks',
                         'action' => 'coa_setting'
