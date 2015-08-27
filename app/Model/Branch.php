@@ -154,7 +154,7 @@ class Branch extends AppModel {
         return $validateBranchCity;
     }
 
-    function doSave( $data, $value = false, $id = false ) {
+    function doSave( $data, $value = false, $id = false, $controller = false ) {
         $result = false;
         $default_msg = __('menyimpan cabang');
 
@@ -188,11 +188,13 @@ class Branch extends AppModel {
                         'msg' => sprintf(__('Berhasil %s'), $default_msg),
                         'status' => 'success',
                     );
+                    $controller->Log->logActivity( sprintf(__('Berhasil %s #%s'), $default_msg, $id), $controller->user_data, $controller->RequestHandler, $controller->params, 0, false, $id ); 
                 } else {
                     $result = array(
                         'msg' => sprintf(__('Gagal %s, mohon lengkapi semua data yang diperlukan'), $default_msg),
                         'status' => 'error',
                     );
+                    $controller->Log->logActivity( sprintf(__('Gagal %s #%s'), $default_msg, $id), $controller->user_data, $controller->RequestHandler, $controller->params, 0, false, $id ); 
                 }
             } else {
                 if( empty($validateBranchCity) ) {
@@ -225,7 +227,9 @@ class Branch extends AppModel {
         return $result;
     }
 
-    public function doToggle( $id, $fieldName = 'status', $value = 0 ) {
+    public function doToggle( $id, $controller = false ) {
+        $fieldName = 'status';
+        $value = 0;
         $default_msg = __('menghapus cabang');
 
         $this->id = $id;
@@ -236,11 +240,13 @@ class Branch extends AppModel {
                 'msg' => sprintf(__('Berhasil %s'), $default_msg),
                 'status' => 'success',
             );
+            $controller->Log->logActivity( sprintf(__('Berhasil %s #%s'), $default_msg, $id), $controller->user_data, $controller->RequestHandler, $controller->params, 0, false, $id ); 
         } else {
             $result = array(
                 'msg' => sprintf(__('Gagal %s'), $default_msg),
                 'status' => 'error',
             );
+            $controller->Log->logActivity( sprintf(__('Gagal %s #%s'), $default_msg, $id), $controller->user_data, $controller->RequestHandler, $controller->params, 1, false, $id ); 
         }
 
         return $result;

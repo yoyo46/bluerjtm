@@ -695,7 +695,7 @@ class RevenuesController extends AppController {
                                 if( empty($data['Ttuj']['is_draft']) && empty($data_local['Ttuj']['is_revenue']) ) {
                                     $revenue = $this->Revenue->getData('first', array(
                                         'conditions' => array(
-                                            'Revenue.ttuj_id' => $this->Ttuj->id,
+                                            'Revenue.ttuj_id' => $document_id,
                                         ),
                                     ));
 
@@ -704,7 +704,7 @@ class RevenuesController extends AppController {
 
                                         $dataRevenue['Revenue'] = array(
                                             'transaction_status' => 'unposting',
-                                            'ttuj_id' => $this->Ttuj->id,
+                                            'ttuj_id' => $document_id,
                                             'date_revenue' => $data['Ttuj']['ttuj_date'],
                                             'customer_id' => $data['Ttuj']['customer_id'],
                                             'ppn' => 0,
@@ -724,14 +724,17 @@ class RevenuesController extends AppController {
                                     }
                                 }
 
-                                $this->saveTtujTipeMotor($data_action, $dataTtujTipeMotor, $data, $dataRevenue, $this->Ttuj->id, $this->Revenue->id, $tarifDefault);
+                                $this->saveTtujTipeMotor($data_action, $dataTtujTipeMotor, $data, $dataRevenue, $document_id, $this->Revenue->id, $tarifDefault);
 
                                 if( !empty($dataTtujPerlengkapan) ) {
-                                    $this->saveTtujPerlengkapan($dataTtujPerlengkapan, $data, $this->Ttuj->id);
+                                    $this->saveTtujPerlengkapan($dataTtujPerlengkapan, $data, $document_id);
                                 }
 
+                                $this->params['old_data'] = $data_local;
+                                $this->params['data'] = $data;
+
                                 $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s TTUJ'), $msg), 'success');
-                                $this->Log->logActivity( sprintf(__('Sukses %s TTUJ #%s'), $msg, $this->Ttuj->id), $this->user_data, $this->RequestHandler, $this->params );
+                                $this->Log->logActivity( sprintf(__('Sukses %s TTUJ #%s'), $msg, $document_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $document_id );
 
                                 $this->redirect(array(
                                     'controller' => 'revenues',
@@ -739,7 +742,7 @@ class RevenuesController extends AppController {
                                 ));
                             }else{
                                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj'), $msg), 'error'); 
-                                $this->Log->logActivity( sprintf(__('Gagal %s TTUJ #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                                $this->Log->logActivity( sprintf(__('Gagal %s TTUJ #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                             }
                         } else {
                             $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj, Mohon lengkapi muatan truk.'), $msg), 'error');  
@@ -1243,10 +1246,10 @@ class RevenuesController extends AppController {
                 }
 
                 $this->MkCommon->setCustomFlash(__('TTUJ berhasil dibatalkan.'), 'success');
-                $this->Log->logActivity( sprintf(__('TTUJ ID #%s berhasil dibatalkan.'), $id), $this->user_data, $this->RequestHandler, $this->params );
+                $this->Log->logActivity( sprintf(__('TTUJ ID #%s berhasil dibatalkan.'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal membatalkan TTUJ.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal membatalkan TTUJ ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                $this->Log->logActivity( sprintf(__('Gagal membatalkan TTUJ ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
             }
         }else{
             $this->MkCommon->setCustomFlash(__('TTUJ tidak ditemukan.'), 'error');
@@ -1521,15 +1524,20 @@ class RevenuesController extends AppController {
 
             if($this->Ttuj->validates($dataTiba)){
                 if($this->Ttuj->save($dataTiba)){
+                    $ttuj_id = $this->Ttuj->id;
+
+                    $this->params['old_data'] = $ttuj;
+                    $this->params['data'] = $dataTiba;
+
                     $this->MkCommon->setCustomFlash(__('Sukses merubah TTUJ'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah TTUJ ID #%s.'), $this->Ttuj->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Sukses merubah TTUJ ID #%s.'), $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $ttuj_id );
                     $this->redirect(array(
                         'controller' => 'revenues',
                         'action' => $referer
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal merubah Ttuj'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah TTUJ #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Gagal merubah TTUJ #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                 }
             }
 
@@ -3114,7 +3122,7 @@ class RevenuesController extends AppController {
             $data = $this->request->data;
             $data['Revenue']['date_revenue'] = $this->MkCommon->getDate($data['Revenue']['date_revenue']);
             $data['Revenue']['branch_id'] = Configure::read('__Site.config_branch_id');
-            $resultSave = $this->Revenue->saveRevenue($id, $data_local, $data);
+            $resultSave = $this->Revenue->saveRevenue($id, $data_local, $data, $this);
             $statusSave = !empty($resultSave['status'])?$resultSave['status']:false;
             $msgSave = !empty($resultSave['msg'])?$resultSave['msg']:false;
             $this->MkCommon->setCustomFlash($msgSave, $statusSave);
@@ -3406,10 +3414,10 @@ class RevenuesController extends AppController {
                 $this->Ttuj->save();
 
                 $this->MkCommon->setCustomFlash(__('Revenue berhasil dibatalkan.'), 'success');
-                $this->Log->logActivity( sprintf(__('Revenue ID #%s berhasil dibatalkan.'), $id), $this->user_data, $this->RequestHandler, $this->params );
+                $this->Log->logActivity( sprintf(__('Revenue ID #%s berhasil dibatalkan.'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
             }else{
                 $this->MkCommon->setCustomFlash(__('Revenue membatalkan TTUJ.'), 'error');
-                $this->Log->logActivity( sprintf(__('Revenue membatalkan TTUJ ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );   
+                $this->Log->logActivity( sprintf(__('Revenue membatalkan TTUJ ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Revenue tidak ditemukan.'), 'error');
@@ -3792,10 +3800,13 @@ class RevenuesController extends AppController {
                                         $this->Journal->setJournal( $invoice_id, $invoice_number, 'invoice_coa_debit_id', $data['Invoice']['total'], 0, 'invoice' );
                                     }
 
+                                    $this->params['old_data'] = $data_local;
+                                    $this->params['data'] = $data;
+
                                     $this->Revenue->getProsesInvoice( $customer_id, $invoice_id, $action, $tarif_type, $value );
-                                    $this->Log->logActivity( sprintf(__('Berhasil %s Invoice #%s'), $msg, $this->Invoice->id), $this->user_data, $this->RequestHandler, $this->params );
+                                    $this->Log->logActivity( sprintf(__('Berhasil %s Invoice #%s'), $msg, $invoice_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $invoice_id );
                                 } else {
-                                    $this->Log->logActivity( sprintf(__('Gagal %s Invoice #%s'), $msg, $this->Invoice->id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                                    $this->Log->logActivity( sprintf(__('Gagal %s Invoice #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                                 }
                             }
 
@@ -3829,21 +3840,23 @@ class RevenuesController extends AppController {
                         //     $this->Customer->CustomerPattern->save();
                         // }
 
+                        $this->params['old_data'] = $data_local;
+                        $this->params['data'] = $data;
+
                         $this->Revenue->getProsesInvoice( $customer_id, $invoice_id, $action, $tarif_type );
                         $this->MkCommon->setCustomFlash(sprintf(__('Berhasil %s Invoice'), $msg), 'success'); 
-                        $this->Log->logActivity( sprintf(__('Berhasil %s Invoice #%s'), $msg, $invoice_id), $this->user_data, $this->RequestHandler, $this->params );
+                        $this->Log->logActivity( sprintf(__('Berhasil %s Invoice #%s'), $msg, $invoice_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $invoice_id );
                         $this->redirect(array(
                             'controller' => 'revenues',
                             'action' => 'invoices'
                         ));
                     }else{
                         $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Invoice'), $msg), 'error'); 
-                        $this->Log->logActivity( sprintf(__('Gagal %s Invoice #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                        $this->Log->logActivity( sprintf(__('Gagal %s Invoice #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                     }
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Invoice'), $msg), 'error'); 
-                $this->Log->logActivity( sprintf(__('Gagal %s Invoice'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
 
                 $this->request->data['Invoice']['no_invoice'] = $this->MkCommon->getNoInvoice( $customer );
             }
@@ -4521,15 +4534,18 @@ class RevenuesController extends AppController {
                         }
                     }
 
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Berhasil %s Pembayaran Invoice'), $msg), 'success'); 
-                    $this->Log->logActivity( sprintf(__('Berhasil %s Pembayaran Invoice #%s'), $msg, $invoice_payment_id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Berhasil %s Pembayaran Invoice #%s'), $msg, $invoice_payment_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $invoice_payment_id );
                     
                     $this->redirect(array(
                         'action' => 'invoice_payments'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Pembayaran Invoice'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Pembayaran Invoice #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Pembayaran Invoice #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
                 }
             }else{
                 $text = sprintf(__('Gagal %s Pembayaran Invoice'), $msg);
@@ -4693,10 +4709,10 @@ class RevenuesController extends AppController {
                     }
 
                     $this->MkCommon->setCustomFlash(__('Berhasil menghapus invoice pembayaran'), 'success');
-                    $this->Log->logActivity( sprintf(__('Berhasil menghapus invoice pembayara ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
+                    $this->Log->logActivity( sprintf(__('Berhasil menghapus invoice pembayaran ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal menghapus invoice pembayaran'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal menghapus invoice pembayara ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Gagal menghapus invoice pembayaran ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
                 }
             }else{
                 $this->MkCommon->setCustomFlash(__('Invoice pembayaran tidak ditemukan'), 'error');
@@ -5105,9 +5121,9 @@ class RevenuesController extends AppController {
                             'type' => 'success'
                         );
                         $this->MkCommon->setCustomFlash( $msg['msg'], $msg['type']);  
-                        $this->Log->logActivity( sprintf(__('Berhasil menghapus invoice #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
+                        $this->Log->logActivity( sprintf(__('Berhasil menghapus invoice #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
                     }else{
-                        $this->Log->logActivity( sprintf(__('Gagal menghapus invoice #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                        $this->Log->logActivity( sprintf(__('Gagal menghapus invoice #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
                     }
                 }else{
                     $msg = array(
@@ -5475,6 +5491,8 @@ class RevenuesController extends AppController {
                 if($this->SuratJalan->validates($data)){
                     if( $qtySJNow <= $qtyTipeMotor ) {
                         if($this->SuratJalan->save($data)){
+                            $sj_id = $this->SuratJalan->id;
+
                             if( $qtySJNow >= $qtyTipeMotor ) {
                                 $this->SuratJalan->Ttuj->set('is_sj_completed', 1);
                             } else {
@@ -5483,8 +5501,11 @@ class RevenuesController extends AppController {
                             $this->SuratJalan->Ttuj->id = $ttuj_id;
                             $this->SuratJalan->Ttuj->save();
 
+                            $this->params['old_data'] = $ttuj;
+                            $this->params['data'] = $data;
+
                             $this->MkCommon->setCustomFlash(__('Sukses menyimpan penerimaan SJ'), 'success');
-                            $this->Log->logActivity( sprintf(__('Sukses menerima SJ #%s'), $this->SuratJalan->id), $this->user_data, $this->RequestHandler, $this->params );
+                            $this->Log->logActivity( sprintf(__('Sukses menerima SJ #%s'), $sj_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $sj_id );
                             $this->redirect(array(
                                 'controller' => 'revenues',
                                 'action' => 'surat_jalan',
@@ -5492,7 +5513,7 @@ class RevenuesController extends AppController {
                             ));
                         }else{
                             $this->MkCommon->setCustomFlash(__('Gagal menyimpan penerimaan SJ'), 'error'); 
-                            $this->Log->logActivity( sprintf(__('Gagal menyimpan penerimaan SJ - TTUJ #%s'), $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                            $this->Log->logActivity( sprintf(__('Gagal menyimpan penerimaan SJ - TTUJ #%s'), $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_id ); 
                         }
                     } else {
                         $this->MkCommon->setCustomFlash(__('Qty diterima melebihi muatan truk'), 'error');
@@ -5533,10 +5554,10 @@ class RevenuesController extends AppController {
                 $this->Ttuj->save();
 
                 $this->MkCommon->setCustomFlash(__('Sukses membatalkan SJ.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses membatalkan SJ ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
+                $this->Log->logActivity( sprintf(__('Sukses membatalkan SJ ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal membatalkan SJ.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal membatalkan SJ ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->Log->logActivity( sprintf(__('Gagal membatalkan SJ ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
             }
         }else{
             $this->MkCommon->setCustomFlash(__('SJ tidak ditemukan.'), 'error');
@@ -6421,7 +6442,7 @@ class RevenuesController extends AppController {
                         $this->TtujPayment->TtujPaymentDetail->Ttuj->id = $ttuj_id;
                         
                         if( !$this->TtujPayment->TtujPaymentDetail->Ttuj->save() ) {
-                            $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran %s #%s'), $data_type, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                            $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran %s #%s'), $data_type, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_id );
                         }
                     }
                 }
@@ -6449,7 +6470,7 @@ class RevenuesController extends AppController {
             $this->TtujPayment->set('total_payment', $totalPayment);
 
             if( !$this->TtujPayment->save() ) {
-                $this->Log->logActivity( sprintf(__('Gagal mengubah total pembayaran ttuj #%s'), $ttuj_payment_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                $this->Log->logActivity( sprintf(__('Gagal mengubah total pembayaran ttuj #%s'), $ttuj_payment_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_payment_id );
             } else {
                 $this->loadModel('Journal');
                 $document_no = !empty($data['TtujPayment']['nodoc'])?$data['TtujPayment']['nodoc']:false;
@@ -6506,8 +6527,11 @@ class RevenuesController extends AppController {
                     $document_id = $this->TtujPayment->id;
                     $flagTtujPaymentDetail = $this->doTtujPaymentDetail($dataAmount, $data, $document_id);
 
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Berhasil melakukan Pembayaran %s'), $labelName), 'success'); 
-                    $this->Log->logActivity( sprintf(__('Berhasil melakukan Pembayaran %s #%s'), $labelName, $document_id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Berhasil melakukan Pembayaran %s #%s'), $labelName, $document_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $document_id );
                     
                     $this->redirect(array(
                         'action' => 'ttuj_payments',
@@ -6515,7 +6539,7 @@ class RevenuesController extends AppController {
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal melakukan Pembayaran %s'), $labelName), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal melakukan Pembayaran %s #%s'), $labelName, $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Gagal melakukan Pembayaran %s #%s'), $labelName, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                 }
             }else{
                 $msgError = array();
@@ -6618,7 +6642,7 @@ class RevenuesController extends AppController {
                                 $this->TtujPayment->TtujPaymentDetail->Ttuj->id = $ttuj_id;
                                 
                                 if( !$this->TtujPayment->TtujPaymentDetail->Ttuj->save() ) {
-                                    $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran %s #%s'), $data_type, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                                    $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran %s #%s'), $data_type, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_id );
                                 }
                             }
                         }
@@ -6642,9 +6666,9 @@ class RevenuesController extends AppController {
                             'type' => 'success'
                         );
                         $this->MkCommon->setCustomFlash( $msg['msg'], $msg['type']);  
-                        $this->Log->logActivity( sprintf(__('Berhasil menghapus pembayaran %s #%s'), $labelName, $id), $this->user_data, $this->RequestHandler, $this->params ); 
+                        $this->Log->logActivity( sprintf(__('Berhasil menghapus pembayaran %s #%s'), $labelName, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
                     }else{
-                        $this->Log->logActivity( sprintf(__('Gagal menghapus pembayaran %s #%s'), $labelName, $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                        $this->Log->logActivity( sprintf(__('Gagal menghapus pembayaran %s #%s'), $labelName, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
                     }
                 }else{
                     $msg = array(
@@ -6883,7 +6907,7 @@ class RevenuesController extends AppController {
                                             );
 
                                             if( !empty($dataRevenue['RevenueDetail']) && empty($tarifNotFound) ) {
-                                                $resultSave = $this->Revenue->saveRevenue(false, false, $dataRevenue);
+                                                $resultSave = $this->Revenue->saveRevenue(false, false, $dataRevenue, $this);
                                                 $statusSave = !empty($resultSave['status'])?$resultSave['status']:false;
                                                 $msgSave = !empty($resultSave['msg'])?$resultSave['msg']:false;
                                                 $this->MkCommon->setCustomFlash($msgSave, $statusSave);

@@ -91,13 +91,13 @@
 
                             if( !empty($value['Siup']['status']) ) {
                                 if( empty($value['Siup']['paid']) && empty($value['Siup']['rejected']) ){
-                                    echo $this->Html->link(__('Hapus'), array(
+                                    echo $this->Html->link(__('Void'), array(
                                         'controller' => 'trucks',
                                         'action' => 'siup_delete',
                                         $id
                                     ), array(
                                         'class' => 'btn btn-danger btn-xs'
-                                    ), __('Anda yakin ingin menghapus data Perpanjang Ijin Usaha ini?'));
+                                    ), __('Anda yakin ingin void data Perpanjang Ijin Usaha ini?'));
                                 }
                             }
                     ?>

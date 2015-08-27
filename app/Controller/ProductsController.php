@@ -91,15 +91,20 @@ class ProductsController extends AppController {
 
             if( $this->ProductCategory->validates($data) ){
                 if($this->ProductCategory->save($data)){
+                    $id = $this->ProductCategory->id;
+
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Kategori Barang'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Kategori Barang #%s'), $msg, $this->ProductCategory->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Kategori Barang #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
                     $this->redirect(array(
                         'controller' => 'products',
                         'action' => 'categories'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Kategori Barang'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Kategori Barang'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Kategori Barang'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Kategori Barang'), $msg), 'error');
@@ -134,10 +139,10 @@ class ProductsController extends AppController {
 
             if($this->ProductCategory->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Kategori Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Kategori Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Kategori Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Kategori Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Kategori Barang tidak ditemukan.'), 'error');
@@ -210,15 +215,20 @@ class ProductsController extends AppController {
 
             if( $this->ProductBrand->validates($data) ){
                 if($this->ProductBrand->save($data)){
+                    $id = $this->ProductBrand->id;
+
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Merk Barang'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Merk Barang #%s'), $msg, $this->ProductBrand->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Merk Barang #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
                     $this->redirect(array(
                         'controller' => 'products',
                         'action' => 'brands'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Merk Barang'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Merk Barang #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Merk Barang #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Merk Barang'), $msg), 'error');
@@ -253,10 +263,10 @@ class ProductsController extends AppController {
 
             if($this->ProductBrand->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Merk Barang tidak ditemukan.'), 'error');
@@ -329,15 +339,19 @@ class ProductsController extends AppController {
 
             if( $this->ProductBrand->validates($data) ){
                 if($this->ProductBrand->save($data)){
+                    $id = $this->ProductBrand->id;
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Merk Barang'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Merk Barang'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Merk Barang #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
                     $this->redirect(array(
                         'controller' => 'products',
                         'action' => 'brands'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Merk Barang'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Merk Barang'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Merk Barang'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Merk Barang'), $msg), 'error');
@@ -372,10 +386,10 @@ class ProductsController extends AppController {
 
             if($this->ProductBrand->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Merk Barang tidak ditemukan.'), 'error');

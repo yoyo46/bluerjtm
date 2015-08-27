@@ -111,9 +111,10 @@ class UsersController extends AppController {
                 $data['User']['password'] = !empty($data['User']['new_password']) ? $this->Auth->password($data['User']['new_password']):'';
 
                 if($this->User->save($data)){
-                    $this->MkCommon->setCustomFlash(__('Sukses mengganti password'), 'success');
+                    $id = $this->User->id;
 
-                    $this->Log->logActivity( sprintf(__('Sukses mengganti password #%s'), $this->User->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->MkCommon->setCustomFlash(__('Sukses mengganti password'), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses mengganti password #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
                     $this->redirect(array(
                         'controller' => 'users',
                         'action' => 'list_user',
@@ -121,7 +122,7 @@ class UsersController extends AppController {
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal mengganti password'), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal mengganti password #%s'), $this->User->id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Gagal mengganti password #%s'), $this->User->id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                 }
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal mengganti password'), 'error');
@@ -159,12 +160,13 @@ class UsersController extends AppController {
 				$data['User']['password_confirmation'] = !empty($data['User']['password_confirmation'])?$this->Auth->password($data['User']['password_confirmation']):'';
 
     			if($this->User->save($data)){
+                    $id = $this->User->id;
     				$this->MkCommon->setCustomFlash(__('sukses merubah password'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah password #%s'), $this->User->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Sukses merubah password #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
     				$this->redirect($this->here);
     			}else{
     				$this->MkCommon->setCustomFlash(__('Gagal merubah password'), 'error');	
-                    $this->Log->logActivity( sprintf(__('Gagal merubah password #%s'), $this->User->id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Gagal merubah password #%s'), $this->User->id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
     			}
     		}else{
     			$this->MkCommon->setCustomFlash(__('Gagal merubah password'), 'error');
@@ -199,12 +201,17 @@ class UsersController extends AppController {
 
             if($userValidates && $employeValidates){
 				if($this->User->save() && $this->User->Employe->save()){
+                    $id = $this->User->id;
+
+                    $this->params['old_data'] = $user;
+                    $this->params['data'] = $data;
+
 					$this->MkCommon->setCustomFlash(__('sukses merubah data'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses merubah data #%s'), $this->User->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Sukses merubah data #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
 					$this->redirect($this->here);	
 				}else{
 					$this->MkCommon->setCustomFlash(__('Gagal merubah data'), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal merubah data #%s'), $this->User->id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Gagal merubah data #%s'), $this->User->id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
 				}
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah data'), 'error');
@@ -287,15 +294,20 @@ class UsersController extends AppController {
 
             if($this->Group->validates($data)){
                 if($this->Group->save($data)){
+                    $id = $this->Group->id;
+
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
                     $this->MkCommon->setCustomFlash(__('Berhasil menyimpan Grup User'), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Grup User #%s'), $msg, $this->Group->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Grup User #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
                     $this->redirect(array(
                         'controller' => 'users',
                         'action' => 'groups'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal menyimpan Grup User'), 'error');  
-                    $this->Log->logActivity( sprintf(__('Gagal %s Grup User #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Gagal %s Grup User #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                 }
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal menyimpan Grup User'), 'error');
@@ -331,10 +343,10 @@ class UsersController extends AppController {
             $this->Group->set('status', $value);
             if($this->Group->save()){
                 $this->MkCommon->setCustomFlash(__('Berhasil menghapus Grup User'), 'success');
-                $this->Log->logActivity( sprintf(__('Berhasil menghapus Grup User #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
+                $this->Log->logActivity( sprintf(__('Berhasil menghapus Grup User #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal menghapus Grup User'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal menghapus Grup User #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                $this->Log->logActivity( sprintf(__('Gagal menghapus Grup User #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Grup User tidak ditemukan.'), 'error');
@@ -457,9 +469,10 @@ class UsersController extends AppController {
                     $this->Employe->id = $data['User']['employe_id'];
                     $this->Employe->set('is_registered', 1);
                     $this->Employe->save();
+                    $id = $this->User->id;
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s User'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s User #%s'), $msg, $this->User->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Sukses %s User #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
                     $this->redirect(array(
                         'controller' => 'users',
                         'action' => 'list_user',
@@ -467,7 +480,7 @@ class UsersController extends AppController {
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s User'), $msg), 'error');  
-                    $this->Log->logActivity( sprintf(__('Gagal %s User #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Gagal %s User #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s User'), $msg), 'error');
@@ -540,10 +553,10 @@ class UsersController extends AppController {
             $this->User->set('status', $value);
             if($this->User->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status user #%s'), $this->User->id), $this->user_data, $this->RequestHandler, $this->params );
+                $this->Log->logActivity( sprintf(__('Sukses merubah status user #%s'), $this->User->id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status user #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                $this->Log->logActivity( sprintf(__('Gagal merubah status user #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
             }
         }else{
             $this->MkCommon->setCustomFlash(__('User tidak ditemukan.'), 'error');
@@ -618,15 +631,19 @@ class UsersController extends AppController {
 
             if($this->EmployePosition->validates($data)){
                 if($this->EmployePosition->save($data)){
+                    $id = $this->EmployePosition->id;
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Posisi Karyawan'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Posisi Karyawan #%s'), $msg, $this->EmployePosition->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Posisi Karyawan #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
                     $this->redirect(array(
                         'controller' => 'users',
                         'action' => 'employe_positions'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Posisi Karyawan'), $msg), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal %s Posisi Karyawan #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Gagal %s Posisi Karyawan #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Posisi Karyawan'), $msg), 'error');
@@ -661,10 +678,10 @@ class UsersController extends AppController {
             $this->EmployePosition->set('status', $value);
             if($this->EmployePosition->save()){
                 $this->MkCommon->setCustomFlash(__('Berhasil menghapus data posisi karyawan'), 'success');
-                $this->Log->logActivity( sprintf(__('Berhasil menghapus data posisi karyawan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params );
+                $this->Log->logActivity( sprintf(__('Berhasil menghapus data posisi karyawan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal menghapus data posisi karyawan'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal menghapus data posisi karyawan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                $this->Log->logActivity( sprintf(__('Gagal menghapus data posisi karyawan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Posisi Karyawan tidak ditemukan.'), 'error');
@@ -766,15 +783,19 @@ class UsersController extends AppController {
 
             if($this->Employe->validates($data)){
                 if($this->Employe->save($data)){
+                    $id = $this->Employe->id;
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Karyawan'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Karyawan #%s'), $msg, $this->Employe->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Karyawan #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
                     $this->redirect(array(
                         'controller' => 'users',
                         'action' => 'employes'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Karyawan'), $msg), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal %s Karyawan #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Gagal %s Karyawan #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Karyawan'), $msg), 'error');
@@ -820,10 +841,10 @@ class UsersController extends AppController {
             $this->Employe->set('status', $value);
             if($this->Employe->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status karyawan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params );
+                $this->Log->logActivity( sprintf(__('Sukses merubah status karyawan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status karyawan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );        
+                $this->Log->logActivity( sprintf(__('Gagal merubah status karyawan ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Karyawan tidak ditemukan.'), 'error');
@@ -910,15 +931,20 @@ class UsersController extends AppController {
 
             if($this->BranchModule->validates($data)){
                 if($this->BranchModule->save($data)){
+                    $id = $this->BranchModule->id;
+
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Action Module'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Action Module #%s'), $msg, $this->BranchModule->id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Sukses %s Action Module #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
                     $this->redirect(array(
                         'controller' => 'users',
                         'action' => 'action_modules'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Action Module'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Action Module #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Gagal %s Action Module #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Action Module'), $msg), 'error');
@@ -957,10 +983,10 @@ class UsersController extends AppController {
 
             if($this->BranchModule->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses menghapus data action module.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses menghapus data action module ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params );
+                $this->Log->logActivity( sprintf(__('Sukses menghapus data action module ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal menghapus data action module.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal menghapus data action module ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->Log->logActivity( sprintf(__('Gagal menghapus data action module ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Action Module tidak ditemukan.'), 'error');

@@ -431,7 +431,7 @@ class Revenue extends AppModel {
         }
     }
 
-    function saveRevenue ( $id, $data_local, $data ) {
+    function saveRevenue ( $id, $data_local, $data, $controller ) {
         $data['Revenue']['date_sj'] = !empty($data['Revenue']['date_sj']) ? date('Y-m-d', strtotime($data['Revenue']['date_sj'])) : '';
         $data['Revenue']['ppn'] = !empty($data['Revenue']['ppn'])?$data['Revenue']['ppn']:0;
         $data['Revenue']['pph'] = !empty($data['Revenue']['pph'])?$data['Revenue']['pph']:0;
@@ -689,7 +689,7 @@ class Revenue extends AppModel {
                     'status' => 'error',
                     'msg' => sprintf(__('Gagal %s Revenue'), $msg),
                 );
-                $this->Log->logActivity( sprintf(__('Gagal %s Revenue #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->Log->logActivity( sprintf(__('Gagal %s Revenue #%s'), $msg, $id), $controller->user_data, $controller->RequestHandler, $controller->params, 1, false, $id ); 
             }
             
             if( empty($id) ) {
@@ -703,7 +703,7 @@ class Revenue extends AppModel {
                 'msg' => $msgAlert,
             );
 
-            $this->Log->logActivity( sprintf(__('Sukses %s Revenue #%s'), $msg, $revenue_id), $this->user_data, $this->RequestHandler, $this->params );
+            $this->Log->logActivity( sprintf(__('Sukses %s Revenue #%s'), $msg, $revenue_id), $controller->user_data, $controller->RequestHandler, $controller->params, 0, false, $revenue_id );
         }
 
         return $result;

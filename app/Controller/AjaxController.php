@@ -2576,10 +2576,13 @@ class AjaxController extends AppController {
 					
 					if($this->GroupBranch->save()){
 						$group_branch_id = $this->GroupBranch->id;
+    					$this->Log->logActivity( sprintf(__('Berhasil menambahkan otorisasi module #%s utk group user #%s'), $group_branch_id, $group_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $group_branch_id );
 
 						if( !empty($tmp_group_branch_id) ) {
 							$this->GroupBranch->delete($tmp_group_branch_id);
 						}
+					} else {
+    					$this->Log->logActivity( sprintf(__('Gagal menambahkan Group Cabang #%s utk group user #%s'), $branch_id, $group_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $group_id );
 					}
 				}
 
@@ -2610,8 +2613,12 @@ class AjaxController extends AppController {
 		            /*custom*/
 		            if(!empty($branch_modules) && !empty($checkall)){
 		            	$allow = 1;
+		            	$flagSave = true;
+		            	$default_msg = __('menambahkan otorisasi');
+
 		            	if($checkall == 'uncheckall'){
 		            		$allow = 0;
+		            		$default_msg = __('menghilangkan otorisasi');
 		            	}
 		            	
 						foreach ($branch_modules as $key_parent_1 => $value_module) {
@@ -2630,7 +2637,10 @@ class AjaxController extends AppController {
 									}
 
 									if($this->BranchActionModule->save()){
+										$id = $this->BranchActionModule->id;
 										$parent_modules[$key_parent]['child'][$key_parent_1]['BranchChild'][$key]['is_allow'] = $allow;
+									} else {
+		            					$flagSave = false;
 									}
 								}
 							}
@@ -2638,6 +2648,14 @@ class AjaxController extends AppController {
 					}
 		            /*end custom*/
 				}
+
+				if( !empty($default_msg) ) {
+	        		if( !empty($flagSave) ) {
+						$this->Log->logActivity( sprintf(__('Berhasil %s kpd group #%s utk semua module'), $default_msg, $group_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+	        		} else {
+						$this->Log->logActivity( sprintf(__('Gagal %s kpd group #%s utk semua module'), $default_msg, $group_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $group_id );
+	        		}
+	        	}
 
 				$branch_modules = $parent_modules;
 				
@@ -2678,8 +2696,12 @@ class AjaxController extends AppController {
 	            	$this->BranchActionModule->set('is_allow', $is_allow);
 
 	            	if($this->BranchActionModule->save()){
+	            		$id = $this->BranchActionModule->id;
 	            		$save = true;
 	            		$data_auth['BranchActionModule']['is_allow'] = $is_allow;
+    					$this->Log->logActivity( sprintf(__('Berhasil menambahkan otorisasi module #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+	            	} else {
+    					$this->Log->logActivity( sprintf(__('Gagal menambahkan Group Cabang #%s utk module #%s'), $group_branch_id, $branch_module_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $group_branch_id );
 	            	}
 	            }else{
 	            	$this->BranchActionModule->create();
@@ -2690,8 +2712,12 @@ class AjaxController extends AppController {
 	            	));
 
 	            	if($this->BranchActionModule->save()){
+	            		$id = $this->BranchActionModule->id;
 	            		$save = true;
 	            		$data_auth['BranchActionModule']['is_allow'] = 1;
+    					$this->Log->logActivity( sprintf(__('Berhasil menambahkan otorisasi module #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+	            	} else {
+    					$this->Log->logActivity( sprintf(__('Gagal menambahkan Group Cabang #%s utk module #%s'), $group_branch_id, $branch_module_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $group_branch_id );
 	            	}
 	            }
 
@@ -2733,6 +2759,9 @@ class AjaxController extends AppController {
 						'type' => 'success',
 						'msg' => 'Berhasil menghapus cabang'
 					);
+                    $this->Log->logActivity( sprintf(__('Berhasil menghapus cabang #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+				} else {
+                    $this->Log->logActivity( sprintf(__('Gagal menghapus cabang #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
 				}
 			}else{
 				$msg = array(
@@ -2785,8 +2814,12 @@ class AjaxController extends AppController {
 	            ));
 
             	$allow = 0;
+        		$default_msg = __('menghilangkan otorisasi');
+        		$flagSave = true;
+
 	            if($type == 'checkall'){
 	            	$allow = 1;
+            		$default_msg = __('menambahkan otorisasi');
 	            }
 
 	            if(!empty($branch_modules)){
@@ -2810,6 +2843,8 @@ class AjaxController extends AppController {
 
 							if($this->BranchActionModule->save()){
 								$branch_modules[$key_parent]['BranchChild'][$key]['is_allow'] = $allow;
+							} else {
+        						$flagSave = true;
 							}
 			            }
 	            	}
@@ -2818,6 +2853,14 @@ class AjaxController extends AppController {
 		            	'branch_modules', 'group_branch_id'
 	            	));
 		        }
+
+				if( !empty($default_msg) ) {
+	        		if( !empty($flagSave) ) {
+						$this->Log->logActivity( sprintf(__('Berhasil %s kpd group #%s utk semua module #%s di cabang #%s'), $default_msg, $group_id, $parent_id, $branch_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+	        		} else {
+						$this->Log->logActivity( sprintf(__('Gagal %s kpd group #%s utk semua module #%s di cabang #%s'), $default_msg, $group_id, $parent_id, $branch_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $group_id );
+	        		}
+	        	}
             }
 		}
 	}

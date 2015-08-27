@@ -264,8 +264,11 @@ class LkusController extends AppController {
                         $this->Lku->LkuDetail->save();
                     }
 
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s LKU'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Berhasil %s LKU #%s'), $msg, $lku_id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Berhasil %s LKU #%s'), $msg, $lku_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $lku_id );
 
                     $this->redirect(array(
                         'controller' => 'Lkus',
@@ -273,7 +276,7 @@ class LkusController extends AppController {
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LKU. Lengkapi field yang dibutuhkan'), $msg), 'error');
-                    $this->Log->logActivity( sprintf(__('Berhasil %s LKU #%s'), $msg, $lku_id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Berhasil %s LKU #%s'), $msg, $lku_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LKU. Lengkapi field yang dibutuhkan'), $msg), 'error');
@@ -448,10 +451,10 @@ class LkusController extends AppController {
 
             if($this->Lku->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
+                $this->Log->logActivity( sprintf(__('Sukses merubah status LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                $this->Log->logActivity( sprintf(__('Gagal merubah status LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Lku tidak ditemukan.'), 'error');
@@ -708,7 +711,10 @@ class LkusController extends AppController {
                         }
                     }
 
-                    $this->Log->logActivity( sprintf(__('Sukses %s Pembayaran LKU ID #%s'), $msg, $lku_payment_id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
+                    $this->Log->logActivity( sprintf(__('Sukses %s Pembayaran LKU ID #%s'), $msg, $lku_payment_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $lku_payment_id );
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Pembayaran LKU'), $msg), 'success');
                     $this->redirect(array(
                         'controller' => 'Lkus',
@@ -717,7 +723,7 @@ class LkusController extends AppController {
 
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Pembayaran LKU'), $msg), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal %s Pembayaran LKU #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
+                    $this->Log->logActivity( sprintf(__('Gagal %s Pembayaran LKU #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );  
                 }
             }else{
                 $text = sprintf(__('Gagal %s pembayaran lku'), $msg);
@@ -1400,8 +1406,11 @@ class LkusController extends AppController {
                         $this->Ksu->KsuDetail->save();
                     }
 
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s KSU'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Berhasil %s KSU #%s'), $msg, $ksu_id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->Log->logActivity( sprintf(__('Berhasil %s KSU #%s'), $msg, $ksu_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $ksu_id );
 
                     $this->redirect(array(
                         'controller' => 'lkus',
@@ -1409,7 +1418,7 @@ class LkusController extends AppController {
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s KSU'), $msg), 'error');
-                    $this->Log->logActivity( sprintf(__('Berhasil %s KSU #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                    $this->Log->logActivity( sprintf(__('Berhasil %s KSU #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                 }
             }else{
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s KSU'), $msg), 'error');
@@ -1573,10 +1582,10 @@ class LkusController extends AppController {
 
             if($this->Ksu->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params );
+                $this->Log->logActivity( sprintf(__('Sukses merubah status KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 );
+                $this->Log->logActivity( sprintf(__('Gagal merubah status KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Ksu tidak ditemukan.'), 'error');
@@ -1853,7 +1862,10 @@ class LkusController extends AppController {
                         }
                     }
 
-                    $this->Log->logActivity( sprintf(__('Sukses %s Pembayaran LKU ID #%s'), $msg, $ksu_payment_id), $this->user_data, $this->RequestHandler, $this->params );
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
+                    $this->Log->logActivity( sprintf(__('Sukses %s Pembayaran LKU ID #%s'), $msg, $ksu_payment_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $ksu_payment_id );
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Pembayaran LKU'), $msg), 'success');
                     $this->redirect(array(
                         'controller' => 'lkus',
@@ -1862,7 +1874,7 @@ class LkusController extends AppController {
 
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Pembayaran LKU'), $msg), 'error');
-                    $this->Log->logActivity( sprintf(__('Gagal %s Pembayaran LKU #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1 );  
+                    $this->Log->logActivity( sprintf(__('Gagal %s Pembayaran LKU #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );  
                 }
             }else{
                 $text = sprintf(__('Gagal %s pembayaran ksu'), $msg);
@@ -2125,10 +2137,10 @@ class LkusController extends AppController {
                 }
 
                 $this->MkCommon->setCustomFlash(__('Berhasil menghapus pembayaran LKU'), 'success');
-                $this->Log->logActivity( sprintf(__('Berhasil menghapus pembayaran LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
+                $this->Log->logActivity( sprintf(__('Berhasil menghapus pembayaran LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal menghapus pembayaran LKU'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal menghapus pembayaran LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->Log->logActivity( sprintf(__('Gagal menghapus pembayaran LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Pembayaran LKU tidak ditemukan'), 'error');
@@ -2204,10 +2216,10 @@ class LkusController extends AppController {
                 }
 
                 $this->MkCommon->setCustomFlash(__('Berhasil menghapus pembayaran KSU'), 'success');
-                $this->Log->logActivity( sprintf(__('Berhasil menghapus pembayaran KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params ); 
+                $this->Log->logActivity( sprintf(__('Berhasil menghapus pembayaran KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal menghapus pembayaran KSU'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal menghapus pembayaran KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1 ); 
+                $this->Log->logActivity( sprintf(__('Gagal menghapus pembayaran KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
             }
         }else{
             $this->MkCommon->setCustomFlash(__('Pembayaran KSU tidak ditemukan'), 'error');

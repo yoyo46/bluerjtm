@@ -141,7 +141,7 @@ class TruckMutation extends AppModel {
         return $result;
     }
 
-    function doSave( $data, $value = false, $id = false ) {
+    function doSave( $data, $value = false, $id = false, $controller = false ) {
         $result = false;
         $allowNopol = true;
         $default_msg = __('menyimpan data mutasi truk');
@@ -334,11 +334,13 @@ class TruckMutation extends AppModel {
                         'msg' => sprintf(__('Berhasil %s'), $default_msg),
                         'status' => 'success',
                     );
+                    $controller->Log->logActivity( sprintf(__('Berhasil %s #%s'), $default_msg, $id), $controller->user_data, $controller->RequestHandler, $controller->params, 0, false, $id ); 
                 } else {
                     $result = array(
                         'msg' => sprintf(__('Gagal %s'), $default_msg),
                         'status' => 'error',
                     );
+                    $controller->Log->logActivity( sprintf(__('Gagal %s #%s'), $default_msg, $id), $controller->user_data, $controller->RequestHandler, $controller->params, 0, false, $id ); 
                 }
             } else {
                 if( empty($allowNopol) ) {
