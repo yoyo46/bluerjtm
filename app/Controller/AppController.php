@@ -58,8 +58,8 @@ class AppController extends Controller {
 	    $User = array();
 
 		$_allowModule = array();
-		$paramController = $this->params['controller'];
-		$paramAction = $this->params['action'];
+		$this->paramController = $paramController = $this->params['controller'];
+		$this->paramAction = $paramAction = $this->params['action'];
 
 		$this->Auth->authError = __('Anda tidak mempunyai hak mengakses konten tersebut.');
 

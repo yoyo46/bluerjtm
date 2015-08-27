@@ -62,6 +62,12 @@ class Leasing extends AppModel {
                 'message' => 'Tanggal angsuran terakhir harap diisi'
             ),
         ),
+        'total_leasing' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Total leasing harap diisi'
+            ),
+        ),
         'leasing_month' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

@@ -29,12 +29,14 @@
                     $urlDefault['action'] = 'point_perplant_report';
 
                     $urlExcel = $urlDefault;
+                    $urlExcel[] = $data_type;
                     $urlExcel[] = 'excel';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
                         'escape' => false,
                         'class' => 'btn btn-success pull-right'
                     ));
                     $urlPdf = $urlDefault;
+                    $urlPdf[] = $data_type;
                     $urlPdf[] = 'pdf';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
                         'escape' => false,
@@ -85,60 +87,8 @@
                 </tr>
             </thead>
             <tbody>
-                <?php
-                        if(!empty($customers)){
-                            $total = array();
-
-                            foreach ($customers as $key => $customer) {
-                ?>
-                <tr>
-                    <?php
-                            $customer_id = $customer['Customer']['id'];
-                            $totalMuatan = 0;
-
-                            echo $this->Html->tag('td', $customer['Customer']['code']);
-
-                            if( $data_type == 'retail' ) {
-                                $totalMuatan = !empty($dataTtuj[$customer_id])?$dataTtuj[$customer_id]:'-';
-                                echo $this->Html->tag('td', $this->Html->tag('div', $totalMuatan, array(
-                                    'style' => 'width: 60px;text-align: center;',
-                                )), array(
-                                    'style' => $tdStyle,
-                                ));
-                            } else {
-                                if( !empty($branches) ) {
-                                    foreach ($branches as $branch_id => $branch) {
-                                        $muatan = !empty($dataTtuj[$customer_id][$branch_id])?$dataTtuj[$customer_id][$branch_id]:'-';
-                                        $totalMuatan += $muatan;
-
-                                        echo $this->Html->tag('td', $muatan, array(
-                                            'class' => 'text-center',
-                                            'style' => 'width: 100px;text-align: center;',
-                                        ));
-                                    }
-                                }
-
-                                echo $this->Html->tag('td', $this->Html->tag('div', $totalMuatan, array(
-                                    'style' => 'width: 60px;text-align: center;',
-                                )), array(
-                                    'style' => $tdStyle,
-                                ));
-                            }
-
-                            $target_rit = !empty($targetUnit[$customer['Customer']['id']][$currentMonth])?$targetUnit[$customer['Customer']['id']][$currentMonth]:'-';
-                            echo $this->Html->tag('td', $target_rit, array(
-                                'style' => 'width: 60px;text-align: center;',
-                            ));
-                    ?>
-                </tr>
                 <?php 
-
-                            }
-                        }else{
-                            echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan'), array(
-                                'colspan' => '7'
-                            )));
-                        }
+                        echo $this->element('blocks/trucks/tables/point_perplant_report_items');
                 ?>
             </tbody>
         </table>
@@ -152,12 +102,6 @@
             echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
                 'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'
             ));
-            
-            if( $data_action != 'excel' ) {
-                echo $this->Html->tag('div', $this->element('pagination'), array(
-                    'class' => 'pagination-report'
-                ));
-            }
     ?>
 </section>
 <?php
@@ -180,50 +124,8 @@
         $table_tr_head = 'background-color: #3C8DBC; border-right: 1px solid #FFFFFF; color: #FFFFFF; font-weight: bold; padding: 0 10px; text-align: left;';
         $table_th = 'padding-top: 3px';
         $table = 'width:100%;font-size: 24px; border: 1px solid #CCC; border-collapse: collapse; padding: 0; margin: 0;';
-        
-        $each_loop_message = '';
-
-        if(!empty($customers)){
-            foreach ($customers as $customer):
-                $customer_id = $customer['Customer']['id'];
-                $totalMuatan = 0;
-
-                $content = $this->Html->tag('td', $customer['Customer']['code']);
-
-                if( $data_type == 'retail' ) {
-                    $totalMuatan = !empty($dataTtuj[$customer_id])?$dataTtuj[$customer_id]:'-';
-                } else {
-                    if( !empty($branches) ) {
-                        foreach ($branches as $branch_id => $branch) {
-                            $muatan = !empty($dataTtuj[$customer_id][$branch_id])?$dataTtuj[$customer_id][$branch_id]:'-';
-                            $totalMuatan += $muatan;
-
-                            $content .= $this->Html->tag('td', $muatan, array(
-                                'style' => 'text-align: center;',
-                            ));
-                        }
-                    }
-                }
-
-                $content .= $this->Html->tag('td', $totalMuatan, array(
-                    'style' => 'text-align: center;',
-                ));
-
-                $target_rit = !empty($targetUnit[$customer['Customer']['id']][$currentMonth])?$targetUnit[$customer['Customer']['id']][$currentMonth]:'-';
-                $content .= $this->Html->tag('td', $target_rit, array(
-                    'style' => 'text-align: center;',
-                ));
-
-                $each_loop_message .= $this->Html->tag('tr', $content);
-            endforeach;
-        }else{
-            $each_loop_message .= '<tr>
-                <td colspan="7">data tidak tersedia</td>
-            </tr>';
-        }
-
+        $each_loop_message = $this->element('blocks/trucks/tables/point_perplant_report_items');
         $header = $this->Html->tag('th', __('Customer'), array(
-            'rowspan' => 2,
             'style' => 'text-align: center;',
         ));
 
@@ -273,6 +175,7 @@ $tbl = <<<EOD
         $print_label
       </div>
 EOD;
+// echo $tbl;die();
 
         // output the HTML content
         $tcpdf->writeHTML($tbl, true, false, false, false, '');

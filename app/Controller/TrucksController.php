@@ -1122,9 +1122,12 @@ class TrucksController extends AppController {
         if(!empty($kir)){
             // $branch_id = $this->MkCommon->filterEmptyField($kir, 'Kir', 'branch_id');
             // $this->MkCommon->allowPage($branch_id);
+            $this->MkCommon->getLogs($this->paramController, array( 'kir_edit', 'kir_add' ), $id);
 
             $this->doKir($id, $kir);
-            $this->set(compact('truck', 'kir'));
+            $this->set(compact(
+                'truck', 'kir'
+            ));
         }else{
             $this->MkCommon->setCustomFlash(__('KIR Truk tidak ditemukan'), 'error');  
             $this->redirect(array(
@@ -3363,8 +3366,15 @@ class TrucksController extends AppController {
 
         $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
         $lastDay = date('t', strtotime($currentMonth));
-        $options = $this->Customer->getData('paginate', array(
+        $customers = $this->Customer->getData('all', array(
             'conditions' => $conditions,
+            'order' => array(
+                'Customer.order_sort' => 'ASC',
+                'Customer.order' => 'ASC',
+                'Customer.manual_group' => 'ASC',
+                'Customer.customer_type_id' => 'DESC',
+                'Customer.customer_group_id' => 'ASC',
+            ),
         ), true, array(
             'branch' => false,
         ));
@@ -3375,13 +3385,13 @@ class TrucksController extends AppController {
             $options['limit'] = 20;
         }
 
-        $this->paginate = $options;
-        $customers = $this->paginate('Customer');
-
         if( !empty($customers) ) {
             foreach ($customers as $key => $value) {
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'branch_id');
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                
+                $customer_group_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'customer_group_id');
+                $value = $this->Customer->CustomerGroup->getMerge($value, $customer_group_id);
                 $customers[$key] = $value;
             }
         }
@@ -3529,10 +3539,9 @@ class TrucksController extends AppController {
             $options['limit'] = 20;
         }
 
-        $this->paginate = $this->Customer->getData('paginate', $options, true, array(
+        $customers = $this->Customer->getData('all', $options, true, array(
             'branch' => false,
         ));
-        $customers = $this->paginate('Customer');
 
         if( !empty($customers) ) {
             foreach ($customers as $key => $value) {
@@ -3618,8 +3627,8 @@ class TrucksController extends AppController {
                 if( empty($branches[$branch_id]) ) {
                     $value = $this->GroupBranch->Branch->getMerge( $value, $branch_id );
 
-                    if( !empty($value['City']['name']) ) {
-                        $branches[$branch_id] = $value['City']['name'];
+                    if( !empty($value['Branch']['code']) ) {
+                        $branches[$branch_id] = $value['Branch']['code'];
                     }
                 }
 

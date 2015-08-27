@@ -95,6 +95,16 @@ body > .header {
   display: block;
 }
 
+.history-logs {
+  margin-top: 25px;
+}
+
+.overflow-y {
+  height: 150px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
 @media screen and (min-width: 992px) {
   .left-side {
     top: 50px;

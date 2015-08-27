@@ -58,7 +58,7 @@
             </div>
         </div>
         <hr>
-        <div class="list-report-monitoring">
+        <div class="list-report-monitoring overflow-y">
             <?php 
                     echo $this->Form->label('monitoring_customer_id', __('Customer'));
             ?>
@@ -114,7 +114,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'controller' => 'trucks', 
+                                'controller' => 'revenues', 
                                 'action' => 'monitoring_truck', 
                             ), array(
                                 'escape' => false, 

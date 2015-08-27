@@ -828,5 +828,22 @@ class MkCommonComponent extends Component {
 
         return $conditions;
     }
+
+    function getLogs( $paramController, $paramAction, $id ) {
+        $this->Log = ClassRegistry::init('Log'); 
+
+        $this->controller->paginate = $this->Log->getLogs( $paramController, $paramAction, $id );
+        $logs = $this->controller->paginate('Log');
+
+        if( !empty($logs) ) {
+            foreach ($logs as $key => $value) {
+                $user_id = $this->filterEmptyField($value, 'Log', 'user_id');
+                $value = $this->Log->User->getMerge($value, $user_id);
+                $logs[$key] = $value;
+            }
+        }
+
+        $this->controller->set('logs', $logs);
+    }
 }
 ?>

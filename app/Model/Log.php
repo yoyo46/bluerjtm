@@ -130,5 +130,22 @@ class Log extends AppModel {
 		}
         return $result;
 	}
+
+	function getLogs( $paramController, $paramAction, $id ) {
+		$logs = $this->getData('paginate', array(
+			'conditions' => array(
+				'Log.transaction_id' => $id,
+				'Log.model' => $paramController,
+				'Log.action' => $paramAction,
+			),
+			'order' => array(
+				'Log.created' => 'DESC',
+				'Log.id' => 'DESC',
+			),
+			'limit' => 50,
+		));
+
+		return $logs;
+	}
 }
 ?>

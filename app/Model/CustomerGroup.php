@@ -52,5 +52,21 @@ class CustomerGroup extends AppModel {
         }
         return $result;
     }
+
+    function getMerge($data, $id){
+        if(empty($data['CustomerGroup'])){
+            $data_merge = $this->getData('first', array(
+                'conditions' => array(
+                    'CustomerGroup.id' => $id
+                )
+            ));
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

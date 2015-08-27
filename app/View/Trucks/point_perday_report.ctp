@@ -55,13 +55,13 @@
     <?php 
             }
     ?>
-        <table id="tt" class="table table-bordered <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true" border="<?php echo $border; ?>">
+        <table id="tt" class="table table-bordered <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true" border="<?php echo $border; ?>" data-options="rowStyler: rowColored">
             <thead frozen="true">
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.customer_name', __('Customer')), array(
+                            echo $this->Html->tag('th', $this->Common->getSorting('Customer.customer_code', __('Customer')), array(
                                 'style' => 'text-align: center;',
-                                'data-options' => 'field:\'customer_name\',width:120',
+                                'data-options' => 'field:\'customer_code\',width:120',
                             ));
 
                             if( $data_action != 'excel' ) {
@@ -97,48 +97,8 @@
                 </tr>
             </thead>
             <tbody>
-                <?php
-                        if(!empty($customers)){
-                            foreach ($customers as $key => $customer) {
-                                $customer_id = $customer['Customer']['id'];
-                                $totalMuatan = 0;
-                ?>
-                <tr>
-                    <?php
-                            echo $this->Html->tag('td', $customer['Customer']['code']);
-
-                            for ($i=1; $i <= $lastDay; $i++) {
-                                $day = date('d', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth))));
-                                $muatan = !empty($dataTtuj[$customer_id][$day])?$dataTtuj[$customer_id][$day]:'-';
-
-                                if( is_numeric($muatan) ) {
-                                    $totalMuatan += $muatan;
-                                }
-
-                                echo $this->Html->tag('td', $muatan, array(
-                                    'class' => 'text-center',
-                                    'style' => 'text-align: center;',
-                                ));
-                            }
-
-                            echo $this->Html->tag('td', $totalMuatan, array(
-                                'style' => 'text-align: center;',
-                            ));
-
-                            $target_rit = !empty($targetUnit[$customer['Customer']['id']][$currentMonth])?$targetUnit[$customer['Customer']['id']][$currentMonth]:'-';
-                            echo $this->Html->tag('td', $target_rit, array(
-                                'style' => 'text-align: center;',
-                            ));
-                    ?>
-                </tr>
                 <?php 
-
-                            }
-                        }else{
-                            echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan'), array(
-                                'colspan' => '7'
-                            )));
-                        }
+                        echo $this->element('blocks/trucks/tables/point_perday_report_items');
                 ?>
             </tbody>
         </table>
@@ -152,12 +112,6 @@
             echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
                 'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'
             ));
-            
-            if( $data_action != 'excel' ) {
-                echo $this->Html->tag('div', $this->element('pagination'), array(
-                    'class' => 'pagination-report'
-                ));
-            }
     ?>
 </section>
 <?php
@@ -180,42 +134,7 @@
         $table_tr_head = 'background-color: #3C8DBC; border-right: 1px solid #FFFFFF; color: #FFFFFF; font-weight: bold; padding: 0 10px; text-align: left;';
         $table_th = 'padding-top: 3px';
         $table = 'width:100%;font-size: 24px; border: 1px solid #CCC; border-collapse: collapse; padding: 0; margin: 0;';
-        
-        $each_loop_message = '';
-
-        if(!empty($customers)){
-            foreach ($customers as $customer):
-
-                $customer_id = $customer['Customer']['id'];
-                $totalMuatan = 0;
-
-                $content = $this->Html->tag('td', $customer['Customer']['code']);
-
-                for ($i=1; $i <= $lastDay; $i++) {
-                    $muatan = !empty($dataTtuj[$customer_id][date('d', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth))))])?$dataTtuj[$customer_id][date('d', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth))))]:'-';
-                    $totalMuatan += $muatan;
-                    $content .= $this->Html->tag('td', $muatan, array(
-                        'style' => 'text-align: center;',
-                    ));
-                }
-
-                $content .= $this->Html->tag('td', $totalMuatan, array(
-                    'style' => 'text-align: center;',
-                ));
-
-                $target_rit = !empty($targetUnit[$customer['Customer']['id']][$currentMonth])?$targetUnit[$customer['Customer']['id']][$currentMonth]:'-';
-                $content .= $this->Html->tag('td', $target_rit, array(
-                    'style' => 'text-align: center;',
-                ));
-
-                $each_loop_message .= $this->Html->tag('tr', $content);
-            endforeach;
-        }else{
-            $each_loop_message .= '<tr>
-                <td colspan="7">data tidak tersedia</td>
-            </tr>';
-        }
-
+        $each_loop_message = $this->element('blocks/trucks/tables/point_perday_report_items');
         $header = $this->Html->tag('th', __('Customer'), array(
             'rowspan' => 2,
             'style' => 'text-align: center;',
@@ -275,3 +194,15 @@ EOD;
         readfile($path.'/'.$filename);
     }
 ?>
+<script type="text/javascript">
+    function rowColored (index,row) {
+        var value = row.customer_code.substr(0, 5).toLowerCase();
+        var temp_value = row.customer_code;
+
+        if( $.inArray( temp_value, [ 'MSK.SRG', 'KAISAR', 'SSP.JMB', 'HYT.PDG', 'SMG.JY', 'YIMM', 'YMMWJ' ] ) != '-1' ) {
+            return 'background: #f4f4f4;';
+        } else if( value == 'total' ) {
+            return 'background: rgba(221, 221, 221,0.5);font-weight:bold;';
+        }
+    }
+</script>

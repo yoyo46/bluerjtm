@@ -2554,9 +2554,6 @@ class RevenuesController extends AppController {
             'order' => array(
                 'Ttuj.customer_name' => 'ASC', 
             ),
-            'group' => array(
-                'Ttuj.customer_id'
-            ),
         ), true, array(
             'branch' => false,
         ));
@@ -2851,6 +2848,7 @@ class RevenuesController extends AppController {
             'conditions' => array(
                 'Truck.status' => 1,
                 'TruckCustomer.primary' => 1,
+                'TruckCustomer.branch_id' => $allow_branch_id,
             ),
             'fields' => array(
                 'CustomerNoType.id', 'CustomerNoType.code'
@@ -2859,6 +2857,9 @@ class RevenuesController extends AppController {
                 'Truck',
                 'CustomerNoType',
             ),
+        ), array(
+            'branch' => false,
+            'plant' => false,
         ));
 
         $this->set(compact(
