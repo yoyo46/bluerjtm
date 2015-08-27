@@ -249,6 +249,8 @@ class Revenue extends AppModel {
                 'fields' => array(
                     'Revenue.id', 'Revenue.id',
                 ),
+            ), true, array(
+                'branch' => false,
             ));
         }
 
@@ -299,6 +301,8 @@ class Revenue extends AppModel {
             default:
                 $revenue = $this->getData('first', array(
                     'conditions' => $conditions,
+                ), true, array(
+                    'branch' => false,
                 ));
 
                 if( !empty($revenue) ) {

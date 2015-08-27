@@ -4800,6 +4800,9 @@ class RevenuesController extends AppController {
             'Invoice.is_canceled' => 1,
             'Invoice.branch_id' => $allow_branch_id,
         );
+        $customerConditions = array(
+            'Customer.branch_id' => $allow_branch_id,
+        );
 
         if( !empty($this->params['named']) ){
             $refine = $this->params['named'];
@@ -4892,12 +4895,18 @@ class RevenuesController extends AppController {
 
         $dataStatus['InvoiceUnpaid'] = $this->Invoice->getData('count', array(
             'conditions' => $invoiceUnpaidOption,
+        ), true, array(
+            'branch' => false,
         ));
         $dataStatus['InvoicePaid'] = $this->Invoice->getData('count', array(
             'conditions' => $invoicePaidOption,
+        ), true, array(
+            'branch' => false,
         ));
         $dataStatus['InvoiceHalfPaid'] = $this->Invoice->getData('count', array(
             'conditions' => $invoiceHalfPaidOption,
+        ), true, array(
+            'branch' => false,
         ));
         $dataStatus['InvoiceVoid'] = $this->Invoice->getData('count', array(
             'conditions' => $invoiceVoidOption,
@@ -4917,6 +4926,10 @@ class RevenuesController extends AppController {
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
+            'conditions' => $customerConditions,
+        ), true, array(
+            'branch' => false,
+            'plant' => false,
         ));
         $this->set('customers', $customers);
         $this->set('sub_module_title', __('List Kwitansi'));
@@ -5132,12 +5145,15 @@ class RevenuesController extends AppController {
         $this->loadModel('Customer');
         $this->loadModel('Invoice');
         $this->loadModel('InvoicePayment');
+
         $fromMonth = '01';
         $fromYear = date('Y');
         $toMonth = date('m');
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $conditions = array(
-            'Customer.status' => 1,
+            'Customer.branch_id' => $allow_branch_id,
         );
+        $optionConditions = $conditions;
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -5159,9 +5175,15 @@ class RevenuesController extends AppController {
             if( !empty($refine['toMonth']) ){
                 $toMonth = urldecode($refine['toMonth']);
             }
+
+            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Customer', $conditions, 'conditions' );
         }
+
         $customers = $this->Customer->getData('all', array(
             'conditions' => $conditions,
+        ), true, array(
+            'plant' => false,
+            'branch' => false,
         ));
 
         $fromDt = sprintf('%s-%s-01', $fromYear, $fromMonth);
@@ -5185,6 +5207,8 @@ class RevenuesController extends AppController {
                         'Invoice.customer_id', 
                         'SUM(Invoice.total) as total',
                     ),
+                ), true, array(
+                    'branch' => false,
                 ));
                 $customer['InvoiceYear'] = !empty($invoiceYear[0]['total'])?$invoiceYear[0]['total']/12:0;
 
@@ -5203,6 +5227,7 @@ class RevenuesController extends AppController {
                     ),
                 ), true, array(
                     'status' => 'all',
+                    'branch' => false,
                 ));
 
                 $invoicePayments = $this->InvoicePayment->InvoicePaymentDetail->getData('all', array(
@@ -5241,6 +5266,7 @@ class RevenuesController extends AppController {
                     ),
                 ), true, array(
                     'status' => 'all',
+                    'branch' => false,
                 ));
 
                 if( !empty($invoices) ) {
@@ -5279,6 +5305,8 @@ class RevenuesController extends AppController {
                     'fields' => array(
                         'SUM(Invoice.total) total',
                     ),
+                ), true, array(
+                    'branch' => false,
                 ));
 
                 $invoicePaymentsBefore = $this->InvoicePayment->getData('first', array(
@@ -5289,6 +5317,9 @@ class RevenuesController extends AppController {
                     'fields' => array(
                         'SUM(InvoicePayment.total_payment) total',
                     ),
+                ), true, array(
+                    'status' => 'all',
+                    'branch' => false,
                 ));
                 $invoiceVoidBefore = $this->Invoice->getData('first', array(
                     'conditions' => array(
@@ -5301,6 +5332,7 @@ class RevenuesController extends AppController {
                     ),
                 ), true, array(
                     'status' => 'all',
+                    'branch' => false,
                 ));
                 $totalInvoice = !empty($invoicesBefore[0]['total'])?$invoicesBefore[0]['total']:0;
                 $totalInvoicePayment = !empty($invoicePaymentsBefore[0]['total'])?$invoicePaymentsBefore[0]['total']:0;
@@ -5318,7 +5350,11 @@ class RevenuesController extends AppController {
         $customerList = $this->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
-            )
+            ),
+            'conditions' => $optionConditions,
+        ), true, array(
+            'plant' => false,
+            'branch' => false,
         ));
 
         $this->set('sub_module_title', __('Laporan Piutang Per Customer'));
@@ -5565,14 +5601,17 @@ class RevenuesController extends AppController {
     public function report_revenue_customers( $data_action = false ) {
         $this->loadModel('Customer');
         $this->loadModel('Revenue');
+
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $fromMonth = '01';
         $fromYear = date('Y');
         $toMonth = date('m');
         $toYear = date('Y');
         $conditions = array();
         $conditionsCustomer = array(
-            'Customer.status'=> 1,
+            'Customer.branch_id'=> $allow_branch_id,
         );
+        $optionConditions = $conditionsCustomer;
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -5592,6 +5631,8 @@ class RevenuesController extends AppController {
                 $toMonth = urldecode($refine['toMonth']);
                 $toYear = urldecode($refine['toYear']);
             }
+
+            $conditionsCustomer = $this->MkCommon->getConditionGroupBranch( $refine, 'Customer', $conditionsCustomer, 'conditions' );
         }
 
         $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') >='] = date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear));
@@ -5601,11 +5642,18 @@ class RevenuesController extends AppController {
         $customerList = $this->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
-            )
+            ),
+            'conditions' => $optionConditions,
+        ), true, array(
+            'branch' => false,
+            'plant' => false,
         ));
 
         $options = $this->Customer->getData('paginate', array(
             'conditions' => $conditionsCustomer,
+        ), true, array(
+            'branch' => false,
+            'plant' => false,
         ));
 
         if( !empty($data_action) ) {
@@ -5637,6 +5685,8 @@ class RevenuesController extends AppController {
                         'SUM(Revenue.total) as total',
                         'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') as dt',
                     ),
+                ), true, array(
+                    'branch' => false,
                 ));
 
                 $conditionsYear = array(
@@ -5652,6 +5702,8 @@ class RevenuesController extends AppController {
                         'Revenue.customer_id', 
                         'SUM(Revenue.total) as total',
                     ),
+                ), true, array(
+                    'branch' => false,
                 ));
                 $customer['RevenueYear'] = !empty($revenueYear[0]['total'])?$revenueYear[0]['total']/12:0;
 
@@ -5710,6 +5762,8 @@ class RevenuesController extends AppController {
         $this->loadModel('Customer');
         $this->loadModel('Revenue');
         $this->loadModel('Ttuj');
+
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $dateFrom = date('Y-m-01');
         $dateTo = date('Y-m-t');
         $options = array(
@@ -5719,6 +5773,7 @@ class RevenuesController extends AppController {
                 'Ttuj.is_draft' => 0,
                 'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >=' => $dateFrom,
                 'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <=' => $dateTo,
+                'Ttuj.branch_id' => $allow_branch_id,
             ),
             'contain' => false,
             'order'=> array(
@@ -5728,6 +5783,9 @@ class RevenuesController extends AppController {
             'group' => array(
                 'Ttuj.id'
             ),
+        );
+        $optionConditions = array(
+            'Customer.branch_id' => $allow_branch_id,
         );
         $this->request->data['Ttuj']['date'] = sprintf('%s - %s', date('d/m/Y',strtotime($dateFrom)), date('d/m/Y',strtotime($dateTo)));
 
@@ -5808,6 +5866,8 @@ class RevenuesController extends AppController {
                         break;
                 }
             }
+
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $options );
         }
 
         if( !empty($data_action) ) {
@@ -5832,7 +5892,11 @@ class RevenuesController extends AppController {
         $customerList = $this->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
-            )
+            ),
+            'conditions' => $optionConditions,
+        ), true, array(
+            'branch' => false,
+            'plant' => false,
         ));
 
         $this->set('sub_module_title', __('Laporan Monitoring Surat Jalan & Revenue'));
@@ -5943,14 +6007,17 @@ class RevenuesController extends AppController {
         $this->loadModel('Customer');
         $this->loadModel('Invoice');
         $this->loadModel('InvoicePayment');
+
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $fromMonthYear = date('Y-m');
         $toMonthYear = date('Y-m');
         $fromMonth = date('m');
         $toMonth = date('m');
         $fromYear = date('Y');
         $conditionsCustomer = array(
-            'Customer.status'=> 1,
+            'Customer.branch_id'=> $allow_branch_id,
         );
+        $optionConditions = $conditionsCustomer;
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -5981,6 +6048,7 @@ class RevenuesController extends AppController {
                     $toMonthYear = sprintf('%s-%s', $fromYear, $toMonth);
                 }
             }
+            $conditionsCustomer = $this->MkCommon->getConditionGroupBranch( $refine, 'Customer', $conditionsCustomer, 'conditions' );
         }
 
         $lastMonth = date('Y-m', strtotime($fromMonthYear." -1 month"));
@@ -6000,11 +6068,18 @@ class RevenuesController extends AppController {
         $customerList = $this->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
-            )
+            ),
+            'conditions' => $optionConditions,
+        ), true, array(
+            'branch' => false,
+            'plant' => false,
         ));
 
         $options = $this->Customer->getData('paginate', array(
             'conditions' => $conditionsCustomer,
+        ), true, array(
+            'branch' => false,
+            'plant' => false,
         ));
         $this->paginate = $options;
         $customers = $this->Customer->getData('all', $options, false);
@@ -6030,6 +6105,7 @@ class RevenuesController extends AppController {
                     ),
                 ), true, array(
                     'status' => 'all',
+                    'branch' => false,
                 ));
 
                 $conditionsInvVoidLastMonth = array(
@@ -6048,6 +6124,7 @@ class RevenuesController extends AppController {
                     ),
                 ), true, array(
                     'status' => 'all',
+                    'branch' => false,
                 ));
 
                 $conditionsInvPaidLastMonth = array(
@@ -6064,6 +6141,8 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'InvoicePayment.customer_id'
                     ),
+                ), true, array(
+                    'branch' => false,
                 ));
 
                 $conditionsInvoiceTotal = $conditionsInvoice;
@@ -6078,6 +6157,7 @@ class RevenuesController extends AppController {
                     ),
                 ), true, array(
                     'status' => 'all',
+                    'branch' => false,
                 ));
 
                 $conditionsInvoiceVoid = array(
@@ -6109,6 +6189,8 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'InvoicePayment.customer_id'
                     ),
+                ), true, array(
+                    'branch' => false,
                 ));
 
                 $customers[$key] = $customer;
