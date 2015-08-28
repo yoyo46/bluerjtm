@@ -214,6 +214,11 @@ class SettingsController extends AppController {
                 $this->request->data['Customer']['customer_type_id'] = $customer_type_id;
                 $options['conditions']['Customer.customer_type_id '] = $customer_type_id;
             }
+            if(!empty($refine['code'])){
+                $code = urldecode($refine['code']);
+                $this->request->data['Customer']['code'] = $code;
+                $options['conditions']['Customer.code LIKE '] = '%'.$code.'%';
+            }
         }
         $this->paginate = $this->Customer->getData('paginate', $options, true, array(
             'status' => 'all',

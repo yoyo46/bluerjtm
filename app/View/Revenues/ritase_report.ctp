@@ -283,7 +283,7 @@
                             ));
                             echo $this->Html->tag('th', __('Total RIT'), array(
                                 'style' => 'text-align: center;width: 120px;vertical-align: middle;',
-                                'data-options' => 'field:\'date_receipt\',width:80',
+                                'data-options' => 'field:\'target_rit\',width:80',
                                 'rowspan' => $headerRowspanSub,
                                 'align' => 'center',
                             ));
@@ -335,17 +335,16 @@
                                 $overTime = !empty($value['OverTime'])?$value['OverTime']:0;
                                 $branch = $this->Common->filterEmptyField($value, 'Branch', 'name');
                                 $qLt = 0;
+                                $target_rit = $this->Common->filterEmptyField($value, 'CustomerNoType', 'target_rit');
 
                                 if( !empty($overTime) ) {
                                     $qLt = round(($overTime/$total)*100, 2);
                                 }
 
-                                if( !empty($value['CustomerNoType']['target_rit']) ) {
-                                    $target_rit = $value['CustomerNoType']['target_rit'];
+                                if( !empty($target_rit) ) {
                                     $pencapaian = ( $total / $target_rit ) * 100;
                                 } else {
                                     $pencapaian = 0;
-                                    $target_rit = 0;
                                 }
                 ?>
                 <tr>

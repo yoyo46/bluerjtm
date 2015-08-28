@@ -35,7 +35,7 @@
                             $id = $value_data['id'];
             ?>
             <tr>
-                <td><?php echo $customerTargetUnit['Customer']['customer_name'];?></td>
+                <td><?php echo $customerTargetUnit['Customer']['customer_name_code'];?></td>
                 <td><?php echo date('Y', mktime(0, 0, 0, 1, 1, $value_data['year']));?></td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>
                 <td class="action">
