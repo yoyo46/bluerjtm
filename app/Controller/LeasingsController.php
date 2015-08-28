@@ -86,6 +86,7 @@ class LeasingsController extends AppController {
     }
 
     function add(){
+        $this->loadModel('Leasing');
         $this->set('sub_module_title', __('Tambah Leasing'));
         $this->doLeasing();
     }
@@ -156,11 +157,11 @@ class LeasingsController extends AppController {
 
             $data['Leasing']['paid_date'] = (!empty($data['Leasing']['paid_date'])) ? $this->MkCommon->getDate($data['Leasing']['paid_date']) : '';
             $data['Leasing']['date_first_installment'] = (!empty($data['Leasing']['date_first_installment'])) ? $this->MkCommon->getDate($data['Leasing']['date_first_installment']) : '';
-            $data['Leasing']['date_last_installment'] = (!empty($data['Leasing']['date_last_installment'])) ? $this->MkCommon->getDate($data['Leasing']['date_last_installment']) : '';
+            $data['Leasing']['date_last_installment'] = !empty($data['Leasing']['tgl_last_installment'])?$this->MkCommon->getDateSelectbox($data['Leasing']['tgl_last_installment']):false;
 
-            $data['Leasing']['down_payment'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'down_payment'), 0);
-            $data['Leasing']['installment'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'installment'), 0);
-            $data['Leasing']['installment_rate'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'installment_rate'), 0);
+            $data['Leasing']['down_payment'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'down_payment'), '');
+            $data['Leasing']['installment'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'installment'), '');
+            $data['Leasing']['installment_rate'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'installment_rate'), '');
             $data['Leasing']['denda'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'denda'), 0);
             $data['Leasing']['total_leasing'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'total_leasing'), 0);
 
@@ -247,6 +248,7 @@ class LeasingsController extends AppController {
         }else{
             if($id && $data_local){
                 $this->request->data = $data_local;
+                $this->request->data = $this->MkCommon->mergeDate($this->request->data, 'Leasing', 'date_last_installment', 'tgl_last_installment');
 
                 if(!empty($data_local['LeasingDetail'])){
                     foreach ($data_local['LeasingDetail'] as $key => $value) {
@@ -287,13 +289,17 @@ class LeasingsController extends AppController {
             $this->request->data['LeasingDetail'] = $temp_arr;
         }
 
-        $this->loadModel('LeasingCompany');
-        $leasing_companies = $this->LeasingCompany->find('list', array(
-            'conditions' => array(
-                'LeasingCompany.status' => 1
-            ),
+        // $leasing_companies = $this->LeasingCompany->find('list', array(
+        //     'conditions' => array(
+        //         'LeasingCompany.status' => 1
+        //     ),
+        //     'fields' => array(
+        //         'LeasingCompany.id', 'LeasingCompany.name'
+        //     )
+        // ));
+        $leasing_companies = $this->Leasing->Vendor->getData('list', array(
             'fields' => array(
-                'LeasingCompany.id', 'LeasingCompany.name'
+                'Vendor.id', 'Vendor.name'
             )
         ));
 
@@ -304,97 +310,97 @@ class LeasingsController extends AppController {
         $this->render('leasing_form');
     }
 
-    function leasing_companies(){
-        $this->loadModel('LeasingCompany');
-        $options = array();
+    // function leasing_companies(){
+    //     $this->loadModel('LeasingCompany');
+    //     $options = array();
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+    //     if(!empty($this->params['named'])){
+    //         $refine = $this->params['named'];
 
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['LeasingCompany']['name'] = $name;
-                $options['conditions']['LeasingCompany.name LIKE '] = '%'.$name.'%';
-            }
-        }
+    //         if(!empty($refine['name'])){
+    //             $name = urldecode($refine['name']);
+    //             $this->request->data['LeasingCompany']['name'] = $name;
+    //             $options['conditions']['LeasingCompany.name LIKE '] = '%'.$name.'%';
+    //         }
+    //     }
 
-        $this->paginate = $this->LeasingCompany->getData('paginate', $options);
-        $leasing_companies = $this->paginate('LeasingCompany');
+    //     $this->paginate = $this->LeasingCompany->getData('paginate', $options);
+    //     $leasing_companies = $this->paginate('LeasingCompany');
 
-        $this->set('active_menu', 'view_leasing');
-        $this->set('sub_module_title', 'Perusahaan Leasing');
-        $this->set('leasing_companies', $leasing_companies);
-    }
+    //     $this->set('active_menu', 'view_leasing');
+    //     $this->set('sub_module_title', 'Perusahaan Leasing');
+    //     $this->set('leasing_companies', $leasing_companies);
+    // }
 
-    function leasing_company_add(){
-        $this->set('sub_module_title', 'Tambah Perusahaan Leasing');
-        $this->doLeasingCompany();
-    }
+    // function leasing_company_add(){
+    //     $this->set('sub_module_title', 'Tambah Perusahaan Leasing');
+    //     $this->doLeasingCompany();
+    // }
 
-    function leasing_company_edit($id){
-        $this->loadModel('LeasingCompany');
-        $this->set('sub_module_title', 'Rubah Perusahaan Leasing');
-        $type_property = $this->LeasingCompany->getData('first', array(
-            'conditions' => array(
-                'LeasingCompany.id' => $id
-            )
-        ));
+    // function leasing_company_edit($id){
+    //     $this->loadModel('LeasingCompany');
+    //     $this->set('sub_module_title', 'Rubah Perusahaan Leasing');
+    //     $type_property = $this->LeasingCompany->getData('first', array(
+    //         'conditions' => array(
+    //             'LeasingCompany.id' => $id
+    //         )
+    //     ));
 
-        if(!empty($type_property)){
-            $this->doLeasingCompany($id, $type_property);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Perusahaan Leasing tidak ditemukan'), 'error');  
-            $this->redirect(array(
-                'controller' => 'settings',
-                'action' => 'citys'
-            ));
-        }
-    }
+    //     if(!empty($type_property)){
+    //         $this->doLeasingCompany($id, $type_property);
+    //     }else{
+    //         $this->MkCommon->setCustomFlash(__('Perusahaan Leasing tidak ditemukan'), 'error');  
+    //         $this->redirect(array(
+    //             'controller' => 'settings',
+    //             'action' => 'citys'
+    //         ));
+    //     }
+    // }
 
-    function doLeasingCompany($id = false, $data_local = false){
-        if(!empty($this->request->data)){
-            $data = $this->request->data;
-            if($id && $data_local){
-                $this->LeasingCompany->id = $id;
-                $msg = 'merubah';
-            }else{
-                $this->loadModel('LeasingCompany');
-                $this->LeasingCompany->create();
-                $msg = 'menambah';
-            }
-            $this->LeasingCompany->set($data);
+    // function doLeasingCompany($id = false, $data_local = false){
+    //     if(!empty($this->request->data)){
+    //         $data = $this->request->data;
+    //         if($id && $data_local){
+    //             $this->LeasingCompany->id = $id;
+    //             $msg = 'merubah';
+    //         }else{
+    //             $this->loadModel('LeasingCompany');
+    //             $this->LeasingCompany->create();
+    //             $msg = 'menambah';
+    //         }
+    //         $this->LeasingCompany->set($data);
 
-            if($this->LeasingCompany->validates($data)){
-                if($this->LeasingCompany->save($data)){
-                    $transaction_id = $this->LeasingCompany->id;
+    //         if($this->LeasingCompany->validates($data)){
+    //             if($this->LeasingCompany->save($data)){
+    //                 $transaction_id = $this->LeasingCompany->id;
 
-                    $this->params['old_data'] = $data_local;
-                    $this->params['data'] = $data;
+    //                 $this->params['old_data'] = $data_local;
+    //                 $this->params['data'] = $data;
 
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Perusahaan Leasing'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Perusahaan Leasing #%s'), $msg, $this->LeasingCompany->id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $transaction_id );
-                    $this->redirect(array(
-                        'controller' => 'leasings',
-                        'action' => 'leasing_companies'
-                    ));
-                }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Perusahaan Leasing'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Perusahaan Leasing #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Perusahaan Leasing'), $msg), 'error');
-            }
-        }else{
+    //                 $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Perusahaan Leasing'), $msg), 'success');
+    //                 $this->Log->logActivity( sprintf(__('Sukses %s Perusahaan Leasing #%s'), $msg, $this->LeasingCompany->id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $transaction_id );
+    //                 $this->redirect(array(
+    //                     'controller' => 'leasings',
+    //                     'action' => 'leasing_companies'
+    //                 ));
+    //             }else{
+    //                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Perusahaan Leasing'), $msg), 'error'); 
+    //                 $this->Log->logActivity( sprintf(__('Gagal %s Perusahaan Leasing #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+    //             }
+    //         }else{
+    //             $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Perusahaan Leasing'), $msg), 'error');
+    //         }
+    //     }else{
             
-            if($id && $data_local){
+    //         if($id && $data_local){
                 
-                $this->request->data = $data_local;
-            }
-        }
+    //             $this->request->data = $data_local;
+    //         }
+    //     }
         
-        $this->set('active_menu', 'view_leasing');
-        $this->render('leasing_company_form');
-    }
+    //     $this->set('active_menu', 'view_leasing');
+    //     $this->render('leasing_company_form');
+    // }
 
     function toggle($id){
         $this->loadModel('Leasing');
@@ -435,33 +441,33 @@ class LeasingsController extends AppController {
         $this->redirect($this->referer());
     }
 
-    function leasing_company_toggle($id){
-        $this->loadModel('LeasingCompany');
-        $locale = $this->LeasingCompany->getData('first', array(
-            'conditions' => array(
-                'LeasingCompany.id' => $id
-            )
-        ));
+    // function leasing_company_toggle($id){
+    //     $this->loadModel('LeasingCompany');
+    //     $locale = $this->LeasingCompany->getData('first', array(
+    //         'conditions' => array(
+    //             'LeasingCompany.id' => $id
+    //         )
+    //     ));
 
-        if($locale){
-            $value = true;
-            if($locale['LeasingCompany']['status']){
-                $value = false;
-            }
+    //     if($locale){
+    //         $value = true;
+    //         if($locale['LeasingCompany']['status']){
+    //             $value = false;
+    //         }
 
-            $this->LeasingCompany->id = $id;
-            $this->LeasingCompany->set('status', $value);
-            if($this->LeasingCompany->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Perusahaan Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
-            }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Perusahaan Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
-            }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Perusahaan Leasing tidak ditemukan.'), 'error');
-        }
+    //         $this->LeasingCompany->id = $id;
+    //         $this->LeasingCompany->set('status', $value);
+    //         if($this->LeasingCompany->save()){
+    //             $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+    //             $this->Log->logActivity( sprintf(__('Sukses merubah status Perusahaan Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
+    //         }else{
+    //             $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+    //             $this->Log->logActivity( sprintf(__('Gagal merubah status Perusahaan Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+    //         }
+    //     }else{
+    //         $this->MkCommon->setCustomFlash(__('Perusahaan Leasing tidak ditemukan.'), 'error');
+    //     }
 
-        $this->redirect($this->referer());
-    }
+    //     $this->redirect($this->referer());
+    // }
 }

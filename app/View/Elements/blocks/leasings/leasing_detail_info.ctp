@@ -16,7 +16,7 @@
             <thead>
                 <tr>
                     <th><?php echo __('Truk');?></th>
-                    <th><?php echo __('Harga');?></th>
+                    <th width="20%"><?php echo __('Harga');?></th>
                     <th><?php echo __('Action');?></th>
                 </tr>
             </thead>
@@ -53,7 +53,7 @@
                             echo $this->Form->input('LeasingDetail.price.', array(
                                 'type' => 'text',
                                 'label' => false,
-                                'class' => 'form-control price-leasing-truck input_price input_number',
+                                'class' => 'form-control price-leasing-truck input_price input_number text-right',
                                 'required' => false,
                                 'value' => $price
                             ));
@@ -77,6 +77,57 @@
                     <td align="right" id="grand-total-leasing">
                         <?php 
                             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                        ?>
+                    </td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="right" colspan="1"><?php echo __('Pokok Angsuran *')?></td>
+                    <td align="right">
+                        <?php 
+                                echo $this->Form->input('installment',array(
+                                    'type' => 'text',
+                                    'label'=> false, 
+                                    'class'=>'form-control input_price total-installment text-right',
+                                    'required' => false,
+                                ));
+                        ?>
+                    </td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="right" colspan="1"><?php echo __('Bunga *')?></td>
+                    <td align="right">
+                        <div class="input-group">
+                            <?php 
+                                    echo $this->Form->input('installment_rate',array(
+                                        'type' => 'text',
+                                        'label'=> false, 
+                                        'class'=>'form-control input_price bunga-leasing text-right',
+                                        'required' => false,
+                                        'error' => false,
+                                    ));
+                                    echo $this->Html->tag('span', __('/Bulan'), array(
+                                        'class' => 'input-group-addon'
+                                    ));
+                            ?>
+                        </div>
+                        <?php 
+                                echo $this->Form->error('installment_rate');
+                        ?>
+                    </td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="right" colspan="1"><?php echo __('Denda')?></td>
+                    <td align="right">
+                        <?php 
+                                echo $this->Form->input('denda',array(
+                                    'type' => 'text',
+                                    'label'=> false, 
+                                    'class'=>'form-control input_price denda-leasing',
+                                    'required' => false,
+                                ));
                         ?>
                     </td>
                     <td>&nbsp;</td>

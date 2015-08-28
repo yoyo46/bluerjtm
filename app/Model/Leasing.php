@@ -93,8 +93,12 @@ class Leasing extends AppModel {
 	);
 
     var $belongsTo = array(
-        'LeasingCompany' => array(
-            'className' => 'LeasingCompany',
+        // 'LeasingCompany' => array(
+        //     'className' => 'LeasingCompany',
+        //     'foreignKey' => 'leasing_company_id',
+        // ),
+        'Vendor' => array(
+            'className' => 'Vendor',
             'foreignKey' => 'leasing_company_id',
         ),
     );
@@ -116,7 +120,8 @@ class Leasing extends AppModel {
                 'Leasing.status' => 'DESC'
             ),
             'contain' => array(
-                'LeasingCompany'
+                // 'LeasingCompany'
+                'Vendor'
             ),
             'fields' => array(),
             'group' => array(),

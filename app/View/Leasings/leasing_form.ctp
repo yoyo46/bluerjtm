@@ -56,7 +56,7 @@
 							echo $this->Form->input('date_first_installment',array(
 								'type' => 'text',
 								'label'=> __('Tgl Angsuran Pertama *'), 
-								'class'=>'form-control custom-date',
+								'class'=>'form-control custom-date leasing-date-installment',
 								'required' => false,
 								'placeholder' => __('Tgl Angsuran Pertama'),
 							));
@@ -64,14 +64,48 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-							echo $this->Form->input('date_last_installment',array(
-								'type' => 'text',
-								'label'=> __('Tgl Angsuran Terakhir *'), 
-								'class'=>'form-control custom-date',
-								'required' => false,
-								'placeholder' => __('Tgl Angsuran Terakhir'),
-							));
+							echo $this->Form->label('tgl_lahir', __('Tgl Angsuran Terakhir *'));
 					?>
+					<div class="row">
+						<div class="col-sm-4">
+				        	<?php 
+									echo $this->Form->day('tgl_last_installment', array(
+										'label'=> false, 
+										'class'=>'form-control selectbox-date leasing-last-day-installment',
+										'required' => false,
+										'empty' => __('Hari'),
+										'id' => 'day',
+										'required' => false,
+									));
+							?>
+						</div>
+						<div class="col-sm-4">
+				        	<?php 
+									echo $this->Form->month('tgl_last_installment', array(
+										'label'=> false, 
+										'class'=>'form-control selectbox-date leasing-last-month-installment',
+										'required' => false,
+										'empty' => __('Bulan'),
+										'id' => 'month',
+										'required' => false,
+									));
+							?>
+						</div>
+						<div class="col-sm-4">
+				        	<?php 
+									echo $this->Form->year('tgl_last_installment', 1949, date('Y') + 10, array(
+										'label'=> false, 
+										'class'=>'form-control selectbox-date leasing-last-year-installment',
+										'empty' => __('Tahun'),
+										'id' => 'year',
+										'required' => false,
+									));
+							?>
+						</div>
+					</div>
+		        	<?php 
+							echo $this->Form->error('date_last_installment');
+		        	?>
 		        </div>
     		</div>
     		<div class="col-sm-6">
@@ -80,7 +114,7 @@
 							echo $this->Form->input('total_leasing',array(
 								'type' => 'text',
 								'label'=> __('Total Leasing *'), 
-								'class'=>'form-control input_price',
+								'class'=>'form-control input_price total-leasing',
 								'required' => false,
 								'placeholder' => __('Total Leasing'),
 							));
@@ -96,7 +130,7 @@
 							echo $this->Form->input('leasing_month',array(
 								'type' => 'text',
 								'label'=> __('Bulan *'), 
-								'class'=>'form-control',
+								'class'=>'form-control month-leasing input_number',
 								'required' => false,
 								'empty' => __('Pilih Bulan'),
 								// 'options' => $months,
@@ -109,42 +143,9 @@
 							echo $this->Form->input('down_payment',array(
 								'type' => 'text',
 								'label'=> __('DP *'), 
-								'class'=>'form-control input_price',
+								'class'=>'form-control input_price leasing-dp',
 								'required' => false,
 								'placeholder' => __('DP'),
-							));
-					?>
-		        </div>
-		        <div class="form-group">
-		        	<?php 
-							echo $this->Form->input('installment',array(
-								'type' => 'text',
-								'label'=> __('Pokok Angsuran *'), 
-								'class'=>'form-control input_price',
-								'required' => false,
-								'placeholder' => __('Pokok Angsuran'),
-							));
-					?>
-		        </div>
-		        <div class="form-group">
-		        	<?php 
-							echo $this->Form->input('denda',array(
-								'type' => 'text',
-								'label'=> __('Denda'), 
-								'class'=>'form-control input_price',
-								'required' => false,
-								'placeholder' => __('Denda'),
-							));
-					?>
-		        </div>
-		        <div class="form-group">
-		        	<?php 
-							echo $this->Form->input('installment_rate',array(
-								'type' => 'text',
-								'label'=> __('Bunga *'), 
-								'class'=>'form-control input_price',
-								'required' => false,
-								'placeholder' => __('Bunga'),
 							));
 					?>
 		        </div>

@@ -918,7 +918,7 @@ var add_custom_field = function( obj ){
                 var content_clone = '<tr class="child child-'+length+'" rel="'+length+'">'+
                     '<td>'+option_form+'</td>'+
                     '<td align="right box-price">'+
-                        '<input name="data[LeasingDetail][price][]" class="form-control price-leasing-truck input_price input_number" value="0" type="text" id="LeasingDetailPrice">'+
+                        '<input name="data[LeasingDetail][price][]" class="form-control price-leasing-truck input_price input_number text-right" value="0" type="text" id="LeasingDetailPrice">'+
                     '</td>'+
                     '<td class="action-table">'+
                         '<a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="leasing_first"><i class="fa fa-times"></i> Hapus</a>'+
@@ -929,6 +929,10 @@ var add_custom_field = function( obj ){
                 input_price( $('#table-leasing tbody.leasing-body tr.child-'+length+' .input_price') );
                 delete_custom_field( $('#table-leasing tbody.leasing-body tr.child-'+length+' .delete-custom-field') );
                 leasing_action();
+
+                $('#table-leasing tbody.leasing-body tr.child-'+length+' .price-leasing-truck').blur(function(){
+                    calc_pokok_leasing();
+                });
             break;
             case 'auth-cash-bank':
                 var count_cash_auth = $('.wrapper-approval-setting').length-1;
@@ -2058,6 +2062,7 @@ var datepicker = function( obj ){
 
     obj.datepicker({
         format: 'dd/mm/yyyy',
+        todayHighlight: true,
     });
 }
 
@@ -3005,7 +3010,7 @@ var get_document_cashbank = function(){
 }
 
 var convert_number = function ( num, type ) {
-    num = num.replace(/,/gi, "").replace(/ /gi, "");
+    num = num.replace(/,/gi, "").replace(/ /gi, "").replace(/IDR/gi, "").replace(/Rp/gi, "");
 
     if( type == 'int' ) {
         num = parseInt(num);
@@ -3322,6 +3327,42 @@ var choosen_select = function(obj, init){
         } else {
             obj.select2(init);
         }
+    }
+}
+
+var calc_pokok_leasing = function () {
+    // var tgl_leasing = $('.leasing-date-installment').val();
+    // var month_last_date = $('.leasing-last-month-installment').val();
+    // var year_last_date = $('.leasing-last-year-installment').val();
+    var months = $('.month-leasing').val();
+    var leasing_dp = convert_number($('.leasing-dp').val());
+    var grand_total = convert_number($('#grand-total-leasing').html());
+    var total_leasing = convert_number($('.total-leasing').val());
+
+    // var month = false;
+    // var year = false;
+    // var months = 0;
+
+    // if( tgl_leasing != '' && month_last_date != '' && year_last_date != '' ) {
+    //     tmp = tgl_leasing.split('/');
+
+    //     if( tmp.length == 3 ) {
+    //         month = tmp[1];
+    //         year = tmp[2];
+    //     }
+
+    //     var a = new Date(year, month),
+    //     b = new Date(year_last_date, month_last_date),
+
+    //     months = Math.floor((b-a)/2628000000);;
+    // }
+
+    if( !isNaN(months) && !isNaN(leasing_dp) && !isNaN(grand_total) && !isNaN(total_leasing) ) {
+        var pokok = Math.ceil((grand_total-leasing_dp)/months);
+        var bunga = Math.ceil((total_leasing/months)-pokok);
+
+        $('.total-installment').val(formatNumber( pokok, 0 ));
+        $('.bunga-leasing').val(formatNumber( bunga, 0 ));
     }
 }
 
@@ -4309,4 +4350,8 @@ $(function() {
     input_price_min();
     datepicker();
     choosen_select();
+
+    $('.leasing-dp,.total-leasing,.month-leasing,.leasing-dp,.price-leasing-truck').blur(function(){
+        calc_pokok_leasing();
+    });
 });

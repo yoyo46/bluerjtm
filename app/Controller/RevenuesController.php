@@ -2165,6 +2165,7 @@ class RevenuesController extends AppController {
             $this->set('active_menu', 'ritase_report_retail');
         } else {
             $this->set('active_menu', 'ritase_report');
+            $defaultConditionsTtuj['Ttuj.is_retail'] = 0;
             $cities = $this->Ttuj->getData('list', array(
                 'conditions' => $defaultConditionsTtuj,
                 'group' => array(

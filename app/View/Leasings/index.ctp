@@ -10,9 +10,14 @@
                 'field_model' => 'Leasing.no_contract',
                 'display' => true,
             ),
+            // 'company' => array(
+            //     'name' => __('Perusahaan'),
+            //     'field_model' => 'LeasingCompany.name',
+            //     'display' => true,
+            // ),
             'company' => array(
                 'name' => __('Perusahaan'),
-                'field_model' => 'LeasingCompany.name',
+                'field_model' => 'Vendor.name',
                 'display' => true,
             ),
             'installment' => array(
@@ -50,13 +55,13 @@
         ?>
         <div class="box-tools">
             <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Perusahaan Leasing', array(
-                        'controller' => 'leasings',
-                        'action' => 'leasing_companies',
-                    ), array(
-                        'escape' => false,
-                        'class' => 'btn btn-app btn-success pull-right'
-                    ));
+                    // echo $this->Html->link('<i class="fa fa-plus"></i> Perusahaan Leasing', array(
+                    //     'controller' => 'leasings',
+                    //     'action' => 'leasing_companies',
+                    // ), array(
+                    //     'escape' => false,
+                    //     'class' => 'btn btn-app btn-success pull-right'
+                    // ));
                     
                     echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
                         'controller' => 'leasings',
@@ -90,7 +95,8 @@
                             $paid_date = $this->Common->filterEmptyField($value, 'Leasing', 'paid_date');
                             $status = $this->Common->filterEmptyField($value, 'Leasing', 'status');
                             $branch_id = $this->Common->filterEmptyField($value, 'Leasing', 'branch_id');
-                            $company = $this->Common->filterEmptyField($value, 'LeasingCompany', 'name');
+                            // $company = $this->Common->filterEmptyField($value, 'LeasingCompany', 'name');
+                            $company = $this->Common->filterEmptyField($value, 'Vendor', 'name');
                             $branch = $this->Common->filterEmptyField($value, 'City', 'name');
             ?>
             <tr>

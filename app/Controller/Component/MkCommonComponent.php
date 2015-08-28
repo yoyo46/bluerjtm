@@ -865,5 +865,18 @@ class MkCommonComponent extends Component {
 
         return $allowFunction;
     }
+
+    function mergeDate ($data, $model, $field, $newField) {
+        $date = $this->filterEmptyField($data, $model, $field);
+
+        if( !empty($date) && $date != '0000-00-00' ) {
+            $mkDate = strtotime($date);
+            $data[$model][$newField]['day'] = date('d', $mkDate);
+            $data[$model][$newField]['month'] = date('m', $mkDate);
+            $data[$model][$newField]['year'] = date('Y', $mkDate);
+        }
+
+        return $data;
+    }
 }
 ?>
