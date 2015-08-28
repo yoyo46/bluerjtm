@@ -38,7 +38,7 @@ class Log extends AppModel {
 	* 	@param array $options - options
 	* 	@return boolean result
 	*/
-	function logActivity( $info = NULL, $user = false, $requestHandler = false, $params = fase, $error = 0, $options = false, $transaction_id = false ){
+	function logActivity( $info = NULL, $user = false, $requestHandler = false, $params = fase, $error = 0, $options = false, $transaction_id = false, $change_action = '' ){
 		$log = array();
 
 		if( !empty($options) ) {
@@ -56,7 +56,13 @@ class Log extends AppModel {
 		$log['Log']['transaction_id'] = $transaction_id;
 		$log['Log']['name'] = $info;
 		$log['Log']['model'] = $params['controller'];
-		$log['Log']['action'] = $params['action'];
+
+		if( !empty($change_action) ) {
+			$log['Log']['action'] = $change_action;
+			$log['Log']['real_action'] = $params['action'];
+		} else {
+			$log['Log']['action'] = $params['action'];
+		}
 
 		if( !empty($requestHandler) ) {
 			$ip_address = $requestHandler->getClientIP();

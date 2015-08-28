@@ -35,6 +35,10 @@
                                 $tmpMsg = __('Created by');
                             } else if( strstr($action, 'edit') ) {
                                 $tmpMsg = __('Modified by');
+                            } else if( strstr($action, 'rejected') ) {
+                                $tmpMsg = __('Rejected by');
+                            } else if( strstr($action, 'void') ) {
+                                $tmpMsg = __('Void by');
                             }
 
                             if( !empty($tmpMsg) ) {

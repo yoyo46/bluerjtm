@@ -1339,6 +1339,7 @@ class TrucksController extends AppController {
             $coa_id = $this->MkCommon->filterEmptyField($kir, 'KirPayment', 'coa_id');
             $kir = $this->KirPayment->Coa->getMerge( $kir, $coa_id );
 
+            $this->MkCommon->getLogs($this->paramController, array( 'kir_payment_add', 'kir_payment_delete', 'kir_payment_rejected', 'kir_payment_void' ), $id);
             $this->doKirPayment($id, $kir);
             $this->set('sub_module_title', __('Detail Pembayaran KIR'));
         } else {
@@ -1355,6 +1356,9 @@ class TrucksController extends AppController {
                 $this->KirPayment->create();
                 $data = $this->request->data;
 
+                $logActionName = false;
+                $default_msg = 'dibayar';
+
                 $data['KirPayment']['user_id'] = $this->user_id;
                 $data['KirPayment']['kir_id'] = $kir_id;
                 $data['KirPayment']['kir_payment_date'] = (!empty($data['KirPayment']['kir_payment_date'])) ? $this->MkCommon->getDate($data['KirPayment']['kir_payment_date']) : '';
@@ -1362,6 +1366,8 @@ class TrucksController extends AppController {
 
                 if( !empty($data['KirPayment']['rejected']) ) {
                     $data['Kir']['rejected'] = 1;
+                    $logActionName = 'kir_payment_rejected';
+                    $default_msg = 'ditolak';
                 } else {
                     $data['Kir']['paid'] = 1;
                 }
@@ -1393,8 +1399,8 @@ class TrucksController extends AppController {
                         $this->params['old_data'] = $kir;
                         $this->params['data'] = $data;
 
-                        $this->MkCommon->setCustomFlash(sprintf(__('KIR Truk %s telah dibayar'), $kir['Kir']['no_pol']), 'success');
-                        $this->Log->logActivity( sprintf(__('KIR Truk %s telah dibayar #%s'), $kir['Kir']['no_pol'], $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+                        $this->MkCommon->setCustomFlash(sprintf(__('KIR Truk %s telah %s'), $kir['Kir']['no_pol'], $default_msg), 'success');
+                        $this->Log->logActivity( sprintf(__('KIR Truk %s telah %s #%s'), $kir['Kir']['no_pol'], $default_msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, $logActionName );
                         $this->redirect(array(
                             'controller' => 'trucks',
                             'action' => 'kir_payments'
@@ -1409,7 +1415,9 @@ class TrucksController extends AppController {
             } else {
                 $this->MkCommon->setCustomFlash(__('Mohon pilih No. Pol Truk'), 'error');
             }
-        } else if( !empty($kir) ) {
+        }
+
+        if( !empty($kir) ) {
             $this->request->data['KirPayment']['kir_id'] = $id;
             $this->request->data['KirPayment']['tgl_kir'] = $this->MkCommon->customDate($kir['Kir']['tgl_kir'], 'd/m/Y', '');
             $this->request->data['KirPayment']['from_date'] = !empty($kir['Kir']['from_date'])?date('d/m/Y', strtotime($kir['Kir']['from_date'])):false;
@@ -1495,7 +1503,7 @@ class TrucksController extends AppController {
                 }
 
                 $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $KirPayment['Kir']['no_pol']), 'success');
-                $this->Log->logActivity( sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $KirPayment['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+                $this->Log->logActivity( sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $KirPayment['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, 'kir_payment_void' );
             } else {
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran KIR Truk %s'), $KirPayment['Kir']['no_pol']), 'error'); 
                 $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran KIR Truk %s'), $KirPayment['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
@@ -1575,8 +1583,8 @@ class TrucksController extends AppController {
         ));
 
         if(!empty($siup)){
+            $this->MkCommon->getLogs($this->paramController, array( 'siup_edit', 'siup_add' ), $id);
             $this->doSiup($id, $siup);
-            $this->set(compact('truck', 'siup'));
         }else{
             $this->MkCommon->setCustomFlash(__('Ijin Usaha Truk tidak ditemukan'), 'error');  
             $this->redirect(array(
@@ -1780,6 +1788,7 @@ class TrucksController extends AppController {
             $coa_id = $this->MkCommon->filterEmptyField($siup, 'SiupPayment', 'coa_id');
             $siup = $this->SiupPayment->Coa->getMerge( $siup, $coa_id );
 
+            $this->MkCommon->getLogs($this->paramController, array( 'siup_payment_add', 'siup_payment_delete', 'siup_payment_rejected', 'siup_payment_void' ), $id);
             $this->doSiupPayment($id, $siup);
             $this->set('sub_module_title', __('Detail Pembayaran Ijin Usaha'));
         } else {
@@ -1796,6 +1805,9 @@ class TrucksController extends AppController {
                 $this->SiupPayment->create();
                 $data = $this->request->data;
 
+                $logActionName = false;
+                $default_msg = 'dibayar';
+
                 $data['SiupPayment']['user_id'] = $this->user_id;
                 $data['SiupPayment']['siup_id'] = $siup_id;
                 $data['SiupPayment']['siup_payment_date'] = (!empty($data['SiupPayment']['siup_payment_date'])) ? $this->MkCommon->getDate($data['SiupPayment']['siup_payment_date']) : '';
@@ -1804,6 +1816,8 @@ class TrucksController extends AppController {
 
                 if( !empty($data['SiupPayment']['rejected']) ) {
                     $data['Siup']['rejected'] = 1;
+                    $logActionName = 'siup_payment_rejected';
+                    $default_msg = 'ditolak';
                 } else {
                     $data['Siup']['paid'] = 1;
                 }
@@ -1835,8 +1849,8 @@ class TrucksController extends AppController {
                         $this->params['old_data'] = $siup;
                         $this->params['data'] = $data;
 
-                        $this->MkCommon->setCustomFlash(sprintf(__('Ijin Usaha Truk %s telah dibayar'), $siup['Siup']['no_pol']), 'success');
-                        $this->Log->logActivity( sprintf(__('Ijin Usaha Truk %s telah dibayar #%s'), $siup['Siup']['no_pol'], $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+                        $this->MkCommon->setCustomFlash(sprintf(__('Ijin Usaha Truk %s telah %s'), $siup['Siup']['no_pol'], $default_msg), 'success');
+                        $this->Log->logActivity( sprintf(__('Ijin Usaha Truk %s telah %s #%s'), $siup['Siup']['no_pol'], $default_msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, $logActionName );
                         $this->redirect(array(
                             'controller' => 'trucks',
                             'action' => 'siup_payments'
@@ -1851,7 +1865,8 @@ class TrucksController extends AppController {
             } else {
                 $this->MkCommon->setCustomFlash(__('Mohon pilih No. Pol Truk'), 'error');
             }
-        } else if( !empty($siup) ) {
+        }
+        if( !empty($siup) ) {
             $this->request->data['SiupPayment']['siup_id'] = $id;
             $this->request->data['SiupPayment']['tgl_siup'] = $this->MkCommon->customDate($siup['Siup']['tgl_siup'], 'd/m/Y', '');
             $this->request->data['SiupPayment']['from_date'] = !empty($siup['Siup']['from_date'])?date('d/m/Y', strtotime($siup['Siup']['from_date'])):false;
@@ -1931,7 +1946,7 @@ class TrucksController extends AppController {
                 }
 
                 $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $SiupPayment['Siup']['no_pol']), 'success');
-                $this->Log->logActivity( sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $SiupPayment['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+                $this->Log->logActivity( sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $SiupPayment['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, 'siup_payment_void' );
             } else {
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran Ijin usaha Truk %s'), $SiupPayment['Siup']['no_pol']), 'error'); 
                 $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran Ijin usaha Truk %s'), $SiupPayment['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
@@ -2485,8 +2500,8 @@ class TrucksController extends AppController {
         ));
 
         if(!empty($Stnk)){
+            $this->MkCommon->getLogs($this->paramController, array( 'stnk_edit', 'stnk_add' ), $id);
             $this->doStnk($id, $Stnk);
-            $this->set(compact('truck'));
         }else{
             $this->MkCommon->setCustomFlash(__('STNK Truk tidak ditemukan'), 'error');  
             $this->redirect(array(
@@ -2644,7 +2659,7 @@ class TrucksController extends AppController {
 
             if($this->Stnk->save()){
                 $this->MkCommon->setCustomFlash(sprintf(__('STNK Truk %s telah berhasil dihapus'), $stnk['Stnk']['no_pol']), 'success');
-                $this->Log->logActivity(sprintf(__('STNK Truk %s telah berhasil dihapus #%s'), $stnk['Stnk']['no_pol'], $this->Stnk->id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+                $this->Log->logActivity(sprintf(__('STNK Truk %s telah berhasil dihapus #%s'), $stnk['Stnk']['no_pol'], $this->Stnk->id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, 'stnk_payment_void' );
             } else {
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal menghapus STNK Truk %s'), $stnk['Stnk']['no_pol']), 'error');  
                 $this->Log->logActivity(sprintf(__('Gagal menghapus STNK Truk %s #%s'), $stnk['Stnk']['no_pol'], $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
@@ -2689,7 +2704,7 @@ class TrucksController extends AppController {
                 }
 
                 $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $StnkPayment['Stnk']['no_pol']), 'success');
-                $this->Log->logActivity( sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $StnkPayment['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+                $this->Log->logActivity( sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $StnkPayment['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, 'stnk_payment_void' );
             } else {
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran STNK Truk %s'), $StnkPayment['Stnk']['no_pol']), 'error'); 
                 $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran STNK Truk %s'), $StnkPayment['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
@@ -2799,6 +2814,7 @@ class TrucksController extends AppController {
             $coa_id = $this->MkCommon->filterEmptyField($stnk, 'StnkPayment', 'coa_id');
             $stnk = $this->StnkPayment->Coa->getMerge( $stnk, $coa_id );
 
+            $this->MkCommon->getLogs($this->paramController, array( 'stnk_payment_add', 'stnk_payment_delete', 'stnk_payment_rejected', 'stnk_payment_void' ), $id);
             $this->doStnkPayment($id, $stnk);
             $this->set('sub_module_title', __('Detail Pembayaran STNK'));
         } else {
@@ -2815,6 +2831,9 @@ class TrucksController extends AppController {
                 $this->StnkPayment->create();
                 $data = $this->request->data;
 
+                $logActionName = false;
+                $default_msg = 'dibayar';
+
                 $data['StnkPayment']['user_id'] = $this->user_id;
                 $data['StnkPayment']['stnk_id'] = $stnk_id;
                 $data['StnkPayment']['stnk_payment_date'] = (!empty($data['StnkPayment']['stnk_payment_date'])) ? $this->MkCommon->getDate($data['StnkPayment']['stnk_payment_date']) : '';
@@ -2826,6 +2845,8 @@ class TrucksController extends AppController {
 
                 if( !empty($data['StnkPayment']['rejected']) ) {
                     $data['Stnk']['rejected'] = 1;
+                    $logActionName = 'stnk_payment_rejected';
+                    $default_msg = 'ditolak';
                 } else {
                     $data['Stnk']['paid'] = 1;
                 }
@@ -2857,8 +2878,8 @@ class TrucksController extends AppController {
                         $this->params['old_data'] = $stnk;
                         $this->params['data'] = $data;
 
-                        $this->MkCommon->setCustomFlash(sprintf(__('STNK Truk %s telah dibayar'), $stnk['Stnk']['no_pol']), 'success');
-                        $this->Log->logActivity(sprintf(__('STNK Truk %s telah dibayar #%s'), $stnk['Stnk']['no_pol'], $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+                        $this->MkCommon->setCustomFlash(sprintf(__('STNK Truk %s telah %s'), $stnk['Stnk']['no_pol'], $default_msg), 'success');
+                        $this->Log->logActivity(sprintf(__('STNK Truk %s telah %s #%s'), $stnk['Stnk']['no_pol'], $default_msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, $logActionName );
                         $this->redirect(array(
                             'controller' => 'trucks',
                             'action' => 'stnk_payments'
@@ -2873,7 +2894,8 @@ class TrucksController extends AppController {
             } else {
                 $this->MkCommon->setCustomFlash(__('Mohon pilih No. Pol Truk'), 'error');
             }
-        } else if( !empty($stnk) ) {
+        }
+        if( !empty($stnk) ) {
             $this->request->data['StnkPayment']['stnk_id'] = $id;
             $this->request->data['StnkPayment']['tgl_bayar'] = $this->MkCommon->customDate($stnk['Stnk']['tgl_bayar'], 'd/m/Y', '');
             $this->request->data['StnkPayment']['from_date'] = date('d/m/Y', strtotime($stnk['Stnk']['from_date']));

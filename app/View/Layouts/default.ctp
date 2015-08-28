@@ -78,8 +78,9 @@
 			        echo $this->Session->flash('success');
 			        echo $this->Session->flash('error');
 			        echo $this->Session->flash('info');
-			        
-            		echo $this->Html->tag('section', $this->fetch('content'), array(
+
+			        $logContent = $this->element('blocks/logs/histories');			        
+            		echo $this->Html->tag('section', $this->fetch('content').$logContent, array(
 							'class' => 'content',
 						));
             ?>

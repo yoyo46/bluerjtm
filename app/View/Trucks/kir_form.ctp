@@ -189,5 +189,4 @@
 </div>
 <?php
 		echo $this->Form->end();
-		echo $this->element('blocks/logs/histories');
 ?>
