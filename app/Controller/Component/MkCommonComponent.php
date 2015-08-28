@@ -845,5 +845,25 @@ class MkCommonComponent extends Component {
 
         $this->controller->set('logs', $logs);
     }
+
+    function checkAllowFunction( $params ) {
+        $allowFunction = false;
+        $paramController = !empty($params['controller'])?$params['controller']:false;
+        $group_id = Configure::read('__Site.config_group_id');
+        $current_branch_id = Configure::read('__Site.config_branch_id');
+        $_allowModule = Configure::read('__Site.config_allow_module');
+
+        if( $group_id == 1 ) {
+            $allowFunction = true;
+        } else if( !empty($_allowModule[$current_branch_id][$paramController]['action']) ) {
+            $allowAction = $_allowModule[$current_branch_id][$paramController]['action'];
+
+            if( in_array('edit_asset', $allowAction) ) {
+                $allowFunction = true;
+            }
+        }
+
+        return $allowFunction;
+    }
 }
 ?>

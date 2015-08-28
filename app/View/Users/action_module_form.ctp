@@ -50,13 +50,14 @@
 	        	<div class="checkbox" id="handle-module">
 	                <label>
 	                	<?php 
-	                		$checked = 'checked';
-	                		if(!empty($this->request->data) && !empty($this->request->data['BranchModule']['parent_id'])){
-	                			$checked = false;
-	                		}
-	                		echo $this->Form->checkbox('is_parent', array(
-	                			'checked' => $checked,
-	                		)).' Parent Module?';
+		                		$checked = 'checked';
+		                		
+		                		if(!empty($this->request->data) && !empty($this->request->data['BranchModule']['parent_id'])){
+		                			$checked = false;
+		                		}
+		                		echo $this->Form->checkbox('is_parent', array(
+		                			'checked' => $checked,
+		                		)).' Parent Module?';
 	                	?>
 	                </label>
 	            </div>

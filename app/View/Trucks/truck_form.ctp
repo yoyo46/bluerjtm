@@ -143,6 +143,9 @@
 	    					));
 					?>
 		        </div>
+			        <?php 
+			        		if( !empty($allowEditAsset) ) {
+			        ?>
 		        <div class="form-group">
 			        <div class="checkbox aset-handling">
 		                <label>
@@ -170,6 +173,9 @@
 						));
 					?>
 		        </div>
+		        <?php 
+		        		}
+		        ?>
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('description',array(

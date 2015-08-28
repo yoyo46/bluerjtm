@@ -247,9 +247,11 @@ class TrucksController extends AppController {
 
     function doTruck($id = false, $data_local = false){
         $this->loadModel('Driver');
+
         $driverConditions = array(
             'Truck.id' => NULL,
         );
+        $allowEditAsset = $this->MkCommon->checkAllowFunction($this->params);
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -508,7 +510,7 @@ class TrucksController extends AppController {
             'truck_brands', 'truck_categories', 'truck_brands', 
             'companies', 'drivers', 'years', 'customers',
             'truck_facilities', 'data_local', 'id',
-            'branches'
+            'branches', 'allowEditAsset'
         ));
         $this->render('truck_form');
     }

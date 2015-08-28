@@ -49,6 +49,7 @@ class BranchModule extends AppModel {
 
     function validateParentGroup($data){
         $result = true;
+        
         if(!empty($this->data['BranchModule']['is_parent']) && empty($data['branch_parent_module_id'])){
             $result = false;
         }
