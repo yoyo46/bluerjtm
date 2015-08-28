@@ -2730,7 +2730,7 @@ class RevenuesController extends AppController {
                 }
                 if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglBalik, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglBalik, 'd'), $inArr) ) {
                     $dataTtujCalendar['title'] = __('Balik');
-                    $dataTtujCalendar['icon'] = '/img/on-the-way.gif';
+                    $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_balik'])?$setting['Setting']['icon_balik']:'';
                     $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                     $dataTtujCalendar['color'] = '#3d9970';
                     $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglBalik, 'm')][$this->MkCommon->customDate($tglBalik, 'd')][] = $dataTtujCalendar;
