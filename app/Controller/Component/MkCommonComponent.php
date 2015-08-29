@@ -792,6 +792,14 @@ class MkCommonComponent extends Component {
                     'select2.min',
                 );
                 break;
+            case 'freeze':
+                $layout_js = array(
+                    'freeze',
+                );
+                $layout_css = array(
+                    'freeze',
+                );
+                break;
         }
 
         $this->controller->set(compact(

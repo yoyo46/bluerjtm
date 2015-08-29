@@ -909,6 +909,10 @@ class CommonHelper extends AppHelper {
                 $align = !empty($dataColumn['align'])?$dataColumn['align']:false;
                 $content = false;
 
+                if( !empty($_style) ) {
+                    $style .= $_style;
+                }
+
                 if( !empty($display) ) {
                     $checked = true;
                     $addClass = '';
@@ -954,7 +958,7 @@ class CommonHelper extends AppHelper {
                             ));
 
                             if( $fix_column && empty($is_print) ) {
-                                $content .= '</tr></thead><thead><tr>';
+                                $content .= '</tr></thead><thead><tr style="'.$_style.'">';
                             }
 
                             // Append Child
@@ -1104,21 +1108,27 @@ class CommonHelper extends AppHelper {
             'escape' => false,
             'class' => false,
         );
+        $urlDefault = $this->passedArgs;
+        $urlDefault['controller'] = !empty($this->params['controller'])?$this->params['controller']:false;
+        $urlDefault['action'] = $this->action;
 
         if( !empty($_attr) ) {
             $default_attr = array_merge($default_attr, $_attr);
         }
 
         if( !empty($_excel) ) {
+            $urlExcel = $urlDefault;
+            $urlExcel[] = 'excel';
             $_excel_attr = $default_attr;
             $_excel_attr['class'] = $default_attr['class'].' btn btn-success pull-right';
-            $result .= $this->Html->link('<i class="fa fa-download"></i> Download Excel', $this->here.'/excel', $_excel_attr);
+            $result .= $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, $_excel_attr);
         }
-
         if( !empty($_pdf) ) {
+            $urlPdf = $urlDefault;
+            $urlPdf[] = 'pdf';
             $_pdf_attr = $default_attr;
             $_pdf_attr['class'] = $default_attr['class'].' btn btn-primary pull-right';
-            $result .= $this->Html->link('<i class="fa fa-download"></i> Download PDF', $this->here.'/pdf', $_pdf_attr);
+            $result .= $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, $_pdf_attr);
         }
 
         if( !empty($showHideColumn) ) {
@@ -1141,7 +1151,7 @@ class CommonHelper extends AppHelper {
         ));
     }
 
-    function filterEmptyField ( $value, $modelName, $fieldName = false, $empty = false ) {
+    function filterEmptyField ( $value, $modelName, $fieldName = false, $empty = false, $removeTag = true ) {
         $result = '';
         
         if( empty($modelName) ) {
@@ -1152,7 +1162,11 @@ class CommonHelper extends AppHelper {
             $result = !empty($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
         }
 
-        return $this->safeTagPrint($result);
+        if( !empty($removeTag) && !is_array($result) ) {
+            return $this->safeTagPrint($result);
+        } else {
+            return $result;
+        }
     }
 
     function getMergePrepayment ( $prepayment, $class = false ) {

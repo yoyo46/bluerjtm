@@ -21,6 +21,9 @@ class RjLakaComponent extends Component {
 				if( !empty($refine['Ttuj']['no_ttuj']) ) {
 					$refine_conditions['Ttuj']['no_ttuj'] = urlencode($refine['Ttuj']['no_ttuj']);
 				}
+				if( !empty($refine['Laka']['status']) ) {
+					$refine_conditions['Laka']['status'] = $refine['Laka']['status'];
+				}
 			}
 				
 			return $refine_conditions;

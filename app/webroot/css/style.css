@@ -105,6 +105,11 @@ body > .header {
   overflow-x: hidden;
 }
 
+.easyui-datagrid {
+  width: 100%;
+  height: 550px;  
+}
+
 @media screen and (min-width: 992px) {
   .left-side {
     top: 50px;

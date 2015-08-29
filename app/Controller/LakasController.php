@@ -485,4 +485,127 @@ class LakasController extends AppController {
 
         $this->redirect($this->referer());
     }
+
+    public function reports( $data_action = false ) {
+        $this->loadModel('Laka');
+
+        $dateFrom = date('Y-m-d', strtotime('-1 month'));
+        $dateTo = date('Y-m-d');
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        $conditions = array(
+            'Laka.branch_id' => $allow_branch_id,
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+
+                $this->request->data['Laka']['type'] = $typeTruck;
+                $this->request->data['Laka']['nopol'] = $nopol;
+
+                if( $typeTruck == 2 ) {
+                    $conditions ['Laka.truck_id'] = $nopol;
+                } else {
+                    $conditions ['Laka.nopol LIKE'] = '%'.$nopol.'%';
+                }
+            }
+
+            if(!empty($refine['driver_name'])){
+                $driver_name = urldecode($refine['driver_name']);
+                $this->request->data['Ttuj']['driver_name'] = $driver_name;
+                $conditions['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$driver_name.'%';
+            }
+
+            if(!empty($refine['status'])){
+                $value = urldecode($refine['status']);
+                $tmpArry = array(
+                    0 => 'active',
+                    1 => 'completed',
+                );
+                $this->request->data['Laka']['status'] = $value;
+
+                if( in_array($value, $tmpArry) ) {
+                    $value = array_search($value, $tmpArry);
+                    $conditions['Laka.completed'] = $value;
+                }
+            }
+
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
+
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                }
+                $this->request->data['Laka']['tgl_laka'] = $dateStr;
+            }
+
+            // Custom Otorisasi
+            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'TruckCustomer', $conditions, 'conditions' );
+        }
+
+        $conditions['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') >='] = $dateFrom;
+        $conditions['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') <='] = $dateTo;
+
+        $lakas = $this->Laka->getData('all', array(
+            'conditions' => $conditions,
+            'order' => array(
+                'Laka.created' => 'ASC', 
+            ),
+        ));
+
+        if( !empty($lakas) ) {
+            $this->loadModel('LakaInsurance');
+
+            foreach ($lakas as $key => $value) {
+                $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'ttuj_id');
+                $truck_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'truck_id');
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'branch_id');
+                $insurances = $this->MkCommon->filterEmptyField($value, 'Laka', 'completeness_insurance');
+
+                $customInsurances = unserialize($insurances);
+                $customInsurances = array_filter($customInsurances);
+                $customInsurances = array_keys($customInsurances);
+                $value['Laka']['insurances'] = $customInsurances;
+
+                $value = $this->Laka->Ttuj->Truck->getMerge($value, $truck_id);
+                $category_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'truck_category_id');
+
+
+                $value = $this->Laka->Ttuj->Truck->TruckCategory->getMerge($value, $category_id);
+                $value = $this->Laka->Ttuj->getMerge($value, $ttuj_id);
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+
+                $lakas[$key] = $value;
+            }
+        }
+
+        $module_title = __('Laporan Laka');
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $this->request->data['Laka']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
+            $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+
+        $this->set('sub_module_title', $module_title);
+        $this->set('active_menu', 'laka_repots');
+
+        $this->set(compact(
+            'lakas', 'cities', 'data_action'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->_layout_file('freeze');
+        }
+    }
 }

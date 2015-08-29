@@ -704,14 +704,14 @@
 
                     $dataMenu = array(
                         'lakas' => array(
-                            'index'
+                            'index', 'reports'
                         ),
                     );
 
                     if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
-                            'lakas'
+                            'lakas', 'reports'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -733,6 +733,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'lakas' )?'active':'',
+                            ));
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan LAKA', array(
+                                'controller' => 'lakas',
+                                'action' => 'reports',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'laka_repots' )?'active':'',
                             ));
                     ?>
                 </ul>
