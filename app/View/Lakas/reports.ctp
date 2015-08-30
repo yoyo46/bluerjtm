@@ -167,20 +167,20 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <?php 
-                            echo $this->Form->input('insurance',array(
-                                'label'=> __('Memiliki Asuransi?'),
-                                'class'=>'form-control',
-                                'required' => false,
-                                'empty' => __('Pilih'),
-                                'options' => array(
-                                    0 => __('Tidak'),
-                                    1 => __('Ya'),
-                                ),
-                            ));
+                            // echo $this->Form->input('insurance',array(
+                            //     'label'=> __('Memiliki Asuransi?'),
+                            //     'class'=>'form-control',
+                            //     'required' => false,
+                            //     'empty' => __('Pilih'),
+                            //     'options' => array(
+                            //         'no' => __('Tidak'),
+                            //         'yes' => __('Ya'),
+                            //     ),
+                            // ));
                     ?>
-                </div>
+                </div> -->
                 <?php 
                         // Custom Otorisasi
                         echo $this->Common->getCheckboxBranch();

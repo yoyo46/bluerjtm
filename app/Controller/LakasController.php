@@ -546,6 +546,23 @@ class LakasController extends AppController {
                 $this->request->data['Laka']['tgl_laka'] = $dateStr;
             }
 
+            if(!empty($refine['insurance'])){
+                $value = urldecode($refine['insurance']);
+
+                switch ($value) {
+                    case 'no':
+                        $conditions['Laka.completeness_insurance LIKE'] = '%i:1;s:1%';
+                        break;
+                    
+                    default:
+                        $conditions['Laka.completeness_insurance NOT LIKE'] = '%i:1;s:1%';
+                        $conditions['Laka.completeness_insurance NOT'] = NULL;
+                        break;
+                }
+
+                $this->request->data['Laka']['insurance'] = $value;
+            }
+
             // Custom Otorisasi
             $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'TruckCustomer', $conditions, 'conditions' );
         }

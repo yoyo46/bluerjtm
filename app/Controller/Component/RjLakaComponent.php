@@ -24,6 +24,9 @@ class RjLakaComponent extends Component {
 				if( !empty($refine['Laka']['status']) ) {
 					$refine_conditions['Laka']['status'] = $refine['Laka']['status'];
 				}
+				if( !empty($refine['Laka']['insurance']) ) {
+					$refine_conditions['Laka']['insurance'] = $refine['Laka']['insurance'];
+				}
 			}
 				
 			return $refine_conditions;
