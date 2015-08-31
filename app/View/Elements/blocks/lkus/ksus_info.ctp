@@ -54,22 +54,6 @@
 	</div>
 </div>
 <div class="form-group">
-	<?php
-		echo $this->Form->label('UangJalan.distance', __('Jarak'));
-	?>
-	<div class="input-group">
-		<?php 
-				echo $this->Form->input('UangJalan.distance',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'readonly' => true,
-				));
-		?>
-		<span class="input-group-addon" id="basic-addon2">Km</span>
-	</div>
-</div>
-<div class="form-group">
 	<?php 
 			echo $this->Form->input('Ttuj.nopol',array(
 				'label'=> __('Truk'), 

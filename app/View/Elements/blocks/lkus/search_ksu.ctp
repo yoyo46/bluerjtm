@@ -95,6 +95,65 @@
                             )); 
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php
+                           echo $this->Html->tag('label', __('Status KSU')); 
+                    ?>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <?php 
+                                    echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('atpm', array(
+                                        'type' => 'checkbox',
+                                        'label'=> false,
+                                        'div' => false,
+                                        'required' => false,
+                                        'value' => 1,
+                                    )).__('Kekurangan MD?')), array(
+                                        'class' => 'checkbox',
+                                    ));
+                            ?>
+                        </div>
+                        <div class="col-sm-6">
+                            <?php 
+                                    echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('closing', array(
+                                        'type' => 'checkbox',
+                                        'label'=> false,
+                                        'div' => false,
+                                        'required' => false,
+                                        'value' => 1,
+                                    )).__('Telah Closing?')), array(
+                                        'class' => 'checkbox',
+                                    ));
+                            ?>
+                        </div>
+                        <div class="col-sm-6">
+                            <?php 
+                                    echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('paid', array(
+                                        'type' => 'checkbox',
+                                        'label'=> false,
+                                        'div' => false,
+                                        'required' => false,
+                                        'value' => 1,
+                                    )).__('Lunas?')), array(
+                                        'class' => 'checkbox',
+                                    ));
+                            ?>
+                        </div>
+                        <div class="col-sm-6">
+                            <?php 
+                                    echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('half_paid', array(
+                                        'type' => 'checkbox',
+                                        'label'=> false,
+                                        'div' => false,
+                                        'required' => false,
+                                        'value' => 1,
+                                    )).__('Dibayar Sebagian?')), array(
+                                        'class' => 'checkbox',
+                                    ));
+                            ?>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <?php 

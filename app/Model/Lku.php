@@ -24,6 +24,18 @@ class Lku extends AppModel {
                 'message' => 'TTUJ harap dipilih'
             ),
         ),
+        'completed_desc' => array(
+            'completeValidate' => array(
+                'rule' => array('completeValidate'),
+                'message' => 'Keterangan proses selesai harap diisi'
+            ),
+        ),
+        'completed_date' => array(
+            'completeDateValidate' => array(
+                'rule' => array('completeDateValidate'),
+                'message' => 'Tgl selesai harap diisi'
+            ),
+        ),
 	);
 
     var $belongsTo = array(
@@ -46,6 +58,30 @@ class Lku extends AppModel {
             ),
         ),
     );
+
+    function completeValidate($data){
+        if(!empty($this->data['Lku']['completed'])){
+            if( !empty($this->data['Lku']['completed_desc']) ){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return true;
+        }
+    }
+
+    function completeDateValidate($data){
+        if(!empty($this->data['Lku']['completed'])){
+            if( !empty($this->data['Lku']['completed_date']) ){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return true;
+        }
+    }
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';

@@ -47,6 +47,18 @@ class RjLkuComponent extends Component {
 				if( !empty($refine['Ksu']['customer_id']) ) {
 					$refine_conditions['Ksu']['customer'] = $refine['Ksu']['customer_id'];
 				}
+				if( !empty($refine['Ksu']['atpm']) ) {
+					$refine_conditions['Ksu']['atpm'] = $refine['Ksu']['atpm'];
+				}
+				if( !empty($refine['Ksu']['closing']) ) {
+					$refine_conditions['Ksu']['closing'] = $refine['Ksu']['closing'];
+				}
+				if( !empty($refine['Ksu']['paid']) ) {
+					$refine_conditions['Ksu']['paid'] = $refine['Ksu']['paid'];
+				}
+				if( !empty($refine['Ksu']['half_paid']) ) {
+					$refine_conditions['Ksu']['half_paid'] = $refine['Ksu']['half_paid'];
+				}
 			}
 				
 			return $refine_conditions;

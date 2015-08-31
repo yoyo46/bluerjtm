@@ -95,6 +95,52 @@
                             )); 
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php
+                           echo $this->Html->tag('label', __('Status LKU')); 
+                    ?>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <?php 
+                                    echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ksu.closing', array(
+                                        'type' => 'checkbox',
+                                        'label'=> false,
+                                        'div' => false,
+                                        'required' => false,
+                                        'value' => 1,
+                                    )).__('Telah Closing?')), array(
+                                        'class' => 'checkbox',
+                                    ));
+                            ?>
+                        </div>
+                        <div class="col-sm-6">
+                            <?php 
+                                    echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ksu.paid', array(
+                                        'type' => 'checkbox',
+                                        'label'=> false,
+                                        'div' => false,
+                                        'required' => false,
+                                        'value' => 1,
+                                    )).__('Lunas?')), array(
+                                        'class' => 'checkbox',
+                                    ));
+                            ?>
+                        </div>
+                        <div class="col-sm-6">
+                            <?php 
+                                    echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ksu.half_paid', array(
+                                        'type' => 'checkbox',
+                                        'label'=> false,
+                                        'div' => false,
+                                        'required' => false,
+                                        'value' => 1,
+                                    )).__('Dibayar Sebagian?')), array(
+                                        'class' => 'checkbox',
+                                    ));
+                            ?>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <?php 

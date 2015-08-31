@@ -83,6 +83,74 @@
 			</div>
 	    </div>
 	</div>
+	<?php
+			if(!empty($id)){
+				$completed_date = $this->Common->filterEmptyField($this->request->data, 'Lku', 'completed_date');
+
+				$customCompletedDate = $this->Common->customDate($completed_date, 'd/m/Y', date('d/m/Y'));
+	?>
+	<div class="box box-success">
+	    <div class="box-header">
+	        <h3 class="box-title"><?php echo __('Closing LKU?'); ?></h3>
+	    </div>
+	    <div class="box-body">
+	    	<?php 
+	    		echo $this->Html->tag('p', __('Digunakan untuk closing LKU.'));
+	    	?>
+	    	<div class="form-group">
+	    		<div class="checkbox">
+                    <label class="completed-handle">
+                    	<?php 
+                    		echo $this->Form->checkbox('completed').' Proses sudah selesai?';
+                    	?>
+                    </label>
+                </div>
+	    	</div>
+            <div id="desc-complete" class="<?php echo !empty($this->request->data['Lku']['completed']) ? '' : 'hide';?>">
+	    		<div class="form-group">
+                	<?php 
+							echo $this->Form->input('completed_date',array(
+								'label'=> __('Tgl Closing *'), 
+								'class'=>'form-control custom-date',
+								'required' => false,
+								'type' => 'text',
+								'value' => $customCompletedDate,
+							));
+
+							if ($this->Form->isFieldError('completed')) {
+							    echo $this->Form->error('completed');
+							}
+					?>
+            	</div>
+	    		<div class="form-group">
+                	<?php 
+							echo $this->Form->input('completed_nodoc',array(
+								'label'=> __('No. Dokumen'), 
+								'class'=>'form-control',
+								'required' => false,
+							));
+					?>
+            	</div>
+	    		<div class="form-group">
+                	<?php 
+							echo $this->Form->input('completed_desc',array(
+								'label'=> __('Keterangan *'), 
+								'class'=>'form-control',
+								'required' => false,
+								'type' => 'textarea'
+							));
+
+							if ($this->Form->isFieldError('completed')) {
+							    echo $this->Form->error('completed');
+							}
+					?>
+            	</div>
+            </div>
+	    </div>
+	</div>
+	<?php
+			}
+	?>
 	<div id="detail-tipe-motor">
 		<?php 
 			if(!empty($this->request->data['LkuDetail'])){

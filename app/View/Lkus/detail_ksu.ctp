@@ -1,5 +1,12 @@
 <?php 
 		$customer_name = $this->Common->filterEmptyField($Ksu, 'Customer', 'customer_name_code');
+        $status = $this->Lku->getCheckStatus($Ksu, 'Ksu');
+		$completed_date = $this->Common->filterEmptyField($Ksu, 'Ksu', 'completed_date');
+		$completed_desc = $this->Common->filterEmptyField($Ksu, 'Ksu', 'completed_desc');
+		$completed_nodoc = $this->Common->filterEmptyField($Ksu, 'Ksu', 'completed_nodoc', '-');
+		$completed = $this->Common->filterEmptyField($Ksu, 'Ksu', 'completed');
+
+		$customCompletedDate = $this->Common->customDate($completed_date, 'd/m/Y');
 ?>
 <div class="row">
     <div class="col-sm-12">
@@ -40,27 +47,33 @@
 					<tr>
 						<th width="30%"><?php echo __('Status');?></th>
 						<?php 
-	                		if(!empty($Ksu['Ksu']['status'])){
-	                            echo $this->Html->tag('td', '<span class="label label-success">Aktif</span>');
-	                        } else{
-	                            echo $this->Html->tag('td', '<span class="label label-danger">Non-aktif</span>');
-	                        }
+	                            echo $this->Html->tag('td', $status);
+	                	?>
+					</tr>
+					<?php 
+							if( !empty($completed) ) {
+					?>
+					<tr>
+						<th width="30%"><?php echo __('Tgl Closing');?></th>
+						<?php 
+	                            echo $this->Html->tag('td', $customCompletedDate);
 	                	?>
 					</tr>
 					<tr>
-						<th width="30%"><?php echo __('Status Pembayaran');?></th>
+						<th width="30%"><?php echo __('No. Dokumen');?></th>
 						<?php 
-	                		if(empty($Ksu['Ksu']['kekurangan_atpm'])){
-	                            if(!empty($Ksu['Ksu']['complete_paid'])){
-	                                echo $this->Html->tag('td', '<span class="label label-success">Pembayaran Lunas</span>');
-	                            }else{
-	                                echo $this->Html->tag('td', '<span class="label label-success">Dibayar Sebagian</span>');
-	                            }
-	                        }else{
-	                            echo $this->Html->tag('td', '<span class="label label-success">Dibayar Main Dealer</span>');
-	                        }
+	                            echo $this->Html->tag('td', $completed_nodoc);
 	                	?>
 					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Keterangan Closing');?></th>
+						<?php 
+	                            echo $this->Html->tag('td', $completed_desc);
+	                	?>
+					</tr>
+					<?php 
+							}
+					?>
 					<tr>
 						<th width="30%"><?php echo __('Kekurangan ATPM');?></th>
 						<?php 

@@ -29,7 +29,19 @@ class Ksu extends AppModel {
                 'rule' => array('validateATPM'),
                 'message' => 'Tanggal ATPM harap diisi'
             )
-        )
+        ),
+        'completed_desc' => array(
+            'completeValidate' => array(
+                'rule' => array('completeValidate'),
+                'message' => 'Keterangan proses selesai harap diisi'
+            ),
+        ),
+        'completed_date' => array(
+            'completeDateValidate' => array(
+                'rule' => array('completeDateValidate'),
+                'message' => 'Tgl selesai harap diisi'
+            ),
+        ),
 	);
 
     var $belongsTo = array(
@@ -52,6 +64,30 @@ class Ksu extends AppModel {
             ),
         ),
     );
+
+    function completeValidate($data){
+        if(!empty($this->data['Ksu']['completed'])){
+            if( !empty($this->data['Ksu']['completed_desc']) ){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return true;
+        }
+    }
+
+    function completeDateValidate($data){
+        if(!empty($this->data['Ksu']['completed'])){
+            if( !empty($this->data['Ksu']['completed_date']) ){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return true;
+        }
+    }
 
     function validateATPM($data){
         $result = true;

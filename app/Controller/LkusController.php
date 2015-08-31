@@ -1,8 +1,10 @@
 <?php
 App::uses('AppController', 'Controller');
 class LkusController extends AppController {
-	public $uses = array();
-
+    public $uses = array();
+	public $helpers = array(
+        'Lku'
+    );
     public $components = array(
         'RjLku'
     );
@@ -27,8 +29,6 @@ class LkusController extends AppController {
 
 	public function index() {
         $this->loadModel('Lku');
-        $this->loadModel('Ttuj');
-        $this->loadModel('Customer');
 
 		$this->set('active_menu', 'lkus');
 		$this->set('sub_module_title', __('Data LKU'));
@@ -58,21 +58,60 @@ class LkusController extends AppController {
             if(!empty($refine['no_ttuj'])){
                 $no_ttuj = urldecode($refine['no_ttuj']);
                 $this->request->data['Lku']['no_ttuj'] = $no_ttuj;
-                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
+
+                $list_ttuj_id = $this->Lku->Ttuj->getData('list', array(
+                    'conditions' => array(
+                        'Ttuj.no_ttuj LIKE' => '%'.$no_ttuj.'%',
+                    ),
+                    'fields' => array(
+                        'Ttuj.id', 'Ttuj.id',
+                    ),
+                ), true, array(
+                    'status' => 'all',
+                ));
+                $conditions['Lku.ttuj_id'] = $list_ttuj_id;
             }
 
             if(!empty($refine['customer'])){
                 $customer = urldecode($refine['customer']);
                 $this->request->data['Lku']['customer_id'] = $customer;
-                $conditions['Ttuj.customer_id'] = $customer;
+
+                $list_ttuj_id = $this->Lku->Ttuj->getData('list', array(
+                    'conditions' => array(
+                        'Ttuj.customer_id' => $customer,
+                    ),
+                    'fields' => array(
+                        'Ttuj.id', 'Ttuj.id',
+                    ),
+                ), true, array(
+                    'status' => 'all',
+                ));
+                $conditions['Lku.ttuj_id'] = $list_ttuj_id;
+            }
+
+            if(!empty($refine['closing'])){
+                $value = urldecode($refine['closing']);
+                $this->request->data['Ksu']['closing'] = $value;
+                $conditions['Lku.completed'] = $value;
+            }
+
+            if(!empty($refine['paid'])){
+                $value = urldecode($refine['paid']);
+                $this->request->data['Ksu']['paid'] = $value;
+                $conditions['Lku.paid'] = 1;
+                $conditions['Lku.complete_paid'] = 1;
+            }
+
+            if(!empty($refine['half_paid'])){
+                $value = urldecode($refine['half_paid']);
+                $this->request->data['Ksu']['half_paid'] = $value;
+                $conditions['Lku.paid'] = 1;
+                $conditions['Lku.complete_paid'] = 0;
             }
         }
 
         $this->paginate = $this->Lku->getData('paginate', array(
             'conditions' => $conditions,
-            'contain' => array(
-                'Ttuj'
-            ),
         ), true, array(
             'status' => 'all',
         ));
@@ -80,29 +119,22 @@ class LkusController extends AppController {
 
         if(!empty($Lkus)){
             foreach ($Lkus as $key => $value) {
-                $customer_data['Customer'] = array();
-                
-                if(!empty($value['Ttuj']['customer_id'])){
-                    $customer_data = $this->Customer->getData('first', array(
-                        'conditions' => array(
-                            'Customer.id' => $value['Ttuj']['customer_id']
-                        )
-                    ), true, array(
-                        'status' => 'all',
-                    ));
+                $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Lku', 'ttuj_id');
 
-                    if( !empty($customer_data['Customer']) ) {
-                        $Lkus[$key]['Customer'] = $customer_data['Customer'];
-                    }
-                }
+                $value = $this->Lku->Ttuj->getMerge($value, $ttuj_id);
+                $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
+
+                $value = $this->Lku->Ttuj->Customer->getMerge($value, $customer_id);
+                $Lkus[$key] = $value;
             }
         }
 
-        $customers = $this->Customer->getData('list', array(
+        $customers = $this->Lku->Ttuj->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
         ));
+
         $this->set(compact(
             'Lkus', 'customers'
         ));
@@ -169,7 +201,9 @@ class LkusController extends AppController {
         $this->set('sub_module_title', 'Rubah LKU');
         $Lku = $this->Lku->getData('first', array(
             'conditions' => array(
-                'Lku.id' => $id
+                'Lku.id' => $id,
+                'Lku.paid' => 0,
+                'Lku.completed' => 0,
             ),
         ));
 
@@ -178,7 +212,7 @@ class LkusController extends AppController {
         }else{
             $this->MkCommon->setCustomFlash(__('LKU tidak ditemukan'), 'error');  
             $this->redirect(array(
-                'controller' => 'Lkus',
+                'controller' => 'lkus',
                 'action' => 'index'
             ));
         }
@@ -208,6 +242,14 @@ class LkusController extends AppController {
             $temp_detail = array();
             $total_price = 0;
             $total_klaim = 0;
+            
+            if( empty($data['Lku']['completed']) ) {
+                $data['Lku']['completed_desc'] = NULL;
+                $data['Lku']['completed_nodoc'] = NULL;
+                $data['Lku']['completed_date'] = NULL;
+            } else {
+                $data['Lku']['completed_date'] = (!empty($data['Lku']['completed_date'])) ? $this->MkCommon->getDate($data['Lku']['completed_date']) : '';
+            }
 
             if(!empty($data['LkuDetail']['tipe_motor_id'])){
                 foreach ($data['LkuDetail']['tipe_motor_id'] as $key => $value) {
@@ -1176,7 +1218,6 @@ class LkusController extends AppController {
 
     public function ksus() {
         $this->loadModel('Ksu');
-        $this->loadModel('Customer');
 
         $this->set('active_menu', 'ksus');
         $this->set('sub_module_title', __('Data KSU'));
@@ -1206,21 +1247,66 @@ class LkusController extends AppController {
             if(!empty($refine['no_ttuj'])){
                 $no_ttuj = urldecode($refine['no_ttuj']);
                 $this->request->data['Ksu']['no_ttuj'] = $no_ttuj;
-                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
+
+                $list_ttuj_id = $this->Ksu->Ttuj->getData('list', array(
+                    'conditions' => array(
+                        'Ttuj.no_ttuj LIKE' => '%'.$no_ttuj.'%',
+                    ),
+                    'fields' => array(
+                        'Ttuj.id', 'Ttuj.id',
+                    ),
+                ), true, array(
+                    'status' => 'all',
+                ));
+                $conditions['Ksu.ttuj_id'] = $list_ttuj_id;
             }
 
             if(!empty($refine['customer'])){
                 $customer = urldecode($refine['customer']);
                 $this->request->data['Ksu']['customer_id'] = $customer;
-                $conditions['Ttuj.customer_id'] = $customer;
+
+                $list_ttuj_id = $this->Ksu->Ttuj->getData('list', array(
+                    'conditions' => array(
+                        'Ttuj.customer_id' => $customer,
+                    ),
+                    'fields' => array(
+                        'Ttuj.id', 'Ttuj.id',
+                    ),
+                ), true, array(
+                    'status' => 'all',
+                ));
+                $conditions['Ksu.ttuj_id'] = $list_ttuj_id;
+            }
+
+            if(!empty($refine['atpm'])){
+                $value = urldecode($refine['atpm']);
+                $this->request->data['Ksu']['atpm'] = $value;
+                $conditions['Ksu.kekurangan_atpm'] = $value;
+            }
+
+            if(!empty($refine['closing'])){
+                $value = urldecode($refine['closing']);
+                $this->request->data['Ksu']['closing'] = $value;
+                $conditions['Ksu.completed'] = $value;
+            }
+
+            if(!empty($refine['paid'])){
+                $value = urldecode($refine['paid']);
+                $this->request->data['Ksu']['paid'] = $value;
+                $conditions['Ksu.paid'] = 1;
+                $conditions['Ksu.complete_paid'] = 1;
+            }
+
+            if(!empty($refine['half_paid'])){
+                $value = urldecode($refine['half_paid']);
+                $this->request->data['Ksu']['half_paid'] = $value;
+                $conditions['Ksu.paid'] = 1;
+                $conditions['Ksu.complete_paid'] = 0;
             }
         }
 
         $this->paginate = $this->Ksu->getData('paginate', array(
             'conditions' => $conditions,
-            'contain' => array(
-                'Ttuj'
-            )
         ), true, array(
             'status' => 'all',
         ));
@@ -1228,23 +1314,17 @@ class LkusController extends AppController {
 
         if(!empty($Ksus)){
             foreach ($Ksus as $key => $value) {
-                $customer_data['Customer'] = array();
-                
-                if(!empty($value['Ttuj']['customer_id'])){
-                    $customer_data = $this->Customer->getData('first', array(
-                        'conditions' => array(
-                            'Customer.id' => $value['Ttuj']['customer_id']
-                        )
-                    ), true, array(
-                        'status' => 'all',
-                    ));
-                }
+                $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Ksu', 'ttuj_id');
 
-                $Ksus[$key]['Customer'] = $customer_data['Customer'];
+                $value = $this->Ksu->Ttuj->getMerge($value, $ttuj_id);
+                $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
+
+                $value = $this->Ksu->Ttuj->Customer->getMerge($value, $customer_id);
+                $Ksus[$key] = $value;
             }
         }
 
-        $customers = $this->Customer->getData('list', array(
+        $customers = $this->Ksu->Ttuj->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -1303,7 +1383,9 @@ class LkusController extends AppController {
         $this->set('sub_module_title', 'Rubah KSU');
         $Ksu = $this->Ksu->getData('first', array(
             'conditions' => array(
-                'Ksu.id' => $id
+                'Ksu.id' => $id,
+                'Ksu.paid' => 0,
+                'Ksu.completed' => 0,
             ),
         ));
 
@@ -1312,7 +1394,7 @@ class LkusController extends AppController {
         }else{
             $this->MkCommon->setCustomFlash(__('KSU tidak ditemukan'), 'error');  
             $this->redirect(array(
-                'controller' => 'Ksus',
+                'controller' => 'lkus',
                 'action' => 'ksus'
             ));
         }
@@ -1344,6 +1426,14 @@ class LkusController extends AppController {
             $total_price = 0;
             $total_klaim = 0;
             $total_choosen = 0;
+            
+            if( empty($data['Ksu']['completed']) ) {
+                $data['Ksu']['completed_desc'] = NULL;
+                $data['Ksu']['completed_nodoc'] = NULL;
+                $data['Ksu']['completed_date'] = NULL;
+            } else {
+                $data['Ksu']['completed_date'] = (!empty($data['Ksu']['completed_date'])) ? $this->MkCommon->getDate($data['Ksu']['completed_date']) : '';
+            }
 
             if(!empty($data['KsuDetail']['perlengkapan_id'])){
                 foreach ($data['KsuDetail']['perlengkapan_id'] as $key => $value) {
@@ -1527,9 +1617,11 @@ class LkusController extends AppController {
             ));
             
             if(!empty($data_ttuj)){
-                $this->loadModel('TtujPerlengkapan');
-                $data_ttuj = $this->TtujPerlengkapan->getMerge($data_ttuj, $ttuj_id);
                 $perlengkapan_list = array();
+                $driver_penganti_id = $this->MkCommon->filterEmptyField($data_ttuj, 'Ttuj', 'driver_penganti_id');
+
+                $data_ttuj = $this->Ttuj->TtujPerlengkapan->getMerge($data_ttuj, $ttuj_id);
+                $data_ttuj = $this->Ttuj->Truck->Driver->getMerge($data_ttuj, $driver_penganti_id, 'DriverPenganti');
 
                 if(!empty($data_ttuj['TtujPerlengkapan'])){
                     foreach ($data_ttuj['TtujPerlengkapan'] as $key => $value) {

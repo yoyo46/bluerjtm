@@ -1,4 +1,54 @@
 <?php 
+        $dataColumns = array(
+            'no_doc' => array(
+                'name' => __('No. LKU'),
+                'field_model' => 'Lku.no_doc',
+                'display' => true,
+            ),
+            'no_ttuj' => array(
+                'name' => __('No. TTUJ'),
+                'field_model' => false,
+                'display' => true,
+            ),
+            'customer' => array(
+                'name' => __('Customer'),
+                'field_model' => false,
+                'display' => true,
+                'style' => 'width:20%;'
+            ),
+            'tgl_lku' => array(
+                'name' => __('Tgl LKU'),
+                'field_model' => 'Lku.tgl_lku',
+                'display' => true,
+            ),
+            'total_klaim' => array(
+                'name' => __('Total Klaim'),
+                'field_model' => 'Lku.total_klaim',
+                'display' => true,
+            ),
+            'total_price' => array(
+                'name' => __('Pembayaran'),
+                'field_model' => 'Lku.total_price',
+                'display' => true,
+            ),
+            'status' => array(
+                'name' => __('Status'),
+                'field_model' => false,
+                'display' => true,
+            ),
+            'created' => array(
+                'name' => __('Dibuat'),
+                'field_model' => 'Lku.created',
+                'display' => true,
+            ),
+            'action' => array(
+                'name' => __('Action'),
+                'field_model' => false,
+                'display' => true,
+            ),
+        );
+        $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
+
         $this->Html->addCrumb($sub_module_title);
         echo $this->element('blocks/lkus/search_index');
 ?>
@@ -23,128 +73,93 @@
         </div>
     </div>
     <div class="box-body table-responsive">
-        <table class="table table-hover">
-            <tr>
-                <?php 
-                        echo $this->Html->tag('th', $this->Paginator->sort('Lku.no_doc', __('No LKU'), array(
-                            'escape' => false
-                        )));
-
-                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.no_ttuj', __('No TTUJ'), array(
-                            'escape' => false
-                        )));
-
-                        echo $this->Html->tag('th', __('Customer'));
-
-                        echo $this->Html->tag('th', $this->Paginator->sort('Lku.tgl_lku', __('Tgl LKU'), array(
-                            'escape' => false
-                        )));
-
-                        echo $this->Html->tag('th', $this->Paginator->sort('Lku.total_klaim', __('Total Klaim'), array(
-                            'escape' => false
-                        )));
-
-                        echo $this->Html->tag('th', $this->Paginator->sort('Lku.total_price', __('Total Pembayaran'), array(
-                            'escape' => false
-                        )));
-
-                        echo $this->Html->tag('th', $this->Paginator->sort('Lku.status', __('Status'), array(
-                            'escape' => false
-                        )));
-
-                        echo $this->Html->tag('th', $this->Paginator->sort('Lku.paid', __('Status Pembayaran'), array(
-                            'escape' => false
-                        )));
-
-                        echo $this->Html->tag('th', $this->Paginator->sort('Lku.created', __('Dibuat'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', __('Action'), array(
-                            'escape' => false
-                        ));
-                ?>
-            </tr>
-            <?php
-                    if(!empty($Lkus)){
-                        foreach ($Lkus as $key => $value) {
-                            $id = $value['Lku']['id'];
-            ?>
-            <tr>
-                <td><?php echo $value['Lku']['no_doc'];?></td>
-                <?php 
-                        $allowChange = true;
-                        $customer = '';
-
-                        echo $this->Html->tag('td', $value['Ttuj']['no_ttuj']);
-
-                        if(!empty($value['Customer']['customer_name_code'])){
-                            $customer = $value['Customer']['customer_name_code'];
-                        }
-
-                        echo $this->Html->tag('td', $customer);
-                        echo $this->Html->tag('td', date('d/m/Y', strtotime($value['Lku']['tgl_lku'])));
-
-                        echo $this->Html->tag('td', $this->Number->format($value['Lku']['total_klaim']));
-                        echo $this->Html->tag('td', $this->Number->currency($value['Lku']['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0)) );
-
-                        if(!empty($value['Lku']['status'])){
-                            echo $this->Html->tag('td', '<span class="label label-success">Aktif</span>');
-                        } else{
-                            echo $this->Html->tag('td', '<span class="label label-danger">Non-aktif</span>');
-                        }
-
-                        if(!empty($value['Lku']['paid'])){
-                            if(!empty($value['Lku']['complete_paid'])){
-                                echo $this->Html->tag('td', '<span class="label label-success">Pembayaran Lunas</span>');
-                            }else{
-                                echo $this->Html->tag('td', '<span class="label label-success">Dibayar Sebagian</span>');
-                            }
-                            $allowChange = false;
-                        } else{
-                            echo $this->Html->tag('td', '<span class="label label-danger">Belum di bayar</span>');
-                        }
-                ?>
-                <td><?php echo $this->Common->customDate($value['Lku']['created']);?></td>
-                <td class="action">
-                    <?php
-                        echo $this->Html->link('Info', array(
-                            'controller' => 'lkus',
-                            'action' => 'detail',
-                            $id
-                        ), array(
-                            'class' => 'btn btn-info btn-xs'
-                        ));
-
-                        if( $allowChange && !empty($value['Lku']['status']) ){
-                            echo $this->Html->link('Edit', array(
-                                'controller' => 'lkus',
-                                'action' => 'edit',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-primary btn-xs'
-                            ));
-
-                            echo $this->Html->link(__('Void'), array(
-                                'controller' => 'lkus',
-                                'action' => 'toggle',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                                'title' => 'disable status brand'
-                            ), __('Apakah Anda yakin akan mengbatalkan data ini?'));
-                        }
+        <table class="table table-hover sorting">
+            <thead>
+                <tr>
+                    <?php 
+                            echo $fieldColumn;
                     ?>
-                </td>
-            </tr>
-            <?php
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                        if(!empty($Lkus)){
+                            foreach ($Lkus as $key => $value) {
+                                $id = $this->Common->filterEmptyField($value, 'Lku', 'id');
+                                $no_doc = $this->Common->filterEmptyField($value, 'Lku', 'no_doc');
+                                $tgl_lku = $this->Common->filterEmptyField($value, 'Lku', 'tgl_lku');
+                                $total_klaim = $this->Common->filterEmptyField($value, 'Lku', 'total_klaim');
+                                $total_price = $this->Common->filterEmptyField($value, 'Lku', 'total_price');
+                                $status = $this->Common->filterEmptyField($value, 'Lku', 'status');
+                                $paid = $this->Common->filterEmptyField($value, 'Lku', 'paid');
+                                $complete_paid = $this->Common->filterEmptyField($value, 'Lku', 'complete_paid');
+                                $created = $this->Common->filterEmptyField($value, 'Lku', 'created');
+                                $completed = $this->Common->filterEmptyField($value, 'Lku', 'completed');
+
+                                $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
+                                $customer_name_code = $this->Common->filterEmptyField($value, 'Customer', 'customer_name_code');
+
+                                $customTglLku = $this->Common->customDate($tgl_lku, 'd/m/Y');
+                                $customCreated = $this->Common->customDate($created, 'd/m/Y');
+                                $customTotalPrice = $this->Common->getCurrencyPrice($total_price);
+                                $customStatus = $this->Lku->getCheckStatus($value, 'Lku');
+                ?>
+                <tr>
+                    <?php 
+                            echo $this->Html->tag('td', $no_doc);
+                            echo $this->Html->tag('td', $no_ttuj);
+                            echo $this->Html->tag('td', $customer_name_code);
+                            echo $this->Html->tag('td', $customTglLku);
+                            echo $this->Html->tag('td', $total_klaim, array(
+                                'class' => 'text-center',
+                            ));
+                            echo $this->Html->tag('td', $customTotalPrice, array(
+                                'class' => 'text-right',
+                            ));
+                            echo $this->Html->tag('td', $customStatus);
+                            echo $this->Html->tag('td', $customCreated);
+                    ?>
+                    <td class="action">
+                        <?php
+                                echo $this->Html->link('Info', array(
+                                    'controller' => 'lkus',
+                                    'action' => 'detail',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-info btn-xs'
+                                ));
+
+                                if( !empty($status) && empty($paid) && empty($completed) ){
+                                    echo $this->Html->link('Edit', array(
+                                        'controller' => 'lkus',
+                                        'action' => 'edit',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-primary btn-xs'
+                                    ));
+
+                                    echo $this->Html->link(__('Void'), array(
+                                        'controller' => 'lkus',
+                                        'action' => 'toggle',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-danger btn-xs',
+                                        'title' => 'disable status brand'
+                                    ), __('Apakah Anda yakin akan mengbatalkan data ini?'));
+                                }
+                        ?>
+                    </td>
+                </tr>
+                <?php
+                            }
+                        }else{
+                            echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
+                                'class' => 'alert alert-warning text-center',
+                                'colspan' => '10'
+                            )));
                         }
-                    }else{
-                        echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
-                            'class' => 'alert alert-warning text-center',
-                            'colspan' => '10'
-                        )));
-                    }
-            ?>
+                ?>
+            </tbody>
         </table>
     </div><!-- /.box-body -->
     <?php echo $this->element('pagination');?>

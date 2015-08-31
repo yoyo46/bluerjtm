@@ -36,6 +36,8 @@
                     $total = 0;
                     for ($i=0; $i < $count; $i++) { 
                         $price = (isset($this->request->data['KsuDetail'][$i]['price']) && !empty($this->request->data['KsuDetail'][$i]['price'])) ? $this->request->data['KsuDetail'][$i]['price'] : 0;
+                        $price = $this->Common->convertPriceToString($price, 0);
+
                         if(!empty($this->request->data['Ksu']['kekurangan_atpm'])){
                             $price = 0;
                         }
@@ -102,6 +104,7 @@
                         <?php 
                             if(empty($this->request->data['Ksu']['kekurangan_atpm'])){
                                 $value_price = 0;
+
                                 if(!empty($price) && !empty($qty)){
                                     $value_price = $price * $qty;
                                     $total += $value_price;
