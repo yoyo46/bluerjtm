@@ -4456,9 +4456,9 @@ class RevenuesController extends AppController {
             $temptotal = $total;
             $data['InvoicePayment']['total_payment'] = $total;
 
-            if(!empty($data['InvoicePayment']['pph'])){
-                $temptotal -= $total*($data['InvoicePayment']['pph']/100);
-            }
+            // if(!empty($data['InvoicePayment']['pph'])){
+            //     $temptotal -= $total*($data['InvoicePayment']['pph']/100);
+            // }
             if(!empty($data['InvoicePayment']['ppn'])){
                 $temptotal += $total*($data['InvoicePayment']['ppn']/100);
             }

@@ -16,12 +16,17 @@
                 $capacity = $this->Common->filterEmptyField($value, 'Truck', 'capacity');
                 $category = $this->Common->filterEmptyField($value, 'TruckCategory', 'name');
 
-                if( in_array(1, $insurance) ) {
+                if( !empty($insurance) ) {
+                    if( in_array(1, $insurance) ) {
+                        $insurance = __('Tidak');
+                        $lblClass = 'warning';
+                    } else {
+                        $insurance =__('Ada');
+                        $lblClass = 'info';
+                    }
+                } else {
                     $insurance = __('Tidak');
                     $lblClass = 'warning';
-                } else {
-                    $insurance =__('Ada');
-                    $lblClass = 'info';
                 }
 
                 if( !empty($completed) ) {

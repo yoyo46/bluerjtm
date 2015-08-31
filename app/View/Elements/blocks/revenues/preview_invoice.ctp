@@ -189,7 +189,7 @@
 						'class' => 'total-row'
 					));
 
-					$pph = !empty($totalPPh[0]['pph'])?$totalPPh[0]['pph']:0;
+					// $pph = !empty($totalPPh[0]['pph'])?$totalPPh[0]['pph']:0;
 					$ppn = !empty($totalPPN[0]['ppn'])?$totalPPN[0]['ppn']:0;
 
 					if( !empty($ppn) ) {
@@ -231,7 +231,8 @@
 					}
 
 					if( !empty($ppn) || !empty($pph) ) {
-						$grandTotalInvoice = $grandTotal + $ppn - $pph;
+						// $grandTotalInvoice = $grandTotal + $ppn - $pph;
+						$grandTotalInvoice = $grandTotal + $ppn;
 						$colom = $this->Html->tag('td', '&nbsp;', array(
 							'colspan' => $totalMergeTotal+1,
 						));

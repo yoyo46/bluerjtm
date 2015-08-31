@@ -1603,9 +1603,9 @@ function grandTotalRevenue(){
     }
     $('#pph-total-revenue').html(formatNumber(pph));
     
-    if(pph > 0){
-        total -= pph;
-    }
+    // if(pph > 0){
+    //     total -= pph;
+    // }
     if(ppn > 0){
         total += ppn;
     }
@@ -1643,9 +1643,9 @@ function calcPPNPPH(){
     
     $('#pph-total-revenue').html(formatNumber(pph));
     
-    if(pph > 0){
-        total -= pph;
-    }
+    // if(pph > 0){
+    //     total -= pph;
+    // }
     if(ppn > 0){
         total += ppn;
     }
@@ -2667,9 +2667,9 @@ function getTotalInvoicePayment(){
     
     $('#pph-total-invoice').html(formatNumber(pph));
     
-    if(pph > 0){
-        total -= pph;
-    }
+    // if(pph > 0){
+    //     total -= pph;
+    // }
     if(ppn > 0){
         total += ppn;
     }
@@ -2719,9 +2719,9 @@ function getTotalLkuPayment(){
     
     $('#pph-total-invoice').html(formatNumber(pph));
     
-    if(pph > 0){
-        total -= pph;
-    }
+    // if(pph > 0){
+    //     total -= pph;
+    // }
     if(ppn > 0){
         total += ppn;
     }

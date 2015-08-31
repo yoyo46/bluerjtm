@@ -128,9 +128,9 @@
     <td align="right" colspan="5"><?php echo __('Grand Total')?></td>
     <td align="right" id="all-total-invoice">
         <?php 
-            if($pph > 0){
-                $total -= $pph;
-            }
+            // if($pph > 0){
+            //     $total -= $pph;
+            // }
             if($ppn > 0){
                 $total += $ppn;
             }

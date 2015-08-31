@@ -77,7 +77,7 @@
 							$ppn_total = $this->Common->calcFloat($grandTotal, $ppn);
 							$pph_total = $this->Common->calcFloat($grandTotal, $pph)*-1;
 							$grandTotal += $ppn_total;
-							$grandTotal -= $pph_total;
+							// $grandTotal -= $pph_total;
 
 							if( !empty($ppn) ) {
 								$colom = $this->Html->tag('td', __('PPN ('.$ppn.'%)'), array(

@@ -215,7 +215,8 @@ if($action_print == 'pdf'){
 				}
 
 				if( !empty($ppn) || !empty($pph) ) {
-					$grandTotalInvoice = $grandTotal + $ppn - $pph;
+					// $grandTotalInvoice = $grandTotal + $ppn - $pph;
+					$grandTotalInvoice = $grandTotal + $ppn;
 					$colom = $this->Html->tag('td', '&nbsp;', array(
 						'colspan' => $totalMergeTotal+1,
 					));

@@ -560,9 +560,9 @@ class Revenue extends AppModel {
             $ppn = $total_revenue * ($dataRevenue['Revenue']['ppn'] / 100);
         }
 
-        if( !empty($dataRevenue['Revenue']['pph']) && $dataRevenue['Revenue']['pph'] > 0 ){
-            $total_revenue -= $pph;
-        }
+        // if( !empty($dataRevenue['Revenue']['pph']) && $dataRevenue['Revenue']['pph'] > 0 ){
+        //     $total_revenue -= $pph;
+        // }
         if( !empty($dataRevenue['Revenue']['ppn']) && $dataRevenue['Revenue']['ppn'] > 0 ){
             $total_revenue += $ppn;
         }

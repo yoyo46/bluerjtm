@@ -403,9 +403,9 @@
                     <td align="right" colspan="7"><?php echo __('Total');?></td>
                     <td align="right" id="all-total-revenue">
                         <?php 
-                                if($pph > 0){
-                                    $total -= $pph;
-                                }
+                                // if($pph > 0){
+                                //     $total -= $pph;
+                                // }
                                 if($ppn > 0){
                                     $total += $ppn;
                                 }
