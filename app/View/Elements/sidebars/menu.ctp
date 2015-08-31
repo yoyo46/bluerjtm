@@ -711,7 +711,7 @@
                     if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
-                            'lakas', 'reports'
+                            'lakas', 'laka_repots'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {

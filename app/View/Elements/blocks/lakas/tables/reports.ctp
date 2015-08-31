@@ -30,11 +30,11 @@
                 }
 
                 if( !empty($completed) ) {
-                    $statusCompleted = __('Aktif');
-                    $lblClassComplated = 'primary';
-                } else {
                     $statusCompleted = __('Selesai');
                     $lblClassComplated = 'success';
+                } else {
+                    $statusCompleted = __('Aktif');
+                    $lblClassComplated = 'primary';
                 }
 
                 $customTglLaka = $this->Common->customDate($tgl_laka, 'd M Y');
