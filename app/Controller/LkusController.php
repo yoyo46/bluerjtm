@@ -881,6 +881,7 @@ class LkusController extends AppController {
                     array(
                         'Lku.status' => 1,
                         'Lku.complete_paid' => 0,
+                        'Lku.completed' => 0,
                     ),
                     array(
                         'Lku.id' => $ttuj_customer_id,
@@ -2101,7 +2102,8 @@ class LkusController extends AppController {
                     array(
                         'Ksu.status' => 1,
                         'Ksu.complete_paid' => 0,
-                        'Ksu.kekurangan_atpm' => 0
+                        'Ksu.kekurangan_atpm' => 0,
+                        'Ksu.completed' => 0,
                     ),
                     array(
                         'Ksu.id' => $ttuj_customer_id,
