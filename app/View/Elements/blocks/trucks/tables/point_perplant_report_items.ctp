@@ -42,6 +42,7 @@
 
                 if( !empty($temp_group_id) && !empty($temp_type_id) && ( $temp_group_id != $customer_group_id || $temp_type_id != $type_id || $temp_manual_group != $manual_group ) ) {
                     echo $this->element('blocks/trucks/tables/point_perplant_report', array(
+                        // 'customer_code' => $value['Customer']['code'],
                         'manual_group' => $temp_manual_group,
                         'type_id' => $temp_type_id,
                         'customer_group_id' => $temp_group_id,
@@ -83,7 +84,7 @@
 <tr>
     <?php
 
-            echo $this->Html->tag('td', $value['Customer']['code']);
+            echo $this->Html->tag('td', $customer_name);
 
             if( $data_type == 'retail' ) {
                 $totalMuatan = !empty($dataTtuj[$customer_id])?$dataTtuj[$customer_id]:'-';

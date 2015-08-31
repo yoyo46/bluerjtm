@@ -3569,8 +3569,11 @@ class TrucksController extends AppController {
 
         if( !empty($customers) ) {
             foreach ($customers as $key => $value) {
+                $customer_group_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'customer_group_id');
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'branch_id');
+
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                $value = $this->Customer->CustomerGroup->getMerge($value, $customer_group_id);
                 $customers[$key] = $value;
             }
         }
