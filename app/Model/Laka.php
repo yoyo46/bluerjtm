@@ -270,5 +270,28 @@ class Laka extends AppModel {
 
         return $data;
     }
+
+    function getMergeTruck( $truck_id, $data, $conditions = false ){
+        if( empty($data['Laka'])){
+            $condition_default = array(
+                'Laka.truck_id' => $truck_id,
+                'Laka.status' => 1,
+            );
+
+            if( !empty($conditions) ) {
+                $condition_default = array_merge($condition_default, $conditions);
+            }
+
+            $data_merge = $this->getData('first', array(
+                'conditions' => $condition_default,
+            ), false);
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

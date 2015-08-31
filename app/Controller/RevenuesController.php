@@ -2541,11 +2541,80 @@ class RevenuesController extends AppController {
         $trucks = $this->paginate('Truck');
         $truckList = Set::extract('/Truck/id', $trucks);
         $conditions['Ttuj.truck_id'] = $truckList;
+        $dataLaka = array();
 
         if( !empty($trucks) ) {
             foreach ($trucks as $key => $value) {
+                $truck_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'id');
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'branch_id');
+                $nopol = $this->MkCommon->filterEmptyField($value, 'Truck', 'nopol');
+
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                $value = $this->Laka->getMergeTruck($truck_id, $value, array(
+                    'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\')' => $currentMonth,
+                ));
+                $laka_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'id');
+
+                if( !empty($laka_id) ) {
+                    $tgl_laka = $this->MkCommon->filterEmptyField($value, 'Laka', 'tgl_laka');
+                    $laka_completed = $this->MkCommon->filterEmptyField($value, 'Laka', 'completed');
+                    $laka_completed_date = $this->MkCommon->filterEmptyField($value, 'Laka', 'completed_date');
+                    $driver_name = $this->MkCommon->filterEmptyField($value, 'Laka', 'driver_name', '-');
+                    $lokasi_laka = $this->MkCommon->filterEmptyField($value, 'Laka', 'lokasi_laka');
+                    $truck_condition = $this->MkCommon->filterEmptyField($value, 'Laka', 'truck_condition');
+                    $change_driver_name = $this->MkCommon->filterEmptyField($value, 'Laka', 'change_driver_name', '-');
+                    $change_driver_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'change_driver_id', '-');
+
+                    if( $change_driver_name == '-' && !empty($change_driver_id) ) {
+                        $value = $this->Truck->Driver->getMerge($value, $change_driver_id, 'DriverPenganti');
+                        $change_driver_name = $this->MkCommon->filterEmptyField($value, 'DriverPenganti', 'driver_name', '-');
+                    }
+
+                    $lakaDate = $this->MkCommon->customDate($tgl_laka, 'Y-m-d');
+                    $lakaCompletedDate = $this->MkCommon->customDate($laka_completed_date, 'Y-m-d', '-');
+                    $addClass = 'pool';
+                    $urlLaka = array(
+                        'controller' => 'lakas',
+                        'action' => 'edit',
+                        $laka_id,
+                    );
+
+                    if( !empty($laka_completed) ) {
+                        $end_date = $lakaCompletedDate;
+                    } else if( date('Y-m-d') >= $lakaDate ) {
+                        $end_date = date('Y-m-d', strtotime("-1 day"));
+                    } else {
+                        $end_date = $lakaDate;
+                    }
+
+
+                    $icon_laka = $this->MkCommon->filterEmptyField($setting, 'Setting', 'icon_laka');
+                    $lakaDate = $this->MkCommon->customDate($tgl_laka, 'd/m/Y');
+                    $lakaMonth = $this->MkCommon->customDate($tgl_laka, 'm');
+                    $lakaDay = $this->MkCommon->customDate($tgl_laka, 'd');
+                    $dataCalendar = array(
+                        'is_laka' => true,
+                        'laka_date' => $lakaDate,
+                        'laka_completed_date' => $lakaCompletedDate,
+                        'driver_name' => $driver_name,
+                        'driver_pengganti_name' => $change_driver_name,
+                        'lokasi_laka' => $lokasi_laka,
+                        'truck_condition' => $truck_condition,
+                        'title' => __('LAKA'),
+                        'icon' => $icon_laka,
+                        'iconPopup' => $icon_laka,
+                        'color' => '#dd545f',
+                        'NoPol' => $nopol,
+                        'url' => array(
+                            'controller' => 'lakas',
+                            'action' => 'edit',
+                            $laka_id,
+                        ),
+                    );
+
+                    $dataLaka['Truck-'.$truck_id][$lakaMonth][$lakaDay][] = $dataCalendar;
+                }
+
                 $trucks[$key] = $value;
             }
         }
@@ -2573,17 +2642,19 @@ class RevenuesController extends AppController {
 
             foreach ($ttujs as $key => $value) {
                 $inArr = array();
-                $driver_penganti_id = !empty($value['Ttuj']['driver_penganti_id'])?$value['Ttuj']['driver_penganti_id']:false;
+                $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
+                $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
+                $nopol = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'nopol');
+                $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
+
                 $value = $this->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
-                $value = $this->Laka->getMergeTtuj($value['Ttuj']['id'], $value, array(
+                $value = $this->Laka->getMergeTtuj($truck_id, $value, array(
                     'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\')' => $currentMonth,
                 ));
-                $truck_id = $value['Ttuj']['truck_id'];
-                $nopol = $value['Ttuj']['nopol'];
                 $ttujTipeMotor = $this->TtujTipeMotor->find('first', array(
                     'conditions' => array(
                         'TtujTipeMotor.status' => 1,
-                        'TtujTipeMotor.ttuj_id' => $value['Ttuj']['id'],
+                        'TtujTipeMotor.ttuj_id' => $ttuj_id,
                     ),
                     'fields' => array(
                         'SUM(TtujTipeMotor.qty) cnt'
@@ -2867,7 +2938,8 @@ class RevenuesController extends AppController {
             'data_action', 'lastDay', 'currentMonth',
             'trucks', 'prevMonth', 'nextMonth',
             'dataTtuj', 'dataEvent', 'customers',
-            'customerId', 'dataRit', 'thisMonth'
+            'customerId', 'dataRit', 'thisMonth',
+            'dataLaka'
         ));
 
         if($data_action == 'pdf'){

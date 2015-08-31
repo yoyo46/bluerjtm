@@ -262,6 +262,54 @@
                                         }
                                     }
 
+                                    if( !empty($dataLaka['Truck-'.$truck_id][$thisMonth][sprintf("%02s", $i)]) ) {
+                                        foreach ($dataLaka['Truck-'.$truck_id][$thisMonth][sprintf("%02s", $i)] as $key => $event) {
+                                            $title = $event['title'];
+                                            $contentLaka = $this->Html->tag('p', sprintf(__('Tanggal: %s', $event['laka_date'])));
+                                            $contentLaka .= $this->Html->tag('p', sprintf(__('Sampai: %s', $event['laka_completed_date'])));
+                                            $contentLaka .= $this->Html->tag('p', sprintf(__('Supir: %s', $event['driver_name'])));
+                                            $contentLaka .= $this->Html->tag('p', sprintf(__('Supir Pengganti: %s', $event['driver_pengganti_name'])));
+                                            $contentLaka .= $this->Html->tag('p', sprintf(__('Lokasi: %s', $event['lokasi_laka'])));
+                                            $contentLaka .= $this->Html->tag('p', sprintf(__('Kondisi Truk: %s', $event['truck_condition'])));
+                                            $contentLaka .= $this->Html->tag('p', $this->Html->link(__('Selengkapnya..'), $event['url'], array(
+                                                'escape' => false,
+                                                'target' => 'blank',
+                                            )));
+                                            $iconLaka = $this->Common->photo_thumbnail(array(
+                                                'save_path' => Configure::read('__Site.truck_photo_folder'), 
+                                                'src' => $event['icon'], 
+                                                'thumb'=>true,
+                                                'size' => 'ps',
+                                                'thumb' => true,
+                                                'url' => true,
+                                            ));
+
+                                            if( !empty($event['icon']) ) {
+                                                $icon = $this->Html->image($iconLaka, array(
+                                                    'class' => 'ico-calendar'
+                                                ));
+                                            } else {
+                                                $icon = $this->Html->tag('span', '&nbsp;', array(
+                                                    'class' => 'ico-calendar'
+                                                ));
+                                            }
+                                            if( !empty($event['iconPopup']) ) {
+                                                $icon .= $this->Html->image($iconLaka, array(
+                                                    'class' => 'icon-popup'
+                                                ));
+                                            }
+
+                                            $point[] = $this->Html->tag('div', $this->Html->tag('div', $icon, array(
+                                                'title' => $title.' <span class="pull-right"><a href="javascript:"><i class="popover-close">Tutup</i></a></span>',
+                                                'class' => 'popover-hover-top-click',
+                                                'data-content' => $contentLaka,
+                                            )), array(
+                                                'class' => 'text-center parent-popover',
+                                            ));
+                                            $style = sprintf('background: %s;', $event['color']);
+                                        }
+                                    }
+
                                     if( empty($point) ){
                                         echo $this->Html->tag('td', $this->Html->link('&nbsp;', array(
                                             'controller' => 'ajax',
