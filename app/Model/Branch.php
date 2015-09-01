@@ -121,16 +121,16 @@ class Branch extends AppModel {
     public function saveBranchCity( $data, $validate = false, $id = false ) {
         $validateBranchCity = true;
 
-        if( !empty($data['BranchCity']['branch_city_id']) ) {
-            if( empty($validate) ) {
-                $this->BranchCity->updateAll(array( 
-                    'BranchCity.status' => 0,
-                ), array( 
-                    'BranchCity.branch_id' => $id,
-                    'BranchCity.status' => 1,
-                ));
-            }
+        if( empty($validate) && !empty($id) ) {
+            $this->BranchCity->updateAll(array( 
+                'BranchCity.status' => 0,
+            ), array( 
+                'BranchCity.branch_id' => $id,
+                'BranchCity.status' => 1,
+            ));
+        }
 
+        if( !empty($data['BranchCity']['branch_city_id']) ) {
             foreach ($data['BranchCity']['branch_city_id'] as $key => $branch_city_id) {
                 $dataBranchCity = array(
                     'BranchCity' => array(
