@@ -15,12 +15,18 @@ class LkusController extends AppController {
         $this->set('module_title', __('LKU/KSU'));
     }
 
-    function search( $index = 'index' ){
+    function search( $index = 'index', $parameter = false ){
         $refine = array();
         if(!empty($this->request->data)) {
-            $refine = $this->RjLku->processRefine($this->request->data);
+            $data = $this->request->data;
+            $refine = $this->RjLku->processRefine($data);
             $params = $this->RjLku->generateSearchURL($refine);
+            $params = $this->MkCommon->getRefineGroupBranch($params, $data);
             $params['action'] = $index;
+
+            if( !empty($parameter) ) {
+                array_unshift($params, $parameter);
+            }
 
             $this->redirect($params);
         }
@@ -877,11 +883,11 @@ class LkusController extends AppController {
 
         $customers = $this->Lku->getData('all', array(
             'conditions' => array(
+                'Lku.completed' => 0,
                 'OR' => array(
                     array(
                         'Lku.status' => 1,
                         'Lku.complete_paid' => 0,
-                        'Lku.completed' => 0,
                     ),
                     array(
                         'Lku.id' => $ttuj_customer_id,
@@ -2098,12 +2104,12 @@ class LkusController extends AppController {
 
         $customers = $this->Ksu->getData('all', array(
             'conditions' => array(
+                'Ksu.completed' => 0,
                 'OR' => array(
                     array(
                         'Ksu.status' => 1,
                         'Ksu.complete_paid' => 0,
                         'Ksu.kekurangan_atpm' => 0,
-                        'Ksu.completed' => 0,
                     ),
                     array(
                         'Ksu.id' => $ttuj_customer_id,
@@ -2547,6 +2553,209 @@ class LkusController extends AppController {
                     }
                 }
             }
+        }
+    }
+
+    public function reports( $type = 'lku', $data_action = false ) {
+        if( in_array($type, array( 'lku', 'ksu' )) ) {
+            switch ($type) {
+                case 'ksu':
+                    $modelName = 'Ksu';
+                    break;
+                
+                default:
+                    $modelName = 'Lku';
+                    break;
+            }
+
+            $this->loadModel($modelName);
+
+            $dateFrom = date('Y-m-d', strtotime('-1 month'));
+            $dateTo = date('Y-m-d');
+            $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+            $conditions = array(
+                $modelName.'.branch_id' => $allow_branch_id,
+            );
+
+            if(!empty($this->params['named'])){
+                $refine = $this->params['named'];
+
+                if(!empty($refine['nodoc'])){
+                    $value = urldecode($refine['nodoc']);
+                    $this->request->data['Lku']['no_doc'] = $value;
+                    $conditions[$modelName.'.no_doc LIKE '] = '%'.$value.'%';
+                }
+
+                if(!empty($refine['status'])){
+                    $value = urldecode($refine['status']);
+                    $this->request->data['Lku']['status'] = $value;
+
+                    switch ($value) {
+                        case 'closing':
+                            $conditions['AND']['OR'][$modelName.'.complete_paid'] = 1;
+                            $conditions['AND']['OR'][$modelName.'.completed'] = 1;
+                            break;
+                        case 'pending':
+                            $conditions[$modelName.'.complete_paid'] = 0;
+                            $conditions[$modelName.'.completed'] = 0;
+                            break;
+                    }
+                }
+
+                if(!empty($refine['nopol'])){
+                    $nopol = urldecode($refine['nopol']);
+                    $this->request->data['Lku']['nopol'] = $nopol;
+                    $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                    $this->request->data['Lku']['type'] = $typeTruck;
+
+                    if( $typeTruck == 2 ) {
+                        $conditionsNopol = array(
+                            'Truck.id' => $nopol,
+                        );
+                    } else {
+                        $conditionsNopol = array(
+                            'Truck.nopol LIKE' => '%'.$nopol.'%',
+                        );
+                    }
+
+                    $truckSearch = $this->$modelName->Ttuj->Truck->getData('list', array(
+                        'conditions' => $conditionsNopol,
+                        'fields' => array(
+                            'Truck.id', 'Truck.id',
+                        ),
+                    ), true, array(
+                        'branch' => false,
+                    ));
+                    $conditions['Ttuj.truck_id'] = $truckSearch;
+                }
+
+                if(!empty($refine['driver_name'])){
+                    $value = urldecode($refine['driver_name']);
+                    $this->request->data['Lku']['driver_name'] = $value;
+
+                    $dataSearchId = $this->$modelName->Ttuj->Truck->Driver->getData('list', array(
+                        'conditions' => array(
+                            'Driver.driver_name LIKE' => '%'.$value.'%',
+                        ),
+                        'fields' => array(
+                            'Driver.id', 'Driver.id',
+                        ),
+                    ), true, array(
+                        'branch' => false,
+                    ));
+                    $conditions['OR']['Ttuj.driver_id'] = $dataSearchId;
+                    $conditions['OR']['Ttuj.driver_penganti_id'] = $dataSearchId;
+                }
+
+                if(!empty($refine['status'])){
+                    $value = urldecode($refine['status']);
+                    $tmpArry = array(
+                        0 => 'active',
+                        1 => 'completed',
+                    );
+                    $this->request->data['Laka']['status'] = $value;
+
+                    if( in_array($value, $tmpArry) ) {
+                        $value = array_search($value, $tmpArry);
+                        $conditions['Laka.completed'] = $value;
+                    }
+                }
+
+                if(!empty($refine['date'])){
+                    $dateStr = urldecode($refine['date']);
+                    $date = explode('-', $dateStr);
+
+                    if( !empty($date) ) {
+                        $date[0] = urldecode($date[0]);
+                        $date[1] = urldecode($date[1]);
+                        $dateFrom = $this->MkCommon->getDate($date[0]);
+                        $dateTo = $this->MkCommon->getDate($date[1]);
+                    }
+                    $this->request->data['Laka']['tgl_laka'] = $dateStr;
+                }
+
+                if(!empty($refine['atpm'])){
+                    $value = urldecode($refine['atpm']);
+                    $this->request->data['Ksu']['atpm'] = $value;
+
+                    switch ($value) {
+                        case 'yes':
+                            $conditions['Ksu.kekurangan_atpm'] = 1;
+                            break;
+                        case 'no':
+                            $conditions['Ksu.kekurangan_atpm'] = 0;
+                            break;
+                    }
+                }
+
+                // Custom Otorisasi
+                $conditions = $this->MkCommon->getConditionGroupBranch( $refine, $modelName, $conditions, 'conditions' );
+            }
+
+            $conditions['DATE_FORMAT('.$modelName.'.tgl_'.$type.', \'%Y-%m-%d\') >='] = $dateFrom;
+            $conditions['DATE_FORMAT('.$modelName.'.tgl_'.$type.', \'%Y-%m-%d\') <='] = $dateTo;
+
+            $datas = $this->$modelName->getData('all', array(
+                'conditions' => $conditions,
+                'order' => array(
+                    $modelName.'.created' => 'ASC', 
+                ),
+                'contain' => array(
+                    'Ttuj',
+                ),
+            ), true, array(
+                'status' => 'all',
+            ));
+
+            if( !empty($datas) ) {
+                foreach ($datas as $key => $value) {
+                    $id = $this->MkCommon->filterEmptyField($value, $modelName, 'id');
+                    $branch_id = $this->MkCommon->filterEmptyField($value, $modelName, 'branch_id');
+                    $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
+
+                    $value = $this->$modelName->Ttuj->Truck->getMerge($value, $truck_id);
+                    $category_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'truck_category_id');
+                    $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
+
+                    $value = $this->$modelName->Ttuj->Truck->TruckCategory->getMerge($value, $category_id);
+                    $value = $this->$modelName->Ttuj->Truck->Driver->getMerge($value, $driver_penganti_id, 'DriverPengganti');
+
+                    if( $type == 'ksu' ) {
+                        $value = $this->$modelName->KsuDetail->getGroupMerge($value, $id);
+                    } else {
+                        $value = $this->$modelName->LkuDetail->getGroupMerge($value, $id);
+                    }
+
+                    $datas[$key] = $value;
+                }
+            }
+
+            $module_title = __('Laporan '.strtoupper($modelName));
+
+            if( !empty($dateFrom) && !empty($dateTo) ) {
+                $this->request->data['Lku']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
+                $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+            }
+
+            $this->set('sub_module_title', $module_title);
+            $this->set('active_menu', $type.'_reports');
+
+            $this->set(compact(
+                'datas', 'cities', 'data_action',
+                'modelName', 'type'
+            ));
+
+            if($data_action == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($data_action == 'excel'){
+                $this->layout = 'ajax';
+            } else {
+                $this->MkCommon->_layout_file('freeze');
+            }
+
+            $this->render('reports');
+        } else {
+            $this->redirect($this->referer());
         }
     }
 }

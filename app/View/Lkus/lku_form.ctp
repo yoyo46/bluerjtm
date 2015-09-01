@@ -91,11 +91,11 @@
 	?>
 	<div class="box box-success">
 	    <div class="box-header">
-	        <h3 class="box-title"><?php echo __('Closing LKU?'); ?></h3>
+	        <h3 class="box-title"><?php echo __('LKU Selesai?'); ?></h3>
 	    </div>
 	    <div class="box-body">
 	    	<?php 
-	    		echo $this->Html->tag('p', __('Digunakan untuk closing LKU.'));
+	    		echo $this->Html->tag('p', __('Digunakan apabila LKU selesai.'));
 	    	?>
 	    	<div class="form-group">
 	    		<div class="checkbox">
@@ -110,7 +110,7 @@
 	    		<div class="form-group">
                 	<?php 
 							echo $this->Form->input('completed_date',array(
-								'label'=> __('Tgl Closing *'), 
+								'label'=> __('Tgl Selesai *'), 
 								'class'=>'form-control custom-date',
 								'required' => false,
 								'type' => 'text',

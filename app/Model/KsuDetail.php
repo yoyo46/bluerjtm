@@ -67,6 +67,7 @@ class KsuDetail extends AppModel {
             ),
             'contain' => array(),
             'fields' => array(),
+            'group' => array(),
         );
 
         if(!empty($options)){
@@ -84,6 +85,9 @@ class KsuDetail extends AppModel {
             }
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         }
 
@@ -108,6 +112,36 @@ class KsuDetail extends AppModel {
 
             $ksuDetails = $this->getData('all', $default_options);
             $data['KsuDetail'] = $ksuDetails;
+        }
+
+        return $data;
+    }
+
+    function getGroupMerge ( $data = false, $ksu_id = false ) {
+        if( empty($data['KsuDetail']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'KsuDetail.ksu_id'=> $ksu_id,
+                ),
+                'contain' => array(
+                    'Perlengkapan',
+                ),
+                'order' => array(
+                    'KsuDetail.id' => 'ASC',
+                ),
+                'fields' => array(
+                    'SUM(KsuDetail.qty) AS qty',
+                    'SUM(KsuDetail.price) AS price',
+                    'Perlengkapan.name',
+                ),
+                'group' => array(
+                    'KsuDetail.perlengkapan_id',
+                    'KsuDetail.price',
+                ),
+            );
+
+            $details = $this->getData('all', $default_options);
+            $data['KsuDetail'] = $details;
         }
 
         return $data;

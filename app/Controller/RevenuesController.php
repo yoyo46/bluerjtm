@@ -5861,16 +5861,31 @@ class RevenuesController extends AppController {
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $dateFrom = date('Y-m-01');
         $dateTo = date('Y-m-t');
+
+        $this->Ttuj->bindModel(array(
+            'hasOne' => array(
+                'Revenue' => array(
+                    'className' => 'Revenue',
+                    'foreignKey' => 'ttuj_id',
+                    'conditions' => array(
+                        'Revenue.status' => 1,
+                    ),
+                )
+            )
+        ), false);
+
         $options = array(
             'conditions' => array(
-                'Ttuj.is_revenue' => 1,
+                'Revenue.id NOT' => NULL,
                 'Ttuj.status' => 1,
                 'Ttuj.is_draft' => 0,
                 'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >=' => $dateFrom,
                 'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <=' => $dateTo,
                 'Ttuj.branch_id' => $allow_branch_id,
             ),
-            'contain' => false,
+            'contain' => array(
+                'Revenue',
+            ),
             'order'=> array(
                 'Ttuj.created' => 'DESC',
                 'Ttuj.id' => 'DESC',

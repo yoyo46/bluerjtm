@@ -13,7 +13,7 @@ class LkuHelper extends AppHelper {
         $customStatus = '-';
 
         if(!empty($completed)){
-            $customStatus = $this->Html->tag('span', __('Closing'), array(
+            $customStatus = $this->Html->tag('span', __('Selesai'), array(
                 'class' => 'label label-success',
             ));
         } else if(!empty($paid)){

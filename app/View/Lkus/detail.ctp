@@ -54,7 +54,7 @@
 							if( !empty($completed) ) {
 					?>
 					<tr>
-						<th width="30%"><?php echo __('Tgl Closing');?></th>
+						<th width="30%"><?php echo __('Tgl Selesai');?></th>
 						<?php 
 	                            echo $this->Html->tag('td', $customCompletedDate);
 	                	?>
@@ -66,7 +66,7 @@
 	                	?>
 					</tr>
 					<tr>
-						<th width="30%"><?php echo __('Keterangan Closing');?></th>
+						<th width="30%"><?php echo __('Keterangan Selesai');?></th>
 						<?php 
 	                            echo $this->Html->tag('td', $completed_desc);
 	                	?>

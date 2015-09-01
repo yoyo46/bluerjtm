@@ -121,7 +121,7 @@
                                         'div' => false,
                                         'required' => false,
                                         'value' => 1,
-                                    )).__('Telah Closing?')), array(
+                                    )).__('Telah Selesai?')), array(
                                         'class' => 'checkbox',
                                     ));
                             ?>

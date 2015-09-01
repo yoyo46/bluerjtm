@@ -654,17 +654,17 @@
 
                     $dataMenu = array(
                         'lkus' => array(
-                            'index',
+                            'index', 'reports',
                         ),
                         'ksus' => array(
-                            'index',
+                            'index', 'ksu_reports',
                         ),
                     );
 
                     if( $this->Common->allowMenu( $dataMenu  ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
-                            'lkus', 'ksus'
+                            'lkus', 'ksus', 'lku_reports', 'ksu_reports',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -696,6 +696,26 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'ksus' )?'active':'',
                             ));
+                         
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan LKU', array(
+                                'controller' => 'lkus',
+                                'action' => 'reports',
+                                'lku',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'lku_reports' )?'active':'',
+                            ));
+                         
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan KSU', array(
+                                'controller' => 'lkus',
+                                'action' => 'reports',
+                                'ksu',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'ksu_reports' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>
@@ -711,7 +731,7 @@
                     if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeMenu = false;
                         $dataMenu = array(
-                            'lakas', 'laka_repots'
+                            'lakas', 'laka_reports'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -740,7 +760,7 @@
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'laka_repots' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'laka_reports' )?'active':'',
                             ));
                     ?>
                 </ul>

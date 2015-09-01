@@ -613,7 +613,7 @@ class LakasController extends AppController {
         }
 
         $this->set('sub_module_title', $module_title);
-        $this->set('active_menu', 'laka_repots');
+        $this->set('active_menu', 'laka_reports');
 
         $this->set(compact(
             'lakas', 'cities', 'data_action'

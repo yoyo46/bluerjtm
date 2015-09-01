@@ -59,6 +59,18 @@ class RjLkuComponent extends Component {
 				if( !empty($refine['Ksu']['half_paid']) ) {
 					$refine_conditions['Ksu']['half_paid'] = $refine['Ksu']['half_paid'];
 				}
+				if( !empty($refine['Lku']['driver_name']) ) {
+					$refine_conditions['Lku']['driver_name'] = $refine['Lku']['driver_name'];
+				}
+				if( !empty($refine['Lku']['nopol']) ) {
+					$refine_conditions['Lku']['nopol'] = $refine['Lku']['nopol'];
+				}
+				if( !empty($refine['Lku']['type']) ) {
+					$refine_conditions['Lku']['type'] = $refine['Lku']['type'];
+				}
+				if( !empty($refine['Lku']['status']) ) {
+					$refine_conditions['Lku']['status'] = $refine['Lku']['status'];
+				}
 			}
 				
 			return $refine_conditions;

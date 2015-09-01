@@ -54,7 +54,7 @@ EOD;
         $tcpdf->SetFont($textfont,'B',10);
 
         $path = $this->Common->pathDirTcpdf();
-        $filename = 'Laporan_Truk_'.$date_title.'.pdf';
+        $filename = $this->Common->toSlug($date_title).'.pdf';
         $pathFile = $path.'/'.$filename;
         
         $tcpdf->Output($pathFile, 'F'); 

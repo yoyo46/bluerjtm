@@ -62,7 +62,8 @@ class LkuDetail extends AppModel {
                 'LkuDetail.id' => 'DESC',
             ),
             'fields' => array(),
-            'contain' => array()
+            'contain' => array(),
+            'group' => array(),
         );
 
         if(!empty($options)){
@@ -80,6 +81,9 @@ class LkuDetail extends AppModel {
             }
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         }
 
@@ -99,6 +103,36 @@ class LkuDetail extends AppModel {
                 ),
                 'order' => array(
                     'LkuDetail.id' => 'ASC',
+                ),
+            );
+
+            $lkuDetails = $this->getData('all', $default_options);
+            $data['LkuDetail'] = $lkuDetails;
+        }
+
+        return $data;
+    }
+
+    function getGroupMerge ( $data = false, $lku_id = false ) {
+        if( empty($data['LkuDetail']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'LkuDetail.lku_id'=> $lku_id,
+                ),
+                'contain' => array(
+                    'PartsMotor',
+                ),
+                'order' => array(
+                    'LkuDetail.id' => 'ASC',
+                ),
+                'fields' => array(
+                    'SUM(LkuDetail.qty) AS qty',
+                    'SUM(LkuDetail.price) AS price',
+                    'PartsMotor.name',
+                ),
+                'group' => array(
+                    'LkuDetail.part_motor_id',
+                    'LkuDetail.price',
                 ),
             );
 

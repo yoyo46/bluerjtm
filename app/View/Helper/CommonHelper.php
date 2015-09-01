@@ -1108,9 +1108,13 @@ class CommonHelper extends AppHelper {
             'escape' => false,
             'class' => false,
         );
-        $urlDefault = $this->passedArgs;
         $urlDefault['controller'] = !empty($this->params['controller'])?$this->params['controller']:false;
         $urlDefault['action'] = $this->action;
+
+        $pass = !empty($this->params['pass'])?$this->params['pass']:array();
+        $named = !empty($this->params['named'])?$this->params['named']:array();
+        $urlDefault = array_merge($urlDefault, $pass);
+        $urlDefault = array_merge($urlDefault, $named);
 
         if( !empty($_attr) ) {
             $default_attr = array_merge($default_attr, $_attr);
@@ -1672,6 +1676,14 @@ class CommonHelper extends AppHelper {
 
     function getCurrencyPrice ($price) {
         return $this->Number->currency($price, Configure::read('__Site.config_currency_code'), array('places' => 0));
+    }
+
+    function getFormatPrice ($price, $empty = 0) {
+        if( !empty($price) ) {
+            return $this->Number->currency($price, '', array('places' => 0));
+        } else {
+            return $empty;
+        }
     }
 
     function getFormatDesc ( $value ) {
