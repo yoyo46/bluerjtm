@@ -908,6 +908,7 @@ class CommonHelper extends AppHelper {
                 $data_options = !empty($dataColumn['data-options'])?$dataColumn['data-options']:false;
                 $align = !empty($dataColumn['align'])?$dataColumn['align']:false;
                 $content = false;
+                $addClass = '';
 
                 if( !empty($_style) ) {
                     $style .= $_style;
@@ -915,10 +916,9 @@ class CommonHelper extends AppHelper {
 
                 if( !empty($display) ) {
                     $checked = true;
-                    $addClass = '';
                 } else {
                     $checked = false;
-                    $addClass = 'hide';
+                    $style .= 'display:none;';
                 }
 
                 switch ($data_type) {
