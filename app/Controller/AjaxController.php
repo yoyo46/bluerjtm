@@ -861,6 +861,9 @@ class AjaxController extends AppController {
 			$this->request->data['Invoice']['total_revenue'] = !empty($revenue[0]['total'])?$revenue[0]['total']:0;
 			$this->request->data['Invoice']['total'] = !empty($revenueDetail[0]['total'])?$revenueDetail[0]['total']:0;
 
+			$customer_group_id = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_group_id');
+			$customer = $this->Customer->CustomerGroup->getMerge($customer, $customer_group_id);
+
 			switch ($tarif_type) {
 				case 'angkut':
 					$this->request->data['Invoice']['total'] += $this->request->data['Invoice']['total_revenue'];
@@ -872,8 +875,8 @@ class AjaxController extends AppController {
 		        	'error' => 1,
 		        	'text' => sprintf(__('Revenue dengan periode bulan yang berbeda tidak bisa dibuatkan invoice( %s s/d %s ). Mohon cek kembali revenue Anda.'), $this->request->data['Invoice']['period_from'], $this->request->data['Invoice']['period_to']),
 		    	);
-	    	} else if( !empty($customer['CustomerGroup']['CustomerGroupPattern']) ) {
-                $this->request->data['Invoice']['pattern'] = $this->MkCommon->getNoInvoice( $customer['CustomerGroup'] );
+	    	} else if( !empty($customer['CustomerGroupPattern']) ) {
+                $this->request->data['Invoice']['pattern'] = $this->MkCommon->getNoInvoice( $customer );
 			}
 		}
 

@@ -229,19 +229,22 @@ class AppController extends Controller {
 	    		}
 	    	}
 
-			if($paramController == 'revenues' && $paramAction == 'index'){
-				// 327 = module revenue
-				$another_rule = $this->BranchActionModule->getRuleByModule(327, $current_group_branch_id);
-			}
-
             Configure::write('__Site.Data.Group.Branch', $group_branches);
 			Configure::write('__Site.config_allow_module', $_allowModule);
 
 			if( $GroupId == 1 ) {
 				Configure::write('__Site.Allow.All.Branch', array_keys($group_branches));
 				$allowBranch = $list_branches;
+				$postingUnposting = true;
 			} else {
 				$allowBranch = $this->MkCommon->allowBranch($group_branches);
+				$postingUnpostingArr = !empty($_allowModule[$current_branch_id]['revenues']['action'])?$_allowModule[$current_branch_id]['revenues']['action']:array();
+
+				if( in_array('edit', $postingUnpostingArr) ) {
+					$postingUnposting = true;
+				} else {
+					$postingUnposting = false;
+				}
 			}
 
 			Configure::write('__Site.config_branch_id', $current_branch_id);
@@ -410,7 +413,7 @@ class AppController extends Controller {
 
 	    $this->set(compact(
 	    	'logged_in', 'GroupId', 'User',
-	    	'invStatus', 'another_rule', 'notifications',
+	    	'invStatus', 'postingUnposting', 'notifications',
 	    	'list_branches', 'current_branch_id'
     	));
 	}

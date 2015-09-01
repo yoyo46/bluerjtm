@@ -159,6 +159,10 @@
 							$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
 								'align' => 'right'
 							));
+						} else {
+							$colom .= $this->Html->tag('td', '-', array(
+								'align' => 'right'
+							));
 						}
 
 						$colom .= $this->Html->tag('td', $this->Common->getNoRef($value['Revenue']['id']));
