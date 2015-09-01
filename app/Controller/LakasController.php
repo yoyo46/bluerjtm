@@ -16,8 +16,10 @@ class LakasController extends AppController {
     function search( $index = 'index' ){
         $refine = array();
         if(!empty($this->request->data)) {
-            $refine = $this->RjLaka->processRefine($this->request->data);
+            $data = $this->request->data;
+            $refine = $this->RjLaka->processRefine($data);
             $params = $this->RjLaka->generateSearchURL($refine);
+            $params = $this->MkCommon->getRefineGroupBranch($params, $data);
             $params['action'] = $index;
 
             $this->redirect($params);
@@ -564,7 +566,7 @@ class LakasController extends AppController {
             }
 
             // Custom Otorisasi
-            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'TruckCustomer', $conditions, 'conditions' );
+            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Laka', $conditions, 'conditions' );
         }
 
         $conditions['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') >='] = $dateFrom;
