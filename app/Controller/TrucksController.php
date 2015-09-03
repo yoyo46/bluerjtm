@@ -4025,10 +4025,14 @@ class TrucksController extends AppController {
                         $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file Zip.'), 'error');
                         $this->redirect(array('action'=>'add_import'));
                     } else {
-                        $path = APP.'webroot'.DS.'files'.DS;
+                        $path = APP.'webroot'.DS.'files'.DS.date('Y').DS.date('m').DS;
                         $filenoext = basename ($filename, '.xls');
                         $filenoext = basename ($filenoext, '.XLS');
                         $fileunique = uniqid() . '_' . $filenoext;
+
+                        if( !file_exists($path) ) {
+                            mkdir($path, 0755, true);
+                        }
 
                         $targetdir = $path . $fileunique . $filename;
                          
@@ -4674,5 +4678,233 @@ class TrucksController extends AppController {
             'canceled_date', 'modelName'
         ));
         $this->render('/Elements/blocks/common/form_delete');
+    }
+
+    public function add_driver_import( $download = false ) {
+        if(!empty($download)){
+            $link_url = FULL_BASE_URL . '/files/drivers.xls';
+            $this->redirect($link_url);
+            exit;
+        } else {
+            $this->loadModel('Driver');
+            App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+
+            $this->set('active_menu', 'drivers');
+            $this->set('sub_module_title', __('Import Supir'));
+
+            $urlRedirect = array(
+                'action'=>'add_driver_import'
+            );
+
+            if(!empty($this->request->data)) { 
+                $Zipped = $this->request->data['Import']['importdata'];
+
+                if($Zipped["name"]) {
+                    $filename = $Zipped["name"];
+                    $source = $Zipped["tmp_name"];
+                    $type = $Zipped["type"];
+                    $name = explode(".", $filename);
+                    $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
+
+                    if(!empty($accepted_types)) {
+                        foreach($accepted_types as $mime_type) {
+                            if($mime_type == $type) {
+                                $okay = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+
+                    if(!$continue) {
+                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file Zip.'), 'error');
+                        $this->redirect($urlRedirect);
+                    } else {
+                        $path = APP.'webroot'.DS.'files'.DS.date('Y').DS.date('m').DS;
+                        $filenoext = basename ($filename, '.xls');
+                        $filenoext = basename ($filenoext, '.XLS');
+                        $fileunique = uniqid() . '_' . $filenoext;
+
+                        if( !file_exists($path) ) {
+                            mkdir($path, 0755, true);
+                        }
+
+                        $targetdir = $path . $fileunique . $filename;
+                         
+                        ini_set('memory_limit', '96M');
+                        ini_set('post_max_size', '64M');
+                        ini_set('upload_max_filesize', '64M');
+
+                        if(!move_uploaded_file($source, $targetdir)) {
+                            $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                            $this->redirect($urlRedirect);
+                        }
+                    }
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                    $this->redirect($urlRedirect);
+                }
+
+                $xls_files = glob( $targetdir );
+
+                if(empty($xls_files)) {
+                    $this->rmdir_recursive ( $targetdir);
+                    $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                    $this->redirect($urlRedirect);
+                } else {
+                    $uploadedXls = $this->addToFiles('xls', $xls_files[0]);
+                    $uploaded_file = $uploadedXls['xls'];
+                    $file = explode(".", $uploaded_file['name']);
+                    $extension = array_pop($file);
+                    
+                    if($extension == 'xls') {
+                        $dataimport = new Spreadsheet_Excel_Reader();
+                        $dataimport->setUTFEncoder('iconv');
+                        $dataimport->setOutputEncoding('UTF-8');
+                        $dataimport->read($uploaded_file['tmp_name']);
+                        
+                        if(!empty($dataimport)) {
+                            $data = $dataimport;
+
+                            for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
+                                $datavar = array();
+                                $flag = true;
+                                $i = 1;
+
+                                while ($flag) {
+                                    if( !empty($data->sheets[0]["cells"][1][$i]) ) {
+                                        $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
+                                        $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
+                                        $$variable = $thedata;
+                                        $datavar[] = $thedata;
+                                    } else {
+                                        $flag = false;
+                                    }
+                                    $i++;
+                                }
+
+                                if(array_filter($datavar)) {
+                                    $driverRelation = $this->Driver->DriverRelation->find('first', array(
+                                        'conditions' => array(
+                                            'DriverRelation.name' => $hubungan,
+                                            'DriverRelation.status' => 1,
+                                        ),
+                                    ));
+                                    $jenisSim = $this->Driver->JenisSim->find('first', array(
+                                        'conditions' => array(
+                                            'jenisSim.name' => $jenis_sim,
+                                            'jenisSim.status' => 1,
+                                        ),
+                                    ));
+                                    $branch = $this->GroupBranch->Branch->getData('first', array(
+                                        'conditions' => array(
+                                            'Branch.code' => $kode_cabang,
+                                        ),
+                                    ));
+
+                                    $branch_id = $this->MkCommon->filterEmptyField($branch, 'Branch', 'id');
+                                    $nama_lengkap = !empty($nama_lengkap)?$nama_lengkap:false;
+                                    $nama_panggilan = !empty($nama_panggilan)?$nama_panggilan:false;
+                                    $no_ktp = !empty($no_ktp)?$no_ktp:false;
+                                    $alamat_rumah = !empty($alamat_rumah)?$alamat_rumah:false;
+                                    $kota = !empty($kota)?$kota:false;
+                                    $provinsi = !empty($provinsi)?$provinsi:false;
+                                    $no_hp = !empty($no_hp)?$no_hp:false;
+                                    $no_telp = !empty($no_telp)?$no_telp:false;
+                                    $tempat_lahir = !empty($tempat_lahir)?$tempat_lahir:false;
+                                    $tgl_lahir = !empty($tgl_lahir)?$this->MkCommon->checkdate($tgl_lahir):false;
+                                    $jenis_sim_id = $this->MkCommon->filterEmptyField($jenisSim, 'JenisSim', 'id');
+                                    $no_sim = !empty($no_sim)?$no_sim:false;
+                                    $tgl_berakhir_sim = !empty($tgl_berakhir_sim)?$this->MkCommon->checkdate($tgl_berakhir_sim):false;
+                                    $nama_kontak_darurat = !empty($nama_kontak_darurat)?$nama_kontak_darurat:false;
+                                    $no_hp_kontak_darurat = !empty($no_hp_kontak_darurat)?$no_hp_kontak_darurat:false;
+                                    $no_telp_kontak_darurat = !empty($no_telp_kontak_darurat)?$no_telp_kontak_darurat:false;
+                                    $driver_relation_id = $this->MkCommon->filterEmptyField($driverRelation, 'DriverRelation', 'id');
+                                    $tgl_penerimaan = !empty($tgl_penerimaan)?$this->MkCommon->checkdate($tgl_penerimaan):false;
+
+                                    $requestData['ROW'.($x-1)] = array(
+                                        'Driver' => array(
+                                            'branch_id' => $branch_id,
+                                            'jenis_sim_id' => $jenis_sim_id,
+                                            'driver_relation_id' => $driver_relation_id,
+                                            'no_id' => $this->Driver->generateNoId(),
+                                            'name' => $nama_lengkap,
+                                            'alias' => $nama_panggilan,
+                                            'address' => $alamat_rumah,
+                                            'city' => $kota,
+                                            'provinsi' => $provinsi,
+                                            'no_hp' => $no_hp,
+                                            'phone' => $no_telp,
+                                            'tempat_lahir' => $tempat_lahir,
+                                            'birth_date' => $tgl_lahir,
+                                            'kontak_darurat_name' => $nama_kontak_darurat,
+                                            'kontak_darurat_no_hp' => $no_hp_kontak_darurat,
+                                            'kontak_darurat_phone' => $no_telp_kontak_darurat,
+                                            'join_date' => $tgl_penerimaan,
+                                            'no_sim' => $no_sim,
+                                            'identity_number' => $no_ktp,
+                                            'expired_date_sim' => $tgl_berakhir_sim,
+                                        ),
+                                    );
+                                }
+                            }
+
+                            if(!empty($requestData)) {
+                                $row_submitted = 1;
+                                $successfull_row = 0;
+                                $failed_row = 0;
+                                $error_message = '';
+
+                                foreach($requestData as $request){
+                                    $data = $request;
+
+                                    $this->Driver->create();
+                                    
+                                    if( $this->Driver->save($data) ){
+                                        $this->Log->logActivity( __('Sukses upload Supir by Import Excel'), $this->user_data, $this->RequestHandler, $this->params );
+                                        $successfull_row++;
+                                    } else {
+                                        $validationErrors = $this->Driver->validationErrors;
+                                        $textError = array();
+
+                                        if( !empty($validationErrors) ) {
+                                            foreach ($validationErrors as $key => $validationError) {
+                                                if( !empty($validationError) ) {
+                                                    foreach ($validationError as $key => $error) {
+                                                        $textError[] = $error;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if( !empty($textError) ) {
+                                            $textError = implode(', ', $textError);
+                                        } else {
+                                            $textError = '';
+                                        }
+
+                                        $failed_row++;
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Listing. %s'), $row_submitted, $textError) . '<br>';
+                                    }
+
+                                    $row_submitted++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(!empty($successfull_row)) {
+                    $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, count($requestData));
+                    $this->MkCommon->setCustomFlash(__($message_import1), 'success');
+                }
+                
+                if(!empty($error_message)) {
+                    $this->MkCommon->setCustomFlash(__($error_message), 'error');
+                }
+                $this->redirect($urlRedirect);
+            }
+        }
     }
 }

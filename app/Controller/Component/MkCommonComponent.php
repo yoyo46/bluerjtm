@@ -440,10 +440,14 @@ class MkCommonComponent extends Component {
                 $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
                 $this->redirect(array('action'=>'import'));
             } else {
-                $path = APP.'webroot'.DS.'files'.DS;
+                $path = APP.'webroot'.DS.'files'.DS.date('Y').DS.date('m').DS;
                 $filenoext = basename ($filename, '.xls');
                 $filenoext = basename ($filenoext, '.XLS');
                 $fileunique = uniqid() . '_' . $filenoext;
+
+                if( !file_exists($path) ) {
+                    mkdir($path, 0755, true);
+                }
 
                 $targetdir = $path . $fileunique . $filename;
                  
@@ -885,6 +889,16 @@ class MkCommonComponent extends Component {
         }
 
         return $data;
+    }
+
+    function checkdate($str) {
+        $date = date_parse($str);
+
+        if ($date["error_count"] == 0 && checkdate($date["month"], $date["day"], $date["year"])) {
+            return $this->customDate($str, 'Y-m-d');
+        } else {
+            return $this->getDate($str);
+        }
     }
 }
 ?>

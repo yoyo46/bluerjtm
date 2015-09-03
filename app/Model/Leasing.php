@@ -93,10 +93,10 @@ class Leasing extends AppModel {
 	);
 
     var $belongsTo = array(
-        // 'LeasingCompany' => array(
-        //     'className' => 'LeasingCompany',
-        //     'foreignKey' => 'leasing_company_id',
-        // ),
+        'LeasingCompany' => array(
+            'className' => 'LeasingCompany',
+            'foreignKey' => 'leasing_company_id',
+        ),
         'Vendor' => array(
             'className' => 'Vendor',
             'foreignKey' => 'leasing_company_id',

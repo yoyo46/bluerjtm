@@ -3958,10 +3958,14 @@ class SettingsController extends AppController {
                         $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
                         $this->redirect(array('action'=>'uang_jalan_import'));
                     } else {
-                        $path = APP.'webroot'.DS.'files'.DS;
+                        $path = APP.'webroot'.DS.'files'.DS.date('Y').DS.date('m').DS;
                         $filenoext = basename ($filename, '.xls');
                         $filenoext = basename ($filenoext, '.XLS');
                         $fileunique = uniqid() . '_' . $filenoext;
+
+                        if( !file_exists($path) ) {
+                            mkdir($path, 0755, true);
+                        }
 
                         $targetdir = $path . $fileunique . $filename;
                          
@@ -4613,10 +4617,14 @@ class SettingsController extends AppController {
                         $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
                         $this->redirect(array('action'=>'tarif_angkut_import'));
                     } else {
-                        $path = APP.'webroot'.DS.'files'.DS;
+                        $path = APP.'webroot'.DS.'files'.DS.date('Y').DS.date('m').DS;
                         $filenoext = basename ($filename, '.xls');
                         $filenoext = basename ($filenoext, '.XLS');
                         $fileunique = uniqid() . '_' . $filenoext;
+
+                        if( !file_exists($path) ) {
+                            mkdir($path, 0755, true);
+                        }
 
                         $targetdir = $path . $fileunique . $filename;
                          

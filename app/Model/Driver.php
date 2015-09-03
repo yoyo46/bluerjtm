@@ -143,16 +143,20 @@ class Driver extends AppModel {
 			'className' => 'Truck',
 			'foreignKey' => 'driver_id',
 		),
-        'DriverRelation' => array(
-            'className' => 'DriverRelation',
-            'foreignKey' => 'driver_relation_id',
-        ),
 	);
 
     var $belongsTo = array(
         'City' => array(
             'className' => 'City',
             'foreignKey' => 'branch_id',
+        ),
+        'DriverRelation' => array(
+            'className' => 'DriverRelation',
+            'foreignKey' => 'driver_relation_id',
+        ),
+        'JenisSim' => array(
+            'className' => 'JenisSim',
+            'foreignKey' => 'jenis_sim_id',
         ),
     );
 
