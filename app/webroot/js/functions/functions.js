@@ -4354,4 +4354,11 @@ $(function() {
     $('.leasing-dp,.total-leasing,.month-leasing,.leasing-dp,.price-leasing-truck').blur(function(){
         calc_pokok_leasing();
     });
+
+    $('form').submit(function(){
+        var self = $(this);
+        var button = self.find('button[type="submit"]');
+
+        button.attr('disabled', true);
+    });
 });
