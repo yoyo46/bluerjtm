@@ -1085,6 +1085,10 @@ class RevenuesController extends AppController {
             }
         }
 
+        if( empty($id) ){
+            $this->request->data['Ttuj']['no_ttuj'] = $this->Ttuj->generateNoId();
+        }
+
         $customer_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'customer_id');
         $from_city_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'from_city_id');
         $customerConditions = array(

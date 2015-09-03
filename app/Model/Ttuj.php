@@ -676,5 +676,35 @@ class Ttuj extends AppModel {
     //         return true;
     //     }
     // }
+
+    function generateNoId(){
+        $default_id = 1;
+        $branch_code = Configure::read('__Site.Branch.code');
+        $format_id = sprintf('%s-%s-', $branch_code, date('y'));
+
+        $last_data = $this->getData('first', array(
+            'order' => array(
+                'Ttuj.no_ttuj' => 'DESC'
+            ),
+            'fields' => array(
+                'Ttuj.no_ttuj'
+            ),
+            'conditions' => array(
+                'Ttuj.no_ttuj LIKE' => '%'.$format_id.'%',
+            )
+        ), true, array(
+            'status' => 'all',
+        ));
+
+        if(!empty($last_data['Ttuj']['no_ttuj'])){
+            $str_arr = explode('-', $last_data['Ttuj']['no_ttuj']);
+            $last_arr = count($str_arr)-1;
+            $default_id = intval($str_arr[$last_arr]+1);
+        }
+        $id = str_pad($default_id, 6,'0',STR_PAD_LEFT);
+        $format_id .= $id;
+        
+        return $format_id;
+    }
 }
 ?>
