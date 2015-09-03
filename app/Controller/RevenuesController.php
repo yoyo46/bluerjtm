@@ -313,6 +313,14 @@ class RevenuesController extends AppController {
                 ), array(
                     'TtujTipeMotor.ttuj_id' => $ttuj_id,
                 ));
+
+                if( !empty($revenue_id) ) {
+                    $this->RevenueDetail->updateAll(array(
+                        'RevenueDetail.status' => 0
+                    ), array(
+                        'RevenueDetail.revenue_id' => $revenue_id,
+                    ));
+                }
             }
 
             foreach ($dataTtujTipeMotor as $key => $tipe_motor_id) {
@@ -627,7 +635,9 @@ class RevenuesController extends AppController {
 
                             if($this->Ttuj->save($data)){
                                 $this->loadModel('Journal');
+
                                 $tarifDefault = false;
+                                $revenue_id = false;
                                 $document_id = $this->Ttuj->id;
                                 $document_no = !empty($data['Ttuj']['no_ttuj'])?$data['Ttuj']['no_ttuj']:false;
 
@@ -692,23 +702,22 @@ class RevenuesController extends AppController {
                                     }
                                 }
 
-                                if( empty($data['Ttuj']['is_draft']) && empty($data_local['Ttuj']['is_revenue']) ) {
+                                if( empty($data['Ttuj']['is_draft']) ) {
                                     $revenue = $this->Revenue->getData('first', array(
                                         'conditions' => array(
                                             'Revenue.ttuj_id' => $document_id,
                                         ),
                                     ));
+                                    $transaction_status = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'transaction_status');
+                                    $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'id');
 
-                                    if( empty($revenue) ) {
+                                    if( $transaction_status != 'posting' ) {
                                         $tarifDefault = $this->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity']);
 
                                         $dataRevenue['Revenue'] = array(
-                                            'transaction_status' => 'unposting',
                                             'ttuj_id' => $document_id,
                                             'date_revenue' => $data['Ttuj']['ttuj_date'],
                                             'customer_id' => $data['Ttuj']['customer_id'],
-                                            'ppn' => 0,
-                                            'pph' => 0,
                                             'revenue_tarif_type' => !empty($tarifDefault['jenis_unit'])?$tarifDefault['jenis_unit']:'per_unit',
                                             'branch_id' => $current_branch_id,
                                         );
@@ -719,12 +728,18 @@ class RevenuesController extends AppController {
                                             $dataRevenue['Revenue']['tarif_per_truck'] = $tarifDefault['tarif'];
                                         }
 
-                                        $this->Revenue->create();
+                                        if( !empty($revenue_id) ) {
+                                            $this->Revenue->id = $revenue_id;
+                                        } else {
+                                            $this->Revenue->create();
+                                        }
+
                                         $this->Revenue->save($dataRevenue);
+                                        $revenue_id = $this->Revenue->id;
                                     }
                                 }
 
-                                $this->saveTtujTipeMotor($data_action, $dataTtujTipeMotor, $data, $dataRevenue, $document_id, $this->Revenue->id, $tarifDefault);
+                                $this->saveTtujTipeMotor($data_action, $dataTtujTipeMotor, $data, $dataRevenue, $document_id, $revenue_id, $tarifDefault);
 
                                 if( !empty($dataTtujPerlengkapan) ) {
                                     $this->saveTtujPerlengkapan($dataTtujPerlengkapan, $data, $document_id);
