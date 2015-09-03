@@ -28,30 +28,30 @@
 				        <h3 class="box-title"><?php echo __('Informasi TTUJ'); ?></h3>
 				    </div>
 				    <div class="box-body">
-				        <div class="form-group">
-				        	<?php 
+				    	<?php 
+				    			if( !empty($id) ) {
 									echo $this->Form->input('no_ttuj',array(
 										'label'=> __('No. TTUJ *'), 
 										'class'=>'form-control',
 										'required' => false,
-										'placeholder' => __('No. TTUJ')
+										'disabled' => true,
+										'placeholder' => __('No. TTUJ'),
+										'div' => array(
+											'class' => 'form-group',
+										),
 									));
-							?>
-				        </div>
-				        <?php 
-				        		if( !empty($id) && !empty($allowEditTtujBranch) ) {
-				        ?>
-				        <div class="form-group">
-				        	<?php 
-									echo $this->Form->input('branch_id',array(
-										'label'=> __('Cabang *'), 
-										'class'=>'form-control',
-										'required' => false,
-										'options' => $branches,
-									));
-							?>
-				        </div>
-				        <?php 
+
+				        			if( !empty($allowEditTtujBranch) ) {
+										echo $this->Form->input('branch_id',array(
+											'label'=> __('Cabang *'), 
+											'class'=>'form-control',
+											'required' => false,
+											'options' => $branches,
+											'div' => array(
+												'class' => 'form-group',
+											),
+										));
+				        			}
 				        		}
 				        ?>
 				        <div class="form-group">

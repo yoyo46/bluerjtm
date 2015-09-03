@@ -498,12 +498,15 @@ class RevenuesController extends AppController {
 
         if( !empty($this->request->data) && $is_draft ){
             $data = $this->request->data;
+
             if($id && $data_local){
                 $this->Ttuj->id = $id;
                 $msg = 'merubah';
+                $no_ttuj = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'no_ttuj');
             }else{
                 $this->Ttuj->create();
                 $msg = 'menambah';
+                $no_ttuj = $data['Ttuj']['no_ttuj'] = $this->Ttuj->generateNoId();
             }
 
             $customer_id = !empty($data['Ttuj']['customer_id'])?$data['Ttuj']['customer_id']:false;
@@ -754,7 +757,7 @@ class RevenuesController extends AppController {
                                 $this->params['old_data'] = $data_local;
                                 $this->params['data'] = $data;
 
-                                $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s TTUJ'), $msg), 'success');
+                                $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s TTUJ dengan no %s'), $msg, $no_ttuj), 'success');
                                 $this->Log->logActivity( sprintf(__('Sukses %s TTUJ #%s'), $msg, $document_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $document_id );
 
                                 $this->redirect(array(
@@ -1083,10 +1086,6 @@ class RevenuesController extends AppController {
             if( !empty($this->request->data['Ttuj']['from_city_id']) ) {
                 $toCities = $this->Ttuj->UangJalan->getKotaTujuan($this->request->data['Ttuj']['from_city_id']);
             }
-        }
-
-        if( empty($id) ){
-            $this->request->data['Ttuj']['no_ttuj'] = $this->Ttuj->generateNoId();
         }
 
         $customer_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'customer_id');

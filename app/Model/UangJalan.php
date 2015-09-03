@@ -254,7 +254,7 @@ class UangJalan extends AppModel {
         }
 
         if( !empty($branch) ) {
-            $default_options['UangJalan.branch_id'] = Configure::read('__Site.config_branch_id');
+            $default_options['conditions']['UangJalan.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         if(!empty($options)){
