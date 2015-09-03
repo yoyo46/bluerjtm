@@ -735,7 +735,13 @@ class RevenuesController extends AppController {
                                         }
 
                                         $this->Revenue->save($dataRevenue);
-                                        $revenue_id = $this->Revenue->id;
+
+                                        if( !empty($revenue_id) ) {
+                                            $this->Log->logActivity( sprintf(__('Berhasil mengubah Revenue #%s dari TTUJ #%s'), $revenue_id, $document_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $revenue_id, 'revenue_ttuj_edit' );
+                                        } else {
+                                            $revenue_id = $this->Revenue->id;
+                                            $this->Log->logActivity( sprintf(__('Berhasil menambah Revenue #%s dari TTUJ #%s'), $revenue_id, $document_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $revenue_id, 'revenue_ttuj_add' );
+                                        }
                                     }
                                 }
 
@@ -1257,6 +1263,26 @@ class RevenuesController extends AppController {
                     if( !empty($locale['Ttuj']['uang_keamanan']) ) {
                         $this->Journal->setJournal( $id, $document_no, 'uang_keamanan_coa_debit_id', 0, $locale['Ttuj']['uang_keamanan'], 'uang_keamanan_void' );
                         $this->Journal->setJournal( $id, $document_no, 'uang_keamanan_coa_credit_id', $locale['Ttuj']['uang_keamanan'], 0, 'uang_keamanan_void' );
+                    }
+                }
+
+                if( $action_type == 'status' ) {
+                    $this->loadModel('Revenue');
+
+                    $revenue = $this->Revenue->getData('first', array(
+                        'conditions' => array(
+                            'Revenue.ttuj_id' => $id,
+                        ),
+                    ));
+
+                    $transaction_status = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'transaction_status');
+                    $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'id');
+
+                    if( $transaction_status != 'posting' ) {
+                        $this->Revenue->id = $revenue_id;
+                        $this->Revenue->set('status', 0);
+                        $this->Revenue->save();
+                        $this->Log->logActivity( sprintf(__('Berhasil membatalkan Revenue #%s dari TTUJ #%s'), $revenue_id, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $revenue_id, 'revenue_ttuj_toggle' );
                     }
                 }
 
@@ -3187,6 +3213,8 @@ class RevenuesController extends AppController {
 
         if(!empty($revenue)){
             $revenue = $this->Revenue->RevenueDetail->getMergeAll( $revenue, $revenue['Revenue']['id'] );
+            $this->MkCommon->getLogs($this->paramController, array( 'revenue_ttuj_add', 'revenue_ttuj_edit', 'revenue_ttuj_toggle', 'edit', 'add', 'revenue_toggle' ), $id);
+
             $module_title = __('Rubah Revenue');
             $this->set('sub_module_title', trim($module_title));
             $this->doRevenue($id, $revenue, $action_type);

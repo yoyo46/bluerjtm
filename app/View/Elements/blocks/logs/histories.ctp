@@ -39,6 +39,8 @@
                                 $tmpMsg = __('Rejected by');
                             } else if( strstr($action, 'void') ) {
                                 $tmpMsg = __('Void by');
+                            } else if( strstr($action, 'toggle') ) {
+                                $tmpMsg = __('Void by');
                             }
 
                             if( !empty($tmpMsg) ) {
