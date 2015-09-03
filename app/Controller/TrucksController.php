@@ -902,8 +902,11 @@ class TrucksController extends AppController {
                 $this->Driver->id = $id;
                 $msg = 'merubah';
                 $data['Driver']['id'] = $id;
+                $data['Driver']['no_id'] = $this->MkCommon->filterEmptyField($data_local, 'Driver', 'no_id');
             }else{
                 $this->loadModel('Driver');
+
+                $data['Driver']['no_id'] = $this->Driver->generateNoId();
                 $this->Driver->create();
                 $msg = 'menambah';
             }
@@ -967,10 +970,6 @@ class TrucksController extends AppController {
                     'year' => $date_arr[0]
                 );
             }
-        }
-
-        if( empty($id) && empty($this->request->data['Driver']['no_id']) ){
-            $this->request->data['Driver']['no_id'] = $this->Driver->generateNoId();
         }
 
         $this->loadModel('DriverRelation');

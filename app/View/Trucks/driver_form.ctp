@@ -47,17 +47,24 @@
 							));
 					?>
 		        </div>
+		        <?php 
+		        		if( !empty($id) ) {
+		        ?>
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('no_id',array(
+								'type' => 'text',
 								'label'=> __('No. ID *'), 
 								'class'=>'form-control',
 								'required' => false,
+								'disabled' => true,
 								'placeholder' => __('No. ID'),
-								'type' => 'text',
 							));
 					?>
 		        </div>
+		        <?php 
+		        		}
+		        ?>
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('name',array(
