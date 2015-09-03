@@ -203,6 +203,8 @@
                     if(!empty($ttujs)){
                         foreach ($ttujs as $key => $value) {
                             $id = $value['Ttuj']['id'];
+                            $is_draft = $this->Common->filterEmptyField($value, 'Ttuj', 'is_draft');
+                            $status = $this->Common->filterEmptyField($value, 'Ttuj', 'status');
             ?>
             <tr>
                 <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
@@ -291,7 +293,7 @@
                 </td> -->
                 <?php
                         
-                        if(empty($value['Ttuj']['status'])){
+                        if(empty($status)){
                             echo $this->Html->tag('td', '<span class="label label-danger">Void</span>');
                         } else if(!empty($value['Ttuj']['is_laka'])){
                             echo $this->Html->tag('td', '<span class="label label-danger">LAKA</span>');
@@ -303,7 +305,7 @@
                             echo $this->Html->tag('td', '<span class="label label-warning">Bongkaran</span>');
                         } else if(!empty($value['Ttuj']['is_arrive'])){
                             echo $this->Html->tag('td', '<span class="label label-info">Tiba</span>');
-                        } else if(!empty($value['Ttuj']['is_draft'])){
+                        } else if(!empty($is_draft)){
                             echo $this->Html->tag('td', '<span class="label label-default">Draft</span>');
                         } else{
                             echo $this->Html->tag('td', '<span class="label label-primary">Commit</span>');
@@ -342,13 +344,16 @@
                                 ), __('Apakah Anda yakin akan menghapus data ini?'));
                             } else {
                                 $labelEdit = __('Edit');
-                                echo $this->Html->link(__('Surat Jalan'), array(
-                                    'controller' => 'revenues',
-                                    'action' => 'surat_jalan',
-                                    $id
-                                ), array(
-                                    'class' => 'btn bg-navy btn-xs'
-                                ));
+
+                                if( empty($is_draft) && !empty($status) ) {
+                                    echo $this->Html->link(__('Surat Jalan'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'surat_jalan',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn bg-navy btn-xs'
+                                    ));
+                                }
 
                                 echo $this->Html->link($labelEdit, array(
                                     'controller' => 'revenues',
@@ -358,7 +363,7 @@
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
 
-                                if( !empty($value['Ttuj']['status']) ) {
+                                if( !empty($status) ) {
                                     echo $this->Html->link(__('Void'), array(
                                         'controller' => 'revenues',
                                         'action' => 'ttuj_toggle',

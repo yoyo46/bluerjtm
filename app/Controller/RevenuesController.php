@@ -5517,11 +5517,10 @@ class RevenuesController extends AppController {
             'conditions' => array(
                 'Ttuj.id' => $ttuj_id
             )
-        ), true, array(
-            'status' => 'all',
         ));
+        $is_draft = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'is_draft');
 
-        if( !empty($ttuj) ) {
+        if( !empty($ttuj) && empty($is_draft) ) {
             $ttuj = $this->Ttuj->getMergeContain( $ttuj, $ttuj_id );
             $ttuj = $this->Ttuj->getSumUnit( $ttuj, $ttuj_id );
             $qtySJNow = !empty($ttuj['QtySJ'])?$ttuj['QtySJ']:0;
