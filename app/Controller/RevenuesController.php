@@ -3725,12 +3725,15 @@ class RevenuesController extends AppController {
 
                         $from_time = strtotime($value['Ttuj']['tgljam_balik']);
                         $to_time = strtotime($value['Ttuj']['tgljam_pool']);
-                        $diff = round(abs($to_time - $from_time) / 60, 2);
-                        $truk_ritase[$key]['back_lead_time'] = round($diff/3600);
-                        $diff = round($diff/60, 2);
 
-                        if( $diff > $value['Ttuj']['back_orver_time'] ) {
-                            $truk_ritase[$key]['back_orver_time'] = round($diff/3600);
+                        if( !empty($to_time) ) {
+                            $diff = round(abs($to_time - $from_time) / 60, 2);
+                            $truk_ritase[$key]['back_lead_time'] = round($diff/3600);
+                            $diff = round($diff/60, 2);
+
+                            if( $diff > $value['Ttuj']['back_orver_time'] ) {
+                                $truk_ritase[$key]['back_orver_time'] = round($diff/3600);
+                            }
                         }
 
                         $truk_ritase[$key]['qty_ritase'] = $qty_ritase[0]['qty_ritase'];
