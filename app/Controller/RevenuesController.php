@@ -3560,6 +3560,7 @@ class RevenuesController extends AppController {
                     )
                 )
             ), false);
+            $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
 
             if(!empty($this->params['named'])){
                 $refine = $this->params['named'];
@@ -3572,6 +3573,7 @@ class RevenuesController extends AppController {
             $truk = $this->Truck->getData('first', array(
                 'conditions' => array(
                     'Truck.id' => $id,
+                    'Truck.branch_id' => $allow_branch_id,
                 ),
                 'contain' => array(
                     'TruckCustomer' => array(
@@ -3738,6 +3740,7 @@ class RevenuesController extends AppController {
                 }
 
                 $sub_module_title = __('Detail Ritase Truk');
+                $this->set('active_menu', 'ritase_report');
                 $this->set(compact(
                     'id', 'truk', 'truk_ritase', 'sub_module_title', 
                     'total_ritase', 'total_unit', 'total_lku'

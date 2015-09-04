@@ -52,8 +52,8 @@ class TruckMutationCustomer extends AppModel {
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
             }
-            if(!empty($options['groups'])){
-                $default_options['groups'] = $options['groups'];
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         } else if( !empty($options) ) {
             $default_options = $options;

@@ -53,11 +53,11 @@ class TruckCustomer extends AppModel {
 	* @param array $options - Menampung semua opsi-opsi yang dibutuhkan dalam melakukan query
 	* @return hasil ditemukan return array, hasil tidak ditemukan return false
 	*/
-    function getData( $find, $options = false, $is_merge = true ){
+    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $branch = isset($elements['branch'])?$elements['branch']:true;
+
 		$default_options = array(
-			'conditions' => array(
-				'TruckCustomer.branch_id' => Configure::read('__Site.config_branch_id'),
-			),
+			'conditions' => array(),
             'order' => array(
                 'TruckCustomer.id' => 'ASC',
             ),
@@ -65,6 +65,10 @@ class TruckCustomer extends AppModel {
             'fields' => array(),
             'group' => array(),
 		);
+
+		if( !empty($branch) ) {
+            $default_options['conditions']['TruckCustomer.branch_id'] = Configure::read('__Site.config_branch_id');
+        }
 
         if( !empty($options) && $is_merge ){
             if(!empty($options['conditions'])){
@@ -84,8 +88,8 @@ class TruckCustomer extends AppModel {
             if(!empty($options['fields'])){
                 $default_options['fields'] = $options['fields'];
             }
-            if(!empty($options['groups'])){
-                $default_options['groups'] = $options['groups'];
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
             }
         } else if( !empty($options) ) {
             $default_options = $options;

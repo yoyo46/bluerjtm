@@ -2277,7 +2277,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
         return false;
     });
 
-    $('#myModal').on('hidden.bs.modal', function () {
+    $('#myModal,.staticModal').on('hidden.bs.modal', function () {
         $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
         $('.modal-dialog').removeClass('expand-modal');
         $('.modal-content').removeClass('expand-content-modal');

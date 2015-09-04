@@ -3244,6 +3244,9 @@ class TrucksController extends AppController {
         $customers = $this->paginate('Customer');
 
         $capacities = $this->Truck->getData('list', array(
+            'conditions' => array(
+                'Truck.branch_id' => $allow_branch_id,
+            ),
             'group' => array(
                 'Truck.capacity',
             ),
@@ -3263,7 +3266,7 @@ class TrucksController extends AppController {
                 'conditions' => array(
                     'Truck.status' => 1,
                     'TruckCustomer.customer_id' => $customerArr,
-                    'TruckCustomer.primary' => $customerArr,
+                    'TruckCustomer.primary' => 1,
                 ),
                 'contain' => array(
                     'Truck',
@@ -3319,6 +3322,7 @@ class TrucksController extends AppController {
         $truckWithoutAlocations = $this->Truck->getData('all', array(
             'conditions' => array(
                 'TruckCustomer.id' => NULL,
+                'Truck.branch_id' => $allow_branch_id,
             ),
             'contain' => array(
                 'TruckCustomer',
@@ -3332,6 +3336,7 @@ class TrucksController extends AppController {
                 'COUNT(Truck.id) AS cnt',
             ),
         ));
+
         if( !empty($truckWithoutAlocations) ) {
             foreach ($truckWithoutAlocations as $key => $truck) {
                 if( !empty($truck[0]['cnt']) ) {
@@ -4121,6 +4126,8 @@ class TrucksController extends AppController {
                                         'conditions' => array(
                                             'Driver.no_id' => $no_id_supir,
                                         ),
+                                    ), true, array(
+                                        'branch' => false,
                                     ));
 
                                     if( !empty($truckBrand) ) {
@@ -4198,6 +4205,9 @@ class TrucksController extends AppController {
                                                 'conditions' => array(
                                                     'Customer.code' => $customer_code,
                                                 ),
+                                            ), true, array(
+                                                'branch' => false,
+                                                'plant' => false,
                                             ));
 
                                             if( !empty($customer) ) {

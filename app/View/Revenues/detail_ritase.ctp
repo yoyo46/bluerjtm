@@ -259,7 +259,7 @@
 			        			<?php
 			        				echo $this->Html->tag('td', $i++);
 			        				
-			        				echo $this->Html->tag('td', $this->Common->customDate($value['Ttuj']['tgljam_berangkat'], 'd M y h:i'));
+			        				echo $this->Html->tag('td', $this->Common->customDate($value['Ttuj']['tgljam_berangkat'], 'd M y H:i'));
 			        				echo $this->Html->tag('td', $value['qty_ritase']);
 
 			        				echo $this->Html->tag('td', $value['Ttuj']['from_city_name']);
@@ -280,7 +280,7 @@
 
 			        				echo $this->Html->tag('td', $lku);
 
-			        				echo $this->Html->tag('td', $this->Common->customDate($value['Ttuj']['tgljam_tiba'], 'd M y h:i', '-'));
+			        				echo $this->Html->tag('td', $this->Common->customDate($value['Ttuj']['tgljam_tiba'], 'd M y H:i', '-'));
 			        				
 			        				$LT = $this->Html->tag('span', $value['arrive_lead_time'], array(
 			        					'class' => 'label label-success'
@@ -292,8 +292,8 @@
 			        				}
 			        				echo $this->Html->tag('td', $LT);
 
-			        				echo $this->Html->tag('td', $this->Common->customDate($value['Ttuj']['tgljam_bongkaran'], 'd M y h:i', '-'));
-			        				echo $this->Html->tag('td', $this->Common->customDate($value['Ttuj']['tgljam_balik'], 'd M y h:i', '-'));
+			        				echo $this->Html->tag('td', $this->Common->customDate($value['Ttuj']['tgljam_bongkaran'], 'd M y H:i', '-'));
+			        				echo $this->Html->tag('td', $this->Common->customDate($value['Ttuj']['tgljam_balik'], 'd M y H:i', '-'));
 
 			        				$LT = $this->Html->tag('span', $value['back_lead_time'], array(
 			        					'class' => 'label label-success'

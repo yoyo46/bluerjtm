@@ -342,12 +342,12 @@ class Driver extends AppModel {
                     'Driver.id' => $include_this_driver_id,
                     'Ttuj.id' => NULL,
                 ),
-                'AND' => array(
-                    'OR' => array(
-                        'Driver.id' => $include_this_driver_id,
-                        'Driver.branch_id' => Configure::read('__Site.config_branch_id'),
-                    ),
-                ),
+                // 'AND' => array(
+                //     'OR' => array(
+                //         'Driver.id' => $include_this_driver_id,
+                //         'Driver.branch_id' => Configure::read('__Site.config_branch_id'),
+                //     ),
+                // ),
             );
         } else {
             $conditions = array(
