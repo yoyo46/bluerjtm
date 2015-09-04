@@ -4054,9 +4054,13 @@ class SettingsController extends AppController {
 
                                     if( !empty($fromCity) ) {
                                         $from_city_id = $fromCity['City']['id'];
+                                    } else {
+                                        $from_city_id = false;
                                     }
                                     if( !empty($toCity) ) {
                                         $to_city_id = $toCity['City']['id'];
+                                    } else {
+                                        $to_city_id = '';
                                     }
 
                                     if( !empty($uang_jalan_per_unit) ) {
@@ -4276,7 +4280,7 @@ class SettingsController extends AppController {
                                         $successfull_row++;
                                     } else {
                                         $failed_row++;
-                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Listing.'), $row_submitted) . '<br>';
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data.'), $row_submitted) . '<br>';
                                     }
 
                                     $row_submitted++;
@@ -4712,21 +4716,34 @@ class SettingsController extends AppController {
                                         'fields' => array(
                                             'Customer.code', 'Customer.id'
                                         ),
+                                    ), true, array(
+                                        'branch' => false,
+                                        'plant' => false,
                                     ));
 
                                     if( !empty($fromCity) ) {
                                         $from_city_id = $fromCity['City']['id'];
                                         $from_city_name = $fromCity['City']['name'];
+                                    } else {
+                                        $from_city_id = false;
+                                        $from_city_name = false;
                                     }
                                     if( !empty($toCity) ) {
                                         $to_city_id = $toCity['City']['id'];
                                         $to_city_name = $toCity['City']['name'];
+                                    } else {
+                                        $to_city_id = false;
+                                        $to_city_name = false;
                                     }
                                     if( !empty($customer) ) {
                                         $customer_id = $customer['Customer']['id'];
+                                    } else {
+                                        $customer_id = '';
                                     }
                                     if( !empty($groupMotor) ) {
                                         $group_motor_id = $groupMotor['GroupMotor']['id'];
+                                    } else {
+                                        $group_motor_id = 0;
                                     }
 
                                     $branch_id = !empty($branch['Branch']['id'])?$branch['Branch']['id']:false;
@@ -4763,8 +4780,27 @@ class SettingsController extends AppController {
                                         $this->Log->logActivity( __('Sukses upload Tarif Angkut by Import Excel'), $this->user_data, $this->RequestHandler, $this->params );
                                         $successfull_row++;
                                     } else {
+                                        $validationErrors = $this->TarifAngkutan->validationErrors;
+                                        $textError = array();
+
+                                        if( !empty($validationErrors) ) {
+                                            foreach ($validationErrors as $key => $validationError) {
+                                                if( !empty($validationError) ) {
+                                                    foreach ($validationError as $key => $error) {
+                                                        $textError[] = $error;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if( !empty($textError) ) {
+                                            $textError = implode(', ', $textError);
+                                        } else {
+                                            $textError = '';
+                                        }
+
                                         $failed_row++;
-                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Listing.'), $row_submitted) . '<br>';
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. %s'), $row_submitted, $textError) . '<br>';
                                     }
 
                                     $row_submitted++;

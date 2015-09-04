@@ -4125,18 +4125,28 @@ class TrucksController extends AppController {
 
                                     if( !empty($truckBrand) ) {
                                         $truck_brand_id = $truckBrand['TruckBrand']['id'];
+                                    } else {
+                                        $truck_brand_id = false;
                                     }
                                     if( !empty($truckCategory) ) {
                                         $truck_category_id = $truckCategory['TruckCategory']['id'];
+                                    } else {
+                                        $truck_category_id = false;
                                     }
                                     if( !empty($truckFacility) ) {
                                         $truck_facility_id = $truckFacility['TruckFacility']['id'];
+                                    } else {
+                                        $truck_facility_id = false;
                                     }
                                     if( !empty($company) ) {
                                         $company_id = $company['Company']['id'];
+                                    } else {
+                                        $company_id = false;
                                     }
                                     if( !empty($driver) ) {
                                         $driver_id = $driver['Driver']['id'];
+                                    } else {
+                                        $driver_id = false;
                                     }
                                     $branch_id = $this->MkCommon->filterEmptyField($branch, 'Branch', 'id');
 
@@ -4792,8 +4802,8 @@ class TrucksController extends AppController {
                                     ));
                                     $jenisSim = $this->Driver->JenisSim->find('first', array(
                                         'conditions' => array(
-                                            'jenisSim.name' => $jenis_sim,
-                                            'jenisSim.status' => 1,
+                                            'JenisSim.name' => $jenis_sim,
+                                            'JenisSim.status' => 1,
                                         ),
                                     ));
                                     $branch = $this->GroupBranch->Branch->getData('first', array(
