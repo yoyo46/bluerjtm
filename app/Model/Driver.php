@@ -60,44 +60,44 @@ class Driver extends AppModel {
                 'message' => 'No. HP harap diisi'
             ),
         ),
-        'birth_date' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tgl Lahir harap dipilih'
-            ),
-            'date' => array(
-                'rule' => array('date'),
-                'message' => 'Tgl Lahir tidak benar'
-            ),
-        ),
-        'tempat_lahir' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tempat Lahir harap diisi'
-            ),
-        ),
-        'jenis_sim_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Jenis SIM harap dipilih'
-            ),
-        ),
-        'no_sim' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'No. SIM harap diisi'
-            ),
-        ),
-        'expired_date_sim' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tgl Berakhir SIM harap dipilih'
-            ),
-            'date' => array(
-                'rule' => array('date'),
-                'message' => 'Tgl Berakhir SIM tidak benar'
-            ),
-        ),
+        // 'birth_date' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Tgl Lahir harap dipilih'
+        //     ),
+        //     'date' => array(
+        //         'rule' => array('date'),
+        //         'message' => 'Tgl Lahir tidak benar'
+        //     ),
+        // ),
+        // 'tempat_lahir' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Tempat Lahir harap diisi'
+        //     ),
+        // ),
+        // 'jenis_sim_id' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Jenis SIM harap dipilih'
+        //     ),
+        // ),
+        // 'no_sim' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'No. SIM harap diisi'
+        //     ),
+        // ),
+        // 'expired_date_sim' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Tgl Berakhir SIM harap dipilih'
+        //     ),
+        //     'date' => array(
+        //         'rule' => array('date'),
+        //         'message' => 'Tgl Berakhir SIM tidak benar'
+        //     ),
+        // ),
         'kontak_darurat_name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -110,22 +110,22 @@ class Driver extends AppModel {
                 'message' => 'No. HP harap diisi'
             ),
         ),
-        'driver_relation_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Hubungan kerabat harap dipilih'
-            ),
-        ),
-        'join_date' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tgl Penerimaan harap dipilih'
-            ),
-            'date' => array(
-                'rule' => array('date'),
-                'message' => 'Tgl Penerimaan tidak benar'
-            ),
-        ),
+        // 'driver_relation_id' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Hubungan kerabat harap dipilih'
+        //     ),
+        // ),
+        // 'join_date' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Tgl Penerimaan harap dipilih'
+        //     ),
+        //     'date' => array(
+        //         'rule' => array('date'),
+        //         'message' => 'Tgl Penerimaan tidak benar'
+        //     ),
+        // ),
         // 'branch_id' => array(
         //     'notempty' => array(
         //         'rule' => array('notempty'),

@@ -4292,7 +4292,7 @@ class TrucksController extends AppController {
                                         }
 
                                         $failed_row++;
-                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Listing. %s'), $row_submitted, $textError) . '<br>';
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. %s'), $row_submitted, $textError) . '<br>';
                                     }
 
                                     $row_submitted++;
@@ -4827,7 +4827,6 @@ class TrucksController extends AppController {
                                             'branch_id' => $branch_id,
                                             'jenis_sim_id' => $jenis_sim_id,
                                             'driver_relation_id' => $driver_relation_id,
-                                            'no_id' => $this->Driver->generateNoId(),
                                             'name' => $nama_lengkap,
                                             'alias' => $nama_panggilan,
                                             'address' => $alamat_rumah,
@@ -4857,6 +4856,7 @@ class TrucksController extends AppController {
 
                                 foreach($requestData as $request){
                                     $data = $request;
+                                    $data['Driver']['no_id'] = $this->Driver->generateNoId();
 
                                     $this->Driver->create();
                                     
@@ -4884,7 +4884,7 @@ class TrucksController extends AppController {
                                         }
 
                                         $failed_row++;
-                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Listing. %s'), $row_submitted, $textError) . '<br>';
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. %s'), $row_submitted, $textError) . '<br>';
                                     }
 
                                     $row_submitted++;
