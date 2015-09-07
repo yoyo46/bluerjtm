@@ -1,5 +1,5 @@
 <?php
-		$this->Html->addCrumb(__('Posisi Karyawan'), array(
+		$this->Html->addCrumb(__('Grup User'), array(
             'action' => 'groups',
         ));
 		$this->Html->addCrumb($sub_module_title);
@@ -18,14 +18,11 @@
     <div class="box-body">
         <div class="form-group">
         	<?php 
-				echo $this->Form->label('name',__('Posisi Karyawan *')); 
-
-				echo $this->Form->input('name',array(
-					'label'=> false, 
-					'class'=>'form-control',
-					'required' => false,
-					'placeholder' => __('Posisi Karyawan')
-				));
+					echo $this->Form->input('name',array(
+						'label'=> __('Nama Grup *'), 
+						'class'=>'form-control',
+						'required' => false,
+					));
 			?>
         </div>
     </div>

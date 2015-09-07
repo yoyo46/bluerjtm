@@ -10,7 +10,7 @@ class Group extends AppModel {
 		'name' => array(
 			'notempty' => array(
 				'rule' => array('notempty'),
-                'message' => 'Nama group harap diisi'
+                'message' => 'Nama grup harap diisi'
 			),
 		)
 	);
