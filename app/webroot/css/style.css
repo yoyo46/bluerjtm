@@ -132,6 +132,10 @@ body > .header {
   padding-top: 5px;
 }
 
+.form-added .tfoot .item-mobile {
+  display: none;
+}
+
 @media screen and (min-width: 992px) {
   .left-side {
     top: 50px;
@@ -1139,11 +1143,13 @@ body > .header .logo .icon {
     background: #ffffff;
   }
 
-  .form-added .thead {
+  .form-added .thead,
+  .form-added .tfoot .total-desktop {
     display: none;
   }
 
-  .form-added .tbody .item .removed {
+  .form-added .tbody .item .removed,
+  .form-added .tfoot .total-mobile {
     display: block;
   }
 

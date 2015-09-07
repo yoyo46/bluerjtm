@@ -49,6 +49,7 @@
 			'label' => false,
 			'required' => false,
 			'div' => false,
+			'placeholder' => __('Jumlah Unit'),
 			'value' => $qty,
 		)), array(
 			'class' => 'col-sm-2',

@@ -413,7 +413,7 @@
 								?>
 							</div>
 							<div class="tfoot">
-								<div class="row">
+								<div class="row total-desktop">
 									<?php 
 											echo $this->Html->tag('div', __('Total'), array(
 												'class' => 'col-sm-8 text-right',
@@ -422,6 +422,15 @@
 												'class' => 'total-unit-muatan',
 											)), array(
 												'class' => 'col-sm-2',
+											));
+									?>
+								</div>
+								<div class=" total-mobile">
+									<?php 
+											echo $this->Html->tag('div', __('Total: ').$this->Html->tag('span', $totalUnitMuatan, array(
+												'class' => 'total-unit-muatan',
+											)), array(
+												'class' => 'text-right',
 											));
 									?>
 								</div>
