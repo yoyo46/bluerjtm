@@ -1041,7 +1041,7 @@ class AjaxController extends AppController {
             foreach ($drivers as $key => $value) {
                 // Custom Otorisasi
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Driver', 'branch_id');
-                $value = $this->City->getMerge($value, $branch_id);
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
                 $drivers[$key] = $value;
             }
         }
