@@ -148,6 +148,9 @@ class RjRevenueComponent extends Component {
 				if( !empty($refine['Revenue']['customer']) ) {
 					$refine_conditions['Revenue']['customer'] = urlencode($refine['Revenue']['customer']);
 				}
+				if( !empty($refine['Truck']['company_id']) ) {
+					$refine_conditions['Truck']['company'] = urlencode($refine['Truck']['company_id']);
+				}
 			}
 				
 			return $refine_conditions;
@@ -186,6 +189,13 @@ class RjRevenueComponent extends Component {
 		}
 		if(isset($refine['InvoicePayment']) && !empty($refine['InvoicePayment'])) {
 			foreach($refine['InvoicePayment'] as $param => $value) {
+				if($value) {
+					$parameters[trim($param)] = rawurlencode($value);
+				}
+			}
+		}
+		if(isset($refine['Truck']) && !empty($refine['Truck'])) {
+			foreach($refine['Truck'] as $param => $value) {
 				if($value) {
 					$parameters[trim($param)] = rawurlencode($value);
 				}

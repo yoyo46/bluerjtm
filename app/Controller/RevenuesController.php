@@ -2093,6 +2093,11 @@ class RevenuesController extends AppController {
             if(!empty($refine['data_action'])){
                 $data_action = $refine['data_action'];
             }
+            if(!empty($refine['company'])){
+                $data = urldecode($refine['company']);
+                $conditions['Truck.company_id'] = $data;
+                $this->request->data['Truck']['company_id'] = $data;
+            }
         }
 
         $conditionCustomers = array(
@@ -2228,9 +2233,11 @@ class RevenuesController extends AppController {
             ));
         }
 
+        $companies = $this->Truck->Company->getData('list');
+
         $this->set(compact(
             'trucks', 'cities', 'data_action',
-            'data_type'
+            'data_type', 'companies'
         ));
 
         if($data_action == 'pdf'){
@@ -2482,6 +2489,11 @@ class RevenuesController extends AppController {
                 $default_conditions['Ttuj.truck_id'] = $truckSearch;
                 $default_conditionsTruck['Truck.id'] = $truckSearch;
                 $default_conditionsEvent['CalendarEvent.truck_id'] = $truckSearch;
+            }
+            if(!empty($refine['company'])){
+                $data = urldecode($refine['company']);
+                $default_conditionsTruck['Truck.company_id'] = $data;
+                $this->request->data['Truck']['company_id'] = $data;
             }
 
             // Custom Otorisasi
@@ -2977,13 +2989,14 @@ class RevenuesController extends AppController {
             'branch' => false,
             'plant' => false,
         ));
+        $companies = $this->Truck->Company->getData('list');
 
         $this->set(compact(
             'data_action', 'lastDay', 'currentMonth',
             'trucks', 'prevMonth', 'nextMonth',
             'dataTtuj', 'dataEvent', 'customers',
             'customerId', 'dataRit', 'thisMonth',
-            'dataLaka'
+            'dataLaka', 'companies'
         ));
 
         if($data_action == 'pdf'){

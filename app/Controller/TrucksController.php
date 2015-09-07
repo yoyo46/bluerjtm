@@ -2998,6 +2998,11 @@ class TrucksController extends AppController {
                 $defaul_condition['CustomerNoType.code LIKE'] = '%'.$data.'%';
                 $this->request->data['Truck']['alokasi'] = $data;
             }
+            if(!empty($refine['company'])){
+                $data = urldecode($refine['company']);
+                $defaul_condition['Truck.company_id'] = $data;
+                $this->request->data['Truck']['company_id'] = $data;
+            }
 
             // Custom Otorisasi
             $defaul_condition = $this->MkCommon->getConditionGroupBranch( $refine, 'Truck', $defaul_condition, 'conditions' );
@@ -3070,7 +3075,12 @@ class TrucksController extends AppController {
             }
         }
 
-        $this->set(compact('trucks', 'from_date', 'to_date', 'data_action'));
+        $companies = $this->Truck->Company->getData('list');
+
+        $this->set(compact(
+            'trucks', 'from_date', 'to_date',
+            'data_action', 'companies'
+        ));
 
         if($data_action == 'pdf'){
             $this->layout = 'pdf';
@@ -3773,6 +3783,11 @@ class TrucksController extends AppController {
                 $conditions['TruckCustomer.customer_id'] = $data;
                 $this->request->data['TruckCustomer']['customer_id'] = $data;
             }
+            if(!empty($refine['company'])){
+                $data = urldecode($refine['company']);
+                $conditions['Truck.company_id'] = $data;
+                $this->request->data['Truck']['company_id'] = $data;
+            }
             
             $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Truck', $conditions, 'conditions' );
         }
@@ -3828,9 +3843,15 @@ class TrucksController extends AppController {
         ), true, array(
             'branch' => false,
         ));
+        $companies = $this->Truck->Company->getData('list');
+
         $this->set('active_menu', 'licenses_report');
         $sub_module_title = __('Laporan Surat-surat Truk');
-        $this->set(compact('trucks', 'customers', 'sub_module_title', 'data_action'));
+
+        $this->set(compact(
+            'trucks', 'customers', 'sub_module_title', 
+            'data_action', 'companies'
+        ));
 
         if($data_action == 'pdf'){
             $this->layout = 'pdf';
@@ -4343,8 +4364,14 @@ class TrucksController extends AppController {
         $sub_module_title = __('Laporan Harian Kendaraan');
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $allow_branch = Configure::read('__Site.config_allow_branchs');
-        $defaul_condition = array(
-            'Ttuj.branch_id' => $allow_branch_id,
+        $options = array(
+            'conditions' => array(
+                'Ttuj.branch_id' => $allow_branch_id,
+            ),
+            'order' => array(
+                'Ttuj.ttuj_date' => 'DESC',
+                'Ttuj.id' => 'DESC',
+            ),
         );
 
         if(!empty($this->params['named'])){
@@ -4367,31 +4394,33 @@ class TrucksController extends AppController {
                 $typeTruck = !empty($refine['type'])?$refine['type']:1;
 
                 if( $typeTruck == 2 ) {
-                    $defaul_condition['Ttuj.truck_id'] = $data;
+                    $options['conditions']['Ttuj.truck_id'] = $data;
                 } else {
-                    $defaul_condition['Ttuj.nopol LIKE'] = '%'.$data.'%';
+                    $options['conditions']['Ttuj.nopol LIKE'] = '%'.$data.'%';
                 }
                 $this->request->data['Truck']['nopol'] = $data;
                 $this->request->data['Truck']['type'] = $typeTruck;
             }
+            if(!empty($refine['company'])){
+                $data = urldecode($refine['company']);
+
+                $options['conditions']['Truck.company_id'] = $data;
+                $options['contain'][] = 'Truck';
+
+                $this->request->data['Truck']['company_id'] = $data;
+            }
 
             // Custom Otorisasi
-            $defaul_condition = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $defaul_condition, 'conditions' );
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $options );
             // $allow_branch = $this->MkCommon->getBranchNameFilter( $refine );
         }
 
-        $defaul_condition = array_merge($defaul_condition, array(
+        $options['conditions'] = array_merge($options['conditions'], array(
             'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='=> $dateFrom,
             'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <=' => $dateTo,
         ));
 
-        $options = $this->Ttuj->getData('paginate', array(
-            'conditions' => $defaul_condition,
-            'order' => array(
-                'Ttuj.ttuj_date' => 'DESC',
-                'Ttuj.id' => 'DESC',
-            ),
-        ), true, array(
+        $options = $this->Ttuj->getData('paginate', $options, true, array(
             'branch' => false,
         ));
 
@@ -4445,13 +4474,15 @@ class TrucksController extends AppController {
             $periode = '-';
         }
 
+        $companies = $this->Truck->Company->getData('list');
+
         $this->set('active_menu', 'daily_report');
         $this->set('sub_module_title', $sub_module_title);
 
         $this->set(compact(
             'ttujs', 'from_date', 'to_date', 
             'data_action', 'header_module_title',
-            'periode', 'allow_branch'
+            'periode', 'allow_branch', 'companies'
         ));
 
         if($data_action == 'pdf'){

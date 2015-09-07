@@ -37,6 +37,16 @@
                         ?>
                     </div>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Truck.company_id',array(
+                                'label'=> __('Pemilik Truk'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Pemilik Truk')
+                            ));
+                    ?>
+                </div>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(

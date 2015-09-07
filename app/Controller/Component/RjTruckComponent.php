@@ -87,6 +87,9 @@ class RjTruckComponent extends Component {
 				if( !empty($refine['Truck']['date']) ) {
 					$refine_conditions['Truck']['date'] = urlencode($refine['Truck']['date']);
 				}
+				if( !empty($refine['Truck']['company_id']) ) {
+					$refine_conditions['Truck']['company'] = urlencode($refine['Truck']['company_id']);
+				}
 			}
 				
 			return $refine_conditions;

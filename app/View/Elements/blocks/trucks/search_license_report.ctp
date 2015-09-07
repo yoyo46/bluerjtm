@@ -93,6 +93,16 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Truck.company_id',array(
+                                'label'=> __('Pemilik Truk'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Pemilik Truk')
+                            ));
+                    ?>
+                </div>
                 <?php 
                         // Custom Otorisasi
                         echo $this->Common->getCheckboxBranch();

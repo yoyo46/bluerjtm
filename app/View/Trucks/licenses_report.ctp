@@ -182,8 +182,8 @@
                             echo $this->Html->tag('tr', $content);
                         }
                     }else{
-                        echo $this->Html->tag('tr', $this->Html->tag('td', __('Data Tidak Ditemukan.'), array(
-                            'class' => 'alert-danger text-center',
+                        echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
+                            'class' => 'alert-warning text-center',
                             'colspan' => 7
                         )));
                     }
@@ -192,11 +192,6 @@
         </table>
         <?php 
                 if( $data_action != 'excel' ) {
-                    if(empty($trucks)){
-                        echo $this->Html->tag('p', __('Data belum tersedia.'), array(
-                            'class' => 'alert alert-warning text-center',
-                        ));
-                    }
         ?>
     </div>
     <?php 

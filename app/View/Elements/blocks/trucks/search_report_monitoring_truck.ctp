@@ -51,7 +51,19 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Truck.company_id',array(
+                                'label'=> __('Pemilik Truk'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Pemilik Truk')
+                            ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-3">
                 <?php 
                         echo $this->Common->getCheckboxBranch();
                 ?>
