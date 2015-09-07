@@ -1131,16 +1131,16 @@ class RevenuesController extends AppController {
 
         $tipeMotors = array();
         $groupTipeMotors = array();
-        $tipeMotorTemps = $this->TtujTipeMotor->TipeMotor->getData('all', array(
-            'fields' => array(
-                'TipeMotor.id', 'TipeMotor.name', 'GroupMotor.id',
-            ),
-        ));
+        $tipeMotorTemps = $this->TtujTipeMotor->TipeMotor->getData('all');
 
         if( !empty($tipeMotorTemps) ) {
             foreach ($tipeMotorTemps as $key => $tipeMotorTemp) {
-                $tipeMotors[$tipeMotorTemp['TipeMotor']['id']] = $tipeMotorTemp['TipeMotor']['name'];
-                $groupTipeMotors[$tipeMotorTemp['TipeMotor']['id']] = $tipeMotorTemp['GroupMotor']['id'];
+                $tipe_motor_id = $this->MkCommon->filterEmptyField($tipeMotorTemp, 'TipeMotor', 'id');
+                $code_name = $this->MkCommon->filterEmptyField($tipeMotorTemp, 'TipeMotor', 'code_name');
+                $group_motor_id = $this->MkCommon->filterEmptyField($tipeMotorTemp, 'GroupMotor', 'id');
+
+                $tipeMotors[$tipe_motor_id] = $code_name;
+                $groupTipeMotors[$tipe_motor_id] = $group_motor_id;
             }
         }
 

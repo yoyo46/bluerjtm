@@ -125,6 +125,7 @@
 			}
 
 			echo $this->Html->script(array(
+				'functions/customs.library.js',
 				'functions/app',
 				'functions/functions',
 				'functions/dashboard',

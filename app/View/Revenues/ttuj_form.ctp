@@ -341,48 +341,95 @@
 				    <div class="box-header">
 				        <h3 class="box-title"><?php echo __('Informasi Muatan'); ?></h3>
 				    </div>
-				    <div class="box-body">
+				    <div class="box-body form-added">
 				    	<div class="form-group">
 							<?php
-									$dataCustom = '';
-									$totalUnitMuatan = 0;
+									$totalUnitMuatan = '';
 									$colSpan = 2;
 
 									if( $data_action == 'retail' ) {
-										$dataCustom = 'retail';
 										$colSpan ++;
 									}
 
 									echo $this->Html->link('<i class="fa fa-plus"></i> '.__('Tambah'), 'javascript:', array(
-										'class' => 'add-custom-field btn btn-success btn-xs',
-										'action_type' => 'ttuj',
-										'data-custom' => $dataCustom,
+										'class' => 'field-added btn btn-success btn-xs',
 										'escape' => false
 									));
 							?>
 						</div>
-				        <table class="table table-bordered table-striped" id="ttujDetail">
-							<thead>
-								<tr>
+						<div id="ttujDetail">
+							<div class="thead">
+								<div class="row">
 									<?php 
 											if( $data_action == 'retail' ) {
-												echo $this->Html->tag('th', __('Tujuan'), array(
-													'width' => '30%',
+												echo $this->Html->tag('div', __('Tujuan'), array(
+													'class' => 'col-sm-3 th',
+												));
+												echo $this->Html->tag('div', __('Tipe Motor'), array(
+													'class' => 'col-sm-3 th',
+												));
+												echo $this->Html->tag('div', __('Warna'), array(
+													'class' => 'col-sm-2 th',
+												));
+											} else {
+												echo $this->Html->tag('div', __('Tipe Motor'), array(
+													'class' => 'col-sm-5 th',
+												));
+												echo $this->Html->tag('div', __('Warna'), array(
+													'class' => 'col-sm-3 th',
 												));
 											}
-											echo $this->Html->tag('th', __('Tipe Motor'));
-											echo $this->Html->tag('th', __('Warna Motor'), array(
-												'width' => '20%',
+											echo $this->Html->tag('div', __('Jumlah'), array(
+												'class' => 'col-sm-2 th',
 											));
-											echo $this->Html->tag('th', __('Jumlah'), array(
-												'width' => '15%',
-											));
-											echo $this->Html->tag('th', __('Action'), array(
-												'width' => '5%',
+											echo $this->Html->tag('div', __('Action'), array(
+												'class' => 'col-sm-2 th text-center',
 											));
 									?>
-								</tr>
-							</thead>
+								</div>
+							</div>
+							<div class="tbody field-content">
+								<?php 
+										if( !empty($datForm['TtujTipeMotor']['tipe_motor_id']) ) {
+											$idx = 0;
+											foreach ($datForm['TtujTipeMotor']['tipe_motor_id'] as $key => $tipe_motor_id) {
+												$city_id = !empty($datForm['TtujTipeMotor']['city_id'][$key])?$datForm['TtujTipeMotor']['city_id'][$key]:false;
+												$qty = !empty($datForm['TtujTipeMotor']['qty'][$key])?$datForm['TtujTipeMotor']['qty'][$key]:false;
+												$color_motor_id = !empty($datForm['TtujTipeMotor']['color_motor_id'][$key])?$datForm['TtujTipeMotor']['color_motor_id'][$key]:false;
+												$totalUnitMuatan += $qty;
+
+												echo $this->element('blocks/ttuj/forms/tipe_motors', array(
+													'idx' => $idx,
+													'city_id' => $city_id,
+													'tipe_motor_id' => $tipe_motor_id,
+													'qty' => $qty,
+													'color_motor_id' => $color_motor_id,
+												));
+												$idx++;
+											}
+										} else {
+											echo $this->element('blocks/ttuj/forms/tipe_motors');
+										}
+								?>
+							</div>
+							<div class="tfoot">
+								<div class="row">
+									<?php 
+											echo $this->Html->tag('div', __('Total'), array(
+												'class' => 'col-sm-8 text-right',
+											));
+											echo $this->Html->tag('div', $this->Html->tag('span', $totalUnitMuatan, array(
+												'class' => 'total-unit-muatan',
+											)), array(
+												'class' => 'col-sm-2',
+											));
+									?>
+								</div>
+							</div>
+						</div>
+						<?php
+						/*
+				        <table class="table table-bordered table-striped" id="ttujDetail">
 							<tbody>
 								<?php 
 										if( !empty($datForm['TtujTipeMotor']['tipe_motor_id']) ) {
@@ -460,6 +507,8 @@
 								</tr>
 							</tfoot>
 						</table>
+						*/
+						?>
 				    </div>
 				</div>
 			</div>
@@ -932,11 +981,15 @@
 		<?php 
 				if( !empty($uangJalan['UangJalanTipeMotor']) ) {
 					foreach ($uangJalan['UangJalanTipeMotor'] as $key => $value) {
-						echo $this->Html->tag('div', $value['UangJalanTipeMotor']['uang_jalan_1'], array(
-							'class' => sprintf('uang-jalan-1-%s', $value['UangJalanTipeMotor']['tipe_motor_id'])
+						$uang_jalan_1 = $this->Common->filterEmptyField($value, 'UangJalanTipeMotor', 'uang_jalan_1');
+						$uang_jalan_2 = $this->Common->filterEmptyField($value, 'UangJalanTipeMotor', 'uang_jalan_2');
+						$group_motor_id = $this->Common->filterEmptyField($value, 'UangJalanTipeMotor', 'group_motor_id');
+
+						echo $this->Html->tag('div', $uang_jalan_1, array(
+							'class' => sprintf('uang-jalan-1-%s', $group_motor_id)
 						));
-						echo $this->Html->tag('div', $value['UangJalanTipeMotor']['uang_jalan_2'], array(
-							'class' => sprintf('uang-jalan-2-%s', $value['UangJalanTipeMotor']['tipe_motor_id'])
+						echo $this->Html->tag('div', $uang_jalan_2, array(
+							'class' => sprintf('uang-jalan-2-%s', $group_motor_id)
 						));
 					}
 				}

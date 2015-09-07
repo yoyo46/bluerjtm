@@ -110,6 +110,28 @@ body > .header {
   height: 550px;  
 }
 
+.form-added .thead {
+  font-weight: bold;
+  border-bottom: 1px solid #dddddd;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+}
+
+.form-added .tbody .item {
+  margin-bottom: 10px;
+}
+
+.form-added .tbody .field-copy .item .removed {
+  display: none;
+}
+
+.form-added .tfoot {
+  font-weight: bold;
+  border-top: 1px solid #dddddd;
+  margin-top: 10px;
+  padding-top: 5px;
+}
+
 @media screen and (min-width: 992px) {
   .left-side {
     top: 50px;
@@ -1115,6 +1137,18 @@ body > .header .logo .icon {
     border-bottom: 1px solid #dddddd;
     border-left: 1px solid #dddddd;
     background: #ffffff;
+  }
+
+  .form-added .thead {
+    display: none;
+  }
+
+  .form-added .tbody .item .removed {
+    display: block;
+  }
+
+  .form-added .tbody .item {
+    margin-bottom: 20px;
   }
 }
 /* Fix menu positions on xs screens to appear correctly and fully */

@@ -29,6 +29,11 @@ class TipeMotor extends AppModel {
         ),
 	);
 
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['code_name'] = 'CASE WHEN TipeMotor.code_motor = \'\' THEN TipeMotor.name ELSE CONCAT(TipeMotor.code_motor, \' - \',TipeMotor.name) END';
+    }
+
 	function getData($find, $options = false, $is_merge = true){
         $default_options = array(
             'conditions'=> array(
