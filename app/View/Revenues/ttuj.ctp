@@ -360,7 +360,8 @@
                                     'action' => 'ttuj_edit',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-primary btn-xs'
+                                    'class' => 'btn btn-primary btn-xs',
+                                    'allowed_module' => !empty($is_draft)?true:false,
                                 ));
 
                                 if( !empty($status) ) {

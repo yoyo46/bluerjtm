@@ -345,7 +345,6 @@ class HtmlHelper extends AppHelper {
 	public function link($title, $url = null, $options = array(), $confirmMessage = false) {
 
 		/*custom*/
-		$allowed_module = Configure::read('__Site.allowed_module');
 		$current_branch_id = Configure::read('__Site.config_branch_id');
 		$is_show = false;
 
@@ -365,7 +364,14 @@ class HtmlHelper extends AppHelper {
 
 		$actionName = !empty($url['action'])?$url['action']:false;
 		$_allow = !empty($options['allow'])?$options['allow']:false;
+		$_allowed_module = isset($options['allowed_module'])?$options['allowed_module']:true;
 		$group_id = Configure::read('__Site.config_group_id');
+
+		if( empty($_allowed_module) ) {
+			$allowed_module = false;
+		} else {
+			$allowed_module = Configure::read('__Site.allowed_module');
+		}
 
 		$allowAction = !empty($allowed_module[$controllerName])?$allowed_module[$controllerName]:array();
 		$allowPage = in_array($actionName, $allowAction)?true:false;

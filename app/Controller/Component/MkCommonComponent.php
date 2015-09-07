@@ -861,6 +861,8 @@ class MkCommonComponent extends Component {
     function checkAllowFunction( $params ) {
         $allowFunction = false;
         $paramController = !empty($params['controller'])?$params['controller']:false;
+        $paramAction = !empty($params['action'])?$params['action']:false;
+
         $group_id = Configure::read('__Site.config_group_id');
         $current_branch_id = Configure::read('__Site.config_branch_id');
         $_allowModule = Configure::read('__Site.config_allow_module');
@@ -871,6 +873,8 @@ class MkCommonComponent extends Component {
             $allowAction = $_allowModule[$current_branch_id][$paramController]['action'];
 
             if( in_array('edit_asset', $allowAction) ) {
+                $allowFunction = true;
+            } else if( in_array($paramAction, $allowAction) ) {
                 $allowFunction = true;
             }
         }

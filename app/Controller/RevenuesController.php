@@ -236,6 +236,16 @@ class RevenuesController extends AppController {
         ));
 
         if(!empty($ttuj)){
+            $is_draft = $this->MkCommon->filterEmptyField( $ttuj, 'Ttuj', 'is_draft' );
+
+            if( empty($is_draft) ) {
+                $allowEdit = $this->MkCommon->checkAllowFunction($this->params);
+
+                if( empty($allowEdit) ) {
+                    $this->redirect($this->referer());
+                }
+            }
+
             $ttuj = $this->Ttuj->getMergeContain( $ttuj, $id );
             $ttuj = $this->Revenue->getPaid( $ttuj, $ttuj['Ttuj']['id'] );
             $data_action = false;
