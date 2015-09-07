@@ -262,7 +262,7 @@ class UsersController extends AppController {
     function group_edit($id){
         $this->loadModel('Group');
         $this->set('sub_module_title', 'Edit Grup User');
-        $Group = $this->Group->find('first', array(
+        $Group = $this->Group->getData('first', array(
             'conditions' => array(
                 'Group.id' => $id
             )
@@ -326,10 +326,9 @@ class UsersController extends AppController {
 
     function group_toggle( $id = false ){
         $this->loadModel('Group');
-        $locale = $this->Group->find('first', array(
+        $locale = $this->Group->getData('first', array(
             'conditions' => array(
                 'Group.id' => $id,
-                'Group.status' => 1,
             )
         ));
 
@@ -495,7 +494,7 @@ class UsersController extends AppController {
         $this->loadModel('Group');
         $this->loadModel('Employe');
 
-        $groups = $this->Group->find('list');
+        $groups = $this->Group->getData('list');
         $branches = $this->GroupBranch->Branch->getData('list');
         $employes = $this->Employe->getData('all', array(
             'conditions' => array(

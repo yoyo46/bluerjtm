@@ -32,14 +32,7 @@ class UserPermissionsController extends AppController {
 
     public function index(){
         $this->loadModel('Group');
-        $groups = $this->Group->find('list', array(
-            'fields' => array(
-                'Group.id', 'Group.name'
-            ),
-            'conditions'=> array(
-                'Group.status'=> 1, 
-            ),
-        ), false);
+        $groups = $this->Group->getData('list');
 
         $group_id = !empty($this->request->data['Group']['group_id'])?$this->request->data['Group']['group_id']:0;
         $conditions['ModuleAction.group_id'] = $group_id;
@@ -105,7 +98,7 @@ class UserPermissionsController extends AppController {
 
         $this->loadModel('Group');
 
-        foreach ($this->Group->find('all') as $role) {
+        foreach ($this->Group->getData('all') as $role) {
             $hasAny = array(
                 'aco_id' => $acoId,
                 'aro_id' => $role['Group']['id'],

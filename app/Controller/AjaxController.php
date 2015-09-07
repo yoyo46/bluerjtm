@@ -1825,14 +1825,7 @@ class AjaxController extends AppController {
 	        echo !empty($users['Group']['name'])?$users['Group']['name']:false;
 	        die();
 		}else{
-			$groups = $this->User->Group->find('list', array(
-				'conditions' => array(
-					'Group.status' => 1
-				),
-				'fields' => array(
-					'Group.id', 'Group.name'
-				)
-			));
+			$groups = $this->User->Group->getData('list');
 
 			$this->paginate = $this->User->getData('paginate', array(
 	            'conditions' => $default_conditions,
