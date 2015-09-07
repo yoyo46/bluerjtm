@@ -1969,6 +1969,7 @@ var choose_item_info = function(){
         var idx = 0;
 
         if($(this).is(':checked')) {
+            $('.'+data_field).show();
             $('.'+data_field).removeClass('hide');
             idx = 1;
         } else {
@@ -1983,6 +1984,7 @@ var choose_item_info = function(){
             if( colspan == 0 ) {
                 parent.addClass('hide');
             } else {
+                parent.show();
                 parent.removeClass('hide');
             }
             

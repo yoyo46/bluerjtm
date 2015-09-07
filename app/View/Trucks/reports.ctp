@@ -5,7 +5,7 @@
             'nomor_id' => array(
                 'name' => __('No. ID'),
                 'field_model' => 'Truck.id',
-                'display' => false,
+                'display' => true,
             ),
             'nopol' => array(
                 'name' => __('Nopol'),
@@ -165,7 +165,7 @@
                             $facility_name = !empty($truck['TruckFacility']['name'])?$truck['TruckFacility']['name']:false;
                             
                             $content = $this->Common->_getDataColumn(str_pad($truck['Truck']['id'], 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
-                                'class' => 'hide nomor_id',
+                                'class' => 'nomor_id',
                                 'style' => 'text-align: left;',
                             ));
                             $content .= $this->Common->_getDataColumn($truck['Truck']['nopol'], 'Truck', 'nopol', array(
