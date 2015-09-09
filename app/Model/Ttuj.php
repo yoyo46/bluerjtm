@@ -439,7 +439,7 @@ class Ttuj extends AppModel {
 
         $driver_penganti_id = !empty($data['Ttuj']['driver_penganti_id'])?$data['Ttuj']['driver_penganti_id']:false;
         $data = $this->Driver->getMerge($data, $driver_penganti_id, 'DriverPenganti');
-        $data = $this->TtujTipeMotor->getMergeTtujTipeMotor( $data, $ttuj_id, 'all');
+        $data = $this->TtujTipeMotor->getMergeTipeMotor( $data, $ttuj_id, 'all');
         $data = $this->TtujPerlengkapan->getMerge($data, $ttuj_id);
 
         return $data;

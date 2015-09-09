@@ -171,5 +171,41 @@ class TtujTipeMotor extends AppModel {
 
         return $kembali;
     }
+
+    function getMergeTipeMotor ( $data = false, $ttuj_id = false, $list = 'all', $conditions = false ) {
+        if( empty($data['TtujTipeMotor']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'TtujTipeMotor.ttuj_id'=> $ttuj_id,
+                    'TtujTipeMotor.status'=> 1,
+                ),
+                'group' => array(
+                    'TtujTipeMotor.tipe_motor_id',
+                    'TtujTipeMotor.city_id',
+                    'TtujTipeMotor.color_motor_id',
+                ),
+                'order' => array(
+                    'TtujTipeMotor.id' => 'ASC',
+                ),
+                'contain' => array(
+                    'City',
+                ),
+            );
+
+            if( !empty($conditions) ) {
+                $default_options['conditions'] = $conditions;
+            }
+
+            $ttujTipeMotor = $this->getData($list, $default_options);
+
+            if( !empty($ttujTipeMotor) && $list != 'first' ) {
+                $data['TtujTipeMotor'] = $ttujTipeMotor;
+            } else {
+                $data['TtujTipeMotor'] = $ttujTipeMotor;
+            }
+        }
+
+        return $data;
+    }
 }
 ?>
