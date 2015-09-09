@@ -17,15 +17,35 @@
                     'inputDefaults' => array('div' => false),
                 ));
         ?>
-        <div class="form-group">
-            <?php 
-                echo $this->Form->input('name',array(
-                    'label'=> __('Nama Company'),
-                    'class'=>'form-control',
-                    'required' => false,
-                    'placeholder' => __('Nama Company')
-                ));
-            ?>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('name',array(
+                                'label'=> __('Nama Company'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Nama Company')
+                            ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('is_rjtm',array(
+                                'label'=> __('via RJTM'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih'),
+                                'options' => array(
+                                    'yes' => __('Ya'),
+                                    'no' => __('Tidak'),
+                                ),
+                            ));
+                    ?>
+                </div>
+            </div>
         </div>
         <div class="form-group action">
             <?php

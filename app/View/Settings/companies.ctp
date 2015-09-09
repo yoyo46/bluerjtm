@@ -30,6 +30,11 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Company.phone_number', __('Telepon'), array(
                             'escape' => false
                         )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Company.is_rjtm', __('via RJTM'), array(
+                            'escape' => false
+                        )), array(
+                            'class' => 'text-center',
+                        ));
                         echo $this->Html->tag('th', $this->Paginator->sort('Company.created', __('Dibuat'), array(
                             'escape' => false
                         )));
@@ -42,6 +47,7 @@
                         foreach ($companies as $key => $value) {
                             $value_data = $value['Company'];
                             $id = $value_data['id'];
+                            $is_rjtm = $this->Common->filterEmptyField($value, 'Company', 'is_rjtm');
             ?>
             <tr>
                 <td><?php echo $value_data['name'];?></td>
@@ -49,6 +55,11 @@
                 <td>
                     <?php 
                         echo $value_data['phone_number'];
+                    ?>
+                </td>
+                <td class="text-center">
+                    <?php 
+                            echo $this->Common->getCheckStatus($is_rjtm);
                     ?>
                 </td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>

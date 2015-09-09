@@ -4,6 +4,9 @@
 			'action' => 'companies'
 		));
 		$this->Html->addCrumb($sub_module_title);
+
+		$data = $this->request->data;
+		$is_rjtm = isset($data['Company']['is_rjtm'])?$data['Company']['is_rjtm']:true;
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -53,6 +56,19 @@
 				// 	'class' => 'form-group'
 				// ));
 		?>
+	    <div class="form-group">
+	        <div class="checkbox-options">
+	        	<div class="checkbox">
+	                <label>
+	                	<?php
+	                			echo $this->Form->checkbox('is_rjtm', array(
+	                				'checked' => $is_rjtm,
+                				)).__(' Uang Jalan via RJTM?');
+            			?>
+	                </label>
+	            </div>
+	        </div>
+	    </div>
     </div>
 
     <div class="box-footer text-center action">

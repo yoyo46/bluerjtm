@@ -793,6 +793,19 @@ class SettingsController extends AppController {
                 $this->request->data['Company']['name'] = $name;
                 $options['conditions']['Company.name LIKE '] = '%'.$name.'%';
             }
+            if(!empty($refine['rjtm'])){
+                $value = urldecode($refine['rjtm']);
+                $this->request->data['Company']['is_rjtm'] = $value;
+
+                switch ($value) {
+                    case 'no':
+                        $options['conditions']['Company.is_rjtm'] = 0;
+                        break;
+                    case 'yes':
+                        $options['conditions']['Company.is_rjtm'] = 1;
+                        break;
+                }
+            }
         }
         $this->paginate = $this->Company->getData('paginate', $options);
         $companies = $this->paginate('Company');
