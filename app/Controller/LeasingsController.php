@@ -1,7 +1,9 @@
 <?php
 App::uses('AppController', 'Controller');
 class LeasingsController extends AppController {
-	public $uses = array();
+	public $uses = array(
+        'Leasing',
+    );
 
     public $components = array(
         'RjLeasing'
@@ -29,8 +31,6 @@ class LeasingsController extends AppController {
     }
 
 	public function index() {
-        $this->loadModel('Leasing');
-
         $conditions = array();
 
         if(!empty($this->params['named'])){
@@ -86,13 +86,11 @@ class LeasingsController extends AppController {
     }
 
     function add(){
-        $this->loadModel('Leasing');
         $this->set('sub_module_title', __('Tambah Leasing'));
         $this->doLeasing();
     }
 
     function edit($id){
-        $this->loadModel('Leasing');
         $this->set('sub_module_title', 'Rubah Leasing');
         $value = $this->Leasing->getData('first', array(
             'conditions' => array(
@@ -150,7 +148,6 @@ class LeasingsController extends AppController {
                 $this->Leasing->id = $id;
                 $msg = 'merubah';
             }else{
-                $this->loadModel('Leasing');
                 $this->Leasing->create();
                 $msg = 'menambah';
             }
@@ -403,8 +400,6 @@ class LeasingsController extends AppController {
     // }
 
     function toggle($id){
-        $this->loadModel('Leasing');
-
         $locale = $this->Leasing->getData('first', array(
             'conditions' => array(
                 'Leasing.id' => $id,
@@ -470,4 +465,65 @@ class LeasingsController extends AppController {
 
     //     $this->redirect($this->referer());
     // }
+
+    function payments() {
+        $this->loadModel('LeasingPayment');
+        $this->set('active_menu', 'leasing_payments');
+        $this->set('sub_module_title', __('Data Pembayaran Leasing'));
+        $conditions = array();
+        
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['nodoc'])){
+                $no_doc = urldecode($refine['nodoc']);
+                $this->request->data['LkuPayment']['no_doc'] = $no_doc;
+                $conditions['LkuPayment.no_doc LIKE '] = '%'.$no_doc.'%';
+            }
+
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Lku']['customer_id'] = $customer;
+                $conditions['LkuPayment.customer_id'] = $customer;
+            }
+        }
+
+        $this->paginate = $this->Leasing->LeasingPayment->getData('paginate', array(
+            'conditions' => $conditions,
+        ), array(
+            'status' => 'all',
+        ));
+        $payments = $this->paginate('LeasingPayment');
+
+        $this->set(compact(
+            'payments'
+        ));
+    }
+
+    function payment_add(){
+        $this->set('sub_module_title', __('Tambah Pembayaran Leasing'));
+        $this->set('active_menu', 'leasing_payments');
+
+        $result = $this->Leasing->LeasingPayment->doSave( $this->request->data );
+        $this->MkCommon->setProcessParams($result, array(
+            'controller' => 'leasings',
+            'action' => 'payments',
+            'admin' => false,
+        ));
+
+        $coas = $this->Leasing->LeasingPayment->Coa->getData('list', array(
+            'fields' => array(
+                'Coa.id', 'Coa.coa_name'
+            ),
+        ), true, array(
+            'status' => 'cash_bank_child',
+        ));
+        $vendors = $this->Leasing->LeasingPayment->Vendor->getData('list');
+
+        $this->set(compact(
+            'coas', 'vendors'
+        ));
+
+        $this->render('payment_form');
+    }
 }

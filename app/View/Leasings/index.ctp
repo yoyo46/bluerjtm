@@ -16,7 +16,7 @@
             //     'display' => true,
             // ),
             'company' => array(
-                'name' => __('Perusahaan'),
+                'name' => __('Vendor'),
                 'field_model' => 'Vendor.name',
                 'display' => true,
             ),

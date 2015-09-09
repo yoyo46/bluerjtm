@@ -4957,4 +4957,110 @@ class TrucksController extends AppController {
             }
         }
     }
+
+    function driver_reports($data_action = false) {
+        $this->set('active_menu', 'reports');
+        $this->set('sub_module_title', __('Laporan Supir'));
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        
+        $options = array(
+            'conditions' => array(
+                'Driver.branch_id' => $allow_branch_id,
+            ),
+        );
+        $from_date = '';
+        $to_date = '';
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['nopol'])){
+                $data = urldecode($refine['nopol']);
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $data,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$data.'%',
+                    );
+                }
+
+                $truckSearch = $this->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.driver_id',
+                    ),
+                ), true, array(
+                    'branch' => false,
+                ));
+                $options['conditions']['Driver.id'] = $truckSearch;
+                $this->request->data['Truck']['nopol'] = $data;
+                $this->request->data['Truck']['type'] = $typeTruck;
+            }
+
+            if(!empty($refine['no_id'])){
+                $value = urldecode($refine['no_id']);
+                $options['conditions']['Driver.no_id LIKE'] = '%'.$value.'%';
+                $this->request->data['Driver']['no_id'] = $value;
+            }
+            if(!empty($refine['name'])){
+                $value = urldecode($refine['name']);
+                $options['conditions']['Driver.driver_name LIKE'] = '%'.$value.'%';
+                $this->request->data['Driver']['name'] = $value;
+            }
+            if(!empty($refine['no_truck'])){
+                $value = urldecode($refine['no_truck']);
+
+                $options['conditions']['Truck.id'] = NULL;
+                $options['contain'][] = 'Truck';
+
+                $this->request->data['Truck']['no_truck'] = $value;
+            }
+
+            // Custom Otorisasi
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Driver', $options );
+        }
+
+        if( !empty($data_action) ) {
+            $drivers = $this->Truck->Driver->getData('count', $options, true, array(
+                'branch' => false,
+            ));
+        } else {
+            $this->loadModel('Driver');
+
+            $options['limit'] = 20;
+            $options = $this->Truck->Driver->getData('paginate', $options, true, array(
+                'branch' => false,
+            ));
+
+            $this->paginate = $options;
+            $drivers = $this->paginate('Driver');
+        }
+
+        if( !empty($drivers) ) {
+            foreach ($drivers as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Driver', 'id');
+                $jenis_sim_id = $this->MkCommon->filterEmptyField($value, 'Driver', 'jenis_sim_id');
+                $driver_relation_id = $this->MkCommon->filterEmptyField($value, 'Driver', 'driver_relation_id');
+
+                $value = $this->Truck->Driver->JenisSim->getMerge( $value, $jenis_sim_id );
+                $value = $this->Truck->Driver->DriverRelation->getMerge( $value, $driver_relation_id );
+                $value = $this->Truck->getByDriver( $value, $id );
+                $drivers[$key] = $value;
+            }
+        }
+
+        $this->set(compact(
+            'drivers', 'data_action'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
+    }
 }

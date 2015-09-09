@@ -108,6 +108,10 @@ class Leasing extends AppModel {
             'className' => 'LeasingDetail',
             'foreignKey' => 'leasing_id',
         ),
+        'LeasingPayment' => array(
+            'className' => 'LeasingPayment',
+            'foreignKey' => 'leasing_id',
+        ),
     );
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){

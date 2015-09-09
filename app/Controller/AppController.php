@@ -77,6 +77,7 @@ class AppController extends Controller {
 			// Set Global Variable for User
 			$this->user_data = $User;
 			Configure::write('__Site.config_group_id', $GroupId);
+			Configure::write('__Site.config_user_id', $this->user_id);
 
 			// Set Variable Branch
 			$my_branch_id = $this->MkCommon->filterEmptyField($User, 'Employe', 'branch_id');

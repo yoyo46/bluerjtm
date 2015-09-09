@@ -321,8 +321,12 @@ class MkCommonComponent extends Component {
         return str_replace('%2F', '/', $string);
     }
 
-    function filterEmptyField ( $value, $modelName, $fieldName, $empty = false ) {
-        return !empty($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
+    function filterEmptyField ( $value, $modelName, $fieldName = false, $empty = false ) {
+        if( empty($fieldName) && !empty($value[$modelName]) ) {
+            return $value[$modelName];
+        } else {
+            return !empty($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
+        }
     }
 
     function getMimeType( $filename ) {

@@ -4080,14 +4080,42 @@ class SettingsController extends AppController {
                                         $uang_jalan_kedua = 0;
                                     }
 
+                                    if( !empty($klasifikasi_1) ) {
+                                        $klasifikasi_1 = strtolower($klasifikasi_1);
+                                        $group_classification_1_id = $this->MkCommon->filterEmptyField($groupClassifications, $klasifikasi_1, false, 0);
+                                    } else {
+                                        $group_classification_1_id = 0;
+                                    }
+
+                                    if( !empty($klasifikasi_2) ) {
+                                        $klasifikasi_2 = strtolower($klasifikasi_2);
+                                        $group_classification_2_id = $this->MkCommon->filterEmptyField($groupClassifications, $klasifikasi_2, false, 0);
+                                    } else {
+                                        $group_classification_2_id = 0;
+                                    }
+
+                                    if( !empty($klasifikasi_3) ) {
+                                        $klasifikasi_3 = strtolower($klasifikasi_3);
+                                        $group_classification_3_id = $this->MkCommon->filterEmptyField($groupClassifications, $klasifikasi_3, false, 0);
+                                    } else {
+                                        $group_classification_3_id = 0;
+                                    }
+
+                                    if( !empty($klasifikasi_4) ) {
+                                        $klasifikasi_4 = strtolower($klasifikasi_4);
+                                        $group_classification_4_id = $this->MkCommon->filterEmptyField($groupClassifications, $klasifikasi_4, false, 0);
+                                    } else {
+                                        $group_classification_4_id = 0;
+                                    }
+
                                     $branch_id = !empty($branch['Branch']['id'])?$branch['Branch']['id']:false;
                                     $requestData['ROW'.($x-1)] = array(
                                         'UangJalan' => array(
                                             'title' => !empty($nama)?$nama:false,
-                                            'group_classification_1_id' => !empty($groupClassifications[strtolower($klasifikasi_1)])?$groupClassifications[strtolower($klasifikasi_1)]:0,
-                                            'group_classification_2_id' => !empty($groupClassifications[strtolower($klasifikasi_2)])?$groupClassifications[strtolower($klasifikasi_2)]:0,
-                                            'group_classification_3_id' => !empty($groupClassifications[strtolower($klasifikasi_3)])?$groupClassifications[strtolower($klasifikasi_3)]:0,
-                                            'group_classification_4_id' => !empty($groupClassifications[strtolower($klasifikasi_4)])?$groupClassifications[strtolower($klasifikasi_4)]:0,
+                                            'group_classification_1_id' => $group_classification_1_id,
+                                            'group_classification_2_id' => $group_classification_2_id,
+                                            'group_classification_3_id' => $group_classification_3_id,
+                                            'group_classification_4_id' => $group_classification_4_id,
                                             'from_city_id' => !empty($from_city_id)?$from_city_id:false,
                                             'to_city_id' => !empty($to_city_id)?$to_city_id:'',
                                             'distance' => !empty($jarak_tempuh)?$jarak_tempuh:false,

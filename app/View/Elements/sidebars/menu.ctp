@@ -210,7 +210,7 @@
                             'kir', 'stnk', 'siup', 'reports',
                             'capacity_report', 'point_perday_report',
                             'point_perplant_report', 'licenses_report',
-                            'daily_report', 'mutations'
+                            'daily_report', 'mutations', 'driver_reports'
                         ),
                         'leasings' => array(
                             'index'
@@ -230,7 +230,7 @@
                             'monitoring_truck', 'capacity_report',
                             'point_perday_report', 'point_perplant_report',
                             'view_leasing', 'licenses_report', 'truck_import',
-                            'daily_report', 'mutations'
+                            'daily_report', 'mutations', 'driver_reports'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -315,6 +315,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'siup' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Supir', array(
+                                'controller' => 'trucks',
+                                'action' => 'driver_reports',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'driver_reports' )?'active':'',
                             ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Truk', array(
@@ -775,7 +784,7 @@
                         'lku_payments', 'coa_setting', 'ksu_payments',
                         'uang_jalan_commission_payments',
                         'biaya_ttuj_payments', 'journal_report',
-                        'prepayment_report'
+                        'prepayment_report', 'leasing_payments'
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
@@ -790,6 +799,9 @@
                         ),
                         'lkus' => array(
                             'payments', 'ksu_payments',
+                        ),
+                        'leasings' => array(
+                            'payments',
                         ),
                     );
 
@@ -877,10 +889,13 @@
                                 // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Leasing', '#', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Leasing', array(
+                                'controller' => 'leasings',
+                                'action' => 'payments',
+                            ), array(
                                 'escape' => false
                             )), array(
-                                // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'leasing_payments' )?'active':'',
                             ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KIR - Pembayaran', array(

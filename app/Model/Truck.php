@@ -489,5 +489,23 @@ class Truck extends AppModel {
             return $conditions;
         }
     }
+
+    function getByDriver($data, $driver_id){
+        if(empty($data['Truck'])){
+            $data_merge = $this->getData('first', array(
+                'conditions' => array(
+                    'Truck.driver_id' => $driver_id,
+                )
+            ), true, array(
+                'branch' => false,
+            ));
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
 }
 ?>
