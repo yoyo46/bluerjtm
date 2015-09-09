@@ -15,7 +15,7 @@
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
-                    'id' => 'daily-report',
+                    'id' => 'form-report',
                 ));
         ?>
         <div class="row">

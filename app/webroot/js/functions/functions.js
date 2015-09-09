@@ -4029,8 +4029,11 @@ $(function() {
     $('form').submit(function(){
         var self = $(this);
         var button = self.find('button[type="submit"]');
+        var idAttr = self.attr('id');
 
-        button.attr('disabled', true);
+        if( idAttr != 'form-report' ) {
+            button.attr('disabled', true);
+        }
     });
 
     $.rowAdded();

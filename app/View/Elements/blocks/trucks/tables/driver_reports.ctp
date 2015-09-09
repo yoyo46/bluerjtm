@@ -61,7 +61,8 @@
                     'class' => 'name',
                 ));
                 $content .= $this->Common->_getDataColumn($identity_number, 'Driver', 'identity_number', array(
-                    'class' => 'hide identity_number',
+                    'class' => 'identity_number',
+                    'style' => 'display: none',
                 ));
                 $content .= $this->Common->_getDataColumn($address, 'Driver', 'address', array(
                     'class' => 'address',
@@ -70,7 +71,8 @@
                     'class' => 'city',
                 ));
                 $content .= $this->Common->_getDataColumn($provinsi, 'Driver', 'provinsi', array(
-                    'class' => 'hide provinsi',
+                    'class' => 'provinsi',
+                    'style' => 'display: none',
                 ));
                 $content .= $this->Common->_getDataColumn($no_hp, 'Driver', 'no_hp', array(
                     'class' => 'no_hp',
@@ -79,20 +81,24 @@
                     'class' => 'phone',
                 ));
                 $content .= $this->Common->_getDataColumn($tempat_lahir, 'Driver', 'tempat_lahir', array(
-                    'class' => 'hide tempat_lahir',
+                    'class' => 'tempat_lahir',
+                    'style' => 'display: none',
                 ));
                 $content .= $this->Common->_getDataColumn($customBirthDate, 'Driver', 'birth_date', array(
-                    'class' => 'hide birth_date',
+                    'class' => 'birth_date',
+                    'style' => 'display: none',
                 ));
                 $content .= $this->Common->_getDataColumn($sim, 'Driver', 'jenis_sim_id', array(
                     'class' => 'sim',
                     'style' => 'text-align:center;',
                 ));
                 $content .= $this->Common->_getDataColumn($no_sim, 'Driver', 'no_sim', array(
-                    'class' => 'hide no_sim',
+                    'class' => 'no_sim',
+                    'style' => 'display: none',
                 ));
                 $content .= $this->Common->_getDataColumn($customExpireDate, 'Driver', 'expired_date_sim', array(
-                    'class' => 'hide no_sim',
+                    'class' => 'no_sim',
+                    'style' => 'display: none',
                 ));
                 $content .= $this->Common->_getDataColumn($kontak_darurat_name, 'Driver', 'kontak_darurat_name', array(
                     'class' => 'kontak_darurat_name',
@@ -101,13 +107,16 @@
                     'class' => 'kontak_darurat_no_hp',
                 ));
                 $content .= $this->Common->_getDataColumn($kontak_darurat_phone, 'Driver', 'kontak_darurat_phone', array(
-                    'class' => 'hide kontak_darurat_phone',
+                    'class' => 'kontak_darurat_phone',
+                    'style' => 'display: none',
                 ));
                 $content .= $this->Common->_getDataColumn($relation, 'Driver', 'driver_relation_id', array(
-                    'class' => 'hide relation',
+                    'class' => 'relation',
+                    'style' => 'display: none',
                 ));
                 $content .= $this->Common->_getDataColumn($customJoinDate, 'Driver', 'join_date', array(
-                    'class' => 'hide join_date',
+                    'class' => 'join_date',
+                    'style' => 'display: none',
                 ));
                 $content .= $this->Common->_getDataColumn($lblStatus, 'Driver', 'status', array(
                     'class' => 'status',

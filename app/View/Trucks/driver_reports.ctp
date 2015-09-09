@@ -121,7 +121,7 @@
             echo $this->Common->_getPrint(array(
                 '_attr' => array(
                     'class' => 'ajaxLink',
-                    'data-request' => '#truck-report',
+                    'data-request' => '#form-report',
                 ),
             ), $showHideColumn);
     ?>

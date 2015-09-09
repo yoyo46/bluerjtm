@@ -5025,7 +5025,7 @@ class TrucksController extends AppController {
         }
 
         if( !empty($data_action) ) {
-            $drivers = $this->Truck->Driver->getData('count', $options, true, array(
+            $drivers = $this->Truck->Driver->getData('all', $options, true, array(
                 'branch' => false,
             ));
         } else {

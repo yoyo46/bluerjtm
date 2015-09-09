@@ -89,7 +89,7 @@
                 echo $this->Common->_getPrint(array(
                     '_attr' => array(
                         'class' => 'ajaxLink',
-                        'data-request' => '#daily-report',
+                        'data-request' => '#form-report',
                     ),
                 ));
             }

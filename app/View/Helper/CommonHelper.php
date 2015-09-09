@@ -1140,7 +1140,7 @@ class CommonHelper extends AppHelper {
                 'url'=> $this->Html->url( null, true ), 
                 'role' => 'form',
                 'inputDefaults' => array('div' => false),
-                'id' => 'truck-report',
+                'id' => 'form-report',
             ));
         }
 
