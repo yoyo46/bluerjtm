@@ -654,7 +654,7 @@ class RevenuesController extends AppController {
                                 $document_id = $this->Ttuj->id;
                                 $document_no = !empty($data['Ttuj']['no_ttuj'])?$data['Ttuj']['no_ttuj']:false;
 
-                                if( !empty($is_rjtm) ) {
+                                if( !empty($is_rjtm) && empty($is_draft) ) {
                                     $this->loadModel('Journal');
 
                                     $this->Journal->deleteJournal( $document_id, 'commission' );
@@ -665,7 +665,7 @@ class RevenuesController extends AppController {
                                     $this->Journal->deleteJournal( $document_id, 'uang_kawal' );
                                     $this->Journal->deleteJournal( $document_id, 'uang_keamanan' );
 
-                                    if ( !$is_draft || $allowUpdate ) {
+                                    if ( $allowUpdate ) {
                                         if( !empty($data['Ttuj']['commission']) ) {
                                             $commissionJournal = $data['Ttuj']['commission'];
 
