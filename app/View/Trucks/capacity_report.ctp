@@ -61,7 +61,19 @@
                     ?>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Truck.company_id',array(
+                                'label'=> __('Pemilik Truk'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Pemilik Truk')
+                            ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-3">
                 <?php 
                         // Custom Otorisasi
                         echo $this->Common->getCheckboxBranch();
@@ -233,7 +245,7 @@
                 <?php
                         }
 
-                        if( empty($capacities) || empty($truckWithoutAlocations) ) {
+                        if( empty($capacities) && empty($truckWithoutAlocations) ) {
                             echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan'), array(
                                 'colspan' => '7'
                             )));
