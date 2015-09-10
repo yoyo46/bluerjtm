@@ -2562,7 +2562,10 @@ class AjaxController extends AppController {
 				$group_branch_id = '';
 
 				if(!empty($GroupBranch)){
-					$group_branch_id = $GroupBranch['GroupBranch']['id'];
+					$msg = array(
+						'type' => 'error',
+						'msg' => 'Cabang telah terdaftar'
+					);
 				}else{
 					$this->GroupBranch->create();
 					$this->GroupBranch->set(array(
@@ -2580,82 +2583,84 @@ class AjaxController extends AppController {
 					} else {
     					$this->Log->logActivity( sprintf(__('Gagal menambahkan Group Cabang #%s utk group user #%s'), $branch_id, $group_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $group_id );
 					}
-				}
 
-				foreach ($parent_modules as $key_parent => $value) {
-					$parent_modules[$key_parent]['child'] = $branch_modules = $this->BranchModule->getData('all', array(
-		                'conditions' => array(
-		                	'BranchModule.branch_parent_module_id' => $value['BranchParentModule']['id'],
-		                    'BranchModule.status' => 1,
-		                    'BranchModule.parent_id' => 0
-		                ),
-		                'contain' => array(
-                            'BranchChild' => array(
-                                'conditions' => array(
-                                    'BranchChild.status' => 1
-                                ),
-                                'order'=> array(
-                                    'BranchChild.order' => 'ASC'
-                                ),
-                            )
-                        ),
-                        'order' => array(
-                            'BranchModule.order' => 'ASC'
-                        )
-		            ));
-					
-					$data_auth = $this->BranchActionModule->getDataBranch($group_branch_id);
+					foreach ($parent_modules as $key_parent => $value) {
+						$parent_modules[$key_parent]['child'] = $branch_modules = $this->BranchModule->getData('all', array(
+			                'conditions' => array(
+			                	'BranchModule.branch_parent_module_id' => $value['BranchParentModule']['id'],
+			                    'BranchModule.status' => 1,
+			                    'BranchModule.parent_id' => 0
+			                ),
+			                'contain' => array(
+	                            'BranchChild' => array(
+	                                'conditions' => array(
+	                                    'BranchChild.status' => 1
+	                                ),
+	                                'order'=> array(
+	                                    'BranchChild.order' => 'ASC'
+	                                ),
+	                            )
+	                        ),
+	                        'order' => array(
+	                            'BranchModule.order' => 'ASC'
+	                        )
+			            ));
+						
+						$data_auth = $this->BranchActionModule->getDataBranch($group_branch_id);
 
-		            /*custom*/
-		            if(!empty($branch_modules) && !empty($checkall)){
-		            	$allow = 1;
-		            	$flagSave = true;
-		            	$default_msg = __('menambahkan otorisasi');
+			            /*custom*/
+			            if(!empty($branch_modules) && !empty($checkall)){
+			            	$allow = 1;
+			            	$flagSave = true;
+			            	$default_msg = __('menambahkan otorisasi');
 
-		            	if($checkall == 'uncheckall'){
-		            		$allow = 0;
-		            		$default_msg = __('menghilangkan otorisasi');
-		            	}
-		            	
-						foreach ($branch_modules as $key_parent_1 => $value_module) {
-							if(!empty($value_module['BranchChild'])){
-								foreach ($value_module['BranchChild'] as $key => $value) {
-									if(!empty($data_auth[$value['id']])){
-										$this->BranchActionModule->id = $data_auth[$value['id']];
-										$this->BranchActionModule->set('is_allow', $allow);
-									}else{
-										$this->BranchActionModule->create();
-						            	$this->BranchActionModule->set(array(
-						            		'group_branch_id' => $group_branch_id,
-						            		'branch_module_id' => $value['id'],
-						            		'is_allow' => $allow,
-						            	));
-									}
+			            	if($checkall == 'uncheckall'){
+			            		$allow = 0;
+			            		$default_msg = __('menghilangkan otorisasi');
+			            	}
+			            	
+							foreach ($branch_modules as $key_parent_1 => $value_module) {
+								if(!empty($value_module['BranchChild'])){
+									foreach ($value_module['BranchChild'] as $key => $value) {
+										if(!empty($data_auth[$value['id']])){
+											$this->BranchActionModule->id = $data_auth[$value['id']];
+											$this->BranchActionModule->set('is_allow', $allow);
+										}else{
+											$this->BranchActionModule->create();
+							            	$this->BranchActionModule->set(array(
+							            		'group_branch_id' => $group_branch_id,
+							            		'branch_module_id' => $value['id'],
+							            		'is_allow' => $allow,
+							            	));
+										}
 
-									if($this->BranchActionModule->save()){
-										$id = $this->BranchActionModule->id;
-										$parent_modules[$key_parent]['child'][$key_parent_1]['BranchChild'][$key]['is_allow'] = $allow;
-									} else {
-		            					$flagSave = false;
+										if($this->BranchActionModule->save()){
+											$id = $this->BranchActionModule->id;
+											$parent_modules[$key_parent]['child'][$key_parent_1]['BranchChild'][$key]['is_allow'] = $allow;
+										} else {
+			            					$flagSave = false;
+										}
 									}
 								}
 							}
 						}
+			            /*end custom*/
 					}
-		            /*end custom*/
+
+					if( !empty($default_msg) ) {
+		        		if( !empty($flagSave) ) {
+							$this->Log->logActivity( sprintf(__('Berhasil %s kpd group #%s utk semua module'), $default_msg, $group_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+		        		} else {
+							$this->Log->logActivity( sprintf(__('Gagal %s kpd group #%s utk semua module'), $default_msg, $group_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $group_id );
+		        		}
+		        	}
+
+					$branch_modules = $parent_modules;
 				}
-
-				if( !empty($default_msg) ) {
-	        		if( !empty($flagSave) ) {
-						$this->Log->logActivity( sprintf(__('Berhasil %s kpd group #%s utk semua module'), $default_msg, $group_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
-	        		} else {
-						$this->Log->logActivity( sprintf(__('Gagal %s kpd group #%s utk semua module'), $default_msg, $group_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $group_id );
-	        		}
-	        	}
-
-				$branch_modules = $parent_modules;
 				
-	            $this->set(compact('branch_modules', 'group_branch_id'));
+	            $this->set(compact(
+	            	'branch_modules', 'group_branch_id', 'msg'
+            	));
         	}
 		}
 	}

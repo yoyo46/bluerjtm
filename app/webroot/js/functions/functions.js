@@ -2789,7 +2789,7 @@ var auth_form_open = function(obj){
         var group_id = $('#group-id').val();
         var group_branch_id = self.attr('data-id');
 
-        check_full_auth(parent, group_id, val, false, group_branch_id);
+        check_full_auth(parent, group_id, val, false, self, group_branch_id);
 
         // if(val != ''){
         //     $.ajax({
@@ -2870,7 +2870,7 @@ var accordion_toggle = function(obj){
     });
 }
 
-function check_full_auth(parent, group_id, val, attr, group_branch_id){
+function check_full_auth(parent, group_id, val, attr, self, group_branch_id){
     if(val != ''){
         var url = '/ajax/auth_action_module/'+group_id+'/'+val+'/';
 
@@ -2886,15 +2886,23 @@ function check_full_auth(parent, group_id, val, attr, group_branch_id){
             url: url,
             type: 'POST',
             success: function(response, status) {
-                if( $(response).filter('#box-action-auth').html() != null ) {
-                    var target_box = parent.find('.auth-action-box');
-                    
-                    target_box.html($(response).filter('#box-action-auth').html()).show();
-                    parent.find('.trigger-collapse').attr('rel', 'times').html('<i class="fa fa-minus"></i>');
+                var status = $(response).filter('#status').text();
+                var msg = $(response).filter('#message').text();
 
-                    parent.find('.delete-custom-field').attr('group-branch-id', $(response).filter('#group_branch_id').html());
-                    action_child_module( parent.find('.action-child-module') );
-                    branch_module_check();
+                if( status != 'error' ) {
+                    if( $(response).filter('#box-action-auth').html() != null ) {
+                        var target_box = parent.find('.auth-action-box');
+                        
+                        target_box.html($(response).filter('#box-action-auth').html()).show();
+                        parent.find('.trigger-collapse').attr('rel', 'times').html('<i class="fa fa-minus"></i>');
+
+                        parent.find('.delete-custom-field').attr('group-branch-id', $(response).filter('#group_branch_id').html());
+                        action_child_module( parent.find('.action-child-module') );
+                        branch_module_check();
+                    }
+                } else {
+                    self.val('');
+                    alert(msg);
                 }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -2928,7 +2936,7 @@ var branch_check = function(obj){
 
         if(val != ''){
             if( confirm('Apakah Anda ingin '+text+'?') ) {
-                check_full_auth(parent, group_id, val, attr);
+                check_full_auth(parent, group_id, val, attr, self);
             } else {
                 return false;
             }
