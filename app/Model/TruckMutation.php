@@ -50,12 +50,12 @@ class TruckMutation extends AppModel {
                 'message' => 'Fasilitas truk harap dipilih'
             ),
         ),
-        'change_driver_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Supir harap dipilih'
-            ),
-        ),
+        // 'change_driver_id' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Supir harap dipilih'
+        //     ),
+        // ),
         'change_capacity' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -214,7 +214,9 @@ class TruckMutation extends AppModel {
                     $dataTruckMutation = $data['DataMutation'];
                     $data['TruckMutation'] = array_merge($data['TruckMutation'], $data['DataMutation']);
 
-                    if( !empty($validateEmptyField) ) {
+                    if( !empty($validateEmptyField) || isset($data['DataMutation']['change_driver_id']) ) {
+                        $validateEmptyField = true;
+
                         if( !empty($dataTruckMutation['change_nopol']) ) {
                             $nopol = $dataTruckMutation['change_nopol'];
 
@@ -256,7 +258,7 @@ class TruckMutation extends AppModel {
                             $data['TruckMutation']['change_truck_facility_id'] = $truck_facility_id;
                             $data['TruckMutation']['change_facility'] = $truck_facility_name;
                         }
-                        if( !empty($dataTruckMutation['change_driver_id']) ) {
+                        if( isset($dataTruckMutation['change_driver_id']) ) {
                             $driver_id = $dataTruckMutation['change_driver_id'];
                             $driver = $this->Truck->Driver->getMerge(array(), $driver_id);
 
