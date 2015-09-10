@@ -4320,8 +4320,27 @@ class SettingsController extends AppController {
                                         $this->Log->logActivity( __('Sukses upload Uang jalan by Import Excel'), $this->user_data, $this->RequestHandler, $this->params );
                                         $successfull_row++;
                                     } else {
+                                        $validationErrors = $this->UangJalan->validationErrors;
+                                        $textError = array();
+
+                                        if( !empty($validationErrors) ) {
+                                            foreach ($validationErrors as $key => $validationError) {
+                                                if( !empty($validationError) ) {
+                                                    foreach ($validationError as $key => $error) {
+                                                        $textError[] = $error;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if( !empty($textError) ) {
+                                            $textError = implode(', ', $textError);
+                                        } else {
+                                            $textError = '';
+                                        }
+
                                         $failed_row++;
-                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data.'), $row_submitted) . '<br>';
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. %s'), $row_submitted, $textError) . '<br>';
                                     }
 
                                     $row_submitted++;
