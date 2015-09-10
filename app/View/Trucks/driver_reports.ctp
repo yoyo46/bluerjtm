@@ -8,7 +8,8 @@
             ),
             'nopol' => array(
                 'name' => __('Truk'),
-                'field_model' => false,
+                'field_model' => 'Truk.nopol',
+                'sorting' => false,
                 'display' => true,
             ),
             'name' => array(
@@ -46,6 +47,11 @@
                 'field_model' => 'Driver.phone',
                 'display' => true,
             ),
+            'tempat_lahir' => array(
+                'name' => __('Tempat Lahir'),
+                'field_model' => 'Driver.tempat_lahir',
+                'display' => false,
+            ),
             'birth_date' => array(
                 'name' => __('Tgl Lahir'),
                 'field_model' => 'Driver.birth_date',
@@ -53,47 +59,47 @@
             ),
             'sim' => array(
                 'name' => __('Jenis SIM'),
-                'field_model' => false,
+                'field_model' => 'Driver.jenis_sim_id',
                 'display' => true,
             ),
             'no_sim' => array(
                 'name' => __('No. SIM'),
-                'field_model' => false,
+                'field_model' => 'Driver.no_sim',
                 'display' => false,
             ),
             'expired_date_sim' => array(
                 'name' => __('Tgl Berakhir SIM'),
-                'field_model' => false,
+                'field_model' => 'Driver.expired_date_sim',
                 'display' => false,
             ),
             'kontak_darurat_name' => array(
                 'name' => __('Nama Kontak Darurat'),
-                'field_model' => false,
+                'field_model' => 'Driver.kontak_darurat_name',
                 'display' => true,
             ),
             'kontak_darurat_no_hp' => array(
                 'name' => __('No. Hp Kontak Darurat'),
-                'field_model' => false,
+                'field_model' => 'Driver.kontak_darurat_no_hp',
                 'display' => true,
             ),
             'kontak_darurat_phone' => array(
                 'name' => __('Telp Kontak Darurat'),
-                'field_model' => false,
+                'field_model' => 'Driver.kontak_darurat_phone',
                 'display' => false,
             ),
             'relation' => array(
                 'name' => __('Hubungan'),
-                'field_model' => false,
+                'field_model' => 'Driver.driver_relation_id',
                 'display' => false,
             ),
             'join_date' => array(
                 'name' => __('Tgl Diterima'),
-                'field_model' => false,
+                'field_model' => 'Driver.join_date',
                 'display' => false,
             ),
             'status' => array(
                 'name' => __('Status'),
-                'field_model' => false,
+                'field_model' => 'Driver.status',
                 'display' => true,
             ),
         );

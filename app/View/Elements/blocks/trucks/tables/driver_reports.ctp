@@ -52,7 +52,7 @@
                     'class' => 'nomor_id',
                     'style' => 'text-align: left;',
                 ));
-                $content .= $this->Common->_getDataColumn($nopol, 'Driver', 'id', array(
+                $content .= $this->Common->_getDataColumn($nopol, 'Truck', 'nopol', array(
                     'style' => 'text-align: left;',
                     'class' => 'nopol',
                 ));
