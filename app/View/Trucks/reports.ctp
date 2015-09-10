@@ -5,7 +5,7 @@
             'nomor_id' => array(
                 'name' => __('No. ID'),
                 'field_model' => 'Truck.id',
-                'display' => true,
+                'display' => false,
             ),
             'nopol' => array(
                 'name' => __('Nopol'),
@@ -27,9 +27,14 @@
                 'field_model' => 'TruckCategory.name',
                 'display' => true,
             ),
+            'no_id' => array(
+                'name' => __('ID Supir'),
+                'field_model' => false,
+                'display' => true,
+            ),
             'driver_name' => array(
                 'name' => __('Supir'),
-                'field_model' => 'Driver.driver_name',
+                'field_model' => false,
                 'display' => true,
             ),
             'customer_code' => array(
@@ -160,12 +165,15 @@
                     if(!empty($trucks)){
                         foreach ($trucks as $key => $truck) {
                             $branch = !empty($truck['Branch']['name'])?$truck['Branch']['name']:false;
-                            $driver_name = !empty($truck['Driver']['driver_name'])?$truck['Driver']['driver_name']:false;
+
+                            $driver_name = $this->Common->filterEmptyField($truck, 'Driver', 'driver_name');
+                            $no_id = $this->Common->filterEmptyField($truck, 'Driver', 'no_id');
+
                             $brand_name = !empty($truck['TruckBrand']['name'])?$truck['TruckBrand']['name']:false;
                             $facility_name = !empty($truck['TruckFacility']['name'])?$truck['TruckFacility']['name']:false;
                             
                             $content = $this->Common->_getDataColumn(str_pad($truck['Truck']['id'], 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
-                                'class' => 'nomor_id',
+                                'class' => 'hide nomor_id',
                                 'style' => 'text-align: left;',
                             ));
                             $content .= $this->Common->_getDataColumn($truck['Truck']['nopol'], 'Truck', 'nopol', array(
@@ -180,6 +188,9 @@
                             ));
                             $content .= $this->Common->_getDataColumn($truck['TruckCategory']['name'], 'TruckCategory', 'name', array(
                                 'class' => 'category_name',
+                            ));
+                            $content .= $this->Common->_getDataColumn($no_id, 'Driver', 'no_id', array(
+                                'class' => 'no_id',
                             ));
                             $content .= $this->Common->_getDataColumn($driver_name, 'Driver', 'driver_name', array(
                                 'class' => 'driver_name',
