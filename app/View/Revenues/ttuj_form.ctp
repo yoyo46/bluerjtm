@@ -885,6 +885,17 @@
 								'type' => 'submit',
 								'action_type' => 'commit'
 							));
+
+							$status = strtolower($this->Revenue->_callStatusTTUJ($data_local));
+							$GroupId = !empty($GroupId)?$GroupId:false;
+
+							if( $status == 'commit' && $GroupId == 1 ) {
+					    		echo $this->Form->button(__('Draft'), array(
+									'class'=> 'btn btn-primary submit-form',
+									'type' => 'submit',
+									'action_type' => 'draft'
+								));
+					    	}
 				    	}
 				    	
 			    		echo $this->Form->hidden('is_draft', array(

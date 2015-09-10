@@ -8,7 +8,7 @@ class RevenuesController extends AppController {
     );
 
     public $helper = array(
-        'PhpExcel'
+        'PhpExcel', 'Revenue'
     );
 
     function beforeFilter() {
