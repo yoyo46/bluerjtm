@@ -929,43 +929,47 @@ class MkCommonComponent extends Component {
     }
 
     function dateDiff ( $startDate, $endDate, $format = false, $tree = false ) {
-        switch ($format) {
-            case 'day':
-                $from_time = strtotime($startDate);
-                $to_time = strtotime($endDate);
-                $datediff = intval($to_time - $from_time);
-                $total_day = intval($datediff/(60*60*24));
-                $total_hour = intval($datediff/(60*60));
+        $result = false;
+        
+        if( !empty($startDate) && !empty($endDate) && $startDate != '0000-00-00 00:00:00' && $endDate != '0000-00-00 00:00:00' ) {
+            switch ($format) {
+                case 'day':
+                    $from_time = strtotime($startDate);
+                    $to_time = strtotime($endDate);
+                    $datediff = intval($to_time - $from_time);
+                    $total_day = intval($datediff/(60*60*24));
+                    $total_hour = intval($datediff/(60*60));
 
-                if( !empty($tree) ) {
-                    $dateResult = $this->_callDateDiff ( $startDate, $endDate );
-                    range(0,-1,1);
-                    
-                    $result = array(
-                        'total_d' => $total_day,
-                        'total_hour' => $total_hour,
-                    );
-                    $h = $dateResult->h;
-                    $i = $dateResult->i;
+                    if( !empty($tree) ) {
+                        $dateResult = $this->_callDateDiff ( $startDate, $endDate );
+                        range(0,-1,1);
+                        
+                        $result = array(
+                            'total_d' => $total_day,
+                            'total_hour' => $total_hour,
+                        );
+                        $h = $dateResult->h;
+                        $i = $dateResult->i;
 
-                    if( !empty($total_day) ) {
-                        $result['FormatArr']['d'] = sprintf(__('%s Hari'), $total_day);
+                        if( !empty($total_day) ) {
+                            $result['FormatArr']['d'] = sprintf(__('%s Hari'), $total_day);
+                        }
+                        if( !empty($h) ) {
+                            $result['FormatArr']['h'] = sprintf(__('%s Jam'), $h);
+                        }
+                        if( !empty($i) ) {
+                            $result['FormatArr']['i'] = sprintf(__('%s Menit'), $i);
+                        }
+                    } else {
+                        $result = $day;
                     }
-                    if( !empty($h) ) {
-                        $result['FormatArr']['h'] = sprintf(__('%s Jam'), $h);
-                    }
-                    if( !empty($i) ) {
-                        $result['FormatArr']['i'] = sprintf(__('%s Menit'), $i);
-                    }
-                } else {
-                    $result = $day;
-                }
 
-                break;
+                    break;
 
-            default:
-                $result = $this->_callDateDiff ( $startDate, $endDate );
-                break;
+                default:
+                    $result = $this->_callDateDiff ( $startDate, $endDate );
+                    break;
+            }
         }
 
         return $result;

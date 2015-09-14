@@ -106,7 +106,7 @@
 				<div class="col-sm-2 hidden-xs">
 					<?php 
 							$attrBrowse = array(
-                                'class' => 'ajaxModal visible-xs',
+                                'class' => 'ajaxModal visible-xs browse-docs',
                                 'escape' => false,
                                 'title' => __('Dibayar Kepada'),
                                 'data-action' => 'browse-form',
@@ -150,7 +150,7 @@
     	<?php 
     			if( empty($invoice) ) {
         			$attrBrowse = array(
-                        'class' => 'ajaxModal visible-xs',
+                        'class' => 'ajaxModal visible-xs browse-docs',
                         'escape' => false,
                         'data-action' => 'browse-check-docs',
                         'data-change' => 'ttuj-info-table',

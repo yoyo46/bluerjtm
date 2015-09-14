@@ -21,7 +21,7 @@
 		<div class="col-sm-2">
 			<?php 
 					$attrBrowse = array(
-                        'class' => 'ajaxModal visible-xs',
+                        'class' => 'ajaxModal visible-xs browse-docs',
                         'escape' => false,
                         'data-action' => 'browse-form',
                         'data-change' => 'document-id',

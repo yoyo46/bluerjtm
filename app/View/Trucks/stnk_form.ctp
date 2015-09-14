@@ -25,7 +25,7 @@
         						echo $this->Html->tag('div', $stnk['Stnk']['no_pol']);
         					} else {
 	        					$attrTruck = array(
-									'class' => 'ajaxModal visible-xs',
+									'class' => 'ajaxModal visible-xs browse-docs',
 									'escape' => false,
 									'title' => __('Data Truk'),
 									'data-action' => 'browse-form',

@@ -21,7 +21,7 @@
                 <div class="form-group">
                     <?php 
                             $attrBrowse = array(
-                                'class' => 'ajaxModal visible-xs',
+                                'class' => 'ajaxModal visible-xs browse-docs',
                                 'escape' => false,
                                 'title' => __('Data Ijin Usaha'),
                                 'data-action' => 'browse-form',

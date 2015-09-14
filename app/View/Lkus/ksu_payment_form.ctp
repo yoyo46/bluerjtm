@@ -79,7 +79,7 @@
 				        <div class="form-group">
 				        	<?php 
 				        			$attrBrowse = array(
-			                            'class' => 'ajaxModal visible-xs',
+			                            'class' => 'ajaxModal visible-xs browse-docs',
 			                            'escape' => false,
 			                            'title' => __('Pembayaran KSU Customer'),
 			                            'data-action' => 'browse-invoice',

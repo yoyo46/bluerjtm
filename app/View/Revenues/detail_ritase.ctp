@@ -288,10 +288,15 @@
 				        				}
 
 				        				$arriveLeadTime = $this->Common->filterEmptyField($value, 'ArriveLeadTime', 'FormatArr');
-				        				$arriveLeadTime = implode('<br>', $arriveLeadTime);
-				        				$customLeadTimeArrive = $this->Html->tag('span', $arriveLeadTime, array(
-				        					'class' => sprintf('block label label-%s', $labelClass),
-				        				));
+			        					
+			        					if( !empty($arriveLeadTime) ) {
+					        				$arriveLeadTime = implode('<br>', $arriveLeadTime);
+					        				$customLeadTimeArrive = $this->Html->tag('span', $arriveLeadTime, array(
+					        					'class' => sprintf('block label label-%s', $labelClass),
+					        				));
+					        			} else {
+					        				$customLeadTimeArrive = '-';
+					        			}
 
 				        				if( $back_lead_time > $back_orver_time ){
 				        					$labelClass = 'danger';
@@ -300,10 +305,15 @@
 				        				}
 
 			        					$backLeadTime = $this->Common->filterEmptyField($value, 'BackLeadTime', 'FormatArr');
-				        				$backLeadTime = implode('<br>', $backLeadTime);
-				        				$customLeadTimeBack = $this->Html->tag('span', $backLeadTime, array(
-				        					'class' => sprintf('block label label-%s', $labelClass),
-				        				));
+
+			        					if( !empty($backLeadTime) ) {
+				        					$backLeadTime = implode('<br>', $backLeadTime);
+					        				$customLeadTimeBack = $this->Html->tag('span', $backLeadTime, array(
+					        					'class' => sprintf('block label label-%s', $labelClass),
+					        				));
+				        				} else {
+				        					$customLeadTimeBack = '-';
+				        				}
 
 				        				if( !empty($lku_qty) ) {
 				        					$customLku = $this->Html->link($lku_qty, array(
@@ -314,13 +324,12 @@
 			        							'class' => 'white',
 			        							'target' => '_blank',
 			        						));
+					        				$customLku = $this->Html->tag('span', $customLku, array(
+					        					'class' => 'label label-warning block',
+				        					));
 				        				} else {
 				        					$customLku = '-';
 				        				}
-
-				        				$customLku = $this->Html->tag('span', $customLku, array(
-				        					'class' => 'label label-warning block',
-			        					));
 			        		?>
 			        		<tr>
 			        			<?php

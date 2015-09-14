@@ -127,7 +127,7 @@
 				<div class="col-sm-2 hidden-xs">
 					<?php 
 							$attrBrowse = array(
-                                'class' => 'ajaxModal visible-xs',
+                                'class' => 'ajaxModal visible-xs browse-docs',
                                 'escape' => false,
                                 'title' => __('Data User Kas/Bank'),
                                 'data-action' => 'browse-form',
@@ -157,7 +157,7 @@
 		<div class="form-group">
         	<?php 
         			$attrBrowse = array(
-                        'class' => 'ajaxModal visible-xs',
+                        'class' => 'ajaxModal visible-xs browse-docs',
                         'escape' => false,
                         'title' => __('Detail Kas/Bank'),
                         'data-action' => 'browse-cash-banks',
