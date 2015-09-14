@@ -27,7 +27,7 @@
 
                 content.append( value );
 
-                $('.field-content > div.item:last-child input').val('');
+                $('.field-content > div.item:last-child input,.field-content > div.item:last-child select').val('');
 
                 if( $('.field-content > div.item:last-child .tipe_motor_id').length > 0 ) {
                     $('.field-content > div.item:last-child .tipe_motor_id').change(function() {

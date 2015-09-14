@@ -21,8 +21,8 @@ class TtujTipeMotor extends AppModel {
             ),
         ),
         'color_motor_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'checkColor' => array(
+                'rule' => array('checkColor'),
                 'message' => 'Warna motor harap dipilih.'
             ),
         ),
@@ -68,6 +68,20 @@ class TtujTipeMotor extends AppModel {
             'order' => ''
         ),
     );
+
+    function checkColor () {
+        $is_plant = Configure::read('__Site.config_branch_plant');
+
+        if( !empty($is_plant) ) {
+            if( empty($this->data['TtujTipeMotor']['color_motor_id']) ) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
 
 	function getData($find, $options = false, $is_merge = true){
         $default_options = array(

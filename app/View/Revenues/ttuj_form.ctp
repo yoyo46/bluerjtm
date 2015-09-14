@@ -421,11 +421,11 @@
 											echo $this->Html->tag('div', $this->Html->tag('span', $totalUnitMuatan, array(
 												'class' => 'total-unit-muatan',
 											)), array(
-												'class' => 'col-sm-2',
+												'class' => 'col-sm-2 text-center',
 											));
 									?>
 								</div>
-								<div class=" total-mobile">
+								<div class="total-mobile visible-xs text-center">
 									<?php 
 											echo $this->Html->tag('div', __('Total: ').$this->Html->tag('span', $totalUnitMuatan, array(
 												'class' => 'total-unit-muatan',
