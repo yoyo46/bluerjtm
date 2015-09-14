@@ -304,6 +304,23 @@
 				        				$customLeadTimeBack = $this->Html->tag('span', $backLeadTime, array(
 				        					'class' => sprintf('block label label-%s', $labelClass),
 				        				));
+
+				        				if( !empty($lku_qty) ) {
+				        					$customLku = $this->Html->link($lku_qty, array(
+				        						'controller' => 'lkus',
+				        						'action' => 'index',
+				        						'nopol' => $nopol,
+			        						), array(
+			        							'class' => 'white',
+			        							'target' => '_blank',
+			        						));
+				        				} else {
+				        					$customLku = '-';
+				        				}
+
+				        				$customLku = $this->Html->tag('span', $customLku, array(
+				        					'class' => 'label label-warning block',
+			        					));
 			        		?>
 			        		<tr>
 			        			<?php
@@ -335,7 +352,7 @@
 				        				echo $this->Html->tag('td', $customLeadTimeBack, array(
 				        					'class' => 'text-center',
 			        					));
-				        				echo $this->Html->tag('td', $lku_qty, array(
+				        				echo $this->Html->tag('td', $customLku, array(
 				        					'class' => 'text-center',
 			        					));
 			        			?>

@@ -114,6 +114,30 @@ class LkusController extends AppController {
                 $conditions['Lku.paid'] = 1;
                 $conditions['Lku.complete_paid'] = 0;
             }
+            if(!empty($refine['nopol'])){
+                $nopol = urldecode($refine['nopol']);
+                $this->request->data['Lku']['nopol'] = $nopol;
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+                $this->request->data['Lku']['type'] = $typeTruck;
+
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Ttuj.truck_id' => $nopol,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Ttuj.nopol LIKE' => '%'.$nopol.'%',
+                    );
+                }
+
+                $truckSearch = $this->Lku->Ttuj->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Ttuj.id', 'Ttuj.id',
+                    ),
+                ));
+                $conditions['Lku.ttuj_id'] = $truckSearch;
+            }
         }
 
         $this->paginate = $this->Lku->getData('paginate', array(

@@ -5,6 +5,11 @@
                 'field_model' => 'Lku.no_doc',
                 'display' => true,
             ),
+            'nopol' => array(
+                'name' => __('Nopol'),
+                'field_model' => false,
+                'display' => true,
+            ),
             'no_ttuj' => array(
                 'name' => __('No. TTUJ'),
                 'field_model' => false,
@@ -96,6 +101,7 @@
                                 $created = $this->Common->filterEmptyField($value, 'Lku', 'created');
                                 $completed = $this->Common->filterEmptyField($value, 'Lku', 'completed');
 
+                                $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
                                 $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
                                 $customer_name_code = $this->Common->filterEmptyField($value, 'Customer', 'customer_name_code');
 
@@ -107,6 +113,7 @@
                 <tr>
                     <?php 
                             echo $this->Html->tag('td', $no_doc);
+                            echo $this->Html->tag('td', $nopol);
                             echo $this->Html->tag('td', $no_ttuj);
                             echo $this->Html->tag('td', $customer_name_code);
                             echo $this->Html->tag('td', $customTglLku);

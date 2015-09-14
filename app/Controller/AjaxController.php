@@ -1509,11 +1509,13 @@ class AjaxController extends AppController {
             case 'lku':
                 $conditions = array_merge($conditions, $this->RjLku->getTtujConditions());
 				$data_change = 'getTtujInfo';
+        		$branchFlag = true;
                 break;
 
             case 'ksu':
                 $conditions = array_merge($conditions, $this->RjLku->getTtujConditions());
 				$data_change = 'getTtujInfoKsu';
+        		$branchFlag = true;
                 break;
 
             case 'laka':

@@ -50,7 +50,7 @@
 										'class'=>'form-control',
 										'required' => false,
 										'empty' => __('Pilih Vendor'),
-										'id' => 'getTtujCustomerInfo'
+										'id' => 'vendor-choosen'
 									));
 							?>
 				        </div>
@@ -80,10 +80,11 @@
 			                            'escape' => false,
 			                            'title' => __('Detail Pembayaran'),
 			                            'data-action' => 'browse-invoice',
-			                            'data-change' => 'getTtujCustomerInfo',
+			                            'data-trigger' => '#vendor-choosen',
+			                            'data-change-message' => __('Mohon pilih vendor terlebih dahulu'),
 			                            'url' => $this->Html->url( array(
-				                            'controller'=> 'ajax', 
-				                            'action' => 'getTtujCustomerInfo',
+				                            'controller'=> 'leasings', 
+				                            'action' => 'leasings_unpaid',
 				                        ))
 			                        );
 									$attrBrowse['class'] = 'btn bg-maroon ajaxModal';

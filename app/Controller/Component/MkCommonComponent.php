@@ -910,8 +910,22 @@ class MkCommonComponent extends Component {
     }
 
     function _callDateDiff ( $startDate, $endDate ) {
-        $start_date = new DateTime($startDate);
-        return $start_date->diff(new DateTime($endDate));
+        $array  =   array(
+            "Interno",
+            "id"
+        );
+
+        $step = count($array) - 1;
+
+        foreach (range(0, $step) as $number) {
+        }
+
+        $datetime1 = new DateTime($startDate);
+        $datetime2 = new DateTime($endDate);
+
+        $interval = date_diff($datetime1,$datetime2);
+
+        return $interval;
     }
 
     function dateDiff ( $startDate, $endDate, $format = false, $tree = false ) {
@@ -925,6 +939,8 @@ class MkCommonComponent extends Component {
 
                 if( !empty($tree) ) {
                     $dateResult = $this->_callDateDiff ( $startDate, $endDate );
+                    range(0,-1,1);
+                    
                     $result = array(
                         'total_d' => $total_day,
                         'total_hour' => $total_hour,
