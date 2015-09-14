@@ -22,6 +22,14 @@
                         break;
                 }
             }
+
+            echo $this->Html->tag('td', $this->Common->getFormatPrice($total_target), array(
+                'style' => 'text-align:center;',
+                'class' => 'test',
+            ));
+            echo $this->Html->tag('td', $this->Common->getFormatPrice($total_pencapaian), array(
+                'style' => 'text-align:center;',
+            ));
             
             if( !empty($branches) ) {
                 foreach ($branches as $branch_id => $branch) {
@@ -32,14 +40,6 @@
                     ));
                 }
             }
-
-            echo $this->Html->tag('td', $total_pencapaian, array(
-                'style' => 'text-align:center;',
-            ));
-            echo $this->Html->tag('td', $total_target, array(
-                'style' => 'text-align:center;',
-                'class' => 'test',
-            ));
     ?>
 </tr>
 <?php 

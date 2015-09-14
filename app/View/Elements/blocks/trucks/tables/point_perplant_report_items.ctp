@@ -22,7 +22,6 @@
 
             foreach ($customers as $key => $value) {
                 $customer_id = $value['Customer']['id'];
-                $totalMuatan = 0;
                 $customer_name = $this->Common->filterEmptyField($value, 'Customer', 'code', '-');
                 $customer_group_id = $this->Common->filterEmptyField($value, 'Customer', 'customer_group_id', '-');
                 $manual_group = $this->Common->filterEmptyField($value, 'Customer', 'manual_group');
@@ -83,15 +82,45 @@
 ?>
 <tr>
     <?php
+            $target_rit = !empty($targetUnit[$customer_id][$currentMonth])?$targetUnit[$customer_id][$currentMonth]:'-';
+            $grandTotalTarget += $target_rit;
 
             echo $this->Html->tag('td', $customer_name);
 
             if( $data_type == 'retail' ) {
                 $totalMuatan = !empty($dataTtuj[$customer_id])?$dataTtuj[$customer_id]:'-';
+                $grandTotalPencapaian += $totalMuatan;
+
                 echo $this->Html->tag('td', $totalMuatan, array(
                     'style' => 'text-align:center;',
                 ));
+
+                echo $this->Html->tag('td', $target_rit, array(
+                    'style' => 'text-align: center;',
+                ));
             } else {
+                $totalMuatan = 0;
+                if( !empty($branches) ) {
+                    foreach ($branches as $branch_id => $branch) {
+                        $muatan = !empty($dataTtuj[$customer_id][$branch_id])?$dataTtuj[$customer_id][$branch_id]:0;
+
+                        if( !empty($muatan) ) {
+                            $totalMuatan += $muatan;
+                        }
+                    }
+                }
+                $grandTotalPencapaian += $totalMuatan;
+
+                echo $this->Html->tag('td', $target_rit, array(
+                    'style' => 'text-align: center;',
+                ));
+                echo $this->Html->tag('td', $this->Html->tag('div', $totalMuatan, array(
+                    'style' => 'text-align: center;',
+                )), array(
+                    'style' => 'text-align:center;',
+                ));
+
+                $totalMuatan = 0;
                 if( !empty($branches) ) {
                     foreach ($branches as $branch_id => $branch) {
                         $muatan = !empty($dataTtuj[$customer_id][$branch_id])?$dataTtuj[$customer_id][$branch_id]:0;
@@ -130,18 +159,7 @@
                         }
                     }
                 }
-
-                echo $this->Html->tag('td', $this->Html->tag('div', $totalMuatan, array(
-                    'style' => 'text-align: center;',
-                )), array(
-                    'style' => 'text-align:center;',
-                ));
             }
-
-            $target_rit = !empty($targetUnit[$customer_id][$currentMonth])?$targetUnit[$customer_id][$currentMonth]:'-';
-            echo $this->Html->tag('td', $target_rit, array(
-                'style' => 'text-align: center;',
-            ));
     ?>
 </tr>
 <?php 
@@ -229,6 +247,13 @@
                 'style' => 'font-weight: bold;'
             ));
 
+            echo $this->Html->tag('td', $this->Number->format($grandTotalTarget, false, array('places' => 0)), array(
+                'style' => 'text-align: center;',
+            ));
+            echo $this->Html->tag('td', $this->Number->format($grandTotalPencapaian, false, array('places' => 0)), array(
+                'style' => 'text-align: center;',
+            ));
+
             if( !empty($branches) ) {
                     foreach ($branches as $branch_id => $branch) {
                     $totalPencapaian = 0;
@@ -242,13 +267,6 @@
                     ));
                 }
             }
-
-            echo $this->Html->tag('td', $this->Number->format($grandTotalPencapaian, false, array('places' => 0)), array(
-                'style' => 'text-align: center;',
-            ));
-            echo $this->Html->tag('td', $this->Number->format($grandTotalTarget, false, array('places' => 0)), array(
-                'style' => 'text-align: center;',
-            ));
     ?>
 </tr>
 <?php

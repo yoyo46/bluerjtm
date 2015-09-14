@@ -1938,7 +1938,15 @@ var ajaxModal = function ( obj, prettyPhoto ) {
             type_action = vthis.attr('data-action');
 
             if(type_action == 'browse-invoice'){
-                if(typeof $('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu').val() == 'undefined' || $('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu').val() == ''){
+                var dataTrigger = vthis.attr('data-trigger');
+                var errorMsg = vthis.attr('data-change-message');
+
+                if( typeof dataTrigger != 'undefined' ) {
+                    if( $(dataTrigger).val() == '' ) {
+                        goAjax = false;
+                        alert(errorMsg);
+                    }
+                } else if(typeof $('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu').val() == 'undefined' || $('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu').val() == ''){
                     goAjax = false;
                     alert('Mohon pilih customer terlebih dahulu');
                 }else{
@@ -2997,6 +3005,32 @@ var branch_module_check = function(obj){
     });
 }
 
+var _callMonthInstallment = function () {
+    var tgl_leasing = $('.leasing-date-installment').val();
+    var month_last_date = $('.leasing-last-month-installment').val();
+    var year_last_date = $('.leasing-last-year-installment').val();
+
+    var month = false;
+    var year = false;
+    var months = 0;
+
+    if( tgl_leasing != '' && month_last_date != '' && year_last_date != '' ) {
+        tmp = tgl_leasing.split('/');
+
+        if( tmp.length == 3 ) {
+            month = tmp[1];
+            year = tmp[2];
+        }
+
+        var a = new Date(year, month),
+        b = new Date(year_last_date, month_last_date),
+
+        months = Math.floor((b-a)/2628000000);;
+
+        $('.month-leasing').val(months);
+    }
+}
+
 var calc_pokok_leasing = function () {
     // var tgl_leasing = $('.leasing-date-installment').val();
     // var month_last_date = $('.leasing-last-month-installment').val();
@@ -4042,6 +4076,13 @@ $(function() {
         if( idAttr != 'form-report' ) {
             button.attr('disabled', true);
         }
+    });
+
+    $('.leasing-last-year-installment,.leasing-last-month-installment,.leasing-last-day-installment').change(function(){
+        _callMonthInstallment();
+    });
+    $('.leasing-date-installment').blur(function(){
+        _callMonthInstallment();
     });
 
     $.rowAdded();

@@ -64,6 +64,18 @@
                                 'data-options' => 'field:\'customer_code\',width:120',
                             ));
 
+                            echo $this->Html->tag('th', __('Target'), array(
+                                'style' => 'text-align: center;',
+                                'data-options' => 'field:\'target\',width:100,sortable:true',
+                                'align' => 'center',
+                            ));
+
+                            echo $this->Html->tag('th', __('Total'), array(
+                                'style' => 'text-align: center;',
+                                'data-options' => 'field:\'total\',width:100,sortable:true',
+                                'align' => 'center',
+                            ));
+
                             if( $data_action != 'excel' ) {
                     ?>
                 </tr>
@@ -81,18 +93,6 @@
                                     'title' => date('l', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth)))),
                                 ));
                             }
-
-                            echo $this->Html->tag('th', __('Total'), array(
-                                'style' => 'text-align: center;',
-                                'data-options' => 'field:\'total\',width:100,sortable:true',
-                                'align' => 'center',
-                            ));
-
-                            echo $this->Html->tag('th', __('Target'), array(
-                                'style' => 'text-align: center;',
-                                'data-options' => 'field:\'target\',width:100,sortable:true',
-                                'align' => 'center',
-                            ));
                     ?>
                 </tr>
             </thead>

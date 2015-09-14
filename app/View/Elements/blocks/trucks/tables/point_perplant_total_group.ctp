@@ -9,6 +9,14 @@
 
             echo $this->Html->tag('td', __('TOTAL ').$total_group);
 
+            echo $this->Html->tag('td', $this->Common->getFormatPrice($total_target), array(
+                'style' => 'text-align:center;',
+                'class' => 'test',
+            ));
+            echo $this->Html->tag('td', $this->Common->getFormatPrice($total_pencapaian), array(
+                'style' => 'text-align:center;',
+            ));
+
             if( !empty($branches) ) {
                 foreach ($branches as $branch_id => $branch) {
                     $pencapaian = !empty($totalPencapaianGroup[$total_group][$branch_id])?$totalPencapaianGroup[$total_group][$branch_id]:'-';
@@ -18,14 +26,6 @@
                     ));
                 }
             }
-
-            echo $this->Html->tag('td', $total_pencapaian, array(
-                'style' => 'text-align:center;',
-            ));
-            echo $this->Html->tag('td', $total_target, array(
-                'style' => 'text-align:center;',
-                'class' => 'test',
-            ));
     ?>
 </tr>
 <?php 

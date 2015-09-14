@@ -21,7 +21,6 @@
 
             foreach ($customers as $key => $value) {
                 $customer_id = $value['Customer']['id'];
-                $totalMuatan = 0;
                 $customer_name = $this->Common->filterEmptyField($value, 'Customer', 'code', '-');
                 $customer_group_id = $this->Common->filterEmptyField($value, 'Customer', 'customer_group_id', '-');
                 $manual_group = $this->Common->filterEmptyField($value, 'Customer', 'manual_group');
@@ -83,6 +82,26 @@
     <?php
             echo $this->Html->tag('td', $value['Customer']['code']);
 
+            $totalMuatan = 0;
+            for ($i=1; $i <= $lastDay; $i++) {
+                $day = date('d', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth))));
+                $muatan = !empty($dataTtuj[$customer_id][$day])?$dataTtuj[$customer_id][$day]:0;
+                
+                if( !empty($muatan) ) {
+                    $totalMuatan += $muatan;
+                }
+            }
+
+            $target_rit = !empty($targetUnit[$customer_id][$currentMonth])?$targetUnit[$customer_id][$currentMonth]:0;
+            echo $this->Html->tag('td', $target_rit, array(
+                'style' => 'text-align: center;',
+            ));
+
+            echo $this->Html->tag('td', $totalMuatan, array(
+                'style' => 'text-align: center;',
+            ));
+
+            $totalMuatan = 0;
             for ($i=1; $i <= $lastDay; $i++) {
                 $day = date('d', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , $i, date("Y", strtotime($currentMonth))));
                 $muatan = !empty($dataTtuj[$customer_id][$day])?$dataTtuj[$customer_id][$day]:0;
@@ -120,15 +139,6 @@
                     $totalDealerGroupPencapaian[$delear_group][$i] = $muatan;
                 }
             }
-
-            echo $this->Html->tag('td', $totalMuatan, array(
-                'style' => 'text-align: center;',
-            ));
-
-            $target_rit = !empty($targetUnit[$customer_id][$currentMonth])?$targetUnit[$customer_id][$currentMonth]:0;
-            echo $this->Html->tag('td', $target_rit, array(
-                'style' => 'text-align: center;',
-            ));
 
             $grandTotalPencapaian += $totalMuatan;
             $grandTotalTarget += $target_rit;
@@ -218,6 +228,13 @@
                 'style' => 'font-weight: bold;'
             ));
 
+            echo $this->Html->tag('td', $this->Number->format($grandTotalTarget, false, array('places' => 0)), array(
+                'style' => 'text-align: center;',
+            ));
+            echo $this->Html->tag('td', $this->Number->format($grandTotalPencapaian, false, array('places' => 0)), array(
+                'style' => 'text-align: center;',
+            ));
+
             if( isset($lastDay) ) {
                 for ($i=1; $i <= $lastDay; $i++) {
                     $totalPencapaian = 0;
@@ -231,13 +248,6 @@
                     ));
                 }
             }
-
-            echo $this->Html->tag('td', $this->Number->format($grandTotalPencapaian, false, array('places' => 0)), array(
-                'style' => 'text-align: center;',
-            ));
-            echo $this->Html->tag('td', $this->Number->format($grandTotalTarget, false, array('places' => 0)), array(
-                'style' => 'text-align: center;',
-            ));
     ?>
 </tr>
 <?php

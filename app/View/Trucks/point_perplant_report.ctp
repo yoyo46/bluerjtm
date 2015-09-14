@@ -59,11 +59,26 @@
                             ));
 
                             if( $data_type == 'retail' ) {
+
+                                echo $this->Html->tag('th', __('Target'), array(
+                                    'class' => 'text-middle text-center',
+                                    'style' => $tdStyle,
+                                ));
                                 echo $this->Html->tag('th', __('Pencapaian'), array(
                                     'class' => 'text-middle text-center',
                                     'style' => $tdStyle,
                                 ));
                             } else {
+
+                                echo $this->Html->tag('th', __('Target'), array(
+                                    'class' => 'text-middle text-center',
+                                    'style' => $tdStyle,
+                                ));
+                                echo $this->Html->tag('th', __('Total'), array(
+                                    'class' => 'text-middle text-center',
+                                    'style' => $tdStyle,
+                                ));
+                                
                                 if( !empty($branches) ) {
                                     foreach ($branches as $key => $branch) {
                                         echo $this->Html->tag('th', $branch, array(
@@ -72,17 +87,7 @@
                                         ));
                                     }
                                 }
-
-                                echo $this->Html->tag('th', __('Total'), array(
-                                    'class' => 'text-middle text-center',
-                                    'style' => $tdStyle,
-                                ));
                             }
-
-                            echo $this->Html->tag('th', __('Target'), array(
-                                'class' => 'text-middle text-center',
-                                'style' => $tdStyle,
-                            ));
                     ?>
                 </tr>
             </thead>

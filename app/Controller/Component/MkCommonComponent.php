@@ -908,5 +908,51 @@ class MkCommonComponent extends Component {
             return $this->getDate($str);
         }
     }
+
+    function _callDateDiff ( $startDate, $endDate ) {
+        $start_date = new DateTime($startDate);
+        return $start_date->diff(new DateTime($endDate));
+    }
+
+    function dateDiff ( $startDate, $endDate, $format = false, $tree = false ) {
+        switch ($format) {
+            case 'day':
+                $from_time = strtotime($startDate);
+                $to_time = strtotime($endDate);
+                $datediff = intval($to_time - $from_time);
+                $total_day = intval($datediff/(60*60*24));
+                $total_hour = intval($datediff/(60*60));
+
+                if( !empty($tree) ) {
+                    $dateResult = $this->_callDateDiff ( $startDate, $endDate );
+                    $result = array(
+                        'total_d' => $total_day,
+                        'total_hour' => $total_hour,
+                    );
+                    $h = $dateResult->h;
+                    $i = $dateResult->i;
+
+                    if( !empty($total_day) ) {
+                        $result['FormatArr']['d'] = sprintf(__('%s Hari'), $total_day);
+                    }
+                    if( !empty($h) ) {
+                        $result['FormatArr']['h'] = sprintf(__('%s Jam'), $h);
+                    }
+                    if( !empty($i) ) {
+                        $result['FormatArr']['i'] = sprintf(__('%s Menit'), $i);
+                    }
+                } else {
+                    $result = $day;
+                }
+
+                break;
+
+            default:
+                $result = $this->_callDateDiff ( $startDate, $endDate );
+                break;
+        }
+
+        return $result;
+    }
 }
 ?>

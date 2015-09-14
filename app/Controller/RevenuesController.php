@@ -90,92 +90,6 @@ class RevenuesController extends AppController {
                 $this->request->data['Ttuj']['customer'] = $customer;
                 $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
             }
-            if(!empty($refine['is_draft'])){
-                $is_draft = urldecode($refine['is_draft']);
-                $conditions['Ttuj.is_draft'] = 1;
-                $this->request->data['Ttuj']['is_draft'] = $is_draft;
-            }
-            if(!empty($refine['is_commit'])){
-                $is_commit = urldecode($refine['is_commit']);
-                $conditions['OR'][]= array(
-                    'Ttuj.is_draft' => 0,
-                    'Ttuj.is_arrive' => 0,
-                    'Ttuj.is_bongkaran' => 0,
-                    'Ttuj.is_balik' => 0,
-                    'Ttuj.is_pool' => 0,
-                );
-                $this->request->data['Ttuj']['is_commit'] = $is_commit;
-            }
-            if(!empty($refine['is_arrive'])){
-                $is_arrive = urldecode($refine['is_arrive']);
-                $conditions['OR'][] = array(
-                    'Ttuj.is_arrive' => 1,
-                    'Ttuj.is_bongkaran' => 0,
-                    'Ttuj.is_balik' => 0,
-                    'Ttuj.is_pool' => 0,
-                );
-                $this->request->data['Ttuj']['is_arrive'] = $is_arrive;
-            }
-            if(!empty($refine['is_bongkaran'])){
-                $is_bongkaran = urldecode($refine['is_bongkaran']);
-                $conditions['OR'][] = array(
-                    'Ttuj.is_bongkaran' => 1,
-                    'Ttuj.is_balik' => 0,
-                    'Ttuj.is_pool' => 0,
-                );
-                $this->request->data['Ttuj']['is_bongkaran'] = $is_bongkaran;
-            }
-            if(!empty($refine['is_balik'])){
-                $is_balik = urldecode($refine['is_balik']);
-                $conditions['OR'][] = array(
-                    'Ttuj.is_balik' => 1,
-                    'Ttuj.is_pool' => 0,
-                );
-                $this->request->data['Ttuj']['is_balik'] = $is_balik;
-            }
-            if(!empty($refine['is_pool'])){
-                $is_pool = urldecode($refine['is_pool']);
-                $conditions['OR'][] = array(
-                    'Ttuj.is_pool' => 1,
-                );
-                $this->request->data['Ttuj']['is_pool'] = $is_pool;
-            }
-            if(!empty($refine['is_sj_not_completed'])){
-                $is_sj_not_completed = urldecode($refine['is_sj_not_completed']);
-                $conditions['OR'][] = array(
-                    'Ttuj.is_sj_completed' => 0,
-                );
-                $this->request->data['Ttuj']['is_sj_not_completed'] = $is_sj_not_completed;
-            }
-            if(!empty($refine['is_sj_completed'])){
-                $is_sj_completed = urldecode($refine['is_sj_completed']);
-                $conditions['OR'][] = array(
-                    'Ttuj.is_sj_completed' => 1,
-                );
-                $this->request->data['Ttuj']['is_sj_completed'] = $is_sj_completed;
-            }
-            if(!empty($refine['is_revenue'])){
-                $is_revenue = urldecode($refine['is_revenue']);
-                $conditions['OR'][] = array(
-                    'Ttuj.is_revenue' => 1,
-                );
-                $this->request->data['Ttuj']['is_revenue'] = $is_revenue;
-            }
-            if(!empty($refine['is_not_revenue'])){
-                $is_not_revenue = urldecode($refine['is_not_revenue']);
-                $conditions['OR'][] = array(
-                    'Ttuj.is_revenue' => 0,
-                );
-                $this->request->data['Ttuj']['is_not_revenue'] = $is_not_revenue;
-            }
-            if(!empty($refine['is_completed'])){
-                $value = urldecode($refine['is_completed']);
-                $conditions['OR'][] = array(
-                    'Ttuj.completed' => 1,
-                );
-                $this->request->data['Ttuj']['is_completed'] = $value;
-            }
-
             if(!empty($refine['date'])){
                 $dateStr = urldecode($refine['date']);
                 $date = explode('-', $dateStr);
@@ -191,6 +105,8 @@ class RevenuesController extends AppController {
                 }
                 $this->request->data['Ttuj']['date'] = $dateStr;
             }
+
+            $conditions = $this->RjRevenue->_callRefineStatusTTUJ($refine, $conditions);
         }
 
         $this->paginate = $this->Ttuj->getData('paginate', array(
@@ -1363,6 +1279,8 @@ class RevenuesController extends AppController {
                 }
                 $this->request->data['Ttuj']['date'] = $dateStr;
             }
+
+            $conditions = $this->RjRevenue->_callRefineStatusTTUJ($refine, $conditions);
         }
 
         $conditions = $this->Ttuj->_callConditionBranch( $conditions );
@@ -1838,6 +1756,8 @@ class RevenuesController extends AppController {
                 }
                 $this->request->data['Ttuj']['date'] = $dateStr;
             }
+
+            $conditions = $this->RjRevenue->_callRefineStatusTTUJ($refine, $conditions);
         }
 
         $this->paginate = $this->Ttuj->getData('paginate', array(
@@ -1923,6 +1843,8 @@ class RevenuesController extends AppController {
                 }
                 $this->request->data['Ttuj']['date'] = $dateStr;
             }
+
+            $conditions = $this->RjRevenue->_callRefineStatusTTUJ($refine, $conditions);
         }
 
         $this->paginate = $this->Ttuj->getData('paginate', array(
@@ -2011,6 +1933,8 @@ class RevenuesController extends AppController {
                 }
                 $this->request->data['Ttuj']['date'] = $dateStr;
             }
+            
+            $conditions = $this->RjRevenue->_callRefineStatusTTUJ($refine, $conditions);
         }
 
         $this->paginate = $this->Ttuj->getData('paginate', array(
@@ -3740,32 +3664,22 @@ class RevenuesController extends AppController {
                             )
                         ));
 
-                        $from_time = strtotime($value['Ttuj']['tgljam_berangkat']);
-                        $to_time = strtotime($value['Ttuj']['tgljam_tiba']);
-                        $diff = round(abs($to_time - $from_time) / 60, 2);
-                        $truk_ritase[$key]['arrive_lead_time'] = round($diff/3600);
-                        $diff = round($diff/60, 2);
+                        $from_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_berangkat');
+                        $to_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_tiba');
+                        $leadTimeArrive = $this->MkCommon->dateDiff($from_time, $to_time, 'day', true);
 
-                        if( $diff > $value['Ttuj']['arrive_over_time'] ) {
-                            $truk_ritase[$key]['arrive_over_time'] = round($diff/3600);
-                        }
+                        $from_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_balik');
+                        $to_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_pool');
+                        $leadTimeBack = $this->MkCommon->dateDiff($from_time, $to_time, 'day', true);
 
-                        $from_time = strtotime($value['Ttuj']['tgljam_balik']);
-                        $to_time = strtotime($value['Ttuj']['tgljam_pool']);
+                        $truk_ritase[$key]['ArriveLeadTime'] = $leadTimeArrive;
+                        $truk_ritase[$key]['BackLeadTime'] = $leadTimeBack;
 
-                        if( !empty($to_time) ) {
-                            $diff = round(abs($to_time - $from_time) / 60, 2);
-                            $truk_ritase[$key]['back_lead_time'] = round($diff/3600);
-                            $diff = round($diff/60, 2);
-
-                            if( $diff > $value['Ttuj']['back_orver_time'] ) {
-                                $truk_ritase[$key]['back_orver_time'] = round($diff/3600);
-                            }
-                        }
-
+                        $qty_lku = !empty($lkus[0]['qty_lku'])?$lkus[0]['qty_lku']:0;
                         $truk_ritase[$key]['qty_ritase'] = $qty_ritase[0]['qty_ritase'];
-                        $truk_ritase[$key]['qty_lku'] = $lkus[0]['qty_lku'];
-                        $total_lku += $lkus[0]['qty_lku'];
+                        $truk_ritase[$key]['Lku']['qty'] = $qty_lku;
+
+                        $total_lku += $qty_lku;
                     }
                 }
 

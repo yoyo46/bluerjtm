@@ -3625,6 +3625,9 @@ class TrucksController extends AppController {
             'fields' => array(
                 'Branch.id', 'Branch.id',
             ),
+            'order'=> array(
+                'Branch.code' => 'ASC'
+            ),
         ));
         $ttujs = $this->TtujTipeMotor->getData('all', array(
             'conditions' => array(
@@ -3696,6 +3699,10 @@ class TrucksController extends AppController {
                     $dataTtuj[$customer_id][$branch_id] = $totalMuatan;
                 }
             }
+        }
+
+        if( !empty($branches) ) {
+            asort($branches);
         }
 
         if( !empty($currentMonth) ) {

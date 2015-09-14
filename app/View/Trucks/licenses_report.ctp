@@ -1,18 +1,19 @@
 <?php
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
-	if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
-        $tdStyle = '';
-        $border = 0;
-            
-		if( $data_action == 'excel' ) {
-	        header('Content-type: application/ms-excel');
-	        header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
-	        $border = 1;
-	        $tdStyle = 'text-align: center;';
-	    } else {
-	    	$this->Html->addCrumb($sub_module_title);
-	        echo $this->element('blocks/trucks/search_license_report');
-	    }
+
+    	if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
+            $tdStyle = '';
+            $border = 0;
+                
+    		if( $data_action == 'excel' ) {
+    	        header('Content-type: application/ms-excel');
+    	        header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
+    	        $border = 1;
+    	        $tdStyle = 'text-align: center;';
+    	    } else {
+    	    	$this->Html->addCrumb($sub_module_title);
+    	        echo $this->element('blocks/trucks/search_license_report');
+    	    }
 ?>
 <section class="content invoice">
     <h2 class="page-header">
@@ -58,10 +59,18 @@
                     <?php
                             echo $this->Html->tag('th', $this->Common->getSorting('Truck.nopol', __('Nopol')));
                             echo $this->Html->tag('th', $this->Common->getSorting('CustomerNoType.name', __('Alokasi')));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_stnk', __('STNK 1TH')));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_stnk_plat', __('STNK 5TH')));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_kir', __('KIR')));
-                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_siup', __('IJIN USAHA')));
+                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_stnk', __('STNK 1TH')), array(
+                                'style' => 'text-align: center;'
+                            ));
+                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_stnk_plat', __('STNK 5TH')), array(
+                                'style' => 'text-align: center;'
+                            ));
+                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_kir', __('KIR')), array(
+                                'style' => 'text-align: center;'
+                            ));
+                            echo $this->Html->tag('th', $this->Common->getSorting('Truck.tgl_siup', __('IJIN USAHA')), array(
+                                'style' => 'text-align: center;'
+                            ));
                             echo $this->Html->tag('th', __('Cabang'));
                     ?>
                 </tr>
@@ -104,7 +113,9 @@
 	                            }
                             }
 
-                            $content .= $this->Html->tag('td', $label_stnk_1th);
+                            $content .= $this->Html->tag('td', $label_stnk_1th, array(
+                                'style' => 'text-align: center;'
+                            ));
 
                             $label_stnk_5th = ' - ';
                             if(!empty($truck['Truck']['tgl_stnk_plat'])){
@@ -128,7 +139,9 @@
                                     ));
                                 }
                             }
-                            $content .= $this->Html->tag('td', $label_stnk_5th);
+                            $content .= $this->Html->tag('td', $label_stnk_5th, array(
+                                'style' => 'text-align: center;',
+                            ));
 
                             $label_kir = ' - ';
                             if(!empty($truck['Truck']['tgl_kir'])){
@@ -152,7 +165,9 @@
                                     ));
                                 }
                             }
-                            $content .= $this->Html->tag('td', $label_kir);
+                            $content .= $this->Html->tag('td', $label_kir, array(
+                                'style' => 'text-align: center;',
+                            ));
 
                             $label_siup = ' - ';
                             if(!empty($truck['Truck']['tgl_siup'])){
@@ -176,7 +191,9 @@
                                     ));
                                 }
                             }
-                            $content .= $this->Html->tag('td', $label_siup);
+                            $content .= $this->Html->tag('td', $label_siup, array(
+                                'style' => 'text-align: center;',
+                            ));
                             $content .= $this->Html->tag('td', $branch);
 
                             echo $this->Html->tag('tr', $content);

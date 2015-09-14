@@ -1,6 +1,10 @@
 <?php
 App::uses('Sanitize', 'Utility');
 class RjRevenueComponent extends Component {
+
+	function initialize(Controller $controller, $settings = array()) {
+		$this->controller = $controller;
+	}
 	
 	function processRefine($refine = false, $default_conditions = array()) {
 		if(!$refine) {
@@ -220,6 +224,99 @@ class RjRevenueComponent extends Component {
 	        }
         } else {
             $conditions['Ttuj.branch_id'] = Configure::read('__Site.config_branch_id');
+        }
+
+        return $conditions;
+	}
+
+	function _callRefineStatusTTUJ ( $refine, $conditions ) {
+		if(!empty($refine['is_draft'])){
+            $is_draft = urldecode($refine['is_draft']);
+            $conditions['AND']['OR'][] = array(
+            	'Ttuj.is_draft' => 1,
+            	'Ttuj.status' => 1,
+        	);
+            $this->controller->request->data['Ttuj']['is_draft'] = $is_draft;
+        }
+        if(!empty($refine['is_commit'])){
+            $is_commit = urldecode($refine['is_commit']);
+            $conditions['AND']['OR'][]= array(
+                'Ttuj.is_draft' => 0,
+                'Ttuj.is_arrive' => 0,
+                'Ttuj.is_bongkaran' => 0,
+                'Ttuj.is_balik' => 0,
+                'Ttuj.is_pool' => 0,
+            );
+            $this->controller->request->data['Ttuj']['is_commit'] = $is_commit;
+        }
+        if(!empty($refine['is_arrive'])){
+            $is_arrive = urldecode($refine['is_arrive']);
+            $conditions['AND']['OR'][] = array(
+                'Ttuj.is_arrive' => 1,
+                'Ttuj.is_bongkaran' => 0,
+                'Ttuj.is_balik' => 0,
+                'Ttuj.is_pool' => 0,
+            );
+            $this->controller->request->data['Ttuj']['is_arrive'] = $is_arrive;
+        }
+        if(!empty($refine['is_bongkaran'])){
+            $is_bongkaran = urldecode($refine['is_bongkaran']);
+            $conditions['AND']['OR'][] = array(
+                'Ttuj.is_bongkaran' => 1,
+                'Ttuj.is_balik' => 0,
+                'Ttuj.is_pool' => 0,
+            );
+            $this->controller->request->data['Ttuj']['is_bongkaran'] = $is_bongkaran;
+        }
+        if(!empty($refine['is_balik'])){
+            $is_balik = urldecode($refine['is_balik']);
+            $conditions['AND']['OR'][] = array(
+                'Ttuj.is_balik' => 1,
+                'Ttuj.is_pool' => 0,
+            );
+            $this->controller->request->data['Ttuj']['is_balik'] = $is_balik;
+        }
+        if(!empty($refine['is_pool'])){
+            $is_pool = urldecode($refine['is_pool']);
+            $conditions['AND']['OR'][] = array(
+                'Ttuj.is_pool' => 1,
+            );
+            $this->controller->request->data['Ttuj']['is_pool'] = $is_pool;
+        }
+        if(!empty($refine['is_sj_not_completed'])){
+            $is_sj_not_completed = urldecode($refine['is_sj_not_completed']);
+            $conditions['AND']['OR'][] = array(
+                'Ttuj.is_sj_completed' => 0,
+            );
+            $this->controller->request->data['Ttuj']['is_sj_not_completed'] = $is_sj_not_completed;
+        }
+        if(!empty($refine['is_sj_completed'])){
+            $is_sj_completed = urldecode($refine['is_sj_completed']);
+            $conditions['AND']['OR'][] = array(
+                'Ttuj.is_sj_completed' => 1,
+            );
+            $this->controller->request->data['Ttuj']['is_sj_completed'] = $is_sj_completed;
+        }
+        if(!empty($refine['is_revenue'])){
+            $is_revenue = urldecode($refine['is_revenue']);
+            $conditions['AND']['OR'][] = array(
+                'Ttuj.is_revenue' => 1,
+            );
+            $this->controller->request->data['Ttuj']['is_revenue'] = $is_revenue;
+        }
+        if(!empty($refine['is_not_revenue'])){
+            $is_not_revenue = urldecode($refine['is_not_revenue']);
+            $conditions['AND']['OR'][] = array(
+                'Ttuj.is_revenue' => 0,
+            );
+            $this->controller->request->data['Ttuj']['is_not_revenue'] = $is_not_revenue;
+        }
+        if(!empty($refine['is_completed'])){
+            $value = urldecode($refine['is_completed']);
+            $conditions['AND']['OR'][] = array(
+                'Ttuj.completed' => 1,
+            );
+            $this->controller->request->data['Ttuj']['is_completed'] = $value;
         }
 
         return $conditions;
