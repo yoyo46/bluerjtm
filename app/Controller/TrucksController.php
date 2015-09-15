@@ -4429,6 +4429,12 @@ class TrucksController extends AppController {
 
                 $this->request->data['Truck']['company_id'] = $data;
             }
+            if(!empty($refine['no_ttuj'])){
+                $data = urldecode($refine['no_ttuj']);
+
+                $options['conditions']['Ttuj.no_ttuj LIKE'] = '%'.$data.'%';
+                $this->request->data['Ttuj']['no_ttuj'] = $data;
+            }
 
             // Custom Otorisasi
             $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $options );

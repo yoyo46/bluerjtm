@@ -7,6 +7,7 @@
 
             foreach ($ttujs as $key => $value) {
                 $ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
+                $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
                 $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
                 $driver_pengganti = $this->Common->filterEmptyField($value, 'DriverPenganti', 'driver_name');
                 $driver = $this->Common->filterEmptyField($value, 'Driver', 'driver_name', $driver_pengganti);
@@ -26,6 +27,9 @@
                 $content = $this->Common->_getDataColumn($this->Common->customDate($ttuj_date), 'Ttuj', 'ttuj_date', array(
                     'style' => 'text-align: center;',
                     'class' => 'ttuj_date',
+                ));
+                $content .= $this->Common->_getDataColumn($no_ttuj, 'Ttuj', 'no_ttuj', array(
+                    'class' => 'no_ttuj',
                 ));
                 $content .= $this->Common->_getDataColumn($nopol, 'Ttuj', 'nopol', array(
                     'class' => 'nopol',

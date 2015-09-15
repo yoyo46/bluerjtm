@@ -8,6 +8,12 @@
                 'style' => 'text-align: center',
                 'display' => true,
             ),
+            'no_ttuj' => array(
+                'name' => __('No TTUJ'),
+                'field_model' => 'Ttuj.no_ttuj',
+                'style' => 'text-align: center',
+                'display' => true,
+            ),
             'nopol' => array(
                 'name' => __('Nopol'),
                 'field_model' => 'Ttuj.nopol',

@@ -39,6 +39,15 @@
                 </div>
                 <div class="form-group">
                     <?php 
+                            echo $this->Form->input('Ttuj.no_ttuj',array(
+                                'label'=> __('No TTUJ'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
                             echo $this->Form->input('Truck.company_id',array(
                                 'label'=> __('Pemilik Truk'),
                                 'class'=>'form-control',
