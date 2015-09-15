@@ -36,9 +36,7 @@ class RevenueHelper extends AppHelper {
                 break;
             
             default:
-                if(empty($is_lku)){
-                    $result = __('NG');
-                } else if(empty($status)){
+                if(empty($status)){
                     $result = __('Void');
                 } else if(!empty($is_laka)){
                     $result = __('LAKA');
