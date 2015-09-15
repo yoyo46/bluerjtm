@@ -1,5 +1,6 @@
 <?php
 		$classJamBongkaran = 'timepicker';
+		$truck_tiba = true;
 		
 		switch ($action_type) {
 			case 'bongkaran':
@@ -53,7 +54,7 @@
     			}
 				break;
 			
-			default:
+			case 'truk_tiba':
 				$backUrl = array(
 					'controller' => 'revenues',
 					'action' => 'truk_tiba'
@@ -65,6 +66,15 @@
     			if( !empty($ttuj_id) ) {
         			$disabledTglJamTiba = true;
     			}
+				break;
+			
+			default:
+				$backUrl = array(
+					'controller' => 'revenues',
+					'action' => 'ttuj'
+				);
+				$this->Html->addCrumb(__('TTUJ'), $backUrl);
+				$truck_tiba = false;
 				break;
 		}
 		$this->Html->addCrumb($sub_module_title);
@@ -267,6 +277,8 @@
 										'class'=>'form-group',
 									));
 				        		}
+
+				        		if( !empty($truck_tiba) ) {
 				        ?>
 				        <div class="form-group">
 				        	<?php 
@@ -311,6 +323,17 @@
 				        	?>
 				        </div>
 				        <?php 
+				        		} else {
+				        			echo $this->Html->tag('div', $this->Form->input('note', array(
+										'label'=> __('Keterangan'), 
+										'class'=>'form-control small',
+										'required' => false,
+										'disabled' => true,
+									)), array(
+										'class'=>'form-group',
+									));
+				        		}
+
 				        		if ( in_array($action_type, array( 'bongkaran', 'balik', 'pool' )) ) {
 				        			if ( in_array($action_type, array( 'bongkaran', 'balik', 'pool' )) && !empty($this->request->data['Ttuj']['note_tiba']) ) {
 				        				echo $this->Html->tag('div', $this->Form->input('note_tiba', array(

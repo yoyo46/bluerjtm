@@ -314,16 +314,16 @@
                 <td><?php echo $this->Common->customDate($value['Ttuj']['created']);?></td>
                 <td class="action">
                     <?php
-                            if( in_array($active_menu, array( 'truk_tiba', 'bongkaran', 'balik', 'pool' )) ) {
-                                echo $this->Html->link('Info', array(
-                                    'controller' => 'revenues',
-                                    'action' => 'info_truk',
-                                    $active_menu,
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-info btn-xs'
-                                ));
+                            echo $this->Html->link('Info', array(
+                                'controller' => 'revenues',
+                                'action' => 'info_truk',
+                                $active_menu,
+                                $id
+                            ), array(
+                                'class' => 'btn btn-info btn-xs'
+                            ));
 
+                            if( in_array($active_menu, array( 'truk_tiba', 'bongkaran', 'balik', 'pool' )) ) {
                                 echo $this->Html->link(__('Edit'), array(
                                     'controller' => 'revenues',
                                     'action' => 'ttuj_lanjutan_edit',
@@ -345,16 +345,6 @@
                             } else {
                                 $labelEdit = __('Edit');
 
-                                if( empty($is_draft) && !empty($status) ) {
-                                    echo $this->Html->link(__('Surat Jalan'), array(
-                                        'controller' => 'revenues',
-                                        'action' => 'surat_jalan',
-                                        $id
-                                    ), array(
-                                        'class' => 'btn bg-navy btn-xs'
-                                    ));
-                                }
-
                                 echo $this->Html->link($labelEdit, array(
                                     'controller' => 'revenues',
                                     'action' => 'ttuj_edit',
@@ -373,6 +363,16 @@
                                         'class' => 'btn btn-danger btn-xs',
                                         'title' => 'disable status brand'
                                     ), __('Apakah Anda yakin akan membatalkan data ini?'));
+                                }
+
+                                if( empty($is_draft) && !empty($status) ) {
+                                    echo $this->Html->link(__('Surat Jalan'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'surat_jalan',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn bg-navy btn-xs'
+                                    ));
                                 }
                             }
                     ?>

@@ -3638,6 +3638,7 @@ fieldset[disabled] .btn-vk.active {
 .action .btn,
 .action-link a {
   margin-right: 5px;
+  margin-bottom: 3px;
 }
 
 .dl-horizontal dt {

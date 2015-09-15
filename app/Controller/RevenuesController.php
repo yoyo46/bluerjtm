@@ -1616,12 +1616,19 @@ class RevenuesController extends AppController {
                 $this->set('active_menu', 'pool');
                 break;
             
-            default:
+            case 'truk_tiba':
                 $conditions['Ttuj.is_arrive'] = 1;
                 $conditions = $this->Ttuj->_callConditionBranch( $conditions );
 
                 $module_title = __('Info Truk Tiba');
                 $this->set('active_menu', 'truk_tiba');
+                break;
+            
+            default:
+                $conditions['Ttuj.is_draft'] = 0;
+
+                $module_title = __('Info TTUJ');
+                $this->set('active_menu', 'ttuj');
                 break;
         }
 
