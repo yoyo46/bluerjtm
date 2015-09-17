@@ -1687,4 +1687,29 @@ class CommonHelper extends AppHelper {
     function getFormatDesc ( $value ) {
         return str_replace(PHP_EOL, '<br>', $value);
     }
+
+    function getDate ( $date, $reverse = false ) {
+        $dtString = false;
+        $date = trim($date);
+
+        if( !empty($date) && $date != '0000-00-00' ) {
+            if($reverse){
+                $dtString = date('d/m/Y', strtotime($date));
+            }else{
+                $dtArr = explode('/', $date);
+
+                if( count($dtArr) == 3 ) {
+                    $dtString = date('Y-m-d', strtotime(sprintf('%s-%s-%s', $dtArr[2], $dtArr[1], $dtArr[0])));
+                } else {
+                    $dtArr = explode('-', $date);
+
+                    if( count($dtArr) == 3 ) {
+                        $dtString = date('Y-m-d', strtotime(sprintf('%s-%s-%s', $dtArr[2], $dtArr[1], $dtArr[0])));
+                    }
+                }
+            }
+        }
+        
+        return $dtString;
+    }
 }

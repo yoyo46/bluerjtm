@@ -76,7 +76,7 @@
 									echo $this->Form->input('payment_date',array(
 										'type' => 'text',
 										'label'=> __('Tgl Bayar'), 
-										'class'=>'form-control custom-date',
+										'class'=>'form-control custom-date leasing-payment-date',
 									));
 							?>
 						</div>
@@ -90,6 +90,9 @@
 									));
 							?>
 				        </div>
+				        <?php 
+								if( empty($id) ) {
+				        ?>
 				        <div class="form-group">
 				        	<?php 
 				        			$attrBrowse = array(
@@ -108,6 +111,9 @@
 			                        echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Ambil Pembayaran'), 'javascript:', $attrBrowse);
 			                ?>
 				        </div>
+				        <?php 
+				        		}
+				        ?>
 				    </div>
 				</div>
 			</div>
@@ -146,10 +152,13 @@
 					), array(
 						'class'=> 'btn btn-default',
 					));
-		    		echo $this->Form->button(__('simpan'), array(
-						'class'=> 'btn btn-success btn-lg',
-						'type' => 'submit'
-					));
+
+					if( empty($id) ) {
+			    		echo $this->Form->button(__('simpan'), array(
+							'class'=> 'btn btn-success btn-lg',
+							'type' => 'submit'
+						));
+			    	}
 			?>
 		</div>
 	</div>

@@ -2418,6 +2418,23 @@ function getTotalLkuPayment(){
 
     $('#grand-total-payment').text('IDR '+formatNumber(total_price));
 }
+
+var _callLeasingExpired = function( rel_id ) {
+    var expired_date = $('.child-'+rel_id+' .leasing-expired-date');
+
+    if( expired_date.length > 0 ) {
+        var paid_date = $('.leasing-payment-date').val();
+        var customPaidDate = _callReverseDate(paid_date);
+        var customExpiredDate = expired_date.val();
+
+        if( customExpiredDate < customPaidDate ) {
+            $('.child-'+rel_id).addClass('expired');
+        } else {
+            $('.child-'+rel_id).removeClass('expired');
+        }
+    }
+}
+
 var check_all_checkbox = function(){
     $('.checkAll').click(function(){
         $('.check-option').not(this).prop('checked', this.checked);
@@ -2477,6 +2494,7 @@ var check_all_checkbox = function(){
                 $.getLeasingPayment({
                     obj: $('.child-'+rel_id).find('.leasing-trigger'),
                 });
+                _callLeasingExpired(rel_id);
             }
         }else{
             $('.child-'+rel_id).remove();
@@ -3016,6 +3034,21 @@ var branch_module_check = function(obj){
     });
 }
 
+var _callReverseDate = function ( date ) {
+    var tmp = date.split('/');
+    var result = date;
+
+    if( tmp.length == 3 ) {
+        day = tmp[0];
+        month = tmp[1];
+        year = tmp[2];
+
+        result = year+'-'+month+'-'+day;
+    }
+
+    return result;
+}
+
 var _callMonthInstallment = function () {
     var tgl_leasing = $('.leasing-date-installment').val();
     var month_last_date = $('.leasing-last-month-installment').val();
@@ -3076,6 +3109,17 @@ var calc_pokok_leasing = function () {
         $('.total-installment').val(formatNumber( pokok, 0 ));
         $('.bunga-leasing').val(formatNumber( bunga, 0 ));
     }
+}
+
+var _callTableLeasingExpired = function () {
+    var obj = $('tr.child');
+    var len = obj.length;
+
+    for (i=0; i < len; i++) {
+        var rel = obj[i].getAttribute('rel');
+
+        _callLeasingExpired(rel);
+    };
 }
 
 $(function() {
@@ -4094,6 +4138,13 @@ $(function() {
     });
     $('.leasing-date-installment').blur(function(){
         _callMonthInstallment();
+    });
+
+    $('.leasing-payment-date').change(function(){
+        _callTableLeasingExpired()
+    });
+    $('.leasing-payment-date').keyup(function(){
+        _callTableLeasingExpired()
     });
 
     $.rowAdded();

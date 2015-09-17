@@ -212,3 +212,8 @@ tr.complete {
 textarea.form-control.description-mutation {
 	height: 108px;
 }
+
+/*Leasing*/
+tr.expired .red {
+	color: #f56954;
+}

@@ -75,7 +75,7 @@
                 <th><?php echo __('Tgl Jth Tempo');?></th>
                 <th class="text-center"><?php echo __('Pokok');?></th>
                 <th class="text-center"><?php echo __('Bunga');?></th>
-                <th class="text-center"><?php echo __('Denda');?></th>
+                <!-- <th class="text-center"><?php // echo __('Denda');?></th> -->
                 <th class="text-center"><?php echo __('Total');?></th>
             </tr>
         </thead>
@@ -87,8 +87,10 @@
                             $no_contract = $this->Common->filterEmptyField($value, 'Leasing', 'no_contract');
                             $installment = $this->Common->filterEmptyField($value, 'LeasingInstallment', 'installment');
                             $installment_rate = $this->Common->filterEmptyField($value, 'Leasing', 'installment_rate');
-                            $denda = $this->Common->filterEmptyField($value, 'Leasing', 'denda');
-                            $total = $installment+$installment_rate+$denda;
+                            $total = $installment+$installment_rate;
+
+                            // $denda = $this->Common->filterEmptyField($value, 'Leasing', 'denda');
+                            // $total = $installment+$installment_rate+$denda;
 
                             $leasing_installment_id = $this->Common->filterEmptyField($value, 'LeasingInstallment', 'id');
                             $paid_date = $this->Common->filterEmptyField($value, 'LeasingInstallment', 'paid_date');
@@ -96,8 +98,8 @@
                             $customPaidDate = $this->Common->formatDate($paid_date, 'd/m/Y');
                             $customInstallment = $this->Common->getFormatPrice($installment);
                             $customInstallmentRate = $this->Common->getFormatPrice($installment_rate);
-                            $customDenda = $this->Common->getFormatPrice($denda);
                             $customTotal = $this->Common->getFormatPrice($total);
+                            // $customDenda = $this->Common->getFormatPrice($denda);
             ?>
             <tr class="child-search child-search-<?php echo $leasing_installment_id;?>" rel="<?php echo $leasing_installment_id;?>">
                 <?php
@@ -121,8 +123,11 @@
 
                         echo $this->Html->tag('td', $customPaidDate.$this->Form->input('LeasingPaymentDetail.expired_date.'.$id, array(
                             'type' => 'hidden',
+                            'class' => 'leasing-expired-date',
                             'value' => $paid_date,
-                        )));
+                        )), array(
+                            'class' => 'red',
+                        ));
                         echo $this->Html->tag('td', $this->Html->tag('span', $customInstallment, array(
                             'class' => 'on-remove',
                         )).$this->Form->input('LeasingPaymentDetail.installment.'.$id, array(
@@ -130,7 +135,7 @@
                             'label' => false,
                             'div' => false,
                             'required' => false,
-                            'class' => 'form-control input_price installment hide on-show text-right leasing-trigger',
+                            'class' => 'form-control input_price installment hide on-show text-right leasing-trigger red',
                             'value' => $installment,
                         )), array(
                             'class' => 'text-right',
@@ -142,25 +147,23 @@
                             'label' => false,
                             'div' => false,
                             'required' => false,
-                            'class' => 'form-control input_price installment-rate hide on-show text-right leasing-trigger',
+                            'class' => 'form-control input_price installment-rate hide on-show text-right leasing-trigger red',
                             'value' => $installment_rate,
                         )), array(
                             'class' => 'text-right',
                         ));
-                        echo $this->Html->tag('td', $this->Html->tag('span', $customDenda, array(
-                            'class' => 'on-remove',
-                        )).$this->Form->input('LeasingPaymentDetail.denda.'.$id, array(
+                        echo $this->Html->tag('td', $this->Form->input('LeasingPaymentDetail.denda.'.$id, array(
                             'type' => 'text',
                             'label' => false,
                             'div' => false,
                             'required' => false,
-                            'class' => 'form-control input_price denda hide on-show text-right leasing-trigger',
-                            'value' => $denda,
+                            'class' => 'form-control input_price denda text-right leasing-trigger red',
+                            // 'value' => $denda,
                         )), array(
-                            'class' => 'text-right',
+                            'class' => 'text-right hide on-show',
                         ));
                         echo $this->Html->tag('td', $customTotal, array(
-                            'class' => 'text-right leasing-total',
+                            'class' => 'text-right leasing-total red',
                         ));
                 ?>
                 <td class="action-search hide">
