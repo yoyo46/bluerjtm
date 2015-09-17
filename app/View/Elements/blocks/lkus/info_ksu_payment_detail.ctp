@@ -89,7 +89,7 @@
                 'label' => false,
                 'div' => false,
                 'required' => false,
-                'class' => 'form-control input_price invoice-price-payment',
+                'class' => 'form-control input_price document-pick-price',
                 'value' => (!empty($this->request->data['KsuPaymentDetail'][$Ksu['id']]['total_biaya_klaim'])) ? $this->request->data['KsuPaymentDetail'][$Ksu['id']]['total_biaya_klaim'] : $total_biaya_klaim
             ));
 
@@ -112,7 +112,7 @@
     }
 }
 ?>
-<tr id="field-grand-total-ttuj">
+<tr id="field-grand-total-document">
     <td align="right" colspan="7"><?php echo __('Grand Total')?></td>
     <td align="right" id="grand-total-payment">
         <?php 

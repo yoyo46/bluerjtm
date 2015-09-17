@@ -125,7 +125,7 @@
                 <?php
                     }
                 ?>
-                <tr id="field-grand-total-ttuj">
+                <tr id="field-grand-total-document">
                     <td align="right" colspan="5"><?php echo __('Grand Total')?></td>
                     <td align="right" id="grand-total-payment"><?php printf('%s %s', Configure::read('__Site.config_currency_code'), $total); ?></td>
                     <td>&nbsp;</td>

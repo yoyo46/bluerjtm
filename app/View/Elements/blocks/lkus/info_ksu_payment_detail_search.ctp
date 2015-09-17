@@ -166,7 +166,7 @@
                             'label' => false,
                             'div' => false,
                             'required' => false,
-                            'class' => 'form-control input_price invoice-price-payment',
+                            'class' => 'form-control input_price document-pick-price',
                             'value' => (!empty($this->request->data['KsuPaymentDetail']['total_biaya_klaim'][$value['KsuDetail']['id']])) ? $this->request->data['KsuPaymentDetail']['total_biaya_klaim'][$value['KsuDetail']['id']] : $price_pay
                         ));
 

@@ -128,7 +128,7 @@
                             'label' => false,
                             'div' => false,
                             'required' => false,
-                            'class' => 'form-control input_price invoice-price-payment',
+                            'class' => 'form-control input_price document-pick-price',
                             'value' => (!empty($this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']])) ? $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']] : $sisaPembayaran
                         ));
 

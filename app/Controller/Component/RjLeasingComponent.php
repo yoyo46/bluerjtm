@@ -27,6 +27,18 @@ class RjLeasingComponent extends Component {
 				if( !empty($refine['LeasingCompany']['name']) ) {
 					$refine_conditions['LeasingCompany']['name'] = $refine['LeasingCompany']['name'];
 				}
+				if( !empty($refine['LeasingPayment']['no_doc']) ) {
+					$refine_conditions['LeasingPayment']['no_doc'] = $refine['LeasingPayment']['no_doc'];
+				}
+				if( !empty($refine['LeasingPayment']['date']) ) {
+					$refine_conditions['LeasingPayment']['date'] = urlencode($refine['LeasingPayment']['date']);
+				}
+				if( !empty($refine['Leasing']['no_contract']) ) {
+					$refine_conditions['Leasing']['no_contract'] = $refine['Leasing']['no_contract'];
+				}
+				if( !empty($refine['Leasing']['vendor_id']) ) {
+					$refine_conditions['Leasing']['vendor'] = $refine['Leasing']['vendor_id'];
+				}
 			}
 				
 			return $refine_conditions;
@@ -72,6 +84,13 @@ class RjLeasingComponent extends Component {
 		}
 		if(isset($refine['LeasingCompany']) && !empty($refine['LeasingCompany'])) {
 			foreach($refine['LeasingCompany'] as $param => $value) {
+				if($value) {
+					$parameters[trim($param)] = rawurlencode($value);
+				}
+			}
+		}
+		if(isset($refine['LeasingPayment']) && !empty($refine['LeasingPayment'])) {
+			foreach($refine['LeasingPayment'] as $param => $value) {
 				if($value) {
 					$parameters[trim($param)] = rawurlencode($value);
 				}

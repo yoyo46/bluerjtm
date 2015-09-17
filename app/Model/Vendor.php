@@ -36,6 +36,7 @@ class Vendor extends AppModel {
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        
         $default_options = array(
             'conditions'=> array(
                 'Vendor.branch_id' => Configure::read('__Site.config_branch_id'),
@@ -92,6 +93,22 @@ class Vendor extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
+    }
+
+    function getMerge( $data, $id ){
+        if( empty($data['Vendor']) ) {
+            $value = $this->getData('first', array(
+                'conditions' => array(
+                    'Vendor.id' => $id,
+                ),
+            ));
+
+            if( !empty($value) ) {
+                $data = array_merge($data, $value);
+            }
+        }
+
+        return $data;
     }
 }
 ?>

@@ -1,6 +1,48 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
-        echo $this->element('blocks/lkus/search_index_payment');
+        echo $this->element('blocks/leasings/search_index_payment');
+
+        $dataColumns = array(
+            'no_doc' => array(
+                'name' => __('No Dokumen'),
+                'field_model' => 'LeasingPayment.no_doc',
+                'display' => true,
+            ),
+            'installment' => array(
+                'name' => __('Tgl Pembayaran'),
+                'field_model' => 'LeasingPayment.payment_date',
+                'class' => 'text-center',
+                'display' => true,
+            ),
+            'vendor' => array(
+                'name' => __('Vendor'),
+                'field_model' => false,
+                'display' => true,
+            ),
+            'grandtotal' => array(
+                'name' => __('Total Pembayaran'),
+                'field_model' => 'LeasingPayment.grandtotal',
+                'class' => 'text-center',
+                'display' => true,
+            ),
+            'status' => array(
+                'name' => __('Status'),
+                'field_model' => 'LeasingPayment.status',
+                'class' => 'text-center',
+                'display' => true,
+            ),
+            'created' => array(
+                'name' => __('Dibuat'),
+                'field_model' => 'LeasingPayment.created',
+                'display' => true,
+            ),
+            'action' => array(
+                'name' => __('Action'),
+                'field_model' => false,
+                'display' => true,
+            ),
+        );
+        $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 ?>
 <div class="box box-success">
     <div class="box-header">
@@ -23,38 +65,13 @@
         </div>
     </div>
     <div class="box-body table-responsive">
-        <table class="table table-hover">
-            <tr>
-                <?php 
-                        echo $this->Html->tag('th', $this->Paginator->sort('LeasingPayment.no_doc', __('No Dokumen'), array(
-                            'escape' => false
-                        )));
-
-                        echo $this->Html->tag('th', $this->Paginator->sort('LeasingPayment.payment_date', __('Tgl Pembayaran'), array(
-                            'escape' => false
-                        )));
-
-                        echo $this->Html->tag('th', __('Vendor'));
-
-                        echo $this->Html->tag('th', $this->Paginator->sort('LeasingPayment.denda', __('Denda'), array(
-                            'escape' => false
-                        )));
-
-                        echo $this->Html->tag('th', $this->Paginator->sort('LeasingPayment.grandtotal', __('Total Pembayaran'), array(
-                            'escape' => false
-                        )));
-
-                        echo $this->Html->tag('th', __('Status'));
-
-                        echo $this->Html->tag('th', $this->Paginator->sort('LeasingPayment.created', __('Dibuat'), array(
-                            'escape' => false
-                        )));
-
-                        echo $this->Html->tag('th', __('Action'), array(
-                            'escape' => false
-                        ));
-                ?>
-            </tr>
+        <table class="table table-hover sorting">
+            <?php
+                    if( !empty($fieldColumn) ) {
+                        echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
+                    }
+            ?>
+            <tbody>
             <?php
                     if(!empty($payments)){
                         foreach ($payments as $key => $value) {
@@ -62,7 +79,6 @@
                             $no_doc = $this->Common->filterEmptyField($value, 'LeasingPayment', 'no_doc');
                             $payment_date = $this->Common->filterEmptyField($value, 'LeasingPayment', 'payment_date');
                             $grandtotal = $this->Common->filterEmptyField($value, 'LeasingPayment', 'grandtotal');
-                            $denda = $this->Common->filterEmptyField($value, 'LeasingPayment', 'denda');
                             $status = $this->Common->filterEmptyField($value, 'LeasingPayment', 'status');
                             $rejected = $this->Common->filterEmptyField($value, 'LeasingPayment', 'rejected');
                             $created = $this->Common->filterEmptyField($value, 'LeasingPayment', 'created');
@@ -71,16 +87,18 @@
 
                             $customCreated = $this->Time->niceShort($created);
                             $customDate = $this->Common->customDate($payment_date, 'd/m/Y');
-                            $customDenda = $this->Common->getFormatPrice($denda);
                             $customGrandtotal = $this->Common->getFormatPrice($grandtotal);
             ?>
             <tr>
                 <?php 
                         echo $this->Html->tag('td', $no_doc);
-                        echo $this->Html->tag('td', $customDate);
+                        echo $this->Html->tag('td', $customDate, array(
+                            'class' => 'text-center',
+                        ));
                         echo $this->Html->tag('td', $vendor);
-                        echo $this->Html->tag('td', $customDenda);
-                        echo $this->Html->tag('td', $customGrandtotal);
+                        echo $this->Html->tag('td', $customGrandtotal, array(
+                            'class' => 'text-right',
+                        ));
 
                         if( !empty($rejected) ) {
                             $lblStatus = $this->Html->tag('span', __('Void'), array(
@@ -92,7 +110,9 @@
                             ));
                         }
 
-                        echo $this->Html->tag('td', $lblStatus);
+                        echo $this->Html->tag('td', $lblStatus, array(
+                            'class' => 'text-right',
+                        ));
                         echo $this->Html->tag('td', $customCreated);
                 ?>
                 <td class="action">
@@ -111,8 +131,10 @@
                                     'action' => 'payment_delete',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs'
-                                ), __('Apakah Anda yakin ingin membatalkan pembayaran ini?'));
+                                    'class' => 'btn btn-danger btn-xs ajaxModal',
+                                    'data-action' => 'submit_form',
+                                    'title' => __('Void Pembayaran Leasing')
+                                ));
                             }
                     ?>
                 </td>
@@ -126,6 +148,7 @@
                         )));
                     }
             ?>
+            </tbody>
         </table>
     </div><!-- /.box-body -->
     <?php echo $this->element('pagination');?>

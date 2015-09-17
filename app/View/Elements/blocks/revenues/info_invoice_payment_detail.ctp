@@ -50,7 +50,7 @@
                 'label' => false,
                 'div' => false,
                 'required' => false,
-                'class' => 'form-control input_price invoice-price-payment',
+                'class' => 'form-control input_price document-pick-price',
                 'value' => (!empty($this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']])) ? $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']] : $price_pay
             ));
 
@@ -73,7 +73,7 @@
         }
     }
 ?>
-<tr id="field-grand-total-ttuj">
+<tr id="field-grand-total-document">
     <td align="right" colspan="5"><?php echo __('Total')?></td>
     <td align="right" id="grand-total-payment">
         <?php 

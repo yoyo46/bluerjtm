@@ -66,6 +66,7 @@ class LeasingPayment extends AppModel {
                 'LeasingPayment.branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
+                'LeasingPayment.rejected' => 'ASC',
                 'LeasingPayment.created' => 'DESC',
                 'LeasingPayment.id' => 'DESC',
             ),
@@ -132,8 +133,17 @@ class LeasingPayment extends AppModel {
                 $this->create();
             }
 
+            $data['LeasingPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
             $data['LeasingPayment']['user_id'] = Configure::read('__Site.config_user_id');
-            $dataDetail = $this->LeasingPaymentDetail->getDataModel($data);
+            $resultDetail = $this->LeasingPaymentDetail->getDataModel($data);
+
+            $data['LeasingPayment']['total_installment'] = !empty($resultDetail['total_installment'])?$resultDetail['total_installment']:0;
+            $data['LeasingPayment']['total_installment_rate'] = !empty($resultDetail['total_installment_rate'])?$resultDetail['total_installment_rate']:0;
+            $data['LeasingPayment']['total_denda'] = !empty($resultDetail['total_denda'])?$resultDetail['total_denda']:0;
+            $data['LeasingPayment']['grandtotal'] = !empty($resultDetail['grandtotal'])?$resultDetail['grandtotal']:0;
+            $dataDetail = !empty($resultDetail['data'])?$resultDetail['data']:false;
+
+            $data['LeasingPaymentDetail'] = $dataDetail;
 
             $this->set($data);
             $mainValidate = $this->validates();
@@ -158,12 +168,21 @@ class LeasingPayment extends AppModel {
                     $result = array(
                         'msg' => sprintf(__('Gagal %s'), $default_msg),
                         'status' => 'error',
+                        'data' => $data,
                     );
                 }
             } else {
+                if( !empty($mainValidate) ) {
+                    $msg = __('Mohon lengkapi detail pembayaran leasing');
+                } else {
+                    $msg = sprintf(__('Gagal %s'), $default_msg);
+                }
+
                 $result = array(
-                    'msg' => sprintf(__('Gagal %s'), $default_msg),
+                    'msg' => $msg,
                     'status' => 'error',
+                    'data' => $data,
+                    'validationErrors' => !empty($detailValidates['validationErrors'])?$detailValidates['validationErrors']:false,
                 );
             }
         } else if( !empty($value) ) {
@@ -171,6 +190,12 @@ class LeasingPayment extends AppModel {
         }
 
         return $result;
+    }
+
+    function _callLastPayment ($leasing_id) {
+        $value = $this->getData('first', array(
+            
+        ));
     }
 }
 ?>

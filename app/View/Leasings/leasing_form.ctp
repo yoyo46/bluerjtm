@@ -30,8 +30,8 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-							echo $this->Form->input('leasing_company_id',array(
-								'label'=> __('Vendor *'), 
+							echo $this->Form->input('vendor_id',array(
+								'label'=> __('Vendor Leasing *'), 
 								'class'=>'form-control',
 								'required' => false,
 								'empty' => __('Pilih Vendor'),

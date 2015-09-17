@@ -430,4 +430,45 @@
             }
         }
     }
+
+    $.getLeasingGrandtotal = function(){
+        var obj = $('.document-pick-info-detail .leasing-total');
+        var objTotal = $('#field-grand-total-document .total');
+        var leng = obj.length;
+
+        if( objTotal.length > 0 ) {
+            var total = 0;
+
+            for (i = 0; i < leng; i++) {
+                total += convert_number(obj[i].innerHTML, 'int');
+            };
+
+            var formatTotal = formatNumber( total, 0 );
+            objTotal.html(formatTotal);
+        }
+    }
+
+    $.getLeasingPayment = function(options){
+        var settings = $.extend({
+            obj: $('.leasing-trigger'),
+        }, options );
+
+        var getTotal = function ( parent ) {
+            var installment = convert_number(parent.find('.installment').val(), 'int');
+            var installmentRate = convert_number(parent.find('.installment-rate').val(), 'int');
+            var denda = convert_number(parent.find('.denda').val(), 'int');
+
+            var total = installment+installmentRate+denda;
+            var formatTotal = formatNumber( total, 0 );
+
+            parent.find('.leasing-total').html(formatTotal);
+            $.getLeasingGrandtotal();
+        };
+
+        settings.obj.keyup(function(){
+            getTotal( settings.obj.parents('tr') );
+        });
+
+        getTotal( settings.obj.parents('tr') );
+    }
 }( jQuery ));

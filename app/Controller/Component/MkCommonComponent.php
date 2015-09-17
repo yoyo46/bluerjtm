@@ -783,9 +783,23 @@ class MkCommonComponent extends Component {
             if ( $data['status'] == 'success' ) {
                 $this->redirectReferer($data['msg'], $data['status'], $urlRedirect);
             } else {
-                $this->setCustomFlash($data['msg'], $data['status']);
+                if( !empty($data['validationErrors']) ) {
+                    $msg = $this->_callMsgValidationErrors($data['validationErrors']);
+
+                    if( !empty($msg) ) {
+                        $msg = implode('</li><li>', $msg);
+                        $msg = '<ul><li>'.$msg.'</li></ul>';
+                    } else {
+                        $msg = $data['msg'];
+                    }
+                } else {
+                    $msg = $data['msg'];
+                }
+                $this->setCustomFlash($msg, $data['status']);
             }
-        } else if ( !empty( $data['data'] ) ) {
+        }
+
+        if ( !empty( $data['data'] ) ) {
             $this->controller->request->data = $data['data'];
         }
     }
@@ -973,6 +987,62 @@ class MkCommonComponent extends Component {
         }
 
         return $result;
+    }
+
+    function dataConverter ( $data, $fields, $reverse = false ) {
+        if( !empty($fields) ) {
+            foreach ($fields as $type => $models) {
+                switch ($type) {
+                    case 'date':
+                        if( !empty($models) ) {
+                            if( is_array($models) ) {
+                                foreach ($models as $modelName => $model) {
+                                    if( !empty($model) ) {
+                                        if( is_array($model) ) {
+                                            foreach ($model as $key => $fieldName) {
+                                                if( !empty($data[$modelName][$fieldName]) ) {
+                                                    $data[$modelName][$fieldName] = $this->getDate($data[$modelName][$fieldName], $reverse);
+                                                }
+                                            }
+                                        } else {
+                                            if( !empty($data[$model]) ) {
+                                                $data[$model] = $this->getDate($data[$model], $reverse);
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                if( !empty($data[$models]) ) {
+                                    $data[$models] = $this->getDate($data[$models], $reverse);
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    function _callMsgValidationErrors ( $validationErrors ) {
+        $textError = array();
+
+        if( !empty($validationErrors) ) {
+            foreach ($validationErrors as $key => $validationError) {
+                if( !empty($validationError) ) {
+                    foreach ($validationError as $key => $error) {
+                        $textError[] = $error;
+                    }
+                }
+            }
+        }
+
+        return $textError;
+    }
+
+    function _callDateView ( $dateFrom, $dateTo ) {
+        return sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
     }
 }
 ?>

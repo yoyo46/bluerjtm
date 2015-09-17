@@ -295,7 +295,7 @@ var add_custom_field = function( obj ){
                 var html_tr = '<tr class="lku-detail lku-detail-'+tipe_motor_table+'" rel="'+tipe_motor_table+'">'+content_clone+'</tr>';
 
                 if( length_option > tipe_motor_table-1 ){
-                    $('.ttuj-info-table #field-grand-total-ttuj').before(html_tr);
+                    $('.ttuj-info-table #field-grand-total-document').before(html_tr);
                     choose_item_info();
                     input_number();
                     price_tipe_motor();
@@ -310,7 +310,7 @@ var add_custom_field = function( obj ){
                 var html_tr = '<tr class="ksu-detail ksu-detail-'+tipe_motor_table+'" rel="'+tipe_motor_table+'">'+content_clone+'</tr>';
 
                 if( length_option > tipe_motor_table-1 ){
-                    $('.ttuj-info-table #field-grand-total-ttuj').before(html_tr);
+                    $('.ttuj-info-table #field-grand-total-document').before(html_tr);
                     choose_item_info();
                     input_number();
                     price_tipe_motor();
@@ -935,11 +935,12 @@ var delete_custom_field = function( obj ) {
                 var action_type = self.attr('action_type');
                 var idx = length;
                 $('#'+action_type+(idx-1)).remove();
-            } else if( action_type == 'lku_first' || action_type == 'leasing_first' || action_type == 'invoice_first' || action_type == 'cashbank_first' ){
+            } else if( action_type == 'lku_first' || action_type == 'leasing_first' || action_type == 'invoice_first' || action_type == 'cashbank_first' || action_type == 'document_first' ){
                 self.parents('tr').remove();
                 grandTotalLku();
                 grandTotalLeasing();
-                getTotalInvoicePayment();
+                getTotalPick();
+                $.getLeasingGrandtotal();
             } else if( action_type == 'lku_second' || action_type == 'ksu_second'){
                 self.parents('tr').remove();
                 getTotalLkuPayment();
@@ -1945,12 +1946,14 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                     if( $(dataTrigger).val() == '' ) {
                         goAjax = false;
                         alert(errorMsg);
+                    } else if( $('#id-choosen').length > 0 && $('#id-choosen').val() != '' ) {
+                        url += '/'+$('#id-choosen').val()+'/'
                     }
-                } else if(typeof $('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu').val() == 'undefined' || $('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu').val() == ''){
+                } else if(typeof $('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu, #id-choosen').val() == 'undefined' || $('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu, #id-choosen').val() == ''){
                     goAjax = false;
                     alert('Mohon pilih customer terlebih dahulu');
                 }else{
-                    url += '/'+$('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu').val()+'/not-list'
+                    url += '/'+$('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu, #id-choosen').val()+'/not-list'
                 }
             }
         }
@@ -2306,15 +2309,16 @@ var leasing_action = function(){
 }
 
 var invoice_price_payment = function(){
-    $('.invoice-price-payment').keyup(function(){
-        getTotalInvoicePayment();
+    $('.document-pick-price').keyup(function(){
+        getTotalPick();
     });
 }
-function getTotalInvoicePayment(){
-    var invoice_price = $('.invoice-info-detail .invoice-price-payment');
+function getTotalPick(){
+    var invoice_price = $('.document-pick-info-detail .document-pick-price');
     var length = invoice_price.length;
     var total = 0;
     var total_price = 0;
+
     for (var i = 0; i < length; i++) {
         if(typeof invoice_price[i] != 'undefined'){
             var price = invoice_price[i].value;
@@ -2449,27 +2453,34 @@ var check_all_checkbox = function(){
 
     function check_option(self){
         var parent = self.parents('.child-search');
-        $('.invoice-info-detail').removeClass('hide');
+        $('.document-pick-info-detail').removeClass('hide');
         var rel_id = parent.attr('rel');
 
         if(self.is(':checked')){
             if($('.child-'+rel_id).length <= 0){
                 var html_content = '<tr class="child child-'+rel_id+'" rel="'+rel_id+'">'+parent.html()+'</tr>';
-                $('#field-grand-total-ttuj').before(html_content);
+                $('#field-grand-total-document').before(html_content);
+
 
                 $('.child-'+rel_id).find('.action-search').removeClass('hide');
+                $('.child-'+rel_id).find('.on-show').removeClass('hide');
+
                 $('.child-'+rel_id).find('.checkbox-detail').remove();
+                $('.child-'+rel_id).find('.on-remove').remove();
 
                 input_price($('.child-'+rel_id+' .input_price'));
                 input_price_min($('.child-'+rel_id+' .input_price_min'));
                 delete_custom_field($('.child-'+rel_id+' .delete-custom-field'));
 
                 invoice_price_payment();
-                getTotalInvoicePayment();
+                getTotalPick();
+                $.getLeasingPayment({
+                    obj: $('.child-'+rel_id).find('.leasing-trigger'),
+                });
             }
         }else{
             $('.child-'+rel_id).remove();
-            getTotalInvoicePayment();
+            getTotalPick();
         } 
     }
 
@@ -3856,7 +3867,7 @@ $(function() {
     get_document_cashbank();
 
     $('.invoice-pph, .invoice-ppn').keyup(function(){
-        getTotalInvoicePayment();
+        getTotalPick();
     });
 
     $(document).ajaxStart(function() {
@@ -4086,4 +4097,7 @@ $(function() {
     });
 
     $.rowAdded();
+    $.getLeasingPayment({
+        obj: $('.leasing-trigger'),
+    });
 });

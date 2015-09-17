@@ -28,10 +28,10 @@ class Leasing extends AppModel {
                 'message' => 'No Kontral harap diisi'
             ),
         ),
-        'leasing_company_id' => array(
+        'vendor_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Perusahaan leasing harap dipilih'
+                'message' => 'Vendor leasing harap dipilih'
             ),
         ),
         'paid_date' => array(
@@ -93,13 +93,9 @@ class Leasing extends AppModel {
 	);
 
     var $belongsTo = array(
-        'LeasingCompany' => array(
-            'className' => 'LeasingCompany',
-            'foreignKey' => 'leasing_company_id',
-        ),
         'Vendor' => array(
             'className' => 'Vendor',
-            'foreignKey' => 'leasing_company_id',
+            'foreignKey' => 'vendor_id',
         ),
     );
 
@@ -112,9 +108,13 @@ class Leasing extends AppModel {
             'className' => 'LeasingPayment',
             'foreignKey' => 'leasing_id',
         ),
+        'LeasingInstallment' => array(
+            'className' => 'LeasingInstallment',
+            'foreignKey' => 'leasing_id',
+        ),
     );
 
-    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+    function getData( $find, $options = false, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
         $branch = isset($elements['branch'])?$elements['branch']:true;
         
@@ -124,7 +124,6 @@ class Leasing extends AppModel {
                 'Leasing.status' => 'DESC'
             ),
             'contain' => array(
-                // 'LeasingCompany'
                 'Vendor'
             ),
             'fields' => array(),
@@ -138,6 +137,10 @@ class Leasing extends AppModel {
 
             case 'non-active':
                 $default_options['conditions']['Leasing.status'] = 0;
+                break;
+
+            case 'unpaid':
+                $default_options['conditions']['Leasing.payment_status'] = array( 'unpaid', 'half_paid' );
                 break;
             
             default:
@@ -179,6 +182,23 @@ class Leasing extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
+    }
+
+    function getMerge( $data, $id ){
+        if( empty($data['Leasing']) ) {
+            $value = $this->getData('first', array(
+                'conditions' => array(
+                    'Leasing.id' => $id,
+                ),
+                'contain' => false,
+            ));
+
+            if( !empty($value) ) {
+                $data = array_merge($data, $value);
+            }
+        }
+
+        return $data;
     }
 }
 ?>
