@@ -2676,10 +2676,33 @@ class RevenuesController extends AppController {
                 );
                 $date = date('Y-m-d', strtotime($value['Ttuj']['tgljam_berangkat']));
                 $tglBerangkat = $this->MkCommon->customDate($value['Ttuj']['tgljam_berangkat'], 'Y-m-d H:i:s');
-                $tglTiba = $this->MkCommon->customDate($value['Ttuj']['tgljam_tiba'], 'Y-m-d H:i:s');
-                $tglBongkaran = $this->MkCommon->customDate($value['Ttuj']['tgljam_bongkaran'], 'Y-m-d H:i:s');
-                $tglBalik = $this->MkCommon->customDate($value['Ttuj']['tgljam_balik'], 'Y-m-d H:i:s');
-                $tglPool = $this->MkCommon->customDate($value['Ttuj']['tgljam_pool'], 'Y-m-d H:i:s');
+
+                $is_arrive = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'is_arrive');
+                $is_bongkaran = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'is_bongkaran');
+                $is_balik = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'is_balik');
+                $is_pool = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'is_pool');
+
+                if( !empty($is_arrive) ) {
+                    $tglTiba = $this->MkCommon->customDate($value['Ttuj']['tgljam_tiba'], 'Y-m-d H:i:s');
+                } else {
+                    $tglTiba = false;
+                }
+                if( !empty($is_bongkaran) ) {
+                    $tglBongkaran = $this->MkCommon->customDate($value['Ttuj']['tgljam_bongkaran'], 'Y-m-d H:i:s');
+                } else {
+                    $tglBongkaran = false;
+                }
+                if( !empty($is_balik) ) {
+                    $tglBalik = $this->MkCommon->customDate($value['Ttuj']['tgljam_balik'], 'Y-m-d H:i:s');
+                } else {
+                    $tglBalik = false;
+                }
+                if( !empty($is_pool) ) {
+                    $tglPool = $this->MkCommon->customDate($value['Ttuj']['tgljam_pool'], 'Y-m-d H:i:s');
+                } else {
+                    $tglPool = false;
+                }
+
                 $lakaDate = false;
                 $i = 0;
                 $differentTtuj = false;

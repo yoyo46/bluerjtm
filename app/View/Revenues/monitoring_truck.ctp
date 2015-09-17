@@ -152,7 +152,7 @@
                                                         'class' => 'icon-popup',
                                                     ));
                                                 }
-                                            } else {
+                                            } else if( !empty($data['to_date']) && $data['to_date'] != '-' ) {
                                                 $formTtuj .= $this->Html->tag('p', sprintf(__('Sampai Pool: %s', $data['to_date'])));
                                             }
 
