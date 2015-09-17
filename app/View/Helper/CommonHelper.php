@@ -1712,4 +1712,11 @@ class CommonHelper extends AppHelper {
         
         return $dtString;
     }
+
+    function _callStaticForm( $label, $value ) {
+        $content = $this->Html->tag('label', $label);
+        $content .= $this->Html->tag('div', $value);
+
+        return $content;
+    }
 }

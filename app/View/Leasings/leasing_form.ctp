@@ -1,4 +1,8 @@
 <?php
+		$value = !empty($value)?$value:false;
+		$vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
+		$date_last_installment = $this->Common->filterEmptyField($value, 'Leasing', 'date_last_installment');
+
 		$this->Html->addCrumb(__('Leasing'), array(
 			'controller' => 'leasings',
 			'action' => 'index'
@@ -30,13 +34,17 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-							echo $this->Form->input('vendor_id',array(
-								'label'=> __('Vendor Leasing *'), 
-								'class'=>'form-control',
-								'required' => false,
-								'empty' => __('Pilih Vendor'),
-								'options' => $leasing_companies
-							));
+		        			if( !empty($vendor) ) {
+		        				echo $this->Common->_callStaticForm(__('Vendor Leasing'), $vendor);
+		        			} else {
+								echo $this->Form->input('vendor_id',array(
+									'label'=> __('Vendor Leasing *'), 
+									'class'=>'form-control',
+									'required' => false,
+									'empty' => __('Pilih Vendor'),
+									'options' => $leasing_companies
+								));
+							}
 					?>
 		        </div>
 		        <div class="form-group">
@@ -64,7 +72,11 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-							echo $this->Form->label('tgl_lahir', __('Tgl Angsuran Terakhir *'));
+		        			if( !empty($date_last_installment) ) {
+		        				$customDateLastInstallment = $this->Common->formatDate($date_last_installment, 'd/m/Y');
+		        				echo $this->Common->_callStaticForm(__('Tgl Angsuran Terakhir'), $customDateLastInstallment);
+		        			} else {
+								echo $this->Form->label('tgl_lahir', __('Tgl Angsuran Terakhir *'));
 					?>
 					<div class="row">
 						<div class="col-sm-4">
@@ -104,7 +116,8 @@
 						</div>
 					</div>
 		        	<?php 
-							echo $this->Form->error('date_last_installment');
+								echo $this->Form->error('date_last_installment');
+							}
 		        	?>
 		        </div>
     		</div>
@@ -158,13 +171,17 @@
 ?>
 <div class="box-footer text-center action">
 	<?php
-			if( !empty($data_local['Leasing']['status']) || empty($data_local) ) {
-	    		echo $this->Form->button(__('Simpan'), array(
-					'div' => false, 
-					'class'=> 'btn btn-success',
-					'type' => 'submit',
-				));
-	    	}
+			if( empty($value) ) {
+				$status = $this->Common->filterEmptyField($data_local, 'Leasing', 'status');
+				
+				if( !empty($status) || empty($data_local) ) {
+		    		echo $this->Form->button(__('Simpan'), array(
+						'div' => false, 
+						'class'=> 'btn btn-success',
+						'type' => 'submit',
+					));
+		    	}
+		    }
 	    	
     		echo $this->Html->link(__('Kembali'), array(
 				'action' => 'index', 

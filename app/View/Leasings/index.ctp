@@ -94,6 +94,7 @@
                             $installment = $this->Common->filterEmptyField($value, 'Leasing', 'installment');
                             $paid_date = $this->Common->filterEmptyField($value, 'Leasing', 'paid_date');
                             $status = $this->Common->filterEmptyField($value, 'Leasing', 'status');
+                            $payment_status = $this->Common->filterEmptyField($value, 'Leasing', 'payment_status');
                             $branch_id = $this->Common->filterEmptyField($value, 'Leasing', 'branch_id');
                             // $company = $this->Common->filterEmptyField($value, 'LeasingCompany', 'name');
                             $company = $this->Common->filterEmptyField($value, 'Vendor', 'name');
@@ -108,9 +109,22 @@
                 <td>
                     <?php 
                             if(!empty($status)){
-                                echo $this->Html->tag('span', __('Active'), array(
-                                    'class' => 'label label-success',
-                                ));
+                                if( $payment_status == 'paid' ) {
+                                    echo $this->Html->tag('span', __('Lunas'), array(
+                                        'class' => 'label label-success',
+                                    ));
+                                } else if( $payment_status == 'half_paid' ) {
+                                    echo $this->Html->tag('span', __('Dibayar Sebagian'), array(
+                                        'class' => 'label label-primary',
+                                    ));
+                                } else {
+                                    echo $this->Html->tag('span', __('Belum Dibayar'), array(
+                                        'class' => 'label label-info',
+                                    ));
+                                }
+                                // echo $this->Html->tag('span', __('Active'), array(
+                                //     'class' => 'label label-success',
+                                // ));
                                 $labelBtn = __('Edit');
                             }else{
                                 echo $this->Html->tag('span', __('Void'), array(
@@ -122,33 +136,44 @@
                 </td>
                 <td class="action">
                     <?php
-                            echo $this->Html->link($labelBtn, array(
+                            echo $this->Html->link(__('Info'), array(
                                 'controller' => 'leasings',
-                                'action' => 'edit',
+                                'action' => 'detail',
                                 $id
                             ), array(
-                                'class' => 'btn btn-primary btn-xs',
+                                'class' => 'btn btn-info btn-xs',
                                 'branch_id' => $branch_id,
                             ));
 
-                            if(!empty($status)){
-                                echo $this->Html->link(__('Void'), array(
+                            if( $payment_status == 'unpaid' ) {
+                                echo $this->Html->link($labelBtn, array(
                                     'controller' => 'leasings',
-                                    'action' => 'toggle',
+                                    'action' => 'edit',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs',
+                                    'class' => 'btn btn-primary btn-xs',
                                     'branch_id' => $branch_id,
-                                ), __('Apakah Anda yakin akan void kontrak ini?'));
-                            }else{
-                                // echo $this->Html->link('Enable', array(
-                                //     'controller' => 'leasings',
-                                //     'action' => 'toggle',
-                                //     $id
-                                // ), array(
-                                //     'class' => 'btn btn-success btn-xs',
-                                //     'title' => 'enable status brand'
-                                // ), __('Apakah Anda yakin akan mengaktifkan kontrak ini?'));
+                                ));
+
+                                if( !empty($status) ){
+                                    echo $this->Html->link(__('Void'), array(
+                                        'controller' => 'leasings',
+                                        'action' => 'toggle',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-danger btn-xs',
+                                        'branch_id' => $branch_id,
+                                    ), __('Apakah Anda yakin akan void kontrak ini?'));
+                                }else{
+                                    // echo $this->Html->link('Enable', array(
+                                    //     'controller' => 'leasings',
+                                    //     'action' => 'toggle',
+                                    //     $id
+                                    // ), array(
+                                    //     'class' => 'btn btn-success btn-xs',
+                                    //     'title' => 'enable status brand'
+                                    // ), __('Apakah Anda yakin akan mengaktifkan kontrak ini?'));
+                                }
                             }
                     ?>
                 </td>

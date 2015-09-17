@@ -29,23 +29,32 @@
                         $total = 0;
 
                         for ($i=0; $i < $count; $i++) { 
-                            $price = ( !empty($this->request->data['LeasingDetail'][$i]['price']) ) ? $this->Common->convertPriceToString($this->request->data['LeasingDetail'][$i]['price'], 0) : 0;
+                            $detail = $this->request->data['LeasingDetail'][$i];
+                            $price = $this->Common->filterEmptyField($detail, 'price');
+                            $truck_id = $this->Common->filterEmptyField($detail, 'truck_id');
+                            $nopol = $this->Common->filterEmptyField($detail, 'Truck', 'nopol');
 
-                            if(!empty($price)){
-                                $total += $price;
+                            $customPrice = $this->Common->convertPriceToString($price, 0);
+
+                            if(!empty($customPrice)){
+                                $total += $customPrice;
                             }
                 ?>
                 <tr classs="child child-<?php echo $i; ?>" rel="<?php echo $i; ?>">
                     <td>
                         <?php
-                            echo $this->Form->input('LeasingDetail.truck_id.', array(
-                                'options' => !empty($trucks)?$trucks:false,
-                                'label' => false,
-                                'empty' => __('Pilih Truk'),
-                                'class' => 'form-control',
-                                'required' => false,
-                                'value' => (isset($this->request->data['LeasingDetail'][$i]['truck_id']) && !empty($this->request->data['LeasingDetail'][$i]['truck_id'])) ? $this->request->data['LeasingDetail'][$i]['truck_id'] : ''
-                            ));
+                                if( !empty($value) && !empty($nopol) ) {
+                                    echo $nopol;
+                                } else {
+                                    echo $this->Form->input('LeasingDetail.truck_id.', array(
+                                        'options' => !empty($trucks)?$trucks:false,
+                                        'label' => false,
+                                        'empty' => __('Pilih Truk'),
+                                        'class' => 'form-control',
+                                        'required' => false,
+                                        'value' => $truck_id,
+                                    ));
+                                }
                         ?>
                     </td>
                     <td align="right box-price">
@@ -55,7 +64,7 @@
                                 'label' => false,
                                 'class' => 'form-control price-leasing-truck input_price input_number text-right',
                                 'required' => false,
-                                'value' => $price
+                                'value' => $customPrice
                             ));
                         ?>
                     </td>

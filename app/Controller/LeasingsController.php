@@ -70,11 +70,37 @@ class LeasingsController extends AppController {
 
     function detail($id = false){
         if(!empty($id)){
-            $truck = $this->Leasing->getLeasing($id);
+            $value = $this->Leasing->getData('first', array(
+                'conditions' => array(
+                    'Leasing.id' => $id
+                ),
+                'contain' => array(
+                    'LeasingDetail'
+                ),
+            ), array(
+                'status' => 'all',
+            ));
 
-            if(!empty($truck)){
+            if(!empty($value)){
                 $sub_module_title = __('Detail Leasing');
-                $this->set(compact('truck', 'sub_module_title'));
+                $vendor_id = $this->MkCommon->filterEmptyField($value, 'Leasing', 'vendor_id');
+
+                $value = $this->Leasing->Vendor->getMerge($value, $vendor_id);
+
+                if( !empty($value['LeasingDetail']) ) {
+                    foreach ($value['LeasingDetail'] as $key => $detail) {
+                        $truck_id = $this->MkCommon->filterEmptyField($detail, 'truck_id');
+
+                        $detail = $this->Leasing->LeasingDetail->Truck->getMerge($detail, $truck_id);
+                        $value['LeasingDetail'][$key] = $detail;
+                    }
+                }
+
+                $this->request->data = $value;
+                $this->set(compact(
+                    'value', 'sub_module_title'
+                ));
+                $this->render('leasing_form');
             }else{
                 $this->MkCommon->setCustomFlash(__('Leasing tidak ditemukan.'), 'error');
                 $this->redirect($this->referer());

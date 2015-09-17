@@ -25,6 +25,10 @@ class LeasingDetail extends AppModel {
             'className' => 'Leasing',
             'foreignKey' => 'leasing_id',
         ),
+        'Truck' => array(
+            'className' => 'Truck',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
 	function getData($find, $options = false){
