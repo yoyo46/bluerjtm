@@ -295,9 +295,10 @@
                                 echo $this->Html->tag('td', $this->Number->format($grandtotalTagihanCust, '', array('places' => 0)), array(
                                     'style' => 'font-weight: bold;text-align: right;',
                                 ));
-                                echo $this->Html->tag('td', $this->Number->format($grandtotalCust, '', array('places' => 0)), array(
-                                    'style' => 'font-weight: bold;text-align: right;',
-                                ));
+                                echo $this->Html->tag('td', '');
+                                // echo $this->Html->tag('td', $this->Number->format($grandtotalCust, '', array('places' => 0)), array(
+                                //     'style' => 'font-weight: bold;text-align: right;',
+                                // ));
                                 echo $this->Html->tag('td', $this->Number->format($grandtotalColectionCust, '', array('places' => 0)), array(
                                     'style' => 'font-weight: bold;text-align: right;',
                                 ));
@@ -326,9 +327,10 @@
                             echo $this->Html->tag('td', $this->Number->format($grandtotalTagihan, '', array('places' => 0)), array(
                                 'style' => 'font-weight: bold;text-align: right;',
                             ));
-                            echo $this->Html->tag('td', $this->Number->format($grandtotal, '', array('places' => 0)), array(
-                                'style' => 'font-weight: bold;text-align: right;',
-                            ));
+                            echo $this->Html->tag('td', '');
+                            // echo $this->Html->tag('td', $this->Number->format($grandtotal, '', array('places' => 0)), array(
+                            //     'style' => 'font-weight: bold;text-align: right;',
+                            // ));
                             echo $this->Html->tag('td', $this->Number->format($grandtotalColection, '', array('places' => 0)), array(
                                 'style' => 'font-weight: bold;text-align: right;',
                             ));

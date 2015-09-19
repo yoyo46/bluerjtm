@@ -4383,7 +4383,7 @@ class RevenuesController extends AppController {
             ));
             $totalAr['Invoice'][$month] = !empty($invoice[0]['total'])?$invoice[0]['total']:0;
 
-            if( $month <= date('Y-m') ) {
+            if( $month <= date('Y-12') ) {
                 $conditionsInvoice = $defaultConditionsInvoice;
                 $conditionsInvoice['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <'] = $month;
                 $invoice = $this->Invoice->getData('first', array(
@@ -4825,10 +4825,78 @@ class RevenuesController extends AppController {
             $this->loadModel('Revenue');
             $validasi = false;
             $arr_id = array();
+
             foreach ($this->request->data['Revenue']['revenue_id'] as $key => $value) {
                 if(!empty($value)){
                     $validasi = true;
                     $arr_id[] = $value;
+                }
+            }
+
+            $revenuDetails = $this->Revenue->RevenueDetail->getData('all', array(
+                'conditions' => array(
+                    'RevenueDetail.revenue_id' => $arr_id,
+                ),
+            ));
+
+            if( !empty($revenuDetails) ) {
+                foreach ($revenuDetails as $key => $detail) {
+                    $revenue_detail_id = $this->MkCommon->filterEmptyField($detail, 'RevenueDetail', 'id');
+                    $tarif_angkutan_type = $this->MkCommon->filterEmptyField($detail, 'RevenueDetail', 'tarif_angkutan_type');
+                    $jenis_unit_angkutan = $this->MkCommon->filterEmptyField($detail, 'RevenueDetail', 'payment_type');
+                    $is_charge = $this->MkCommon->filterEmptyField($detail, 'RevenueDetail', 'is_charge');
+                    $revenue_id = $this->MkCommon->filterEmptyField($detail, 'RevenueDetail', 'revenue_id');
+                    $price_unit = $this->MkCommon->filterEmptyField($detail, 'RevenueDetail', 'price_unit');
+                    $qty = $this->MkCommon->filterEmptyField($detail, 'RevenueDetail', 'qty_unit');
+
+                    $detail = $this->Revenue->getMerge($detail, false, $revenue_id, 'first');
+                    $jenis_unit = $this->MkCommon->filterEmptyField($detail, 'Revenue', 'revenue_tarif_type');
+
+                    if( ( $jenis_unit_angkutan != 'per_truck' && ( $tarif_angkutan_type != 'angkut' && !empty($is_charge) ) ) || $jenis_unit == 'per_unit' ) {
+                        $flagShowPrice = true;
+                    } else {
+                        $flagShowPrice = false;
+                    }
+
+                    $value_price = 0;
+
+                    if( $flagShowPrice ) {
+                        if( !empty($qty) && $jenis_unit_angkutan == 'per_unit' ){
+                            $value_price = $price_unit * $qty;
+                        }else if( $jenis_unit_angkutan == 'per_truck' ){
+                            $value_price = $price_unit;
+                        }
+
+                        $this->Revenue->RevenueDetail->set('total_price_unit', $value_price);
+                        $this->Revenue->RevenueDetail->id = $revenue_detail_id;
+                        $this->Revenue->RevenueDetail->save();
+                    }
+                }
+
+                $revenues = $this->Revenue->RevenueDetail->getData('all', array(
+                    'conditions' => array(
+                        'RevenueDetail.revenue_id' => $arr_id,
+                    ),
+                    'group' => array(
+                        'RevenueDetail.revenue_id'
+                    ),
+                    'fields'=> array(
+                        'RevenueDetail.revenue_id', 
+                        'SUM(RevenueDetail.total_price_unit) as total',
+                    ),
+                ), true, array(
+                    'branch' => false,
+                ));
+
+                if( !empty($revenues) ) {
+                    foreach ($revenues as $key => $revenue) {
+                        $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'RevenueDetail', 'revenue_id');
+                        $total = !empty($revenue[0]['total'])?$revenue[0]['total']:0;
+
+                        $this->Revenue->set('total', $total);
+                        $this->Revenue->id = $revenue_id;
+                        $this->Revenue->save();
+                    }
                 }
             }
 
@@ -5786,20 +5854,17 @@ class RevenuesController extends AppController {
         if( !empty($customers) ) {
             foreach ($customers as $key => $customer) {
                 $conditions['Revenue.customer_id'] = $customer['Customer']['id'];
-                $revenues = $this->Revenue->getData('all', array(
+                $revenues = $this->Revenue->RevenueDetail->getData('all', array(
                     'conditions' => $conditions,
                     'contain' => array(
-                        'CustomerNoType',
-                    ),
-                    'order' => array(
-                        'CustomerNoType.name' => 'ASC', 
+                        'Revenue',
                     ),
                     'group' => array(
                         'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\')'
                     ),
                     'fields'=> array(
                         'Revenue.customer_id', 
-                        'SUM(Revenue.total) as total',
+                        'SUM(RevenueDetail.total_price_unit) as total',
                         'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') as dt',
                     ),
                 ), true, array(
