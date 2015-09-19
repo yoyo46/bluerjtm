@@ -165,6 +165,7 @@ class AppController extends Controller {
 				),
 				'revenues' => array(
 					'search', 'ttuj_edit', 'info_truk',
+					'surat_jalan_outstanding'
 				),
 			);
 			Configure::write('__Site.allowed_module', $_allowedModule);

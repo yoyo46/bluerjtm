@@ -253,7 +253,7 @@ class RevenuesController extends AppController {
                 $group_motor_id = 0;
                 $dataValidate['TtujTipeMotor']['tipe_motor_id'] = $tipe_motor_id;
                 $dataValidate['TtujTipeMotor']['color_motor_id'] = !empty($data['TtujTipeMotor']['color_motor_id'][$key])?$data['TtujTipeMotor']['color_motor_id'][$key]:false;
-                $dataValidate['TtujTipeMotor']['qty'] = !empty($data['TtujTipeMotor']['qty'][$key])?$data['TtujTipeMotor']['qty'][$key]:false;
+                $dataValidate['TtujTipeMotor']['qty'] = !empty($data['TtujTipeMotor']['qty'][$key])?trim($data['TtujTipeMotor']['qty'][$key]):false;
 
                 if( $data_action == 'retail' ) {
                     $dataValidate['TtujTipeMotor']['city_id'] = !empty($data['TtujTipeMotor']['city_id'][$key])?$data['TtujTipeMotor']['city_id'][$key]:false;
@@ -299,7 +299,7 @@ class RevenuesController extends AppController {
                         $tarif_angkutan_type = $tarifDefault['tarif_angkutan_type'];
                     }
 
-                    $qtyMuatan = !empty($dataValidate['TtujTipeMotor']['qty'])?$dataValidate['TtujTipeMotor']['qty']:0;
+                    $qtyMuatan = !empty($dataValidate['TtujTipeMotor']['qty'])?trim($dataValidate['TtujTipeMotor']['qty']):0;
                     $totalTarif += $priceUnit*$qtyMuatan;
                     $dataRevenue['RevenueDetail'] = array(
                         'revenue_id' => $revenue_id,
@@ -360,7 +360,7 @@ class RevenuesController extends AppController {
             }
 
             foreach ($dataTtujPerlengkapan as $key => $qty) {
-                $dataValidate['TtujPerlengkapan']['qty'] = $qty;
+                $dataValidate['TtujPerlengkapan']['qty'] = trim($qty);
                 $dataValidate['TtujPerlengkapan']['perlengkapan_id'] = !empty($data['TtujPerlengkapan']['id'][$key])?$data['TtujPerlengkapan']['id'][$key]:false;
                 $this->TtujPerlengkapan->set($dataValidate);
 
