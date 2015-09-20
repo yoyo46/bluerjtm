@@ -4048,7 +4048,10 @@ class RevenuesController extends AppController {
             if( $data_print == 'header' ) {
                 $this->loadModel('Setting');
                 $setting = $this->Setting->find('first');
+                $billing_id = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'billing_id');
+
                 $invoice = $this->Revenue->RevenueDetail->getSumUnit($invoice, $invoice['Invoice']['id']);
+                $invoice = $this->User->getMerge($invoice, $billing_id);
             } else {
                 $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($invoice['Invoice']['id'], $invoice['Invoice']['tarif_type'], $action_print, $data_print, $revenueDetailId);
             }

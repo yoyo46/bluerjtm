@@ -1,6 +1,6 @@
 <?php
 		$qty_unit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
-        $full_name = !empty($invoice['User']['full_name'])?$invoice['User']['full_name']:false;
+        $full_name = $this->Common->filterEmptyField($invoice, 'Employe', 'full_name');
 
 if($action_print == 'pdf'){
 	App::import('Vendor','xtcpdf');
