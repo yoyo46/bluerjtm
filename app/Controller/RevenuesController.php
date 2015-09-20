@@ -3059,12 +3059,13 @@ class RevenuesController extends AppController {
                     );
                 }
 
-                $conditionsNopol = $this->City->getCityIdPlants( $conditionsNopol );
                 $truckSearch = $this->Ttuj->Truck->getData('list', array(
                     'conditions' => $conditionsNopol,
                     'fields' => array(
                         'Truck.id', 'Truck.id',
                     ),
+                ), true, array(
+                    'branch' => false,
                 ));
                 $conditions['Ttuj.truck_id'] = $truckSearch;
             }
@@ -6063,6 +6064,16 @@ class RevenuesController extends AppController {
                         break;
                 }
             }
+
+            $options['conditions'] = $this->MkCommon->_callSearchNopol($options['conditions'], $refine, 'Ttuj.truck_id');
+            $options['conditions'] = $this->MkCommon->_callRefineGenerating($options['conditions'], $refine, array(
+                array(
+                    'modelName' => 'Ttuj',
+                    'fieldName' => 'city',
+                    'conditionName' => 'Ttuj.to_city_name',
+                    'operator' => 'LIKE',
+                ),
+            ));
 
             $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $options );
         }

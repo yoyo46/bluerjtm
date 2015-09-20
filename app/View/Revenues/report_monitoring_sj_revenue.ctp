@@ -56,6 +56,36 @@
                 </div>
                 <div class="form-group">
                     <?php 
+                            echo $this->Form->label('type', __('Truk'));
+                    ?>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <?php 
+                                    echo $this->Form->input('Ttuj.type',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                        'empty' => false,
+                                        'options' => array(
+                                            '1' => __('Nopol'),
+                                            '2' => __('ID Truk'),
+                                        ),
+                                    ));
+                            ?>
+                        </div>
+                        <div class="col-sm-8">
+                            <?php 
+                                    echo $this->Form->input('Ttuj.nopol',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                    ));
+                            ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <?php 
                             echo $this->Form->input('status',array(
                                 'label'=> __('Status Surat Jalan'),
                                 'class'=>'form-control',
@@ -94,6 +124,15 @@
                                 'class'=>'form-control',
                                 'empty' => __('Pilih Customer'),
                                 'options' => $customerList,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('city',array(
+                                'label'=> __('Kota Tujuan'),
+                                'class'=>'form-control',
+                                'required' => false,
                             ));
                     ?>
                 </div>
@@ -286,7 +325,8 @@
                             $cntAvgLeadSjInvoiced = 0;
 
                             foreach ($ttujs as $key => $ttuj) {
-                                $city_name = !empty($ttuj['city_name'])?$ttuj['city_name']:'-';
+                                $city_name = $this->Common->filterEmptyField($ttuj, 'Ttuj', 'to_city_name');
+
                                 $unit = !empty($ttuj['Qty'])?$ttuj['Qty']:0;
                                 $unitSj = !empty($ttuj['QtySJ'])?$ttuj['QtySJ']:0;
                                 $unitSjNotRecipt = $unit - $unitSj;

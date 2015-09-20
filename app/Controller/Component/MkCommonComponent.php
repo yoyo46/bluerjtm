@@ -1044,5 +1044,73 @@ class MkCommonComponent extends Component {
     function _callDateView ( $dateFrom, $dateTo ) {
         return sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
     }
+
+    function _callSearchNopol ( $conditions, $refine, $fieldName ){
+        $nopol = $this->filterEmptyField($refine, 'nopol');
+
+        if(!empty($nopol)){
+            $this->Truck = ClassRegistry::init('Truck'); 
+            $type = !empty($refine['type'])?$refine['type']:1;
+
+            $nopol = urldecode($nopol);
+            $type = urldecode($type);
+
+            if( $type == 2 ) {
+                $conditionsNopol = array(
+                    'Truck.id' => $nopol,
+                );
+            } else {
+                $conditionsNopol = array(
+                    'Truck.nopol LIKE' => '%'.$nopol.'%',
+                );
+            }
+
+            $truckId = $this->Truck->getData('list', array(
+                'conditions' => $conditionsNopol,
+                'fields' => array(
+                    'Truck.id', 'Truck.id',
+                ),
+            ), true, array(
+                'branch' => false,
+            ));
+            $conditions[$fieldName] = $truckId;
+
+            $this->controller->request->data['Ttuj']['nopol'] = $nopol;
+            $this->controller->request->data['Ttuj']['type'] = $type;
+        }
+
+        return $conditions;
+    }
+
+    function _callRefineGenerating ( $conditions, $refine, $values ) {
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $fieldName = $this->filterEmptyField($value, 'fieldName');
+                $modelName = $this->filterEmptyField($value, 'modelName');
+                $conditionName = $this->filterEmptyField($value, 'conditionName');
+                $operator = $this->filterEmptyField($value, 'operator');
+
+                $keyword = $this->filterEmptyField($refine, $fieldName);
+
+                if(!empty($keyword)){
+                    $keyword = urldecode($keyword);
+                    $operator = strtolower($operator);
+                    
+                    $this->controller->request->data[$modelName][$fieldName] = $keyword;
+
+                    switch ($operator) {
+                        case 'like':
+                            $conditionName .= ' LIKE';
+                            $keyword = '%'.$keyword.'%';
+                            break;
+                    }
+
+                    $conditions[$conditionName] = $keyword;
+                }
+            }
+        }
+
+        return $conditions;
+    }
 }
 ?>
