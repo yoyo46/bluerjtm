@@ -792,6 +792,7 @@ class AjaxController extends AppController {
 		$this->loadModel('Revenue');
 		$this->loadModel('Bank');
 		$this->loadModel('Customer');
+
 		$conditions = array(
 			'Revenue.customer_id' => $customer_id,
 			'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
@@ -855,6 +856,7 @@ class AjaxController extends AppController {
 		if(!empty($revenueDetail) && !empty($customer)){
 			$monthFrom = !empty($revenueDetail[0]['period_from'])?$this->MkCommon->customDate($revenueDetail[0]['period_from'], 'Y-m'):false;
 			$monthTo = !empty($revenueDetail[0]['period_to'])?$this->MkCommon->customDate($revenueDetail[0]['period_to'], 'Y-m'):false;
+			
 			$this->request->data['Invoice']['bank_id'] = !empty($customer['Customer']['bank_id'])?$customer['Customer']['bank_id']:false;
 			$this->request->data['Invoice']['period_from'] = !empty($revenueDetail[0]['period_from'])?$this->MkCommon->customDate($revenueDetail[0]['period_from'], 'd/m/Y'):false;
 			$this->request->data['Invoice']['period_to'] = !empty($revenueDetail[0]['period_to'])?$this->MkCommon->customDate($revenueDetail[0]['period_to'], 'd/m/Y'):false;

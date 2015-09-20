@@ -87,17 +87,33 @@ class CustomerGroupPattern extends AppModel {
     function addPattern ( $customer, $data ) {
         $last_number = false;
 
-        if( !empty($customer['CustomerGroup']['CustomerGroupPattern']) ) {
-            $last_number = str_replace($customer['CustomerGroup']['CustomerGroupPattern']['pattern'], '', $data['Invoice']['no_invoice']);
+        if( !empty($customer['CustomerGroupPattern']) ) {
+            $last_number = str_replace($customer['CustomerGroupPattern']['pattern'], '', $data['Invoice']['no_invoice']);
             $last_number = intval($last_number)+1;
             $this->set('last_number', $last_number);
-            $this->id = $customer['CustomerGroup']['CustomerGroupPattern']['id'];
+            $this->id = $customer['CustomerGroupPattern']['id'];
             $this->save();
 
-            $last_number = sprintf('%s%s', str_pad($last_number, $customer['CustomerGroup']['CustomerGroupPattern']['min_digit'], '0', STR_PAD_LEFT), $customer['CustomerGroup']['CustomerGroupPattern']['pattern']);
+            $last_number = sprintf('%s%s', str_pad($last_number, $customer['CustomerGroupPattern']['min_digit'], '0', STR_PAD_LEFT), $customer['CustomerGroupPattern']['pattern']);
         }
 
         return $last_number;
+    }
+
+    function getMerge( $data, $id ){
+        if(empty($data['CustomerGroupPattern'])){
+            $data_merge = $this->getData('first', array(
+                'conditions' => array(
+                    'CustomerGroupPattern.customer_group_id' => $id
+                ),
+            ));
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
     }
 }
 ?>

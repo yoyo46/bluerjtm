@@ -3840,6 +3840,9 @@ class RevenuesController extends AppController {
             ));
 
             if( !empty($customer) ) {
+                $customer_group_id = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_group_id');
+                $customer = $this->Customer->CustomerGroup->CustomerGroupPattern->getMerge($customer, $customer_group_id);
+
                 $data['Invoice']['billing_id'] = $customer['Customer']['billing_id'];
                 $data['Invoice']['term_of_payment'] = $customer['Customer']['term_of_payment'];
 
