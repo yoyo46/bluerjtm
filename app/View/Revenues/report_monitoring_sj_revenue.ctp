@@ -410,7 +410,8 @@
                     <?php 
                             echo $this->Html->tag('td', $this->Html->link($ttuj['Ttuj']['no_ttuj'], array(
                                 'controller' => 'revenues',
-                                'action' => 'ttuj_edit',
+                                'action' => 'info_truk',
+                                'ttuj',
                                 $ttuj['Ttuj']['id']
                             ), array(
                                 'target' => '_blank',
