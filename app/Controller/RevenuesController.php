@@ -6068,6 +6068,25 @@ class RevenuesController extends AppController {
 
                         $options['conditions']['Ttuj.id'] = $revenues;
                         break;
+
+                    case 'sj_receipt_paid':
+                        $options['conditions']['Ttuj.is_sj_completed'] = 0;
+                        $revenueConditions = !empty($options['conditions'])?$options['conditions']:false;
+                        $revenueConditions['Revenue.transaction_status'] = 'invoiced';
+                        $revenues = $this->Revenue->getData('list', array(
+                            'conditions' => $revenueConditions,
+                            'contain' => array(
+                                'Ttuj'
+                            ),
+                            'fields' => array(
+                                'Revenue.id', 'Revenue.ttuj_id'
+                            ),
+                        ), true, array(
+                            'status' => 'all',
+                        ));
+
+                        $options['conditions']['Ttuj.id'] = $revenues;
+                        break;
                 }
             }
 

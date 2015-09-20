@@ -2723,16 +2723,18 @@ var get_document_cashbank = function(){
 }
 
 var convert_number = function ( num, type ) {
-    num = num.replace(/,/gi, "").replace(/ /gi, "").replace(/IDR/gi, "").replace(/Rp/gi, "");
+    if( typeof num != 'undefined' ) {
+        num = num.replace(/,/gi, "").replace(/ /gi, "").replace(/IDR/gi, "").replace(/Rp/gi, "");
 
-    if( type == 'int' ) {
-        num = parseInt(num);
-    } else if( type == 'float' ) {
-        num = parseFloat(num);
-    }
+        if( type == 'int' ) {
+            num = parseInt(num);
+        } else if( type == 'float' ) {
+            num = parseFloat(num);
+        }
 
-    if( isNaN(num) ) {
-        num = 0;
+        if( isNaN(num) ) {
+            num = 0;
+        }
     }
 
     return num;

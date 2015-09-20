@@ -96,6 +96,7 @@
                                     'hal_receipt' => __('Surat jalan Sebagian Diterima'),
                                     'receipt' => __('Surat jalan Diterima'),
                                     'receipt_unpaid' => __('Surat jalan diterima belum ditagih'),
+                                    'sj_receipt_paid' => __('Surat jalan Belum Diterima sudah ditagih'),
                                 ),
                             ));
                     ?>
@@ -282,7 +283,7 @@
                             ));
                             echo $this->Html->tag('th', __('SJ KEMBALI BELUM TERTAGIH'), array(
                                 'style' => 'text-align: center;',
-                                'data-options' => 'field:\'sj_not_receipt_not_invoice\',width:120',
+                                'data-options' => 'field:\'sj_not_receipt_not_invoice\',width:120,styler:cellStyler',
                                 'align' => 'center',
                             ));
                             echo $this->Html->tag('th', __('SJ BELUM TERTAGIH'), array(
@@ -408,6 +409,12 @@
                 ?>
                 <tr>
                     <?php 
+                            if( $unitJSUnInvoiced < 0 ) {
+                                $addStyleSj = 'background-color:#f2dede;color:#a94442;';
+                            } else {
+                                $addStyleSj = '';
+                            }
+
                             echo $this->Html->tag('td', $this->Html->link($ttuj['Ttuj']['no_ttuj'], array(
                                 'controller' => 'revenues',
                                 'action' => 'info_truk',
@@ -439,7 +446,7 @@
                             ));
                             echo $this->Html->tag('td', $unitJSUnInvoiced, array(
                                 'align' => 'center',
-                                'style' => 'text-align: center;',
+                                'style' => 'text-align: center;'.$addStyleSj,
                             ));
                             echo $this->Html->tag('td', $unitUnInvoiced, array(
                                 'align' => 'center',
@@ -472,6 +479,12 @@
                 ?>
                 <tr>
                     <?php 
+                            if( $totalUnitJSUnInvoiced < 0 ) {
+                                $addStyleSj = 'background-color:#f2dede;color:#a94442;';
+                            } else {
+                                $addStyleSj = '';
+                            }
+
                             echo $this->Html->tag('td', '', array(
                                 'align' => 'center',
                                 'style' => 'text-align: center;',
@@ -508,7 +521,7 @@
                             ));
                             echo $this->Html->tag('td', $this->Html->tag('strong', $totalUnitJSUnInvoiced), array(
                                 'align' => 'center',
-                                'style' => 'text-align: center;',
+                                'style' => 'text-align: center;'.$addStyleSj,
                             ));
                             echo $this->Html->tag('td', $this->Html->tag('strong', $totalUnitUnInvoiced), array(
                                 'align' => 'center',
@@ -768,6 +781,12 @@
                     $totalUnitJSUnInvoiced += $unitJSUnInvoiced;
                     $totalUnitUnInvoiced += $unitUnInvoiced;
 
+                    if( $unitJSUnInvoiced < 0 ) {
+                        $addStyleSj = 'background-color:#f2dede;color:#a94442;';
+                    } else {
+                        $addStyleSj = '';
+                    }
+
                     $each_loop_message .= '<tr>';
                     $each_loop_message .= $this->Html->tag('td', $this->Html->link($ttuj['Ttuj']['no_ttuj'], array(
                         'controller' => 'revenues',
@@ -798,7 +817,7 @@
                         'style' => 'text-align: center;',
                     ));
                     $each_loop_message .= $this->Html->tag('td', $unitJSUnInvoiced, array(
-                        'style' => 'text-align: center;',
+                        'style' => 'text-align: center;'.$addStyleSj,
                     ));
                     $each_loop_message .= $this->Html->tag('td', $unitUnInvoiced, array(
                         'style' => 'text-align: center;',
@@ -819,6 +838,12 @@
                         'style' => 'text-align: center;',
                     ));
                     $each_loop_message .= '</tr>';
+                }
+
+                if( $totalUnitJSUnInvoiced < 0 ) {
+                    $addStyleSj = 'background-color:#f2dede;color:#a94442;';
+                } else {
+                    $addStyleSj = '';
                 }
 
                 $each_loop_message .= '<tr>';
@@ -849,7 +874,7 @@
                     'style' => 'text-align: center;',
                 ));
                 $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', $totalUnitJSUnInvoiced), array(
-                    'style' => 'text-align: center;',
+                    'style' => 'text-align: center;'.$addStyleSj,
                 ));
                 $each_loop_message .= $this->Html->tag('td', $this->Html->tag('strong', $totalUnitUnInvoiced), array(
                     'style' => 'text-align: center;',
@@ -936,3 +961,16 @@ EOD;
         readfile($path.'/'.$filename);
     }
 ?>
+<script type="text/javascript">
+    function cellStyler(value,row,index, rel){
+        if( isNaN(value) ) {
+            value = parseInt($(value).filter('strong').html());
+        }
+
+        if( value < 0 ) {
+            return 'background-color:#f2dede;color:#a94442;';
+        } else {
+            return false;
+        }
+    }
+</script>
