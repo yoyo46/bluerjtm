@@ -176,9 +176,7 @@
                                                 $icon = $this->Common->photo_thumbnail(array(
                                                     'save_path' => Configure::read('__Site.truck_photo_folder'), 
                                                     'src' => $data['icon'], 
-                                                    'thumb'=>true,
                                                     'size' => 's',
-                                                    'thumb' => true,
                                                 ), array(
                                                     'class' => 'ico-calendar',
                                                 ));
@@ -188,12 +186,14 @@
                                                 ));
                                             }
                                             if( !empty($data['iconPopup']) ) {
+                                                if( empty($data['icon']) ) {
+                                                    $data['icon'] = $data['iconPopup'];
+                                                }
+
                                                 $icon .= $this->Common->photo_thumbnail(array(
                                                     'save_path' => Configure::read('__Site.truck_photo_folder'), 
                                                     'src' => $data['icon'], 
-                                                    'thumb'=>true,
                                                     'size' => 's',
-                                                    'thumb' => true,
                                                 ), array(
                                                     'class' => 'icon-popup',
                                                 ));
