@@ -28,17 +28,39 @@ class ProductsController extends AppController {
 	public function categories() {
         $this->loadModel('ProductCategory');
 		$this->set('active_menu', 'product_categories');
-		$this->set('sub_module_title', __('Kategori Barang'));
+		$this->set('sub_module_title', __('Grup Barang'));
         $conditions = array();
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
+            $parent_id = false;
 
-            if(!empty($refine['category'])){
-                $value = urldecode($refine['category']);
-                $this->request->data['ProductCategory']['name'] = $value;
-                $conditions['ProductCategory.name LIKE'] = '%'.$value.'%';
+            if( !empty($refine['parent']) ) {
+                $value = urldecode($refine['parent']);
+                $parent_id = $this->ProductCategory->getData('list', array(
+                    'conditions' => array(
+                        'ProductCategory.name LIKE' => '%'.$value.'%',
+                    ),
+                    'fields' => array(
+                        'ProductCategory.id', 'ProductCategory.id',
+                    ),
+                ));
             }
+
+            $conditions = $this->MkCommon->_callRefineGenerating($conditions, $refine, array(
+                array(
+                    'modelName' => 'ProductCategory',
+                    'fieldName' => 'name',
+                    'conditionName' => 'ProductCategory.name',
+                    'operator' => 'LIKE',
+                ),
+                array(
+                    'modelName' => 'ProductCategory',
+                    'fieldName' => 'parent',
+                    'conditionName' => 'ProductCategory.parent_id',
+                    'keyword' => $parent_id,
+                ),
+            ));
         }
 
         $this->paginate = $this->ProductCategory->getData('paginate', array(
@@ -46,18 +68,27 @@ class ProductsController extends AppController {
         ));
         $productCategories = $this->paginate('ProductCategory');
 
+        if( !empty($productCategories) ) {
+            foreach ($productCategories as $key => $value) {
+                $parent_id = $this->MkCommon->filterEmptyField($value, 'ProductCategory', 'parent_id');
+                
+                $value = $this->ProductCategory->getMerge($value, $parent_id, 'Parent');
+                $productCategories[$key] = $value;
+            }
+        }
+
         $this->set('productCategories', $productCategories);
 	}
 
     function category_add(){
         $this->loadModel('ProductCategory');
-        $this->set('sub_module_title', __('Tambah Kategori Barang'));
+        $this->set('sub_module_title', __('Tambah Grup Barang'));
         $this->doProductCategory();
     }
 
     function category_edit($id){
         $this->loadModel('ProductCategory');
-        $this->set('sub_module_title', 'Ubah Kategori Barang');
+        $this->set('sub_module_title', 'Ubah Grup Barang');
         $productCategory = $this->ProductCategory->getData('first', array(
             'conditions' => array(
                 'ProductCategory.id' => $id
@@ -67,7 +98,7 @@ class ProductsController extends AppController {
         if(!empty($productCategory)){
             $this->doProductCategory($id, $productCategory);
         }else{
-            $this->MkCommon->setCustomFlash(__('Kategori Barang tidak ditemukan'), 'error');  
+            $this->MkCommon->setCustomFlash(__('Grup Barang tidak ditemukan'), 'error');  
             $this->redirect(array(
                 'controller' => 'products',
                 'action' => 'categories'
@@ -96,25 +127,27 @@ class ProductsController extends AppController {
                     $this->params['old_data'] = $data_local;
                     $this->params['data'] = $data;
 
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Kategori Barang'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Kategori Barang #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Grup Barang'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Grup Barang #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
                     $this->redirect(array(
                         'controller' => 'products',
                         'action' => 'categories'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Kategori Barang'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Kategori Barang'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Grup Barang'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Grup Barang'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
                 }
             }else{
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Kategori Barang'), $msg), 'error');
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Grup Barang'), $msg), 'error');
             }
         } else if( !empty($data_local) ){
             $this->request->data = $data_local;
         }
 
+        $categories = $this->ProductCategory->getListParent( $id );
+
         $this->set(compact(
-            'data_local'
+            'data_local', 'categories'
         ));
         $this->set('active_menu', 'product_categories');
         $this->render('category_form');
@@ -139,13 +172,13 @@ class ProductsController extends AppController {
 
             if($this->ProductCategory->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Kategori Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Grup Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Kategori Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Grup Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
             }
         }else{
-            $this->MkCommon->setCustomFlash(__('Kategori Barang tidak ditemukan.'), 'error');
+            $this->MkCommon->setCustomFlash(__('Grup Barang tidak ditemukan.'), 'error');
         }
 
         $this->redirect($this->referer());
@@ -289,12 +322,12 @@ class ProductsController extends AppController {
             }
         }
 
-        $this->paginate = $this->ProductBrand->getData('paginate', $options);
-        $productBrands = $this->paginate('ProductBrand');
+        $this->paginate = $this->Product->getData('paginate', $options);
+        $values = $this->paginate('Product');
 
-        $this->set('active_menu', 'product_brands');
-        $this->set('sub_module_title', __('Merk Barang'));
-        $this->set('productBrands', $productBrands);
+        $this->set('active_menu', 'products');
+        $this->set('sub_module_title', __('Barang'));
+        $this->set('values', $values);
     }
 
     function add(){

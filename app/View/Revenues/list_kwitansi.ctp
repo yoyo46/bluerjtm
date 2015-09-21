@@ -113,12 +113,6 @@
     </div>
 </div>
 
-<style type="text/css">
-    .list_kwitansi .datagrid-body table tr td a {
-        color: #FFFFFF;
-    }
-</style>
-
 <section class="content invoice list_kwitansi">
     <h2 class="page-header">
         <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
@@ -155,13 +149,13 @@
                     doc_status = doc_status.toLowerCase();
 
                     if ( doc_status == 'void' ){
-                        return 'background-color:#d9534f;color:#fff;';
+                        return 'background-color:#f2dede;';
                     } else if ( doc_status == 'half paid' ){
-                        return 'background-color:#337ab7;color:#fff;';
+                        return 'background-color:#d9edf7;';
                     } else if ( doc_status == 'paid' ){
-                        return 'background-color:#5cb85c;color:#fff;';
+                        return 'background-color:#dff0d8;';
                     } else if ( doc_status == 'unpaid' ){
-                        return 'background-color:#777;color:#fff;';
+                        return 'background-color:#f5f5f5;';
                     }
                 }
             ">
@@ -304,7 +298,7 @@
                                 ), array(
                                     'target' => '_blank'
                                 )), array(
-                                'style' => 'text-align: left;vertical-align: middle;color: #FFFFFF;',
+                                'style' => 'text-align: left;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
@@ -619,7 +613,7 @@ EOD;
         status_doc = status_doc.toLowerCase();
 
         if( status_doc == 'unpaid' ) {
-            return 'background-color:#777;color:#FFFFFF;';
+            return 'background-color:#f5f5f5;';
         }
     }
 </script>

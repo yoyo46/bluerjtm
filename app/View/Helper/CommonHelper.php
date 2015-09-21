@@ -591,15 +591,19 @@ class CommonHelper extends AppHelper {
     function getInvoiceStatusContent ( $data ) {
         $statusContent = $this->Html->tag('span', sprintf(__('Unpaid : %s'), $data['InvoiceUnpaid']), array(
             'class' => 'label label-default',
+            'style' => 'background-color:#f5f5f5;color:#333;',
         ));
         $statusContent .= $this->Html->tag('span', sprintf(__('Half Paid : %s'), $data['InvoiceHalfPaid']), array(
             'class' => 'label label-primary',
+            'style' => 'background-color:#d9edf7;color:#333;',
         ));
         $statusContent .= $this->Html->tag('span', sprintf(__('Paid : %s'), $data['InvoicePaid']), array(
             'class' => 'label label-success',
+            'style' => 'background-color:#dff0d8;color:#333;',
         ));
         $statusContent .= $this->Html->tag('span', sprintf(__('Void : %s'), $data['InvoiceVoid']), array(
             'class' => 'label label-danger',
+            'style' => 'background-color:#f2dede;color:#333;',
         ));
 
         return $this->Html->tag('div', $statusContent, array(

@@ -1089,14 +1089,21 @@ class MkCommonComponent extends Component {
                 $modelName = $this->filterEmptyField($value, 'modelName');
                 $conditionName = $this->filterEmptyField($value, 'conditionName');
                 $operator = $this->filterEmptyField($value, 'operator');
+                $keyword = $this->filterEmptyField($value, 'keyword');
+                $customKeyword = $this->filterEmptyField($refine, $fieldName);
 
-                $keyword = $this->filterEmptyField($refine, $fieldName);
+                if( empty($keyword) ) {
+                    $keyword = $customKeyword;
+                }
 
                 if(!empty($keyword)){
-                    $keyword = urldecode($keyword);
                     $operator = strtolower($operator);
+
+                    if( is_string($keyword) ) {
+                        $keyword = urldecode($keyword);
+                    }
                     
-                    $this->controller->request->data[$modelName][$fieldName] = $keyword;
+                    $this->controller->request->data[$modelName][$fieldName] = $customKeyword;
 
                     switch ($operator) {
                         case 'like':

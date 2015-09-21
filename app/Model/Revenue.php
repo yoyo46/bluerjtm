@@ -159,6 +159,15 @@ class Revenue extends AppModel {
                         ),
                     ));
 
+                    if( !empty($data_merge) ) {
+                        foreach ($data_merge as $key => $value) {
+                            $ttuj_id = !empty($value['Revenue']['ttuj_id'])?$value['Revenue']['ttuj_id']:false;
+                            
+                            $value = $this->Ttuj->getMerge($value, $ttuj_id);
+                            $data_merge[$key] = $value;
+                        }
+                    }
+
                     if(!empty($data_merge)){
                         $data['Revenue'] = $data_merge;
                     }

@@ -68,13 +68,13 @@
         <h3 class="box-title"><?php echo $sub_module_title;?></h3>
         <div class="box-tools">
             <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
-                    'controller' => 'settings',
-                    'action' => 'customer_add'
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app pull-right'
-                ));
+                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
+                        'controller' => 'settings',
+                        'action' => 'customer_add'
+                    ), array(
+                        'escape' => false,
+                        'class' => 'btn btn-app pull-right'
+                    ));
             ?>
         </div>
     </div><!-- /.box-header -->

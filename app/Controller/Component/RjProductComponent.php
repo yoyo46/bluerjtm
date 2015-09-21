@@ -12,6 +12,9 @@ class RjProductComponent extends Component {
 				if( !empty($refine['ProductCategory']['name']) ) {
 					$refine_conditions['ProductCategory']['name'] = $refine['ProductCategory']['name'];
 				}
+				if( !empty($refine['ProductCategory']['parent']) ) {
+					$refine_conditions['ProductCategory']['parent'] = $refine['ProductCategory']['parent'];
+				}
 				if( !empty($refine['ProductBrand']['name']) ) {
 					$refine_conditions['ProductBrand']['name'] = $refine['ProductBrand']['name'];
 				}

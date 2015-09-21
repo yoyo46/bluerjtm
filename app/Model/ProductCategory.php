@@ -1,5 +1,7 @@
 <?php
 class ProductCategory extends AppModel {
+    public $actsAs = array('Tree');
+
 	var $name = 'ProductCategory';
 	var $validate = array(
         'name' => array(
@@ -46,20 +48,48 @@ class ProductCategory extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id, $with_contain = false ){
-        if(empty($data['ProductCategory'])){
-            $data_merge = $this->find('first', array(
-                'conditions' => array(
-                    'ProductCategory.id' => $id
-                ),
-            ));
+    function getMerge( $data, $id, $fieldName = 'ProductCategory' ){
+        $data_merge = $this->find('first', array(
+            'conditions' => array(
+                'ProductCategory.id' => $id
+            ),
+        ));
 
-            if(!empty($data_merge)){
-                $data = array_merge($data, $data_merge);
-            }
+        if(!empty($data_merge['ProductCategory'])){
+            $data[$fieldName] = $data_merge['ProductCategory'];
         }
 
         return $data;
+    }
+
+    function getListParent ( $id = false, $categories = false, $idx = 0 ) {
+        $result = array();
+        $separator = str_pad('', $idx, '-', STR_PAD_LEFT);
+
+        if( empty($categories) ) {
+            $categories = $this->getData('threaded');
+        }
+
+        if( !empty($categories) ) {
+            foreach ($categories as $key => $value) {
+                $cat_id = !empty($value['ProductCategory']['id'])?$value['ProductCategory']['id']:false;
+
+                if( $id != $cat_id ) {
+                    $i = $idx;
+                    $name = !empty($value['ProductCategory']['name'])?$value['ProductCategory']['name']:false;
+                    $child = !empty($value['children'])?$value['children']:false;
+
+                    $result[$cat_id] = trim(sprintf('%s %s', $separator, $name));
+
+                    if( !empty($child) ) {
+                        $i += 2;
+                        $result = $result + $this->getListParent($id, $child, $i);
+                    }
+                }
+            }
+        }
+
+        return $result;
     }
 }
 ?>

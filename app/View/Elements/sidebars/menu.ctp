@@ -981,7 +981,7 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kategori Barang</span>', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Grup Barang</span>', array(
                                 'controller' => 'products',
                                 'action' => 'categories'
                             ), array(
@@ -989,14 +989,22 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'product_categories' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Merk Barang</span>', array(
-                                'controller' => 'products',
-                                'action' => 'brands'
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'product_brands' )?'active':'',
-                            ));
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Merk Barang</span>', array(
+                            //     'controller' => 'products',
+                            //     'action' => 'brands'
+                            // ), array(
+                            //     'escape' => false
+                            // )), array(
+                            //     'class' => ( !empty($active_menu) && $active_menu == 'product_brands' )?'active':'',
+                            // ));
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Barang</span>', array(
+                            //     'controller' => 'products',
+                            //     'action' => 'index'
+                            // ), array(
+                            //     'escape' => false
+                            // )), array(
+                            //     'class' => ( !empty($active_menu) && $active_menu == 'products' )?'active':'',
+                            // ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> SPK Internal</span>', array(
                                 'controller' => 'spk',

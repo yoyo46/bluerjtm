@@ -1,4 +1,28 @@
 <?php 
+        $dataColumns = array(
+            'parent' => array(
+                'name' => __('Parent Grup'),
+                'field_model' => false,
+                'display' => true,
+            ),
+            'name' => array(
+                'name' => __('Nama Grup'),
+                'field_model' => 'ProductCategory.name',
+                'display' => true,
+            ),
+            'status' => array(
+                'name' => __('Status'),
+                'field_model' => 'ProductCategory.status',
+                'display' => true,
+            ),
+            'action' => array(
+                'name' => __('Action'),
+                'field_model' => false,
+                'display' => true,
+            ),
+        );
+        $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
+
         $this->Html->addCrumb($sub_module_title);
         echo $this->element('blocks/products/search_categories');
 ?>
@@ -18,32 +42,30 @@
         </div>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
-        <table class="table table-hover">
-            <tr>
-                <?php 
-                        echo $this->Html->tag('th', $this->Paginator->sort('ProductCategory.name', $this->Common->getSorting('ProductCategory.name', __('Kategori Barang')), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('ProductCategory.created', $this->Common->getSorting('ProductCategory.created', __('Dibuat')), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', __('Action'));
-                ?>
-            </tr>
+        <table class="table table-hover sorting">
             <?php
-                    $i = 1;
-
+                    if( !empty($fieldColumn) ) {
+                        echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
+                    }
+            ?>
+            <tbody>
+            <?php
                     if(!empty($productCategories)){
-                        foreach ($productCategories as $key => $productCategory) {
-                            $value_data = $productCategory['ProductCategory'];
-                            $id = $value_data['id'];
+                        foreach ($productCategories as $key => $value) {
+                            $id = $this->Common->filterEmptyField($value, 'ProductCategory', 'id');
+                            $parent_name = $this->Common->filterEmptyField($value, 'Parent', 'name', '-');
+                            $name = $this->Common->filterEmptyField($value, 'ProductCategory', 'name');
+                            $created = $this->Common->filterEmptyField($value, 'ProductCategory', 'created');
+
+                            $customCreated = $this->Common->formatDate($created, 'd/m/Y');
             ?>
             <tr>
-                <td><?php echo $value_data['name'];?></td>
-                <td><?php echo $this->Common->customDate($value_data['created']);?></td>
+                <td><?php echo $parent_name;?></td>
+                <td><?php echo $name;?></td>
+                <td><?php echo $customCreated;?></td>
                 <td class="action">
                     <?php 
-                            echo $this->Html->link('Ubah', array(
+                            echo $this->Html->link('Edit', array(
                                 'controller' => 'products',
                                 'action' => 'category_edit',
                                 $id
@@ -58,7 +80,7 @@
                             ), array(
                                 'class' => 'btn btn-danger btn-xs',
                                 'title' => 'disable status brand'
-                            ), __('Anda yakin ingin menghapus data Kategori barang ini?'));
+                            ), __('Anda yakin ingin menghapus data grup barang ini?'));
                     ?>
                 </td>
             </tr>
@@ -71,6 +93,7 @@
                         )));
                     }
             ?>
+            </tbody>
         </table>
     </div><!-- /.box-body -->
     <?php echo $this->element('pagination');?>

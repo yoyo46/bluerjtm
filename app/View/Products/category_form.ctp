@@ -1,8 +1,10 @@
 <?php
-		$this->Html->addCrumb(__('Kategori Barang'), array(
+		$this->Html->addCrumb(__('Grup Barang'), array(
 			'action' => 'categories'
 		));
 		$this->Html->addCrumb($sub_module_title);
+
+		$categories = !empty($categories)?$categories:false;
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -17,12 +19,22 @@
 	?>
     <div class="box-body">
         <div class="form-group">
-        	<?php 
-					echo $this->Form->input('name',array(
-						'label'=> __('Kategori Barang *'), 
+	    	<?php 
+		        	echo $this->Form->input('parent_id',array(
+						'label'=> __('Parent Grup'), 
 						'class'=>'form-control',
 						'required' => false,
-						'placeholder' => __('Kategori Barang')
+		            	'empty' => __('Grup Utama'),
+		            	'options' => $categories,
+					));
+	    	?>
+        </div>
+        <div class="form-group">
+        	<?php 
+					echo $this->Form->input('name',array(
+						'label'=> __('Nama Grup *'), 
+						'class'=>'form-control',
+						'required' => false,
 					));
 			?>
         </div>
