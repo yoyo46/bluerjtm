@@ -1579,17 +1579,19 @@ class RevenuesController extends AppController {
         $this->loadModel('Perlengkapan');
         $this->loadModel('ColorMotor');
         $this->set('module_title', __('TTUJ'));
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+
         $conditions = array(
             'Ttuj.id' => $ttuj_id,
             'Ttuj.is_draft' => 0,
             'Ttuj.status' => 1,
+            'Ttuj.branch_id' => $allow_branch_id,
         );
 
         switch ($action_type) {
             case 'bongkaran':
                 $conditions['Ttuj.is_arrive'] = 1;
                 $conditions['Ttuj.is_bongkaran'] = 1;
-                $conditions = $this->Ttuj->_callConditionBranch( $conditions );
                 
                 $module_title = __('Info Bongkaran');
                 $this->set('active_menu', 'bongkaran');
@@ -1599,7 +1601,6 @@ class RevenuesController extends AppController {
                 $conditions['Ttuj.is_arrive'] = 1;
                 $conditions['Ttuj.is_bongkaran'] = 1;
                 $conditions['Ttuj.is_balik'] = 1;
-                $conditions = $this->Ttuj->_callConditionBranch( $conditions );
 
                 $module_title = __('Info Truk Balik');
                 $this->set('active_menu', 'balik');
@@ -1610,7 +1611,6 @@ class RevenuesController extends AppController {
                 $conditions['Ttuj.is_bongkaran'] = 1;
                 $conditions['Ttuj.is_balik'] = 1;
                 $conditions['Ttuj.is_pool'] = 1;
-                $conditions = $this->Ttuj->_callConditionTtujPool( $conditions );
 
                 $module_title = __('Info Sampai Pool');
                 $this->set('active_menu', 'pool');
@@ -1618,16 +1618,13 @@ class RevenuesController extends AppController {
             
             case 'truk_tiba':
                 $conditions['Ttuj.is_arrive'] = 1;
-                $conditions = $this->Ttuj->_callConditionBranch( $conditions );
 
                 $module_title = __('Info Truk Tiba');
                 $this->set('active_menu', 'truk_tiba');
                 break;
             
             default:
-                $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
                 $conditions['Ttuj.is_draft'] = 0;
-                $conditions['Ttuj.branch_id'] = $allow_branch_id;
 
                 $module_title = __('Info TTUJ');
                 $this->set('active_menu', 'ttuj');
@@ -2601,6 +2598,7 @@ class RevenuesController extends AppController {
                         'laka_date' => $lakaDate,
                         'laka_date_ori' => $lakaDateOri,
                         'laka_completed_date' => $lakaCompletedDate,
+                        'monitoring_date' => $lakaDateOri,
                         'driver_name' => $driver_name,
                         'driver_pengganti_name' => $change_driver_name,
                         'lokasi_laka' => $lokasi_laka,
@@ -2627,7 +2625,12 @@ class RevenuesController extends AppController {
         $ttujs = $this->Ttuj->getData('all', array(
             'conditions' => $conditions,
             'order' => array(
-                'Ttuj.customer_name' => 'ASC', 
+                'Ttuj.tgljam_berangkat' => 'ASC', 
+                'Ttuj.tgljam_tiba' => 'ASC', 
+                'Ttuj.tgljam_bongkaran' => 'ASC', 
+                'Ttuj.tgljam_balik' => 'ASC', 
+                'Ttuj.tgljam_pool' => 'ASC', 
+                'Ttuj.id' => 'ASC', 
             ),
         ), true, array(
             'branch' => false,
@@ -2788,6 +2791,7 @@ class RevenuesController extends AppController {
                     'to_date' => !empty($tglPool)?$this->MkCommon->customDate($tglPool, 'd/m/Y - H:i'):'-',
                     'to_date_ori' => !empty($tglPool)?$this->MkCommon->customDate($tglPool, 'Y-m-d'):false,
                     'url' => $urlTtuj,
+                    'monitoring_date' => $this->MkCommon->customDate($tglBerangkat, 'Y-m-d'),
                 ));
 
                 if( !empty($value['Laka']['id']) ) {
@@ -2824,6 +2828,7 @@ class RevenuesController extends AppController {
 
                 if( !empty($lakaDate) && $this->MkCommon->customDate($lakaDate, 'Y-m') == $currMonth && $this->MkCommon->customDate($lakaDate, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($lakaDate, 'd'), $inArr) ) {
                     $dataTtujCalendar['title'] = __('LAKA');
+                    $dataTtujCalendar['monitoring_date'] = $this->MkCommon->customDate($lakaDate, 'Y-m-d');
                     $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_laka'])?$setting['Setting']['icon_laka']:'';
                     $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                     $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($lakaDate, 'm')][$this->MkCommon->customDate($lakaDate, 'd')][] = $dataTtujCalendar;
@@ -2832,6 +2837,7 @@ class RevenuesController extends AppController {
                 }
                 if( !empty($tglPool) && $this->MkCommon->customDate($tglPool, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglPool, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglPool, 'd'), $inArr) ) {
                     $dataTtujCalendar['title'] = __('Sampai Pool');
+                    $dataTtujCalendar['monitoring_date'] = $this->MkCommon->customDate($tglPool, 'Y-m-d');
                     $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_pool'])?$setting['Setting']['icon_pool']:'';
                     $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                     $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglPool, 'm')][$this->MkCommon->customDate($tglPool, 'd')][] = $dataTtujCalendar;
@@ -2841,6 +2847,7 @@ class RevenuesController extends AppController {
                 }
                 if( !empty($tglBalik) && $this->MkCommon->customDate($tglBalik, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglBalik, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglBalik, 'd'), $inArr) ) {
                     $dataTtujCalendar['title'] = __('Balik');
+                    $dataTtujCalendar['monitoring_date'] = $this->MkCommon->customDate($tglBalik, 'Y-m-d');
                     $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_balik'])?$setting['Setting']['icon_balik']:'';
                     $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                     $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglBalik, 'm')][$this->MkCommon->customDate($tglBalik, 'd')][] = $dataTtujCalendar;
@@ -2849,6 +2856,7 @@ class RevenuesController extends AppController {
                 }
                 if( !empty($tglBongkaran) && $this->MkCommon->customDate($tglBongkaran, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglBongkaran, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglBongkaran, 'd'), $inArr) ) {
                     $dataTtujCalendar['title'] = __('Bongkaran');
+                    $dataTtujCalendar['monitoring_date'] = $this->MkCommon->customDate($tglBongkaran, 'Y-m-d');
                     $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_bongkaran'])?$setting['Setting']['icon_bongkaran']:'';
                     $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                     $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglBongkaran, 'm')][$this->MkCommon->customDate($tglBongkaran, 'd')][] = $dataTtujCalendar;
@@ -2857,6 +2865,7 @@ class RevenuesController extends AppController {
                 }
                 if( !empty($tglTiba) && $this->MkCommon->customDate($tglTiba, 'Y-m') == $currMonth && $this->MkCommon->customDate($tglTiba, 'd') != $this->MkCommon->customDate($tglBerangkat, 'd') && !in_array($this->MkCommon->customDate($tglTiba, 'd'), $inArr) ) {
                     $dataTtujCalendar['title'] = __('Tiba');
+                    $dataTtujCalendar['monitoring_date'] = $this->MkCommon->customDate($tglTiba, 'Y-m-d');
                     $dataTtujCalendar['icon'] = !empty($setting['Setting']['icon_tiba'])?$setting['Setting']['icon_tiba']:'';
                     $dataTtujCalendar['iconPopup'] = $dataTtujCalendar['icon'];
                     $dataTtuj['Truck-'.$truck_id][$this->MkCommon->customDate($tglTiba, 'm')][$this->MkCommon->customDate($tglTiba, 'd')][] = $dataTtujCalendar;

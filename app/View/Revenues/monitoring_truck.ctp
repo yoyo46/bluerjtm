@@ -143,31 +143,6 @@
                                                 if( !empty($data['laka_completed_date']) ) {
                                                     $formTtuj .= $this->Html->tag('p', sprintf(__('Selesai LAKA: %s', $data['laka_completed_date'])));
                                                 }
-                                                
-                                                if( !empty($data['icon']) ) {
-                                                    $icon = $this->Common->photo_thumbnail(array(
-                                                        'save_path' => Configure::read('__Site.truck_photo_folder'), 
-                                                        'src' => $data['icon'], 
-                                                        'thumb'=>true,
-                                                        'size' => 's',
-                                                        'thumb' => true,
-                                                    ), array(
-                                                        'class' => 'ico-calendar',
-                                                    ));
-                                                } else {
-                                                    $icon = '&nbsp;';
-                                                }
-                                                if( !empty($data['iconPopup']) ) {
-                                                    $icon .= $this->Common->photo_thumbnail(array(
-                                                        'save_path' => Configure::read('__Site.truck_photo_folder'), 
-                                                        'src' => $data['iconPopup'], 
-                                                        'thumb'=>true,
-                                                        'size' => 's',
-                                                        'thumb' => true,
-                                                    ), array(
-                                                        'class' => 'icon-popup',
-                                                    ));
-                                                }
                                             } else if( !empty($data['to_date']) && $data['to_date'] != '-' ) {
                                                 $formTtuj .= $this->Html->tag('p', sprintf(__('Sampai Pool: %s', $data['to_date'])));
                                             }
@@ -322,7 +297,7 @@
                                             )), array(
                                                 'class' => 'text-center parent-popover',
                                             ));
-                                            $style = sprintf('background: %s;', $event['color']);
+                                            $style = sprintf('background: %s;', $event['color_laka']);
                                         }
                                     }
 
@@ -346,7 +321,7 @@
                                             if( !empty($rit) ) {
                                                 $iconPoint = $rit;
                                             } else {
-                                                $iconPoint = str_replace('popover-hover-bottom-click', '', str_replace('popover-hover-top-click', '', $point[0]));
+                                                $iconPoint = str_replace('popover-hover-bottom-click', '', str_replace('popover-hover-top-click', '', $point[1]));
                                             }
                                             echo $this->Html->tag('td', $this->Html->tag('div', $this->Html->link($iconPoint, '#multiple-'.$i, array(
                                                 'escape' => false,
@@ -370,7 +345,6 @@
                                 <ul class="row list-calendar">
                                     <li class="col-sm-2 text-center">
                                         <?php 
-                                                rsort($point);
                                                 echo str_replace('popover-hover-top-click', 'popover-hover-bottom-click', implode('</li><li class="col-sm-2 text-center">', $point));
                                         ?>
                                     </li>

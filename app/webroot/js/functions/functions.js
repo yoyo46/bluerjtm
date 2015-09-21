@@ -3648,7 +3648,7 @@ $(function() {
         $(this).addClass('in');
         ajaxModal($('.popover-content .ajaxModal'));
         $('.popover-close').click(function () {
-            $('.popover-hover-bottom-click').popover('hide');
+            $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
         });
     })
 
