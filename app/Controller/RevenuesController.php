@@ -6124,14 +6124,7 @@ class RevenuesController extends AppController {
             $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $options );
         }
 
-        if( !empty($data_action) ) {
-            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
-        } else {
-            $options['limit'] = 20;
-        }
-
-        $this->paginate = $options;
-        $ttujs = $this->paginate('Ttuj');
+        $ttujs = $this->Ttuj->getData('all', $options);
 
         if( !empty($ttujs) ) {
             foreach ($ttujs as $key => $ttuj) {
