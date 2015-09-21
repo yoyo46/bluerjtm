@@ -96,7 +96,23 @@
 
                                     if( !empty($dataTtuj['Truck-'.$truck_id][$thisMonth][$idx]) ) {
                                         foreach ($dataTtuj['Truck-'.$truck_id][$thisMonth][$idx] as $key => $data) {
-                                            $style = sprintf('background: %s;', $data['color']);
+
+                                            $currDate = sprintf('%s-%s', $currentMonth, $idx);
+                                            $colorBg = $data['color_berangkat'];
+
+                                            if( !empty($data['laka_date_ori']) && $data['laka_date_ori'] <= $currDate ) {
+                                                $colorBg = $data['color_laka'];
+                                            } else if( !empty($data['to_date_ori']) && $data['to_date_ori'] <= $currDate ) {
+                                                $colorBg = $data['color_pool'];
+                                            } else if( !empty($data['tglBalikOri']) && $data['tglBalikOri'] <= $currDate ) {
+                                                $colorBg = $data['color_balik'];
+                                            } else if( !empty($data['tglBongkaranOri']) && $data['tglBongkaranOri'] <= $currDate ) {
+                                                $colorBg = $data['color_bongkaran'];
+                                            } else if( !empty($data['tglTibaOri']) && $data['tglTibaOri'] <= $currDate ) {
+                                                $colorBg = $data['color_tiba'];
+                                            }
+
+                                            $style = sprintf('background: %s;', $colorBg);
                                             $formTtuj = $this->Html->tag('p', sprintf(__('Berangkat: %s', $data['from_date'])));
                                             $ttujNopol = $data['NoPol'];
 
