@@ -1625,7 +1625,9 @@ class RevenuesController extends AppController {
                 break;
             
             default:
+                $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
                 $conditions['Ttuj.is_draft'] = 0;
+                $conditions['Ttuj.branch_id'] = $allow_branch_id;
 
                 $module_title = __('Info TTUJ');
                 $this->set('active_menu', 'ttuj');
