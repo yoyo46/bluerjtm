@@ -2579,7 +2579,7 @@ var laka_ttuj_change = function(){
     $('#laka-ttuj-change').change(function(){
         var self = $(this);
         var val = self.val();
-        $('#laka-driver-change-id option:contains("")').text('Pilih No TTUJ');
+        $('#laka-driver-change-id option:contains("")').text('Pilih Supir Pengganti');
         
         if(val != ''){
             $.ajax({
@@ -3572,7 +3572,7 @@ $(function() {
                 $('#ttuj-form').html($(response).filter('#data-ttuj-form').html());
                 $('#laka-ttuj-change').attr('readonly', false);
                 $('#laka-driver-change-id').val('');
-                $('#laka-driver-change-id option:eq("")').text('Pilih No TTUJ');
+                $('#laka-driver-change-id option:eq("")').text('Pilih Supir Pengganti');
 
                 laka_ttuj_change();
                 $('.supir-pengganti-val').val('');
