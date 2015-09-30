@@ -153,5 +153,15 @@ class Log extends AppModel {
 
 		return $logs;
 	}
+
+	function doSave ( $data ) {
+		$this->create();
+
+		if($this->save($data)) {
+			return true;	
+		} else {
+			return false;
+		}
+	}
 }
 ?>

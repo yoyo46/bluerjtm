@@ -780,6 +780,16 @@ class MkCommonComponent extends Component {
 
     function setProcessParams ( $data, $urlRedirect = false ) {
         if ( !empty($data['msg']) && !empty($data['status']) ) {
+            if ( !empty( $data['Log'] ) ) {
+                $activity = $this->filterEmptyField($data, 'Log', 'activity');
+                $old_data = $this->filterEmptyField($data, 'Log', 'old_data');
+                $document_id = $this->filterEmptyField($data, 'Log', 'document_id');
+                $error = $this->filterEmptyField($data, 'Log', 'error');
+                $custom_action = $this->filterEmptyField($data, 'Log', 'custom_action');
+
+                $this->_saveLog( $activity, $old_data, $document_id, $error, $custom_action );
+            }
+
             if ( $data['status'] == 'success' ) {
                 $this->redirectReferer($data['msg'], $data['status'], $urlRedirect);
             } else {
@@ -1118,6 +1128,55 @@ class MkCommonComponent extends Component {
         }
 
         return $conditions;
+    }
+
+    function _saveLog( $activity = NULL, $old_data = false, $document_id = false, $error = 0, $custom_action = false ){
+        $this->Log = ClassRegistry::init('Log'); 
+
+        $log = array();
+        $user_id = Configure::read('__Site.config_user_id');
+
+        $controllerName = $this->controller->params['controller'];
+        $actionName = $this->controller->params['action'];
+        $data = serialize($this->controller->params['data']);
+        $named = serialize( $this->controller->params['named'] );
+
+        $old_data = serialize( $old_data );
+        $url = $this->RequestHandler->getReferer();
+
+        $ip_address = $this->RequestHandler->getClientIP();
+
+        $user_agents = @get_browser(null, true);
+        $browser = !empty($user_agents['browser'])?implode(' ', array($user_agents['browser'], $user_agents['version'])):'';
+        $os = !empty($user_agents['platform'])?$user_agents['platform']:'';
+
+        if( empty($custom_action) ) {
+            $custom_action = $actionName;
+        }
+        
+        $log['Log']['user_id'] = $user_id;
+        $log['Log']['transaction_id'] = $document_id;
+        $log['Log']['name'] = $activity;
+        $log['Log']['model'] = $controllerName;
+        $log['Log']['action'] = $custom_action;
+        $log['Log']['real_action'] = $actionName;
+
+        $log['Log']['old_data'] = $old_data;
+        $log['Log']['data'] = $data;
+        $log['Log']['ip'] = $ip_address;
+        $log['Log']['user_agent'] = env('HTTP_USER_AGENT');
+        $log['Log']['browser'] = $browser;
+        $log['Log']['os'] = $os;
+        $log['Log']['from'] = $url;
+        $log['Log']['named'] = $named;
+        $log['Log']['error'] = !empty($error)?$error:0;
+        $log['Log']['bank_activity'] = 1;
+
+        if( $this->Log->doSave($log) ) {
+            return true;    
+        } else {
+            return false;
+        }
     }
 }
 ?>

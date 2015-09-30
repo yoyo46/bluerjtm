@@ -1,6 +1,6 @@
 <?php
-		$this->Html->addCrumb(__('Merk Barang'), array(
-			'action' => 'brands'
+		$this->Html->addCrumb(__('Satuan Barang'), array(
+			'action' => 'units'
 		));
 		$this->Html->addCrumb($sub_module_title);
 ?>
@@ -9,7 +9,7 @@
         <h3 class="box-title"><?php echo $sub_module_title?></h3>
     </div>
     <?php 
-			echo $this->Form->create('ProductBrand', array(
+			echo $this->Form->create('ProductUnit', array(
 				'url'=> $this->Html->url( null, true ), 
 				'role' => 'form',
 				'inputDefaults' => array('div' => false),
@@ -19,10 +19,9 @@
         <div class="form-group">
         	<?php 
 					echo $this->Form->input('name',array(
-						'label'=> __('Merk Barang *'), 
+						'label'=> __('Satuan Barang *'), 
 						'class'=>'form-control',
 						'required' => false,
-						'placeholder' => __('Merk Barang')
 					));
 			?>
         </div>
@@ -36,7 +35,7 @@
 					'type' => 'submit',
 				));
 	    		echo $this->Html->link(__('Kembali'), array(
-					'action' => 'brands', 
+					'action' => 'units', 
 				), array(
 					'class'=> 'btn btn-default',
 				));

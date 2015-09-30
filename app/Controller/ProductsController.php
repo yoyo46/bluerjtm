@@ -184,8 +184,8 @@ class ProductsController extends AppController {
         $this->redirect($this->referer());
     }
 
-    function brands(){
-        $this->loadModel('ProductBrand');
+    function units(){
+        $this->loadModel('ProductUnit');
         $options = array();
 
         if(!empty($this->params['named'])){
@@ -193,78 +193,78 @@ class ProductsController extends AppController {
 
             if(!empty($refine['name'])){
                 $name = urldecode($refine['name']);
-                $this->request->data['ProductBrand']['name'] = $name;
-                $options['conditions']['ProductBrand.name LIKE '] = '%'.$name.'%';
+                $this->request->data['ProductUnit']['name'] = $name;
+                $options['conditions']['ProductUnit.name LIKE '] = '%'.$name.'%';
             }
         }
 
-        $this->paginate = $this->ProductBrand->getData('paginate', $options);
-        $productBrands = $this->paginate('ProductBrand');
+        $this->paginate = $this->ProductUnit->getData('paginate', $options);
+        $values = $this->paginate('ProductUnit');
 
-        $this->set('active_menu', 'product_brands');
-        $this->set('sub_module_title', __('Merk Barang'));
-        $this->set('productBrands', $productBrands);
+        $this->set('active_menu', 'product_units');
+        $this->set('sub_module_title', __('Satuan Barang'));
+        $this->set('values', $values);
     }
 
-    function brand_add(){
-        $this->loadModel('ProductBrand');
-        $this->set('sub_module_title', __('Tambah Merk Barang'));
-        $this->doProductBrand();
+    function unit_add(){
+        $this->loadModel('ProductUnit');
+        $this->set('sub_module_title', __('Tambah Satuan Barang'));
+        $this->doProductUnit();
     }
 
-    function brand_edit($id){
-        $this->loadModel('ProductBrand');
-        $this->set('sub_module_title', 'Ubah Merk Barang');
-        $productBrand = $this->ProductBrand->getData('first', array(
+    function unit_edit($id){
+        $this->loadModel('ProductUnit');
+        $this->set('sub_module_title', 'Ubah Satuan Barang');
+        $value = $this->ProductUnit->getData('first', array(
             'conditions' => array(
-                'ProductBrand.id' => $id
+                'ProductUnit.id' => $id
             ),
         ));
 
-        if(!empty($productBrand)){
-            $this->doProductBrand($id, $productBrand);
+        if(!empty($value)){
+            $this->doProductUnit($id, $value);
         }else{
-            $this->MkCommon->setCustomFlash(__('Merk Barang tidak ditemukan'), 'error');  
+            $this->MkCommon->setCustomFlash(__('Satuan Barang tidak ditemukan'), 'error');  
             $this->redirect(array(
                 'controller' => 'products',
-                'action' => 'brands'
+                'action' => 'units'
             ));
         }
     }
 
-    function doProductBrand($id = false, $data_local = false){
+    function doProductUnit($id = false, $data_local = false){
         if(!empty($this->request->data)){
             $data = $this->request->data;
 
             if($id && $data_local){
-                $this->ProductBrand->id = $id;
+                $this->ProductUnit->id = $id;
                 $msg = 'merubah';
             }else{
-                $this->ProductBrand->create();
+                $this->ProductUnit->create();
                 $msg = 'menambah';
             }
 
-            $this->ProductBrand->set($data);
+            $this->ProductUnit->set($data);
 
-            if( $this->ProductBrand->validates($data) ){
-                if($this->ProductBrand->save($data)){
-                    $id = $this->ProductBrand->id;
+            if( $this->ProductUnit->validates($data) ){
+                if($this->ProductUnit->save($data)){
+                    $id = $this->ProductUnit->id;
 
                     $this->params['old_data'] = $data_local;
                     $this->params['data'] = $data;
 
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Merk Barang'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Merk Barang #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s satuan barang'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s satuan barang #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
                     $this->redirect(array(
                         'controller' => 'products',
-                        'action' => 'brands'
+                        'action' => 'units'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Merk Barang'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Merk Barang #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s satuan barang'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s satuan barang #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
                 }
             }else{
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Merk Barang'), $msg), 'error');
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s satuan barang'), $msg), 'error');
             }
         } else if( !empty($data_local) ){
             $this->request->data = $data_local;
@@ -273,36 +273,36 @@ class ProductsController extends AppController {
         $this->set(compact(
             'data_local'
         ));
-        $this->set('active_menu', 'product_brands');
-        $this->render('brand_form');
+        $this->set('active_menu', 'product_units');
+        $this->render('unit_form');
     }
 
-    function brand_toggle($id){
-        $this->loadModel('ProductBrand');
-        $locale = $this->ProductBrand->getData('first', array(
+    function unit_toggle($id){
+        $this->loadModel('ProductUnit');
+        $locale = $this->ProductUnit->getData('first', array(
             'conditions' => array(
-                'ProductBrand.id' => $id
+                'ProductUnit.id' => $id
             )
         ));
 
         if($locale){
             $value = true;
-            if($locale['ProductBrand']['status']){
+            if($locale['ProductUnit']['status']){
                 $value = false;
             }
 
-            $this->ProductBrand->id = $id;
-            $this->ProductBrand->set('status', $value);
+            $this->ProductUnit->id = $id;
+            $this->ProductUnit->set('status', $value);
 
-            if($this->ProductBrand->save()){
+            if($this->ProductUnit->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
+                $this->Log->logActivity( sprintf(__('Sukses merubah status satuan barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+                $this->Log->logActivity( sprintf(__('Gagal merubah status satuan barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
             }
         }else{
-            $this->MkCommon->setCustomFlash(__('Merk Barang tidak ditemukan.'), 'error');
+            $this->MkCommon->setCustomFlash(__('Satuan barang tidak ditemukan.'), 'error');
         }
 
         $this->redirect($this->referer());
@@ -310,124 +310,73 @@ class ProductsController extends AppController {
 
     function index(){
         $this->loadModel('Product');
-        $options = array();
-
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['ProductBrand']['name'] = $name;
-                $options['conditions']['ProductBrand.name LIKE '] = '%'.$name.'%';
-            }
-        }
+        $options =  $this->Product->_callRefineParams($this->params);
+        $this->RjProduct->_callRefineParams($this->params);
 
         $this->paginate = $this->Product->getData('paginate', $options);
         $values = $this->paginate('Product');
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $product_unit_id = $this->MkCommon->filterEmptyField($value, 'Product', 'product_unit_id');
+                $product_category_id = $this->MkCommon->filterEmptyField($value, 'Product', 'product_category_id');
+
+                $value = $this->Product->ProductUnit->getMerge($value, $product_unit_id);
+                $value = $this->Product->ProductCategory->getMerge($value, $product_category_id);
+                $values[$key] = $value;
+            }
+        }
 
         $this->set('active_menu', 'products');
         $this->set('sub_module_title', __('Barang'));
         $this->set('values', $values);
     }
 
-    function add(){
-        $this->loadModel('ProductBrand');
-        $this->set('sub_module_title', __('Tambah Merk Barang'));
-        $this->doProductBrand();
+    function _callGeneralProduct () {
+        $productUnits = $this->Product->ProductUnit->getData('list');
+        $productCategories = $this->Product->ProductCategory->getData('list');
+
+        $this->set(compact(
+            'productUnits', 'productCategories'
+        ));
+        $this->render('add');
     }
 
-    function edit($id){
-        $this->loadModel('ProductBrand');
-        $this->set('sub_module_title', 'Ubah Merk Barang');
-        $productBrand = $this->ProductBrand->getData('first', array(
+    function add(){
+        $this->loadModel('Product');
+        $this->set('sub_module_title', __('Tambah Barang'));
+
+        $result = $this->Product->doSave($this->request->data);
+        $this->MkCommon->setProcessParams($result, array(
+            'controller' => 'products',
+            'action' => 'index',
+            'admin' => false,
+        ));
+
+        $this->_callGeneralProduct();
+    }
+
+    function edit( $id = false ){
+        $this->loadModel('Product');
+        $this->set('sub_module_title', __('Edit Barang'));
+
+        $value = $this->Product->getData('first', array(
             'conditions' => array(
-                'ProductBrand.id' => $id
+                'Product.id' => $id,
             ),
         ));
 
-        if(!empty($productBrand)){
-            $this->doProductBrand($id, $productBrand);
-        }else{
-            $this->MkCommon->setCustomFlash(__('Merk Barang tidak ditemukan'), 'error');  
-            $this->redirect(array(
+        if( !empty($value) ) {
+            $result = $this->Product->doSave($this->request->data, $value, $id);
+            $this->MkCommon->setProcessParams($result, array(
                 'controller' => 'products',
-                'action' => 'brands'
+                'action' => 'index',
+                'admin' => false,
             ));
+
+            $this->_callGeneralProduct();
+        } else {
+            $this->MkCommon->setCustomFlash(__('Barang tidak ditemukan.'), 'error');
         }
-    }
-
-    function doProduct($id = false, $data_local = false){
-        if(!empty($this->request->data)){
-            $data = $this->request->data;
-
-            if($id && $data_local){
-                $this->ProductBrand->id = $id;
-                $msg = 'merubah';
-            }else{
-                $this->ProductBrand->create();
-                $msg = 'menambah';
-            }
-
-            $this->ProductBrand->set($data);
-
-            if( $this->ProductBrand->validates($data) ){
-                if($this->ProductBrand->save($data)){
-                    $id = $this->ProductBrand->id;
-                    $this->params['old_data'] = $data_local;
-                    $this->params['data'] = $data;
-
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Merk Barang'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Merk Barang #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
-                    $this->redirect(array(
-                        'controller' => 'products',
-                        'action' => 'brands'
-                    ));
-                }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Merk Barang'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Merk Barang'), $msg), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
-                }
-            }else{
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Merk Barang'), $msg), 'error');
-            }
-        } else if( !empty($data_local) ){
-            $this->request->data = $data_local;
-        }
-
-        $this->set(compact(
-            'data_local'
-        ));
-        $this->set('active_menu', 'product_brands');
-        $this->render('brand_form');
-    }
-
-    function toggle($id){
-        $this->loadModel('ProductBrand');
-        $locale = $this->ProductBrand->getData('first', array(
-            'conditions' => array(
-                'ProductBrand.id' => $id
-            )
-        ));
-
-        if($locale){
-            $value = true;
-            if($locale['ProductBrand']['status']){
-                $value = false;
-            }
-
-            $this->ProductBrand->id = $id;
-            $this->ProductBrand->set('status', $value);
-
-            if($this->ProductBrand->save()){
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
-            }else{
-                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status Merk Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
-            }
-        }else{
-            $this->MkCommon->setCustomFlash(__('Merk Barang tidak ditemukan.'), 'error');
-        }
-
-        $this->redirect($this->referer());
     }
 }

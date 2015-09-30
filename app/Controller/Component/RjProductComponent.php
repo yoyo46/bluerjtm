@@ -1,6 +1,21 @@
 <?php
 App::uses('Sanitize', 'Utility');
 class RjProductComponent extends Component {
+	var $components = array(
+		'MkCommon'
+	);
+
+	function initialize(Controller $controller, $settings = array()) {
+		$this->controller = $controller;
+	}
+
+	function _callRefineParams ( $data ) {
+		$keyword = $this->MkCommon->filterEmptyField($data, 'named', 'keyword');
+
+		if( !empty($keyword) ) {
+			$this->controller->request->data['Search']['keyword'] = $keyword;
+		}
+	}
 	
 	function processRefine($refine = false, $default_conditions = array()) {
 		if(!$refine) {

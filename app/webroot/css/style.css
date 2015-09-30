@@ -154,6 +154,10 @@ body > .header {
   font-size: 18px;
 }
 
+.radio label > label {
+  padding-left: 0;
+}
+
 @media screen and (min-width: 992px) {
   .left-side {
     top: 50px;

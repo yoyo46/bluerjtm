@@ -79,7 +79,6 @@
                                 $id
                             ), array(
                                 'class' => 'btn btn-danger btn-xs',
-                                'title' => 'disable status brand'
                             ), __('Anda yakin ingin menghapus data grup barang ini?'));
                     ?>
                 </td>

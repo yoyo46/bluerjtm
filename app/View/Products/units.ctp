@@ -1,6 +1,6 @@
 <?php 
         $this->Html->addCrumb($sub_module_title);
-        echo $this->element('blocks/products/search_brands');
+        echo $this->element('blocks/products/search_units');
 ?>
 <div class="box">
     <div class="box-header">
@@ -9,7 +9,7 @@
             <?php
                 echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
                     'controller' => 'products',
-                    'action' => 'brand_add'
+                    'action' => 'unit_add'
                 ), array(
                     'escape' => false,
                     'class' => 'btn btn-app pull-right'
@@ -21,10 +21,10 @@
         <table class="table table-hover">
             <tr>
                 <?php 
-                        echo $this->Html->tag('th', $this->Paginator->sort('ProductBrand.name', $this->Common->getSorting('ProductBrand.name', __('Merk Barang')), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('ProductUnit.name', $this->Common->getSorting('ProductUnit.name', __('Satuan Barang')), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('ProductBrand.created', $this->Common->getSorting('ProductBrand.created', __('Dibuat')), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('ProductUnit.created', $this->Common->getSorting('ProductUnit.created', __('Dibuat')), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', __('Action'));
@@ -33,9 +33,9 @@
             <?php
                     $i = 1;
 
-                    if(!empty($productBrands)){
-                        foreach ($productBrands as $key => $productBrand) {
-                            $value_data = $productBrand['ProductBrand'];
+                    if(!empty($values)){
+                        foreach ($values as $key => $value) {
+                            $value_data = $value['ProductUnit'];
                             $id = $value_data['id'];
             ?>
             <tr>
@@ -45,7 +45,7 @@
                     <?php 
                             echo $this->Html->link('Ubah', array(
                                 'controller' => 'products',
-                                'action' => 'brand_edit',
+                                'action' => 'unit_edit',
                                 $id
                             ), array(
                                 'class' => 'btn btn-primary btn-xs'
@@ -53,12 +53,11 @@
 
                             echo $this->Html->link(__('Hapus'), array(
                                 'controller' => 'products',
-                                'action' => 'brand_toggle',
+                                'action' => 'unit_toggle',
                                 $id
                             ), array(
                                 'class' => 'btn btn-danger btn-xs',
-                                'title' => 'disable status brand'
-                            ), __('Anda yakin ingin menghapus data merk barang ini?'));
+                            ), __('Anda yakin ingin menghapus data satuan barang ini?'));
                     ?>
                 </td>
             </tr>

@@ -1723,4 +1723,11 @@ class CommonHelper extends AppHelper {
 
         return $content;
     }
+
+    function unSlug($string) {
+        $string = str_replace(array( '-', '_' ), array( '', '' ), $string);
+        $string = ucwords($string);
+        
+        return $string;
+    }
 }

@@ -1,11 +1,11 @@
 <?php
-class ProductBrand extends AppModel {
-	var $name = 'ProductBrand';
+class ProductUnit extends AppModel {
+	var $name = 'ProductUnit';
 	var $validate = array(
         'name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Merk Barang harap diisi'
+                'message' => 'Satuan barang harap diisi'
             ),
         ),
 	);
@@ -13,10 +13,10 @@ class ProductBrand extends AppModel {
 	function getData( $find, $options = false, $is_merge = true ){
         $default_options = array(
             'conditions'=> array(
-                'ProductBrand.status' => 1,
+                'ProductUnit.status' => 1,
             ),
             'order'=> array(
-                'ProductBrand.name' => 'ASC'
+                'ProductUnit.name' => 'ASC'
             ),
             'fields' => array(),
         );
@@ -47,11 +47,10 @@ class ProductBrand extends AppModel {
     }
 
     function getMerge( $data, $id, $with_contain = false ){
-        if(empty($data['ProductBrand'])){
+        if(empty($data['ProductUnit'])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
-                    'ProductBrand
-                    .id' => $id
+                    'ProductUnit.id' => $id
                 ),
             ));
 

@@ -956,7 +956,7 @@
 
                     $dataMenu = array(
                         'products' => array(
-                            'categories', 'brands',
+                            'categories', 'units',
                         ),
                         'spk' => array(
                             'internal',
@@ -966,7 +966,7 @@
                     if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeSetting = false;
                         $settingMenu = array(
-                            'internal', 'product_categories', 'product_brands'
+                            'internal', 'product_categories', 'product_units'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -989,22 +989,22 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'product_categories' )?'active':'',
                             ));
-                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Merk Barang</span>', array(
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Satuan Barang</span>', array(
                             //     'controller' => 'products',
-                            //     'action' => 'brands'
+                            //     'action' => 'units'
                             // ), array(
                             //     'escape' => false
                             // )), array(
-                            //     'class' => ( !empty($active_menu) && $active_menu == 'product_brands' )?'active':'',
+                            //     'class' => ( !empty($active_menu) && $active_menu == 'product_units' )?'active':'',
                             // ));
-                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Barang</span>', array(
-                            //     'controller' => 'products',
-                            //     'action' => 'index'
-                            // ), array(
-                            //     'escape' => false
-                            // )), array(
-                            //     'class' => ( !empty($active_menu) && $active_menu == 'products' )?'active':'',
-                            // ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Barang</span>', array(
+                                'controller' => 'products',
+                                'action' => 'index'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'products' )?'active':'',
+                            ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> SPK Internal</span>', array(
                                 'controller' => 'spk',
