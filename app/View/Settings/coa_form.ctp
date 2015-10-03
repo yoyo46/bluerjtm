@@ -107,6 +107,18 @@
 					)), array(
 						'class' => 'form-group'
 					));
+					echo $this->Html->tag('div', $this->Form->input('periode_reset', array(
+						'label'=> __('Reset Balance'), 
+						'class'=>'form-control',
+						'required' => false,
+						'empty' => __('Tidak Reset Balance'),
+						'options' => array(
+							'monthly' => __('Per Bulan'),
+							'yearly' => __('Per Tahun'),
+						),
+					)), array(
+						'class' => 'form-group'
+					));
 		?>
 			    	<div class="form-group">
 			    		<div class="checkbox">

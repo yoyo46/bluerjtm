@@ -16,6 +16,25 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
+							echo $this->Html->tag('label', __('Module'));
+					?>
+				</div>
+				<div class="col-sm-4 text-center">
+		        	<?php 
+							echo $this->Html->tag('label', __('Debit'));
+					?>
+				</div>
+				<div class="col-sm-4 text-center">
+		        	<?php 
+							echo $this->Html->tag('label', __('Credit'));
+					?>
+				</div>
+			</div>
+        </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
 							echo $this->Form->label('uang_jalan_coa_debit_id', __('Uang Jalan'));
 					?>
 				</div>
@@ -264,23 +283,12 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
-							echo $this->Form->label('pembayaran_invoice_coa_debit_id', __('Pembayaran Invoice'));
+							echo $this->Form->label('pembayaran_invoice_coa_id', __('Pembayaran Invoice'));
 					?>
 				</div>
 				<div class="col-sm-4">
 		        	<?php 
-							echo $this->Form->input('pembayaran_invoice_coa_debit_id',array(
-								'label'=> false, 
-								'class'=>'form-control',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->input('pembayaran_invoice_coa_credit_id',array(
+							echo $this->Form->input('pembayaran_invoice_coa_id',array(
 								'label'=> false, 
 								'class'=>'form-control',
 								'required' => false,
@@ -295,23 +303,12 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
-							echo $this->Form->label('lku_payment_coa_debit_id', __('Pembayaran LKU'));
+							echo $this->Form->label('lku_payment_coa_id', __('Pembayaran LKU'));
 					?>
 				</div>
-				<div class="col-sm-4">
+				<div class="col-sm-4 col-sm-offset-4">
 		        	<?php 
-							echo $this->Form->input('lku_payment_coa_debit_id',array(
-								'label'=> false, 
-								'class'=>'form-control',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->input('lku_payment_coa_credit_id',array(
+							echo $this->Form->input('lku_payment_coa_id',array(
 								'label'=> false, 
 								'class'=>'form-control',
 								'required' => false,
@@ -326,23 +323,12 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
-							echo $this->Form->label('ksu_payment_coa_debit_id', __('Pembayaran KSU'));
+							echo $this->Form->label('ksu_payment_coa_id', __('Pembayaran KSU'));
 					?>
 				</div>
-				<div class="col-sm-4">
+				<div class="col-sm-4 col-sm-offset-4">
 		        	<?php 
-							echo $this->Form->input('ksu_payment_coa_debit_id',array(
-								'label'=> false, 
-								'class'=>'form-control',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->input('ksu_payment_coa_credit_id',array(
+							echo $this->Form->input('ksu_payment_coa_id',array(
 								'label'=> false, 
 								'class'=>'form-control',
 								'required' => false,
@@ -357,23 +343,12 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
-							echo $this->Form->label('kir_payment_coa_debit_id', __('Pembayaran KIR'));
+							echo $this->Form->label('kir_payment_coa_id', __('Pembayaran KIR'));
 					?>
 				</div>
-				<div class="col-sm-4">
+				<div class="col-sm-4 col-sm-offset-4">
 		        	<?php 
-							echo $this->Form->input('kir_payment_coa_debit_id',array(
-								'label'=> false, 
-								'class'=>'form-control',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->input('kir_payment_coa_credit_id',array(
+							echo $this->Form->input('kir_payment_coa_id',array(
 								'label'=> false, 
 								'class'=>'form-control',
 								'required' => false,
@@ -388,23 +363,12 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
-							echo $this->Form->label('siup_payment_coa_debit_id', __('Pembayaran Ijin Usaha'));
+							echo $this->Form->label('siup_payment_coa_id', __('Pembayaran Ijin Usaha'));
 					?>
 				</div>
-				<div class="col-sm-4">
+				<div class="col-sm-4 col-sm-offset-4">
 		        	<?php 
-							echo $this->Form->input('siup_payment_coa_debit_id',array(
-								'label'=> false, 
-								'class'=>'form-control',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->input('siup_payment_coa_credit_id',array(
+							echo $this->Form->input('siup_payment_coa_id',array(
 								'label'=> false, 
 								'class'=>'form-control',
 								'required' => false,
@@ -419,23 +383,12 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
-							echo $this->Form->label('stnk_payment_coa_debit_id', __('Pembayaran STNK'));
+							echo $this->Form->label('stnk_payment_coa_id', __('Pembayaran STNK'));
 					?>
 				</div>
-				<div class="col-sm-4">
+				<div class="col-sm-4 col-sm-offset-4">
 		        	<?php 
-							echo $this->Form->input('stnk_payment_coa_debit_id',array(
-								'label'=> false, 
-								'class'=>'form-control',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->input('stnk_payment_coa_credit_id',array(
+							echo $this->Form->input('stnk_payment_coa_id',array(
 								'label'=> false, 
 								'class'=>'form-control',
 								'required' => false,
@@ -450,23 +403,12 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
-							echo $this->Form->label('uang_Jalan_commission_payment_coa_debit_id', __('Pembayaran Uang Jalan/Komisi'));
+							echo $this->Form->label('uang_Jalan_commission_payment_coa_id', __('Pembayaran Uang Jalan/Komisi'));
 					?>
 				</div>
-				<div class="col-sm-4">
+				<div class="col-sm-4 col-sm-offset-4">
 		        	<?php 
-							echo $this->Form->input('uang_Jalan_commission_payment_coa_debit_id',array(
-								'label'=> false, 
-								'class'=>'form-control',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->input('uang_Jalan_commission_payment_coa_credit_id',array(
+							echo $this->Form->input('uang_Jalan_commission_payment_coa_id',array(
 								'label'=> false, 
 								'class'=>'form-control',
 								'required' => false,
