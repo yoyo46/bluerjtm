@@ -1430,7 +1430,7 @@ class TrucksController extends AppController {
             'fields' => array(
                 'Coa.id', 'Coa.coa_name'
             ),
-        ), true, array(
+        ), array(
             'status' => 'cash_bank_child',
         ));
 
@@ -1879,7 +1879,7 @@ class TrucksController extends AppController {
             'fields' => array(
                 'Coa.id', 'Coa.coa_name'
             ),
-        ), true, array(
+        ), array(
             'status' => 'cash_bank_child',
         ));
 
@@ -2913,7 +2913,7 @@ class TrucksController extends AppController {
             'fields' => array(
                 'Coa.id', 'Coa.coa_name'
             ),
-        ), true, array(
+        ), array(
             'status' => 'cash_bank_child',
         ));
 

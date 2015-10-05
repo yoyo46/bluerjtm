@@ -26,48 +26,45 @@ class Journal extends AppModel {
         'Coa' => array(
             'className' => 'Coa',
             'foreignKey' => 'coa_id',
-            'fields' => '',
-            'order' => ''
+        ),
+        'User' => array(
+            'className' => 'User',
+            'foreignKey' => 'user_id',
         )
     );
 
-    function setJournal ( $document_id = false, $document_no = false, $coa_name = false, $debit = 0, $credit = 0, $type = false ) {
-        if( is_numeric($coa_name) ) {
-            $coa_id = $coa_name;
-            $data['Journal'] = array(
-                'document_id' => $document_id,
-                'document_no' => $document_no,
-                'coa_id' => $coa_id,
-                'debit' => $debit,
-                'credit' => $credit,
-                'type' => $type,
-                'branch_id' => Configure::read('__Site.config_branch_id'),
-            );
-            $this->create();
-            $this->set($data);
+    function setJournal ( $document_id = false, $document_no = false, $coas, $type = false ) {
+        if( !empty($coas) && is_array($coas) ) {
+            foreach ($coas as $coa_name => $total) {
+                $coaSetting = $this->User->CoaSetting->getData('first', array(
+                    'conditions' => array(
+                        'CoaSetting.status' => 1
+                    ),
+                ));
 
-            if( $this->save($data) ) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            $this->CoaSetting = ClassRegistry::init('CoaSetting');
-            $coaSetting = $this->CoaSetting->getData('first', array(
-                'conditions' => array(
-                    'CoaSetting.status' => 1
-                ),
-            ));
+                if( !empty($coaSetting['CoaSetting'][$coa_name]) ) {
+                    $coa_id = $coaSetting['CoaSetting'][$coa_name];
+                } else {
+                    $coa_id = false;
+                }
 
-            if( !empty($coaSetting['CoaSetting'][$coa_name]) ) {
+                $user_id = Configure::read('__Site.config_user_id');
+                $coa = $this->Coa->getData('first', array(
+                    'conditions' => array(
+                        'Coa.id' => $coa_id,
+                    ),
+                ));
+                $saldo_awal = !empty($coa['Coa']['balance'])?$coa['Coa']['balance']:false;
+
                 $data['Journal'] = array(
+                    'user_id' => $user_id,
+                    'coa_id' => $coa_id,
                     'document_id' => $document_id,
                     'document_no' => $document_no,
-                    'coa_id' => $coaSetting['CoaSetting'][$coa_name],
+                    'saldo_awal' => $saldo_awal,
                     'debit' => $debit,
                     'credit' => $credit,
                     'type' => $type,
-                    'branch_id' => Configure::read('__Site.config_branch_id'),
                 );
                 $this->create();
                 $this->set($data);
@@ -77,9 +74,9 @@ class Journal extends AppModel {
                 } else {
                     return false;
                 }
-            } else {
-                return false;
             }
+        } else {
+            return false;
         }
     }
 

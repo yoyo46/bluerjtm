@@ -1,7 +1,9 @@
 <?php
 App::uses('AppController', 'Controller');
 class RevenuesController extends AppController {
-    public $uses = array();
+    public $uses = array(
+        'Ttuj'
+    );
 
     public $components = array(
         'RjRevenue'
@@ -39,9 +41,6 @@ class RevenuesController extends AppController {
     }
 
     public function ttuj() {
-        $this->loadModel('Ttuj');
-        $this->loadModel('SuratJalan');
-
         $this->set('module_title', __('TTUJ'));
         $this->set('active_menu', 'ttuj');
         $this->set('sub_module_title', __('TTUJ'));
@@ -123,7 +122,7 @@ class RevenuesController extends AppController {
 
         if( !empty($ttujs) ) {
             foreach ($ttujs as $key => $ttuj) {
-                $ttujs[$key] = $this->SuratJalan->getSJ( $ttuj, $ttuj['Ttuj']['id'] );
+                $ttujs[$key] = $this->Ttuj->SuratJalan->getSJ( $ttuj, $ttuj['Ttuj']['id'] );
             }
         }
 
@@ -131,14 +130,12 @@ class RevenuesController extends AppController {
     }
 
     function ttuj_add( $data_action = 'depo' ){
-        $this->loadModel('Ttuj');
         $module_title = sprintf(__('Tambah TTUJ - %s'), strtoupper($data_action));
         $this->set('sub_module_title', trim($module_title));
         $this->doTTUJ( $data_action );
     }
 
     function ttuj_edit( $id ){
-        $this->loadModel('Ttuj');
         $this->loadModel('Revenue');
         $ttuj = $this->Ttuj->getData('first', array(
             'conditions' => array(
@@ -344,7 +341,6 @@ class RevenuesController extends AppController {
     }
 
     function saveTtujPerlengkapan ( $dataTtujPerlengkapan = false, $data = false, $ttuj_id = false ) {
-        $this->loadModel('TtujPerlengkapan');
         $result = array(
             'validates' => true,
             'data' => false,
@@ -352,7 +348,7 @@ class RevenuesController extends AppController {
 
         if( !empty($dataTtujPerlengkapan) ) {
             if( !empty($ttuj_id) ) {
-                $this->TtujPerlengkapan->updateAll( array(
+                $this->Ttuj->TtujPerlengkapan->updateAll( array(
                     'TtujPerlengkapan.status' => 0,
                 ), array(
                     'TtujPerlengkapan.ttuj_id' => $ttuj_id,
@@ -362,15 +358,15 @@ class RevenuesController extends AppController {
             foreach ($dataTtujPerlengkapan as $key => $qty) {
                 $dataValidate['TtujPerlengkapan']['qty'] = trim($qty);
                 $dataValidate['TtujPerlengkapan']['perlengkapan_id'] = !empty($data['TtujPerlengkapan']['id'][$key])?$data['TtujPerlengkapan']['id'][$key]:false;
-                $this->TtujPerlengkapan->set($dataValidate);
+                $this->Ttuj->TtujPerlengkapan->set($dataValidate);
 
                 if( !empty($ttuj_id) ) {
                     $dataValidate['TtujPerlengkapan']['ttuj_id'] = $ttuj_id;
 
-                    $this->TtujPerlengkapan->create();
-                    $this->TtujPerlengkapan->save($dataValidate);
+                    $this->Ttuj->TtujPerlengkapan->create();
+                    $this->Ttuj->TtujPerlengkapan->save($dataValidate);
                 } else {
-                    if(!$this->TtujPerlengkapan->validates($dataValidate)){
+                    if(!$this->Ttuj->TtujPerlengkapan->validates($dataValidate)){
                         $result['validates'] = false;
                     } else {
                         $result['data'][$key] = $dataValidate;
@@ -384,8 +380,6 @@ class RevenuesController extends AppController {
 
     function doTTUJ($data_action = false, $id = false, $data_local = false){
         $this->loadModel('City');
-        $this->loadModel('Perlengkapan');
-        $this->loadModel('Truck');
         $this->loadModel('TarifAngkutan');
         $this->loadModel('Revenue');
         $this->loadModel('RevenueDetail');
@@ -459,13 +453,13 @@ class RevenuesController extends AppController {
                 $conditionsTruck['Truck.branch_id'] = $plantCityId;
             }
 
-            $truck = $this->Truck->getData('first', array(
+            $truck = $this->Ttuj->Truck->getData('first', array(
                 'conditions' => $conditionsTruck,
             ));
 
             if( !empty($truck) ) {
                 $company_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'company_id');
-                $truck = $this->Truck->Company->getMerge($truck, $company_id);
+                $truck = $this->Ttuj->Truck->Company->getMerge($truck, $company_id);
                 $is_rjtm = $this->MkCommon->filterEmptyField($truck, 'Company', 'is_rjtm');
             }
 
@@ -571,15 +565,13 @@ class RevenuesController extends AppController {
                                 $document_no = !empty($data['Ttuj']['no_ttuj'])?$data['Ttuj']['no_ttuj']:false;
 
                                 if( !empty($is_rjtm) && empty($is_draft) ) {
-                                    $this->loadModel('Journal');
-
-                                    $this->Journal->deleteJournal( $document_id, 'commission' );
-                                    $this->Journal->deleteJournal( $document_id, 'uang_jalan' );
-                                    $this->Journal->deleteJournal( $document_id, 'uang_kuli_muat' );
-                                    $this->Journal->deleteJournal( $document_id, 'uang_kuli_bongkar' );
-                                    $this->Journal->deleteJournal( $document_id, 'asdp' );
-                                    $this->Journal->deleteJournal( $document_id, 'uang_kawal' );
-                                    $this->Journal->deleteJournal( $document_id, 'uang_keamanan' );
+                                    $this->User->Journal->deleteJournal( $document_id, 'commission' );
+                                    $this->User->Journal->deleteJournal( $document_id, 'uang_jalan' );
+                                    $this->User->Journal->deleteJournal( $document_id, 'uang_kuli_muat' );
+                                    $this->User->Journal->deleteJournal( $document_id, 'uang_kuli_bongkar' );
+                                    $this->User->Journal->deleteJournal( $document_id, 'asdp' );
+                                    $this->User->Journal->deleteJournal( $document_id, 'uang_kawal' );
+                                    $this->User->Journal->deleteJournal( $document_id, 'uang_keamanan' );
 
                                     if ( $allowUpdate ) {
                                         if( !empty($data['Ttuj']['commission']) ) {
@@ -589,8 +581,12 @@ class RevenuesController extends AppController {
                                                 $commissionJournal += $data['Ttuj']['commission_extra'];
                                             }
 
-                                            $this->Journal->setJournal( $document_id, $document_no, 'commission_coa_credit_id', 0, $commissionJournal, 'commission' );
-                                            $this->Journal->setJournal( $document_id, $document_no, 'commission_coa_debit_id', $commissionJournal, 0, 'commission' );
+                                            $this->User->Journal->setJournal( $document_id, $document_no, array(
+                                                'Coa' => array(
+                                                    'commission_coa_credit_id' => $commissionJournal,
+                                                    'commission_coa_debit_id' => $commissionJournal,
+                                                ),
+                                            ), 'commission' );
                                         }
 
                                         if( !empty($data['Ttuj']['uang_jalan_1']) ) {
@@ -604,33 +600,62 @@ class RevenuesController extends AppController {
                                                 $uangJalanJournal += $data['Ttuj']['uang_jalan_extra'];
                                             }
 
-                                            $this->Journal->setJournal( $document_id, $document_no, 'uang_jalan_coa_credit_id', 0, $uangJalanJournal, 'uang_jalan' );
-                                            $this->Journal->setJournal( $document_id, $document_no, 'uang_jalan_coa_debit_id', $uangJalanJournal, 0, 'uang_jalan' );
+                                            $this->User->Journal->setJournal( $document_id, $document_no, array(
+                                                'Coa' => array(
+                                                    'uang_jalan_coa_credit_id' => $uangJalanJournal,
+                                                    'uang_jalan_coa_debit_id' => $uangJalanJournal,
+                                                ),
+                                            ), 'uang_jalan' );
                                         }
 
                                         if( !empty($data['Ttuj']['uang_kuli_muat']) ) {
-                                            $this->Journal->setJournal( $document_id, $document_no, 'uang_kuli_muat_coa_credit_id', 0, $data['Ttuj']['uang_kuli_muat'], 'uang_kuli_muat' );
-                                            $this->Journal->setJournal( $document_id, $document_no, 'uang_kuli_muat_coa_debit_id', $data['Ttuj']['uang_kuli_muat'], 0, 'uang_kuli_muat' );
+                                            $biaya_uang_kuli_muat = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'uang_kuli_muat', 0);
+                                            $this->User->Journal->setJournal( $document_id, $document_no, array(
+                                                'Coa' => array(
+                                                    'uang_kuli_muat_coa_credit_id' => $biaya_uang_kuli_muat,
+                                                    'uang_kuli_muat_coa_debit_id' => $biaya_uang_kuli_muat,
+                                                ),
+                                            ), 'uang_kuli_muat' );
                                         }
 
                                         if( !empty($data['Ttuj']['uang_kuli_bongkar']) ) {
-                                            $this->Journal->setJournal( $document_id, $document_no, 'uang_kuli_bongkar_coa_credit_id', 0, $data['Ttuj']['uang_kuli_bongkar'], 'uang_kuli_bongkar' );
-                                            $this->Journal->setJournal( $document_id, $document_no, 'uang_kuli_bongkar_coa_debit_id', $data['Ttuj']['uang_kuli_bongkar'], 0, 'uang_kuli_bongkar' );
+                                            $biaya_uang_kuli_bongkar = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'uang_kuli_bongkar', 0);
+                                            $this->User->Journal->setJournal( $document_id, $document_no, array(
+                                                'Coa' => array(
+                                                    'uang_kuli_bongkar_coa_credit_id' => $biaya_uang_kuli_bongkar,
+                                                    'uang_kuli_bongkar_coa_debit_id' => $biaya_uang_kuli_bongkar,
+                                                ),
+                                            ), 'uang_kuli_bongkar' );
                                         }
 
                                         if( !empty($data['Ttuj']['asdp']) ) {
-                                            $this->Journal->setJournal( $document_id, $document_no, 'asdp_coa_credit_id', 0, $data['Ttuj']['asdp'], 'asdp' );
-                                            $this->Journal->setJournal( $document_id, $document_no, 'asdp_coa_debit_id', $data['Ttuj']['asdp'], 0, 'asdp' );
+                                            $asdp_uang_jalan = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'asdp', 0);
+                                            $this->User->Journal->setJournal( $document_id, $document_no, array(
+                                                'Coa' => array(
+                                                    'asdp_coa_credit_id' => $asdp_uang_jalan,
+                                                    'asdp_coa_debit_id' => $asdp_uang_jalan,
+                                                ),
+                                            ), 'asdp' );
                                         }
 
                                         if( !empty($data['Ttuj']['uang_kawal']) ) {
-                                            $this->Journal->setJournal( $document_id, $document_no, 'uang_kawal_coa_credit_id', 0, $data['Ttuj']['uang_kawal'], 'uang_kawal' );
-                                            $this->Journal->setJournal( $document_id, $document_no, 'uang_kawal_coa_debit_id', $data['Ttuj']['uang_kawal'], 0, 'uang_kawal' );
+                                            $biaya_uang_kawal = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'uang_kawal', 0);
+                                            $this->User->Journal->setJournal( $document_id, $document_no, array(
+                                                'Coa' => array(
+                                                    'uang_kawal_coa_credit_id' => $biaya_uang_kawal,
+                                                    'uang_kawal_coa_debit_id' => $biaya_uang_kawal,
+                                                ),
+                                            ), 'uang_kawal' );
                                         }
 
                                         if( !empty($data['Ttuj']['uang_keamanan']) ) {
-                                            $this->Journal->setJournal( $document_id, $document_no, 'uang_keamanan_coa_credit_id', 0, $data['Ttuj']['uang_keamanan'], 'uang_keamanan' );
-                                            $this->Journal->setJournal( $document_id, $document_no, 'uang_keamanan_coa_debit_id', $data['Ttuj']['uang_keamanan'], 0, 'uang_keamanan' );
+                                            $biaya_uang_keamanan = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'uang_keamanan', 0);
+                                            $this->User->Journal->setJournal( $document_id, $document_no, array(
+                                                'Coa' => array(
+                                                    'uang_keamanan_coa_credit_id' => $biaya_uang_keamanan,
+                                                    'uang_keamanan_coa_debit_id' => $biaya_uang_keamanan,
+                                                ),
+                                            ), 'uang_keamanan' );
                                         }
                                     }
                                 }
@@ -932,7 +957,7 @@ class RevenuesController extends AppController {
                             $this->request->data['Ttuj']['uang_jalan_extra_per_unit'] = !empty($uangJalan['UangJalan']['uang_jalan_extra_per_unit'])?$uangJalan['UangJalan']['uang_jalan_extra_per_unit']:0;
 
                             if( !empty($data['Ttuj']['truck_id']) ) {
-                                $truckInfo = $this->Truck->getInfoTruck($data['Ttuj']['truck_id'], $plantCityId);
+                                $truckInfo = $this->Ttuj->Truck->getInfoTruck($data['Ttuj']['truck_id'], $plantCityId);
                                 $this->request->data['Ttuj']['driver_name'] = !empty($truckInfo['Driver']['name'])?$truckInfo['Driver']['name']:false;
                                 $this->request->data['Ttuj']['truck_capacity'] = !empty($truckInfo['Truck']['capacity'])?$truckInfo['Truck']['capacity']:false;
                             }
@@ -1034,12 +1059,12 @@ class RevenuesController extends AppController {
 
         $ttuj_truck_id = !empty($data_local['Ttuj']['truck_id'])?$data_local['Ttuj']['truck_id']:false;
         $ttuj_truck_nopol = !empty($data_local['Ttuj']['nopol'])?$data_local['Ttuj']['nopol']:false;
-        $trucks = $this->Truck->getListTruck($ttuj_truck_id, false, $ttuj_truck_nopol, $plantCityId);
+        $trucks = $this->Ttuj->Truck->getListTruck($ttuj_truck_id, false, $ttuj_truck_nopol, $plantCityId);
 
         $driver_penganti_id = !empty($data_local['Ttuj']['driver_penganti_id'])?$data_local['Ttuj']['driver_penganti_id']:false;
         $driverPengantis = $this->Ttuj->Truck->Driver->getListDriverPenganti($driver_penganti_id);
 
-        $perlengkapans = $this->Perlengkapan->getData('list', array(
+        $perlengkapans = $this->Ttuj->Truck->TruckPerlengkapan->Perlengkapan->getData('list', array(
             'fields' => array(
                 'Perlengkapan.id', 'Perlengkapan.name',
             ),
@@ -1088,8 +1113,6 @@ class RevenuesController extends AppController {
     }
 
     function ttuj_toggle( $id, $action_type = 'status' ){
-        $this->loadModel('Ttuj');
-
         $conditions = array(
             'Ttuj.id' => $id,
         );
@@ -1143,7 +1166,6 @@ class RevenuesController extends AppController {
             }
 
             if($this->Ttuj->save()){
-                $this->loadModel('Journal');
                 $document_no = !empty($locale['Ttuj']['no_ttuj'])?$locale['Ttuj']['no_ttuj']:false;
 
                 if( $deleteJournal && empty($locale['Ttuj']['is_draft']) ) {
@@ -1154,8 +1176,8 @@ class RevenuesController extends AppController {
                             $commissionJournal += $locale['Ttuj']['commission_extra'];
                         }
 
-                        $this->Journal->setJournal( $id, $document_no, 'commission_coa_debit_id', 0, $commissionJournal, 'commission_void' );
-                        $this->Journal->setJournal( $id, $document_no, 'commission_coa_credit_id', $commissionJournal, 0, 'commission_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'commission_coa_debit_id', 0, $commissionJournal, 'commission_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'commission_coa_credit_id', $commissionJournal, 0, 'commission_void' );
                     }
 
                     if( !empty($locale['Ttuj']['uang_jalan_1']) ) {
@@ -1169,33 +1191,33 @@ class RevenuesController extends AppController {
                             $uangJalanJournal += $locale['Ttuj']['uang_jalan_extra'];
                         }
 
-                        $this->Journal->setJournal( $id, $document_no, 'uang_jalan_coa_debit_id', 0, $uangJalanJournal, 'uang_jalan_void' );
-                        $this->Journal->setJournal( $id, $document_no, 'uang_jalan_coa_credit_id', $uangJalanJournal, 0, 'uang_jalan_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'uang_jalan_coa_debit_id', 0, $uangJalanJournal, 'uang_jalan_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'uang_jalan_coa_credit_id', $uangJalanJournal, 0, 'uang_jalan_void' );
                     }
 
                     if( !empty($locale['Ttuj']['uang_kuli_muat']) ) {
-                        $this->Journal->setJournal( $id, $document_no, 'uang_kuli_muat_coa_debit_id', 0, $locale['Ttuj']['uang_kuli_muat'], 'uang_kuli_muat_void' );
-                        $this->Journal->setJournal( $id, $document_no, 'uang_kuli_muat_coa_credit_id', $locale['Ttuj']['uang_kuli_muat'], 0, 'uang_kuli_muat_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'uang_kuli_muat_coa_debit_id', 0, $locale['Ttuj']['uang_kuli_muat'], 'uang_kuli_muat_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'uang_kuli_muat_coa_credit_id', $locale['Ttuj']['uang_kuli_muat'], 0, 'uang_kuli_muat_void' );
                     }
 
                     if( !empty($locale['Ttuj']['uang_kuli_bongkar']) ) {
-                        $this->Journal->setJournal( $id, $document_no, 'uang_kuli_bongkar_coa_debit_id', 0, $locale['Ttuj']['uang_kuli_bongkar'], 'uang_kuli_bongkar_void' );
-                        $this->Journal->setJournal( $id, $document_no, 'uang_kuli_bongkar_coa_credit_id', $locale['Ttuj']['uang_kuli_bongkar'], 0, 'uang_kuli_bongkar_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'uang_kuli_bongkar_coa_debit_id', 0, $locale['Ttuj']['uang_kuli_bongkar'], 'uang_kuli_bongkar_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'uang_kuli_bongkar_coa_credit_id', $locale['Ttuj']['uang_kuli_bongkar'], 0, 'uang_kuli_bongkar_void' );
                     }
 
                     if( !empty($locale['Ttuj']['asdp']) ) {
-                        $this->Journal->setJournal( $id, $document_no, 'asdp_coa_debit_id', 0, $locale['Ttuj']['asdp'], 'asdp_void' );
-                        $this->Journal->setJournal( $id, $document_no, 'asdp_coa_credit_id', $locale['Ttuj']['asdp'], 0, 'asdp_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'asdp_coa_debit_id', 0, $locale['Ttuj']['asdp'], 'asdp_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'asdp_coa_credit_id', $locale['Ttuj']['asdp'], 0, 'asdp_void' );
                     }
 
                     if( !empty($locale['Ttuj']['uang_kawal']) ) {
-                        $this->Journal->setJournal( $id, $document_no, 'uang_kawal_coa_debit_id', 0, $locale['Ttuj']['uang_kawal'], 'uang_kawal_void' );
-                        $this->Journal->setJournal( $id, $document_no, 'uang_kawal_coa_credit_id', $locale['Ttuj']['uang_kawal'], 0, 'uang_kawal_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'uang_kawal_coa_debit_id', 0, $locale['Ttuj']['uang_kawal'], 'uang_kawal_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'uang_kawal_coa_credit_id', $locale['Ttuj']['uang_kawal'], 0, 'uang_kawal_void' );
                     }
 
                     if( !empty($locale['Ttuj']['uang_keamanan']) ) {
-                        $this->Journal->setJournal( $id, $document_no, 'uang_keamanan_coa_debit_id', 0, $locale['Ttuj']['uang_keamanan'], 'uang_keamanan_void' );
-                        $this->Journal->setJournal( $id, $document_no, 'uang_keamanan_coa_credit_id', $locale['Ttuj']['uang_keamanan'], 0, 'uang_keamanan_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'uang_keamanan_coa_debit_id', 0, $locale['Ttuj']['uang_keamanan'], 'uang_keamanan_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'uang_keamanan_coa_credit_id', $locale['Ttuj']['uang_keamanan'], 0, 'uang_keamanan_void' );
                     }
                 }
 
@@ -1233,8 +1255,6 @@ class RevenuesController extends AppController {
     }
 
     public function truk_tiba() {
-        $this->loadModel('Ttuj');
-
         $action_type = 'truk_tiba';
         $conditions = array(
             'Ttuj.is_arrive' => 1,
@@ -1312,13 +1332,11 @@ class RevenuesController extends AppController {
     }
 
     public function truk_tiba_add() {
-        $this->loadModel('Ttuj');
         $this->set('active_menu', 'truk_tiba');
         $this->doTTUJLanjutan();
     }
 
     public function ttuj_lanjutan_edit( $action_type = 'truk_tiba', $id = false ) {
-        $this->loadModel('Ttuj');
         $this->set('active_menu', 'truk_tiba');
 
         $conditions = array(
@@ -1364,8 +1382,6 @@ class RevenuesController extends AppController {
 
     function doTTUJLanjutan( $action_type = 'truk_tiba', $id = false, $ttuj = false ){
         $this->loadModel('TipeMotor');
-        $this->loadModel('Perlengkapan');
-        $this->loadModel('Truck');
         $this->loadModel('ColorMotor');
 
         $data_action = false;
@@ -1543,7 +1559,7 @@ class RevenuesController extends AppController {
         }
 
         $ttujs = $this->Ttuj->getTtujAfterLeave($id, $action_type);
-        $perlengkapans = $this->Perlengkapan->getData('list', array(
+        $perlengkapans = $this->Ttuj->Truck->TruckPerlengkapan->Perlengkapan->getData('list', array(
             'fields' => array(
                 'Perlengkapan.id', 'Perlengkapan.name',
             ),
@@ -1574,10 +1590,9 @@ class RevenuesController extends AppController {
     }
 
     public function info_truk( $action_type = 'truk_tiba', $ttuj_id = false ) {
-        $this->loadModel('Ttuj');
         $this->loadModel('TipeMotor');
-        $this->loadModel('Perlengkapan');
         $this->loadModel('ColorMotor');
+
         $this->set('module_title', __('TTUJ'));
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
 
@@ -1676,7 +1691,7 @@ class RevenuesController extends AppController {
                 }
 
                 $this->request->data = $data_local;
-                $perlengkapans = $this->Perlengkapan->getData('list', array(
+                $perlengkapans = $this->Ttuj->Truck->TruckPerlengkapan->Perlengkapan->getData('list', array(
                     'fields' => array(
                         'Perlengkapan.id', 'Perlengkapan.name',
                     ),
@@ -1714,8 +1729,6 @@ class RevenuesController extends AppController {
     }
 
     public function bongkaran() {
-        $this->loadModel('Ttuj');
-
         $action_type = 'bongkaran';
         $conditions = array(
             'Ttuj.is_arrive' => 1,
@@ -1794,15 +1807,12 @@ class RevenuesController extends AppController {
     }
 
     public function bongkaran_add() {
-        $this->loadModel('Ttuj');
         $this->set('sub_module_title', __('Bongkaran'));
         $this->set('active_menu', 'bongkaran');
         $this->doTTUJLanjutan( 'bongkaran' );
     }
 
     public function balik() {
-        $this->loadModel('Ttuj');
-
         $action_type = 'balik';
         $conditions = array(
             'Ttuj.is_balik' => 1,
@@ -1881,14 +1891,12 @@ class RevenuesController extends AppController {
     }
 
     public function balik_add() {
-        $this->loadModel('Ttuj');
         $this->set('sub_module_title', __('Tambah TTUJ Balik'));
         $this->set('active_menu', 'balik');
         $this->doTTUJLanjutan( 'balik' );
     }
 
     public function pool() {
-        $this->loadModel('Ttuj');
         $this->loadModel('City');
 
         $action_type = 'pool';
@@ -1967,17 +1975,13 @@ class RevenuesController extends AppController {
     }
 
     public function pool_add() {
-        $this->loadModel('Ttuj');
         $this->set('sub_module_title', __('TTUJ Sampai Pool'));
         $this->set('active_menu', 'pool');
         $this->doTTUJLanjutan( 'pool' );
     }
 
     public function ritase_report( $data_type = 'depo' ) {
-        $this->loadModel('Truck');
         $this->loadModel('TruckCustomer');
-        $this->loadModel('Ttuj');
-        $this->loadModel('Ttuj');
         $this->loadModel('CustomerNoType');
 
         $dateFrom = date('Y-m-01');
@@ -2102,7 +2106,7 @@ class RevenuesController extends AppController {
                     'TruckCustomer.truck_id'=> $truck['Truck']['id'],
                 );
 
-                $truck = $this->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
+                $truck = $this->Ttuj->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
                 $truck = $this->GroupBranch->Branch->getMerge($truck, $branch_id);
 
                 $conditionsTtuj = $defaultConditionsTtuj;
@@ -2177,7 +2181,7 @@ class RevenuesController extends AppController {
             ));
         }
 
-        $companies = $this->Truck->Company->getData('list');
+        $companies = $this->Ttuj->Truck->Company->getData('list');
 
         $this->set(compact(
             'trucks', 'cities', 'data_action',
@@ -2204,7 +2208,6 @@ class RevenuesController extends AppController {
 
     public function achievement_report( $data_action = false ) {
         $this->loadModel('CustomerTargetUnitDetail');
-        $this->loadModel('Ttuj');
         $this->loadModel('TtujTipeMotor');
         $this->loadModel('Customer');
         $this->set('active_menu', 'achievement_report');
@@ -2368,8 +2371,6 @@ class RevenuesController extends AppController {
     public function monitoring_truck( $data_action = false ) {
         $this->loadModel('Customer');
         $this->loadModel('TruckCustomer');
-        $this->loadModel('Truck');
-        $this->loadModel('Ttuj');
         $this->loadModel('TtujTipeMotor');
         $this->loadModel('CalendarEvent');
         $this->loadModel('Laka');
@@ -2500,7 +2501,7 @@ class RevenuesController extends AppController {
             }
         }
 
-        $this->Truck->bindModel(array(
+        $this->Ttuj->Truck->bindModel(array(
             'hasOne' => array(
                 'TruckCustomerWithOrder' => array(
                     'className' => 'TruckCustomerWithOrder',
@@ -2523,7 +2524,7 @@ class RevenuesController extends AppController {
             )
         ), false);
 
-        $this->paginate = $this->Truck->getData('paginate', array(
+        $this->paginate = $this->Ttuj->Truck->getData('paginate', array(
             'conditions' => $conditionTrucks,
             'contain' => array(
                 'TruckCustomerWithOrder',
@@ -2566,7 +2567,7 @@ class RevenuesController extends AppController {
                     $change_driver_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'change_driver_id', '-');
 
                     if( $change_driver_name == '-' && !empty($change_driver_id) ) {
-                        $value = $this->Truck->Driver->getMerge($value, $change_driver_id, 'DriverPenganti');
+                        $value = $this->Ttuj->Truck->Driver->getMerge($value, $change_driver_id, 'DriverPenganti');
                         $change_driver_name = $this->MkCommon->filterEmptyField($value, 'DriverPenganti', 'driver_name', '-');
                     }
 
@@ -2978,7 +2979,7 @@ class RevenuesController extends AppController {
             'branch' => false,
             'plant' => false,
         ));
-        $companies = $this->Truck->Company->getData('list');
+        $companies = $this->Ttuj->Truck->Company->getData('list');
 
         $this->set(compact(
             'data_action', 'lastDay', 'currentMonth',
@@ -3008,7 +3009,6 @@ class RevenuesController extends AppController {
 
     function index(){
         $this->loadModel('Revenue');
-        $this->loadModel('Ttuj');
         $this->loadModel('City');
 
         $this->set('active_menu', 'revenues');
@@ -3131,8 +3131,6 @@ class RevenuesController extends AppController {
         $revenues = $this->paginate('Revenue');
 
         if(!empty($revenues)){
-            $this->loadModel('Truck');
-
             foreach ($revenues as $key => $value) {
                 $value = $this->Revenue->InvoiceDetail->getInvoicedRevenue($value, $value['Revenue']['id']);
 
@@ -3144,7 +3142,7 @@ class RevenuesController extends AppController {
                     $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
                     $value = $this->City->getMerge($value, $to_city_id);
                     $value = $this->Ttuj->Customer->getMerge($value, $value['Revenue']['customer_id']);
-                    $value = $this->Truck->getMerge($value, $truck_id);
+                    $value = $this->Ttuj->Truck->getMerge($value, $truck_id);
                 } else {
                     $value = $this->Ttuj->Customer->getMerge($value, $value['Ttuj']['customer_id']);
                 }
@@ -3171,7 +3169,6 @@ class RevenuesController extends AppController {
     // }
 
     // function revenue_edit( $id ){
-    //     $this->loadModel('Ttuj');
     //     $ttuj = $this->Ttuj->getData('first', array(
     //         'conditions' => array(
     //             'Ttuj.id' => $id
@@ -3234,7 +3231,6 @@ class RevenuesController extends AppController {
     }
 
     function doRevenue($id = false, $data_local = false, $action_type = false){
-        $this->loadModel('Ttuj');
         $this->loadModel('TarifAngkutan');
         $this->loadModel('City');
         $this->loadModel('GroupMotor');
@@ -3471,8 +3467,7 @@ class RevenuesController extends AppController {
         $this->set('active_menu', 'revenues');
 
         if( $action_type == 'manual' ) {
-            $this->loadModel('Truck');
-            $this->Truck->bindModel(array(
+            $this->Ttuj->Truck->bindModel(array(
                 'hasOne' => array(
                     'Ttuj' => array(
                         'className' => 'Ttuj',
@@ -3488,7 +3483,7 @@ class RevenuesController extends AppController {
                 )
             ), false);
 
-            $trucks = $this->Truck->getData('list', array(
+            $trucks = $this->Ttuj->Truck->getData('list', array(
                 'conditions' => array(
                     'Ttuj.id' => NULL,
                 ),
@@ -3531,7 +3526,6 @@ class RevenuesController extends AppController {
             $this->Revenue->id = $id;
 
             if($this->Revenue->save()){
-                $this->loadModel('Ttuj');
                 $this->Ttuj->set('is_revenue', 0);
                 $this->Ttuj->id = $locale['Revenue']['ttuj_id'];
                 $this->Ttuj->save();
@@ -3551,11 +3545,9 @@ class RevenuesController extends AppController {
 
     function detail_ritase($id){
         if(!empty($id)){
-            $this->loadModel('Truck');
-            $this->loadModel('Ttuj');
             $this->loadModel('Customer');
 
-            $this->Truck->bindModel(array(
+            $this->Ttuj->Truck->bindModel(array(
                 'hasOne' => array(
                     'TruckCustomer' => array(
                         'className' => 'TruckCustomer',
@@ -3573,7 +3565,7 @@ class RevenuesController extends AppController {
                 }
             }
 
-            $truk = $this->Truck->getData('first', array(
+            $truk = $this->Ttuj->Truck->getData('first', array(
                 'conditions' => array(
                     'Truck.id' => $id,
                     'Truck.branch_id' => $allow_branch_id,
@@ -3598,10 +3590,10 @@ class RevenuesController extends AppController {
                 $driver_id = !empty($truk['Truck']['driver_id'])?$truk['Truck']['driver_id']:false;
 
                 $truk = $this->Customer->getMerge($truk, $customer_id);
-                $truk = $this->Truck->TruckBrand->getMerge($truk, $truck_brand_id);
-                $truk = $this->Truck->TruckCategory->getMerge($truk, $truck_category_id);
-                $truk = $this->Truck->TruckFacility->getMerge($truk, $truck_facility_id);
-                $truk = $this->Truck->Driver->getMerge($truk, $driver_id);
+                $truk = $this->Ttuj->Truck->TruckBrand->getMerge($truk, $truck_brand_id);
+                $truk = $this->Ttuj->Truck->TruckCategory->getMerge($truk, $truck_category_id);
+                $truk = $this->Ttuj->Truck->TruckFacility->getMerge($truk, $truck_facility_id);
+                $truk = $this->Ttuj->Truck->Driver->getMerge($truk, $driver_id);
                 $total_ritase = $this->Ttuj->getData('count', array(
                     'conditions' => array(
                         'Ttuj.truck_id' => $id,
@@ -3875,7 +3867,6 @@ class RevenuesController extends AppController {
             $this->Invoice->set($data);
 
             if($this->Invoice->validates()){
-                $this->loadModel('Journal');
                 $this->loadModel('CustomerGroupPattern');
 
                 $tarif_type = !empty($data['Invoice']['tarif_type'])?$data['Invoice']['tarif_type']:false;
@@ -3918,8 +3909,8 @@ class RevenuesController extends AppController {
                                     $this->CustomerGroupPattern->addPattern($customer, $data);
 
                                     if( !empty($data['Invoice']['total']) ) {
-                                        $this->Journal->setJournal( $invoice_id, $invoice_number, 'invoice_coa_credit_id', 0, $data['Invoice']['total'], 'invoice' );
-                                        $this->Journal->setJournal( $invoice_id, $invoice_number, 'invoice_coa_debit_id', $data['Invoice']['total'], 0, 'invoice' );
+                                        $this->User->Journal->setJournal( $invoice_id, $invoice_number, 'invoice_coa_credit_id', 0, $data['Invoice']['total'], 'invoice' );
+                                        $this->User->Journal->setJournal( $invoice_id, $invoice_number, 'invoice_coa_debit_id', $data['Invoice']['total'], 0, 'invoice' );
                                     }
 
                                     $this->params['old_data'] = $data_local;
@@ -3948,8 +3939,8 @@ class RevenuesController extends AppController {
                         $document_no = !empty($data['Invoice']['no_invoice'])?$data['Invoice']['no_invoice']:false;
 
                         if( !empty($data['Invoice']['total']) ) {
-                            $this->Journal->setJournal( $invoice_id, $document_no, 'invoice_coa_credit_id', 0, $data['Invoice']['total'], 'invoice' );
-                            $this->Journal->setJournal( $invoice_id, $document_no, 'invoice_coa_debit_id', $data['Invoice']['total'], 0, 'invoice' );
+                            $this->User->Journal->setJournal( $invoice_id, $document_no, 'invoice_coa_credit_id', 0, $data['Invoice']['total'], 'invoice' );
+                            $this->User->Journal->setJournal( $invoice_id, $document_no, 'invoice_coa_debit_id', $data['Invoice']['total'], 0, 'invoice' );
                         }
 
                         $this->CustomerGroupPattern->addPattern($customer, $data);
@@ -4595,14 +4586,13 @@ class RevenuesController extends AppController {
                 $this->Invoice->InvoicePaymentDetail->InvoicePayment->set($data);
 
                 if($this->Invoice->InvoicePaymentDetail->InvoicePayment->save()){
-                    $this->loadModel('Journal');
                     $invoice_payment_id = $this->Invoice->InvoicePaymentDetail->InvoicePayment->id;
                     $document_no = !empty($data['InvoicePayment']['nodoc'])?$data['InvoicePayment']['nodoc']:false;
-                    $this->Journal->deleteJournal( $invoice_payment_id, 'invoice_payment' );
+                    $this->User->Journal->deleteJournal( $invoice_payment_id, 'invoice_payment' );
 
                     if( !empty($data['InvoicePayment']['grand_total_payment']) ) {
-                        $this->Journal->setJournal( $invoice_payment_id, $document_no, 'pembayaran_invoice_coa_credit_id', 0, $data['InvoicePayment']['grand_total_payment'], 'invoice_payment' );
-                        $this->Journal->setJournal( $invoice_payment_id, $document_no, 'pembayaran_invoice_coa_debit_id', $data['InvoicePayment']['grand_total_payment'], 0, 'invoice_payment' );
+                        $this->User->Journal->setJournal( $invoice_payment_id, $document_no, 'pembayaran_invoice_coa_credit_id', 0, $data['InvoicePayment']['grand_total_payment'], 'invoice_payment' );
+                        $this->User->Journal->setJournal( $invoice_payment_id, $document_no, 'pembayaran_invoice_coa_debit_id', $data['InvoicePayment']['grand_total_payment'], 0, 'invoice_payment' );
                     }
 
                     if($id && $data_local){
@@ -4825,12 +4815,10 @@ class RevenuesController extends AppController {
                 ));
 
                 if($this->Invoice->InvoicePaymentDetail->InvoicePayment->save()){
-                    $this->loadModel('Journal');
-
                     if( !empty($invoice_payment['InvoicePayment']['grand_total_payment']) ) {
                         $document_no = !empty($invoice_payment['InvoicePayment']['nodoc'])?$invoice_payment['InvoicePayment']['nodoc']:false;
-                        $this->Journal->setJournal( $id, $document_no, 'pembayaran_invoice_coa_debit_id', 0, $invoice_payment['InvoicePayment']['grand_total_payment'], 'invoice_payment_void' );
-                        $this->Journal->setJournal( $id, $document_no, 'pembayaran_invoice_coa_credit_id', $invoice_payment['InvoicePayment']['grand_total_payment'], 0, 'invoice_payment_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'pembayaran_invoice_coa_debit_id', 0, $invoice_payment['InvoicePayment']['grand_total_payment'], 'invoice_payment_void' );
+                        $this->User->Journal->setJournal( $id, $document_no, 'pembayaran_invoice_coa_credit_id', $invoice_payment['InvoicePayment']['grand_total_payment'], 0, 'invoice_payment_void' );
                     }
 
                     $this->MkCommon->setCustomFlash(__('Berhasil menghapus invoice pembayaran'), 'success');
@@ -5199,12 +5187,10 @@ class RevenuesController extends AppController {
                     $this->Invoice->set($this->request->data);
 
                     if($this->Invoice->save()){
-                        $this->loadModel('Journal');
-
                         if( !empty($invoice['Invoice']['total']) ) {
                             $document_no = !empty($invoice['Invoice']['no_invoice'])?$invoice['Invoice']['no_invoice']:false;
-                            $this->Journal->setJournal( $id, $document_no, 'invoice_coa_debit_id', 0, $invoice['Invoice']['total'], 'invoice_void' );
-                            $this->Journal->setJournal( $id, $document_no, 'invoice_coa_credit_id', $invoice['Invoice']['total'], 0, 'invoice_void' );
+                            $this->User->Journal->setJournal( $id, $document_no, 'invoice_coa_debit_id', 0, $invoice['Invoice']['total'], 'invoice_void' );
+                            $this->User->Journal->setJournal( $id, $document_no, 'invoice_coa_credit_id', $invoice['Invoice']['total'], 0, 'invoice_void' );
                         }
 
                         $this->Invoice->InvoiceDetail->updateAll(
@@ -5583,9 +5569,6 @@ class RevenuesController extends AppController {
     }
 
     public function surat_jalan( $ttuj_id = false ) {
-        $this->loadModel('Ttuj');
-        $this->loadModel('SuratJalan');
-
         $ttuj = $this->Ttuj->getData('first', array(
             'conditions' => array(
                 'Ttuj.id' => $ttuj_id
@@ -5606,7 +5589,7 @@ class RevenuesController extends AppController {
                 $flagAdd = true;
             }
 
-            $suratJalans = $this->SuratJalan->getData('all', array(
+            $suratJalans = $this->Ttuj->SuratJalan->getData('all', array(
                 'conditions' => array(
                     'SuratJalan.status' => 1,
                     'SuratJalan.ttuj_id' => $ttuj_id,
@@ -5624,7 +5607,6 @@ class RevenuesController extends AppController {
     }
 
     function surat_jalan_add( $id = false ){
-        $this->loadModel('Ttuj');
         $ttuj = $this->Ttuj->getData('first', array(
             'conditions' => array(
                 'Ttuj.id' => $id
@@ -5643,15 +5625,14 @@ class RevenuesController extends AppController {
     }
 
     public function surat_jalan_edit($id = false) {
-        $this->loadModel('SuratJalan');
-        $suratJalan = $this->SuratJalan->getData('first', array(
+        $suratJalan = $this->Ttuj->SuratJalan->getData('first', array(
             'conditions' => array(
                 'SuratJalan.id' => $id,
             )
         ));
 
         if( !empty($suratJalan['Ttuj']) ) {
-            $suratJalan = $this->SuratJalan->Ttuj->getSumUnit( $suratJalan, $suratJalan['SuratJalan']['ttuj_id'], $suratJalan['SuratJalan']['id'] );
+            $suratJalan = $this->Ttuj->SuratJalan->Ttuj->getSumUnit( $suratJalan, $suratJalan['SuratJalan']['ttuj_id'], $suratJalan['SuratJalan']['id'] );
             $this->set('sub_module_title', __('Terima Surat Jalan'));
             $this->doSuratJalan($suratJalan['Ttuj']['id'], $suratJalan);
         } else {
@@ -5665,7 +5646,6 @@ class RevenuesController extends AppController {
 
         if( $qtySJNow < $qtyTipeMotor ) {
             if(!empty($this->request->data)){
-                $this->loadModel('SuratJalan');
                 $data = $this->request->data;
                 $qtySJDiterima = !empty($data['SuratJalan']['qty'])?$data['SuratJalan']['qty']:0;
                 $qtySJNow += $qtySJDiterima;
@@ -5673,25 +5653,25 @@ class RevenuesController extends AppController {
                 $data['SuratJalan']['ttuj_id'] = $ttuj_id;
 
                 if( !empty($ttuj['SuratJalan']['id']) ) {
-                    $this->SuratJalan->id = $ttuj['SuratJalan']['id'];
+                    $this->Ttuj->SuratJalan->id = $ttuj['SuratJalan']['id'];
                 } else {
-                    $this->SuratJalan->create();
+                    $this->Ttuj->SuratJalan->create();
                 }
 
-                $this->SuratJalan->set($data);
+                $this->Ttuj->SuratJalan->set($data);
 
-                if($this->SuratJalan->validates($data)){
+                if($this->Ttuj->SuratJalan->validates($data)){
                     if( $qtySJNow <= $qtyTipeMotor ) {
-                        if($this->SuratJalan->save($data)){
-                            $sj_id = $this->SuratJalan->id;
+                        if($this->Ttuj->SuratJalan->save($data)){
+                            $sj_id = $this->Ttuj->SuratJalan->id;
 
                             if( $qtySJNow >= $qtyTipeMotor ) {
-                                $this->SuratJalan->Ttuj->set('is_sj_completed', 1);
+                                $this->Ttuj->SuratJalan->Ttuj->set('is_sj_completed', 1);
                             } else {
-                                $this->SuratJalan->Ttuj->set('is_sj_completed', 0);
+                                $this->Ttuj->SuratJalan->Ttuj->set('is_sj_completed', 0);
                             }
-                            $this->SuratJalan->Ttuj->id = $ttuj_id;
-                            $this->SuratJalan->Ttuj->save();
+                            $this->Ttuj->SuratJalan->Ttuj->id = $ttuj_id;
+                            $this->Ttuj->SuratJalan->Ttuj->save();
 
                             $this->params['old_data'] = $ttuj;
                             $this->params['data'] = $data;
@@ -5728,19 +5708,17 @@ class RevenuesController extends AppController {
     }
 
     function surat_jalan_delete( $id = false ){
-        $this->loadModel('SuratJalan');
-        $this->loadModel('Ttuj');
-        $locale = $this->SuratJalan->getData('first', array(
+        $locale = $this->Ttuj->SuratJalan->getData('first', array(
             'conditions' => array(
                 'SuratJalan.id' => $id
             )
         ));
 
         if( !empty($locale) && !empty($locale['Ttuj']['id']) ){
-            $this->SuratJalan->id = $id;
-            $this->SuratJalan->set('status', 0);
+            $this->Ttuj->SuratJalan->id = $id;
+            $this->Ttuj->SuratJalan->set('status', 0);
 
-            if($this->SuratJalan->save()){
+            if($this->Ttuj->SuratJalan->save()){
                 $this->Ttuj->id = $locale['Ttuj']['id'];
                 $this->Ttuj->set('is_sj_completed', 0);
                 $this->Ttuj->save();
@@ -5759,7 +5737,6 @@ class RevenuesController extends AppController {
     }
 
     public function surat_jalan_outstanding( $driver_id = false, $pengganti = false ) {
-        $this->loadModel('Ttuj');
         $this->loadModel('Revenue');
         $this->loadModel('Driver');
         $driver = $this->Driver->getData('first', array(
@@ -5971,7 +5948,6 @@ class RevenuesController extends AppController {
     public function report_monitoring_sj_revenue( $data_action = false ) {
         $this->loadModel('Customer');
         $this->loadModel('Revenue');
-        $this->loadModel('Ttuj');
 
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $dateFrom = date('Y-m-01');
@@ -6181,7 +6157,6 @@ class RevenuesController extends AppController {
         $this->loadModel('GroupMotor');
         $this->loadModel('City');
         $this->loadModel('Customer');
-        $this->loadModel('Ttuj');
 
         $module_title = __('Print Invoice HSO');
         $this->set('sub_module_title', trim($module_title));
@@ -6586,7 +6561,6 @@ class RevenuesController extends AppController {
             $this->request->data = $invoice;
 
             if( !empty($invoice['TtujPaymentDetail']) ) {
-                $this->loadModel('Ttuj');
 
                 foreach ($invoice['TtujPaymentDetail'] as $key => $ttujPaymentDetail) {
                     $ttuj_id = !empty($ttujPaymentDetail['ttuj_id'])?$ttujPaymentDetail['ttuj_id']:false;
@@ -6606,7 +6580,7 @@ class RevenuesController extends AppController {
                 'fields' => array(
                     'Coa.id', 'Coa.coa_name'
                 ),
-            ), true, array(
+            ), array(
                 'status' => 'cash_bank_child',
             ));
 
@@ -6698,20 +6672,19 @@ class RevenuesController extends AppController {
             if( !$this->TtujPayment->save() ) {
                 $this->Log->logActivity( sprintf(__('Gagal mengubah total pembayaran ttuj #%s'), $ttuj_payment_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_payment_id );
             } else {
-                $this->loadModel('Journal');
                 $document_no = !empty($data['TtujPayment']['nodoc'])?$data['TtujPayment']['nodoc']:false;
 
                 switch ($document_type) {
                     case 'biaya_ttuj':
-                        $this->Journal->deleteJournal( $ttuj_payment_id, 'biaya_ttuj_payment' );
-                        $this->Journal->setJournal( $ttuj_payment_id, $document_no, 'biaya_ttuj_payment_coa_credit_id', 0, $totalPayment, 'biaya_ttuj_payment' );
-                        $this->Journal->setJournal( $ttuj_payment_id, $document_no, 'biaya_ttuj_payment_coa_debit_id', $totalPayment, 0, 'biaya_ttuj_payment' );
+                        $this->User->Journal->deleteJournal( $ttuj_payment_id, 'biaya_ttuj_payment' );
+                        $this->User->Journal->setJournal( $ttuj_payment_id, $document_no, 'biaya_ttuj_payment_coa_credit_id', 0, $totalPayment, 'biaya_ttuj_payment' );
+                        $this->User->Journal->setJournal( $ttuj_payment_id, $document_no, 'biaya_ttuj_payment_coa_debit_id', $totalPayment, 0, 'biaya_ttuj_payment' );
                         break;
                     
                     default:
-                        $this->Journal->deleteJournal( $ttuj_payment_id, 'uang_Jalan_commission_payment' );
-                        $this->Journal->setJournal( $ttuj_payment_id, $document_no, 'uang_Jalan_commission_payment_coa_credit_id', 0, $totalPayment, 'uang_Jalan_commission_payment' );
-                        $this->Journal->setJournal( $ttuj_payment_id, $document_no, 'uang_Jalan_commission_payment_coa_debit_id', $totalPayment, 0, 'uang_Jalan_commission_payment' );
+                        $this->User->Journal->deleteJournal( $ttuj_payment_id, 'uang_Jalan_commission_payment' );
+                        $this->User->Journal->setJournal( $ttuj_payment_id, $document_no, 'uang_Jalan_commission_payment_coa_credit_id', 0, $totalPayment, 'uang_Jalan_commission_payment' );
+                        $this->User->Journal->setJournal( $ttuj_payment_id, $document_no, 'uang_Jalan_commission_payment_coa_debit_id', $totalPayment, 0, 'uang_Jalan_commission_payment' );
                         break;
                 }
             }
@@ -6721,7 +6694,6 @@ class RevenuesController extends AppController {
     }
 
     function doTtujPayment( $action_type, $id = false, $data_local = false){
-        $this->loadModel('Ttuj');
         $this->loadModel('TtujPayment');
         $ttuj_id = false;
 
@@ -6800,7 +6772,7 @@ class RevenuesController extends AppController {
             'fields' => array(
                 'Coa.id', 'Coa.coa_name'
             ),
-        ), true, array(
+        ), array(
             'status' => 'cash_bank_child',
         ));
 
@@ -6849,7 +6821,6 @@ class RevenuesController extends AppController {
                     $this->TtujPayment->set($data);
 
                     if($this->TtujPayment->save()){
-                        $this->loadModel('Journal');
                         $document_no = !empty($invoice['TtujPayment']['nodoc'])?$invoice['TtujPayment']['nodoc']:false;
 
 
@@ -6876,13 +6847,13 @@ class RevenuesController extends AppController {
                         if( !empty($invoice['TtujPayment']['total_payment']) ) {
                             switch ($action_type) {
                                 case 'biaya_ttuj':
-                                    $this->Journal->setJournal( $id, $document_no, 'biaya_ttuj_payment_coa_debit_id', 0, $invoice['TtujPayment']['total_payment'], 'biaya_ttuj_payment' );
-                                    $this->Journal->setJournal( $id, $document_no, 'biaya_ttuj_payment_coa_credit_id', $invoice['TtujPayment']['total_payment'], 0, 'biaya_ttuj_payment' );
+                                    $this->User->Journal->setJournal( $id, $document_no, 'biaya_ttuj_payment_coa_debit_id', 0, $invoice['TtujPayment']['total_payment'], 'biaya_ttuj_payment' );
+                                    $this->User->Journal->setJournal( $id, $document_no, 'biaya_ttuj_payment_coa_credit_id', $invoice['TtujPayment']['total_payment'], 0, 'biaya_ttuj_payment' );
                                     break;
                                 
                                 default:
-                                    $this->Journal->setJournal( $id, $document_no, 'uang_Jalan_commission_payment_coa_debit_id', 0, $invoice['TtujPayment']['total_payment'], 'uang_Jalan_commission_payment_void' );
-                                    $this->Journal->setJournal( $id, $document_no, 'uang_Jalan_commission_payment_coa_credit_id', $invoice['TtujPayment']['total_payment'], 0, 'uang_Jalan_commission_payment_void' );
+                                    $this->User->Journal->setJournal( $id, $document_no, 'uang_Jalan_commission_payment_coa_debit_id', 0, $invoice['TtujPayment']['total_payment'], 'uang_Jalan_commission_payment_void' );
+                                    $this->User->Journal->setJournal( $id, $document_no, 'uang_Jalan_commission_payment_coa_credit_id', $invoice['TtujPayment']['total_payment'], 0, 'uang_Jalan_commission_payment_void' );
                                     break;
                             }
                         }
@@ -6958,7 +6929,6 @@ class RevenuesController extends AppController {
                             
                             if(!empty($dataimport)) {
                                 $this->loadModel('CustomerNoType');
-                                $this->loadModel('Truck');
                                 $this->loadModel('City');
                                 $this->loadModel('TarifAngkutan');
                                 $this->loadModel('GroupMotor');
@@ -6999,7 +6969,7 @@ class RevenuesController extends AppController {
                                                 'CustomerNoType.status' => 1,
                                             ),
                                         ));
-                                        $truck = $this->Truck->find('first', array(
+                                        $truck = $this->Ttuj->Truck->find('first', array(
                                             'conditions' => array(
                                                 'Truck.nopol' => $nopol,
                                                 'Truck.status' => 1,

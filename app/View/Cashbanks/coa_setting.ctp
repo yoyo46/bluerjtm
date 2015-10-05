@@ -286,7 +286,7 @@
 							echo $this->Form->label('pembayaran_invoice_coa_id', __('Pembayaran Invoice'));
 					?>
 				</div>
-				<div class="col-sm-4">
+				<div class="col-sm-4 col-sm-offset-4">
 		        	<?php 
 							echo $this->Form->input('pembayaran_invoice_coa_id',array(
 								'label'=> false, 
@@ -306,7 +306,7 @@
 							echo $this->Form->label('lku_payment_coa_id', __('Pembayaran LKU'));
 					?>
 				</div>
-				<div class="col-sm-4 col-sm-offset-4">
+				<div class="col-sm-4">
 		        	<?php 
 							echo $this->Form->input('lku_payment_coa_id',array(
 								'label'=> false, 
@@ -326,7 +326,7 @@
 							echo $this->Form->label('ksu_payment_coa_id', __('Pembayaran KSU'));
 					?>
 				</div>
-				<div class="col-sm-4 col-sm-offset-4">
+				<div class="col-sm-4">
 		        	<?php 
 							echo $this->Form->input('ksu_payment_coa_id',array(
 								'label'=> false, 
@@ -346,7 +346,7 @@
 							echo $this->Form->label('kir_payment_coa_id', __('Pembayaran KIR'));
 					?>
 				</div>
-				<div class="col-sm-4 col-sm-offset-4">
+				<div class="col-sm-4">
 		        	<?php 
 							echo $this->Form->input('kir_payment_coa_id',array(
 								'label'=> false, 
@@ -366,7 +366,7 @@
 							echo $this->Form->label('siup_payment_coa_id', __('Pembayaran Ijin Usaha'));
 					?>
 				</div>
-				<div class="col-sm-4 col-sm-offset-4">
+				<div class="col-sm-4">
 		        	<?php 
 							echo $this->Form->input('siup_payment_coa_id',array(
 								'label'=> false, 
@@ -386,7 +386,7 @@
 							echo $this->Form->label('stnk_payment_coa_id', __('Pembayaran STNK'));
 					?>
 				</div>
-				<div class="col-sm-4 col-sm-offset-4">
+				<div class="col-sm-4">
 		        	<?php 
 							echo $this->Form->input('stnk_payment_coa_id',array(
 								'label'=> false, 
@@ -406,7 +406,7 @@
 							echo $this->Form->label('uang_Jalan_commission_payment_coa_id', __('Pembayaran Uang Jalan/Komisi'));
 					?>
 				</div>
-				<div class="col-sm-4 col-sm-offset-4">
+				<div class="col-sm-4">
 		        	<?php 
 							echo $this->Form->input('uang_Jalan_commission_payment_coa_id',array(
 								'label'=> false, 

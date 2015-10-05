@@ -46,9 +46,10 @@ class UsersController extends AppController {
                 $get_cookie_session = !empty($get_cookie_session)?$get_cookie_session:0;
                 $msgFailedLogin = __('Gagal melakukan login, Anda sudah melakukan 3x percobaan login, silahkan tunggu 1 jam kemudian untuk melakukan login kembali.');
 
-                if( !empty($session_error) ) {
-                    $this->MkCommon->setCustomFlash($msgFailedLogin, 'error');
-                } else if($this->Auth->login()){
+                // if( !empty($session_error) ) {
+                //     $this->MkCommon->setCustomFlash($msgFailedLogin, 'error');
+                // } else
+                if($this->Auth->login()){
                     $this->Cookie->write($session_name_ip, 0, '1 hour');
                     $this->Cookie->write($session_try_login, 0);
                     $this->redirect($this->Auth->redirect());   

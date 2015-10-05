@@ -966,9 +966,7 @@ class CashbanksController extends AppController {
     }
 
     public function coa_setting() {
-        $this->loadModel('Coa');
-        $this->loadModel('CoaSetting');
-        $coaSetting = $this->CoaSetting->getData('first', array(
+        $coaSetting = $this->User->CoaSetting->getData('first', array(
             'conditions' => array(
                 'CoaSetting.status' => 1
             ),
@@ -976,18 +974,19 @@ class CashbanksController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $data['CoaSetting']['user_id'] = Configure::read('__Site.config_user_id');
             
             if( !empty($coaSetting['CoaSetting']['id']) ){
-                $this->CoaSetting->id = $coaSetting['CoaSetting']['id'];
+                $this->User->CoaSetting->id = $coaSetting['CoaSetting']['id'];
             }else{
-                $this->CoaSetting->create();
+                $this->User->CoaSetting->create();
             }
 
-            $this->CoaSetting->set($data);
+            $this->User->CoaSetting->set($data);
 
-            if($this->CoaSetting->validates($data)){
-                if($this->CoaSetting->save($data)){
-                    $transaction_id = $this->CoaSetting->id;
+            if($this->User->CoaSetting->validates($data)){
+                if($this->User->CoaSetting->save($data)){
+                    $transaction_id = $this->User->CoaSetting->id;
                     $this->MkCommon->setCustomFlash(__('Sukses menyimpan pengaturan COA'), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses menyimpan pengaturan COA #%s'), $transaction_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $transaction_id );
                     $this->redirect(array(
@@ -1005,7 +1004,7 @@ class CashbanksController extends AppController {
             $this->request->data = $coaSetting;
         }
 
-        $coas = $this->Coa->getData('list', array(
+        $coas = $this->User->Coa->getData('list', array(
             'conditions' => array(
                 'Coa.level' => 4,
                 'Coa.status' => 1

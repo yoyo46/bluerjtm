@@ -637,8 +637,7 @@ class SettingsController extends AppController {
     }
 
     public function coas() {
-        $this->loadModel('Coa');
-        $coas = $this->Coa->getData('threaded', array(
+        $coas = $this->User->Coa->getData('threaded', array(
             'conditions' => array(
                 'Coa.status' => 1
             ),
@@ -655,11 +654,10 @@ class SettingsController extends AppController {
     }
 
     public function coa_add( $parent_id = false ) {
-        $this->loadModel('Coa');
         $coa = false;
 
         if( !empty($parent_id) ) {
-            $coa = $this->Coa->getData('first', array(
+            $coa = $this->User->Coa->getData('first', array(
                 'conditions' => array(
                     'Coa.status' => 1,
                     'Coa.id' => $parent_id
@@ -681,11 +679,10 @@ class SettingsController extends AppController {
     }
 
     public function coa_edit( $id = false, $parent_id = false ) {
-        $this->loadModel('Coa');
         $coa = false;
 
         if( !empty($id) ) {
-            $coa_current = $this->Coa->getData('first', array(
+            $coa_current = $this->User->Coa->getData('first', array(
                 'conditions' => array(
                     'Coa.id' => $id,
                     'Coa.status' => 1,
@@ -693,7 +690,7 @@ class SettingsController extends AppController {
             ));
 
             if( !empty($coa_current) ) {
-                $coa = $this->Coa->getData('first', array(
+                $coa = $this->User->Coa->getData('first', array(
                     'conditions' => array(
                         'Coa.id' => $parent_id,
                         'Coa.status' => 1,
@@ -712,14 +709,15 @@ class SettingsController extends AppController {
     function doCoa($id = false, $data_local = false, $parent_id = false, $coa = false ){
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $data['Coa']['user_id'] = Configure::read('__Site.config_user_id');
 
             if($id && $data_local){
-                $this->Coa->id = $id;
+                $this->User->Coa->id = $id;
                 $msg = 'merubah';
                 $data['Coa']['level'] = $data_local['Coa']['level'];
                 $data['Coa']['id'] = $id;
             }else{
-                $this->Coa->create();
+                $this->User->Coa->create();
                 $msg = 'menambah';
             }
 
@@ -747,11 +745,11 @@ class SettingsController extends AppController {
                 $data['Coa']['balance'] = $this->MkCommon->convertPriceToString($data['Coa']['balance'], 0);
             }
             
-            $this->Coa->set($data);
+            $this->User->Coa->set($data);
 
-            if($this->Coa->validates($data)){
-                if($this->Coa->save($data)){
-                    $id = $this->Coa->id;
+            if($this->User->Coa->validates($data)){
+                if($this->User->Coa->save($data)){
+                    $id = $this->User->Coa->id;
 
                     $this->params['old_data'] = $data_local;
                     $this->params['data'] = $data;
@@ -3471,7 +3469,7 @@ class SettingsController extends AppController {
             }
         }
 
-        $coas = $this->Coa->getData('list', array(
+        $coas = $this->User->Coa->getData('list', array(
             'conditions' => array(
                 'Coa.status' => 1,
             ),
@@ -4612,8 +4610,7 @@ class SettingsController extends AppController {
     }
 
     function coa_toggle($id){
-        $this->loadModel('Coa');
-        $locale = $this->Coa->getData('first', array(
+        $locale = $this->User->Coa->getData('first', array(
             'conditions' => array(
                 'Coa.id' => $id
             )
@@ -4625,9 +4622,9 @@ class SettingsController extends AppController {
                 $value = false;
             }
 
-            $this->Coa->id = $id;
-            $this->Coa->set('status', $value);
-            if($this->Coa->save()){
+            $this->User->Coa->id = $id;
+            $this->User->Coa->set('status', $value);
+            if($this->User->Coa->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
                 $this->Log->logActivity( sprintf(__('Sukses merubah status COA ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
             }else{
@@ -5217,7 +5214,7 @@ class SettingsController extends AppController {
         $this->MkCommon->setProcessParams($result, $urlReferer);
 
         $cities = $this->Branch->City->getData('list');
-        $coas = $this->Branch->Coa->getData('list', false, true, array(
+        $coas = $this->User->Coa->getData('list', false, array(
             'status' => 'cash_bank_child',
         ));
         $branch_cities = $this->Branch->getData('list');

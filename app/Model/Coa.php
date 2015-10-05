@@ -3,12 +3,6 @@ class Coa extends AppModel {
     public $actsAs = array('Tree');
 	var $name = 'Coa';
 	var $validate = array(
-        // 'code' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'Kode COA harap diisi'
-        //     ),
-        // ),
 		'code' => array(
 			'validateCode' => array(
 				'rule' => array('validateCode'),
@@ -65,7 +59,7 @@ class Coa extends AppModel {
         $this->virtualFields['coa_name'] = sprintf('CASE WHEN %s.with_parent_code IS NULL THEN %s.name ELSE CONCAT(%s.with_parent_code, \' - \', %s.name) END', $this->alias, $this->alias, $this->alias, $this->alias);
     }
 
-    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+    function getData( $find, $options = false, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:false;
 
         $default_options = array(
@@ -90,26 +84,22 @@ class Coa extends AppModel {
                 break;
         }
 
-        if( !empty($options) && $is_merge ){
-            if(!empty($options['conditions'])){
-                $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
-            }
-            if(!empty($options['order'])){
-                $default_options['order'] = $options['order'];
-            }
-            if( isset($options['contain']) && empty($options['contain']) ) {
-                $default_options['contain'] = false;
-            } else if(!empty($options['contain'])){
-                $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
-            }
-            if(!empty($options['limit'])){
-                $default_options['limit'] = $options['limit'];
-            }
-            if(!empty($options['fields'])){
-                $default_options['fields'] = $options['fields'];
-            }
-        } else if( !empty($options) ) {
-            $default_options = $options;
+        if(!empty($options['conditions'])){
+            $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
+        }
+        if(!empty($options['order'])){
+            $default_options['order'] = $options['order'];
+        }
+        if( isset($options['contain']) && empty($options['contain']) ) {
+            $default_options['contain'] = false;
+        } else if(!empty($options['contain'])){
+            $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
+        }
+        if(!empty($options['limit'])){
+            $default_options['limit'] = $options['limit'];
+        }
+        if(!empty($options['fields'])){
+            $default_options['fields'] = $options['fields'];
         }
 
         if( $find == 'paginate' ) {

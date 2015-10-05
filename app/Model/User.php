@@ -11,6 +11,20 @@ class User extends AppModel {
             'foreignKey' => 'employe_id',
         ),
     );
+    var $hasMany = array(
+        'Journal' => array(
+            'className' => 'Journal',
+            'foreignKey' => 'user_id',
+        ),
+        'Coa' => array(
+            'className' => 'Coa',
+            'foreignKey' => 'user_id',
+        ),
+        'CoaSetting' => array(
+            'className' => 'CoaSetting',
+            'foreignKey' => 'user_id',
+        ),
+    );
     
     var $validate = array(
         'employe_id' => array(
