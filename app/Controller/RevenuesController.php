@@ -2794,7 +2794,8 @@ class RevenuesController extends AppController {
                 } else if( empty($value['Ttuj']['is_draft']) ) {
                     $urlTtuj = array(
                         'controller' => 'revenues',
-                        'action' => 'ttuj_edit',
+                        'action' => 'info_truk',
+                        'ttuj',
                         $value['Ttuj']['id'],
                     );
                 }
