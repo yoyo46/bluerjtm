@@ -46,7 +46,7 @@
     <![endif]-->
 	<link rel="icon" href="/img/favicon.png" type="image/jpg" />
 </head>
-<body class="skin-red">
+<body class="skin-blue">
     <?php
 			echo $this->element('headers/menu');
 	?>
