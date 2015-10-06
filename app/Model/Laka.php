@@ -163,20 +163,17 @@ class Laka extends AppModel {
         }
     }
 
-    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+    function getData( $find, $options = false, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
+
         $default_options = array(
-            'conditions'=> array(
-                'Laka.branch_id' => Configure::read('__Site.config_branch_id'),
-            ),
+            'conditions'=> array(),
             'order'=> array(
                 'Laka.created' => 'DESC',
                 'Laka.id' => 'DESC',
             ),
             'contain' => array(),
-            // 'contain' => array(
-            //     'LakaDetail'
-            // ),
             'fields' => array(),
             'group' => array(),
         );
@@ -195,7 +192,11 @@ class Laka extends AppModel {
                 break;
         }
 
-        if( !empty($options) && !empty($is_merge) ){
+        if( !empty($branch) ) {
+            $default_options['Laka.branch_id'] = Configure::read('__Site.config_branch_id');
+        }
+
+        if( !empty($options) ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
@@ -216,8 +217,6 @@ class Laka extends AppModel {
             if(!empty($options['group'])){
                 $default_options['group'] = $options['group'];
             }
-        } else if( !empty($options) ){
-            $default_options = $options;
         }
 
         if( $find == 'paginate' ) {
@@ -238,6 +237,8 @@ class Laka extends AppModel {
                 'contain' => array(
                     'Ttuj'
                 ),
+            ), array(
+                'branch' => false,
             ));
 
             if(!empty($data_merge)){
@@ -252,7 +253,6 @@ class Laka extends AppModel {
         if( empty($data['Laka'])){
             $condition_default = array(
                 'Laka.ttuj_id' => $ttuj_id,
-                'Laka.status' => 1,
             );
 
             if( !empty($conditions) ) {
@@ -261,7 +261,9 @@ class Laka extends AppModel {
 
             $data_merge = $this->getData('first', array(
                 'conditions' => $condition_default,
-            ), false);
+            ), array(
+                'branch' => false,
+            ));
 
             if(!empty($data_merge)){
                 $data = array_merge($data, $data_merge);
@@ -275,7 +277,6 @@ class Laka extends AppModel {
         if( empty($data['Laka'])){
             $condition_default = array(
                 'Laka.truck_id' => $truck_id,
-                'Laka.status' => 1,
             );
 
             if( !empty($conditions) ) {
@@ -284,7 +285,9 @@ class Laka extends AppModel {
 
             $data_merge = $this->getData('first', array(
                 'conditions' => $condition_default,
-            ), false);
+            ), array(
+                'branch' => false,
+            ));
 
             if(!empty($data_merge)){
                 $data = array_merge($data, $data_merge);
