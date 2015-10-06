@@ -1,4 +1,4 @@
-<div class="box box-primary wrapper-approval-setting" rel="<?php echo $idx; ?>">
+<div class="box wrapper-approval-setting" rel="<?php echo $idx; ?>">
     <div class="box-header">
         <h3 class="box-title"><?php printf(__('List Approval #%s'), $idx+1); ?></h3>
         <div class="pull-right box-tools">

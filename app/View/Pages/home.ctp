@@ -188,7 +188,7 @@
             </div><!-- /.box (chat box) -->                                                        
 
             <!-- TO DO List -->
-            <div class="box box-primary">
+            <div class="box">
                 <div class="box-header">
                     <i class="ion ion-clipboard"></i>
                     <h3 class="box-title">To Do List</h3>

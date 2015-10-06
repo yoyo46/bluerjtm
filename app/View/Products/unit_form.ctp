@@ -4,7 +4,7 @@
 		));
 		$this->Html->addCrumb($sub_module_title);
 ?>
-<div class="box box-primary">
+<div class="box">
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title?></h3>
     </div>

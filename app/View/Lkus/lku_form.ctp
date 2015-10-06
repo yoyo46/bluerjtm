@@ -13,7 +13,7 @@
 		));
 ?>
 <div class="ttuj-form">
-	<div class="box box-primary">
+	<div class="box">
 	    <div class="box-header">
 	        <h3 class="box-title"><?php echo __('Informasi LKU'); ?></h3>
 	    </div>

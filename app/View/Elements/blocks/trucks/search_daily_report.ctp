@@ -1,4 +1,4 @@
-<div class="box box-primary hidden-print">
+<div class="box hidden-print">
     <div class="box-header">
         <h3 class="box-title">Pencarian</h3>
         <div class="box-tools pull-right">

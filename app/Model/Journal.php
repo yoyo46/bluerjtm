@@ -33,9 +33,9 @@ class Journal extends AppModel {
         )
     );
 
-    function setJournal ( $document_id = false, $document_no = false, $coas, $type = false ) {
+    function setJournal ( $document_id = false, $document_no = false, $coas, $total, $document_name = false ) {
         if( !empty($coas) && is_array($coas) ) {
-            foreach ($coas as $coa_name => $total) {
+            foreach ($coas as $type => $coa_name) {
                 $coaSetting = $this->User->CoaSetting->getData('first', array(
                     'conditions' => array(
                         'CoaSetting.status' => 1
@@ -45,7 +45,7 @@ class Journal extends AppModel {
                 if( !empty($coaSetting['CoaSetting'][$coa_name]) ) {
                     $coa_id = $coaSetting['CoaSetting'][$coa_name];
                 } else {
-                    $coa_id = false;
+                    $coa_id = $coa_name;
                 }
 
                 $user_id = Configure::read('__Site.config_user_id');
@@ -56,24 +56,32 @@ class Journal extends AppModel {
                 ));
                 $saldo_awal = !empty($coa['Coa']['balance'])?$coa['Coa']['balance']:false;
 
+                if( in_array($type, array( 'debit', 'credit' )) ) {
+                    if( $type == 'credit' ) {
+                        $saldo_awal -= $total;
+                    } else {
+                        $saldo_awal += $total;
+                    }
+
+                    $this->Coa->id = $coa_id;
+                    $this->Coa->set('balance', $saldo_awal);
+                    $this->Coa->save();
+                }
+
                 $data['Journal'] = array(
                     'user_id' => $user_id,
                     'coa_id' => $coa_id,
                     'document_id' => $document_id,
                     'document_no' => $document_no,
                     'saldo_awal' => $saldo_awal,
-                    'debit' => $debit,
-                    'credit' => $credit,
-                    'type' => $type,
+                    'type' => $document_name,
                 );
+                $data['Journal'][$type] = $total;
+
                 $this->create();
                 $this->set($data);
 
-                if( $this->save($data) ) {
-                    return true;
-                } else {
-                    return false;
-                }
+                $this->save($data);
             }
         } else {
             return false;
@@ -81,30 +89,45 @@ class Journal extends AppModel {
     }
 
     function deleteJournal ( $document_id = false, $type = false ) {
-        $journal = $this->find('first', array(
-            'conditions' => array(
-                'Journal.document_id' => $document_id,
-                'Journal.type' => $type,
-                'Journal.status' => 1,
-            ),
-        ));
+        if( !empty($type) ) {
+            foreach ($type as $key => $value) {
+                $journal = $this->find('first', array(
+                    'conditions' => array(
+                        'Journal.document_id' => $document_id,
+                        'Journal.type' => $value,
+                        'Journal.status' => 1,
+                    ),
+                ));
 
-        if( !empty($journal) ) {
-            if( $this->updateAll(
-                array(
-                    'Journal.status' => 0
-                ),
-                array(
-                    'Journal.document_id' => $journal['Journal']['document_id'],
-                    'Journal.type' => $type,
-                )
-            ) ) {
-                return true;
-            } else {
-                return false;
+                if( !empty($journal) ) {
+                    $coa_id = !empty($journal['Journal']['coa_id'])?$journal['Journal']['coa_id']:0;
+                    $credit = !empty($journal['Journal']['credit'])?$journal['Journal']['credit']:0;
+                    $debit = !empty($journal['Journal']['debit'])?$journal['Journal']['debit']:0;
+
+                    $journal = $this->Coa->getMerge($journal, $coa_id);
+                    $saldo_awal = !empty($journal['Coa']['balance'])?$journal['Coa']['balance']:0;
+
+                    if( !empty($credit) ) {
+                        $saldo_awal += $credit;
+                    } else {
+                        $saldo_awal -= $credit;
+                    }
+
+                    $this->Coa->id = $coa_id;
+                    $this->Coa->set('balance', $saldo_awal);
+                    $this->Coa->save();
+
+                    $this->updateAll(
+                        array(
+                            'Journal.status' => 0
+                        ),
+                        array(
+                            'Journal.document_id' => $document_id,
+                            'Journal.type' => $value,
+                        )
+                    );
+                }
             }
-        } else {
-            return false;
         }
     }
 

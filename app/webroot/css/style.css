@@ -19,7 +19,7 @@ body {
   background: #f9f9f9;
 }
 a {
-  color: #3c8dbc;
+  color: #0462F0;
 }
 a:hover,
 a:active,
@@ -824,7 +824,7 @@ body > .header .logo .icon {
 }
 
 .skin-red .dropdown-menu > li > a:hover {
-  background-color: #d62d20;
+  background-color: #e01025;
 }
 
 /*Drodown in navbars*/
@@ -1057,7 +1057,7 @@ body > .header .logo .icon {
 }
 
 .skin-red .navbar-nav > .user-menu > .dropdown-menu > li.user-header {
-  background: #d62d20;
+  background: #e01025;
 }
 
 .navbar-nav > .user-menu > .dropdown-menu > li.user-header > img {
@@ -1094,7 +1094,8 @@ body > .header .logo .icon {
   clear: both;
 }
 .navbar-nav > .user-menu > .dropdown-menu > li.user-body > div > a {
-  color: #0073b7;
+  color: #069D54;
+  font-weight: bold;
 }
 .navbar-nav > .user-menu > .dropdown-menu > li.user-footer {
   background-color: #f9f9f9;
@@ -1224,7 +1225,7 @@ body > .header .logo .icon {
 }
 
 .skin-red .form-control:focus {
-  border-color: #d62d20 !important;
+  border-color: #e01025 !important;
 }
 
 .form-group.has-success label {
@@ -2788,7 +2789,7 @@ Component: timeline
 */
 /* skin-red navbar */
 .skin-red .navbar {
-  background-color: #d62d20;
+  background-color: #e01025;
 }
 .skin-red .navbar .nav a {
   color: rgba(255, 255, 255, 0.8);
@@ -2813,14 +2814,14 @@ Component: timeline
 }
 /* skin-red logo */
 .skin-red .logo {
-  background-color: #cb2424;
+  background-color: #e01025;
   color: #f9f9f9;
 }
 .skin-red .logo > a {
   color: #f9f9f9;
 }
 .skin-red .logo:hover {
-  background: #357ca5;
+  background: #ca0e21;
 }
 /* skin-red content header */
 .skin-red .right-side > .content-header {

@@ -1388,11 +1388,12 @@ class TrucksController extends AppController {
                         $document_no = str_pad($this->KirPayment->id, 5, '0', STR_PAD_LEFT);
 
                         if( !empty($data['KirPayment']['total_pembayaran']) ) {
-                            $this->loadModel('Journal');
                             $total = $data['KirPayment']['total_pembayaran'];
 
-                            $this->Journal->setJournal( $document_id, $document_no, 'kir_payment_coa_credit_id', 0, $total, 'kir' );
-                            $this->Journal->setJournal( $document_id, $document_no, 'kir_payment_coa_debit_id', $total, 0, 'kir' );
+                            $this->User->Journal->setJournal( $document_id, $document_no, array(
+                                'credit' => 'kir_payment_coa_credit_id',
+                                'debit' => 'kir_payment_coa_debit_id',
+                            ), $total, 'kir' );
                         }
 
                         $this->params['old_data'] = $kir;
@@ -1838,11 +1839,12 @@ class TrucksController extends AppController {
                         $document_no = str_pad($this->SiupPayment->id, 5, '0', STR_PAD_LEFT);
                         
                         if( !empty($data['SiupPayment']['total_pembayaran']) ) {
-                            $this->loadModel('Journal');
                             $total = $data['SiupPayment']['total_pembayaran'];
 
-                            $this->Journal->setJournal( $document_id, $document_no, 'siup_payment_coa_credit_id', 0, $total, 'siup' );
-                            $this->Journal->setJournal( $document_id, $document_no, 'siup_payment_coa_debit_id', $total, 0, 'siup' );
+                            $this->User->Journal->setJournal( $document_id, $document_no, array(
+                                'credit' => 'siup_payment_coa_credit_id',
+                                'debit' => 'siup_payment_coa_debit_id',
+                            ), $total, 'siup' );
                         }
 
                         $this->params['old_data'] = $siup;
@@ -2867,11 +2869,12 @@ class TrucksController extends AppController {
                         $document_no = str_pad($this->StnkPayment->id, 5, '0', STR_PAD_LEFT);
                         
                         if( !empty($data['StnkPayment']['total_pembayaran']) ) {
-                            $this->loadModel('Journal');
                             $total = $data['StnkPayment']['total_pembayaran'];
 
-                            $this->Journal->setJournal( $document_id, $document_no, 'stnk_payment_coa_credit_id', 0, $total, 'stnk' );
-                            $this->Journal->setJournal( $document_id, $document_no, 'stnk_payment_coa_debit_id', $total, 0, 'stnk' );
+                            $this->User->Journal->setJournal( $document_id, $document_no, array(
+                                'credit' => 'stnk_payment_coa_credit_id',
+                                'debit' => 'stnk_payment_coa_debit_id',
+                            ), $total, 'stnk' );
                         }
 
                         $this->params['old_data'] = $stnk;

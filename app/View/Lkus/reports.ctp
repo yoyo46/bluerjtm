@@ -93,7 +93,7 @@
 
             if( $data_action != 'excel' ) {
 ?>
-<div class="box box-primary">
+<div class="box">
     <div class="box-header">
         <h3 class="box-title">Pencarian</h3>
         <div class="box-tools pull-right">

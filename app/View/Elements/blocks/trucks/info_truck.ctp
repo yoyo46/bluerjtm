@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-sm-6">
-        <div class="box box-primary">
+        <div class="box">
             <div class="box-header">
                 <?php 
                         echo $this->Html->tag('h3', __('Informasi Truk'), array(

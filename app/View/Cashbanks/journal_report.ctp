@@ -1,4 +1,6 @@
 <?php
+        $data_action = !empty($data_action)?$data_action:false;
+
         if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
             $border = 0;
 
@@ -7,11 +9,12 @@
                 header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
             } else {
+                echo $this->element('blocks/cashbanks/searchs/journal_report');
             	$this->Html->addCrumb($sub_module_title);
 ?>
 <section class="content invoice">
     <h2 class="page-header">
-        <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
+        <i class="fa fa-globe"></i> <?php echo $module_title;?>
     </h2>
     <!-- <div class="row no-print print-action">
         <div class="col-xs-12 action">
@@ -31,46 +34,63 @@
         <?php 
                 }
         ?>
-        <table class="table table-bordered report" border="<?php echo $border; ?>">
+        <table class="table journal table-bordered" border="<?php echo $border; ?>">
             <thead>
     			<tr>
-    				<th class="text-center text-middle">
-    					<?php
-        						echo __('No. Dokumen');
-    					?>
-    				</th>
+                    <th class="text-center text-middle"><?php echo __('Tgl');?></th>
     				<th class="text-center text-middle"><?php echo __('Tipe');?></th>
-    				<th class="text-center text-middle"><?php echo __('Tgl');?></th>
                     <th class="text-center text-middle"><?php echo __('COA');?></th>
                     <th class="text-center text-middle"><?php echo __('Debit');?></th>
-    				<th class="text-center text-middle"><?php echo __('Kredit');?></th>
+                    <th class="text-center text-middle"><?php echo __('Kredit');?></th>
+    				<th class="text-center text-middle"><?php echo __('No Dokumen');?></th>
     			</tr>
             </thead>
             <tbody>
                 <?php
-                        if(!empty($journals)){
+                        if(!empty($values)){
                             $old = false;
+                            $documentType = Configure::read('__Site.Journal.Documents');
 
-                            foreach ($journals as $key => $journal) {
-                                $new = sprintf('%s-%s', $journal['Journal']['document_id'], $journal['Journal']['type']);
+                            foreach ($values as $key => $value) {
+                                $document_no = $this->Common->filterEmptyField($value, 'Journal', 'document_no');
+                                $document_id = $this->Common->filterEmptyField($value, 'Journal', 'document_id');
+                                $created = $this->Common->filterEmptyField($value, 'Journal', 'created');
+                                $type = $this->Common->filterEmptyField($value, 'Journal', 'type');
+                                $debit = $this->Common->filterEmptyField($value, 'Journal', 'debit');
+                                $credit = $this->Common->filterEmptyField($value, 'Journal', 'credit');
+
+                                $coa = $this->Common->filterEmptyField($value, 'Coa', 'coa_name');
+
+                                $new = sprintf('%s-%s', $type, $document_no);
+                                $customCreated = $this->Common->formatDate($created, 'd/m/Y');
+                                $customDebit = $this->Common->getFormatPrice($debit, false);
+                                $customCredit = $this->Common->getFormatPrice($credit, false);
+
+                                if( !empty($documentType[$type]) ) {
+                                    $customType = $documentType[$type];
+                                } else {
+                                    $customType = ucwords(str_replace('_', ' ', $type));
+                                }
 
                                 if( !empty($old) && $new != $old ) {
                                     echo '<tr><td colspan="6"><hr></td></tr>';
                                 }
                 ?>
                 <tr>
-                    <td><?php echo $journal['Journal']['document_no'];?></td>
-                    <td><?php echo ucwords(str_replace('_', ' ', $journal['Journal']['type']));?></td>
-                    <td>
-                        <?php
-                                echo $this->Common->customDate($journal['Journal']['created'], 'd/m/Y');
-                                echo '<br>';
-                                echo $this->Common->customDate($journal['Journal']['created'], 'H:i');
-                        ?>
-                    </td>
-                    <td><?php echo $journal['Coa']['coa_name'];?></td>
-                    <td class="text-right"><?php echo $this->Number->currency($journal['Journal']['debit'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
-                    <td class="text-right"><?php echo $this->Number->currency($journal['Journal']['credit'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
+                    <?php
+                            echo $this->Html->tag('td', $customCreated);
+                            echo $this->Html->tag('td', $customType, array(
+                                'style' => 'text-align:center;'
+                            ));
+                            echo $this->Html->tag('td', $coa);
+                            echo $this->Html->tag('td', $customDebit, array(
+                                'style' => 'text-align:right;'
+                            ));
+                            echo $this->Html->tag('td', $customCredit, array(
+                                'style' => 'text-align:right;'
+                            ));
+                            echo $this->Html->tag('td', $document_no);
+                    ?>
                 </tr>
                 <?php
 
@@ -82,14 +102,13 @@
         </table>
         <?php 
                 if( $data_action != 'excel' ) {
-                    if(empty($journals)){
+                    if(empty($values)){
                         echo $this->Html->tag('p', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
                         ));
                     }
         ?>
     </div><!-- /.box-body -->
-    <?php echo $this->element('pagination');?>
 </section>
 <?php
             }

@@ -79,17 +79,21 @@
                         <li class="user-body">
                             <div class="col-xs-6 text-center">
                                 <?php
-                                    echo $this->Html->link(__('Ganti Password'), array(
+                                    echo $this->Html->link(__('Ganti<br>Password'), array(
                                         'controller' => 'users',
                                         'action' => 'authorization'
+                                    ), array(
+                                        'escape' => false,
                                     ));
                                 ?>
                             </div>
                             <div class="col-xs-6 text-center">
                                 <?php
-                                    echo $this->Html->link(__('Edit Profile'), array(
+                                    echo $this->Html->link(__('Edit<br>Profile'), array(
                                         'controller' => 'users',
                                         'action' => 'profile'
+                                    ), array(
+                                        'escape' => false,
                                     ));
                                 ?>
                             </div>

@@ -16,7 +16,7 @@
 	<div id="step1">
 		<div class="row">
 			<div class="col-sm-12">
-				<div class="box box-primary">
+				<div class="box">
 				    <div class="box-header">
 				        <h3 class="box-title"><?php echo __('Informasi Pembayaran LKU'); ?></h3>
 				    </div>

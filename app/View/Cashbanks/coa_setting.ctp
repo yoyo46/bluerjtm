@@ -7,7 +7,7 @@
 			'inputDefaults' => array('div' => false),
 		));
 ?>
-<div class="box box-primary">
+<div class="box">
     <div class="box-header">
         <h3 class="box-title"><?php echo __('Pengaturan COA'); ?></h3>
     </div>

@@ -11,7 +11,7 @@
 			'inputDefaults' => array('div' => false),
 		));
 ?>
-<div class="box box-primary">
+<div class="box">
     <div class="box-header">
         <h3 class="box-title"><?php echo $sub_module_title?></h3>
     </div>
@@ -175,7 +175,7 @@
 </div>
 
 <div class="cashbank-info-detail <?php echo (!empty($this->request->data['CashBankDetail'])) ? '' : 'hide';?>">
-	<div class="box box-primary">
+	<div class="box">
 	    <div class="box-header">
 	        <h3 class="box-title"><?php echo __('Detail Info Kas/Bank'); ?></h3>
 	    </div>

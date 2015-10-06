@@ -40,6 +40,12 @@ class RjCashBankComponent extends Component {
 				if( !empty($refine['CashBank']['date_to']) ) {
 					$refine_conditions['CashBank']['to'] = strtotime($this->MkCommon->getDate($refine['CashBank']['date_to']));
 				}
+				if( !empty($refine['Journal']['date']) ) {
+					$refine_conditions['Journal']['date'] = urlencode($refine['Journal']['date']);
+				}
+				if( !empty($refine['Journal']['document_no']) ) {
+					$refine_conditions['Journal']['document_no'] = urlencode($refine['Journal']['document_no']);
+				}
 			}
 				
 			return $refine_conditions;
@@ -50,6 +56,13 @@ class RjCashBankComponent extends Component {
 		$parameters = array();
 		if(isset($refine['CashBank']) && !empty($refine['CashBank'])) {
 			foreach($refine['CashBank'] as $param => $value) {
+				if($value) {
+					$parameters[trim($param)] = rawurlencode($value);
+				}
+			}
+		}
+		if(isset($refine['Journal']) && !empty($refine['Journal'])) {
+			foreach($refine['Journal'] as $param => $value) {
 				if($value) {
 					$parameters[trim($param)] = rawurlencode($value);
 				}

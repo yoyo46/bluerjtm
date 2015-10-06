@@ -1,4 +1,4 @@
-<div class="box box-primary">
+<div class="box">
     <div class="box-header">
         <h3 class="box-title"><?php echo __('Detail Leasing'); ?></h3>
     </div>

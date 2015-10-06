@@ -25,7 +25,7 @@
 	<div id="step1">
 		<div class="row">
 			<div class="col-sm-6">
-				<div class="box box-primary">
+				<div class="box">
 				    <div class="box-header">
 				        <h3 class="box-title"><?php echo __('Data Supir dan Armada'); ?></h3>
 				    </div>
@@ -249,7 +249,7 @@
 				</div>
 			</div>
 			<div class="col-sm-6">
-				<div class="box box-primary">
+				<div class="box">
 				    <div class="box-header">
 				        <h3 class="box-title"><?php echo __('Data dan Informasi Pihak Lain (jika ada)');?></h3>
 				    </div>
@@ -424,7 +424,7 @@
 	<div id="step2">
 		<div class="row">
 			<div class="col-sm-6">
-				<div class="box box-primary">
+				<div class="box">
 				    <div class="box-header">
 				        <h3 class="box-title"><?php echo __('Data dan Informasi Kejadian'); ?></h3>
 				    </div>
@@ -519,7 +519,7 @@
 				        </div>
 				    </div>
 				</div>
-				<div class="box box-primary">
+				<div class="box">
 				    <div class="box-header">
 				        <h3 class="box-title"><?php echo __('Data Kerusakan Properti (jika ada)');?></h3>
 				    </div>
@@ -559,7 +559,7 @@
 			</div>
 			
 			<div class="col-sm-6">
-				<div class="box box-primary">
+				<div class="box">
 				    <div class="box-header">
 				        <h3 class="box-title"><?php echo __('Laporan Internal');?></h3>
 				    </div>
@@ -642,7 +642,7 @@
 				<?php
 					if(!empty($id)){
 				?>
-				<div class="box box-primary">
+				<div class="box">
 				    <div class="box-header">
 				        <h3 class="box-title"><?php echo __('Status LAKA'); ?></h3>
 				    </div>

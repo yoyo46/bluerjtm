@@ -1,4 +1,4 @@
-<div class="box box-primary">
+<div class="box">
     <div class="box-header">
         <?php 
                 echo $this->Html->tag('h3', __('Informasi TTUJ'), array(

@@ -217,3 +217,8 @@ textarea.form-control.description-mutation {
 tr.expired .red {
 	color: #f56954;
 }
+
+/*Journal*/
+.table.journal td hr {
+	margin: 0;
+}

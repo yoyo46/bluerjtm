@@ -582,6 +582,15 @@ class MkCommonComponent extends Component {
             'l' => '855x481',
         );
         Configure::write('__Site.dimension', $dimensionArr);
+
+        Configure::write('__Site.Journal.Documents', array(
+            'in' => __('Penerimaan Kas Masuk'),
+            'out' => __('Pembayaran Kas Keluar'),
+            'ppn_out' => __('Pembayaran PPN Keluar'),
+            'ppn_in' => __('Penerimaan PPN Masuk'),
+            'prepayment_out' => __('Pembayaran Prepayment'),
+            'prepayment_in' => __('Penerimaan Prepayment'),
+        ));
     }
 
     function allowPage ( $branchs, $no_exact = false ) {

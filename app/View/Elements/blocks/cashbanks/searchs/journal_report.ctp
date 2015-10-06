@@ -7,30 +7,34 @@
     </div>
     <div class="box-body">
         <?php 
-                $model = (isset($model) && !empty($model)) ? $model : 'LkuPayment';
-                $action = (isset($action) && !empty($action)) ? $action : 'payments';
-                
-                echo $this->Form->create($model, array(
-                    'url'=> $this->Html->url( array(
-                        'controller' => 'lkus',
-                        'action' => 'search',
-                        $action
-                    )), 
-                    'role' => 'form',
-                    'inputDefaults' => array('div' => false),
-                ));
+            echo $this->Form->create('Journal', array(
+                'url'=> $this->Html->url( array(
+                    'controller' => 'cashbanks',
+                    'action' => 'search',
+                    'journal_report',
+                )), 
+                'role' => 'form',
+                'inputDefaults' => array('div' => false),
+            ));
         ?>
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('no_doc',array(
-                                'label'=> __('No Dokumen'),
-                                'class'=>'form-control',
-                                'required' => false,
-                                'placeholder' => __('No Dokumen')
-                            ));
+                            echo $this->Form->label('date', __('Tanggal'));
                     ?>
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <?php 
+                                echo $this->Form->input('Journal.date',array(
+                                    'label'=> false,
+                                    'class'=>'form-control pull-right date-range',
+                                    'required' => false,
+                                ));
+                        ?>
+                    </div>
                 </div>
                 <div class="form-group action">
                     <?php
@@ -40,8 +44,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'controller' => 'lkus', 
-                                'action' => $action, 
+                                'action' => 'journal_report', 
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',
@@ -51,14 +54,12 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <?php
-                           echo $this->Form->input('Lku.customer_id',array(
-                                'label'=> __('Customer'),
+                    <?php 
+                            echo $this->Form->input('Journal.document_no',array(
+                                'label'=> __('No Dokumen'),
                                 'class'=>'form-control',
                                 'required' => false,
-                                'empty' => __('Pilih Customer'),
-                                'options' => $customers
-                            )); 
+                            ));
                     ?>
                 </div>
             </div>

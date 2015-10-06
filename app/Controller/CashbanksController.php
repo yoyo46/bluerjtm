@@ -477,7 +477,6 @@ class CashbanksController extends AppController {
             $this->CashBank->id = $id;
             $this->CashBank->set('status', $value);
             if($this->CashBank->save()){
-                $this->loadModel('Journal');
                 $document_id = !empty($locale['CashBank']['document_id'])?$locale['CashBank']['document_id']:false;
                 $document_type = !empty($locale['CashBank']['document_type'])?$locale['CashBank']['document_type']:false;
 
@@ -701,7 +700,6 @@ class CashbanksController extends AppController {
                                     }
 
                                     if( $status_document == 'approve' ) {
-                                        $this->loadModel('Journal');
 
                                         if( !empty($cashbank['CashBankDetail']) ) {
                                             foreach ($cashbank['CashBankDetail'] as $key => $cashBankDetail) {
@@ -709,17 +707,25 @@ class CashbanksController extends AppController {
                                                 $total = !empty($cashBankDetail['total'])?$cashBankDetail['total']:false;
 
                                                 if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
-                                                    $this->Journal->setJournal( $id, $nodoc, $coa_id, 0, $total, $receiving_cash_type );
+                                                    $this->User->Journal->setJournal( $id, $nodoc, array(
+                                                        'credit' => $coa_id
+                                                    ), $total, $receiving_cash_type );
                                                 } else {
-                                                    $this->Journal->setJournal( $id, $nodoc, $coa_id, $total, 0, $receiving_cash_type );
+                                                    $this->User->Journal->setJournal( $id, $nodoc, array(
+                                                        'debit' => $coa_id
+                                                    ), $total, $receiving_cash_type );
                                                 }
                                             }
                                         }
 
                                         if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
-                                            $this->Journal->setJournal( $id, $nodoc, $document_coa_id, $debit_total, 0, $receiving_cash_type );
+                                             $this->User->Journal->setJournal( $id, $nodoc, array(
+                                                'debit' => $document_coa_id,
+                                            ), $debit_total, $receiving_cash_type );
                                         } else {
-                                            $this->Journal->setJournal( $id, $nodoc, $document_coa_id, 0, $credit_total, $receiving_cash_type );
+                                            $this->User->Journal->setJournal( $id, $nodoc, array(
+                                                'credit' => $document_coa_id,
+                                            ), $credit_total, $receiving_cash_type );
                                         }
                                     }
                                 }
@@ -1017,15 +1023,52 @@ class CashbanksController extends AppController {
         $this->set(compact('coas'));
     }
 
-    public function journal_report( $data_action = false ) {
-        $this->loadModel('Journal');
+    public function journal_report() {
         $this->set('sub_module_title', 'Laporan Jurnal');
-        $this->paginate = $this->Journal->getData('paginate');
-        $journals = $this->paginate('Journal');
-        $this->set('active_menu', 'journal_report');
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+        $conditions = array();
 
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['document_no'])){
+                $value = urldecode($refine['document_no']);
+                $this->request->data['CashBank']['document_no'] = $value;
+                $conditions['Journal.document_no LIKE'] = '%'.$value.'%';
+            }
+
+            if(!empty($refine['date'])){
+                $dateStr = urldecode($refine['date']);
+                $date = explode('-', $dateStr);
+
+                if( !empty($date) ) {
+                    $date[0] = urldecode($date[0]);
+                    $date[1] = urldecode($date[1]);
+                    $dateFrom = $this->MkCommon->getDate($date[0]);
+                    $dateTo = $this->MkCommon->getDate($date[1]);
+                }
+                $this->request->data['Ttuj']['date'] = $dateStr;
+            }
+        }
+
+        $module_title = __('Laporan Jurnal');
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $this->request->data['Journal']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
+            $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+
+        $conditions['DATE_FORMAT(Journal.created, \'%Y-%m-%d\') >='] = $dateFrom;
+        $conditions['DATE_FORMAT(Journal.created, \'%Y-%m-%d\') <='] = $dateTo;
+
+        $values = $this->User->Journal->getData('all', array(
+            'conditions' => $conditions,
+        ));
+
+        $this->set('active_menu', 'journal_report');
         $this->set(compact(
-            'journals', 'data_action'
+            'values', 'module_title'
         ));
     }
 
