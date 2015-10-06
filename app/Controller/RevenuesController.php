@@ -73,14 +73,14 @@ class RevenuesController extends AppController {
                     );
                 }
 
-                $this->loadModel('City');
-                $conditionsNopol = $this->City->getCityIdPlants( $conditionsNopol );
-
                 $truckSearch = $this->Ttuj->Truck->getData('list', array(
                     'conditions' => $conditionsNopol,
                     'fields' => array(
                         'Truck.id', 'Truck.id',
                     ),
+                ), true, array(
+                    'status' => 'all',
+                    'branch' => false,
                 ));
                 $conditions['Ttuj.truck_id'] = $truckSearch;
             }
@@ -2554,7 +2554,8 @@ class RevenuesController extends AppController {
 
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
                 $value = $this->Laka->getMergeTruck($truck_id, $value, array(
-                    'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\')' => $currentMonth,
+                    'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\') <=' => $currentMonth,
+                    'Laka.completed' => 0,
                 ));
                 $laka_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'id');
 
@@ -2573,7 +2574,7 @@ class RevenuesController extends AppController {
                         $change_driver_name = $this->MkCommon->filterEmptyField($value, 'DriverPenganti', 'driver_name', '-');
                     }
 
-                    $lakaDate = $this->MkCommon->customDate($tgl_laka, 'Y-m-d');
+                    $TglLaka = $this->MkCommon->customDate($tgl_laka, 'Y-m-d');
                     $lakaCompletedDate = $this->MkCommon->customDate($laka_completed_date, 'Y-m-d', '-');
                     $addClass = 'pool';
                     $urlLaka = array(
@@ -2584,16 +2585,17 @@ class RevenuesController extends AppController {
 
                     if( !empty($laka_completed) ) {
                         $end_date = $lakaCompletedDate;
-                    } else if( date('Y-m-d') >= $lakaDate ) {
+                    } else if( date('Y-m-d') >= $TglLaka ) {
                         $end_date = date('Y-m-d', strtotime("-1 day"));
                     } else {
-                        $end_date = $lakaDate;
+                        $end_date = $TglLaka;
                     }
 
 
                     $icon_laka = $this->MkCommon->filterEmptyField($setting, 'Setting', 'icon_laka');
                     $lakaDate = $this->MkCommon->customDate($tgl_laka, 'd/m/Y');
                     $lakaDateOri = $this->MkCommon->customDate($tgl_laka, 'Y-m-d');
+                    $lakaEndDate = $this->MkCommon->customDate($laka_completed_date, 'Y-m-d');
                     $lakaMonth = $this->MkCommon->customDate($tgl_laka, 'm');
                     $lakaDay = $this->MkCommon->customDate($tgl_laka, 'd');
                     $dataCalendar = array(
@@ -2607,7 +2609,6 @@ class RevenuesController extends AppController {
                         'lokasi_laka' => $lokasi_laka,
                         'truck_condition' => $truck_condition,
                         'title' => __('LAKA'),
-                        'icon' => $icon_laka,
                         'iconPopup' => $icon_laka,
                         'color_laka' => '#dd545f',
                         'NoPol' => $nopol,
@@ -2617,8 +2618,28 @@ class RevenuesController extends AppController {
                             $laka_id,
                         ),
                     );
+                    $i = 0;
 
-                    $dataLaka['Truck-'.$truck_id][$lakaMonth][$lakaDay][] = $dataCalendar;
+                    if( empty($lakaEndDate) ) {
+                        $lakaEndDate = date('Y-m-d');
+                    }
+
+                    while (strtotime($TglLaka) < strtotime($lakaEndDate)) {
+                        $currMonth = date('Y-m', strtotime($TglLaka));
+                        $currDay = date('d', strtotime($TglLaka));
+                        $currMonthly = date('m', strtotime($TglLaka));
+
+                        if( empty($i) ) {
+                            $dataCalendar['icon'] = $icon_laka;
+                        } else {
+                            $dataCalendar['icon'] = false;
+                        }
+                        
+                        $dataLaka['Truck-'.$truck_id][$currMonthly][$currDay][] = $dataCalendar;
+
+                        $TglLaka = date ("Y-m-d", strtotime("+1 day", strtotime($TglLaka)));
+                        $i++;
+                    }
                 }
 
                 $trucks[$key] = $value;
