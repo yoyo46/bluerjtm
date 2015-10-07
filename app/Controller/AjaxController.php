@@ -2348,13 +2348,15 @@ class AjaxController extends AppController {
 	        		);
                 }
 
-                $conditionsNopol = $this->City->getCityIdPlants( $conditionsNopol );
                 $truckSearch = $this->Ttuj->Truck->getData('list', array(
                 	'conditions' => $conditionsNopol,
             		'fields' => array(
             			'Truck.id', 'Truck.id',
         			),
-            	));
+            	), true, array(
+                    'status' => 'all',
+                    'branch' => false,
+                ));
                 $conditions['Ttuj.truck_id'] = $truckSearch;
             }
             if(!empty($this->request->data['Driver']['name'])){
