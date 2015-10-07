@@ -231,11 +231,8 @@ class Laka extends AppModel {
         if( empty($data['Laka'])){
             $data_merge = $this->getData('first', array(
                 'conditions' => array(
-                    'Ttuj.truck_id' => $truck_id,
+                    'Laka.truck_id' => $truck_id,
                     'Laka.completed' => 0,
-                ),
-                'contain' => array(
-                    'Ttuj'
                 ),
             ), array(
                 'branch' => false,
