@@ -205,6 +205,10 @@
                             $id = $value['Ttuj']['id'];
                             $is_draft = $this->Common->filterEmptyField($value, 'Ttuj', 'is_draft');
                             $status = $this->Common->filterEmptyField($value, 'Ttuj', 'status');
+                            $completed = $this->Common->filterEmptyField($value, 'Ttuj', 'completed');
+                            $completed_date = $this->Common->filterEmptyField($value, 'Ttuj', 'completed_date');
+
+                            $customComplatedDate = $this->Common->formatDate($completed_date, 'd/m/Y', false);
             ?>
             <tr>
                 <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
@@ -293,7 +297,17 @@
                 </td> -->
                 <?php
                         
-                        if(empty($status)){
+                        if(!empty($completed)){
+                            $labelStatus = $this->Html->tag('span', __('Completed'), array(
+                                'class' => 'label label-success',
+                            ));
+
+                            if( !empty($customComplatedDate) ) {
+                                $labelStatus .= '<br>'.$customComplatedDate;
+                            }
+                            
+                            echo $this->Html->tag('td', $labelStatus);
+                        } else if(empty($status)){
                             echo $this->Html->tag('td', '<span class="label label-danger">Void</span>');
                         } else if(!empty($value['Ttuj']['is_laka'])){
                             echo $this->Html->tag('td', '<span class="label label-danger">LAKA</span>');
