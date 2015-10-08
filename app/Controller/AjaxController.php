@@ -2259,6 +2259,7 @@ class AjaxController extends AppController {
 		$document_type = false;
 		$conditions = array(
             'Ttuj.is_draft' => 0,
+            'Ttuj.is_rjtm' => 1,
         );
         $head_office = Configure::read('__Site.config_branch_head_office');
 

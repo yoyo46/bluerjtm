@@ -461,13 +461,14 @@ class RevenuesController extends AppController {
             if( !empty($truck) ) {
                 $company_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'company_id');
                 $truck = $this->Ttuj->Truck->Company->getMerge($truck, $company_id);
-                $is_rjtm = $this->MkCommon->filterEmptyField($truck, 'Company', 'is_rjtm');
             }
 
             if( !empty($uangJalan) ) {
                 $uangJalan = $this->City->getMerge($uangJalan, $from_city_id, 'FromCity');
                 $uangJalan = $this->City->getMerge($uangJalan, $to_city_id, 'ToCity');
             }
+
+            $is_rjtm = $this->MkCommon->filterEmptyField($truck, 'Company', 'is_rjtm');
 
             $data['Ttuj']['from_city_name'] = !empty($uangJalan['FromCity']['name'])?$uangJalan['FromCity']['name']:false;
             $data['Ttuj']['to_city_name'] = !empty($uangJalan['ToCity']['name'])?$uangJalan['ToCity']['name']:false;
@@ -491,6 +492,7 @@ class RevenuesController extends AppController {
             $data['Ttuj']['arrive_lead_time'] = !empty($uangJalan['UangJalan']['arrive_lead_time'])?$uangJalan['UangJalan']['arrive_lead_time']:0;
             $data['Ttuj']['back_lead_time'] = !empty($uangJalan['UangJalan']['back_lead_time'])?$uangJalan['UangJalan']['back_lead_time']:0;
             $data['Ttuj']['tgljam_berangkat'] = '';
+            $data['Ttuj']['is_rjtm'] = $is_rjtm;
 
             if( empty($data['Ttuj']['branch_id']) || empty($allowEditTtujBranch) ) {
                 $data['Ttuj']['branch_id'] = $current_branch_id;
