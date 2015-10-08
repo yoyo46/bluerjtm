@@ -50,8 +50,18 @@ class UsersController extends AppController {
                 //     $this->MkCommon->setCustomFlash($msgFailedLogin, 'error');
                 // } else
                 if($this->Auth->login()){
+                    $value = $this->Auth->user();
+                    $id = $this->MkCommon->filterEmptyField($value, 'id');
+                    $employe_id = $this->MkCommon->filterEmptyField($value, 'employe_id');
+
+                    $value = $this->User->Employe->getMerge($value, $employe_id);
+                    $full_name = $this->MkCommon->filterEmptyField($value, 'Employe', 'full_name');
+                    $acticity = sprintf(__('%s telah melakukan login pada %s'), $full_name, date('d/m/Y H:i:s'));
+
                     $this->Cookie->write($session_name_ip, 0, '1 hour');
                     $this->Cookie->write($session_try_login, 0);
+
+                    $this->MkCommon->_saveLog( $acticity, false, $id );
                     $this->redirect($this->Auth->redirect());   
                 }else{
                     if($get_cookie_session >= 3){
