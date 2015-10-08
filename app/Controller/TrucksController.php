@@ -3069,11 +3069,13 @@ class TrucksController extends AppController {
                 $driver_id = !empty($truck['Truck']['driver_id'])?$truck['Truck']['driver_id']:false;
                 $truck_brand_id = !empty($truck['Truck']['truck_brand_id'])?$truck['Truck']['truck_brand_id']:false;
                 $truck_facility_id = !empty($truck['Truck']['truck_facility_id'])?$truck['Truck']['truck_facility_id']:false;
+                $company_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'company_id');
 
                 $truck = $this->Truck->Driver->getMerge( $truck, $driver_id );
                 $truck = $this->Truck->TruckBrand->getMerge($truck, $truck_brand_id);
                 $truck = $this->Truck->TruckFacility->getMerge($truck, $truck_facility_id);
                 $truck = $this->GroupBranch->Branch->getMerge($truck, $branch_id);
+                $truck = $this->Truck->Company->getMerge($truck, $company_id);
                 $trucks[$key] = $truck;
             }
         }

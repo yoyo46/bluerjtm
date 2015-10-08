@@ -17,9 +17,10 @@
                 'field_model' => 'TruckBrand.name',
                 'display' => true,
             ),
-            'atas_nama' => array(
+            'company' => array(
                 'name' => __('Pemilik'),
-                'field_model' => 'Truck.atas_nama',
+                'field_model' => 'Truck.company',
+                'sorting' => false,
                 'display' => true,
             ),
             'category_name' => array(
@@ -29,12 +30,14 @@
             ),
             'no_id' => array(
                 'name' => __('ID Supir'),
-                'field_model' => false,
+                'field_model' => 'Driver.no_id',
+                'sorting' => false,
                 'display' => true,
             ),
             'driver_name' => array(
                 'name' => __('Supir'),
-                'field_model' => false,
+                'field_model' => 'Driver.driver_name',
+                'sorting' => false,
                 'display' => true,
             ),
             'customer_code' => array(
@@ -164,15 +167,18 @@
                 <?php
                     if(!empty($trucks)){
                         foreach ($trucks as $key => $truck) {
-                            $branch = !empty($truck['Branch']['name'])?$truck['Branch']['name']:false;
+                            $id = $this->Common->filterEmptyField($truck, 'Truck', 'id');
+
+                            $company = $this->Common->filterEmptyField($truck, 'Company', 'name');
+                            $branch = $this->Common->filterEmptyField($truck, 'Branch', 'name');
 
                             $driver_name = $this->Common->filterEmptyField($truck, 'Driver', 'driver_name');
                             $no_id = $this->Common->filterEmptyField($truck, 'Driver', 'no_id');
 
-                            $brand_name = !empty($truck['TruckBrand']['name'])?$truck['TruckBrand']['name']:false;
-                            $facility_name = !empty($truck['TruckFacility']['name'])?$truck['TruckFacility']['name']:false;
+                            $brand_name = $this->Common->filterEmptyField($truck, 'TruckBrand', 'name');
+                            $facility_name = $this->Common->filterEmptyField($truck, 'TruckFacility', 'name');
                             
-                            $content = $this->Common->_getDataColumn(str_pad($truck['Truck']['id'], 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
+                            $content = $this->Common->_getDataColumn(str_pad($id, 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
                                 'class' => 'hide nomor_id',
                                 'style' => 'text-align: left;',
                             ));
@@ -183,8 +189,8 @@
                             $content .= $this->Common->_getDataColumn($brand_name, 'TruckBrand', 'name', array(
                                 'class' => 'brand_name',
                             ));
-                            $content .= $this->Common->_getDataColumn($truck['Truck']['atas_nama'], 'Truck', 'atas_nama', array(
-                                'class' => 'atas_nama',
+                            $content .= $this->Common->_getDataColumn($company, 'Truck', 'company', array(
+                                'class' => 'company',
                             ));
                             $content .= $this->Common->_getDataColumn($truck['TruckCategory']['name'], 'TruckCategory', 'name', array(
                                 'class' => 'category_name',
@@ -293,20 +299,22 @@
 
         if(!empty($trucks)){
             foreach ($trucks as $truck):
+                $id = $this->Common->filterEmptyField($truck, 'Truck', 'id');
                 $branch = !empty($truck['Branch']['name'])?$truck['Branch']['name']:false;
                 $driver_name = !empty($truck['Driver']['driver_name'])?$truck['Driver']['driver_name']:false;
                 $customer_code = !empty($truck['CustomerNoType']['code'])?$truck['CustomerNoType']['code']:false;
                 $truck_facility = !empty($truck['TruckFacility']['name'])?$truck['TruckFacility']['name']:false;
                 $brand_name = !empty($truck['TruckBrand']['name'])?$truck['TruckBrand']['name']:false;
+                $company = $this->Common->filterEmptyField($truck, 'Company', 'name');
 
-                $content = $this->Common->_getDataColumn(str_pad($truck['Truck']['id'], 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
+                $content = $this->Common->_getDataColumn(str_pad($id, 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
                     'style' => 'text-align: left;',
                 ));
                 $content .= $this->Common->_getDataColumn($truck['Truck']['nopol'], 'Truck', 'nopol', array(
                     'style' => 'text-align: left;',
                 ));
                 $content .= $this->Common->_getDataColumn($brand_name, 'TruckBrand', 'name');
-                $content .= $this->Common->_getDataColumn($truck['Truck']['atas_nama'], 'Truck', 'atas_nama');
+                $content .= $this->Common->_getDataColumn($company, 'Truck', 'company');
                 $content .= $this->Common->_getDataColumn($truck['TruckCategory']['name'], 'TruckCategory', 'name');
                 $content .= $this->Common->_getDataColumn($driver_name, 'Driver', 'driver_name');
                 $content .= $this->Common->_getDataColumn($customer_code, 'CustomerNoType', 'code');

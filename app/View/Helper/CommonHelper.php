@@ -905,7 +905,7 @@ class CommonHelper extends AppHelper {
 
                 $style = !empty($dataColumn['style'])?$dataColumn['style']:false;
                 $name = !empty($dataColumn['name'])?$dataColumn['name']:false;
-                $display = !empty($dataColumn['display'])?$dataColumn['display']:false;
+                $display = isset($dataColumn['display'])?$dataColumn['display']:true;
                 $child = !empty($dataColumn['child'])?$dataColumn['child']:false;
                 $rowspan = !empty($dataColumn['rowspan'])?$dataColumn['rowspan']:false;
                 $class = !empty($dataColumn['class'])?$dataColumn['class']:false;
