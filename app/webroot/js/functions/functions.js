@@ -1873,16 +1873,21 @@ var pickData = function () {
         $(data_change).trigger('change');
         
         if(data_change == '#receiver-id'){
+            var receiver_type = '';
+
             $('#receiver-type').val(vthis.attr('data-type'));
             $('#cash-bank-user,#ttuj-receiver').val(vthis.attr('data-text'));
 
             if( vthis.attr('data-type') == 'Driver' ) {
-                $('#tag-receiver-type').html('(Supir)');
+                receiver_type = 'Supir';
             } else if( vthis.attr('data-type') == 'Empoye' ) {
-                $('#tag-receiver-type').html('(Karyawan)');
+                receiver_type = 'Karyawan';
             } else {
-                $('#tag-receiver-type').html('('+vthis.attr('data-type')+')');
+                receiver_type = vthis.attr('data-type');
             }
+            
+            $('#tag-receiver-type').html('('+receiver_type+')');
+            $('#hid-receiver-type').val(receiver_type);
         }
 
         $('#myModal').modal('hide');

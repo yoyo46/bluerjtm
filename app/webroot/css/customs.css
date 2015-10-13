@@ -1,4 +1,13 @@
 /*
+1. Journal Report
+*/
+
+/*Journal Report*/
+.table.journal td hr {
+	border-top: 2px solid #CCCCCC;
+}
+
+/*
 **	TTUJ
 */
 .ttuj-form #step2, .laka-form #step2 {

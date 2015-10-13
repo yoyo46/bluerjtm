@@ -5,6 +5,10 @@ class RjCashBankComponent extends Component {
 	var $components = array(
 		'MkCommon'
 	); 
+
+	function initialize(Controller $controller, $settings = array()) {
+		$this->controller = $controller;
+	}
 	
 	function processRefine($refine = false, $default_conditions = array()) {
 		if(!$refine) {
@@ -70,6 +74,36 @@ class RjCashBankComponent extends Component {
 		}
 
 		return $parameters;
+	}
+
+	function _callReceiverName ( $receiver_id, $model ) {
+        switch ($model) {
+            case 'Vendor':
+                $value = $this->controller->CashBank->Vendor->getData('first', array(
+                    'conditions' => array(
+                        'Vendor.id' => $receiver_id,
+                    )
+                ));
+                break;
+            case 'Employe':
+                $value = $this->controller->CashBank->Employe->getData('first', array(
+                    'conditions' => array(
+                        'Employe.id' => $receiver_id,
+                    )
+                ));
+
+                break;
+            default:
+                $value = $this->controller->CashBank->Customer->getData('first', array(
+                    'conditions' => array(
+                        'Customer.id' => $receiver_id,
+                    )
+                ));
+
+                break;
+        }
+
+		return $this->MkCommon->filterEmptyField($value, $model, 'name');
 	}
 }
 ?>

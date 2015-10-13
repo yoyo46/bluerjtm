@@ -19,13 +19,20 @@
 		$this->Html->addCrumb($sub_module_title);
 		$disabled = false;
 		$receiver_type = false;
+		$receiver_label = false;
 
 		if( !empty($invoice) ) {
 			$disabled = true;
 		}
 
-		if( !empty($invoice['TtujPayment']['receiver_type']) ) {
-			$receiver_type = $this->Common->getReceiverType($invoice['TtujPayment']['receiver_type']);
+		if( !empty($this->request->data['TtujPayment']['receiver_type']) ) {
+			$receiver_type = $this->request->data['TtujPayment']['receiver_type'];
+		} else if( !empty($invoice['TtujPayment']['receiver_type']) ) {
+			$receiver_type = $invoice['TtujPayment']['receiver_type'];
+		}
+
+		if( !empty($receiver_type) ) {
+			$receiver_label = $this->Common->getReceiverType($receiver_type);
 		}
 
 		echo $this->Form->create('TtujPayment', array(
@@ -80,9 +87,13 @@
         ?>
         <div class="form-group">
         	<?php 
-					echo $this->Form->label('receiver', __('Dibayar Kepada').$this->Html->tag('span', $receiver_type, array(
+					echo $this->Form->label('receiver', __('Dibayar Kepada').$this->Html->tag('span', $receiver_label, array(
 						'id' => 'tag-receiver-type'
 					)));
+					echo $this->Form->hidden('receiver_type', array(
+						'value' => $receiver_type,
+						'id' => 'hid-receiver-type'
+					));
 
 					if( empty($disabled) ) {
 						if( in_array($action_type, array( 'commission', 'uang_jalan' )) ) {

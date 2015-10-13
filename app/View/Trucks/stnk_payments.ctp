@@ -22,33 +22,35 @@
         </div>
     </div>
     <div class="box-body table-responsive">
-        <table class="table table-hover">
-            <tr>
-                <?php
-                        echo $this->Html->tag('th', $this->Paginator->sort('Stnk.no_pol', __('No. Pol'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Stnk.tgl_bayar', __('Tgl Perpanjang'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Stnk.to_date', __('Berlaku Hingga'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Stnk.plat_to_date', __('Perpanjang Plat Hingga'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('StnkPayment.total_pembayaran', __('Biaya Perpanjang'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Stnk.paid', __('Status'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('StnkPayment.created', __('Dibuat'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', __('Action'));
-                ?>
-            </tr>
+        <table class="table table-hover red sorting">
+            <thead>
+                <tr>
+                    <?php
+                            echo $this->Html->tag('th', $this->Paginator->sort('Stnk.no_pol', __('No. Pol'), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('Stnk.tgl_bayar', __('Tgl Perpanjang'), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('Stnk.to_date', __('Berlaku Hingga'), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('Stnk.plat_to_date', __('Perpanjang Plat Hingga'), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('StnkPayment.total_pembayaran', __('Biaya Perpanjang'), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('Stnk.paid', __('Status'), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('StnkPayment.created', __('Dibuat'), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', __('Action'));
+                    ?>
+                </tr>
+            </thead>
             <?php
                     $i = 1;
                     if(!empty($stnkPayments)){

@@ -78,7 +78,7 @@
         </div>
     </div>
     <div class="box-body table-responsive">
-        <table class="table table-hover sorting">
+        <table class="table table-hover sorting red">
             <thead>
                 <tr>
                     <?php 

@@ -183,15 +183,13 @@
 	        <table class="table table-hover">
 	        	<thead>
 	        		<tr>
-	        			<th><?php echo __('Kode Acc');?></th>
-	                    <th><?php echo __('Nama Acc');?></th>
                     	<?php 
-                    		// echo $this->Html->tag('th', __('Debit'));
-                    		// echo $this->Html->tag('th', __('Kredit'));
-
-                    		echo $this->Html->tag('th', __('Total'), array(
-                    			'width' => '30%'
-                    		));
+	                    		echo $this->Html->tag('th', __('Kode Acc'));
+	                    		echo $this->Html->tag('th', __('Nama Acc'));
+	                    		echo $this->Html->tag('th', __('Total'), array(
+	                    			'width' => '30%'
+	                    		));
+	                    		echo $this->Html->tag('th', '');
                     	?>
 	        		</tr>
 	        	</thead>

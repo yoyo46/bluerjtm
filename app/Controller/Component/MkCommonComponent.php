@@ -233,6 +233,10 @@ class MkCommonComponent extends Component {
         return strtolower(Inflector::slug($string, $separator));
     }
 
+    function unSlug($string) {
+        return str_replace(array( '_', '-' ), array( ' ', ' ' ), $string);
+    }
+
     function deletePathPhoto( $pathfolder = false, $filename = false, $dimensions = false, $deleteUploadFile = true, $project_path = false ) {
         if( !empty($filename) ) {
             if( !empty($project_path) ) {

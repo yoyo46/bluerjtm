@@ -34,30 +34,30 @@
         <?php 
                 }
         ?>
-        <table class="table journal table-bordered" border="<?php echo $border; ?>">
+        <table class="table journal table-no-border red" border="<?php echo $border; ?>" id="journal-report">
             <thead>
     			<tr>
                     <th class="text-center text-middle"><?php echo __('Tgl');?></th>
-    				<th class="text-center text-middle"><?php echo __('Tipe');?></th>
-                    <th class="text-center text-middle"><?php echo __('COA');?></th>
-                    <th class="text-center text-middle"><?php echo __('Debit');?></th>
-                    <th class="text-center text-middle"><?php echo __('Kredit');?></th>
-    				<th class="text-center text-middle"><?php echo __('No Dokumen');?></th>
+    				<th class="text-center text-middle"><?php echo __('Keterangan');?></th>
+                    <th class="text-right text-middle"><?php echo __('Debit');?></th>
+                    <th class="text-right text-middle"><?php echo __('Kredit');?></th>
+    				<th class="text-center text-middle"><?php echo __('Job');?></th>
     			</tr>
             </thead>
             <tbody>
                 <?php
                         if(!empty($values)){
                             $old = false;
-                            $documentType = Configure::read('__Site.Journal.Documents');
 
                             foreach ($values as $key => $value) {
                                 $document_no = $this->Common->filterEmptyField($value, 'Journal', 'document_no');
                                 $document_id = $this->Common->filterEmptyField($value, 'Journal', 'document_id');
+                                $title = $this->Common->filterEmptyField($value, 'Journal', 'title');
                                 $created = $this->Common->filterEmptyField($value, 'Journal', 'created');
                                 $type = $this->Common->filterEmptyField($value, 'Journal', 'type');
                                 $debit = $this->Common->filterEmptyField($value, 'Journal', 'debit');
                                 $credit = $this->Common->filterEmptyField($value, 'Journal', 'credit');
+                                $nopol = $this->Common->filterEmptyField($value, 'Journal', 'nopol');
 
                                 $coa = $this->Common->filterEmptyField($value, 'Coa', 'coa_name');
 
@@ -66,30 +66,44 @@
                                 $customDebit = $this->Common->getFormatPrice($debit, false);
                                 $customCredit = $this->Common->getFormatPrice($credit, false);
 
-                                if( !empty($documentType[$type]) ) {
-                                    $customType = $documentType[$type];
-                                } else {
-                                    $customType = ucwords(str_replace('_', ' ', $type));
-                                }
-
-                                if( !empty($old) && $new != $old ) {
-                                    echo '<tr><td colspan="6"><hr></td></tr>';
-                                }
+                                if( $new != $old ) {
+                                    if( !empty($old) ) {
+                                        echo '<tr><td colspan="6"><hr></td></tr>';
+                                    }
                 ?>
                 <tr>
                     <?php
                             echo $this->Html->tag('td', $customCreated);
-                            echo $this->Html->tag('td', $customType, array(
+                            echo $this->Html->tag('td', $title, array(
+                                'style' => 'text-align:left;'
+                            ));
+                            echo $this->Html->tag('td', '', array(
+                                'style' => 'text-align:right;',
+                                'colspan' => 2,
+                            ));
+                            echo $this->Html->tag('td', $nopol, array(
                                 'style' => 'text-align:center;'
                             ));
-                            echo $this->Html->tag('td', $coa);
+                    ?>
+                </tr>
+                <?php
+                                }
+                ?>
+                <tr>
+                    <?php
+                            echo $this->Html->tag('td', $document_no);
+                            echo $this->Html->tag('td', $coa, array(
+                                'style' => 'text-align:left;'
+                            ));
                             echo $this->Html->tag('td', $customDebit, array(
                                 'style' => 'text-align:right;'
                             ));
                             echo $this->Html->tag('td', $customCredit, array(
                                 'style' => 'text-align:right;'
                             ));
-                            echo $this->Html->tag('td', $document_no);
+                            echo $this->Html->tag('td', $nopol, array(
+                                'style' => 'text-align:center;'
+                            ));
                     ?>
                 </tr>
                 <?php

@@ -55,7 +55,19 @@ class CashBank extends AppModel {
         'CashBankAuth' => array(
             'className' => 'CashBankAuth',
             'foreignKey' => 'cash_bank_id',
-        )
+        ),
+        'Vendor' => array(
+            'className' => 'Vendor',
+            'foreignKey' => 'receiver_id',
+        ),
+        'Employe' => array(
+            'className' => 'Employe',
+            'foreignKey' => 'receiver_id',
+        ),
+        'Customer' => array(
+            'className' => 'Customer',
+            'foreignKey' => 'receiver_id',
+        ),
     );
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){

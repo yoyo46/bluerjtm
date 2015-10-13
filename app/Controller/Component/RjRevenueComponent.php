@@ -1,6 +1,7 @@
 <?php
 App::uses('Sanitize', 'Utility');
 class RjRevenueComponent extends Component {
+	var $components = array('MkCommon'); 
 
 	function initialize(Controller $controller, $settings = array()) {
 		$this->controller = $controller;
@@ -324,5 +325,16 @@ class RjRevenueComponent extends Component {
 
         return $conditions;
 	}
+
+    function _callReceiverType ( $value ) {
+        if( !empty($value) ) {
+            $value = array_unique($value);
+            $value = array_filter($value);
+            $value = implode(', ', $value);
+            $value = $this->MkCommon->unSlug($value);
+        }
+
+        return $value;
+    }
 }
 ?>

@@ -1722,6 +1722,7 @@ class AjaxController extends AppController {
         	'Vendor' => __('Vendor'),
         	'Employe' => __('karyawan')
         );
+        $branch_plant_id = Configure::read('__Site.Branch.Plant.id');
 
 		switch ($action_type) {
 			case 'ttuj':
@@ -1763,14 +1764,19 @@ class AjaxController extends AppController {
 			}
 		}
 
-		$list_result = $this->$model->getData('all', array(
+		if( !empty($branch_plant_id) ) {
+            $default_conditions[$model.'.branch_id'] = $branch_plant_id;
+        }
+
+		$this->paginate = $this->$model->getData('paginate', array(
 			'conditions' => $default_conditions
 		));
+		$values = $this->paginate($model);
 
 		$this->request->data['UserCashBank']['model'] = $model;
 
 		$this->set(compact(
-			'list_result', 'model', 'data_action', 
+			'values', 'model', 'data_action', 
 			'title', 'data_change', 'listReceivers',
 			'action_type'
 		));

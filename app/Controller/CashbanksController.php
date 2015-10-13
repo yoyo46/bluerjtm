@@ -1,7 +1,9 @@
 <?php
 App::uses('AppController', 'Controller');
 class CashbanksController extends AppController {
-	public $uses = array('CashBank', 'CashBankAuth');
+	public $uses = array(
+        'CashBank', 'CashBankAuth'
+    );
 
     public $components = array(
         'RjCashBank'
@@ -74,37 +76,7 @@ class CashbanksController extends AppController {
             foreach ($cash_banks as $key => $value) {
                 $model = $value['CashBank']['receiver_type'];
                 $receiver_id = $value['CashBank']['receiver_id'];
-                $this->loadModel($model);
-
-                switch ($model) {
-                    case 'Vendor':
-                        $list_result = $this->Vendor->getData('first', array(
-                            'conditions' => array(
-                                'Vendor.id' => $receiver_id,
-                            ),
-                        ));
-                        break;
-                    case 'Employe':
-                        $list_result = $this->Employe->getData('first', array(
-                            'conditions' => array(
-                                'Employe.id' => $receiver_id,
-                            )
-                        ));
-
-                        break;
-                    default:
-                        $list_result = $this->Customer->getData('first', array(
-                            'conditions' => array(
-                                'Customer.id' => $receiver_id,
-                            )
-                        ));
-
-                        break;
-                }
-
-                if(!empty($list_result)){
-                    $cash_banks[$key]['name_cash'] = $list_result[$model]['name'];
-                }
+                $cash_banks[$key]['name_cash'] = $this->RjCashBank->_callReceiverName($receiver_id, $model);
             }
         }
 
@@ -355,37 +327,7 @@ class CashbanksController extends AppController {
         if(!empty($this->request->data['CashBank']['receiver_type'])){
             $model = $this->request->data['CashBank']['receiver_type'];
             $receiver_id = !empty($this->request->data['CashBank']['receiver_id'])?$this->request->data['CashBank']['receiver_id']:false;
-            $this->loadModel($model);
-
-            switch ($model) {
-                case 'Vendor':
-                    $list_result = $this->Vendor->getData('first', array(
-                        'conditions' => array(
-                            'Vendor.id' => $receiver_id,
-                        ),
-                    ));
-                    break;
-                case 'Employe':
-                    $list_result = $this->Employe->getData('first', array(
-                        'conditions' => array(
-                            'Employe.id' => $receiver_id,
-                        ),
-                    ));
-
-                    break;
-                default:
-                    $list_result = $this->Customer->getData('first', array(
-                        'conditions' => array(
-                            'Customer.id' => $receiver_id,
-                        ),
-                    ));
-
-                    break;
-            }
-
-            if(!empty($list_result)){
-                $this->request->data['CashBank']['receiver'] = $list_result[$model]['name'];
-            }
+            $this->request->data['CashBank']['receiver'] = $this->RjCashBank->_callReceiverName($receiver_id, $model);
         }
 
         if(!empty($data['CashBankDetail'])){
@@ -510,17 +452,6 @@ class CashbanksController extends AppController {
     function detail($id = false){
         $this->set('sub_module_title', 'Detail Kas/Bank');
 
-        // $this->loadModel('CashBankAuthMaster');
-        // $cash_bank_auth_master = $this->CashBankAuthMaster->getUserApproval($id);
-        // $this->set('cash_bank_auth_master', $cash_bank_auth_master);
-
-        // $cash_bank_master_user = $this->CashBankAuthMaster->find('first', array(
-        //     'conditions' => array(
-        //         'CashBankAuthMaster.employe_id' => $this->user_id
-        //     )
-        // ));
-        // $this->set('cash_bank_master_user', $cash_bank_master_user);
-
         $cashbank = $this->CashBank->getData('first', array(
             'conditions' => array(
                 'CashBank.id' => $id,
@@ -529,32 +460,29 @@ class CashbanksController extends AppController {
                 'CashBankDetail' => array(
                     'Coa'
                 ),
-                // 'CashBankAuth' => array(
-                //     'conditions' => array(
-                //         'CashBankAuth.cash_bank_auth_master_id' => !empty($cash_bank_master_user['CashBankAuthMaster']['id']) ? $cash_bank_master_user['CashBankAuthMaster']['id'] : ''
-                //     )
-                // )
             )
         ));
 
         if( !empty($cashbank) ) {
-            $this->loadModel('Employe');
             $this->loadModel('Approval');
 
-            // $cashbank_auth_id = Set::extract('/CashBankAuthMaster/employe_id', $cash_bank_auth_master);
-            $user_id = !empty($cashbank['CashBank']['user_id'])?$cashbank['CashBank']['user_id']:false;
-            $document_type = !empty($cashbank['CashBank']['document_type'])?$cashbank['CashBank']['document_type']:false;
-            $document_id = !empty($cashbank['CashBank']['document_id'])?$cashbank['CashBank']['document_id']:false;
-            $debit_total = !empty($cashbank['CashBank']['debit_total'])?$cashbank['CashBank']['debit_total']:0;
-            $credit_total = !empty($cashbank['CashBank']['credit_total'])?$cashbank['CashBank']['credit_total']:0;
-            $receiving_cash_type = !empty($cashbank['CashBank']['receiving_cash_type'])?$cashbank['CashBank']['receiving_cash_type']:false;
-            $nodoc = !empty($cashbank['CashBank']['nodoc'])?$cashbank['CashBank']['nodoc']:false;
-            $document_coa_id = !empty($cashbank['CashBank']['coa_id'])?$cashbank['CashBank']['coa_id']:false;
+            $user_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'user_id');
+            $document_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'document_id');
+            $document_coa_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'document_coa_id');
+            $receiver_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'receiver_id');
+
+            $document_type = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'document_type');
+            $receiver_type = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'receiver_type');
+            $receiving_cash_type = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'receiving_cash_type');
+            $nodoc = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'nodoc');
+            $debit_total = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'debit_total', 0);
+            $credit_total = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'credit_total', 0);
+
             $grand_total = $credit_total + $debit_total;
             
             $cashbank = $this->User->getMerge($cashbank, $user_id);
             $user_employe_id = !empty($cashbank['User']['employe_id'])?$cashbank['User']['employe_id']:false;
-            $cashbank = $this->Employe->getMerge($cashbank, $user_employe_id);
+            $cashbank = $this->CashBank->Employe->getMerge($cashbank, $user_employe_id);
             $user_position_id = !empty($cashbank['Employe']['employe_position_id'])?$cashbank['Employe']['employe_position_id']:false;
             $user_otorisasi_approvals = $this->Approval->getUserOtorisasiApproval('cash-bank', $user_position_id, $grand_total, $id);
             $position_approval = $this->Approval->getPositionPriority($user_otorisasi_approvals);
@@ -569,7 +497,7 @@ class CashbanksController extends AppController {
 
             $approval = $this->user_data;
             $approval_employe_id = !empty($approval['employe_id'])?$approval['employe_id']:false;
-            $approval = $this->Employe->getMerge($approval, $approval);
+            $approval = $this->CashBank->Employe->getMerge($approval, $approval);
             $approval_position_id = !empty($approval['Employe']['employe_position_id'])?$approval['Employe']['employe_position_id']:false;
             $idx_arr_otorisasi = array_search($approval_position_id, $position_otorisasi_approvals);
             $show_approval = false;
@@ -700,33 +628,54 @@ class CashbanksController extends AppController {
                                     }
 
                                     if( $status_document == 'approve' ) {
+                                        $coaArr = array();
 
                                         if( !empty($cashbank['CashBankDetail']) ) {
                                             foreach ($cashbank['CashBankDetail'] as $key => $cashBankDetail) {
-                                                $coa_id = !empty($cashBankDetail['coa_id'])?$cashBankDetail['coa_id']:false;
-                                                $total = !empty($cashBankDetail['total'])?$cashBankDetail['total']:false;
+                                                $coa_id = $this->MkCommon->filterEmptyField($cashBankDetail, 'coa_id');
+                                                $total = $this->MkCommon->filterEmptyField($cashBankDetail, 'total');
+
+                                                $documentType = Configure::read('__Site.Journal.Documents');
+                                                $documentType = $this->MkCommon->filterEmptyField($documentType, $receiving_cash_type);
+                                                $receiver_name = $this->RjCashBank->_callReceiverName($receiver_id, $receiver_type);
 
                                                 if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
-                                                    $this->User->Journal->setJournal( $id, $nodoc, array(
+                                                    $title = sprintf(__('%s kepada %s'), $documentType, $receiver_name);
+                                                    $coaArr = array(
                                                         'credit' => $coa_id
-                                                    ), $total, $receiving_cash_type );
+                                                    );
                                                 } else {
-                                                    $this->User->Journal->setJournal( $id, $nodoc, array(
+                                                    $title = sprintf(__('%s dari %s'), $documentType, $receiver_name);
+                                                    $coaArr = array(
                                                         'debit' => $coa_id
-                                                    ), $total, $receiving_cash_type );
+                                                    );
                                                 }
+
+                                                $this->User->Journal->setJournal($total, $coaArr, array(
+                                                    'document_id' => $id,
+                                                    'title' => $title,
+                                                    'document_no' => $nodoc,
+                                                    'type' => $receiving_cash_type,
+                                                ));
                                             }
                                         }
 
                                         if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
-                                             $this->User->Journal->setJournal( $id, $nodoc, array(
+                                            $coaArr = array(
                                                 'debit' => $document_coa_id,
-                                            ), $debit_total, $receiving_cash_type );
+                                            );
                                         } else {
-                                            $this->User->Journal->setJournal( $id, $nodoc, array(
+                                            $coaArr = array(
                                                 'credit' => $document_coa_id,
-                                            ), $credit_total, $receiving_cash_type );
+                                            );
                                         }
+
+                                        $this->User->Journal->setJournal($debit_total, $coaArr, array(
+                                            'document_id' => $id,
+                                            'title' => $title,
+                                            'document_no' => $nodoc,
+                                            'type' => $receiving_cash_type,
+                                        ));
                                     }
                                 }
                             }
@@ -754,37 +703,7 @@ class CashbanksController extends AppController {
             if(!empty($cashbank['CashBank']['receiver_type'])){
                 $model = $cashbank['CashBank']['receiver_type'];
                 $receiver_id = !empty($cashbank['CashBank']['receiver_id'])?$cashbank['CashBank']['receiver_id']:false;
-                $this->loadModel($model);
-
-                switch ($model) {
-                    case 'Vendor':
-                        $list_result = $this->Vendor->getData('first', array(
-                            'conditions' => array(
-                                'Vendor.id' => $receiver_id,
-                            )
-                        ));
-                        break;
-                    case 'Employe':
-                        $list_result = $this->Employe->getData('first', array(
-                            'conditions' => array(
-                                'Employe.id' => $receiver_id,
-                            )
-                        ));
-
-                        break;
-                    default:
-                        $list_result = $this->Customer->getData('first', array(
-                            'conditions' => array(
-                                'Customer.id' => $receiver_id,
-                            )
-                        ));
-
-                        break;
-                }
-
-                if(!empty($list_result)){
-                    $cashbank['CashBank']['receiver'] = $list_result[$model]['name'];
-                }
+                $cashbank['CashBank']['receiver'] = $this->RjCashBank->_callReceiverName($receiver_id, $model);
             }
 
             // $cashBankAuth = $this->CashBankAuthMaster->CashBankAuth->find('all', array(

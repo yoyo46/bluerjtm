@@ -55,7 +55,7 @@
         </div>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
-        <table class="table table-hover sorting">
+        <table class="table red table-hover sorting">
             <thead>
                 <tr>
                     <?php

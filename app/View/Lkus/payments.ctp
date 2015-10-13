@@ -23,38 +23,40 @@
         </div>
     </div>
     <div class="box-body table-responsive">
-        <table class="table table-hover">
-            <tr>
-                <?php 
-                        echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.no_doc', __('No Dokumen'), array(
-                            'escape' => false
-                        )));
+        <table class="table table-hover red sorting">
+            <thead>
+                <tr>
+                    <?php 
+                            echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.no_doc', __('No Dokumen'), array(
+                                'escape' => false
+                            )));
 
-                        echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.tgl_bayar', __('Tgl Pembayaran'), array(
-                            'escape' => false
-                        )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.tgl_bayar', __('Tgl Pembayaran'), array(
+                                'escape' => false
+                            )));
 
-                        echo $this->Html->tag('th', $this->Paginator->sort('Customer.name', __('Customer'), array(
-                            'escape' => false
-                        )));
+                            echo $this->Html->tag('th', __('Customer'), array(
+                                'width' => '30%',
+                            ));
 
-                        echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.grandtotal', __('Total Pembayaran'), array(
-                            'escape' => false
-                        )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.grandtotal', __('Total Pembayaran'), array(
+                                'escape' => false
+                            )));
 
-                        echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.paid', __('Status'), array(
-                            'escape' => false
-                        )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.paid', __('Status'), array(
+                                'escape' => false
+                            )));
 
-                        echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.created', __('Dibuat'), array(
-                            'escape' => false
-                        )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('LkuPayment.created', __('Dibuat'), array(
+                                'escape' => false
+                            )));
 
-                        echo $this->Html->tag('th', __('Action'), array(
-                            'escape' => false
-                        ));
-                ?>
-            </tr>
+                            echo $this->Html->tag('th', __('Action'), array(
+                                'escape' => false
+                            ));
+                    ?>
+                </tr>
+            </thead>
             <?php
                     if(!empty($payments)){
                         foreach ($payments as $key => $value) {
@@ -62,7 +64,7 @@
             ?>
             <tr>
                 <td><?php echo $value['LkuPayment']['no_doc'];?></td>
-                <?php echo $this->Html->tag('td', date('d M Y', strtotime($value['LkuPayment']['tgl_bayar'])));?>
+                <?php echo $this->Html->tag('td', date('d/m/Y', strtotime($value['LkuPayment']['tgl_bayar'])));?>
                 <td><?php echo !empty($value['Customer']['customer_name_code']) ? $value['Customer']['customer_name_code'] : ' - ';?></td>
                 <td><?php echo $this->Number->currency($value['LkuPayment']['grandtotal'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <?php 

@@ -22,30 +22,32 @@
         </div>
     </div>
     <div class="box-body table-responsive">
-        <table class="table table-hover">
-            <tr>
-                <?php
-                        echo $this->Html->tag('th', $this->Paginator->sort('Siup.no_pol', __('No. Pol'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Siup.tgl_siup', __('Tgl Perpanjang'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Siup.to_date', __('Berlaku Hingga'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Siup.price', __('Biaya Perpanjang'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Siup.paid', __('Status'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Siup.created', __('Dibuat'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', __('Action'));
-                ?>
-            </tr>
+        <table class="table table-hover red sorting">
+            <thead>
+                <tr>
+                    <?php
+                            echo $this->Html->tag('th', $this->Paginator->sort('Siup.no_pol', __('No. Pol'), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('Siup.tgl_siup', __('Tgl Perpanjang'), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('Siup.to_date', __('Berlaku Hingga'), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('Siup.price', __('Biaya Perpanjang'), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('Siup.paid', __('Status'), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('Siup.created', __('Dibuat'), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', __('Action'));
+                    ?>
+                </tr>
+            </thead>
             <?php
                     $i = 1;
                     if(!empty($siup)){

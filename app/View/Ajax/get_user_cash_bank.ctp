@@ -75,8 +75,8 @@
             ?>
         </tr>
         <?php
-                if(!empty($list_result)){
-                    foreach ($list_result as $key => $value) {
+                if(!empty($values)){
+                    foreach ($values as $key => $value) {
                         if( !empty($value[$model]['customer_name_code']) ) {
                             $receiver_name = $value[$model]['customer_name_code'];
                         } else if( !empty($value[$model]['driver_name']) ) {

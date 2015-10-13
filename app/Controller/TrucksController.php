@@ -1350,10 +1350,13 @@ class TrucksController extends AppController {
     public function doKirPayment( $id = false, $kir = false ) {
         if(!empty($this->request->data)){
             if( !empty($this->request->data['KirPayment']['kir_id']) && !empty($kir) ){
-                $kir_id = $this->request->data['KirPayment']['kir_id'];
+                $data = $this->request->data;
+                $kir_id = $this->MkCommon->filterEmptyField($data, 'KirPayment', 'kir_id');
+                $coa_id = $this->MkCommon->filterEmptyField($data, 'KirPayment', 'coa_id');
+                $nopol = $this->MkCommon->filterEmptyField($kir, 'Kir', 'no_pol');
+                $truck_id = $this->MkCommon->filterEmptyField($kir, 'Kir', 'truck_id');
 
                 $this->KirPayment->create();
-                $data = $this->request->data;
 
                 $logActionName = false;
                 $default_msg = 'dibayar';
@@ -1389,11 +1392,19 @@ class TrucksController extends AppController {
 
                         if( !empty($data['KirPayment']['total_pembayaran']) ) {
                             $total = $data['KirPayment']['total_pembayaran'];
+                            $title = sprintf(__('Pembayaran KIR Truk %s'), $nopol);
 
-                            $this->User->Journal->setJournal( $document_id, $document_no, array(
-                                'credit' => 'kir_payment_coa_credit_id',
-                                'debit' => 'kir_payment_coa_debit_id',
-                            ), $total, 'kir' );
+                            $this->User->Journal->setJournal($total, array(
+                                'credit' => $coa_id,
+                                'debit' => 'kir_payment_coa_id',
+                            ), array(
+                                'document_id' => $id,
+                                'truck_id' => $truck_id,
+                                'nopol' => $nopol,
+                                'title' => $title,
+                                'document_no' => $document_no,
+                                'type' => 'kir',
+                            ));
                         }
 
                         $this->params['old_data'] = $kir;
@@ -1478,35 +1489,54 @@ class TrucksController extends AppController {
 
     public function kir_payment_delete( $id ) {
         $this->loadModel('KirPayment');
-        $this->loadModel('Kir');
 
-        $KirPayment = $this->KirPayment->getData('first', array(
+        $value = $this->KirPayment->getData('first', array(
             'conditions' => array(
                 'KirPayment.id' => $id,
             ),
         ));
 
-        if( !empty($KirPayment) ) {
+        if( !empty($value) ) {
+            $total = $this->MkCommon->filterEmptyField($value, 'KirPayment', 'total_pembayaran');
+            $coa_id = $this->MkCommon->filterEmptyField($value, 'KirPayment', 'coa_id');
+            $nopol = $this->MkCommon->filterEmptyField($value, 'Kir', 'no_pol');
+            $truck_id = $this->MkCommon->filterEmptyField($value, 'Kir', 'truck_id');
+            $document_no = str_pad($id, 5, '0', STR_PAD_LEFT);
+
             $this->KirPayment->id = $id;
             $this->KirPayment->set('is_void', 1);
             $this->KirPayment->set('status', 0);
 
             if($this->KirPayment->save()){
-                $this->Kir->id = $KirPayment['Kir']['id'];
-                $this->Kir->set('paid', 0);
-                $this->Kir->save();
+                $this->KirPayment->Kir->id = $value['Kir']['id'];
+                $this->KirPayment->Kir->set('paid', 0);
+                $this->KirPayment->Kir->save();
 
-                if(!empty($KirPayment['Kir']['from_date'])){
-                    $this->Truck->id = $KirPayment['Kir']['truck_id'];
-                    $this->Truck->set('tgl_kir', $KirPayment['Kir']['from_date']);
+                if(!empty($value['Kir']['from_date'])){
+                    $this->Truck->id = $value['Kir']['truck_id'];
+                    $this->Truck->set('tgl_kir', $value['Kir']['from_date']);
                     $this->Truck->save();
                 }
 
-                $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $KirPayment['Kir']['no_pol']), 'success');
-                $this->Log->logActivity( sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $KirPayment['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, 'kir_payment_void' );
+                $title = sprintf(__('Pembatalan pembayaran KIR Truk %s'), $nopol);
+
+                $this->User->Journal->setJournal($total, array(
+                    'credit' => 'kir_payment_coa_id',
+                    'debit' => $coa_id,
+                ), array(
+                    'document_id' => $id,
+                    'truck_id' => $truck_id,
+                    'nopol' => $nopol,
+                    'title' => $title,
+                    'document_no' => $document_no,
+                    'type' => 'kir_void',
+                ));
+
+                $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $value['Kir']['no_pol']), 'success');
+                $this->Log->logActivity( sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $value['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, 'kir_payment_void' );
             } else {
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran KIR Truk %s'), $KirPayment['Kir']['no_pol']), 'error'); 
-                $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran KIR Truk %s'), $KirPayment['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran KIR Truk %s'), $value['Kir']['no_pol']), 'error'); 
+                $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran KIR Truk %s'), $value['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
             }
         } else {
             $this->MkCommon->setCustomFlash(__('Data pembayaran KIR tidak ditemukan'), 'error');
@@ -1800,10 +1830,13 @@ class TrucksController extends AppController {
     public function doSiupPayment( $id = false, $siup = false ) {
         if(!empty($this->request->data)){
             if( !empty($this->request->data['SiupPayment']['siup_id']) && !empty($siup) ){
-                $siup_id = $this->request->data['SiupPayment']['siup_id'];
+                $data = $this->request->data;
+                $siup_id = $this->MkCommon->filterEmptyField($data, 'SiupPayment', 'siup_id');
+                $coa_id = $this->MkCommon->filterEmptyField($data, 'SiupPayment', 'coa_id');
+                $nopol = $this->MkCommon->filterEmptyField($siup, 'Siup', 'no_pol');
+                $truck_id = $this->MkCommon->filterEmptyField($siup, 'Siup', 'truck_id');
 
                 $this->SiupPayment->create();
-                $data = $this->request->data;
 
                 $logActionName = false;
                 $default_msg = 'dibayar';
@@ -1840,11 +1873,19 @@ class TrucksController extends AppController {
                         
                         if( !empty($data['SiupPayment']['total_pembayaran']) ) {
                             $total = $data['SiupPayment']['total_pembayaran'];
+                            $title = sprintf(__('Pembayaran ijin usaha Truk %s'), $nopol);
 
-                            $this->User->Journal->setJournal( $document_id, $document_no, array(
-                                'credit' => 'siup_payment_coa_credit_id',
-                                'debit' => 'siup_payment_coa_debit_id',
-                            ), $total, 'siup' );
+                            $this->User->Journal->setJournal($total, array(
+                                'credit' => $coa_id,
+                                'debit' => 'siup_payment_coa_id',
+                            ), array(
+                                'document_id' => $id,
+                                'truck_id' => $truck_id,
+                                'nopol' => $nopol,
+                                'title' => $title,
+                                'document_no' => $document_no,
+                                'type' => 'siup',
+                            ));
                         }
 
                         $this->params['old_data'] = $siup;
@@ -1922,35 +1963,54 @@ class TrucksController extends AppController {
 
     public function siup_payment_delete( $id ) {
         $this->loadModel('SiupPayment');
-        $this->loadModel('Siup');
 
-        $SiupPayment = $this->SiupPayment->getData('first', array(
+        $value = $this->SiupPayment->getData('first', array(
             'conditions' => array(
                 'SiupPayment.id' => $id,
             ),
         ));
 
-        if( !empty($SiupPayment) ) {
+        if( !empty($value) ) {
+            $total = $this->MkCommon->filterEmptyField($value, 'SiupPayment', 'total_pembayaran');
+            $coa_id = $this->MkCommon->filterEmptyField($value, 'SiupPayment', 'coa_id');
+            $nopol = $this->MkCommon->filterEmptyField($value, 'Siup', 'no_pol');
+            $truck_id = $this->MkCommon->filterEmptyField($value, 'Siup', 'truck_id');
+            $document_no = str_pad($id, 5, '0', STR_PAD_LEFT);
+
             $this->SiupPayment->id = $id;
             $this->SiupPayment->set('is_void', 1);
             $this->SiupPayment->set('status', 0);
 
             if($this->SiupPayment->save()){
-                $this->Siup->id = $SiupPayment['Siup']['id'];
-                $this->Siup->set('paid', 0);
-                $this->Siup->save();
+                $this->SiupPayment->Siup->id = $value['Siup']['id'];
+                $this->SiupPayment->Siup->set('paid', 0);
+                $this->SiupPayment->Siup->save();
 
-                if(!empty($SiupPayment['Siup']['from_date'])){
-                    $this->Truck->id = $SiupPayment['Siup']['truck_id'];
-                    $this->Truck->set('tgl_siup', $SiupPayment['Siup']['from_date']);
+                if(!empty($value['Siup']['from_date'])){
+                    $this->Truck->id = $value['Siup']['truck_id'];
+                    $this->Truck->set('tgl_siup', $value['Siup']['from_date']);
                     $this->Truck->save();
                 }
 
-                $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $SiupPayment['Siup']['no_pol']), 'success');
-                $this->Log->logActivity( sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $SiupPayment['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, 'siup_payment_void' );
+                $title = sprintf(__('Pembatalan pembayaran ijin usaha Truk %s'), $nopol);
+
+                $this->User->Journal->setJournal($total, array(
+                    'credit' => 'siup_payment_coa_id',
+                    'debit' => $coa_id,
+                ), array(
+                    'document_id' => $id,
+                    'truck_id' => $truck_id,
+                    'nopol' => $nopol,
+                    'title' => $title,
+                    'document_no' => $document_no,
+                    'type' => 'siup_void',
+                ));
+
+                $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $value['Siup']['no_pol']), 'success');
+                $this->Log->logActivity( sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $value['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, 'siup_payment_void' );
             } else {
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran Ijin usaha Truk %s'), $SiupPayment['Siup']['no_pol']), 'error'); 
-                $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran Ijin usaha Truk %s'), $SiupPayment['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran Ijin usaha Truk %s'), $value['Siup']['no_pol']), 'error'); 
+                $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran Ijin usaha Truk %s'), $value['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
             }
         } else {
             $this->MkCommon->setCustomFlash(__('Data pembayaran Ijin usaha tidak ditemukan'), 'error');
@@ -2674,41 +2734,66 @@ class TrucksController extends AppController {
 
     public function stnk_payment_delete( $id ) {
         $this->loadModel('StnkPayment');
-        $this->loadModel('Stnk');
 
-        $StnkPayment = $this->StnkPayment->getData('first', array(
+        $value = $this->StnkPayment->getData('first', array(
             'conditions' => array(
                 'StnkPayment.id' => $id,
             ),
         ));
+        $additionalTitle = '';
 
-        if( !empty($StnkPayment) ) {
+        if( !empty($value) ) {
+            $total = $this->MkCommon->filterEmptyField($value, 'StnkPayment', 'total_pembayaran');
+            $coa_id = $this->MkCommon->filterEmptyField($value, 'StnkPayment', 'coa_id');
+            $nopol = $this->MkCommon->filterEmptyField($value, 'Stnk', 'no_pol');
+            $truck_id = $this->MkCommon->filterEmptyField($value, 'Stnk', 'truck_id');
+            $is_change_plat = $this->MkCommon->filterEmptyField($value, 'Stnk', 'is_change_plat');
+            $document_no = str_pad($id, 5, '0', STR_PAD_LEFT);
+
+            if( !empty($is_change_plat) ) {
+                $additionalTitle = 'dan ganti plat ';
+            }
+
             $this->StnkPayment->id = $id;
             $this->StnkPayment->set('is_void', 1);
             $this->StnkPayment->set('status', 0);
 
             if($this->StnkPayment->save()){
-                $this->Stnk->id = $StnkPayment['Stnk']['id'];
-                $this->Stnk->set('paid', 0);
-                $this->Stnk->save();
+                $this->StnkPayment->Stnk->id = $value['Stnk']['id'];
+                $this->StnkPayment->Stnk->set('paid', 0);
+                $this->StnkPayment->Stnk->save();
 
-                if(!empty($StnkPayment['Stnk']['from_date'])){
-                    $this->Truck->id = $StnkPayment['Stnk']['truck_id'];
-                    $this->Truck->set('tgl_stnk', $StnkPayment['Stnk']['from_date']);
+                if(!empty($value['Stnk']['from_date'])){
+                    $this->Truck->id = $value['Stnk']['truck_id'];
+                    $this->Truck->set('tgl_stnk', $value['Stnk']['from_date']);
                     $this->Truck->save();
                 }
 
-                if(!empty($StnkPayment['Stnk']['plat_from_date']) && $StnkPayment['Stnk']['plat_from_date'] != '0000-00-00' && !empty($StnkPayment['Stnk']['is_change_plat'])){
-                    $this->Truck->id = $StnkPayment['Stnk']['truck_id'];
-                    $this->Truck->set('tgl_stnk_plat', $StnkPayment['Stnk']['plat_from_date']);
+                if(!empty($value['Stnk']['plat_from_date']) && $value['Stnk']['plat_from_date'] != '0000-00-00' && !empty($value['Stnk']['is_change_plat'])){
+                    $this->Truck->id = $value['Stnk']['truck_id'];
+                    $this->Truck->set('tgl_stnk_plat', $value['Stnk']['plat_from_date']);
                     $this->Truck->save();
                 }
 
-                $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $StnkPayment['Stnk']['no_pol']), 'success');
-                $this->Log->logActivity( sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $StnkPayment['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, 'stnk_payment_void' );
+                $title = sprintf(__('Pembatalan pembayaran STNK %sTruk %s'), $additionalTitle, $nopol);
+
+                $this->User->Journal->setJournal($total, array(
+                    'credit' => 'stnk_payment_coa_id',
+                    'debit' => $coa_id,
+                ), array(
+                    'document_id' => $id,
+                    'truck_id' => $truck_id,
+                    'nopol' => $nopol,
+                    'title' => $title,
+                    'document_no' => $document_no,
+                    'type' => 'stnk_void',
+                ));
+
+                $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $value['Stnk']['no_pol']), 'success');
+                $this->Log->logActivity( sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $value['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, 'stnk_payment_void' );
             } else {
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran STNK Truk %s'), $StnkPayment['Stnk']['no_pol']), 'error'); 
-                $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran STNK Truk %s'), $StnkPayment['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal membatalkan pembayaran STNK Truk %s'), $value['Stnk']['no_pol']), 'error'); 
+                $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran STNK Truk %s'), $value['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
             }
         } else {
             $this->MkCommon->setCustomFlash(__('Data pembayaran STNK tidak ditemukan'), 'error');
@@ -2827,13 +2912,17 @@ class TrucksController extends AppController {
     public function doStnkPayment( $id = false, $stnk = false ) {
         if(!empty($this->request->data)){
             if( !empty($this->request->data['StnkPayment']['stnk_id']) && !empty($stnk) ){
-                $stnk_id = $this->request->data['StnkPayment']['stnk_id'];
+                $data = $this->request->data;
+                $stnk_id = $this->MkCommon->filterEmptyField($data, 'StnkPayment', 'stnk_id');
+                $coa_id = $this->MkCommon->filterEmptyField($data, 'StnkPayment', 'coa_id');
+                $nopol = $this->MkCommon->filterEmptyField($stnk, 'Stnk', 'no_pol');
+                $truck_id = $this->MkCommon->filterEmptyField($stnk, 'Stnk', 'truck_id');
 
                 $this->StnkPayment->create();
-                $data = $this->request->data;
 
                 $logActionName = false;
                 $default_msg = 'dibayar';
+                $additionalTitle = '';
 
                 $data['StnkPayment']['user_id'] = $this->user_id;
                 $data['StnkPayment']['stnk_id'] = $stnk_id;
@@ -2842,6 +2931,7 @@ class TrucksController extends AppController {
 
                 if( !empty($stnk['Stnk']['is_change_plat']) ) {
                     $data['Truck']['tgl_stnk_plat'] = (!empty($stnk['Stnk']['plat_to_date'])) ? $this->MkCommon->getDate($stnk['Stnk']['plat_to_date']) : '';
+                    $additionalTitle = 'dan ganti plat ';
                 }
 
                 if( !empty($data['StnkPayment']['rejected']) ) {
@@ -2870,11 +2960,19 @@ class TrucksController extends AppController {
                         
                         if( !empty($data['StnkPayment']['total_pembayaran']) ) {
                             $total = $data['StnkPayment']['total_pembayaran'];
+                            $title = sprintf(__('Pembayaran STNK %sTruk %s'), $additionalTitle, $nopol);
 
-                            $this->User->Journal->setJournal( $document_id, $document_no, array(
-                                'credit' => 'stnk_payment_coa_credit_id',
-                                'debit' => 'stnk_payment_coa_debit_id',
-                            ), $total, 'stnk' );
+                            $this->User->Journal->setJournal($total, array(
+                                'credit' => $coa_id,
+                                'debit' => 'stnk_payment_coa_id',
+                            ), array(
+                                'document_id' => $id,
+                                'truck_id' => $truck_id,
+                                'nopol' => $nopol,
+                                'title' => $title,
+                                'document_no' => $document_no,
+                                'type' => 'stnk',
+                            ));
                         }
 
                         $this->params['old_data'] = $stnk;

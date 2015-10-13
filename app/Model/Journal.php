@@ -30,10 +30,14 @@ class Journal extends AppModel {
         'User' => array(
             'className' => 'User',
             'foreignKey' => 'user_id',
-        )
+        ),
+        'Truck' => array(
+            'className' => 'Truck',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
-    function setJournal ( $document_id = false, $document_no = false, $coas, $total, $document_name = false ) {
+    function setJournal ( $total, $coas, $valueSet = array() ) {
         if( !empty($coas) && is_array($coas) ) {
             foreach ($coas as $type => $coa_name) {
                 $coaSetting = $this->User->CoaSetting->getData('first', array(
@@ -48,40 +52,40 @@ class Journal extends AppModel {
                     $coa_id = $coa_name;
                 }
 
-                $user_id = Configure::read('__Site.config_user_id');
-                $coa = $this->Coa->getData('first', array(
-                    'conditions' => array(
-                        'Coa.id' => $coa_id,
-                    ),
-                ));
-                $saldo_awal = !empty($coa['Coa']['balance'])?$coa['Coa']['balance']:false;
+                if( !empty($coa_id) ) {
+                    $user_id = Configure::read('__Site.config_user_id');
+                    $coa = $this->Coa->getData('first', array(
+                        'conditions' => array(
+                            'Coa.id' => $coa_id,
+                        ),
+                    ));
+                    $saldo_awal = !empty($coa['Coa']['balance'])?$coa['Coa']['balance']:false;
 
-                if( in_array($type, array( 'debit', 'credit' )) ) {
-                    if( $type == 'credit' ) {
-                        $saldo_awal -= $total;
-                    } else {
-                        $saldo_awal += $total;
+                    if( in_array($type, array( 'debit', 'credit' )) ) {
+                        if( $type == 'credit' ) {
+                            $saldo_awal -= $total;
+                        } else {
+                            $saldo_awal += $total;
+                        }
+
+                        $this->Coa->id = $coa_id;
+                        $this->Coa->set('balance', $saldo_awal);
+                        $this->Coa->save();
                     }
 
-                    $this->Coa->id = $coa_id;
-                    $this->Coa->set('balance', $saldo_awal);
-                    $this->Coa->save();
+                    $data['Journal'] = array(
+                        'user_id' => $user_id,
+                        'coa_id' => $coa_id,
+                        'saldo_awal' => $saldo_awal,
+                    );
+                    $data['Journal'][$type] = $total;
+                    $data['Journal'] = array_merge($data['Journal'], $valueSet);
+
+                    $this->create();
+                    $this->set($data);
+
+                    $this->save($data);
                 }
-
-                $data['Journal'] = array(
-                    'user_id' => $user_id,
-                    'coa_id' => $coa_id,
-                    'document_id' => $document_id,
-                    'document_no' => $document_no,
-                    'saldo_awal' => $saldo_awal,
-                    'type' => $document_name,
-                );
-                $data['Journal'][$type] = $total;
-
-                $this->create();
-                $this->set($data);
-
-                $this->save($data);
             }
         } else {
             return false;
