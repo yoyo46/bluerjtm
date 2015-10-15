@@ -1,3 +1,11 @@
+<?php 
+        $data = $this->request->data;
+        $count = 1;
+
+        if(!empty($data['LeasingDetail'])){
+            $count = count($data['LeasingDetail']);
+        }
+?>
 <div class="box">
     <div class="box-header">
         <h3 class="box-title"><?php echo __('Detail Leasing'); ?></h3>
@@ -21,15 +29,11 @@
                 </tr>
             </thead>
             <tbody class="leasing-body">
-                <?php
-                        $count = 1;
-                        if(!empty($this->request->data['LeasingDetail'])){
-                            $count = count($this->request->data['LeasingDetail']);
-                        }
+                <?php                        
                         $total = 0;
 
-                        for ($i=0; $i < $count; $i++) { 
-                            $detail = $this->request->data['LeasingDetail'][$i];
+                        for ($i = 0; $i < $count; $i++) { 
+                            $detail = !empty($data['LeasingDetail'][$i])?$data['LeasingDetail'][$i]:false;
                             $price = $this->Common->filterEmptyField($detail, 'price');
                             $truck_id = $this->Common->filterEmptyField($detail, 'truck_id');
                             $nopol = $this->Common->filterEmptyField($detail, 'Truck', 'nopol');

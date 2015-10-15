@@ -1,7 +1,9 @@
 <?php
 		$value = !empty($value)?$value:false;
 		$vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
-		$date_last_installment = $this->Common->filterEmptyField($value, 'Leasing', 'date_last_installment');
+        $paid_date = $this->Common->filterEmptyField($value, 'Leasing', 'paid_date');
+        $date_first_installment = $this->Common->filterEmptyField($value, 'Leasing', 'date_first_installment');
+        $date_last_installment = $this->Common->filterEmptyField($value, 'Leasing', 'date_last_installment');
 
 		$this->Html->addCrumb(__('Leasing'), array(
 			'controller' => 'leasings',
@@ -49,32 +51,39 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-							echo $this->Form->input('paid_date',array(
-								'type' => 'text',
-								'label'=> __('Tgl Leasing *'), 
-								'class'=>'form-control custom-date',
-								'required' => false,
-								'placeholder' => __('Tgl Leasing'),
-								'value' => (!empty($this->request->data['Leasing']['paid_date'])) ? $this->request->data['Leasing']['paid_date'] : date('d/m/Y')
-							));
+		        			if( !empty($paid_date) ) {
+		        				echo $this->Common->_callStaticForm(__('Tgl Leasing'), $paid_date);
+		        			} else {
+								echo $this->Form->input('paid_date',array(
+									'type' => 'text',
+									'label'=> __('Tgl Leasing *'), 
+									'class'=>'form-control custom-date',
+									'required' => false,
+									'placeholder' => __('Tgl Leasing'),
+									'value' => (!empty($this->request->data['Leasing']['paid_date'])) ? $this->request->data['Leasing']['paid_date'] : date('d/m/Y')
+								));
+							}
 					?>
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-							echo $this->Form->input('date_first_installment',array(
-								'type' => 'text',
-								'label'=> __('Tgl Angsuran Pertama *'), 
-								'class'=>'form-control custom-date leasing-date-installment',
-								'required' => false,
-								'placeholder' => __('Tgl Angsuran Pertama'),
-							));
+		        			if( !empty($date_first_installment) ) {
+		        				echo $this->Common->_callStaticForm(__('Tgl Angsuran Pertama'), $date_first_installment);
+		        			} else {
+								echo $this->Form->input('date_first_installment',array(
+									'type' => 'text',
+									'label'=> __('Tgl Angsuran Pertama *'), 
+									'class'=>'form-control custom-date leasing-date-installment',
+									'required' => false,
+									'placeholder' => __('Tgl Angsuran Pertama'),
+								));
+							}
 					?>
 		        </div>
 		        <div class="form-group">
 		        	<?php 
 		        			if( !empty($date_last_installment) ) {
-		        				$customDateLastInstallment = $this->Common->formatDate($date_last_installment, 'd/m/Y');
-		        				echo $this->Common->_callStaticForm(__('Tgl Angsuran Terakhir'), $customDateLastInstallment);
+		        				echo $this->Common->_callStaticForm(__('Tgl Angsuran Terakhir'), $date_last_installment);
 		        			} else {
 								echo $this->Form->label('tgl_lahir', __('Tgl Angsuran Terakhir *'));
 					?>

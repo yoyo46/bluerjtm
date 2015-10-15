@@ -2,16 +2,6 @@
 class Leasing extends AppModel {
 	var $name = 'Leasing';
 	var $validate = array(
-        // 'branch_id' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'Cabang harap dipilih'
-        //     ),
-        //     'numeric' => array(
-        //         'rule' => array('numeric'),
-        //         'message' => 'Cabang harap dipilih'
-        //     ),
-        // ),
         'installment' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -199,6 +189,28 @@ class Leasing extends AppModel {
         }
 
         return $data;
+    }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $vendor = !empty($data['named']['vendor'])?$data['named']['vendor']:false;
+
+        if( !empty($nodoc) ) {
+            $default_options['conditions']['Leasing.no_contract LIKE'] = '%'.$nodoc.'%';
+        }
+        if( !empty($vendor) ) {
+            $vendor_id = $this->Vendor->getData('list', array(
+                'conditions' => array(
+                    'Vendor.name LIKE' => '%'.$vendor.'%',
+                ),
+                'fields' => array(
+                    'Vendor.id', 'Vendor.id'
+                ),
+            ));
+            $default_options['conditions']['Leasing.vendor_id'] = $vendor_id;
+        }
+        
+        return $default_options;
     }
 }
 ?>

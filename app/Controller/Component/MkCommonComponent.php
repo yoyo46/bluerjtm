@@ -1191,5 +1191,32 @@ class MkCommonComponent extends Component {
             return false;
         }
     }
+
+    function processFilter ( $data ) {
+        $vendor = $this->filterEmptyField($data, 'Search', 'vendor');
+        $nodoc = $this->filterEmptyField($data, 'Search', 'nodoc');
+        $params = array();
+
+        if( !empty($vendor) ) {
+            $params['vendor'] = $vendor;
+        }
+        if( !empty($nodoc) ) {
+            $params['nodoc'] = $nodoc;
+        }
+        
+        return $params;
+    }
+
+    function _callRefineParams ( $data ) {
+        $nodoc = $this->filterEmptyField($data, 'named', 'nodoc');
+        $vendor = $this->filterEmptyField($data, 'named', 'vendor');
+
+        if( !empty($nodoc) ) {
+            $this->controller->request->data['Search']['nodoc'] = $nodoc;
+        }
+        if( !empty($vendor) ) {
+            $this->controller->request->data['Search']['vendor'] = $vendor;
+        }
+    }
 }
 ?>

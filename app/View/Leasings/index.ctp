@@ -10,11 +10,6 @@
                 'field_model' => 'Leasing.no_contract',
                 'display' => true,
             ),
-            // 'company' => array(
-            //     'name' => __('Perusahaan'),
-            //     'field_model' => 'LeasingCompany.name',
-            //     'display' => true,
-            // ),
             'company' => array(
                 'name' => __('Vendor'),
                 'field_model' => 'Vendor.name',
@@ -55,14 +50,6 @@
         ?>
         <div class="box-tools">
             <?php
-                    // echo $this->Html->link('<i class="fa fa-plus"></i> Perusahaan Leasing', array(
-                    //     'controller' => 'leasings',
-                    //     'action' => 'leasing_companies',
-                    // ), array(
-                    //     'escape' => false,
-                    //     'class' => 'btn btn-app btn-success pull-right'
-                    // ));
-                    
                     echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
                         'controller' => 'leasings',
                         'action' => 'add'
@@ -122,15 +109,10 @@
                                         'class' => 'label label-info',
                                     ));
                                 }
-                                // echo $this->Html->tag('span', __('Active'), array(
-                                //     'class' => 'label label-success',
-                                // ));
-                                $labelBtn = __('Edit');
                             }else{
                                 echo $this->Html->tag('span', __('Void'), array(
                                     'class' => 'label label-danger',
                                 ));
-                                $labelBtn = __('Detail');
                             }
                     ?>
                 </td>
@@ -146,14 +128,16 @@
                             ));
 
                             if( $payment_status == 'unpaid' ) {
-                                echo $this->Html->link($labelBtn, array(
-                                    'controller' => 'leasings',
-                                    'action' => 'edit',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs',
-                                    'branch_id' => $branch_id,
-                                ));
+                                if(!empty($status)){
+                                    echo $this->Html->link(__('Edit'), array(
+                                        'controller' => 'leasings',
+                                        'action' => 'edit',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-primary btn-xs',
+                                        'branch_id' => $branch_id,
+                                    ));
+                                }
 
                                 if( !empty($status) ){
                                     echo $this->Html->link(__('Void'), array(

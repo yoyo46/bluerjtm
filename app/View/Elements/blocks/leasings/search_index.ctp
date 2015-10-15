@@ -7,7 +7,7 @@
     </div>
     <div class="box-body">
         <?php 
-                echo $this->Form->create('Leasing', array(
+                echo $this->Form->create('Search', array(
                     'url'=> $this->Html->url( array(
                         'controller' => 'leasings',
                         'action' => 'search',
@@ -21,7 +21,7 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('no_contract',array(
+                            echo $this->Form->input('nodoc',array(
                                 'label'=> __('No. Kontrak'),
                                 'class'=>'form-control',
                                 'required' => false,
@@ -31,6 +31,16 @@
                 </div>
             </div>
             <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('vendor',array(
+                                'label'=> __('Vendor'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Vendor')
+                            ));
+                    ?>
+                </div>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(

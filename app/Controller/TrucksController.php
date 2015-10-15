@@ -255,13 +255,9 @@ class TrucksController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
-            $leasing_id = 0;
 
             if($id && $data_local){
                 $this->Truck->id = $id;
-                if(!empty($data['Leasing']['id'])){
-                    $leasing_id = $data['Leasing']['id'];
-                }
                 $msg = 'merubah';
             }else{
                 $this->loadModel('Truck');
@@ -362,17 +358,6 @@ class TrucksController extends AppController {
                         $this->Truck->TruckCustomer->saveMany($data_customer);
                         /*End Alokasi*/
                     }
-
-                    /*Begin Leasing*/
-                    $data['Leasing']['truck_id'] = $truck_id;
-                    if($leasing_id){
-                        $this->Truck->Leasing->id = $leasing_id;
-                    }else{
-                        $this->Truck->Leasing->create();
-                    }
-                    $this->Truck->Leasing->set($data);
-                    $this->Truck->Leasing->save();
-                    /*End Leasing*/
 
                     $this->params['old_data'] = $data_local;
                     $this->params['data'] = $data;
