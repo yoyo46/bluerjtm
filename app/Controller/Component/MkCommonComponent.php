@@ -1193,12 +1193,12 @@ class MkCommonComponent extends Component {
     }
 
     function processFilter ( $data ) {
-        $vendor = $this->filterEmptyField($data, 'Search', 'vendor');
+        $vendor_id = $this->filterEmptyField($data, 'Search', 'vendor_id');
         $nodoc = $this->filterEmptyField($data, 'Search', 'nodoc');
         $params = array();
 
-        if( !empty($vendor) ) {
-            $params['vendor'] = $vendor;
+        if( !empty($vendor_id) ) {
+            $params['vendor_id'] = $vendor_id;
         }
         if( !empty($nodoc) ) {
             $params['nodoc'] = $nodoc;
@@ -1209,13 +1209,13 @@ class MkCommonComponent extends Component {
 
     function _callRefineParams ( $data ) {
         $nodoc = $this->filterEmptyField($data, 'named', 'nodoc');
-        $vendor = $this->filterEmptyField($data, 'named', 'vendor');
+        $vendor_id = $this->filterEmptyField($data, 'named', 'vendor_id');
 
         if( !empty($nodoc) ) {
             $this->controller->request->data['Search']['nodoc'] = $nodoc;
         }
-        if( !empty($vendor) ) {
-            $this->controller->request->data['Search']['vendor'] = $vendor;
+        if( !empty($vendor_id) ) {
+            $this->controller->request->data['Search']['vendor_id'] = $vendor_id;
         }
     }
 }

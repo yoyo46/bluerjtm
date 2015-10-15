@@ -4,6 +4,13 @@
 
         $payment_date = $this->Common->filterEmptyField($data, 'LeasingPayment', 'payment_date');
         $customPaymentDate = $this->Common->getDate($payment_date);
+        $totalClass = '';
+        $grandTotalClass = '';
+
+        if( empty($id) ) {
+            $totalClass = 'leasing-total';
+            $grandTotalClass = 'field-grand-total-document';
+        }
 
         if(!empty($data['LeasingPaymentDetail'])){
             foreach ($data['LeasingPaymentDetail'] as  $value) {
@@ -71,7 +78,7 @@
                 'value' => $denda,
             )));
             echo $this->Html->tag('td', $customTotal, array(
-                'class' => 'text-right leasing-total red',
+                'class' => 'text-right red '.$totalClass,
             ));
             echo $this->Html->tag('td', $this->Html->link($this->Common->icon('time').__(' Hapus'), 'javascript:', array(
                 'class' => 'delete-custom-field btn btn-danger btn-xs',
@@ -86,7 +93,7 @@
         }
 }
 ?>
-<tr id="field-grand-total-document">
+<tr id="<?php echo $grandTotalClass; ?>">
     <td align="right" colspan="5"><?php echo __('Total')?></td>
     <td align="right" class="total">
         <?php 

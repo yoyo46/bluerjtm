@@ -193,20 +193,12 @@ class Leasing extends AppModel {
 
     public function _callRefineParams( $data = '', $default_options = false ) {
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
-        $vendor = !empty($data['named']['vendor'])?$data['named']['vendor']:false;
+        $vendor_id = !empty($data['named']['vendor_id'])?$data['named']['vendor_id']:false;
 
         if( !empty($nodoc) ) {
             $default_options['conditions']['Leasing.no_contract LIKE'] = '%'.$nodoc.'%';
         }
-        if( !empty($vendor) ) {
-            $vendor_id = $this->Vendor->getData('list', array(
-                'conditions' => array(
-                    'Vendor.name LIKE' => '%'.$vendor.'%',
-                ),
-                'fields' => array(
-                    'Vendor.id', 'Vendor.id'
-                ),
-            ));
+        if( !empty($vendor_id) ) {
             $default_options['conditions']['Leasing.vendor_id'] = $vendor_id;
         }
         

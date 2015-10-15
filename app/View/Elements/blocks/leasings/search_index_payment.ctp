@@ -38,8 +38,8 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('no_doc',array(
-                                'label'=> __('No. Dokumen'),
+                            echo $this->Form->input('Search.nodoc',array(
+                                'label'=> __('No. Kontrak'),
                                 'class'=>'form-control',
                                 'required' => false,
                             ));
@@ -49,7 +49,7 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('Leasing.vendor_id',array(
+                            echo $this->Form->input('Search.vendor_id',array(
                                 'label'=> __('Vendor'),
                                 'class'=>'form-control',
                                 'empty' => __('Pilih Vendor'),

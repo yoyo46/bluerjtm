@@ -33,11 +33,11 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('vendor',array(
+                            echo $this->Form->input('vendor_id',array(
                                 'label'=> __('Vendor'),
                                 'class'=>'form-control',
+                                'empty' => __('Pilih Vendor'),
                                 'required' => false,
-                                'placeholder' => __('Vendor')
                             ));
                     ?>
                 </div>

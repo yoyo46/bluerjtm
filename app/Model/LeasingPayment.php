@@ -197,5 +197,19 @@ class LeasingPayment extends AppModel {
             
         ));
     }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $vendor_id = !empty($data['named']['vendor_id'])?$data['named']['vendor_id']:false;
+
+        if( !empty($nodoc) ) {
+            $default_options['conditions']['LeasingPayment.no_doc LIKE'] = '%'.$nodoc.'%';
+        }
+        if( !empty($vendor_id) ) {
+            $default_options['conditions']['LeasingPayment.vendor_id'] = $vendor_id;
+        }
+        
+        return $default_options;
+    }
 }
 ?>

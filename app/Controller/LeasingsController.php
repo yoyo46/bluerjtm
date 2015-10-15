@@ -51,11 +51,12 @@ class LeasingsController extends AppController {
                 $leasings[$key] = $value;
             }
         }
+        $vendors = $this->Leasing->Vendor->getData('list');
 
         $this->set('active_menu', 'view_leasing');
         $this->set('sub_module_title', __('Leasing'));
         $this->set(compact(
-            'leasings'
+            'leasings', 'vendors'
         ));
 	}
 
@@ -493,34 +494,12 @@ class LeasingsController extends AppController {
         $this->set('active_menu', 'leasing_payments');
         $this->set('sub_module_title', __('Data Pembayaran Leasing'));
 
-        $conditions = array();
+        $options = array();
         $dateFrom = date('Y-m-01');
         $dateTo = date('Y-m-t');
         
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
-
-            if(!empty($refine['no_doc'])){
-                $value = urldecode($refine['no_doc']);
-                $this->request->data['LeasingPayment']['no_doc'] = $value;
-                $conditions['LeasingPayment.no_doc LIKE '] = '%'.$value.'%';
-            }
-
-            if(!empty($refine['no_contract'])){
-                $value = urldecode($refine['no_contract']);
-
-                $leasingId = $this->Leasing->getData('list', array(
-                    'conditions' => array(
-                        'Leasing.no_contract LIKE' => '%'.$value.'%',
-                    ),
-                    'fields' => array(
-                        'Leasing.id', 'Leasing.id',
-                    ),
-                ));
-
-                $this->request->data['Leasing']['no_contract'] = $value;
-                $conditions['LeasingPayment.leasing_id'] = $leasingId;
-            }
 
             if(!empty($refine['date'])){
                 $dateStr = urldecode($refine['date']);
@@ -534,20 +513,14 @@ class LeasingsController extends AppController {
                 }
                 $this->request->data['LeasingPayment']['date'] = $dateStr;
             }
-
-            if(!empty($refine['vendor'])){
-                $value = urldecode($refine['vendor']);
-                $this->request->data['Leasing']['vendor_id'] = $value;
-                $conditions['LeasingPayment.vendor_id'] = $value;
-            }
         }
 
-        $conditions['LeasingPayment.payment_date >='] = $dateFrom;
-        $conditions['LeasingPayment.payment_date <='] = $dateTo;
+        $options['conditions']['LeasingPayment.payment_date >='] = $dateFrom;
+        $options['conditions']['LeasingPayment.payment_date <='] = $dateTo;
+        $options =  $this->Leasing->LeasingPayment->_callRefineParams($this->params, $options);
+        $this->MkCommon->_callRefineParams($this->params);
 
-        $this->paginate = $this->Leasing->LeasingPayment->getData('paginate', array(
-            'conditions' => $conditions,
-        ), array(
+        $this->paginate = $this->Leasing->LeasingPayment->getData('paginate', $options, array(
             'status' => 'all',
         ));
         $payments = $this->paginate('LeasingPayment');
