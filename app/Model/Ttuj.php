@@ -349,6 +349,7 @@ class Ttuj extends AppModel {
             ),
         ), true, array(
             'status' => 'all',
+            'branch' => false,
         ));
         $total = 0;
 

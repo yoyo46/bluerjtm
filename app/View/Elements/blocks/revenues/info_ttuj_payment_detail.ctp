@@ -1,12 +1,12 @@
 <tbody id="checkbox-info-table">
 	<?php
 			$grandTotal = 0;
+			$data = $this->request->data;
 
-			if(!empty($this->request->data['Ttuj'])){
-				foreach ($this->request->data['Ttuj'] as $key => $value) {
-					$data = $this->request->data;
+			if(!empty($data['Ttuj'])){
+				foreach ($data['Ttuj'] as $key => $value) {
 					$data_type = !empty($data['TtujPayment']['data_type'][$key])?$data['TtujPayment']['data_type'][$key]:false;
-					$grandTotal += !empty($this->request->data['TtujPayment']['amount_payment'][$key])?$this->request->data['TtujPayment']['amount_payment'][$key]:0;
+					$grandTotal += !empty($data['TtujPayment']['amount_payment'][$key])?$data['TtujPayment']['amount_payment'][$key]:0;
 
 					echo $this->element('blocks/ajax/biaya_uang_jalan', array(
 	                    'ttuj' => $value,

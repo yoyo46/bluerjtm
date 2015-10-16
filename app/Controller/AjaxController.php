@@ -2492,6 +2492,14 @@ class AjaxController extends AppController {
         	$this->request->data['Ttuj']['date'] = sprintf('%s - %s', $this->MkCommon->getDate($from_date, true), $this->MkCommon->getDate($to_date, true));
         }
 
+        if( !empty($head_office) ) {
+        	$element = array(
+        		'branch' => false,
+    		);
+        } else {
+        	$element = false;
+        }
+
         $this->paginate = $this->Ttuj->getData('paginate', array(
             'conditions' => $conditions,
             'order' => array(
@@ -2499,7 +2507,7 @@ class AjaxController extends AppController {
                 'Ttuj.id' => 'ASC',
             ),
             'limit' => Configure::read('__Site.config_pagination'),
-        ));
+        ), true, $element);
         $ttujs = $this->paginate('Ttuj');
 
         if( !empty($ttujs) ) {

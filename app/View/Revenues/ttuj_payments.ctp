@@ -44,8 +44,9 @@
 
                         echo $this->Html->tag('th', $this->Paginator->sort('TtujPayment.total_payment', __('Total Dibayar'), array(
                             'escape' => false,
+                        )), array(
                             'class' => 'text-center'
-                        )));
+                        ));
                         echo $this->Html->tag('th', $this->Paginator->sort('TtujPayment.date_payment', __('Tgl pembayaran'), array(
                             'escape' => false
                         )), array(
@@ -53,7 +54,9 @@
                         ));
                         echo $this->Html->tag('th', $this->Paginator->sort('TtujPayment.status', __('Status'), array(
                             'escape' => false
-                        )));
+                        )), array(
+                            'class' => 'text-center'
+                        ));
                         echo $this->Html->tag('th', __('Action'));
                 ?>
             </tr>
@@ -97,7 +100,9 @@
                                 $statusDoc .= '<br>'.$this->Common->customDate($value['TtujPayment']['canceled_date'], 'd/m/Y');
                             }
                         }
-                        echo $this->Html->tag('td', $statusDoc);
+                        echo $this->Html->tag('td', $statusDoc, array(
+                            'class' => 'text-center'
+                        ));
 
                         $actionDoc = $this->Html->link('Detail', array(
                             'controller' => 'revenues',
