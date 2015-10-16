@@ -153,4 +153,5 @@
             ?>
         </table>
     </div><!-- /.box-body -->
+    <?php echo $this->element('pagination');?>
 </div>
