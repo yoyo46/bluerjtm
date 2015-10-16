@@ -735,9 +735,9 @@ class RevenuesController extends AppController {
                                         ),
                                     ));
                                     $transaction_status = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'transaction_status');
-                                    $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'id');
 
                                     if( $transaction_status != 'posting' ) {
+                                        $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'id');
                                         $tarifDefault = $this->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity']);
 
                                         $dataRevenue['Revenue'] = array(

@@ -940,7 +940,7 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'prepayment_report' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Jurnal', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Ledger', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'journal_report',
                             ), array(
