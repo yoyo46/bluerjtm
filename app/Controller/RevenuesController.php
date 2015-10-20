@@ -7121,10 +7121,10 @@ class RevenuesController extends AppController {
 
                         if( !empty($invoice['TtujPayment']['total_payment']) ) {
                             $paidType = $this->RjRevenue->_callReceiverType($paidType);
-                            $titleJournalInv = sprintf(__('Pembatalan pembayaran biaya %s kepada %s %s'), $paidType, $receiver_type, $receiver_name);
 
                             switch ($action_type) {
                                 case 'biaya_ttuj':
+                                    $titleJournalInv = sprintf(__('Pembatalan pembayaran biaya %s kepada %s %s'), $paidType, $receiver_type, $receiver_name);
                                     $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment');
 
                                     $this->User->Journal->setJournal($totalPayment, array(
@@ -7139,6 +7139,7 @@ class RevenuesController extends AppController {
                                     break;
                                 
                                 default:
+                                    $titleJournalInv = sprintf(__('Pembatalan pembayaran biaya %s'), $paidType);
                                     $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment');
 
                                     $this->User->Journal->setJournal($totalPayment, array(

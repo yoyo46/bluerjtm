@@ -81,6 +81,7 @@ class Journal extends AppModel {
                     }
 
                     $data['Journal'] = array(
+                        'branch_id' => Configure::read('__Site.config_branch_id'),
                         'user_id' => $user_id,
                         'coa_id' => $coa_id,
                         'saldo_awal' => $saldo_awal,

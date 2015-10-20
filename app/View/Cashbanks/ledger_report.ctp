@@ -31,6 +31,10 @@
             ),
         );
         
+        if( empty($data_action) ){
+            echo $this->element('blocks/cashbanks/searchs/ledger_report');
+        }
+        
         if(!empty($values)){
             if( !empty($data_action) ){
                 $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
@@ -45,7 +49,6 @@
                 $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
                 $this->Html->addCrumb($module_title);
-                echo $this->element('blocks/cashbanks/searchs/ledger_report');
 ?>
 <section class="content invoice" id="ledger-report">
     <h2 class="page-header">

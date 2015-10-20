@@ -22,7 +22,7 @@
             $customCreated = $this->Common->formatDate($created, 'd/m/Y');
             $customDebit = $this->Common->getFormatPrice($debit, false);
             $customCredit = $this->Common->getFormatPrice($credit, false);
-            $customSaldoAwal = $this->Common->getFormatPrice($saldo_awal, false);
+            $customSaldoAwal = $this->Common->getFormatPrice($saldo_awal);
             $customBalance = $this->Common->getFormatPrice($balance);
 
             $totalDebit += $debit;

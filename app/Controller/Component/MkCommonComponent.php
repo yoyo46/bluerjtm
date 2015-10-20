@@ -1216,15 +1216,15 @@ class MkCommonComponent extends Component {
     }
 
     function _callRefineParams ( $data, $options = array() ) {
-        $result = $this->filterEmptyField($data, 'named');
+        $result['named'] = $this->filterEmptyField($data, 'named');
 
         $dateFrom = $this->filterEmptyField($options, 'dateFrom');
         $dateTo = $this->filterEmptyField($options, 'dateTo');
 
-        $nodoc = $this->filterEmptyField($result, 'nodoc');
-        $vendor_id = $this->filterEmptyField($result, 'vendor_id');
-        $date = $this->filterEmptyField($result, 'date');
-        $coa = $this->filterEmptyField($result, 'coa');
+        $nodoc = $this->filterEmptyField($result, 'named', 'nodoc');
+        $vendor_id = $this->filterEmptyField($result, 'named', 'vendor_id');
+        $date = $this->filterEmptyField($result, 'named', 'date');
+        $coa = $this->filterEmptyField($result, 'named', 'coa');
 
         if( !empty($nodoc) ) {
             $this->controller->request->data['Search']['nodoc'] = $nodoc;
