@@ -6,6 +6,17 @@
 .table.journal td hr {
 	border-top: 2px solid #CCCCCC;
 }
+#ledger-report h3 {
+	color: #069D54;
+	font-weight: 600;
+	font-size: 18px;
+}
+#ledger-report tr.total {
+	border-top: 1px solid #CCC;
+}
+#ledger-report tr.ending td {
+	padding-top: 0;
+}
 
 /*
 **	TTUJ

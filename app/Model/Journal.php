@@ -37,6 +37,16 @@ class Journal extends AppModel {
         ),
     );
 
+    function _callCalcSaldo( $coaType, $type, $biaya, $saldo_awal ) {
+        if( $coaType == $type ) {
+            $saldo_awal += $biaya;
+        } else {
+            $saldo_awal -= $biaya;
+        }
+
+        return $saldo_awal;
+    }
+
     function setJournal ( $total, $coas, $valueSet = array() ) {
         if( !empty($coas) && is_array($coas) ) {
             foreach ($coas as $type => $coa_name) {
@@ -59,17 +69,14 @@ class Journal extends AppModel {
                             'Coa.id' => $coa_id,
                         ),
                     ));
-                    $saldo_awal = !empty($coa['Coa']['balance'])?$coa['Coa']['balance']:false;
+                    $coaType = !empty($coa['Coa']['type'])?$coa['Coa']['type']:false;
+                    $saldo_awal = $balance = !empty($coa['Coa']['balance'])?$coa['Coa']['balance']:false;
 
                     if( in_array($type, array( 'debit', 'credit' )) ) {
-                        if( $type == 'credit' ) {
-                            $saldo_awal -= $total;
-                        } else {
-                            $saldo_awal += $total;
-                        }
+                        $balance = $this->_callCalcSaldo($coaType, $type, $total, $saldo_awal);
 
                         $this->Coa->id = $coa_id;
-                        $this->Coa->set('balance', $saldo_awal);
+                        $this->Coa->set('balance', $balance);
                         $this->Coa->save();
                     }
 
@@ -109,17 +116,19 @@ class Journal extends AppModel {
                     $debit = !empty($journal['Journal']['debit'])?$journal['Journal']['debit']:0;
 
                     $journal = $this->Coa->getMerge($journal, $coa_id);
-                    $saldo_awal = !empty($journal['Coa']['balance'])?$journal['Coa']['balance']:0;
+                    $saldo_awal = $balance = !empty($journal['Coa']['balance'])?$journal['Coa']['balance']:0;
 
                     if( !empty($credit) ) {
-                        $saldo_awal += $credit;
+                        $balance += $credit;
                     } else {
-                        $saldo_awal -= $credit;
+                        $balance -= $credit;
                     }
 
-                    $this->Coa->id = $coa_id;
-                    $this->Coa->set('balance', $saldo_awal);
-                    $this->Coa->save();
+                    if( !empty($coa_id) ) {
+                        $this->Coa->id = $coa_id;
+                        $this->Coa->set('balance', $balance);
+                        $this->Coa->save();
+                    }
 
                     $this->updateAll(
                         array(
@@ -182,6 +191,30 @@ class Journal extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
+    }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $coa = !empty($data['named']['coa'])?$data['named']['coa']:false;
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(Journal.created, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(Journal.created, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+        if( !empty($coa) ) {
+            $allChildren = $this->Coa->children($coa);
+            $tmpId = Set::extract('/Coa/id', $allChildren);
+            $tmpId[] = $coa;
+            $default_options['conditions']['Journal.coa_id'] = $tmpId;
+        }
+        
+        return $default_options;
     }
 }
 ?>

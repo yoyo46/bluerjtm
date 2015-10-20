@@ -4703,6 +4703,8 @@ class RevenuesController extends AppController {
         if(!empty($this->request->data)){
             $data = $this->request->data;
             $customer_id = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'customer_id');
+            $coa_id = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'coa_id');
+
             $customer = $this->Customer->getData('first', array(
                 'conditions' => array(
                     'Customer.id' => $customer_id
@@ -4801,8 +4803,8 @@ class RevenuesController extends AppController {
                         $grandTotal = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'grand_total_payment');
 
                         $this->User->Journal->setJournal($grandTotal, array(
-                            'credit' => 'pembayaran_invoice_coa_credit_id',
-                            'debit' => 'pembayaran_invoice_coa_debit_id',
+                            'credit' => 'pembayaran_invoice_coa_id',
+                            'debit' => $coa_id,
                         ), array(
                             'document_id' => $invoice_payment_id,
                             'title' => $titleJournalInv,
@@ -4981,6 +4983,7 @@ class RevenuesController extends AppController {
             
             if(!empty($invoice_payment)){
                 $customer_id = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'customer_id');
+                $coa_id = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'coa_id');
                 $invoice_payment = $this->Invoice->InvoicePaymentDetail->InvoicePayment->Customer->getMerge($invoice_payment, $customer_id);
                 $customer_name_code = $this->MkCommon->filterEmptyField($invoice_payment, 'Customer', 'customer_name_code');
 
@@ -5036,8 +5039,8 @@ class RevenuesController extends AppController {
                         $grandTotal = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'grand_total_payment');
 
                         $this->User->Journal->setJournal($grandTotal, array(
-                            'credit' => 'pembayaran_invoice_coa_debit_id',
-                            'debit' => 'pembayaran_invoice_coa_credit_id',
+                            'credit' => $coa_id,
+                            'debit' => 'pembayaran_invoice_coa_id',
                         ), array(
                             'document_id' => $id,
                             'title' => $titleJournalInv,
@@ -5174,6 +5177,8 @@ class RevenuesController extends AppController {
                     ),
                     'Coa',
                 )
+            ), true, array(
+                'status' => 'all',
             ));
 
             if(!empty($invoice)){
@@ -6916,6 +6921,7 @@ class RevenuesController extends AppController {
                 $this->Log->logActivity( sprintf(__('Gagal mengubah total pembayaran ttuj #%s'), $ttuj_payment_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_payment_id );
             } else {
                 $document_no = !empty($data['TtujPayment']['nodoc'])?$data['TtujPayment']['nodoc']:false;
+                $coa_id = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'coa_id');
                 $paidType = $this->MkCommon->filterEmptyField($this->request->data, 'TtujPayment', 'data_type');
                 $paidType = $this->RjRevenue->_callReceiverType($paidType);
                 $titleJournalInv = sprintf(__('Pembayaran biaya %s kepada %s %s'), $paidType, $receiver_type, $receiver_name);
@@ -6927,8 +6933,8 @@ class RevenuesController extends AppController {
                             'biaya_ttuj_payment',
                         ));
                         $this->User->Journal->setJournal($totalPayment, array(
-                            'credit' => 'biaya_ttuj_payment_coa_credit_id',
-                            'debit' => 'biaya_ttuj_payment_coa_debit_id',
+                            'credit' => 'biaya_ttuj_payment_coa_id',
+                            'debit' => $coa_id,
                         ), array(
                             'document_id' => $ttuj_payment_id,
                             'title' => $titleJournalInv,
@@ -6942,8 +6948,8 @@ class RevenuesController extends AppController {
                             'uang_Jalan_commission_payment',
                         ));
                         $this->User->Journal->setJournal($totalPayment, array(
-                            'credit' => 'uang_Jalan_commission_payment_coa_credit_id',
-                            'debit' => 'uang_Jalan_commission_payment_coa_debit_id',
+                            'credit' => 'uang_Jalan_commission_payment_coa_id',
+                            'debit' => $coa_id,
                         ), array(
                             'document_id' => $ttuj_payment_id,
                             'title' => $titleJournalInv,
@@ -7089,6 +7095,7 @@ class RevenuesController extends AppController {
 
                     if($this->TtujPayment->save()){
                         $document_no = !empty($invoice['TtujPayment']['nodoc'])?$invoice['TtujPayment']['nodoc']:false;
+                        $coa_id = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'coa_id');
                         $paidType = array();
 
                         if( !empty($invoice['TtujPaymentDetail']) ) {
@@ -7121,8 +7128,8 @@ class RevenuesController extends AppController {
                                     $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment');
 
                                     $this->User->Journal->setJournal($totalPayment, array(
-                                        'credit' => 'biaya_ttuj_payment_coa_debit_id',
-                                        'debit' => 'biaya_ttuj_payment_coa_credit_id',
+                                        'credit' => $coa_id,
+                                        'debit' => 'biaya_ttuj_payment_coa_id',
                                     ), array(
                                         'document_id' => $id,
                                         'title' => $titleJournalInv,
@@ -7135,8 +7142,8 @@ class RevenuesController extends AppController {
                                     $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment');
 
                                     $this->User->Journal->setJournal($totalPayment, array(
-                                        'credit' => 'uang_Jalan_commission_payment_coa_debit_id',
-                                        'debit' => 'uang_Jalan_commission_payment_coa_credit_id',
+                                        'credit' => $coa_id,
+                                        'debit' => 'uang_Jalan_commission_payment_coa_id',
                                     ), array(
                                         'document_id' => $id,
                                         'title' => $titleJournalInv,

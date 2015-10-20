@@ -65,6 +65,7 @@ class Coa extends AppModel {
         $default_options = array(
             'conditions'=> array(
                 'Coa.status' => 1,
+                'Coa.name <>' => '',
             ),
             'order'=> array(
                 'Coa.with_parent_code' => 'ASC',
@@ -180,6 +181,67 @@ class Coa extends AppModel {
         }
 
         return $data;
+    }
+
+    function getListParent ( $id = false, $categories = false, $idx = 0 ) {
+        $result = array();
+        $separator = str_pad('', $idx, '-', STR_PAD_LEFT);
+
+        if( empty($categories) ) {
+            $categories = $this->getData('threaded');
+        }
+
+        if( !empty($categories) ) {
+            foreach ($categories as $key => $value) {
+                $cat_id = !empty($value['Coa']['id'])?$value['Coa']['id']:false;
+
+                if( $id != $cat_id ) {
+                    $i = $idx;
+                    $name = !empty($value['Coa']['name'])?$value['Coa']['name']:false;
+                    $child = !empty($value['children'])?$value['children']:false;
+
+                    $result[$cat_id] = trim(sprintf('%s %s', $separator, $name));
+
+                    if( !empty($child) ) {
+                        $i += 2;
+                        $result = $result + $this->getListParent($id, $child, $i);
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    function _callOptGroup ( $id = false, $categories = false, $modelName = false ) {
+        $result = array();
+        
+        if( empty($categories) ) {
+            $categories = $this->getData('threaded');
+        }
+
+        if( !empty($categories) ) {
+            foreach ($categories as $key => $value) {
+                $cat_id = !empty($value['Coa']['id'])?$value['Coa']['id']:false;
+
+                if( $id != $cat_id ) {
+                    $name = !empty($value['Coa']['name'])?$value['Coa']['name']:false;
+                    $child = !empty($value['children'])?$value['children']:false;
+
+                    if( !empty($child) ) {
+                        $result[$name] = $this->_callOptGroup($id, $child, $name);
+                    } else {
+                        // if( !empty($modelName) ) {
+                        //     $result[$modelName][$cat_id] = $name;
+                        // } else {
+                            $result[$cat_id] = $name;
+                        // }
+                    }
+                }
+            }
+        }
+
+        return $result;
     }
 }
 ?>

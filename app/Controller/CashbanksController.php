@@ -4,9 +4,11 @@ class CashbanksController extends AppController {
 	public $uses = array(
         'CashBank', 'CashBankAuth'
     );
-
     public $components = array(
         'RjCashBank'
+    );
+    public $helpers = array(
+        'CashBank'
     );
 
     function beforeFilter() {
@@ -19,8 +21,11 @@ class CashbanksController extends AppController {
         $refine = array();
 
         if(!empty($this->request->data)) {
-            $refine = $this->RjCashBank->processRefine($this->request->data);
+            $data = $this->request->data;
+            $refine = $this->RjCashBank->processRefine($data);
+            $result = $this->MkCommon->processFilter($data);
             $params = $this->RjCashBank->generateSearchURL($refine);
+            $params = array_merge($params, $result);
             $params['action'] = $index;
 
             if( !empty($param_get) ) {
@@ -942,7 +947,7 @@ class CashbanksController extends AppController {
         $this->set(compact('coas'));
     }
 
-    public function journal_report() {
+    public function journal_report( $data_action = false ) {
         $this->set('sub_module_title', 'Laporan Jurnal');
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
@@ -987,8 +992,73 @@ class CashbanksController extends AppController {
 
         $this->set('active_menu', 'journal_report');
         $this->set(compact(
-            'values', 'module_title'
+            'values', 'module_title', 'data_action'
         ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
+    }
+
+    public function ledger_report( $data_action = false ) {
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $named = $this->MkCommon->filterEmptyField($this->params, 'named');
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+
+        if( !empty($named) ) {
+            $coa_id = $this->MkCommon->filterEmptyField($named, 'coa');
+
+            if( !empty($coa_id) ) {
+                $coa = $this->User->Journal->Coa->getMerge(array(), $coa_id);
+                $coa_name = $this->MkCommon->filterEmptyField($coa, 'Coa', 'coa_name');
+
+                $options =  $this->User->Journal->_callRefineParams($params, array(
+                    'group' => array(
+                        'Journal.coa_id',
+                        'Journal.document_no',
+                        'Journal.type',
+                    ),
+                    'order' => array(
+                        'Journal.created' => 'ASC',
+                        'Journal.id' => 'ASC',
+                    ),
+                ));
+                $values = $this->User->Journal->getData('all', $options);
+            } else {
+                $this->MkCommon->redirectReferer(__('Mohon pilih COA terlebih dahulu'), 'error', array(
+                    'action' => 'ledger_report',
+                    'admin' => false,
+                ));
+            }
+        }
+
+        $coas = $this->User->Journal->Coa->_callOptGroup();
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+        $module_title = __('Laporan Ledger');
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+
+        $this->set('active_menu', 'journal_report');
+        $this->set(compact(
+            'coas', 'values', 'module_title',
+            'coa_name', 'data_action'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
     }
 
     function getPrepaymentMerge ( $prepayment ) {

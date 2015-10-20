@@ -4,6 +4,10 @@
 			'action' => 'invoice_payments'
 		));
 		$this->Html->addCrumb($sub_module_title);
+
+		$is_canceled = $this->Common->filterEmptyField($invoice, 'InvoicePayment', 'is_canceled');
+		$status = $this->Common->filterEmptyField($invoice, 'InvoicePayment', 'status');
+		$canceled_date = $this->Common->filterEmptyField($invoice, 'InvoicePayment', 'canceled_date');
 ?>
 <div class="box">
     <div class="box-header">
@@ -26,6 +30,10 @@
 			<tr>
 				<th><?php echo __('Tgl Pembayaran');?></th>
 				<td><?php echo $this->Common->customDate($invoice['InvoicePayment']['date_payment']);?></td>
+			</tr>
+			<tr>
+				<th><?php echo __('Status');?></th>
+				<td><?php echo $this->Revenue->_callStatusInvoicePayment($invoice);?></td>
 			</tr>
 			<!-- <tr>
 				<th><?php echo __('Total Pembayaran');?></th>

@@ -56,29 +56,11 @@
                 <td class="text-center"><?php echo $this->Common->customDate($value['InvoicePayment']['date_payment']);?></td>
                 <td>
                     <?php 
-                        if(empty($value['InvoicePayment']['is_canceled'])){
-                            if($value['InvoicePayment']['status']){
-                                echo $this->Html->tag('span', 'aktif', array(
-                                    'class' => 'label label-success'
-                                ));
-                            }else{
-                                echo $this->Html->tag('span', 'non-aktif', array(
-                                    'class' => 'label label-danger'
-                                ));
-                            }
-                        }else{
-                            echo $this->Html->tag('span', __('Void'), array(
-                                'class' => 'label label-danger'
-                            ));
-                            if(!empty($value['InvoicePayment']['canceled_date'])){
-                                echo '<br>'.$this->Common->customDate($value['InvoicePayment']['canceled_date'], 'd/m/Y');
-                            }
-                        }
+                            echo $this->Revenue->_callStatusInvoicePayment($value);
                     ?>
                 </td>
                 <td class="action">
                     <?php 
-                        if(empty($value['InvoicePayment']['is_canceled'])){
                             echo $this->Html->link('Info', array(
                                 'controller' => 'revenues',
                                 'action' => 'detail_invoice_payment',
@@ -86,22 +68,23 @@
                             ), array(
                                 'class' => 'btn btn-info btn-xs'
                             ));
-                            // echo $this->Html->link('Edit', array(
-                            //     'controller' => 'revenues',
-                            //     'action' => 'detail_invoice_payment',
-                            //     $id
-                            // ), array(
-                            //     'class' => 'btn btn-primary btn-xs'
-                            // ));
-                            
-                            echo $this->Html->link('Void', array(
-                                'controller' => 'revenues',
-                                'action' => 'invoice_payment_delete',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-danger btn-xs'
-                            ), __('Apakah Anda yakin ingin mengbatalkan pembayaran invoice ini?'));
-                        }
+                            if(empty($value['InvoicePayment']['is_canceled'])){
+                                // echo $this->Html->link('Edit', array(
+                                //     'controller' => 'revenues',
+                                //     'action' => 'detail_invoice_payment',
+                                //     $id
+                                // ), array(
+                                //     'class' => 'btn btn-primary btn-xs'
+                                // ));
+                                
+                                echo $this->Html->link('Void', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'invoice_payment_delete',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs'
+                                ), __('Apakah Anda yakin ingin mengbatalkan pembayaran invoice ini?'));
+                            }
                     ?>
                 </td>
             </tr>

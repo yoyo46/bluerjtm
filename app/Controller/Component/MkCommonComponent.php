@@ -1195,6 +1195,8 @@ class MkCommonComponent extends Component {
     function processFilter ( $data ) {
         $vendor_id = $this->filterEmptyField($data, 'Search', 'vendor_id');
         $nodoc = $this->filterEmptyField($data, 'Search', 'nodoc');
+        $date = $this->filterEmptyField($data, 'Search', 'date');
+        $coa = $this->filterEmptyField($data, 'Search', 'coa');
         $params = array();
 
         if( !empty($vendor_id) ) {
@@ -1203,13 +1205,26 @@ class MkCommonComponent extends Component {
         if( !empty($nodoc) ) {
             $params['nodoc'] = $nodoc;
         }
+        if( !empty($coa) ) {
+            $params['coa'] = $coa;
+        }
+        if( !empty($date) ) {
+            $params['date'] = rawurlencode(urlencode($date));
+        }
         
         return $params;
     }
 
-    function _callRefineParams ( $data ) {
-        $nodoc = $this->filterEmptyField($data, 'named', 'nodoc');
-        $vendor_id = $this->filterEmptyField($data, 'named', 'vendor_id');
+    function _callRefineParams ( $data, $options = array() ) {
+        $result = $this->filterEmptyField($data, 'named');
+
+        $dateFrom = $this->filterEmptyField($options, 'dateFrom');
+        $dateTo = $this->filterEmptyField($options, 'dateTo');
+
+        $nodoc = $this->filterEmptyField($result, 'nodoc');
+        $vendor_id = $this->filterEmptyField($result, 'vendor_id');
+        $date = $this->filterEmptyField($result, 'date');
+        $coa = $this->filterEmptyField($result, 'coa');
 
         if( !empty($nodoc) ) {
             $this->controller->request->data['Search']['nodoc'] = $nodoc;
@@ -1217,6 +1232,30 @@ class MkCommonComponent extends Component {
         if( !empty($vendor_id) ) {
             $this->controller->request->data['Search']['vendor_id'] = $vendor_id;
         }
+        if( !empty($coa) ) {
+            $this->controller->request->data['Search']['coa'] = $coa;
+        }
+        if( !empty($date) ) {
+            $dateStr = urldecode($date);
+            $date = explode('-', $dateStr);
+
+            if( !empty($date) ) {
+                $date[0] = urldecode($date[0]);
+                $date[1] = urldecode($date[1]);
+                $dateFrom = $this->getDate($date[0]);
+                $dateTo = $this->getDate($date[1]);
+                $result['named']['DateFrom'] = $dateFrom;
+                $result['named']['DateTo'] = $dateTo;
+            }
+        }
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $this->controller->request->data['Search']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
+
+            $result['named']['DateFrom'] = $dateFrom;
+            $result['named']['DateTo'] = $dateTo;
+        }
+
+        return $result;
     }
 }
 ?>

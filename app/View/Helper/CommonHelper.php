@@ -1106,7 +1106,7 @@ class CommonHelper extends AppHelper {
     function _getPrint ( $options = false, $showHideColumn = false ) {
         $_excel = isset($options['_excel'])?$options['_excel']:true;
         $_pdf = isset($options['_pdf'])?$options['_pdf']:true;
-        $_attr = isset($options['_attr'])?$options['_attr']:true;
+        $_attr = isset($options['_attr'])?$options['_attr']:array();
         $result = false;
         $resultContent = '';
         $default_attr = array(
