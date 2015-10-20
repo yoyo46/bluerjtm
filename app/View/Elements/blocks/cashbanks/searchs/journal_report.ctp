@@ -36,6 +36,23 @@
                         ?>
                     </div>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Journal.document_no',array(
+                                'label'=> __('No Dokumen'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            // Custom Otorisasi
+                            echo $this->Common->getCheckboxBranch();
+                    ?>
+                </div>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
@@ -48,17 +65,6 @@
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',
-                            ));
-                    ?>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->input('Journal.document_no',array(
-                                'label'=> __('No Dokumen'),
-                                'class'=>'form-control',
-                                'required' => false,
                             ));
                     ?>
                 </div>

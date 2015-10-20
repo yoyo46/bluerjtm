@@ -25,6 +25,8 @@ class CashbanksController extends AppController {
             $refine = $this->RjCashBank->processRefine($data);
             $result = $this->MkCommon->processFilter($data);
             $params = $this->RjCashBank->generateSearchURL($refine);
+            $params = $this->MkCommon->getRefineGroupBranch($params, $data);
+
             $params = array_merge($params, $result);
             $params['action'] = $index;
 
@@ -951,7 +953,10 @@ class CashbanksController extends AppController {
         $this->set('sub_module_title', 'Laporan Jurnal');
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
-        $conditions = array();
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        $conditions = array(
+            'Journal.branch_id' => $allow_branch_id,
+        );
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -974,6 +979,9 @@ class CashbanksController extends AppController {
                 }
                 $this->request->data['Ttuj']['date'] = $dateStr;
             }
+
+            // Custom Otorisasi
+            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Journal', $conditions, 'conditions' );
         }
 
         $module_title = __('Laporan Jurnal');
@@ -1013,13 +1021,21 @@ class CashbanksController extends AppController {
         ));
 
         if( !empty($named) ) {
+            $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
             $coa_id = $this->MkCommon->filterEmptyField($named, 'coa');
+            $conditions = array(
+                'Journal.branch_id' => $allow_branch_id,
+            );
+
+            // Custom Otorisasi
+            $conditions = $this->MkCommon->getConditionGroupBranch( $named, 'Journal', $conditions, 'conditions' );
 
             if( !empty($coa_id) ) {
                 $coa = $this->User->Journal->Coa->getMerge(array(), $coa_id);
                 $coa_name = $this->MkCommon->filterEmptyField($coa, 'Coa', 'coa_name');
 
                 $options =  $this->User->Journal->_callRefineParams($params, array(
+                    'conditions' => $conditions,
                     'group' => array(
                         'Journal.coa_id',
                         'Journal.document_no',
