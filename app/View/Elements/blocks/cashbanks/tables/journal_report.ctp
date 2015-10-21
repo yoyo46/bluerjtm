@@ -6,7 +6,7 @@
                 $document_no = $this->Common->filterEmptyField($value, 'Journal', 'document_no');
                 $document_id = $this->Common->filterEmptyField($value, 'Journal', 'document_id');
                 $title = $this->Common->filterEmptyField($value, 'Journal', 'title');
-                $created = $this->Common->filterEmptyField($value, 'Journal', 'created');
+                $date = $this->Common->filterEmptyField($value, 'Journal', 'date');
                 $type = $this->Common->filterEmptyField($value, 'Journal', 'type');
                 $debit = $this->Common->filterEmptyField($value, 'Journal', 'debit');
                 $credit = $this->Common->filterEmptyField($value, 'Journal', 'credit');
@@ -15,7 +15,7 @@
                 $coa = $this->Common->filterEmptyField($value, 'Coa', 'coa_name');
 
                 $new = sprintf('%s-%s', $type, $document_no);
-                $customCreated = $this->Common->formatDate($created, 'd/m/Y');
+                $customDate = $this->Common->formatDate($date, 'd/m/Y');
                 $customDebit = $this->Common->getFormatPrice($debit, false);
                 $customCredit = $this->Common->getFormatPrice($credit, false);
 
@@ -26,7 +26,7 @@
 ?>
 <tr>
     <?php
-            echo $this->Html->tag('td', $customCreated);
+            echo $this->Html->tag('td', $customDate);
             echo $this->Html->tag('td', $title, array(
                 'style' => 'text-align:left;'
             ));

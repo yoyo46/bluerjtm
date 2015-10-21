@@ -623,6 +623,7 @@ class LkusController extends AppController {
             $data = $this->request->data;
             $customer_id = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'customer_id');
             $coa_id = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'coa_id');
+            $tgl_bayar = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'tgl_bayar');
 
             $customer = $this->LkuPayment->Customer->getMerge(array(), $customer_id);
             $customer_name = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
@@ -722,6 +723,7 @@ class LkusController extends AppController {
                             'credit' => $coa_id,
                             'debit' => 'lku_payment_coa_id',
                         ), array(
+                            'date' => $tgl_bayar,
                             'document_id' => $lku_payment_id,
                             'title' => $title,
                             'document_no' => $document_no,
@@ -1534,6 +1536,7 @@ class LkusController extends AppController {
             $data = $this->request->data;
             $customer_id = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'customer_id');
             $coa_id = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'coa_id');
+            $tgl_bayar = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'tgl_bayar');
 
             $customer = $this->KsuPayment->Customer->getMerge(array(), $customer_id);
             $customer_name = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
@@ -1632,6 +1635,7 @@ class LkusController extends AppController {
                             'credit' => $coa_id,
                             'debit' => 'ksu_payment_coa_id',
                         ), array(
+                            'date' => $tgl_bayar,
                             'document_id' => $ksu_payment_id,
                             'title' => $title,
                             'document_no' => $document_no,
@@ -1927,6 +1931,7 @@ class LkusController extends AppController {
             $coa_id = $this->MkCommon->filterEmptyField($payments, 'LkuPayment', 'coa_id');
             $grandtotal = $this->MkCommon->filterEmptyField($payments, 'LkuPayment', 'grandtotal');
             $no_doc = $this->MkCommon->filterEmptyField($payments, 'LkuPayment', 'no_doc');
+            $tgl_bayar = $this->MkCommon->filterEmptyField($payments, 'LkuPayment', 'tgl_bayar');
 
             $customer = $this->LkuPayment->Customer->getMerge(array(), $customer_id);
             $customer_name = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
@@ -1986,6 +1991,7 @@ class LkusController extends AppController {
                     'credit' => 'lku_payment_coa_id',
                     'debit' => $coa_id,
                 ), array(
+                    'date' => $tgl_bayar,
                     'document_id' => $id,
                     'title' => $title,
                     'document_no' => $no_doc,
@@ -2026,6 +2032,7 @@ class LkusController extends AppController {
             $coa_id = $this->MkCommon->filterEmptyField($payments, 'KsuPayment', 'coa_id');
             $grandtotal = $this->MkCommon->filterEmptyField($payments, 'KsuPayment', 'grandtotal');
             $no_doc = $this->MkCommon->filterEmptyField($payments, 'KsuPayment', 'no_doc');
+            $tgl_bayar = $this->MkCommon->filterEmptyField($payments, 'KsuPayment', 'tgl_bayar');
 
             $customer = $this->KsuPayment->Customer->getMerge(array(), $customer_id);
             $customer_name = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
@@ -2085,6 +2092,7 @@ class LkusController extends AppController {
                     'credit' => 'ksu_payment_coa_id',
                     'debit' => $coa_id,
                 ), array(
+                    'date' => $tgl_bayar,
                     'document_id' => $id,
                     'title' => $title,
                     'document_no' => $no_doc,

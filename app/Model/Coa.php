@@ -52,6 +52,10 @@ class Coa extends AppModel {
                 'ChildCoa.order' => 'ASC'
             ),
         ),
+        'CoaBalance' => array(
+            'className' => 'CoaBalance',
+            'foreignKey' => 'coa_id',
+        ),
     );
 
     function __construct($id = false, $table = null, $ds = null) {

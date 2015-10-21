@@ -1012,6 +1012,10 @@ class MkCommonComponent extends Component {
         return $result;
     }
 
+    function _callPriceConverter ($price) {
+        return trim(str_replace(array( ',', '.' ), array( '', '' ), $price));
+    }
+
     function dataConverter ( $data, $fields, $reverse = false ) {
         if( !empty($fields) ) {
             foreach ($fields as $type => $models) {
@@ -1037,6 +1041,31 @@ class MkCommonComponent extends Component {
                             } else {
                                 if( !empty($data[$models]) ) {
                                     $data[$models] = $this->getDate($data[$models], $reverse);
+                                }
+                            }
+                        }
+                        break;
+                    case 'price':
+                        if( !empty($models) ) {
+                            if( is_array($models) ) {
+                                foreach ($models as $modelName => $model) {
+                                    if( !empty($model) ) {
+                                        if( is_array($model) ) {
+                                            foreach ($model as $key => $fieldName) {
+                                                if( !empty($data[$modelName][$fieldName]) ) {
+                                                    $data[$modelName][$fieldName] = $this->_callPriceConverter($data[$modelName][$fieldName], $reverse);
+                                                }
+                                            }
+                                        } else {
+                                            if( !empty($data[$model]) ) {
+                                                $data[$model] = $this->_callPriceConverter($data[$model], $reverse);
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                if( !empty($data[$models]) ) {
+                                    $data[$models] = $this->_callPriceConverter($data[$models], $reverse);
                                 }
                             }
                         }

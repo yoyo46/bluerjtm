@@ -478,6 +478,7 @@ class CashbanksController extends AppController {
             $document_coa_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'document_coa_id');
             $receiver_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'receiver_id');
 
+            $tgl_cash_bank = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'tgl_cash_bank');
             $document_type = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'document_type');
             $receiver_type = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'receiver_type');
             $receiving_cash_type = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'receiving_cash_type');
@@ -663,6 +664,7 @@ class CashbanksController extends AppController {
                                                     'title' => $title,
                                                     'document_no' => $nodoc,
                                                     'type' => $receiving_cash_type,
+                                                    'date' => $tgl_cash_bank,
                                                 ));
                                             }
                                         }
@@ -682,6 +684,7 @@ class CashbanksController extends AppController {
                                             'title' => $title,
                                             'document_no' => $nodoc,
                                             'type' => $receiving_cash_type,
+                                            'date' => $tgl_cash_bank,
                                         ));
                                     }
                                 }
@@ -1191,5 +1194,132 @@ class CashbanksController extends AppController {
         }else if($data_action == 'excel'){
             $this->layout = 'ajax';
         }
+    }
+
+    public function closing() {
+        $month = date('m');
+        $year = date('Y');
+
+        if( !empty($this->request->data) ) {
+            $data = $this->request->data;
+            
+            $value = $this->MkCommon->filterEmptyField($data, 'Journal');
+            $closingMonth = $this->MkCommon->filterEmptyField($value, 'periode', 'month');
+            $closingYear = $this->MkCommon->filterEmptyField($value, 'periode', 'year');
+            $closingPeriod = sprintf('%s-%s', $closingYear, $closingMonth);
+
+            $this->User->Journal->virtualFields['saldo_debit'] = 'SUM(Journal.debit)';
+            $this->User->Journal->virtualFields['saldo_credit'] = 'SUM(Journal.credit)';
+            
+            $values = $this->User->Journal->getData('all', array(
+                'conditions' => array(
+                    'DATE_FORMAT(Journal.created, \'%Y-%m\')' => $closingPeriod,
+                ),
+                'group' => array(
+                    'Journal.coa_id',
+                ),
+                'contain' => false,
+            ));
+
+            if( !empty($values) ) {
+                $this->User->Journal->Coa->CoaHistory->updateAll(array(
+                    'CoaHistory.status'=> 0,
+                ), array(
+                    'CoaHistory.status' => 1,
+                    'CoaHistory.periode'=> $closingPeriod,
+                ));
+
+                foreach ($values as $key => $value) {
+                    $coa_id = $this->MkCommon->filterEmptyField($value, 'Journal', 'coa_id');
+                    $saldo_debit = $this->MkCommon->filterEmptyField($value, 'Journal', 'saldo_debit');
+                    $saldo_credit = $this->MkCommon->filterEmptyField($value, 'Journal', 'saldo_credit');
+
+                    $dataValue = array(
+                        'CoaHistory' => array(
+                            'branch_id' => Configure::read('__Site.config_branch_id'),
+                            'user_id' => $this->user_id,
+                            'coa_id' => $coa_id,
+                            'periode' => $closingPeriod,
+                            'saldo_debit' => $saldo_debit,
+                            'saldo_credit' => $saldo_credit,
+                        ),
+                    );
+                    $this->User->Journal->Coa->CoaHistory->create();
+                    $this->User->Journal->Coa->CoaHistory->save($dataValue);
+                }
+
+                $this->MkCommon->redirectReferer(__('Berhasil melakukan closing COA'), 'success', array(
+                    'action' => 'closing',
+                    'admin' => false,
+                ));
+            }
+        } else {
+            $this->request->data['Journal']['periode']['month'] = $month;
+            $this->request->data['Journal']['periode']['year'] = $year;
+        }
+
+        $this->set('active_menu', 'closing');
+    }
+
+    function balances(){
+        $this->loadModel('CoaBalance');
+
+        $this->set('module_title', __('COA'));
+        $this->set('sub_module_title', __('COA Balance'));
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->CoaBalance->_callRefineParams($params);
+
+        $this->paginate = $this->CoaBalance->getData('paginate', $options);
+        $values = $this->paginate('CoaBalance');
+
+        if(!empty($values)){
+            foreach ($values as $key => $value) {
+                $coa_id = $this->MkCommon->filterEmptyField($value, 'CoaBalance', 'coa_id');
+
+                $value = $this->User->Journal->Coa->getMerge($value, $coa_id);
+                $values[$key] = $value;
+            }
+        }
+
+        $this->set('active_menu', 'balances');
+        $this->set('values', $values);
+    }
+
+    function balance_add(){
+        $this->set('sub_module_title', __('Tambah Balance'));
+
+        $data = $this->request->data;
+        $data = $this->MkCommon->dataConverter($data, array(
+            'price' => array(
+                'CoaBalance' => array(
+                    'saldo',
+                ),
+            )
+        ));
+        $result = $this->User->Journal->Coa->CoaBalance->doSave($data);
+        $this->MkCommon->setProcessParams($result, array(
+            'controller' => 'cashbanks',
+            'action' => 'balances',
+            'admin' => false,
+        ));
+
+        $coas = $this->User->Journal->Coa->getData('list', array(
+            'fields' => array(
+                'Coa.id', 'Coa.coa_name'
+            ),
+        ), array(
+            'status' => 'cash_bank_child',
+        ));
+
+        $this->set('active_menu', 'balances');
+        $this->set(compact(
+            'coas'
+        ));
     }
 }

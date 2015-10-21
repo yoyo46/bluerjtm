@@ -8,7 +8,7 @@
             $document_no = $this->Common->filterEmptyField($value, 'Journal', 'document_no');
             $document_id = $this->Common->filterEmptyField($value, 'Journal', 'document_id');
             $title = $this->Common->filterEmptyField($value, 'Journal', 'title');
-            $created = $this->Common->filterEmptyField($value, 'Journal', 'created');
+            $date = $this->Common->filterEmptyField($value, 'Journal', 'date');
             $type = $this->Common->filterEmptyField($value, 'Journal', 'type');
             $debit = $this->Common->filterEmptyField($value, 'Journal', 'debit');
             $credit = $this->Common->filterEmptyField($value, 'Journal', 'credit');
@@ -19,7 +19,7 @@
             $balance = $this->CashBank->_callCalcSaldo($value);
 
             $new = sprintf('%s-%s', $type, $document_no);
-            $customCreated = $this->Common->formatDate($created, 'd/m/Y');
+            $customDate = $this->Common->formatDate($date, 'd/m/Y');
             $customDebit = $this->Common->getFormatPrice($debit, false);
             $customCredit = $this->Common->getFormatPrice($credit, false);
             $customSaldoAwal = $this->Common->getFormatPrice($saldo_awal);
@@ -47,7 +47,7 @@
 <tr>
     <?php
             echo $this->Html->tag('td', $no);
-            echo $this->Html->tag('td', $customCreated);
+            echo $this->Html->tag('td', $customDate);
             echo $this->Html->tag('td', $document_no);
             echo $this->Html->tag('td', $title);
             echo $this->Html->tag('td', $customDebit, array(

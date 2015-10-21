@@ -493,7 +493,7 @@ class RevenuesController extends AppController {
 
             $data['Ttuj']['customer_name'] = !empty($customer['Customer']['customer_name_code'])?$customer['Customer']['customer_name_code']:'';
             $data['Ttuj']['uang_jalan_id'] = !empty($uangJalan['UangJalan']['id'])?$uangJalan['UangJalan']['id']:false;
-            $data['Ttuj']['ttuj_date'] = $this->MkCommon->getDate($data['Ttuj']['ttuj_date']);
+            $data['Ttuj']['ttuj_date'] = $ttuj_date = $this->MkCommon->getDate($data['Ttuj']['ttuj_date']);
             $data['Ttuj']['commission'] = !empty($uangJalan['UangJalan']['commission'])?$uangJalan['UangJalan']['commission']:0;
             $data['Ttuj']['commission_extra'] = $this->MkCommon->convertPriceToString($data['Ttuj']['commission_extra'], 0);
             $data['Ttuj']['commission_per_unit'] = !empty($uangJalan['UangJalan']['commission_per_unit'])?$uangJalan['UangJalan']['commission_per_unit']:0;
@@ -607,6 +607,7 @@ class RevenuesController extends AppController {
                                                 'credit' => 'commission_coa_credit_id',
                                                 'debit' => 'commission_coa_debit_id',
                                             ), array(
+                                                'date' => $ttuj_date,
                                                 'document_id' => $document_id,
                                                 'truck_id' => $truck_id,
                                                 'nopol' => $nopol,
@@ -632,6 +633,7 @@ class RevenuesController extends AppController {
                                                 'credit' => 'uang_jalan_coa_credit_id',
                                                 'debit' => 'uang_jalan_coa_debit_id',
                                             ), array(
+                                                'date' => $ttuj_date,
                                                 'document_id' => $document_id,
                                                 'truck_id' => $truck_id,
                                                 'nopol' => $nopol,
@@ -649,6 +651,7 @@ class RevenuesController extends AppController {
                                                 'credit' => 'uang_kuli_muat_coa_credit_id',
                                                 'debit' => 'uang_kuli_muat_coa_debit_id',
                                             ), array(
+                                                'date' => $ttuj_date,
                                                 'document_id' => $document_id,
                                                 'truck_id' => $truck_id,
                                                 'nopol' => $nopol,
@@ -666,6 +669,7 @@ class RevenuesController extends AppController {
                                                 'credit' => 'uang_kuli_bongkar_coa_credit_id',
                                                 'debit' => 'uang_kuli_bongkar_coa_debit_id',
                                             ), array(
+                                                'date' => $ttuj_date,
                                                 'document_id' => $document_id,
                                                 'truck_id' => $truck_id,
                                                 'nopol' => $nopol,
@@ -683,6 +687,7 @@ class RevenuesController extends AppController {
                                                 'credit' => 'asdp_coa_credit_id',
                                                 'debit' => 'asdp_coa_debit_id',
                                             ), array(
+                                                'date' => $ttuj_date,
                                                 'document_id' => $document_id,
                                                 'truck_id' => $truck_id,
                                                 'nopol' => $nopol,
@@ -700,6 +705,7 @@ class RevenuesController extends AppController {
                                                 'credit' => 'uang_kawal_coa_credit_id',
                                                 'debit' => 'uang_kawal_coa_debit_id',
                                             ), array(
+                                                'date' => $ttuj_date,
                                                 'document_id' => $document_id,
                                                 'truck_id' => $truck_id,
                                                 'nopol' => $nopol,
@@ -717,6 +723,7 @@ class RevenuesController extends AppController {
                                                 'credit' => 'uang_keamanan_coa_credit_id',
                                                 'debit' => 'uang_keamanan_coa_debit_id',
                                             ), array(
+                                                'date' => $ttuj_date,
                                                 'document_id' => $document_id,
                                                 'truck_id' => $truck_id,
                                                 'nopol' => $nopol,
@@ -1207,6 +1214,7 @@ class RevenuesController extends AppController {
             $driver_name = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'driver_name');
             $to_city_name = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'to_city_name');
             $nopol = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'nopol');
+            $ttuj_date = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'ttuj_date');
 
             $value = true;
             if($locale['Ttuj']['status']){
@@ -1253,6 +1261,7 @@ class RevenuesController extends AppController {
                             'credit' => 'commission_coa_debit_id',
                             'debit' => 'commission_coa_credit_id',
                         ), array(
+                            'date' => $ttuj_date,
                             'document_id' => $id,
                             'truck_id' => $truck_id,
                             'nopol' => $nopol,
@@ -1278,6 +1287,7 @@ class RevenuesController extends AppController {
                             'credit' => 'uang_jalan_coa_debit_id',
                             'debit' => 'uang_jalan_coa_credit_id',
                         ), array(
+                            'date' => $ttuj_date,
                             'document_id' => $id,
                             'truck_id' => $truck_id,
                             'nopol' => $nopol,
@@ -1295,6 +1305,7 @@ class RevenuesController extends AppController {
                             'credit' => 'uang_kuli_muat_coa_debit_id',
                             'debit' => 'uang_kuli_muat_coa_credit_id',
                         ), array(
+                            'date' => $ttuj_date,
                             'document_id' => $id,
                             'truck_id' => $truck_id,
                             'nopol' => $nopol,
@@ -1312,6 +1323,7 @@ class RevenuesController extends AppController {
                             'credit' => 'uang_kuli_bongkar_coa_debit_id',
                             'debit' => 'uang_kuli_bongkar_coa_credit_id',
                         ), array(
+                            'date' => $ttuj_date,
                             'document_id' => $id,
                             'truck_id' => $truck_id,
                             'nopol' => $nopol,
@@ -1329,6 +1341,7 @@ class RevenuesController extends AppController {
                             'credit' => 'asdp_coa_debit_id',
                             'debit' => 'asdp_coa_credit_id',
                         ), array(
+                            'date' => $ttuj_date,
                             'document_id' => $id,
                             'truck_id' => $truck_id,
                             'nopol' => $nopol,
@@ -1346,6 +1359,7 @@ class RevenuesController extends AppController {
                             'credit' => 'uang_kawal_coa_debit_id',
                             'debit' => 'uang_kawal_coa_credit_id',
                         ), array(
+                            'date' => $ttuj_date,
                             'document_id' => $id,
                             'truck_id' => $truck_id,
                             'nopol' => $nopol,
@@ -1363,6 +1377,7 @@ class RevenuesController extends AppController {
                             'credit' => 'uang_keamanan_coa_debit_id',
                             'debit' => 'uang_keamanan_coa_credit_id',
                         ), array(
+                            'date' => $ttuj_date,
                             'document_id' => $id,
                             'truck_id' => $truck_id,
                             'nopol' => $nopol,
@@ -4019,7 +4034,7 @@ class RevenuesController extends AppController {
 
             $data['Invoice']['period_from'] = $this->MkCommon->getDate($data['Invoice']['period_from']);
             $data['Invoice']['period_to'] = $this->MkCommon->getDate($data['Invoice']['period_to']);
-            $data['Invoice']['invoice_date'] = $this->MkCommon->getDate($data['Invoice']['invoice_date']);
+            $data['Invoice']['invoice_date'] = $invoice_date = $this->MkCommon->getDate($data['Invoice']['invoice_date']);
             $data['Invoice']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             $customer = $this->Customer->getData('first', array(
@@ -4093,6 +4108,7 @@ class RevenuesController extends AppController {
                                             'credit' => 'invoice_coa_credit_id',
                                             'debit' => 'invoice_coa_debit_id',
                                         ), array(
+                                            'date' => $invoice_date,
                                             'document_id' => $invoice_id,
                                             'title' => $titleJournalInv,
                                             'document_no' => $invoice_number,
@@ -4133,6 +4149,7 @@ class RevenuesController extends AppController {
                                 'credit' => 'invoice_coa_credit_id',
                                 'debit' => 'invoice_coa_debit_id',
                             ), array(
+                                'date' => $invoice_date,
                                 'document_id' => $invoice_id,
                                 'title' => $titleJournalInv,
                                 'document_no' => $document_no,
@@ -4721,7 +4738,7 @@ class RevenuesController extends AppController {
                 $msg = 'membuat';
             }
 
-            $data['InvoicePayment']['date_payment'] = !empty($data['InvoicePayment']['date_payment']) ? $this->MkCommon->getDate($data['InvoicePayment']['date_payment']) : '';
+            $data['InvoicePayment']['date_payment'] = $date_payment = !empty($data['InvoicePayment']['date_payment']) ? $this->MkCommon->getDate($data['InvoicePayment']['date_payment']) : '';
             $data['InvoicePayment']['branch_id'] = Configure::read('__Site.config_branch_id');
             $total = 0;
             $validate_price_pay = true;
@@ -4806,6 +4823,7 @@ class RevenuesController extends AppController {
                             'credit' => 'pembayaran_invoice_coa_id',
                             'debit' => $coa_id,
                         ), array(
+                            'date' => $date_payment,
                             'document_id' => $invoice_payment_id,
                             'title' => $titleJournalInv,
                             'document_no' => $document_no,
@@ -5042,6 +5060,7 @@ class RevenuesController extends AppController {
                             'credit' => $coa_id,
                             'debit' => 'pembayaran_invoice_coa_id',
                         ), array(
+                            'date' => $date_payment,
                             'document_id' => $id,
                             'title' => $titleJournalInv,
                             'document_no' => $document_no,
@@ -5404,6 +5423,7 @@ class RevenuesController extends AppController {
 
         if( !empty($invoice) ){
             $customer_id = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'customer_id');
+            $invoice_date = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'invoice_date');
             $invoice = $this->Invoice->Customer->getMerge($invoice, $customer_id);
             $customer_name_code = $this->MkCommon->filterEmptyField($invoice, 'Customer', 'customer_name_code');
 
@@ -5430,6 +5450,7 @@ class RevenuesController extends AppController {
                                 'credit' => 'invoice_coa_debit_id',
                                 'debit' => 'invoice_coa_credit_id',
                             ), array(
+                                'date' => $invoice_date,
                                 'document_id' => $id,
                                 'title' => $titleJournalInv,
                                 'document_no' => $document_no,
@@ -6846,6 +6867,7 @@ class RevenuesController extends AppController {
         $document_type = !empty($data['TtujPayment']['type'])?$data['TtujPayment']['type']:false;
         $receiver_name = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'receiver_name');
         $receiver_type = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'receiver_type');
+        $date_payment = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'date_payment');
 
         if( !empty($ttuj_payment_id) ) {
             $this->TtujPayment->TtujPaymentDetail->updateAll( array(
@@ -6936,6 +6958,7 @@ class RevenuesController extends AppController {
                             'credit' => 'biaya_ttuj_payment_coa_id',
                             'debit' => $coa_id,
                         ), array(
+                            'date' => $date_payment,
                             'document_id' => $ttuj_payment_id,
                             'title' => $titleJournalInv,
                             'document_no' => $document_no,
@@ -6951,6 +6974,7 @@ class RevenuesController extends AppController {
                             'credit' => 'uang_Jalan_commission_payment_coa_id',
                             'debit' => $coa_id,
                         ), array(
+                            'date' => $date_payment,
                             'document_id' => $ttuj_payment_id,
                             'title' => $titleJournalInv,
                             'document_no' => $document_no,
@@ -7074,6 +7098,7 @@ class RevenuesController extends AppController {
                 $data = $this->request->data;
                 $receiver_name = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'receiver_name');
                 $receiver_type = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'receiver_type', __('Supir'));
+                $date_payment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'date_payment');
 
                 switch ($action_type) {
                     case 'biaya_ttuj':
@@ -7131,6 +7156,7 @@ class RevenuesController extends AppController {
                                         'credit' => $coa_id,
                                         'debit' => 'biaya_ttuj_payment_coa_id',
                                     ), array(
+                                        'date' => $date_payment,
                                         'document_id' => $id,
                                         'title' => $titleJournalInv,
                                         'document_no' => $document_no,
@@ -7146,6 +7172,7 @@ class RevenuesController extends AppController {
                                         'credit' => $coa_id,
                                         'debit' => 'uang_Jalan_commission_payment_coa_id',
                                     ), array(
+                                        'date' => $date_payment,
                                         'document_id' => $id,
                                         'title' => $titleJournalInv,
                                         'document_no' => $document_no,

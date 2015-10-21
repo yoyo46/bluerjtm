@@ -7,15 +7,15 @@
     </div>
     <div class="box-body">
         <?php 
-            echo $this->Form->create('Journal', array(
-                'url'=> $this->Html->url( array(
-                    'controller' => 'cashbanks',
-                    'action' => 'search',
-                    'journal_report',
-                )), 
-                'role' => 'form',
-                'inputDefaults' => array('div' => false),
-            ));
+                echo $this->Form->create('Search', array(
+                    'url'=> $this->Html->url( array(
+                        'controller' => 'cashbanks',
+                        'action' => 'search',
+                        'ledger_report',
+                    )), 
+                    'role' => 'form',
+                    'inputDefaults' => array('div' => false),
+                ));
         ?>
         <div class="row">
             <div class="col-sm-6">
@@ -28,8 +28,7 @@
                             <i class="fa fa-calendar"></i>
                         </div>
                         <?php 
-                                echo $this->Form->input('Journal.date',array(
-                                    'type' => 'text',
+                                echo $this->Form->input('date',array(
                                     'label'=> false,
                                     'class'=>'form-control pull-right date-range',
                                     'required' => false,
@@ -39,10 +38,11 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('Journal.document_no',array(
-                                'label'=> __('No Dokumen'),
+                            echo $this->Form->input('coa',array(
+                                'label'=> __('COA'),
                                 'class'=>'form-control',
                                 'required' => false,
+                                'empty' => __('Pilih COA'),
                             ));
                     ?>
                 </div>
@@ -62,7 +62,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'journal_report', 
+                                'action' => 'ledger_report', 
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',

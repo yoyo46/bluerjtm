@@ -1348,7 +1348,7 @@ class TrucksController extends AppController {
 
                 $data['KirPayment']['user_id'] = $this->user_id;
                 $data['KirPayment']['kir_id'] = $kir_id;
-                $data['KirPayment']['kir_payment_date'] = (!empty($data['KirPayment']['kir_payment_date'])) ? $this->MkCommon->getDate($data['KirPayment']['kir_payment_date']) : '';
+                $data['KirPayment']['kir_payment_date'] = $kir_payment_date = (!empty($data['KirPayment']['kir_payment_date'])) ? $this->MkCommon->getDate($data['KirPayment']['kir_payment_date']) : '';
                 $data['Truck']['tgl_kir'] = (!empty($kir['Kir']['to_date'])) ? $this->MkCommon->getDate($kir['Kir']['to_date']) : '';
 
                 if( !empty($data['KirPayment']['rejected']) ) {
@@ -1383,6 +1383,7 @@ class TrucksController extends AppController {
                                 'credit' => $coa_id,
                                 'debit' => 'kir_payment_coa_id',
                             ), array(
+                                'date' => $kir_payment_date,
                                 'document_id' => $id,
                                 'truck_id' => $truck_id,
                                 'nopol' => $nopol,
@@ -1484,6 +1485,7 @@ class TrucksController extends AppController {
         if( !empty($value) ) {
             $total = $this->MkCommon->filterEmptyField($value, 'KirPayment', 'total_pembayaran');
             $coa_id = $this->MkCommon->filterEmptyField($value, 'KirPayment', 'coa_id');
+            $kir_payment_date = $this->MkCommon->filterEmptyField($value, 'KirPayment', 'kir_payment_date');
             $nopol = $this->MkCommon->filterEmptyField($value, 'Kir', 'no_pol');
             $truck_id = $this->MkCommon->filterEmptyField($value, 'Kir', 'truck_id');
             $document_no = str_pad($id, 5, '0', STR_PAD_LEFT);
@@ -1509,6 +1511,7 @@ class TrucksController extends AppController {
                     'credit' => 'kir_payment_coa_id',
                     'debit' => $coa_id,
                 ), array(
+                    'date' => $kir_payment_date,
                     'document_id' => $id,
                     'truck_id' => $truck_id,
                     'nopol' => $nopol,
@@ -1828,7 +1831,7 @@ class TrucksController extends AppController {
 
                 $data['SiupPayment']['user_id'] = $this->user_id;
                 $data['SiupPayment']['siup_id'] = $siup_id;
-                $data['SiupPayment']['siup_payment_date'] = (!empty($data['SiupPayment']['siup_payment_date'])) ? $this->MkCommon->getDate($data['SiupPayment']['siup_payment_date']) : '';
+                $data['SiupPayment']['siup_payment_date'] = $siup_payment_date = (!empty($data['SiupPayment']['siup_payment_date'])) ? $this->MkCommon->getDate($data['SiupPayment']['siup_payment_date']) : '';
 
                 $data['Truck']['tgl_siup'] = (!empty($siup['Siup']['to_date'])) ? $this->MkCommon->getDate($siup['Siup']['to_date']) : '';
 
@@ -1864,6 +1867,7 @@ class TrucksController extends AppController {
                                 'credit' => $coa_id,
                                 'debit' => 'siup_payment_coa_id',
                             ), array(
+                                'date' => $siup_payment_date,
                                 'document_id' => $id,
                                 'truck_id' => $truck_id,
                                 'nopol' => $nopol,
@@ -1958,6 +1962,7 @@ class TrucksController extends AppController {
         if( !empty($value) ) {
             $total = $this->MkCommon->filterEmptyField($value, 'SiupPayment', 'total_pembayaran');
             $coa_id = $this->MkCommon->filterEmptyField($value, 'SiupPayment', 'coa_id');
+            $siup_payment_date = $this->MkCommon->filterEmptyField($value, 'SiupPayment', 'siup_payment_date');
             $nopol = $this->MkCommon->filterEmptyField($value, 'Siup', 'no_pol');
             $truck_id = $this->MkCommon->filterEmptyField($value, 'Siup', 'truck_id');
             $document_no = str_pad($id, 5, '0', STR_PAD_LEFT);
@@ -1983,6 +1988,7 @@ class TrucksController extends AppController {
                     'credit' => 'siup_payment_coa_id',
                     'debit' => $coa_id,
                 ), array(
+                    'date' => $siup_payment_date,
                     'document_id' => $id,
                     'truck_id' => $truck_id,
                     'nopol' => $nopol,
@@ -2730,6 +2736,7 @@ class TrucksController extends AppController {
         if( !empty($value) ) {
             $total = $this->MkCommon->filterEmptyField($value, 'StnkPayment', 'total_pembayaran');
             $coa_id = $this->MkCommon->filterEmptyField($value, 'StnkPayment', 'coa_id');
+            $stnk_payment_date = $this->MkCommon->filterEmptyField($value, 'StnkPayment', 'stnk_payment_date');
             $nopol = $this->MkCommon->filterEmptyField($value, 'Stnk', 'no_pol');
             $truck_id = $this->MkCommon->filterEmptyField($value, 'Stnk', 'truck_id');
             $is_change_plat = $this->MkCommon->filterEmptyField($value, 'Stnk', 'is_change_plat');
@@ -2766,6 +2773,7 @@ class TrucksController extends AppController {
                     'credit' => 'stnk_payment_coa_id',
                     'debit' => $coa_id,
                 ), array(
+                    'date' => $stnk_payment_date,
                     'document_id' => $id,
                     'truck_id' => $truck_id,
                     'nopol' => $nopol,
@@ -2911,7 +2919,7 @@ class TrucksController extends AppController {
 
                 $data['StnkPayment']['user_id'] = $this->user_id;
                 $data['StnkPayment']['stnk_id'] = $stnk_id;
-                $data['StnkPayment']['stnk_payment_date'] = (!empty($data['StnkPayment']['stnk_payment_date'])) ? $this->MkCommon->getDate($data['StnkPayment']['stnk_payment_date']) : '';
+                $data['StnkPayment']['stnk_payment_date'] = $stnk_payment_date = (!empty($data['StnkPayment']['stnk_payment_date'])) ? $this->MkCommon->getDate($data['StnkPayment']['stnk_payment_date']) : '';
                 $data['Truck']['tgl_stnk'] = (!empty($stnk['Stnk']['to_date'])) ? $this->MkCommon->getDate($stnk['Stnk']['to_date']) : '';
 
                 if( !empty($stnk['Stnk']['is_change_plat']) ) {
@@ -2951,6 +2959,7 @@ class TrucksController extends AppController {
                                 'credit' => $coa_id,
                                 'debit' => 'stnk_payment_coa_id',
                             ), array(
+                                'date' => $stnk_payment_date,
                                 'document_id' => $id,
                                 'truck_id' => $truck_id,
                                 'nopol' => $nopol,
