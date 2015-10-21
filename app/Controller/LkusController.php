@@ -623,7 +623,6 @@ class LkusController extends AppController {
             $data = $this->request->data;
             $customer_id = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'customer_id');
             $coa_id = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'coa_id');
-            $tgl_bayar = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'tgl_bayar');
 
             $customer = $this->LkuPayment->Customer->getMerge(array(), $customer_id);
             $customer_name = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
@@ -636,7 +635,7 @@ class LkusController extends AppController {
                 $msg = 'menambah';
             }
             
-            $data['LkuPayment']['tgl_bayar'] = (!empty($data['LkuPayment']['tgl_bayar'])) ? $this->MkCommon->getDate($data['LkuPayment']['tgl_bayar']) : '';
+            $data['LkuPayment']['tgl_bayar'] = $tgl_bayar = (!empty($data['LkuPayment']['tgl_bayar'])) ? $this->MkCommon->getDate($data['LkuPayment']['tgl_bayar']) : '';
             $data['LkuPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
             $total_price = 0;
 
@@ -1536,7 +1535,6 @@ class LkusController extends AppController {
             $data = $this->request->data;
             $customer_id = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'customer_id');
             $coa_id = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'coa_id');
-            $tgl_bayar = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'tgl_bayar');
 
             $customer = $this->KsuPayment->Customer->getMerge(array(), $customer_id);
             $customer_name = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
@@ -1549,7 +1547,7 @@ class LkusController extends AppController {
                 $msg = 'menambah';
             }
             
-            $data['KsuPayment']['tgl_bayar'] = (!empty($data['KsuPayment']['tgl_bayar'])) ? $this->MkCommon->getDate($data['KsuPayment']['tgl_bayar']) : '';
+            $data['KsuPayment']['tgl_bayar'] = $tgl_bayar = (!empty($data['KsuPayment']['tgl_bayar'])) ? $this->MkCommon->getDate($data['KsuPayment']['tgl_bayar']) : '';
             $data['KsuPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
             $total_price = 0;
 

@@ -98,15 +98,25 @@
 				}
 
 				if(!empty($coa['Coa']['level']) && $coa['Coa']['level'] == 3){
-					echo $this->Html->tag('div', $this->Form->input('balance', array(
-						'label'=> __('Balance'), 
-						'class'=>'form-control input_price_min',
-						'required' => false,
-						'placeholder' => __('Balance'),
-						'type' => 'text'
-					)), array(
-						'class' => 'form-group'
-					));
+					if( empty($saldo) ) {
+						echo $this->Html->tag('div', $this->Form->input('balance', array(
+							'label'=> __('Balance'), 
+							'class'=>'form-control input_price_min',
+							'required' => false,
+							'placeholder' => __('Balance'),
+							'type' => 'text'
+						)), array(
+							'class' => 'form-group'
+						));
+					} else {
+						$customSaldo = $this->Common->getFormatPrice($saldo);
+						$lbl = $this->Html->tag('label', __('Balance'));
+						
+						echo $this->Html->tag('div', $lbl.$this->Html->tag('div', $customSaldo), array(
+							'class' => 'form-group'
+						));
+					}
+
 					echo $this->Html->tag('div', $this->Form->input('periode_reset', array(
 						'label'=> __('Reset Balance'), 
 						'class'=>'form-control',

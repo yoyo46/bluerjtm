@@ -742,7 +742,16 @@ class SettingsController extends AppController {
             }
 
             if(isset($data['Coa']['balance'])){
-                $data['Coa']['balance'] = $this->MkCommon->convertPriceToString($data['Coa']['balance'], 0);
+                $saldoFormat = $this->MkCommon->filterEmptyField($data, 'Coa', 'balance');
+
+                $data['Coa']['balance'] = $this->MkCommon->convertPriceToString($saldoFormat, 0);
+
+                $saldo = $this->MkCommon->filterEmptyField($data, 'Coa', 'balance');
+                $coa_code = $this->MkCommon->filterEmptyField($data, 'Coa', 'with_parent_code');
+                $coa_name = $this->MkCommon->filterEmptyField($data, 'Coa', 'name');
+
+                $coa_code_name = sprintf('%s - %s', $coa_code, $coa_name);
+                $title = sprintf(__('Menambah saldo awal COA %s sebesar %s'), $coa_code_name, $saldoFormat);
             }
             
             $this->User->Coa->set($data);
@@ -756,6 +765,11 @@ class SettingsController extends AppController {
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Coa'), $msg), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses %s Coa #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+
+                    if( !empty($saldo) && !empty($title) ) {
+                        $this->MkCommon->_saveLog( $title, $data_local, $id );
+                    }
+
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'coas'
@@ -770,12 +784,15 @@ class SettingsController extends AppController {
         }else{
             if($id && $data_local){
                 $this->request->data = $data_local;
+                $saldo = $this->MkCommon->filterEmptyField($data_local, 'Coa', 'balance');
             }
         }
 
         $this->set('active_menu', 'coas');
         $this->set('module_title', 'Data Master');
-        $this->set('parent_id', $parent_id);
+        $this->set(compact(
+            'parent_id', 'saldo'
+        ));
         $this->render('coa_form');
     }
 

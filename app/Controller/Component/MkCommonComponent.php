@@ -845,6 +845,11 @@ class MkCommonComponent extends Component {
                     'freeze',
                 );
                 break;
+            case 'progressbar':
+                $layout_js = array(
+                    'jquery.progresstimer',
+                );
+                break;
         }
 
         $this->controller->set(compact(

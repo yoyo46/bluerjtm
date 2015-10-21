@@ -4158,4 +4158,34 @@ $(function() {
     $.getLeasingPayment({
         obj: $('.leasing-trigger'),
     });
+    $('.btn-closing').click(function (e) {
+        var self = $(this);
+        var form = self.parents('form');
+        var url = form.attr('action');
+        var data = form.serialize();
+        var progress = $(".loading-progress").progressTimer({
+            timeLimit: 10,
+            onFinish: function () {
+                alert('Proses closing telah selesai');
+                window.location.reload();
+            }
+        });
+
+        $.ajax({
+            data: data,
+            url: url,
+            type: 'POST',
+        }).error(function(){
+            progress.progressTimer('error', {
+                errorText:'Gagal melakukan proses',
+                onFinish:function(){
+                    alert('Gagal melakukan proses');
+                }
+            });
+        }).done(function(){
+            progress.progressTimer('complete');
+        });
+
+        return false;
+    });
 });

@@ -783,7 +783,6 @@
                         ),
                         'cashbanks' => array(
                             'coa_setting', 'closing',
-                            'balances'
                         ),
                     );
 
@@ -791,7 +790,7 @@
                         $activeSetting = false;
                         $settingMenu = array(
                             'coas', 'banks', 'coa_setting',
-                            'closing', 'balances',
+                            'closing',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -823,15 +822,6 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'coas' )?'active':'',
                             ));
-                            
-                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Balance COA</span>', array(
-                            //     'controller' => 'cashbanks',
-                            //     'action' => 'balances'
-                            // ), array(
-                            //     'escape' => false
-                            // )), array(
-                            //     'class' => ( !empty($active_menu) && $active_menu == 'balances' )?'active':'',
-                            // ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pengaturan COA</span>', array(
                                 'controller' => 'cashbanks',
@@ -842,14 +832,14 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'coa_setting' )?'active':'',
                             ));
                             
-                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Closing Kas/Bank</span>', array(
-                            //     'controller' => 'cashbanks',
-                            //     'action' => 'closing'
-                            // ), array(
-                            //     'escape' => false
-                            // )), array(
-                            //     'class' => ( !empty($active_menu) && $active_menu == 'closing' )?'active':'',
-                            // ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Closing Kas/Bank</span>', array(
+                                'controller' => 'cashbanks',
+                                'action' => 'closing'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'closing' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>
@@ -863,10 +853,12 @@
                         'lku_payments', 'ksu_payments',
                         'uang_jalan_commission_payments',
                         'biaya_ttuj_payments', 'leasing_payments',
+                        'journal_report', 'prepayment_report', 'ledger_report',
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
-                            'index',
+                            'index', 'journal_report', 'prepayment_report',
+                            'ledger_report',
                         ),
                         'trucks' => array(
                             'kir_payments', 'stnk_payments', 'siup_payments',
@@ -998,37 +990,7 @@
                             )), array(
                                 // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
                             ));
-                    ?>
-                </ul>
-            </li>
 
-            <?php 
-                    }
-
-                    $activeSetting = false;
-                    $settingMenu = array(
-                        'journal_report', 'prepayment_report', 'ledger_report',
-                    );
-                    $dataMenu = array(
-                        'cashbanks' => array(
-                            'journal_report', 'prepayment_report',
-                            'ledger_report',
-                        ),
-                    );
-
-                    if( $this->Common->allowMenu( $dataMenu  ) ) {
-                        if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
-                            $activeSetting = 'active';
-                        }
-            ?>
-            <li class="treeview <?php echo $activeSetting; ?>">
-                <a href="#">
-                    <i class="fa fa-book"></i>
-                    <span>Laporan Kas/Bank</span>
-                    <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <?php
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Prepayment</span>', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'prepayment_report'
@@ -1057,6 +1019,7 @@
                     ?>
                 </ul>
             </li>
+
             <?php 
                     }
 

@@ -43,11 +43,12 @@
                         </div>
                     </div>
                 </div>
+                <div class="loading-progress"></div>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Closing'), array(
                                 'div' => false, 
-                                'class'=> 'btn btn-success btn-sm',
+                                'class'=> 'btn btn-success btn-closing',
                                 'type' => 'submit',
                             ));
                     ?>

@@ -52,8 +52,8 @@ class Coa extends AppModel {
                 'ChildCoa.order' => 'ASC'
             ),
         ),
-        'CoaBalance' => array(
-            'className' => 'CoaBalance',
+        'CoaHistory' => array(
+            'className' => 'CoaHistory',
             'foreignKey' => 'coa_id',
         ),
     );
@@ -229,7 +229,7 @@ class Coa extends AppModel {
                 $cat_id = !empty($value['Coa']['id'])?$value['Coa']['id']:false;
 
                 if( $id != $cat_id ) {
-                    $name = !empty($value['Coa']['name'])?$value['Coa']['name']:false;
+                    $name = !empty($value['Coa']['coa_name'])?$value['Coa']['coa_name']:false;
                     $child = !empty($value['children'])?$value['children']:false;
 
                     if( !empty($child) ) {

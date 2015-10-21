@@ -475,7 +475,7 @@ class CashbanksController extends AppController {
 
             $user_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'user_id');
             $document_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'document_id');
-            $document_coa_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'document_coa_id');
+            $document_coa_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'coa_id');
             $receiver_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'receiver_id');
 
             $tgl_cash_bank = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'tgl_cash_bank');
@@ -1258,6 +1258,7 @@ class CashbanksController extends AppController {
             $this->request->data['Journal']['periode']['year'] = $year;
         }
 
+        $this->MkCommon->_layout_file('progressbar');
         $this->set('active_menu', 'closing');
     }
 

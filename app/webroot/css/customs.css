@@ -242,3 +242,8 @@ tr.expired .red {
 .table.journal td hr {
 	margin: 0;
 }
+
+/*Closing*/
+.loading-progress{
+    width:100%;
+}
