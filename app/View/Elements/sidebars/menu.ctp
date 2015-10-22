@@ -832,7 +832,7 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'coa_setting' )?'active':'',
                             ));
                             
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Closing Kas/Bank</span>', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Closing</span>', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'closing'
                             ), array(
