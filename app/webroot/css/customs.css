@@ -16,6 +16,19 @@
 	padding-left: 35px;
 	display: block;
 }
+.timeline > li > .timeline-item.read,
+.timeline > li > .timeline-item.read > .timeline-header,
+.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a.read {
+	color: #999;
+}
+.timeline > li > .timeline-item.,
+.timeline > li > .timeline-item. > .timeline-header {
+	font-weight: 600;
+	color: #666;
+}
+.timeline > li > .timeline-item. > .timeline-header {
+    color: #3c8dbc;
+}
 
 /*
 1. Journal Report

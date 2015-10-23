@@ -17,17 +17,22 @@ class Notification extends AppModel {
 		)
 	);
 
-	function getData( $find, $options = false, $is_merge = true ){
+	function getData( $find, $options = false, $element = true ){
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'Notification.id' => 'DESC'
+                'Notification.created' => 'DESC',
+                'Notification.id' => 'DESC',
             ),
             'contain' => array(),
             'fields' => array(),
         );
 
-        if( !empty($options) && $is_merge ){
+        if( isset($element['read']) ) {
+            $default_options['conditions']['Notification.read'] = $element['read'];
+        }
+
+        if( !empty($options) ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
@@ -102,6 +107,41 @@ class Notification extends AppModel {
         } else {
             return false;
         }
+    }
+
+    function doRead ( $id ) {
+        $this->set('read', 1);
+        $this->id = $id;
+
+        if($this->save()) {
+            return true;    
+        } else {
+            return false;
+        }
+    }
+
+    function _callNotifications ( $user_id = false ) {
+        if( empty($user_id) ) {
+            $user_id = Configure::read('__Site.config_user_id');
+        }
+
+        $notifications = $this->getData('all', array(
+            'conditions' => array(
+                'Notification.user_id' => $user_id,
+            )
+        ));
+        $cnt = $this->getData('count', array(
+            'conditions' => array(
+                'Notification.user_id' => $user_id,
+            )
+        ), array(
+            'read' => false,
+        ));
+
+        return array(
+            'notifications' => $notifications,
+            'cnt' => $cnt,
+        );
     }
 }
 ?>

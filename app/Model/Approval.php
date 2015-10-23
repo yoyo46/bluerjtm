@@ -295,6 +295,8 @@ class Approval extends AppModel {
                     ),
                 ));
 
+                $conditions['OR'][$key]['CashBank.is_revised'] = 0;
+                $conditions['OR'][$key]['CashBank.completed'] = 0;
                 $conditions['OR'][$key]['CashBank.user_id'] = $users;
 
                 if( !empty($min_amount) ) {

@@ -54,39 +54,40 @@ class PagesController extends AppController {
 		$this->render('home');
 	}
 
+    function referer_notification ( $id = false ) {
+        $value = $this->User->Notification->getData('first', array(
+            'conditions' => array(
+                'Notification.id' => $id,
+            ),
+        ));
+        $url = $this->MkCommon->filterEmptyField($value, 'Notification', 'url');
+
+        if( !empty($url) ) {
+            $this->User->Notification->doRead($id);
+            $this->redirect($url);
+        } else {
+            $this->redirect(array(
+                'controller' => 'pages',
+                'action' => 'notifications',
+                'admin' => false,
+            ));
+        }
+    }
+
     function notifications(){
+        $this->loadModel('Notification');
+
+        $want_to_read_id = array();
         $this->paginate = $this->Notification->getData('paginate', array(
             'conditions' => array(
                 'Notification.user_id' => $this->user_id
             ),
             'limit' => 20
         ));
-
-        $Notifications = $this->paginate('Notification');
-
-        $want_to_read_id = array();
-        if(!empty($Notifications)){
-            foreach ($Notifications as $key => $value) {
-                if(empty($value['Notification']['read'])){
-                    array_push($want_to_read_id, $value['Notification']['id']);
-                }
-            }
-
-            if(!empty($want_to_read_id)){
-                $this->Notification->updateAll(
-                    array(
-                        'Notification.read' => 1
-                    ),
-                    array(
-                        'Notification.id' => $want_to_read_id,
-                        'Notification.user_id' => $this->user_id
-                    )
-                );
-            }
-        }
+        $values = $this->paginate('Notification');
 
         $this->set('title_for_layout', __('ERP RJTM | Notifikasi'));
         $this->set('module_title', __('Notifikasi'));
-        $this->set('Notifications', $Notifications);
+        $this->set('values', $values);
     }
 }

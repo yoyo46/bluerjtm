@@ -297,11 +297,17 @@ class CashbanksController extends AppController {
                     $this->params['data'] = $data;
 
                     if( !empty($allowApprovals) ) {
-                        $this->MkCommon->_saveNotification(sprintf(__('Kas/Bank dengan No Dokumen %s memerlukan ijin Approval'), $document_no), $allowApprovals, $cash_bank_id, array(
-                            'controller' => 'cashbanks',
-                            'action' => 'detail',
-                            $cash_bank_id,
-                            'admin' => false,
+                        $this->MkCommon->_saveNotification(array(
+                            'action' => __('Kas/Bank'),
+                            'name' => sprintf(__('Kas/Bank dengan No Dokumen %s memerlukan ijin Approval'), $document_no),
+                            'user_id' => $allowApprovals,
+                            'document_id' => $cash_bank_id, 
+                            'url' => array(
+                                'controller' => 'cashbanks',
+                                'action' => 'detail',
+                                $cash_bank_id,
+                                'admin' => false,
+                            ),
                         ));
                     }
 

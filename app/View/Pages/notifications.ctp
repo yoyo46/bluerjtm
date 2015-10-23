@@ -5,63 +5,68 @@
     <div class="col-md-12">
         <!-- The time line -->
         <?php
-            if(!empty($Notifications)){
+            if(!empty($values)){
         ?>
         <ul class="timeline">
             <!-- timeline time label -->
             <?php
-                    $date_created = '';
-                    foreach ($Notifications as $key => $notification) {
-                        $created = date('d M, Y', strtotime($notification['Notification']['created']));
-                        if($date_created != $created){
-                            echo $this->Html->tag('li', $this->Html->tag('span', $created, array('class' => 'bg-blue')), array('class' => 'time-label') );
+                    $dateCreated = '';
 
-                            $date_created = $created;
+                    foreach ($values as $key => $value) {
+                        $action = $this->Common->filterEmptyField($value, 'Notification', 'action');
+                        $name = $this->Common->filterEmptyField($value, 'Notification', 'name');
+                        $url = $this->Common->filterEmptyField($value, 'Notification', 'url');
+                        $created = $this->Common->filterEmptyField($value, 'Notification', 'created');
+                        $type_notif = $this->Common->filterEmptyField($value, 'Notification', 'type_notif');
+                        $read = $this->Common->filterEmptyField($value, 'Notification', 'read');
+
+                        $addClass = '';
+                        $customCreated = $this->Common->formatDate($created, 'd M, Y');
+                        $customCreatedNormal = $this->Common->formatDate($created, 'd/m/Y');
+
+                        if( !empty($read) ) {
+                            $addClass = 'read';
                         }
 
-                        $notif = '';
-                        $content = '';
+                        if($dateCreated != $customCreated){
+                            echo $this->Html->tag('li', $this->Html->tag('span', $customCreated, array(
+                                'class' => 'bg-blue'
+                            )), array(
+                                'class' => 'time-label'
+                            ));
 
-                        if(!empty($notification['Notification']['type_notif'])){
-                            switch ($notification['Notification']['type_notif']) {
-                                case 'warning':
-                                    $notif = sprintf('<i class="fa fa-%s bg-yellow"></i> ', $notification['Notification']['icon_modul']);
-                                break;
-                                case 'success':
-                                    $notif .= sprintf('<i class="fa fa-%s bg-green"></i> ', $notification['Notification']['icon_modul']);
-                                break;
-                                case 'danger':
-                                    $notif = sprintf('<i class="fa fa-%s bg-red"></i> ', $notification['Notification']['icon_modul']);
-                                break;
-                            }
+                            $dateCreated = $customCreated;
                         }
 
-                        $content .= sprintf('<span class="time"><i class="fa fa-clock-o"></i> %s</span>', $this->Common->formatDate($created));
-
-                        $content .= $this->Html->tag('div', $notification['Notification']['name'], array(
+                        $notif = $this->Common->_callGetNotificationIcon($type_notif, true);
+                        $content = $this->Html->tag('span', sprintf('%s %s', $this->Common->icon('clock-o'), $customCreatedNormal), array(
+                            'class' => 'time',
+                        ));
+                        $content .= $this->Html->tag('h3', $action, array(
+                            'class' => 'timeline-header',
+                        ));
+                        $content .= $this->Html->tag('div', $name, array(
                             'class' => 'timeline-body'
                         ));
 
-                        $link = '';
-                        if(!empty($notification['Notification']['url'])){
-                            $url = unserialize($notification['Notification']['url']);
-                            $link = $this->Html->link($notification['Notification']['link'], $url, array(
-                                'class' => 'btn btn-primary btn-xs'
+                        if(!empty($url)){
+                            $link = $this->Common->_callNotificationUrl($value, __('Selengkapnya..'), array(
+                                'escape' => false,
+                                'class' => 'btn btn-primary btn-xs',
+                            ));
+                            $content .= $this->Html->tag('div', $link, array(
+                                'class' => 'timeline-footer',
                             ));
                         }
 
-                        if(!empty($link)){
-                            $content .= $this->Html->tag('div', $link);
-                        }
-
                         $content = $notif.$this->Html->tag('div', $content, array(
-                            'class' => 'timeline-item'
+                            'class' => sprintf('timeline-item %s', $addClass),
                         ));
                         echo $this->Html->tag('li', $content);
                     }
             ?>
             <li>
-                <i class="fa fa-clock-o"></i>
+                <i class="fa fa-clock-o bg-blue"></i>
             </li>
         </ul>
         <?php

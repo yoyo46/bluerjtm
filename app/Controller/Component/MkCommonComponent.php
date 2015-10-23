@@ -1242,24 +1242,28 @@ class MkCommonComponent extends Component {
         }
     }
 
-    function _saveNotification( $title = NULL, $user_id = false, $document_id = false, $url = false, $type_notif = 'warning' ){
+    function _saveNotification( $options = false){
         $data = array();
         $created_id = Configure::read('__Site.config_user_id');
         $branch_id = Configure::read('__Site.config_branch_id');
+        $user_id = $this->filterEmptyField($options, 'user_id');
 
         App::import('Helper', 'Html');
         $this->Html = new HtmlHelper(new View(null));
+        $url = $this->filterEmptyField($options, 'url');
 
         if( !empty($url) ) {
             $url = $this->Html->url($url);
             $data['Notification']['url'] = $url;
         }
         
-        $data['Notification']['type_notif'] = $type_notif ;
+        $data['Notification']['action'] = $this->filterEmptyField($options, 'action');
+        $data['Notification']['name'] = $this->filterEmptyField($options, 'name');
+        $data['Notification']['document_id'] = $this->filterEmptyField($options, 'document_id');
+        $data['Notification']['type_notif'] = $this->filterEmptyField($options, 'type_notif', false, 'warning');
+
         $data['Notification']['branch_id'] = $branch_id ;
         $data['Notification']['created_id'] = $created_id;
-        $data['Notification']['document_id'] = $document_id;
-        $data['Notification']['name'] = $title;
 
         if( !empty($user_id) ) {
             if( is_array($user_id) ) {

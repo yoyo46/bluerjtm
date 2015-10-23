@@ -154,7 +154,8 @@ class AppController extends Controller {
 					'profile'
 				),
 				'pages' => array(
-					'dashboard'
+					'dashboard', 'notifications',
+					'referer_notification',
 				),
 				'settings' => array(
 					'search',
@@ -403,11 +404,7 @@ class AppController extends Controller {
 			// 	Cache::write($cacheName, 1, 'short');
 			// }
 
-			$notifications = $this->User->Notification->getData('all', array(
-				'conditions' => array(
-					'Notification.user_id' => $this->user_id,
-				)
-			));
+			$notifications = $this->User->Notification->_callNotifications();
 		} else if( $paramAction != 'login' && $paramController == 'users' ) {
 			$this->redirect('/');
 		}

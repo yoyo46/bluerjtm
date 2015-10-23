@@ -1249,31 +1249,71 @@ class CommonHelper extends AppHelper {
         );
     }
 
-    function getNotif($type_notif = false, $data, $header = true){
-        $url = 'javascript;';
+    function _callGetNotificationIcon ( $type, $bg = false ) {
+        if( !empty($bg) ) {
+            switch ($type) {
+                case 'success':
+                    return $this->icon('check', false, 'i', 'bg-green');
+                break;
+                case 'danger':
+                    return $this->icon('warning', false, 'i', 'bg-red');
+                break;
+                default:
+                    return $this->icon('info-circle', false, 'i', 'bg-aqua');
+                break;
+            }
+        } else {
+            switch ($type) {
+                case 'success':
+                    return $this->icon('check', false, 'i', 'success');
+                break;
+                case 'danger':
+                    return $this->icon('warning', false, 'i', 'danger');
+                break;
+                default:
+                    return $this->icon('info-circle', false, 'i', 'info');
+                break;
+            }
+        }
+    }
+
+    function _callNotificationUrl ( $data, $title, $options = false ) {
+        $id = $this->filterEmptyField($data, 'Notification', 'id');
+        $url = $this->filterEmptyField($data, 'Notification', 'url');
+        $read = $this->filterEmptyField($data, 'Notification', 'read');
+
+        if( !empty($url) && !empty($id) ) {
+            if( empty($options) ) {
+                $options = array(
+                    'escape' => false
+                );
+            }
+
+            if( !empty($read) ) {
+                $options['class'] = 'read';
+            }
+
+            return $this->Html->link($title, array(
+                'controller' => 'pages',
+                'action' => 'referer_notification',
+                $id,
+                'admin' => false,
+            ), $options);
+        }
+    }
+
+    function getNotif($data, $header = true){
+        $id = $this->filterEmptyField($data, 'Notification', 'id');
+        $type_notif = $this->filterEmptyField($data, 'Notification', 'type_notif');
         $content_notif = $this->filterEmptyField($data, 'Notification', 'name');
         $url = $this->filterEmptyField($data, 'Notification', 'url');
 
-        if(!empty($type_notif)){
+        $type_notif = $this->_callGetNotificationIcon($type_notif);
+        $content = sprintf('%s%s', $type_notif, $this->Html->tag('span', $content_notif));
 
-            switch ($type_notif) {
-                case 'warning':
-                    $type_notif = $this->icon('info-circle', false, 'i', 'info');
-                break;
-                case 'success':
-                    $type_notif = $this->icon('check', false, 'i', 'success');
-                break;
-                case 'danger':
-                    $type_notif = $this->icon('warning', false, 'i', 'danger');
-                break;
-            }
-        }else{
-            $type_notif = '';
+        if( !empty($url) && !empty($id) ) {
+            $content = $this->_callNotificationUrl($data, $content);
         }
-
-        $content = $this->Html->link(sprintf('%s%s', $type_notif, $this->Html->tag('span', $content_notif)), $url, array(
-            'escape' => false
-        ));
 
         return $this->Html->tag('li', $content);
     }

@@ -1,3 +1,7 @@
+<?php 
+        $notifs = $this->Common->filterEmptyField($notifications, 'notifications');
+        $notifCnt = $this->Common->filterEmptyField($notifications, 'cnt');
+?>
 <header class="header">
     <?php 
             echo $this->Html->link($this->Html->image('/img/logo-rjtm.png').__('RJTM'), '/', array(
@@ -14,38 +18,35 @@
         </a>
         <div class="navbar-right">
             <ul class="nav navbar-nav">
+                <?php 
+                        if(!empty($notifs)){
+                ?>
                 <li class="dropdown notifications-menu">
                     <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown">
-                        <i class="fa fa-warning"></i>
                         <?php
-                            if(!empty($notifications)){
-                                echo $this->Html->tag('span', count($notifications), array(
+                                echo $this->Common->icon('warning');
+                                echo $this->Html->tag('span', $notifCnt, array(
                                     'class' => 'label label-info'
                                 ));
-                            }
                         ?>
                     </a>
                     <ul class="dropdown-menu">
                         <?php
-                                echo $this->Html->tag('li', sprintf('Anda memiliki %s notifikasi', count($notifications)), array(
+                                echo $this->Html->tag('li', sprintf('Anda memiliki %s notifikasi', $notifCnt), array(
                                     'class' => 'header'
                                 ));
 
-                                if(!empty($notifications)){
                         ?>
                         <li>
                             <ul class="menu">
                                 <?php
-                                        foreach ($notifications as $key => $notification) {
-                                            $type_notif = $notification['Notification']['type_notif'];
-                                            echo $this->Common->getNotif($type_notif, $notification);
+                                        foreach ($notifs as $key => $notification) {
+                                            echo $this->Common->getNotif($notification);
                                         }
                                 ?>
                             </ul>
                         </li>
                         <?php
-                                }
-
                                 echo $this->Html->tag('li', $this->Html->link(__('Selengkapnya'), array(
                                     'controller' => 'pages',
                                     'action' => 'notifications',
@@ -55,8 +56,9 @@
                         ?>
                     </ul>
                 </li>
-                <!-- User Account: style can be found in dropdown.less -->
                 <?php
+                        }
+
                         $name = !empty($User['Employe']['full_name']) ? $User['Employe']['full_name'] : '';
                 ?>
                 <li class="dropdown user user-menu">
