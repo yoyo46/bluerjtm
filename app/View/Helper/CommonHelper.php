@@ -1251,46 +1251,27 @@ class CommonHelper extends AppHelper {
 
     function getNotif($type_notif = false, $data, $header = true){
         $url = 'javascript;';
-        if(!empty($data['Notification']['url'])){
-            $url = unserialize($data['Notification']['url']);
-        }
-
-        $content_notif = $data['Notification']['name'];
-        if($header){
-            App::uses('TextHelper', 'View/Helper');
-            $this->Text = new TextHelper(new View(null));
-
-            $content_notif = $this->Text->truncate($content_notif, 150, 
-                array(
-                    'ending' => '...',
-                    'exact' => false
-                )
-            );
-        }
+        $content_notif = $this->filterEmptyField($data, 'Notification', 'name');
+        $url = $this->filterEmptyField($data, 'Notification', 'url');
 
         if(!empty($type_notif)){
-            if($url != 'javascript:'){
-                $url = array_merge($url, array(
-                    'ntf' => $data['Notification']['id']
-                ));
-            }
 
             switch ($type_notif) {
                 case 'warning':
-                    $type_notif = sprintf('<i class="fa fa-%s warning"></i> ', $data['Notification']['icon_modul']);
+                    $type_notif = $this->icon('info-circle', false, 'i', 'info');
                 break;
                 case 'success':
-                    $type_notif = sprintf('<i class="fa fa-%s success"></i> ', $data['Notification']['icon_modul']);
+                    $type_notif = $this->icon('check', false, 'i', 'success');
                 break;
                 case 'danger':
-                    $type_notif = sprintf('<i class="fa fa-%s danger"></i> ', $data['Notification']['icon_modul']);
+                    $type_notif = $this->icon('warning', false, 'i', 'danger');
                 break;
             }
         }else{
             $type_notif = '';
         }
 
-        $content = $this->Html->link(sprintf('%s%s', $type_notif, $content_notif), $url, array(
+        $content = $this->Html->link(sprintf('%s%s', $type_notif, $this->Html->tag('span', $content_notif)), $url, array(
             'escape' => false
         ));
 

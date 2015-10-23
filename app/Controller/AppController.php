@@ -43,9 +43,8 @@ class AppController extends Controller {
 	);
 
 	var $uses = array(
-		'Log', 'Module', 'Notification', 
-		'GroupBranch', 'BranchActionModule',
-		'User'
+		'Log', 'Module', 'GroupBranch', 
+		'BranchActionModule', 'User',
 	);
 
 	function beforeFilter() {
@@ -76,6 +75,9 @@ class AppController extends Controller {
 
 			// Set Global Variable for User
 			$this->user_data = $User;
+			$employe_position_id = $this->MkCommon->filterEmptyField($User, 'Employe', 'employe_position_id');
+
+			Configure::write('__Site.User.employe_position_id', $employe_position_id);
 			Configure::write('__Site.config_group_id', $GroupId);
 			Configure::write('__Site.config_user_id', $this->user_id);
 
@@ -289,122 +291,121 @@ class AppController extends Controller {
 			}
 			/*End Auth*/
 
-	        if(isset($this->params['named']['ntf']) && !empty($this->params['named']['ntf'])){
-	        	$this->Notification->notifCheck($this->user_id, $this->params['named']['ntf']);
-	        }
+	        // if(isset($this->params['named']['ntf']) && !empty($this->params['named']['ntf'])){
+	        // 	$this->User->Notification->notifCheck($this->user_id, $this->params['named']['ntf']);
+	        // }
 
-	        $cacheName = sprintf('LeadTime-%s', $this->user_id);
+	        // $cacheName = sprintf('LeadTime-%s', $this->user_id);
 			// $lead_time_notif = Cache::read($cacheName, 'short');
 			
-			if(empty($lead_time_notif)){
-				$this->loadModel('Ttuj');
-				$overlead_time_destination = $this->Ttuj->getData('all', array(
-					'conditions' => array(
-						'Ttuj.is_arrive' => 1,
-						'Ttuj.arrive_over_time >' => 0,
-						'Ttuj.is_pool' => 0,
-						'Ttuj.completed' => 0,
-					),
-				));
-				$overlead_time_pool = $this->Ttuj->getData('all', array(
-					'conditions' => array(
-						'Ttuj.back_orver_time >' => 0,
-						'OR' => array(
-							array(
-								'Ttuj.is_arrive' => 1,
-								'Ttuj.is_pool' => 1,
-							),
-							array(
-								'Ttuj.completed' => 1,
-							),
-						),
-					),
-					'fields' => array(
-						'Ttuj.id', 'Ttuj.nopol', 'Ttuj.no_ttuj'
-					)
-				));
+			// if(empty($lead_time_notif)){
+			// 	$this->loadModel('Ttuj');
+			// 	$overlead_time_destination = $this->Ttuj->getData('all', array(
+			// 		'conditions' => array(
+			// 			'Ttuj.is_arrive' => 1,
+			// 			'Ttuj.arrive_over_time >' => 0,
+			// 			'Ttuj.is_pool' => 0,
+			// 			'Ttuj.completed' => 0,
+			// 		),
+			// 	));
+			// 	$overlead_time_pool = $this->Ttuj->getData('all', array(
+			// 		'conditions' => array(
+			// 			'Ttuj.back_orver_time >' => 0,
+			// 			'OR' => array(
+			// 				array(
+			// 					'Ttuj.is_arrive' => 1,
+			// 					'Ttuj.is_pool' => 1,
+			// 				),
+			// 				array(
+			// 					'Ttuj.completed' => 1,
+			// 				),
+			// 			),
+			// 		),
+			// 		'fields' => array(
+			// 			'Ttuj.id', 'Ttuj.nopol', 'Ttuj.no_ttuj'
+			// 		)
+			// 	));
 				
-				if(!empty($overlead_time_destination) || !empty($overlead_time_pool)){
-					$list_id_user_admin = $this->User->getData('list', array(
-						'conditions' => array(
-							'User.group_id' => 1,
-							'User.status' => 1
-						),
-						'fields' => array(
-							'User.id'
-						)
-					));
+			// 	if(!empty($overlead_time_destination) || !empty($overlead_time_pool)){
+			// 		$list_id_user_admin = $this->User->getData('list', array(
+			// 			'conditions' => array(
+			// 				'User.group_id' => 1,
+			// 				'User.status' => 1
+			// 			),
+			// 			'fields' => array(
+			// 				'User.id'
+			// 			)
+			// 		));
 
-					if(!empty($list_id_user_admin)){
-						if(!empty($overlead_time_destination)){
-							$ttuj_id = Set::extract('/Ttuj/id', $overlead_time_destination);
+			// 		if(!empty($list_id_user_admin)){
+			// 			if(!empty($overlead_time_destination)){
+			// 				$ttuj_id = Set::extract('/Ttuj/id', $overlead_time_destination);
 
-							$check_notif = $this->Notification->getData('list', array(
-								'conditions' => array(
-									'Notification.document_id' => $ttuj_id,
-									'Notification.action' => 'overlead_time_destination'
-								)
-							));
+			// 				$check_notif = $this->User->Notification->getData('list', array(
+			// 					'conditions' => array(
+			// 						'Notification.document_id' => $ttuj_id,
+			// 						'Notification.action' => 'overlead_time_destination'
+			// 					)
+			// 				));
 
-							if(empty($check_notif)){
-								foreach ($overlead_time_destination as $key => $value) {
-									$data_ttuj = !empty($value['Ttuj'])?$value['Ttuj']:false;
-									$this->Notification->saveData($list_id_user_admin, array(
-										'document_id' => $data_ttuj['id'],
-										'action' => 'overlead_time_destination',
-										'name' => sprintf(__('Truk dengan Nopol %s dengan no TTUJ %s telah melewati lead time tujuan'), $data_ttuj['nopol'], $data_ttuj['no_ttuj']),
-										'url' => serialize(array(
-											'controller' => 'revenues',
-											'action' => 'ttuj_edit',
-											$data_ttuj['id']
-										)),
-										'type_notif' => 'danger',
-										'icon_modul' => 'truck',
-										'link' => __('Lihat TTUJ')
-									));
-								}
-							}
-						}
+			// 				if(empty($check_notif)){
+			// 					foreach ($overlead_time_destination as $key => $value) {
+			// 						$data_ttuj = !empty($value['Ttuj'])?$value['Ttuj']:false;
+			// 						$this->User->Notification->saveData($list_id_user_admin, array(
+			// 							'document_id' => $data_ttuj['id'],
+			// 							'action' => 'overlead_time_destination',
+			// 							'name' => sprintf(__('Truk dengan Nopol %s dengan no TTUJ %s telah melewati lead time tujuan'), $data_ttuj['nopol'], $data_ttuj['no_ttuj']),
+			// 							'url' => serialize(array(
+			// 								'controller' => 'revenues',
+			// 								'action' => 'ttuj_edit',
+			// 								$data_ttuj['id']
+			// 							)),
+			// 							'type_notif' => 'danger',
+			// 							'icon_modul' => 'truck',
+			// 							'link' => __('Lihat TTUJ')
+			// 						));
+			// 					}
+			// 				}
+			// 			}
 
-						if(!empty($overlead_time_pool)){
-							$ttuj_id = Set::extract('/Ttuj/id', $overlead_time_pool);
+			// 			if(!empty($overlead_time_pool)){
+			// 				$ttuj_id = Set::extract('/Ttuj/id', $overlead_time_pool);
 
-							$check_notif = $this->Notification->getData('list', array(
-								'conditions' => array(
-									'Notification.document_id' => $ttuj_id,
-									'Notification.action' => 'overlead_time_pool'
-								)
-							));
+			// 				$check_notif = $this->User->Notification->getData('list', array(
+			// 					'conditions' => array(
+			// 						'Notification.document_id' => $ttuj_id,
+			// 						'Notification.action' => 'overlead_time_pool'
+			// 					)
+			// 				));
 
-							if(empty($check_notif)){
-								foreach ($overlead_time_pool as $key => $value) {
-									$data_ttuj = $value['Ttuj'];
-									$this->Notification->saveData($list_id_user_admin, array(
-										'document_id' => $data_ttuj['id'],
-										'action' => 'overlead_time_pool',
-										'name' => sprintf(__('Truk dengan Nopol %s dengan no TTUJ %s telah melewati lead time balik pool'), $data_ttuj['nopol'], $data_ttuj['no_ttuj']),
-										'url' => serialize(array(
-											'controller' => 'revenues',
-											'action' => 'ttuj_edit',
-											$data_ttuj['id']
-										)),
-										'type_notif' => 'danger',
-										'icon_modul' => 'truck',
-										'link' => __('Lihat TTUJ')
-									));
-								}
-							}
-						}
-					}
-				}
+			// 				if(empty($check_notif)){
+			// 					foreach ($overlead_time_pool as $key => $value) {
+			// 						$data_ttuj = $value['Ttuj'];
+			// 						$this->User->Notification->saveData($list_id_user_admin, array(
+			// 							'document_id' => $data_ttuj['id'],
+			// 							'action' => 'overlead_time_pool',
+			// 							'name' => sprintf(__('Truk dengan Nopol %s dengan no TTUJ %s telah melewati lead time balik pool'), $data_ttuj['nopol'], $data_ttuj['no_ttuj']),
+			// 							'url' => serialize(array(
+			// 								'controller' => 'revenues',
+			// 								'action' => 'ttuj_edit',
+			// 								$data_ttuj['id']
+			// 							)),
+			// 							'type_notif' => 'danger',
+			// 							'icon_modul' => 'truck',
+			// 							'link' => __('Lihat TTUJ')
+			// 						));
+			// 					}
+			// 				}
+			// 			}
+			// 		}
+			// 	}
 
-				Cache::write($cacheName, 1, 'short');
-			}
+			// 	Cache::write($cacheName, 1, 'short');
+			// }
 
-			$notifications = $this->Notification->getData('all', array(
+			$notifications = $this->User->Notification->getData('all', array(
 				'conditions' => array(
 					'Notification.user_id' => $this->user_id,
-					'Notification.read' => 0
 				)
 			));
 		} else if( $paramAction != 'login' && $paramController == 'users' ) {

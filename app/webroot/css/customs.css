@@ -1,3 +1,22 @@
+/*Notification*/
+.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a {
+    padding: 5px;
+	white-space: normal;
+	position: relative;
+}
+.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a > .fa {
+	font-size: 14px;
+    width: auto;
+    padding: 8px;
+    position: absolute;
+    left: 5px;
+    top: 6px;
+}
+.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a > span {
+	padding-left: 35px;
+	display: block;
+}
+
 /*
 1. Journal Report
 */

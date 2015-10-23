@@ -44,7 +44,11 @@ class CashBank extends AppModel {
 		'Coa' => array(
 			'className' => 'Coa',
 			'foreignKey' => 'coa_id',
-		)
+		),
+        'User' => array(
+            'className' => 'User',
+            'foreignKey' => 'user_id',
+        ),
 	);
 
     var $hasMany = array(
@@ -70,17 +74,28 @@ class CashBank extends AppModel {
         ),
     );
 
-    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['grand_total'] = 'debit_total+credit_total';
+    }
+
+    function getData( $find, $options = false, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
+
         $default_options = array(
-            'conditions'=> array(
-                'CashBank.branch_id' => Configure::read('__Site.config_branch_id'),
+            'conditions'=> array(),
+            'order'=> array(
+                'CashBank.created' => 'DESC'
             ),
-            'order'=> array(),
             'contain' => array(),
             'fields' => array(),
             'group' => array(),
         );
+
+        if( !empty($branch) ) {
+            $default_options['conditions']['CashBank.branch_id'] = Configure::read('__Site.config_branch_id');
+        }
 
         switch ($status) {
             case 'all':
@@ -96,7 +111,7 @@ class CashBank extends AppModel {
                 break;
         }
 
-        if( !empty($options) && $is_merge ){
+        if( !empty($options) ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
@@ -288,8 +303,29 @@ class CashBank extends AppModel {
         }
     }
 
-    function beforeFind($data){
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $type = !empty($data['named']['type'])?$data['named']['type']:false;
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+        if(!empty($nodoc)){
+            $default_options['conditions']['CashBank.nodoc LIKE'] = '%'.$nodoc.'%';
+        }
+        if(!empty($type)){
+            $default_options['conditions']['CashBank.receiving_cash_type LIKE'] = '%'.$type.'%';
+        }
         
+        return $default_options;
     }
 }
 ?>

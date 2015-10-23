@@ -83,5 +83,27 @@ class CashBankDetail extends AppModel {
 
         return !empty($docPaid[0]['total'])?$docPaid[0]['total']:0;
     }
+
+    function getMerge ( $data = false, $id = false, $options = false ) {
+        if( empty($data['CashBankDetail']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'CashBankDetail.cash_bank_id'=> $id,
+                ),
+                'order' => array(
+                    'CashBankDetail.id' => 'ASC',
+                ),
+            );
+
+            if( !empty($options) ) {
+                $default_options = array_merge($default_options, $options);
+            }
+
+            $value = $this->getData('all', $default_options);
+            $data['CashBankDetail'] = $value;
+        }
+
+        return $data;
+    }
 }
 ?>

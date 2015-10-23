@@ -3,7 +3,18 @@
             'action' => 'index'
         ));
         $this->Html->addCrumb($sub_module_title);
-        $receiving_cash_type = !empty($cashbank['CashBank']['receiving_cash_type'])?$cashbank['CashBank']['receiving_cash_type']:false;
+        $nodoc = $this->Common->filterEmptyField($cashbank, 'CashBank', 'nodoc');
+        $receiver = $this->Common->filterEmptyField($cashbank, 'CashBank', 'receiver');
+        $tgl = $this->Common->filterEmptyField($cashbank, 'CashBank', 'tgl_cash_bank');
+        $type = $this->Common->filterEmptyField($cashbank, 'CashBank', 'receiving_cash_type');
+        $description = $this->Common->filterEmptyField($cashbank, 'CashBank', 'description', '-');
+        $grand_total = $this->Common->filterEmptyField($cashbank, 'CashBank', 'grand_total', 0);
+        $completed = $this->Common->filterEmptyField($cashbank, 'CashBank', 'completed');
+
+        $revenue_id = $this->Common->filterEmptyField($cashbank, 'Revenue', 'id');
+        $customDate = $this->Common->formatDate($tgl, 'd/m/Y');
+        $customTotal = $this->Common->getFormatPrice($grand_total);
+        $customStatus = $this->CashBank->_callStatus($cashbank);
 ?>
 <div class="row">
     <div class="col-sm-6">
@@ -18,13 +29,13 @@
             <div class="box-body">
                 <dl class="dl-horizontal">
                     <dt><?php echo __('No. Dokumen')?></dt>
-                    <dd><?php echo $cashbank['CashBank']['nodoc'];?></dd>
+                    <dd><?php echo $nodoc;?></dd>
                     <?php 
-                            switch ($receiving_cash_type) {
+                            switch ($type) {
                                 case 'ppn_in':
-                                    if( !empty($cashbank['Revenue']) ) {
+                                    if( !empty($revenue_id) ) {
                                         echo $this->Html->tag('dt', __('No. Ref Revenue'));
-                                        echo $this->Html->tag('dd', str_pad($cashbank['Revenue']['id'], 5, '0', STR_PAD_LEFT));
+                                        echo $this->Html->tag('dd', str_pad($revenue_id, 5, '0', STR_PAD_LEFT));
                                     }
                                     break;
                                 
@@ -34,39 +45,25 @@
                             }
                     ?>
                     <dt><?php echo __('Tipe Kas')?></dt>
-                    <dd><?php echo strtoupper(str_replace('_', ' ', $receiving_cash_type));?></dd>
+                    <dd><?php echo strtoupper(str_replace('_', ' ', $type));?></dd>
                     <dt>
                         <?php 
                                 $text = __('Diterima dari');
-                                if(!empty($receiving_cash_type) && $receiving_cash_type == 'out'){
+                                if( $type == 'out' ){
                                     $text = __('Dibayar kepada');
                                 }
                                 echo $text;
                         ?>
                     </dt>
-                    <dd><?php echo !empty($cashbank['CashBank']['receiver'])?$cashbank['CashBank']['receiver']:false;?></dd>
+                    <dd><?php echo $receiver;?></dd>
                     <dt><?php echo __('Tgl Kas/Bank')?></dt>
-                    <dd><?php echo $this->Common->customDate($cashbank['CashBank']['tgl_cash_bank'], 'd/m/Y');?></dd>
+                    <dd><?php echo $customDate;?></dd>
                     <dt><?php echo __('Keterangan')?></dt>
-                    <dd><?php echo !empty($cashbank['CashBank']['description'])?$cashbank['CashBank']['description']:'-';?></dd>
+                    <dd><?php echo $description;?></dd>
                     <dt><?php echo __('Status')?></dt>
                     <dd>
                         <?php
-                                $status = 'Pending';
-                                $class = 'info';
-
-                                if(!empty($cashbank['CashBank']['completed'])){
-                                    $status = 'Complete';
-                                    $class = 'success';
-                                }else if(!empty($cashbank['CashBank']['is_revised'])){
-                                    $status = 'Revisi';
-                                    $class = 'primary';
-                                }else if(!empty($cashbank['CashBank']['is_rejected'])){
-                                    $status = 'Ditolak';
-                                    $class = 'danger';
-                                }
-
-                                echo '<span class="label label-'.$class.'">'.$status.'</span>';
+                                echo $customStatus;
                         ?>
                     </dd>
             </div>
@@ -85,80 +82,43 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th><?php echo __('Kode Acc');?></th>
-                            <th><?php echo __('Nama Acc');?></th>
                             <?php 
-                                // echo $this->Html->tag('th', __('Debit'), array(
-                                //     'class' => 'text-center'
-                                // ));
-                                // echo $this->Html->tag('th', __('Kredit'), array(
-                                //     'class' => 'text-center'
-                                // ));
-
-                                echo $this->Html->tag('th', __('Total'), array(
-                                    'class' => 'text-center'
-                                ));
+                                    echo $this->Html->tag('th', __('Kode Acc'));
+                                    echo $this->Html->tag('th', __('Nama Acc'));
+                                    echo $this->Html->tag('th', __('Total'), array(
+                                        'class' => 'text-center'
+                                    ));
                             ?>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                            if(!empty($cashbank['CashBankDetail'])){
-                                foreach ($cashbank['CashBankDetail'] as $key => $value) {
+                                if(!empty($cashbank['CashBankDetail'])){
+                                    foreach ($cashbank['CashBankDetail'] as $key => $value) {
+                                        $coa_code = $this->Common->filterEmptyField($value, 'Coa', 'code', '-');
+                                        $coa_name = $this->Common->filterEmptyField($value, 'Coa', 'name', '-');
+                                        $total = $this->Common->filterEmptyField($value, 'CashBankDetail', 'total');
+
+                                        $customTotal = $this->Common->getFormatPrice($total);
                         ?>
                         <tr>
-                            <td>
-                                <?php
-                                    if(!empty($value['Coa']['code'])){
-                                        echo $value['Coa']['code'];
-                                    }else{
-                                        echo '-';
-                                    }
-                                ?>
-                            </td>
-                            <td>
-                                <?php
-                                    if(!empty($value['Coa']['name'])){
-                                        echo $value['Coa']['name'];
-                                    }else{
-                                        echo '-';
-                                    }
-                                ?>
-                            </td>
                             <?php
-                                    // $debit = $this->Number->currency($value['debit'], Configure::read('__Site.config_currency_code'), array('places' => 0));
-
-                                    // echo $this->Html->tag('td', $debit, array(
-                                    //     'align' => 'right'
-                                    // ));
-
-                                    // $credit = $this->Number->currency($value['credit'], Configure::read('__Site.config_currency_code'), array('places' => 0));
-                                    // echo $this->Html->tag('td', $debit, array(
-                                    //     'align' => 'right'
-                                    // ));
-
-                                    $total = $this->Number->currency($value['total'], Configure::read('__Site.config_currency_code'), array('places' => 0));
-                                    echo $this->Html->tag('td', $total, array(
+                                    echo $this->Html->tag('td', $coa_code);
+                                    echo $this->Html->tag('td', $coa_name);
+                                    echo $this->Html->tag('td', $customTotal, array(
                                         'align' => 'right'
                                     ));
                             ?>
                         </tr>
                         <?php
+                                    }
                                 }
-                            }
                         ?>
                         <tr>
                             <td align="right" colspan="2" style="font-weight: bold;">Total</td>
                             <td align="right" style="font-weight: bold;">
                                 <?php
-                                    $total = 0;
-                                    if(!empty($cashbank['CashBank']['debit_total'])){
-                                        $total = $cashbank['CashBank']['debit_total'];
-                                    }else{
-                                        $total = $cashbank['CashBank']['credit_total'];
-                                    }
-
-                                    echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                                        echo $customTotal;
                                 ?>
                             </td>
                         </tr>
@@ -167,164 +127,76 @@
             </div>
         </div>
     </div>
-    <?php
-        if(!empty($user_otorisasi_approvals)){
-    ?>
-    <div class="col-sm-12" id="list-approval">
-        <div class="box box-success">
-            <div class="box-header">
-                <?php 
-                        echo $this->Html->tag('h3', __('Approval Kas/Bank'), array(
-                            'class' => 'box-title',
-                        ));
-                ?>
-            </div>
-            <div class="box-body table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th><?php echo __('Posisi yang menyetujui');?></th>
-                            <th class="text-center"><?php echo __('Prioritas Approval');?></th>
-                            <th class="text-center"><?php echo __('Status');?></th>
-                            <th><?php echo __('Keterangan');?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                                foreach ($user_otorisasi_approvals as $key => $value) {
-                                    $position_name = !empty($value['EmployePosition']['name'])?$value['EmployePosition']['name']:false;
-                                    $is_priority = !empty($value['ApprovalDetailPosition']['is_priority'])?$value['ApprovalDetailPosition']['is_priority']:false;
-
-                                    if( !empty($is_priority) ) {
-                                        $labelCheck = '<i class="fa fa-check text-green"></i>';
-                                    } else {
-                                        $labelCheck = '<i class="fa fa-times text-red"></i>';
-                                    }
-
-                                    if( !empty($value['CashBankAuth']['status_document']) ) {
-                                        switch ($value['CashBankAuth']['status_document']) {
-                                            case 'approve':
-                                                $labelClass = 'success';
-                                                break;
-
-                                            case 'reject':
-                                                $labelClass = 'danger';
-                                                break;
-
-                                            case 'revise':
-                                                $labelClass = 'warning';
-                                                break;
-                                            
-                                            default:
-                                                $labelClass = 'default';
-                                                break;
-                                        }
-
-                                        $status_document = $this->Html->tag('div', ucwords($value['CashBankAuth']['status_document']), array(
-                                            'class' => sprintf('label label-%s', $labelClass),
-                                        ));
-                                    } else {
-                                        $status_document = '-';
-                                    }
-
-                                    if( !empty($value['CashBankAuth']['description']) ) {
-                                        $description = ucfirst($value['CashBankAuth']['description']);
-                                    } else {
-                                        $description = '-';
-                                    }
-                        ?>
-                        <tr>
-                            <?php 
-                                    echo $this->Html->tag('td', $position_name);
-                                    echo $this->Html->tag('td', $labelCheck, array(
-                                        'class' => 'text-center',
-                                    ));
-                                    echo $this->Html->tag('td', $status_document, array(
-                                        'class' => 'text-center',
-                                    ));
-                                    echo $this->Html->tag('td', $description);
-                            ?>
-                        </tr>
-                        <?php
-                            }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <?php
-            }
-
-            if( $show_approval && empty($cashbank['CashBank']['completed']) ){
-    ?>
-    <div class="col-sm-12">
-        <div class="box box-success">
-            <div class="box-header">
-                <?php 
-                        echo $this->Html->tag('h3', __('Approval Form'), array(
-                            'class' => 'box-title',
-                        ));
-                ?>
-            </div>
-            <div class="box-body">
-                <?php
-                    echo $this->Form->create('CashBankAuth', array(
-                        'url'=> $this->Html->url( null, true ), 
-                        'role' => 'form',
-                        'inputDefaults' => array('div' => false),
-                    ));
-                    echo $this->Form->input('status_document', array(
-                        'label' => __('Status Approval *'),
-                        'div' => array(
-                            'class' => 'form-group'
-                        ),
-                        'options' => array(
-                            // 'pending' => 'Pending',
-                            'approve' => 'Setujui',
-                            'revise' => 'Direvisi',
-                            'reject' => 'Tidak Setuju',
-                        ),
-                        'class' => 'form-control',
-                        'empty' => __('Pilih Status Approval'),
-                    ));
-
-                    echo $this->Form->input('description', array(
-                        'label' => __('Keterangan'),
-                        'div' => array(
-                            'class' => 'form-group'
-                        ),
-                        'type' => 'textarea',
-                        'class' => 'form-control'
-                    ));
-                ?>
-                <div class="box-footer text-center action">
-                    <?php
-                            echo $this->Form->button(__('Simpan'), array(
-                                'div' => false, 
-                                'class'=> 'btn btn-success',
-                                'type' => 'submit',
-                            ));
-                            echo $this->Html->link(__('Kembali'), array(
-                                'controller' => 'cashbanks', 
-                                'action' => 'index', 
-                            ), array(
-                                'class'=> 'btn btn-default',
-                            ));
-                    ?>
-                </div>
-                <?php
-
-                    echo $this->Form->end();
-                ?>
-            </div>
-        </div>
-    </div>
-    <?php
-                $statusApproval = true;
-            }
-    ?>
 </div>
+<?php
+        echo $this->element('blocks/cashbanks/tables/list_approvals');
+        
+        if( $show_approval && empty($completed) ){
+?>
+<div class="box box-success">
+    <div class="box-header">
+        <?php 
+                echo $this->Html->tag('h3', __('Approval Form'), array(
+                    'class' => 'box-title',
+                ));
+        ?>
+    </div>
+    <div class="box-body">
+        <?php
+            echo $this->Form->create('CashBankAuth', array(
+                'url'=> $this->Html->url( null, true ), 
+                'role' => 'form',
+                'inputDefaults' => array('div' => false),
+            ));
+            echo $this->Form->input('status_document', array(
+                'label' => __('Status Approval *'),
+                'div' => array(
+                    'class' => 'form-group'
+                ),
+                'options' => array(
+                    // 'pending' => 'Pending',
+                    'approve' => 'Setujui',
+                    'revise' => 'Direvisi',
+                    'reject' => 'Tidak Setuju',
+                ),
+                'class' => 'form-control',
+                'empty' => __('Pilih Status Approval'),
+            ));
+
+            echo $this->Form->input('description', array(
+                'label' => __('Keterangan'),
+                'div' => array(
+                    'class' => 'form-group'
+                ),
+                'type' => 'textarea',
+                'class' => 'form-control'
+            ));
+        ?>
+        <div class="box-footer text-center action">
+            <?php
+                    echo $this->Form->button(__('Simpan'), array(
+                        'div' => false, 
+                        'class'=> 'btn btn-success',
+                        'type' => 'submit',
+                    ));
+                    echo $this->Html->link(__('Kembali'), array(
+                        'controller' => 'cashbanks', 
+                        'action' => 'index', 
+                    ), array(
+                        'class'=> 'btn btn-default',
+                    ));
+            ?>
+        </div>
+        <?php
+
+            echo $this->Form->end();
+        ?>
+    </div>
+</div>
+<?php
+            $statusApproval = true;
+        }
+?>
 <?php 
         if( empty($statusApproval) ){
             echo $this->Html->tag('div', $this->Html->link(__('Kembali'), array(

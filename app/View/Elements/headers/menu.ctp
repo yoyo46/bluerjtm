@@ -36,10 +36,10 @@
                         <li>
                             <ul class="menu">
                                 <?php
-                                    foreach ($notifications as $key => $notification) {
-                                        $type_notif = $notification['Notification']['type_notif'];
-                                        echo $this->Common->getNotif($type_notif, $notification);
-                                    }
+                                        foreach ($notifications as $key => $notification) {
+                                            $type_notif = $notification['Notification']['type_notif'];
+                                            echo $this->Common->getNotif($type_notif, $notification);
+                                        }
                                 ?>
                             </ul>
                         </li>

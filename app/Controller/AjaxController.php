@@ -1717,6 +1717,7 @@ class AjaxController extends AppController {
 	function getUserCashBank( $action_type = 'cash_bank' ){
 		$data_action = 'browse-form';
 		$data_change = 'receiver-id';
+		
 		$listReceivers = array(
         	'Customer' => __('Customer'),
         	'Vendor' => __('Vendor'),
@@ -2141,7 +2142,7 @@ class AjaxController extends AppController {
 						'Coa'
 					),
 				),
-			), true, array(
+			), array(
 				'status' => 'all',
 			));
 

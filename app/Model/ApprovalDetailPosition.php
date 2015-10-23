@@ -69,7 +69,9 @@ class ApprovalDetailPosition extends AppModel {
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
             }
-            if(!empty($options['group'])){
+            if( isset($options['group']) && empty($options['group']) ) {
+                $default_options['group'] = false;
+            } else if(!empty($options['group'])){
                 $default_options['group'] = $options['group'];
             }
         } else if( !empty($options) ) {

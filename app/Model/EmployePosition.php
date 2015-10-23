@@ -16,6 +16,17 @@ class EmployePosition extends AppModel {
         ),
 	);
 
+    var $hasMany = array(
+        'Approval' => array(
+            'className' => 'Approval',
+            'foreignKey' => 'employe_position_id',
+        ),
+        'Employe' => array(
+            'className' => 'Employe',
+            'foreignKey' => 'employe_position_id',
+        ),
+    );
+
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(

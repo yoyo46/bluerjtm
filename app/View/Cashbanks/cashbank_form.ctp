@@ -4,6 +4,7 @@
 			'action' => 'index'
 		));
 		$this->Html->addCrumb($sub_module_title);
+        echo $this->element('blocks/cashbanks/tables/list_approvals');
 
 		echo $this->Form->create('CashBank', array(
 			'url'=> $this->Html->url( null, true ), 
@@ -219,5 +220,5 @@
 	?>
 </div>
 <?php
-	echo $this->Form->end();
+		echo $this->Form->end();
 ?>

@@ -66,37 +66,37 @@
                 </tr>
             </thead>
             <?php
-                    if(!empty($cash_banks)){
-                        foreach ($cash_banks as $key => $value) {
-                            $content = $this->Html->tag('td', $value['CashBank']['nodoc']);
-                            $content .= $this->Html->tag('td', !empty($value['name_cash']) ? $value['name_cash'] : '-');
-                            $content .= $this->Html->tag('td', $this->Common->customDate($value['CashBank']['tgl_cash_bank'], 'd/m/Y'));
-                            $content .= $this->Html->tag('td', strtoupper(str_replace('_', ' ', $value['CashBank']['receiving_cash_type'])), array(
-                                'align' => 'center'
+                    if(!empty($values)){
+                        foreach ($values as $key => $value) {
+                            $id = $this->Common->filterEmptyField($value, 'CashBank', 'id');
+                            $nodoc = $this->Common->filterEmptyField($value, 'CashBank', 'nodoc');
+                            $tgl = $this->Common->filterEmptyField($value, 'CashBank', 'tgl_cash_bank');
+                            $type = $this->Common->filterEmptyField($value, 'CashBank', 'receiving_cash_type');
+                            $is_revised = $this->Common->filterEmptyField($value, 'CashBank', 'is_revised');
+                            $completed = $this->Common->filterEmptyField($value, 'CashBank', 'completed');
+
+                            $name_cash = $this->Common->filterEmptyField($value, 'name_cash', false, '-');
+                            $customDate = $this->Common->formatDate($tgl, 'd/m/Y');
+                            $customType = strtoupper(str_replace('_', ' ', $type));
+                            $customStatus = $this->CashBank->_callStatus($value);
+
+                            $content = $this->Html->tag('td', $nodoc);
+                            $content .= $this->Html->tag('td', $name_cash);
+                            $content .= $this->Html->tag('td', $customDate, array(
+                                'class' => 'text-center',
+                            ));
+                            $content .= $this->Html->tag('td', $customType, array(
+                                'class' => 'text-center',
+                            ));
+                            $content .= $this->Html->tag('td', $customStatus, array(
+                                'class' => 'text-center',
                             ));
 
-                            $status = 'Pending';
-                            $class = 'info';
-                            if(!empty($value['CashBank']['completed'])){
-                                $status = 'Complete';
-                                $class = 'success';
-                            }else if(!empty($value['CashBank']['is_revised'])){
-                                $status = 'Revisi';
-                                $class = 'primary';
-                            }else if(!empty($value['CashBank']['is_rejected'])){
-                                $status = 'Ditolak';
-                                $class = 'danger';
-                            }
-
-                            $content .= $this->Html->tag('td', '<span class="label label-'.$class.'">'.$status.'</span>', array(
-                                'align' => 'center'
-                            ));
-
-                            if( !empty($value['CashBank']['is_revised']) ){
+                            if( !empty($is_revised) ){
                                 $link = $this->Html->link(__('Ubah'), array(
                                     'controller' => 'cashbanks',
                                     'action' => 'cashbank_edit',
-                                    $value['CashBank']['id'],
+                                    $id,
                                 ), array(
                                     'escape' => false,
                                     'class' => 'btn btn-info btn-xs'
@@ -105,35 +105,23 @@
                                 $link = $this->Html->link('Detail', array(
                                     'controller' => 'cashbanks',
                                     'action' => 'detail',
-                                    $value['CashBank']['id']
+                                    $id
                                 ), array(
                                     'escape' => false,
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
                             }
 
-                            if( empty($value['CashBank']['completed']) ) {
+                            if( empty($completed) ) {
                                 $link .= $this->Html->link('Hapus', array(
                                     'controller' => 'cashbanks',
                                     'action' => 'cashbank_delete',
-                                    $value['CashBank']['id']
+                                    $id
                                 ), array(
                                     'escape' => false,
                                     'class' => 'btn btn-danger btn-xs'
                                 ), __('Anda yakin ingin menghapus data ini?'));
                             }
-
-                            // if( empty($value['CashBank']['is_rejected']) && empty($value['CashBank']['completed']) ){
-                            //     $link .= $this->Html->link('Approval', array(
-                            //         'controller' => 'cashbanks',
-                            //         'action' => 'detail',
-                            //         $value['CashBank']['id'],
-                            //         '#' => 'list-approval',
-                            //     ), array(
-                            //         'escape' => false,
-                            //         'class' => 'btn btn-success btn-xs'
-                            //     ));
-                            // }
 
                             $content .= $this->Html->tag('td', $link, array(
                                 'class' => 'action'

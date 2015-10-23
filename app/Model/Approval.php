@@ -62,7 +62,10 @@ class Approval extends AppModel {
         $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
             'conditions'=> array(),
-            'order'=> array(),
+            'order'=> array(
+                'Approval.created' => 'DESC',
+                'Approval.id' => 'DESC',
+            ),
             'contain' => array(
                 'ApprovalModule',
                 'EmployePosition',
@@ -116,6 +119,22 @@ class Approval extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
+    }
+
+    function getMerge ( $data = false, $id = false ) {
+        if( empty($data['Approval']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'Approval.id'=> $id,
+                ),
+                'contain' => false,
+            );
+
+            $value = $this->getData('first', $default_options);
+            $data = array_merge($data, $value);
+        }
+
+        return $data;
     }
 
     function getUserOtorisasiApproval ( $modul, $employe_position_id, $grand_total, $cash_bank_id = false ) {
@@ -194,6 +213,102 @@ class Approval extends AppModel {
         }
 
         return $result;
+    }
+
+    function _callNeedApproval ( $module_id, $total ) {
+        $employe_position_id = Configure::read('__Site.User.employe_position_id');
+        $users = false;
+
+        $values = $this->ApprovalDetail->getData('all', array(
+            'conditions' => array(
+                'Approval.approval_module_id' => $module_id,
+                'Approval.employe_position_id' => $employe_position_id,
+                'ApprovalDetail.min_amount <=' => $total,
+                'ApprovalDetail.max_amount >=' => $total,
+            ),
+            'contain' => array(
+                'Approval',
+            ),
+        ));
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = !empty($value['ApprovalDetail']['id'])?$value['ApprovalDetail']['id']:false;
+
+                $value = $this->ApprovalDetail->ApprovalDetailPosition->getMerge($value, $id);
+                $values[$key] = $value;
+            }
+
+            $approverEmployeePositions = Set::extract('/ApprovalDetailPosition/ApprovalDetailPosition/employe_position_id', $values);
+            $users = $this->ApprovalDetail->ApprovalDetailPosition->EmployePosition->Employe->User->getData('list', array(
+                'conditions' => array(
+                    'Employe.employe_position_id' => $approverEmployeePositions,
+                ),
+                'fields' => array(
+                    'User.id', 'User.id',
+                ),
+            ));
+
+            if( !empty($users) ) {
+                $users = array_unique($users);
+            }
+        }
+
+        return $users;
+    }
+
+    function _callGetDataToApprove ( $module_id ) {
+        $employe_position_id = Configure::read('__Site.User.employe_position_id');
+
+        $values = $this->ApprovalDetail->ApprovalDetailPosition->getData('all', array(
+            'conditions' => array(
+                'ApprovalDetailPosition.employe_position_id' => $employe_position_id,
+                'ApprovalDetail.status' => true,
+            ),
+            'contain' => array(
+                'ApprovalDetail',
+            ),
+            'group' => false,
+        ));
+        $conditions = array(
+            'OR' => array(
+                'CashBank.branch_id' => Configure::read('__Site.config_branch_id'),
+            ),
+        );
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $approval_id = !empty($value['ApprovalDetail']['approval_id'])?$value['ApprovalDetail']['approval_id']:false;
+
+                $value = $this->getMerge($value, $approval_id);
+                $employe_position_id = !empty($value['Approval']['employe_position_id'])?$value['Approval']['employe_position_id']:false;
+                $min_amount = !empty($value['ApprovalDetail']['min_amount'])?$value['ApprovalDetail']['min_amount']:false;
+                $max_amount = !empty($value['ApprovalDetail']['max_amount'])?$value['ApprovalDetail']['max_amount']:false;
+
+                $employes = $this->ApprovalDetail->ApprovalDetailPosition->EmployePosition->Employe->getListByPosition($employe_position_id);
+                $users = $this->ApprovalDetail->ApprovalDetailPosition->EmployePosition->Employe->User->getData('list', array(
+                    'conditions' => array(
+                        'User.employe_id' => $employes,
+                    ),
+                    'fields' => array(
+                        'User.id', 'User.id',
+                    ),
+                ));
+
+                $conditions['OR'][$key]['CashBank.user_id'] = $users;
+
+                if( !empty($min_amount) ) {
+                    $conditions['OR'][$key]['CashBank.grand_total >='] = $min_amount;
+                }
+                if( !empty($max_amount) ) {
+                    $conditions['OR'][$key]['CashBank.grand_total <='] = $max_amount;
+                }
+
+                $values[$key] = $value;
+            }
+        }
+
+        return $conditions;
     }
 }
 ?>

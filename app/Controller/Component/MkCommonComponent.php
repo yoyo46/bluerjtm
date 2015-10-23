@@ -791,17 +791,33 @@ class MkCommonComponent extends Component {
         }
     }
 
+    function _callProcessLog ( $data ) {
+        if ( !empty( $data['Log'] ) ) {
+            $activity = $this->filterEmptyField($data, 'Log', 'activity');
+            $old_data = $this->filterEmptyField($data, 'Log', 'old_data');
+            $document_id = $this->filterEmptyField($data, 'Log', 'document_id');
+            $error = $this->filterEmptyField($data, 'Log', 'error');
+            $custom_action = $this->filterEmptyField($data, 'Log', 'custom_action');
+
+            $this->_saveLog( $activity, $old_data, $document_id, $error, $custom_action );
+        }
+    }
+
+    function _callProcessNotification ( $data ) {
+        if ( !empty( $data['Notification'] ) ) {
+            $title = $this->filterEmptyField($data, 'Notification', 'title');
+            $user_id = $this->filterEmptyField($data, 'Notification', 'user_id');
+            $document_id = $this->filterEmptyField($data, 'Notification', 'document_id');
+            $url = $this->filterEmptyField($data, 'Notification', 'url');
+
+            $this->_saveNotification( $title, $user_id, $document_id, $url );
+        }
+    }
+
     function setProcessParams ( $data, $urlRedirect = false ) {
         if ( !empty($data['msg']) && !empty($data['status']) ) {
-            if ( !empty( $data['Log'] ) ) {
-                $activity = $this->filterEmptyField($data, 'Log', 'activity');
-                $old_data = $this->filterEmptyField($data, 'Log', 'old_data');
-                $document_id = $this->filterEmptyField($data, 'Log', 'document_id');
-                $error = $this->filterEmptyField($data, 'Log', 'error');
-                $custom_action = $this->filterEmptyField($data, 'Log', 'custom_action');
-
-                $this->_saveLog( $activity, $old_data, $document_id, $error, $custom_action );
-            }
+            $this->_callProcessLog($data);
+            $this->_callProcessNotification($data);
 
             if ( $data['status'] == 'success' ) {
                 $this->redirectReferer($data['msg'], $data['status'], $urlRedirect);
@@ -1226,11 +1242,46 @@ class MkCommonComponent extends Component {
         }
     }
 
+    function _saveNotification( $title = NULL, $user_id = false, $document_id = false, $url = false, $type_notif = 'warning' ){
+        $data = array();
+        $created_id = Configure::read('__Site.config_user_id');
+        $branch_id = Configure::read('__Site.config_branch_id');
+
+        App::import('Helper', 'Html');
+        $this->Html = new HtmlHelper(new View(null));
+
+        if( !empty($url) ) {
+            $url = $this->Html->url($url);
+            $data['Notification']['url'] = $url;
+        }
+        
+        $data['Notification']['type_notif'] = $type_notif ;
+        $data['Notification']['branch_id'] = $branch_id ;
+        $data['Notification']['created_id'] = $created_id;
+        $data['Notification']['document_id'] = $document_id;
+        $data['Notification']['name'] = $title;
+
+        if( !empty($user_id) ) {
+            if( is_array($user_id) ) {
+                foreach ($user_id as $key => $id) {
+                    $data['Notification']['user_id'] = $id;
+                    $this->controller->User->Notification->create();
+                    $this->controller->User->Notification->doSave($data);
+                }
+            } else {
+                $data['Notification']['user_id'] = $user_id;
+                $this->controller->User->Notification->create();
+                $this->controller->User->Notification->doSave($data);
+            }
+        }
+    }
+
     function processFilter ( $data ) {
         $vendor_id = $this->filterEmptyField($data, 'Search', 'vendor_id');
         $nodoc = $this->filterEmptyField($data, 'Search', 'nodoc');
         $date = $this->filterEmptyField($data, 'Search', 'date');
         $coa = $this->filterEmptyField($data, 'Search', 'coa');
+        $type = $this->filterEmptyField($data, 'Search', 'type');
         $params = array();
 
         if( !empty($vendor_id) ) {
@@ -1241,6 +1292,9 @@ class MkCommonComponent extends Component {
         }
         if( !empty($coa) ) {
             $params['coa'] = $coa;
+        }
+        if( !empty($type) ) {
+            $params['type'] = $type;
         }
         if( !empty($date) ) {
             $params['date'] = rawurlencode(urlencode($date));
@@ -1259,6 +1313,7 @@ class MkCommonComponent extends Component {
         $vendor_id = $this->filterEmptyField($result, 'named', 'vendor_id');
         $date = $this->filterEmptyField($result, 'named', 'date');
         $coa = $this->filterEmptyField($result, 'named', 'coa');
+        $type = $this->filterEmptyField($result, 'named', 'type');
 
         if( !empty($nodoc) ) {
             $this->controller->request->data['Search']['nodoc'] = $nodoc;
@@ -1268,6 +1323,9 @@ class MkCommonComponent extends Component {
         }
         if( !empty($coa) ) {
             $this->controller->request->data['Search']['coa'] = $coa;
+        }
+        if( !empty($type) ) {
+            $this->controller->request->data['Search']['type'] = $type;
         }
         if( !empty($date) ) {
             $dateStr = urldecode($date);

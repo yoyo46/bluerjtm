@@ -8,24 +8,6 @@ class Notification extends AppModel {
                 'message' => 'Notification name harap diisi'
             ),
         ),
-        'branch' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Cabang harap diisi'
-            ),
-        ),
-        'account_number' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'No Rek harap diisi'
-            ),
-        ),
-        'account_name' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Atas Nama harap diisi'
-            ),
-        ),
 	);
 
 	var $belongsTo = array(
@@ -109,6 +91,16 @@ class Notification extends AppModel {
             $this->id = $id;
             $this->set(array('read' => 1));
             $this->save();
+        }
+    }
+
+    function doSave ( $data ) {
+        $this->create();
+
+        if($this->save($data)) {
+            return true;    
+        } else {
+            return false;
         }
     }
 }

@@ -10,6 +10,10 @@ class User extends AppModel {
             'className' => 'Employe',
             'foreignKey' => 'employe_id',
         ),
+        'Branch' => array(
+            'className' => 'Branch',
+            'foreignKey' => 'branch_id',
+        ),
     );
     var $hasMany = array(
         'Journal' => array(
@@ -22,6 +26,10 @@ class User extends AppModel {
         ),
         'CoaSetting' => array(
             'className' => 'CoaSetting',
+            'foreignKey' => 'user_id',
+        ),
+        'Notification' => array(
+            'className' => 'Notification',
             'foreignKey' => 'user_id',
         ),
     );

@@ -42,53 +42,37 @@ class CashbanksController extends AppController {
     function index(){
         $this->loadModel('CashBank');
         $this->set('sub_module_title', 'index');
-
-        $default_conditions = array();
-
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['nodoc'])){
-                $nodoc = urldecode($refine['nodoc']);
-                $this->request->data['CashBank']['nodoc'] = $nodoc;
-                $default_conditions['CashBank.nodoc LIKE '] = '%'.$nodoc.'%';
-            }
-            if(!empty($refine['cash'])){
-                $cash = urldecode($refine['cash']);
-                $this->request->data['CashBank']['receiving_cash_type'] = $cash;
-                $default_conditions['CashBank.receiving_cash_type'] = $cash;
-            }
-            if(!empty($refine['from'])){
-                $from = date('Y-m-d', urldecode($refine['from']));
-                $this->request->data['CashBank']['date_from'] = date('d/m/Y', urldecode($refine['from']));
-                $default_conditions['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') >='] = $from;
-            }
-            if(!empty($refine['to'])){
-                $to = date('Y-m-d', urldecode($refine['to']));
-                $this->request->data['CashBank']['date_to'] = date('d/m/Y', urldecode($refine['to']));
-                $default_conditions['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') <='] = $to;
-            }
-        }
         
-        $this->paginate = $this->CashBank->getData('paginate', array(
-            'conditions' => $default_conditions,
-            'order' => array(
-                'CashBank.created' => 'DESC'
-            )
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+        $conditionToApprove = $this->User->Employe->EmployePosition->Approval->_callGetDataToApprove(1);
+
+        $named = $this->MkCommon->filterEmptyField($this->params, 'named');
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
         ));
+        $options =  $this->CashBank->_callRefineParams($params, array(
+            'conditions' => $conditionToApprove,
+        ));
+        $this->paginate = $this->CashBank->getData('paginate', $options, array(
+            'branch' => false,
+        ));
+        $values = $this->paginate('CashBank');
 
-        $cash_banks = $this->paginate('CashBank');
+        if(!empty($values)){
+            foreach ($values as $key => $value) {
+                $model = $this->MkCommon->filterEmptyField($value, 'CashBank', 'receiver_type');
+                $receiver_id = $this->MkCommon->filterEmptyField($value, 'CashBank', 'receiver_id');
 
-        if(!empty($cash_banks)){
-            foreach ($cash_banks as $key => $value) {
-                $model = $value['CashBank']['receiver_type'];
-                $receiver_id = $value['CashBank']['receiver_id'];
-                $cash_banks[$key]['name_cash'] = $this->RjCashBank->_callReceiverName($receiver_id, $model);
+                $values[$key]['name_cash'] = $this->RjCashBank->_callReceiverName($receiver_id, $model);
             }
         }
 
-        $this->set('cash_banks', $cash_banks);
         $this->set('active_menu', 'cash_bank');
+        $this->set(compact(
+            'values'
+        ));
     }
 
     public function cashbank_add() {
@@ -123,7 +107,6 @@ class CashbanksController extends AppController {
 
     public function cashbank_detail( $id = false ) {
         $this->set('sub_module_title', 'Detail Transaksi Kas/Bank');
-        $coa = false;
 
         if( !empty($id) ) {
             $cashbank = $this->CashBank->getData('first', array(
@@ -151,8 +134,9 @@ class CashbanksController extends AppController {
     }
 
     function doCashBank($id = false, $data_local = false){
-        $this->loadModel('Coa');
-        $prepayment_out_id = !empty($data_local['CashBank']['document_id'])?$data_local['CashBank']['document_id']:false;
+        $grand_total = $this->MkCommon->filterEmptyField($data_local, 'CashBank', 'grand_total');
+        $user_id = $this->MkCommon->filterEmptyField($data_local, 'CashBank', 'user_id');
+        $prepayment_out_id = $this->MkCommon->filterEmptyField($data_local, 'CashBank', 'document_id');
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -249,6 +233,12 @@ class CashbanksController extends AppController {
                 }
             }
 
+            $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval(1, $total_coa);
+
+            if( empty($allowApprovals) ) {
+                $data['CashBank']['completed'] = 1;
+            }
+
             $this->CashBank->set($data);
 
             if($this->CashBank->validates($data) && $coas_validate){
@@ -306,8 +296,18 @@ class CashbanksController extends AppController {
                     $this->params['old_data'] = $data_local;
                     $this->params['data'] = $data;
 
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Kas/Bank'), $msg), 'success');
+                    if( !empty($allowApprovals) ) {
+                        $this->MkCommon->_saveNotification(sprintf(__('Kas/Bank dengan No Dokumen %s memerlukan ijin Approval'), $document_no), $allowApprovals, $cash_bank_id, array(
+                            'controller' => 'cashbanks',
+                            'action' => 'detail',
+                            $cash_bank_id,
+                            'admin' => false,
+                        ));
+                    }
+
                     $this->Log->logActivity( sprintf(__('Sukses %s Kas/Bank #%s'), $msg, $this->CashBank->id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $cash_bank_id );
+
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Kas/Bank'), $msg), 'success');
                     $this->redirect(array(
                         'controller' => 'cashbanks',
                         'action' => 'index'
@@ -340,7 +340,7 @@ class CashbanksController extends AppController {
         if(!empty($data['CashBankDetail'])){
             $this->loadModel('Coa');
             foreach ($data['CashBankDetail'] as $key => $value) {
-                $curr_coa = $this->Coa->getData('first', array(
+                $curr_coa = $this->User->Journal->Coa->getData('first', array(
                     'conditions' => array(
                         'Coa.id' => $value['coa_id']
                     )
@@ -356,7 +356,7 @@ class CashbanksController extends AppController {
             $this->set('coa_data', $coa_data);
         }
 
-        $receiving_cash_type = !empty($this->request->data['CashBank']['receiving_cash_type'])?$this->request->data['CashBank']['receiving_cash_type']:false;
+        $receiving_cash_type = $this->MkCommon->filterEmptyField($this->request->data, 'CashBank', 'receiving_cash_type');
 
         if( $receiving_cash_type == 'ppn_in' ) {
             $this->loadModel('Revenue');
@@ -384,7 +384,15 @@ class CashbanksController extends AppController {
             }
         }
 
-        $coas = $this->Coa->getData('list', array(
+        $user = $this->User->getData('first', array(
+            'conditions' => array(
+                'User.id' => $user_id,
+            ),
+        ));
+        $employe_position_id = $this->MkCommon->filterEmptyField($user, 'Employe', 'employe_position_id');
+        $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('cash-bank', $employe_position_id, $grand_total, $id);
+
+        $coas = $this->User->Journal->Coa->getData('list', array(
             'conditions' => array(
                 'Coa.level' => 4,
                 'Coa.is_cash_bank' => 1,
@@ -394,18 +402,17 @@ class CashbanksController extends AppController {
                 'Coa.id', 'Coa.coa_name'
             ),
         ));
-        $this->set(compact(
-            'coas', 'document_id', 'receiving_cash_type',
-            'docs', 'urlBrowseDocument', 'prepayment_out_id',
-            'id', 'data_local'
-        ));
-
-        $this->loadModel('City');
-        $branches = $this->City->branchCities();
-        $this->set('branches', $branches);
+        $branches = $this->User->Branch->City->branchCities();
         
         $this->set('active_menu', 'cash_bank');
         $this->set('module_title', 'Kas/Bank');
+
+        $this->set(compact(
+            'coas', 'document_id', 'receiving_cash_type',
+            'docs', 'urlBrowseDocument', 'prepayment_out_id',
+            'id', 'data_local', 'branches',
+            'user_otorisasi_approvals'
+        ));
 
         $this->render('cashbank_form');
     }
@@ -458,21 +465,19 @@ class CashbanksController extends AppController {
 
     function detail($id = false){
         $this->set('sub_module_title', 'Detail Kas/Bank');
+        $conditions = array(
+            'CashBank.id' => $id,
+        );
+        $conditionToApprove = $this->User->Employe->EmployePosition->Approval->_callGetDataToApprove(1);
+        $conditions = array_merge($conditions, $conditionToApprove);
 
         $cashbank = $this->CashBank->getData('first', array(
-            'conditions' => array(
-                'CashBank.id' => $id,
-            ),
-            'contain' => array(
-                'CashBankDetail' => array(
-                    'Coa'
-                ),
-            )
+            'conditions' => $conditions,
+        ), array(
+            'branch' => false,
         ));
 
         if( !empty($cashbank) ) {
-            $this->loadModel('Approval');
-
             $user_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'user_id');
             $document_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'document_id');
             $document_coa_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'coa_id');
@@ -485,17 +490,22 @@ class CashbanksController extends AppController {
             $nodoc = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'nodoc');
             $debit_total = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'debit_total', 0);
             $credit_total = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'credit_total', 0);
-
-            $grand_total = $credit_total + $debit_total;
+            $grand_total = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'grand_total', 0);
             
             $cashbank = $this->User->getMerge($cashbank, $user_id);
-            $user_employe_id = !empty($cashbank['User']['employe_id'])?$cashbank['User']['employe_id']:false;
-            $cashbank = $this->CashBank->Employe->getMerge($cashbank, $user_employe_id);
-            $user_position_id = !empty($cashbank['Employe']['employe_position_id'])?$cashbank['Employe']['employe_position_id']:false;
-            $user_otorisasi_approvals = $this->Approval->getUserOtorisasiApproval('cash-bank', $user_position_id, $grand_total, $id);
-            $position_approval = $this->Approval->getPositionPriority($user_otorisasi_approvals);
-            $position_priority = !empty($position_approval['Priority'])?$position_approval['Priority']:false;
-            $position_normal = !empty($position_approval['Normal'])?$position_approval['Normal']:false;
+            $cashbank = $this->CashBank->CashBankDetail->getMerge($cashbank, $id, array(
+                'contain' => array(
+                    'Coa'
+                ),
+            ));
+
+            $user_position_id = $this->MkCommon->filterEmptyField($cashbank, 'Employe', 'employe_position_id');
+
+            $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('cash-bank', $user_position_id, $grand_total, $id);
+            $position_approval = $this->User->Employe->EmployePosition->Approval->getPositionPriority($user_otorisasi_approvals);
+
+            $position_priority = $this->MkCommon->filterEmptyField($position_approval, 'Priority');
+            $position_normal = $this->MkCommon->filterEmptyField($position_approval, 'Normal');
 
             if( !empty($user_otorisasi_approvals) ) {
                 $position_otorisasi_approvals = Set::extract('/EmployePosition/id', $user_otorisasi_approvals);
@@ -504,22 +514,27 @@ class CashbanksController extends AppController {
             }
 
             $approval = $this->user_data;
-            $approval_employe_id = !empty($approval['employe_id'])?$approval['employe_id']:false;
+
+            $approval_employe_id = $this->MkCommon->filterEmptyField($approval, 'employe_id');
             $approval = $this->CashBank->Employe->getMerge($approval, $approval);
-            $approval_position_id = !empty($approval['Employe']['employe_position_id'])?$approval['Employe']['employe_position_id']:false;
+
+            $approval_position_id = $this->MkCommon->filterEmptyField($approval, 'Employe', 'employe_position_id');
             $idx_arr_otorisasi = array_search($approval_position_id, $position_otorisasi_approvals);
             $show_approval = false;
 
             if( is_numeric($idx_arr_otorisasi) && !empty($user_otorisasi_approvals[$idx_arr_otorisasi]) ) {
                 $dataOtorisasiApproval = $user_otorisasi_approvals[$idx_arr_otorisasi];
-                $approval_detail_id = !empty($dataOtorisasiApproval['ApprovalDetailPosition']['approval_detail_id'])?$dataOtorisasiApproval['ApprovalDetailPosition']['approval_detail_id']:0;
-                $approval_detail_position_id = !empty($dataOtorisasiApproval['ApprovalDetailPosition']['id'])?$dataOtorisasiApproval['ApprovalDetailPosition']['id']:0;
-                $approvalDetail = $this->Approval->ApprovalDetail->getData('first', array(
+
+                $approval_detail_id = $this->MkCommon->filterEmptyField($dataOtorisasiApproval, 'ApprovalDetailPosition', 'approval_detail_id');
+                $approval_detail_position_id = $this->MkCommon->filterEmptyField($dataOtorisasiApproval, 'ApprovalDetailPosition', 'id');
+
+                $approvalDetail = $this->User->Employe->EmployePosition->Approval->ApprovalDetail->getData('first', array(
                     'conditions' => array(
                         'ApprovalDetail.id' => $approval_detail_id,
                     ),
                 ));
-                $approval_id = !empty($approvalDetail['ApprovalDetail']['approval_id'])?$approvalDetail['ApprovalDetail']['approval_id']:false;
+                $approval_id = $this->MkCommon->filterEmptyField($approvalDetail, 'ApprovalDetail', 'approval_id');
+
                 $auth = $this->CashBank->CashBankAuth->getData('first', array(
                     'conditions' => array(
                         'CashBankAuth.cash_bank_id' => $id,
@@ -537,9 +552,9 @@ class CashbanksController extends AppController {
             if( !empty($this->request->data) ){
                 if( !empty($show_approval) ){
                     $data = $this->request->data;
-                    $is_priority = !empty($dataOtorisasiApproval['ApprovalDetailPosition']['is_priority'])?$dataOtorisasiApproval['ApprovalDetailPosition']['is_priority']:false;
-                    $employe_position_id = !empty($dataOtorisasiApproval['ApprovalDetailPosition']['employe_position_id'])?$dataOtorisasiApproval['ApprovalDetailPosition']['employe_position_id']:false;
-                    $status_document = !empty($data['CashBankAuth']['status_document'])?$data['CashBankAuth']['status_document']:false;
+                    $is_priority = $this->MkCommon->filterEmptyField($dataOtorisasiApproval, 'ApprovalDetailPosition', 'is_priority');
+                    $employe_position_id = $this->MkCommon->filterEmptyField($dataOtorisasiApproval, 'ApprovalDetailPosition', 'employe_position_id');
+                    $status_document = $this->MkCommon->filterEmptyField($data, 'CashBankAuth', 'status_document');
 
                     $data['CashBankAuth']['cash_bank_id'] = $id;
                     $data['CashBankAuth']['approval_id'] = $approval_id;
@@ -640,8 +655,8 @@ class CashbanksController extends AppController {
 
                                         if( !empty($cashbank['CashBankDetail']) ) {
                                             foreach ($cashbank['CashBankDetail'] as $key => $cashBankDetail) {
-                                                $coa_id = $this->MkCommon->filterEmptyField($cashBankDetail, 'coa_id');
-                                                $total = $this->MkCommon->filterEmptyField($cashBankDetail, 'total');
+                                                $coa_id = $this->MkCommon->filterEmptyField($cashBankDetail, 'CashBankDetail', 'coa_id');
+                                                $total = $this->MkCommon->filterEmptyField($cashBankDetail, 'CashBankDetail', 'total');
 
                                                 $documentType = Configure::read('__Site.Journal.Documents');
                                                 $documentType = $this->MkCommon->filterEmptyField($documentType, $receiving_cash_type);

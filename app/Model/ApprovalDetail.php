@@ -94,15 +94,32 @@ class ApprovalDetail extends AppModel {
             $default_options = array(
                 'conditions' => array(
                     'ApprovalDetail.approval_id'=> $id,
-                    'ApprovalDetail.status'=> 1,
                 ),
                 'order' => array(
                     'ApprovalDetail.id' => 'ASC',
                 ),
             );
 
-            $approvalDetails = $this->find('all', $default_options);
+            $approvalDetails = $this->getData('all', $default_options);
             $data['ApprovalDetail'] = $approvalDetails;
+        }
+
+        return $data;
+    }
+
+    function getMergeCurrent ( $data = false, $id = false ) {
+        if( empty($data['ApprovalDetail']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'ApprovalDetail.id'=> $id,
+                ),
+                'contain' => array(
+                    'Approval',
+                ),
+            );
+
+            $approvalDetails = $this->getData('first', $default_options);
+            $data = array_merge($data, $approvalDetails);
         }
 
         return $data;

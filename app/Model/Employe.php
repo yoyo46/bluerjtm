@@ -151,5 +151,16 @@ class Employe extends AppModel {
 
         return $data;
     }
+
+    function getListByPosition( $position_id ){
+        return $this->getData('list', array(
+            'conditions' => array(
+                'Employe.employe_position_id' => $position_id
+            ),
+            'fields' => array(
+                'Employe.id', 'Employe.id',
+            ),
+        ));
+    }
 }
 ?>
