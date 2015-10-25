@@ -49,13 +49,20 @@ class AjaxController extends AppController {
 			
 			$uangJalan = $this->UangJalan->getNopol( $from_city_id, $to_city_id, $result['Truck']['capacity'] );
 			$uangKuli = $this->UangKuli->getUangKuli( $from_city_id, $to_city_id, $customer_id, $result['Truck']['capacity'] );
+			$converterUjs = $this->Ttuj->TtujTipeMotor->TipeMotor->getData('all', array(
+				'contain' => false,
+			), true, array(
+				'converter' => true,
+			));
+
 			$uangKuliMuat = !empty($uangKuli['UangKuliMuat'])?$uangKuli['UangKuliMuat']:false;
 			$uangKuliBongkar = !empty($uangKuli['UangKuliBongkar'])?$uangKuli['UangKuliBongkar']:false;
 		}
 
 		$this->set(compact(
 			'result', 'uangJalan', 'uangKuliMuat',
-			'uangKuliBongkar', 'sjOutstanding'
+			'uangKuliBongkar', 'sjOutstanding',
+			'converterUjs'
 		));
 		$this->render('get_nopol');
 	}

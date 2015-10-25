@@ -1697,6 +1697,25 @@ class CommonHelper extends AppHelper {
         return $result;
     }
 
+    function buildInputForm ($fieldName, $label = false, $options = false) {
+        $default_options = array(
+            'label' => $label,
+            'fieldName' => $fieldName,
+            'frameClass' => 'form-group',
+            'labelClass' => false,
+            'class' => 'form-control',
+            'div' => false,
+            'placeholder' => false,
+            'options' => false,
+        );
+
+        if( !empty($options) ) {
+            $default_options = array_merge($default_options, $options);
+        }
+
+        return $this->_View->element('blocks/common/forms/input_form', $default_options);
+    }
+
     function getCurrencyPrice ($price) {
         return $this->Number->currency($price, Configure::read('__Site.config_currency_code'), array('places' => 0));
     }

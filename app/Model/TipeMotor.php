@@ -34,7 +34,8 @@ class TipeMotor extends AppModel {
         $this->virtualFields['code_name'] = 'CASE WHEN TipeMotor.code_motor = \'\' THEN TipeMotor.name ELSE CONCAT(TipeMotor.code_motor, \' - \',TipeMotor.name) END';
     }
 
-	function getData($find, $options = false, $is_merge = true){
+	function getData($find, $options = false, $is_merge = true, $element = false){
+        $converter = isset($element['converter'])?$element['converter']:false;
         $default_options = array(
             'conditions'=> array(
                 'TipeMotor.status' => 1,
@@ -48,6 +49,13 @@ class TipeMotor extends AppModel {
             'fields' => array()
         );
 
+        if( !empty($converter) ) {
+            $default_options['conditions'] = array_merge($default_options['conditions'], array(
+                'TipeMotor.converter <>' => 0,
+                'TipeMotor.converter NOT' => NULL,
+            ));
+        }
+
         if(!empty($options) && $is_merge){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
@@ -55,7 +63,9 @@ class TipeMotor extends AppModel {
             if(!empty($options['order'])){
                 $default_options['order'] = array_merge($default_options['order'], $options['order']);
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['fields'])){

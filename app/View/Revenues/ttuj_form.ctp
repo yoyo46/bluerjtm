@@ -636,6 +636,14 @@
 												echo $this->Form->hidden('uang_jalan_extra_ori',array(
 													'class'=>'uang_jalan_extra_ori',
 												));
+
+												if( !empty($converterUjs) ) {
+													echo $this->element('blocks/ttuj/tipe_motor_converter', array(
+														'idName' => 'converter-uang-jalan-extra',
+														'class' => 'hide',
+														'values' => $converterUjs,
+													));
+												}
 										?>
 									</div>
 								</div>

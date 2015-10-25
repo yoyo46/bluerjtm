@@ -100,6 +100,26 @@
         }
     }
 
+    $.convertNumber = function(num, type){
+        if( typeof num != 'undefined' ) {
+            num = num.replace(/,/gi, "").replace(/ /gi, "").replace(/IDR/gi, "").replace(/Rp/gi, "");
+
+            if( type == 'int' ) {
+                num = parseInt(num);
+            } else if( type == 'float' ) {
+                num = parseFloat(num);
+            }
+
+            if( isNaN(num) ) {
+                num = 0;
+            }
+        } else {
+            num = 0;
+        }
+
+        return num;
+    }
+
     $.calcUangJalan = function(){
         var qtyLen = $('#ttujDetail .tbody > div').length;
         var uang_jalan_1 = $('.uang_jalan_1_ori').val();
@@ -136,6 +156,7 @@
         var commission_extra_tipe_motor = 0;
         var min_capacity_commission_extra = 0;
         var total_commission_extra = 0;
+        var totalMuatanExtra = 0;
 
         if( $('.uang_jalan_2').length > 0 ) {
             var uang_jalan_2 = $('.uang_jalan_2').val().replace(/,/gi, "");
@@ -149,12 +170,16 @@
         for (var i = 0; i < qtyLen; i++) {
             var tipe_motor_id = tipeMotorObj[i].value;
             var group_motor_id = parseInt($('#group_tipe_motor_id option[value="'+tipe_motor_id+'"]').text());
-            var qtyMuatan = parseInt(qtyMuatanObj[i].value);
-            
-            if( isNaN(qtyMuatan) ) {
-                qtyMuatan = 0;
-            }
+            var qtyMuatan = $.convertNumber(qtyMuatanObj[i].value, 'int');
+            var converter_uang_jalan_extra = $.convertNumber($('#converter-uang-jalan-extra-'+tipe_motor_id).html(), 'int');
+
             total_muatan += qtyMuatan;
+
+            if( converter_uang_jalan_extra != 0 ) {
+                totalMuatanExtra += qtyMuatan * converter_uang_jalan_extra;
+            } else {
+                totalMuatanExtra = total_muatan;
+            }
 
             if( typeof $('.uang-jalan-1-'+group_motor_id).html() != 'undefined' ) {
                 uang_jalan_tipe_motor += parseInt($('.uang-jalan-1-'+group_motor_id).html()) * qtyMuatan;
@@ -198,17 +223,21 @@
                 commission_tipe_motor += commission * qtyMuatan;
             }
 
-            if( typeof $('.uang-jalan-extra-'+group_motor_id).html() != 'undefined' ) {
-                uang_jalan_extra_tipe_motor = parseInt($('.uang-jalan-extra-'+group_motor_id).html());
-                min_capacity_uang_jalan_extra = parseInt($('.uang-jalan-extra-min-capacity-'+group_motor_id).html());
+            // if( typeof $('.uang-jalan-extra-'+group_motor_id).html() != 'undefined' ) {
+            //     var qtyMuatanExtra = qtyMuatan;
+            //     uang_jalan_extra_tipe_motor = parseInt($('.uang-jalan-extra-'+group_motor_id).html());
+            //     min_capacity_uang_jalan_extra = parseInt($('.uang-jalan-extra-min-capacity-'+group_motor_id).html());
 
+            //     if( converter_uang_jalan_extra != 0 ) {
+            //         qtyMuatanExtra = qtyMuatanExtra * converter_uang_jalan_extra;
+            //     }
 
-                if( qtyMuatan > min_capacity_uang_jalan_extra ) {
-                    var capacityCost = qtyMuatan - min_capacity_uang_jalan_extra;
-                    total_uang_jalan_extra += uang_jalan_extra_tipe_motor*capacityCost;
-                    min_capacity_use += capacityCost;
-                }
-            }
+            //     if( qtyMuatanExtra > min_capacity_uang_jalan_extra ) {
+            //         var capacityCost = qtyMuatanExtra - min_capacity_uang_jalan_extra;
+            //         total_uang_jalan_extra += uang_jalan_extra_tipe_motor*capacityCost;
+            //         min_capacity_use += capacityCost;
+            //     }
+            // }
 
             if( typeof $('.commission-extra-'+group_motor_id).html() != 'undefined' ) {
                 commission_extra_tipe_motor = parseInt($('.commission-extra-'+group_motor_id).html());
@@ -217,6 +246,11 @@
 
                 if( qtyMuatan > min_capacity_commission_extra ) {
                     var capacityCost = qtyMuatan - min_capacity_commission_extra;
+
+                    if( converter_uang_jalan_extra != 0 ) {
+                        commission_extra_tipe_motor *= converter_uang_jalan_extra;
+                    }
+
                     total_commission_extra += commission_extra_tipe_motor*capacityCost;
                     min_capacity_use += capacityCost;
                 }
@@ -265,8 +299,8 @@
             commission = commission_tipe_motor;
         }
 
-        if( total_muatan > min_capacity ) {
-            var capacityCost = total_muatan - min_capacity;
+        if( totalMuatanExtra > min_capacity ) {
+            var capacityCost = totalMuatanExtra - min_capacity;
             
             if( capacityCost > min_capacity_use ) {
                 capacityCost = capacityCost - min_capacity_use;

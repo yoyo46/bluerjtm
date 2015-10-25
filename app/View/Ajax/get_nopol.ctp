@@ -103,6 +103,12 @@
 		echo $this->Html->tag('div', !empty($uangJalan['UangJalan']['is_unit'])?$uangJalan['UangJalan']['is_unit']:0, array(
 			'id' => 'is_unit',
 		));
+
+		if( !empty($converterUjs) ) {
+			echo $this->element('blocks/ttuj/tipe_motor_converter', array(
+				'values' => $converterUjs,
+			));
+		}
 ?>
 <div id="list-tipe-motor">
 	<?php 

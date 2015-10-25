@@ -35,7 +35,8 @@ var getUangjalan = function ( response ) {
     $('.truck_capacity').val($(response).filter('#truck_capacity').html());
     $('.driver_name').val($(response).filter('#driver_name').html());
     $('.driver_id').val($(response).filter('#driver_id').html());
-    var uang_jalan_1 = $(response).filter('#uang_jalan_1').html().replace(/,/gi, "");
+
+    $('#converter-uang-jalan-extra').html($(response).filter('#list-converter-uang-jalan-extra').html());
 
     if( $(response).filter('#sj_outstanding').html() != null ) {
         $('.sj_outstanding').html($(response).filter('#sj_outstanding').html());
@@ -44,6 +45,7 @@ var getUangjalan = function ( response ) {
         $('.sj_outstanding').html('');
     }
 
+    var uang_jalan_1 = $(response).filter('#uang_jalan_1').html().replace(/,/gi, "");
     var total_muatan = 0;
     var qtyLen = $('#ttujDetail .tbody > div').length;
 
