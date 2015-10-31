@@ -1770,4 +1770,52 @@ class CommonHelper extends AppHelper {
         
         return $string;
     }
+
+    function menu($text, $url, $options = false, $alert = false) {
+        $_icon = $this->filterEmptyField($options, 'data-icon');
+        $_wrapper = $this->filterEmptyField($options, 'data-wrapper');
+        $_wrapper_options = $this->filterEmptyField($options, 'data-wrapper-options');
+        $_lbl_active = $this->filterEmptyField($options, 'data-active');
+        $_caret = $this->filterEmptyField($options, 'data-caret', false, false, false);
+
+        $_add_class = !empty($options['class'])?$options['class']:false;
+        $_tolower_text = strtolower($text);
+        $options['escape'] = false;
+
+        if( !empty($_icon) ) {
+            $text = sprintf('%s %s', $this->icon($_icon), $text);
+
+            unset($options['data-icon']);
+        }
+        if( $_lbl_active == $_tolower_text ) {
+            $_add_class .= ' active';
+            $options['class'] = $_add_class;
+
+            if( isset($options['aria-expanded']) ) {
+                $options['aria-expanded'] = 'true';
+            }
+            if( isset($options['class']) ) {
+                $options['class'] = str_replace('collapsed', '', $options['class']);
+            }
+        }
+
+        if( !empty($_caret) ) {
+            $text .= $_caret;
+            unset($options['data-caret']);
+        }
+
+        if( !empty($_wrapper) ) {
+            $default_wrapper_options = false;
+
+            if( !empty($_wrapper_options) ) {
+                $default_wrapper_options = $_wrapper_options;
+            }
+            
+            $result = $this->Html->tag($_wrapper, $this->Html->link($text, $url, $options, $alert), $default_wrapper_options);
+        } else {
+            $result = $this->Html->link($text, $url, $options, $alert);
+        }
+
+        return $result;
+    }
 }

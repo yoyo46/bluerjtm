@@ -823,7 +823,7 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'coas' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pengaturan COA</span>', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pengaturan COA', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'coa_setting'
                             ), array(
@@ -832,7 +832,7 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'coa_setting' )?'active':'',
                             ));
                             
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Closing</span>', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Closing', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'closing'
                             ), array(
@@ -887,7 +887,7 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php                            
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kas/Bank</span>', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kas/Bank', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'index'
                             ), array(
@@ -991,7 +991,7 @@
                                 // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Prepayment</span>', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Prepayment', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'prepayment_report'
                             ), array(
@@ -1050,7 +1050,7 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Grup Barang</span>', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Grup Barang', array(
                                 'controller' => 'products',
                                 'action' => 'categories'
                             ), array(
@@ -1058,7 +1058,7 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'product_categories' )?'active':'',
                             ));
-                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Satuan Barang</span>', array(
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Satuan Barang', array(
                             //     'controller' => 'products',
                             //     'action' => 'units'
                             // ), array(
@@ -1066,7 +1066,7 @@
                             // )), array(
                             //     'class' => ( !empty($active_menu) && $active_menu == 'product_units' )?'active':'',
                             // ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Barang</span>', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Barang', array(
                                 'controller' => 'products',
                                 'action' => 'index'
                             ), array(
@@ -1075,13 +1075,54 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'products' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> SPK Internal</span>', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> SPK Internal', array(
                                 'controller' => 'spk',
                                 'action' => 'internal'
                             ), array(
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'internal' )?'active':'',
+                            ));
+                    ?>
+                </ul>
+            </li>
+
+            <?php 
+                    }
+
+                    $dataMenu = array(
+                        'purchases' => array(
+                            'supplier_quotations',
+                        ),
+                    );
+
+                    if( $this->Common->allowMenu( $dataMenu ) ) {
+                        $activeSetting = false;
+                        $settingMenu = array(
+                            'supplier_quotations',
+                        );
+
+                        if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
+                            $activeSetting = 'active';
+                        }
+            ?>
+            <li class="treeview <?php echo $activeSetting; ?>">
+                <?php 
+                        echo $this->Common->menu(__('Purchase Order'), '#', array(
+                            'data-icon' => 'tag',
+                            'data-caret' => $this->Common->icon('angle-left', false, 'i', 'pull-right'),
+                        ));
+                ?>
+                <ul class="treeview-menu">
+                    <?php
+                            echo $this->Common->menu(__('Supplier Quotation'), array(
+                                'controller' => 'purchases',
+                                'action' => 'supplier_quotations',
+                                'admin' => false,
+                            ), array(
+                                'data-wrapper' => 'li',
+                                'data-icon' => 'angle-double-right',
+                                'data-active' => $active_menu,
                             ));
                     ?>
                 </ul>
@@ -1220,7 +1261,7 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'parts_motor' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pengaturan Approval</span>', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pengaturan Approval', array(
                                 'controller' => 'settings',
                                 'action' => 'approval_setting'
                             ), array(
