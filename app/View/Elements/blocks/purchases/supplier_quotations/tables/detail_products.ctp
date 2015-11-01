@@ -47,7 +47,7 @@
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 ?>
-<div class="temp-document-picker hide">
+<div class="temp-document-picker document-calc hide">
 	<div class="box box-primary">
 	    <?php 
 	            echo $this->element('blocks/common/box_header', array(

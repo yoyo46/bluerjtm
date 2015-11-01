@@ -161,6 +161,7 @@ body > .header {
 /*Document Picker*/
 .temp-document-picker tbody input {
   width: 100%;
+  padding: 3px 5px;
 }
 
 @media screen and (min-width: 992px) {

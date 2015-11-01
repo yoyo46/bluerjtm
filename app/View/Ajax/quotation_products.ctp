@@ -55,6 +55,8 @@
                             echo $this->Html->tag('td', $this->Form->checkbox('document_id.', array(
                                 'class' => 'check-option',
                                 'value' => $id,
+                            )).$this->Form->hidden('SupplierQuotationDetail.product_id.'.$id, array(
+                                'value' => $id,
                             )), array(
                                 'class' => 'removed check-box text-center',
                             ));
@@ -67,30 +69,32 @@
                             echo $this->Html->tag('td', $customType, array(
                                 'class' => 'removed',
                             ));
-                            echo $this->Html->tag('td', $rate);
-                            echo $this->Html->tag('td', $this->Common->buildInputForm('price', false, array(
+                            echo $this->Html->tag('td', $rate, array(
+                                'class' => 'text-right',
+                            ));
+                            echo $this->Html->tag('td', $this->Common->buildInputForm('SupplierQuotationDetail.price.'.$id, false, array(
+                                'type' => 'text',
                                 'frameClass' => false,
-                                'class' => false,
+                                'class' => 'input_price text-right price',
                             )), array(
                                 'class' => 'hide',
                             ));
-                            echo $this->Html->tag('td', $this->Common->buildInputForm('disc', false, array(
+                            echo $this->Html->tag('td', $this->Common->buildInputForm('SupplierQuotationDetail.disc.'.$id, false, array(
+                                'type' => 'text',
                                 'frameClass' => false,
-                                'class' => 'disc',
+                                'class' => 'disc input_price text-right',
                             )), array(
                                 'class' => 'hide',
                             ));
-                            echo $this->Html->tag('td', $this->Common->buildInputForm('ppn', false, array(
+                            echo $this->Html->tag('td', $this->Common->buildInputForm('SupplierQuotationDetail.ppn.'.$id, false, array(
+                                'type' => 'text',
                                 'frameClass' => false,
-                                'class' => 'ppn',
+                                'class' => 'ppn input_price text-right',
                             )), array(
                                 'class' => 'hide',
                             ));
-                            echo $this->Html->tag('td', $this->Common->buildInputForm('total', false, array(
-                                'frameClass' => false,
-                                'class' => 'total',
-                            )), array(
-                                'class' => 'hide',
+                            echo $this->Html->tag('td', 0, array(
+                                'class' => 'hide total text-right',
                             ));
                             echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
                                 'class' => 'delete-document btn btn-danger btn-xs',

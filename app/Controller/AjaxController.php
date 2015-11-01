@@ -2910,7 +2910,7 @@ class AjaxController extends AppController {
 	function quotation_products () {
         $this->loadModel('Product');
         $options =  $this->Product->_callRefineParams($this->params, array(
-        	'limit' => 1,
+        	'limit' => 10,
     	));
         $this->MkCommon->_callRefineParams($this->params);
 

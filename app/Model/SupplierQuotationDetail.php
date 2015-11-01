@@ -110,7 +110,7 @@ class SupplierQuotationDetail extends AppModel {
         return $data;
     }
 
-    function doSave( $datas, $value = false, $id = false, $quotation_id, $is_validate = false ) {
+    function doSave( $data, $quotation_id, $is_validate = false ) {
         $result = false;
         $msg = __('Gagal menambahkan quotation');
 
@@ -119,8 +119,10 @@ class SupplierQuotationDetail extends AppModel {
                 'SupplierQuotationDetail.supplier_quotation_id' => $quotation_id,
             ));
         }
+        $data = $this->getDataModel($data);
 
         if ( !empty($datas) ) {
+            debug($datas);die();
             foreach ($datas as $key => $data) {
                 $this->create();
 

@@ -126,6 +126,13 @@ class SupplierQuotation extends AppModel {
         $defaul_msg = __('supplier quotation');
 
         if ( !empty($data) ) {
+            $nodoc = !empty($data['SupplierQuotation']['nodoc'])?$data['SupplierQuotation']['nodoc']:false;
+            $data['SupplierQuotation']['branch_id'] = Configure::read('__Site.config_branch_id');
+
+            if( !empty($nodoc) ) {
+                $defaul_msg = sprintf(__('%s %s'), $defaul_msg, $nodoc);
+            }
+
             if( empty($id) ) {
                 $this->create();
                 $defaul_msg = sprintf(__('menambah %s'), $defaul_msg);
@@ -134,17 +141,12 @@ class SupplierQuotation extends AppModel {
                 $defaul_msg = sprintf(__('mengubah %s'), $defaul_msg);
             }
 
-            $data['Product']['user_id'] = Configure::read('__Site.config_user_id');
-
+            $validates = $this->validates();
+            $detailValidates = $this->SupplierQuotationDetail->doSave($data, false, true);
             $this->set($data);
-            $flagValidates = $this->validates();
-            $nodoc = !empty($data['SupplierQuotation']['nodoc'])?$data['SupplierQuotation']['nodoc']:false;
+            debug($data);die();
 
-            if( !empty($nodoc) ) {
-                $defaul_msg = sprintf(__('%s %s'), $defaul_msg, $nodoc);
-            }
-
-            if( $flagValidates ) {
+            if( $validates && $detailValidates ) {
                 if( $this->save($data) ) {
                     $id = $this->id;
                     $defaul_msg = sprintf(__('Berhasil %s'), $defaul_msg);

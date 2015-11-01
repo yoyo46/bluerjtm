@@ -4,9 +4,9 @@ class PurchasesController extends AppController {
 	public $uses = array(
         'Product'
     );
-    // public $components = array(
-    //     'RjPurchase'
-    // );
+    public $components = array(
+        'RjPurchase'
+    );
 
     function beforeFilter() {
         parent::beforeFilter();
@@ -59,6 +59,8 @@ class PurchasesController extends AppController {
     function supplier_quotation_add(){
         $this->set('sub_module_title', __('Tambah Supplier Quotation'));
 
+        $data = $this->request->data;
+        $data = $this->RjPurchase->_callBeforeSaveDetailQuotation($data);
         $result = $this->Product->SupplierQuotationDetail->SupplierQuotation->doSave($this->request->data);
         $this->MkCommon->setProcessParams($result, array(
             'controller' => 'purchases',

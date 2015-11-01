@@ -763,7 +763,7 @@
                 var pickDocument = $('.pick-document[rel="'+rel_id+'"]');
 
                 if(self.is(':checked')){
-                    if(pickDocument.length > 0){
+                    if(temp_picker.find('.pick-document[rel="'+rel_id+'"]').length <= 0){
                         var html_content = '<tr class="pick-document" rel="'+rel_id+'">'+pickDocument.html()+'</tr>';
                         temp_picker.find('tbody').append(html_content);
 
@@ -772,10 +772,95 @@
 
                         temp_picker.removeClass('hide');
                         $.rebuildFunction();
+                        $.inputPrice({
+                            obj: temp_picker.find('.input_price'),
+                        });
                     }
                 }
             }
         }
+    }
+
+    $.calcTotal = function(options){
+        var settings = $.extend({
+            obj: $('.document-calc .price,.document-calc .disc,.document-calc .ppn,.document-calc .total'),
+        }, options );
+
+        if( settings.obj.length > 0 ) {
+            settings.obj.off('keyup');
+            settings.obj.keyup(function(){
+                var self = $(this);
+                var parent = self.parents('.pick-document');
+                calculate(parent);
+            });
+        }
+
+        function calculate(parent){
+            var price = $.convertNumber(parent.find('.price').val());
+            var disc = $.convertNumber(parent.find('.disc').val());
+            var ppn = $.convertNumber(parent.find('.ppn').val());
+            var objTotal = parent.find('.total');
+
+            total = ( price - disc ) + ppn;
+            objTotal.html( $.formatDecimal(total) );
+        }
+    }
+
+    $.convertNumber = function(num, type){
+        if( typeof num != 'undefined' ) {
+            num = num.replace(/,/gi, "").replace(/ /gi, "").replace(/IDR/gi, "").replace(/Rp/gi, "");
+
+            if( typeof type == 'undefined' ) {
+                type = 'int';
+            }
+
+            if( type == 'int' ) {
+                num = num*1;
+            } else if( type == 'float' ) {
+                num = parseFloat(num);
+            }
+
+            if( isNaN(num) ) {
+                num = 0;
+            }
+        } else {
+            num = 0;
+        }
+
+        return num;
+    }
+
+    $.formatDecimal = function(number, decimals, dec_point, thousands_sep){
+        // Set the default values here, instead so we can use them in the replace below.
+        thousands_sep   = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep;
+        dec_point       = (typeof dec_point === 'undefined') ? '.' : dec_point;
+        decimals        = !isFinite(+decimals) ? 0 : Math.abs(decimals);
+
+        // Work out the unicode representation for the decimal place.   
+        var u_dec = ('\\u'+('0000'+(dec_point.charCodeAt(0).toString(16))).slice(-4));
+
+        // Fix the number, so that it's an actual number.
+        number = (number + '')
+            .replace(new RegExp(u_dec,'g'),'.')
+            .replace(new RegExp('[^0-9+\-Ee.]','g'),'');
+
+        var n = !isFinite(+number) ? 0 : +number,
+            s = '',
+            toFixedFix = function (n, decimals) {
+                var k = Math.pow(10, decimals);
+                return '' + Math.round(n * k) / k;
+            };
+
+        // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+        s = (decimals ? toFixedFix(n, decimals) : '' + Math.round(n)).split('.');
+        if (s[0].length > 3) {
+            s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, thousands_sep);
+        }
+        if ((s[1] || '').length < decimals) {
+            s[1] = s[1] || '';
+            s[1] += new Array(decimals - s[1].length + 1).join('0');
+        }
+        return s.join(dec_point);
     }
 
     $.rebuildFunction = function() {
@@ -783,6 +868,7 @@
         $.rowAdded();
         $.ajaxModal();
         $.documentPicker();
+        $.calcTotal();
     }
 
     $.rebuildFunctionAjax = function( obj ) {
