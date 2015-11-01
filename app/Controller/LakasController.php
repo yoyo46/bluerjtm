@@ -246,11 +246,11 @@ class LakasController extends AppController {
                 if($this->Laka->save($data)){
                     $laka_id = $this->Laka->id;
 
-                    if(!empty($data_local['Laka']['ttuj_id']) && $data['Laka']['ttuj_id'] != $data_local['Laka']['ttuj_id']){
-                        $this->Ttuj->id = $data_local['Laka']['ttuj_id'];
-                        $this->Ttuj->set('is_laka', 0);
-                        $this->Ttuj->save();
-                    }
+                    // if(!empty($data_local['Laka']['ttuj_id']) && $data['Laka']['ttuj_id'] != $data_local['Laka']['ttuj_id']){
+                    //     $this->Ttuj->id = $data_local['Laka']['ttuj_id'];
+                    //     $this->Ttuj->set('is_laka', 0);
+                    //     $this->Ttuj->save();
+                    // }
 
                     if(empty($id) && empty($data_local)){
                         $data['LakaDetail']['laka_id'] = $laka_id;
@@ -286,11 +286,11 @@ class LakasController extends AppController {
                             $this->Ttuj->save();
                         }
 
-                        if(!empty($data['Laka']['completed']) && !empty($data['Laka']['ttuj_id'])){
-                            $this->Ttuj->id = $data['Laka']['ttuj_id'];
-                            $this->Ttuj->set('is_laka', 0);
-                            $this->Ttuj->save();
-                        }
+                        // if(!empty($data['Laka']['completed']) && !empty($data['Laka']['ttuj_id'])){
+                        //     $this->Ttuj->id = $data['Laka']['ttuj_id'];
+                        //     $this->Ttuj->set('is_laka', 0);
+                        //     $this->Ttuj->save();
+                        // }
 
                         $this->params['old_data'] = $data_local;
                         $this->params['data'] = $data;
@@ -332,10 +332,6 @@ class LakasController extends AppController {
             $this->request->data['Laka']['tgl_laka'] = (!empty($this->request->data['Laka']['tgl_laka']) ? $this->MkCommon->customDate($this->request->data['Laka']['tgl_laka'], 'd/m/Y') : '' );
             $this->request->data['LakaDetail']['date_birth'] = (!empty($this->request->data['LakaDetail']['date_birth'])) ? $this->MkCommon->getDate($this->request->data['LakaDetail']['date_birth'], true) : '';
 
-            if( !empty($this->request->data['Laka']['completed']) ) {
-                $this->request->data['Laka']['completed_date'] = date('d/m/Y', strtotime($this->request->data['Laka']['completed_date']));
-            }
-
             if( !empty($this->request->data['Laka']['from_city_id']) ) {
                 $this->request->data['Laka']['from_city_name'] = $this->City->getCity( $this->request->data['Laka']['from_city_id'], 'name' );
             }
@@ -358,6 +354,10 @@ class LakasController extends AppController {
                     $this->request->data['Laka']['change_driver_name'] = $driver_change['Driver']['driver_name'];
                 }
             }
+        }
+
+        if( !empty($this->request->data['Laka']['completed_date']) ) {
+            $this->request->data['Laka']['completed_date'] = date('d/m/Y', strtotime($this->request->data['Laka']['completed_date']));
         }
 
         $this->loadModel('Truck');
