@@ -505,4 +505,290 @@
 
         getTotal( settings.obj.parents('tr') );
     }
+
+    $.inputPrice = function(options){
+        var settings = $.extend({
+            obj: $('.input_price'),
+        }, options );
+
+        if( settings.obj.length > 0 ) {
+            settings.obj.priceFormat({
+                doneFunc: function(obj, val) {
+                    currencyVal = val;
+                    currencyVal = currencyVal.replace(/,/gi, "")
+                    obj.next(".input_hidden").val(currencyVal);
+                }
+            });
+        }
+    }
+
+    $.inputNumber = function(options){
+        var settings = $.extend({
+            obj: $('.input_number'),
+        }, options );
+
+        if( settings.obj.length > 0 ) {
+            settings.obj.keypress(function(event) {
+                var charCode = (event.which) ? event.which : event.keyCode;
+
+                if( (this.value.length == 0 && charCode == 46) || charCode == 33 || charCode == 64 || charCode == 35 || charCode == 36 || charCode == 37 || charCode == 94 || charCode == 38 || charCode == 42 || charCode == 40 || charCode == 41
+                    ){
+                    return false;
+                } else {
+                    if (
+                        charCode == 8 ||  /*backspace*/
+                        charCode == 46 || /*point*/
+                        charCode == 9 || /*Tab*/
+                        charCode == 27 || /*esc*/
+                        charCode == 13 || /*enter*/
+                        // charCode == 97 || 
+                        // Allow: Ctrl+A
+                        // (charCode == 65 && event.ctrlKey === true) ||
+                        // Allow: home, end, left, right
+                        (charCode >= 35 && charCode < 39) || ( charCode >= 48 && charCode <= 57 )
+                        ) 
+                    {
+                        return true;
+                    }else if (          
+                        (charCode != 46 || ($(this).val().indexOf('.') != -1)) || 
+                        (charCode < 48 || charCode > 57)) 
+                    {
+                        event.preventDefault();
+                    }
+                }
+            });     
+        }
+    }
+
+    $.ajaxForm = function( options ) {
+        var settings = $.extend({
+            obj: $('.ajax-form'),
+        }, options );
+
+        if( settings.obj.length > 0 ) {
+            settings.obj.off('submit');
+            settings.obj.submit(function(){
+                var self = $(this);
+
+                getAjaxForm ( self );
+
+                return false;
+            });
+
+            function getAjaxForm ( self ) {
+                var url = self.attr('action');
+                var type = self.attr('data-type');
+                var flag_alert = self.attr('data-alert');
+                var data_ajax_type = self.attr('data-ajax-type');
+                var formData = self.serialize(); 
+                var data_wrapper_write = self.attr('data-wrapper-write');
+                var data_wrapper_success = self.attr('data-wrapper-success');
+                var data_pushstate = self.attr('data-pushstate');
+                var data_url_pushstate = self.attr('data-url-pushstate');
+                var data_reload = self.attr('data-reload');
+                var data_reload_url = self.attr('data-reload-url');
+                var data_close_modal = self.attr('data-close-modal');
+
+                if( flag_alert != null ) {
+                    if ( !confirm(flag_alert) ) { 
+                        return false;
+                    }
+                }
+
+                if(typeof data_ajax_type == 'undefined' ) {
+                    data_ajax_type = 'html';
+                }
+
+                if(typeof data_wrapper_write == 'undefined' ) {
+                    data_wrapper_write = '#wrapper-write';
+                }
+
+                if(typeof data_pushstate == 'undefined' ) {
+                    data_pushstate = false;
+                }
+
+                if(typeof data_url_pushstate != 'undefined' ) {
+                    data_url_pushstate = url;
+                }
+
+                if(typeof type == 'undefined' ) {
+                    type = 'content';
+                }
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    dataType: data_ajax_type,
+                    data: formData,
+                    success: function(result) {
+                        if( type == 'content' ) {
+                            var content = result;
+                            var status = $(content).find('#msg-status').html();
+                            var msg = $(content).find('#msg-text').html();
+                            var contentHtml = $(content).filter(data_wrapper_write).html();
+
+                            if(typeof contentHtml == 'undefined' ) {
+                                contentHtml = $(content).find(data_wrapper_write).html();
+                            }
+
+                            if( $(data_wrapper_write).length > 0 ) {
+                                if( status == 'success' && data_reload == 'true' ) {
+                                    if(typeof data_reload_url == 'undefined' ) {
+                                        window.location.reload();
+                                    } else {
+                                        location.href = data_reload_url;
+                                    }
+                                } else if(status == 'success' && typeof data_wrapper_success != 'undefined' && $(data_wrapper_success).length > 0 ) {
+                                    contentHtml = $(content).filter(data_wrapper_success).html();
+
+                                    if(typeof contentHtml == 'undefined' ) {
+                                        contentHtml = $(content).find(data_wrapper_success).html();
+                                    }
+
+                                    $(data_wrapper_success).html(contentHtml);
+                                    $.rebuildFunctionAjax( $(data_wrapper_success) );
+
+                                    if( data_pushstate != false ) {
+                                        window.history.pushState('data', '', data_url_pushstate);
+                                    }
+
+                                    if( data_close_modal == 'true' ) {
+                                        $('#myModal .close.btn').trigger("click");
+                                    }
+                                } else {
+                                    $(data_wrapper_write).html(contentHtml);
+                                    $.rebuildFunctionAjax( $(data_wrapper_write) );
+                                }
+                            }
+                        }
+
+                        return false;
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                        return false;
+                    }
+                });
+
+                return false;
+            }
+        }
+    }
+
+    $.directAjaxModal = function(options){
+        var settings = $.extend({
+            obj: $('.ajaxCustomModal'),
+            objId: $('#myModal'),
+        }, options );
+
+        var vthis = settings.obj;
+        var url = vthis.attr('href');
+        var alert_msg = vthis.attr('alert');
+        var title = vthis.attr('title');
+
+        $('.modal-body').html('');
+
+        if( alert_msg != null ) {
+            if ( !confirm(alert_msg) ) { 
+                return false;
+            }
+        }
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            success: function(response, status) {
+                if( title !== undefined ) {
+                    settings.objId.find('.modal-title').html(title).show();
+                } else {
+                    settings.objId.find('.modal-title').hide();
+                }
+
+                settings.objId.find('.modal-body').html(response);
+                settings.objId.modal({
+                    show: true,
+                });
+                $.rebuildFunctionAjax( settings.objId );
+
+                return false;
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    }
+
+    $.ajaxModal = function(options){
+        var settings = $.extend({
+            obj: $('.ajaxCustomModal'),
+            objId: $('#myModal'),
+        }, options );
+
+        if( settings.obj.length > 0 ) {
+            settings.obj.off('click');
+            settings.obj.click(function(msg) {
+                var self = $(this);
+                $.directAjaxModal({
+                    obj: self,
+                    objId: settings.objId,
+                });
+
+                return false;
+            });
+        }
+    }
+
+    $.documentPicker = function(options){
+        var settings = $.extend({
+            obj: $('.document-picker'),
+            objCheck: $('.document-picker .check-option'),
+        }, options );
+
+        if( settings.obj.length > 0 ) {
+            settings.objCheck.off('click');
+            settings.objCheck.click(function(){
+                if(settings.objCheck.length > 0){
+                    jQuery.each( settings.objCheck, function( i, val ) {
+                        var self = $(this);
+                        check_option_coa(self)
+                    });
+                }
+            });
+
+            function check_option_coa(self){
+                var parent = self.parents('.pick-document');
+                var rel_id = parent.attr('rel');
+                var temp_picker = $('.temp-document-picker');
+                var pickDocument = $('.pick-document[rel="'+rel_id+'"]');
+
+                if(self.is(':checked')){
+                    if(pickDocument.length > 0){
+                        var html_content = '<tr class="pick-document" rel="'+rel_id+'">'+pickDocument.html()+'</tr>';
+                        temp_picker.find('tbody').append(html_content);
+
+                        temp_picker.find('td.hide').removeClass('hide');
+                        temp_picker.find('td.removed').remove();
+
+                        temp_picker.removeClass('hide');
+                        $.rebuildFunction();
+                    }
+                }
+            }
+        }
+    }
+
+    $.rebuildFunction = function() {
+        $.ajaxForm();
+        $.rowAdded();
+        $.ajaxModal();
+        $.documentPicker();
+    }
+
+    $.rebuildFunctionAjax = function( obj ) {
+        $.rebuildFunction();
+        $.inputPrice({
+            obj: obj.find('.input_price'),
+        });
+    }
 }( jQuery ));

@@ -158,6 +158,11 @@ body > .header {
   padding-left: 0;
 }
 
+/*Document Picker*/
+.temp-document-picker tbody input {
+  width: 100%;
+}
+
 @media screen and (min-width: 992px) {
   .left-side {
     top: 50px;

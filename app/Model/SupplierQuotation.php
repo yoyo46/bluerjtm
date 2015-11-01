@@ -1,82 +1,87 @@
 <?php
-class Product extends AppModel {
-	var $name = 'Product';
+class SupplierQuotation extends AppModel {
+	var $name = 'SupplierQuotation';
 
     var $belongsTo = array(
-        'ProductUnit' => array(
-            'className' => 'ProductUnit',
-            'foreignKey' => 'product_unit_id',
+        'User' => array(
+            'className' => 'User',
+            'foreignKey' => 'user_id',
         ),
-        'SupplierQuotationDetail' => array(
-            'className' => 'SupplierQuotationDetail',
-            'foreignKey' => 'product_id',
+        'Vendor' => array(
+            'className' => 'Vendor',
+            'foreignKey' => 'vendor_id',
         )
     );
 
     var $hasMany = array(
-        'ProductUnit' => array(
-            'className' => 'ProductUnit',
-            'foreignKey' => 'product_unit_id',
+        'SupplierQuotationDetail' => array(
+            'className' => 'SupplierQuotationDetail',
+            'foreignKey' => 'supplier_quotation_id',
         ),
-        'ProductCategory' => array(
-            'className' => 'ProductCategory',
-            'foreignKey' => 'product_category_id',
-        )
     );
 
 	var $validate = array(
-        'code' => array(
+        'nodoc' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Kode barang harap diisi'
+                'message' => 'No dokumen harap diisi'
             ),
             'unique' => array(
                 'rule' => 'isUnique',
-                'message' => 'Kode barang sudah terdaftar, mohon masukkan kode lain.'
+                'message' => 'No dokumen sudah terdaftar, mohon masukkan no dokumen lain.'
             ),
         ),
-        'name' => array(
+        'vendor_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Nama barang harap diisi'
-            ),
-        ),
-        'product_unit_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Satuan barang harap dipilih'
+                'message' => 'Vendor harap dipilih'
             ),
             'numeric' => array(
                 'rule' => array('numeric'),
-                'message' => 'Satuan barang harap dipilih'
+                'message' => 'Vendor harap dipilih'
             ),
         ),
-        'product_category_id' => array(
+        'available_from' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Grup barang harap dipilih'
+                'message' => 'Tgl berlaku quotation harap dipilih'
             ),
-            'numeric' => array(
-                'rule' => array('numeric'),
-                'message' => 'Grup barang harap dipilih'
+        ),
+        'available_to' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl berlaku quotation harap dipilih'
+            ),
+        ),
+        'transaction_date' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl quotation harap dipilih'
             ),
         ),
 	);
 
 	function getData( $find, $options = false, $elements = false ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
+
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'Product.name' => 'ASC'
+                'SupplierQuotation.created' => 'DESC',
+                'SupplierQuotation.id' => 'DESC',
             ),
             'fields' => array(),
         );
 
         switch ($status) {
             case 'active':
-                $default_options['conditions']['Product.status'] = 1;
+                $default_options['conditions']['SupplierQuotation.status'] = 1;
                 break;
+        }
+
+        if( !empty($branch) ) {
+            $default_options['conditions']['SupplierQuotation.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         if(!empty($options['conditions'])){
@@ -103,7 +108,7 @@ class Product extends AppModel {
     function getMerge( $data, $id ){
         $data_merge = $this->getData('first', array(
             'conditions' => array(
-                'Product.id' => $id
+                'SupplierQuotation.id' => $id
             ),
         ), array(
             'status' => 'all',
@@ -118,7 +123,7 @@ class Product extends AppModel {
 
     function doSave( $data, $value = false, $id = false ) {
         $result = false;
-        $defaul_msg = __('barang');
+        $defaul_msg = __('supplier quotation');
 
         if ( !empty($data) ) {
             if( empty($id) ) {
@@ -129,13 +134,14 @@ class Product extends AppModel {
                 $defaul_msg = sprintf(__('mengubah %s'), $defaul_msg);
             }
 
+            $data['Product']['user_id'] = Configure::read('__Site.config_user_id');
+
             $this->set($data);
             $flagValidates = $this->validates();
-            $code = !empty($data['Product']['code'])?$data['Product']['code']:false;
-            $name = !empty($data['Product']['name'])?$data['Product']['name']:false;
+            $nodoc = !empty($data['SupplierQuotation']['nodoc'])?$data['SupplierQuotation']['nodoc']:false;
 
-            if( !empty($code) && !empty($name) ) {
-                $defaul_msg = sprintf(__('%s (%s) %s'), $defaul_msg, $code, $name);
+            if( !empty($nodoc) ) {
+                $defaul_msg = sprintf(__('%s %s'), $defaul_msg, $nodoc);
             }
 
             if( $flagValidates ) {
@@ -180,28 +186,42 @@ class Product extends AppModel {
     }
 
     public function _callRefineParams( $data = '', $default_options = false ) {
-        $keyword = !empty($data['named']['keyword'])?$data['named']['keyword']:false;
-        $code = !empty($data['named']['code'])?$data['named']['code']:false;
-        $name = !empty($data['named']['name'])?$data['named']['name']:false;
-        $group = !empty($data['named']['group'])?$data['named']['group']:false;
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $vendor_id = !empty($data['named']['vendor_id'])?$data['named']['vendor_id']:false;
 
-        if( !empty($keyword) ) {
-            $default_options['conditions']['OR'] = array(
-                'Product.code LIKE' => '%'.$keyword.'%',
-                'Product.name LIKE' => '%'.$keyword.'%',
-            );
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(SupplierQuotation.transaction_date, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(SupplierQuotation.transaction_date, \'%Y-%m-%d\') <='] = $dateTo;
+            }
         }
-        if( !empty($code) ) {
-            $default_options['conditions']['Product.code LIKE'] = '%'.$code.'%';
+        if( !empty($nodoc) ) {
+            $default_options['conditions']['SupplierQuotation.nodoc LIKE'] = '%'.$nodoc.'%';
         }
-        if( !empty($name) ) {
-            $default_options['conditions']['Product.name LIKE'] = '%'.$name.'%';
-        }
-        if( !empty($group) ) {
-            $default_options['conditions']['Product.product_category_id'] = $group;
+        if( !empty($vendor_id) ) {
+            $default_options['conditions']['SupplierQuotation.vendor_id'] = $vendor_id;
         }
         
         return $default_options;
+    }
+
+    function _callRatePrice ( $product_id = false, $empty = 0 ) {
+        $this->SupplierQuotationDetail->virtualFields['min_price'] = 'MIN(SupplierQuotationDetail.price)';
+        $value = $this->SupplierQuotationDetail->getData('first', array(
+            'conditions' => array(
+                'SupplierQuotationDetail.product_id' => $product_id,
+            ),
+            'group' => array(
+                'SupplierQuotationDetail.product_id',
+            ),
+        ));
+
+        return !empty($value['SupplierQuotationDetail']['price'])?$value['SupplierQuotationDetail']['price']:$empty;
     }
 }
 ?>

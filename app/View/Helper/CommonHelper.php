@@ -1771,7 +1771,7 @@ class CommonHelper extends AppHelper {
         return $string;
     }
 
-    function menu($text, $url, $options = false, $alert = false) {
+    function link($text, $url, $options = false, $alert = false) {
         $_icon = $this->filterEmptyField($options, 'data-icon');
         $_wrapper = $this->filterEmptyField($options, 'data-wrapper');
         $_wrapper_options = $this->filterEmptyField($options, 'data-wrapper-options');

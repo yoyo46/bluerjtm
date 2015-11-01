@@ -75,6 +75,16 @@ class PaginatorHelper extends AppHelper {
 		'convertKeys' => array('page', 'limit', 'sort', 'direction')
 	);
 
+	function _callSetOptionUrl ( $options ) {
+		if( !empty($options['urlClass']) ) {
+			$options['class'] = $options['urlClass'];
+			$options['title'] = $options['urlTitle'];
+			unset($options['urlClass'], $options['urlTitle']);
+		}
+
+		return $options;
+	}
+
 /**
  * Constructor for the helper. Sets up the helper that is used for creating 'AJAX' links.
  *
@@ -308,6 +318,7 @@ class PaginatorHelper extends AppHelper {
 			'rel' => 'next'
 		);
 		$options = (array)$options + $defaults;
+
 		return $this->_pagingLink('Next', $title, $options, $disabledTitle, $disabledOptions);
 	}
 
@@ -521,6 +532,9 @@ class PaginatorHelper extends AppHelper {
 					compact('escape', 'model', 'class') + $options
 				);
 			}
+
+			$options = $this->_callSetOptionUrl($options);
+
 			$link = $this->link($title, $url, compact('escape', 'model') + $options);
 			return $this->Html->tag($tag, $link, compact('class'));
 		}
@@ -737,6 +751,7 @@ class PaginatorHelper extends AppHelper {
 			$options['ellipsis'], $options['class'], $options['currentClass'], $options['currentTag']
 		);
 
+		$options = $this->_callSetOptionUrl($options);
 		$out = '';
 
 		if ($modulus && $params['pageCount'] > $modulus) {
@@ -872,6 +887,7 @@ class PaginatorHelper extends AppHelper {
 		unset($options['tag'], $options['after'], $options['model'], $options['separator'], $options['ellipsis'], $options['class']);
 
 		$out = '';
+		$options = $this->_callSetOptionUrl($options);
 
 		if (is_int($first) && $params['page'] >= $first) {
 			if ($after === null) {
@@ -937,6 +953,7 @@ class PaginatorHelper extends AppHelper {
 
 		$out = '';
 		$lower = $params['pageCount'] - $last + 1;
+		$options = $this->_callSetOptionUrl($options);
 
 		if (is_int($last) && $params['page'] <= $lower) {
 			if ($before === null) {

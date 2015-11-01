@@ -13,6 +13,24 @@ class AjaxController extends AppController {
 		$this->layout = false;
 	}
 
+    function search( $index = 'index' ){
+        if(!empty($this->request->data)) {
+            $data = $this->request->data;
+            $params = array(
+                'controller' => 'ajax',
+                'action' => $index,
+                'false' => false,
+            );
+
+            $result = $this->MkCommon->processFilter($data);
+            $params = array_merge($params, $result);
+
+            $this->redirect($params);
+        } else {
+            $this->redirect('/');
+        }
+    }
+
 	function getKotaAsal() {
 		$this->loadModel('UangJalan');
 		$resultCity = $this->UangJalan->getKotaAsal();
@@ -2887,6 +2905,36 @@ class AjaxController extends AppController {
 	        	}
             }
 		}
+	}
+
+	function quotation_products () {
+        $this->loadModel('Product');
+        $options =  $this->Product->_callRefineParams($this->params, array(
+        	'limit' => 1,
+    	));
+        $this->MkCommon->_callRefineParams($this->params);
+
+        $this->paginate = $this->Product->getData('paginate', $options);
+        $values = $this->paginate('Product');
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Product', 'id');
+                $product_unit_id = $this->MkCommon->filterEmptyField($value, 'Product', 'product_unit_id');
+                $product_category_id = $this->MkCommon->filterEmptyField($value, 'Product', 'product_category_id');
+
+                $value = $this->Product->ProductUnit->getMerge($value, $product_unit_id);
+                $value = $this->Product->ProductCategory->getMerge($value, $product_category_id);
+                $value['Product']['rate'] = $this->Product->SupplierQuotationDetail->SupplierQuotation->_callRatePrice($id, '-');
+                $values[$key] = $value;
+            }
+        }
+
+        $groups = $this->Product->ProductCategory->getData('list');
+        $this->set('module_title', __('Barang'));
+        $this->set(compact(
+        	'values', 'groups'
+    	));
 	}
 }
 ?>

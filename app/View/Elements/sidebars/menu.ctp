@@ -1098,8 +1098,10 @@
 
                     if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeSetting = false;
+                        $lblQuotation = __('Supplier Quotation');
+                        
                         $settingMenu = array(
-                            'supplier_quotations',
+                            $lblQuotation,
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1108,14 +1110,14 @@
             ?>
             <li class="treeview <?php echo $activeSetting; ?>">
                 <?php 
-                        echo $this->Common->menu(__('Purchase Order'), '#', array(
+                        echo $this->Common->link(__('Purchase Order'), '#', array(
                             'data-icon' => 'tag',
                             'data-caret' => $this->Common->icon('angle-left', false, 'i', 'pull-right'),
                         ));
                 ?>
                 <ul class="treeview-menu">
                     <?php
-                            echo $this->Common->menu(__('Supplier Quotation'), array(
+                            echo $this->Common->link($lblQuotation , array(
                                 'controller' => 'purchases',
                                 'action' => 'supplier_quotations',
                                 'admin' => false,

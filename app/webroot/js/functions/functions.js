@@ -2018,7 +2018,9 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
 
                         if( type_action == 'browse-check-docs' ) {
-                            input_price($('#myModal .modal-body .input_price'));
+                            $.inputPrice({
+                                obj: $('#myModal .modal-body .input_price'),
+                            });
                             input_price_min($('#myModal .modal-body .input_price_min'));
                             sisa_ttuj($('#myModal .modal-body .sisa-ttuj'));
                             popup_checkbox();
@@ -2243,20 +2245,6 @@ function findInfoTTujPayment(url){
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
             return false;
-        }
-    });
-}
-
-var input_price = function ( obj ) {
-    if( typeof obj == 'undefined' ) {
-        obj = $('.input_price');
-    }
-
-    obj.priceFormat({
-        doneFunc: function(obj, val) {
-            currencyVal = val;
-            currencyVal = currencyVal.replace(/,/gi, "")
-            obj.next(".input_hidden").val(currencyVal);
         }
     });
 }
@@ -2492,7 +2480,9 @@ var check_all_checkbox = function(){
                 $('.child-'+rel_id).find('.checkbox-detail').remove();
                 $('.child-'+rel_id).find('.on-remove').remove();
 
-                input_price($('.child-'+rel_id+' .input_price'));
+                $.inputPrice({
+                    obj: $('.child-'+rel_id+' .input_price'),
+                });
                 input_price_min($('.child-'+rel_id+' .input_price_min'));
                 delete_custom_field($('.child-'+rel_id+' .delete-custom-field'));
 
@@ -2522,7 +2512,9 @@ var check_all_checkbox = function(){
                 $('.child-'+rel_id).find('.action-search').removeClass('hide');
                 $('.child-'+rel_id).find('.checkbox-detail').remove();
 
-                input_price($('.child-'+rel_id+' .input_price'));
+                $.inputPrice({
+                    obj: $('.child-'+rel_id+' .input_price'),
+                });
                 input_price_min($('.child-'+rel_id+' .input_price_min'));
                 delete_custom_field($('.child-'+rel_id+' .delete-custom-field'));
             }
@@ -2566,7 +2558,9 @@ var popup_checkbox = function(){
                     $('#checkbox-info-table .child-'+id+' .ttuj-payment-action').removeClass('hide');
                     $('.action-biaya-ttuj').removeClass('hide');
 
-                    input_price( $('.child-'+id+' .input_price') );
+                    $.inputPrice({
+                        obj: $('.child-'+id+' .input_price'),
+                    });
                     input_price_min( $('.child-'+id+' .input_price_min') );
                     sisa_ttuj($('#checkbox-info-table .child-'+id+' .sisa-ttuj'));
                     delete_biaya_ttuj($('#checkbox-info-table .child-'+id+' .ttuj-payment-action a'));
@@ -2690,7 +2684,9 @@ var get_document_cashbank = function(){
                             content_table = content_table.replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/opentd/gi, "td").replace(/closetd/gi, "/td").replace(/opentr/gi, "tr").replace(/closetr/gi, "/tr");
                             $('.cashbanks-info-table').empty();
                             $('.cashbanks-info-table').html(content_table);
-                            input_price( $('.cashbanks-info-table .child .input_price') );
+                            $.inputPrice({
+                                obj: $('.cashbanks-info-table .child .input_price'),
+                            });
                         } else {
                             var html_content = '<tr class="child child-'+coa_id+'" rel="'+coa_id+'"> \
                                 <td>\
@@ -2708,7 +2704,9 @@ var get_document_cashbank = function(){
                                 </td> \
                             </tr>';
                             $('.cashbanks-info-table').append(html_content);
-                            input_price( $('.cashbanks-info-table .child:last-child .input_price') );
+                            $.inputPrice({
+                                obj: $('.cashbanks-info-table .child:last-child .input_price'),
+                            });
                         }
                     } else {
                         $('#receiver-type').val('');
@@ -3251,8 +3249,6 @@ $(function() {
             $('.uang-keamanan-unit').addClass('hide');
         }
     });
-
-    input_price( $('.input_price') );
 
     // $('#getKotaAsal').change(function() {
     //     var self = $(this);
@@ -4155,8 +4151,6 @@ $(function() {
     $('.leasing-payment-date').keyup(function(){
         _callTableLeasingExpired()
     });
-
-    $.rowAdded();
     $.getLeasingPayment({
         obj: $('.leasing-trigger'),
     });
@@ -4190,4 +4184,7 @@ $(function() {
 
         return false;
     });
+
+    $.inputPrice();
+    $.rebuildFunction();
 });

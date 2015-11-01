@@ -1280,26 +1280,59 @@ class MkCommonComponent extends Component {
         }
     }
 
+    function _callUnset( $fieldArr, $data ) {
+        if( !empty($fieldArr) ) {
+            foreach ($fieldArr as $key => $value) {
+                if( is_array($value) ) {
+                    foreach ($value as $idx => $fieldName) {
+                        if( !empty($data[$key][$fieldName]) ) {
+                            unset($data[$key][$fieldName]);
+                        }
+                    }
+                } else {
+                    unset($data[$value]);
+                }
+            }
+        }
+
+        return $data;
+    }
+
     function processFilter ( $data ) {
-        $vendor_id = $this->filterEmptyField($data, 'Search', 'vendor_id');
-        $nodoc = $this->filterEmptyField($data, 'Search', 'nodoc');
         $date = $this->filterEmptyField($data, 'Search', 'date');
-        $coa = $this->filterEmptyField($data, 'Search', 'coa');
-        $type = $this->filterEmptyField($data, 'Search', 'type');
         $params = array();
 
-        if( !empty($vendor_id) ) {
-            $params['vendor_id'] = $vendor_id;
+        $data = $this->_callUnset(array(
+            'Search' => array(
+                'date',
+            ),
+        ), $data);
+        $dataSearch = $this->filterEmptyField($data, 'Search');
+
+        if( !empty($dataSearch) ) {
+            foreach ($dataSearch as $fieldName => $value) {
+                if( is_array($value) ) {
+                    $value = array_filter($value);
+
+                    if( !empty($value) ) {
+                        $result = array();
+
+                        foreach ($value as $id => $boolean) {
+                            if( !empty($id) ) {
+                                $result[] = $id;
+                            }
+                        }
+
+                        $value = implode(',', $result);
+                    }
+                }
+
+                if( !empty($value) ) {
+                    $params[$fieldName] = $value;
+                }
+            }
         }
-        if( !empty($nodoc) ) {
-            $params['nodoc'] = $nodoc;
-        }
-        if( !empty($coa) ) {
-            $params['coa'] = $coa;
-        }
-        if( !empty($type) ) {
-            $params['type'] = $type;
-        }
+
         if( !empty($date) ) {
             $params['date'] = rawurlencode(urlencode($date));
         }
@@ -1313,24 +1346,18 @@ class MkCommonComponent extends Component {
         $dateFrom = $this->filterEmptyField($options, 'dateFrom');
         $dateTo = $this->filterEmptyField($options, 'dateTo');
 
-        $nodoc = $this->filterEmptyField($result, 'named', 'nodoc');
-        $vendor_id = $this->filterEmptyField($result, 'named', 'vendor_id');
         $date = $this->filterEmptyField($result, 'named', 'date');
-        $coa = $this->filterEmptyField($result, 'named', 'coa');
-        $type = $this->filterEmptyField($result, 'named', 'type');
 
-        if( !empty($nodoc) ) {
-            $this->controller->request->data['Search']['nodoc'] = $nodoc;
+        $dataString = $this->_callUnset(array(
+            'date',
+        ), $result['named']);
+
+        if( !empty($dataString) ) {
+            foreach ($dataString as $fieldName => $value) {
+                $this->controller->request->data['Search'][$fieldName] = $value;
+            }
         }
-        if( !empty($vendor_id) ) {
-            $this->controller->request->data['Search']['vendor_id'] = $vendor_id;
-        }
-        if( !empty($coa) ) {
-            $this->controller->request->data['Search']['coa'] = $coa;
-        }
-        if( !empty($type) ) {
-            $this->controller->request->data['Search']['type'] = $type;
-        }
+        
         if( !empty($date) ) {
             $dateStr = urldecode($date);
             $date = explode('-', $dateStr);

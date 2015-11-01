@@ -7,7 +7,7 @@
         $readonly = !empty($readonly)?$readonly:false;
 
         $frameClass = !empty($frameClass)?$frameClass:false;
-        $class = !empty($class)?$class:false;
+        $class = isset($class)?$class:false;
         $divClass = !empty($divClass)?$divClass:false;
         $fieldName = !empty($fieldName)?$fieldName:false;
         $textGroup = !empty($textGroup)?$textGroup:false;
