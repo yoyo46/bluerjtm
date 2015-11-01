@@ -426,5 +426,24 @@ class UangJalan extends AppModel {
 
         return $data;
     }
+
+    function getMerge( $data, $id ){
+        if(empty($data['UangJalan'])){
+            $data_merge = $this->getData('first', array(
+                'conditions' => array(
+                    'UangJalan.id' => $id
+                ),
+            ), true, array(
+                'status' => 'all',
+                'branch' => false,
+            ));
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

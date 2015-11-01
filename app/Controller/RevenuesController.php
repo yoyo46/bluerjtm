@@ -3758,8 +3758,6 @@ class RevenuesController extends AppController {
 
     function detail_ritase($id){
         if(!empty($id)){
-            $this->loadModel('Customer');
-
             $this->Ttuj->Truck->bindModel(array(
                 'hasOne' => array(
                     'TruckCustomer' => array(
@@ -3802,7 +3800,7 @@ class RevenuesController extends AppController {
                 $truck_facility_id = !empty($truk['Truck']['truck_facility_id'])?$truk['Truck']['truck_facility_id']:false;
                 $driver_id = !empty($truk['Truck']['driver_id'])?$truk['Truck']['driver_id']:false;
 
-                $truk = $this->Customer->getMerge($truk, $customer_id);
+                $truk = $this->Ttuj->Customer->getMerge($truk, $customer_id);
                 $truk = $this->Ttuj->Truck->TruckBrand->getMerge($truk, $truck_brand_id);
                 $truk = $this->Ttuj->Truck->TruckCategory->getMerge($truk, $truck_category_id);
                 $truk = $this->Ttuj->Truck->TruckFacility->getMerge($truk, $truck_facility_id);
@@ -3911,7 +3909,6 @@ class RevenuesController extends AppController {
                                 'sum(TtujTipeMotor.qty) as qty_ritase'
                             )
                         ));
-
                         $lkus = $this->Lku->getData('first', array(
                             'conditions' => array(
                                 'Lku.ttuj_id' => $value['Ttuj']['id']
@@ -3921,7 +3918,8 @@ class RevenuesController extends AppController {
                             )
                         ));
 
-                        $from_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_berangkat');
+                        $uang_jalan_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'uang_jalan_id');
+                                                $from_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_berangkat');
                         $to_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_tiba');
                         $leadTimeArrive = $this->MkCommon->dateDiff($from_time, $to_time, 'day', true);
 
@@ -3929,6 +3927,7 @@ class RevenuesController extends AppController {
                         $to_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_pool');
                         $leadTimeBack = $this->MkCommon->dateDiff($from_time, $to_time, 'day', true);
 
+                        $truk_ritase[$key] = $this->Ttuj->UangJalan->getMerge($truk_ritase[$key], $uang_jalan_id);
                         $truk_ritase[$key]['ArriveLeadTime'] = $leadTimeArrive;
                         $truk_ritase[$key]['BackLeadTime'] = $leadTimeBack;
 

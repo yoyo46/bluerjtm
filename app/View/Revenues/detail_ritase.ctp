@@ -257,7 +257,7 @@
 				        			$i=1;
 				        			foreach ($truk_ritase as $key => $value) {
 				        				$qty = $this->Common->filterEmptyField($value, 'qty_ritase');
-				        				$lku_qty = $this->Common->filterEmptyField($value, 'Lku', 'qty', '-');
+				        				$lku_qty = $this->Common->filterEmptyField($value, 'Lku', 'qty');
 
 				        				$from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
 				        				$to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
@@ -271,8 +271,8 @@
 				        				$arrive_lead_time = $this->Common->filterEmptyField($value, 'ArriveLeadTime', 'total_hour');
 				        				$back_lead_time = $this->Common->filterEmptyField($value, 'BackLeadTime', 'total_hour');
 
-				        				$arrive_over_time = $this->Common->filterEmptyField($value, 'Ttuj', 'arrive_over_time');
-				        				$back_orver_time = $this->Common->filterEmptyField($value, 'Ttuj', 'back_orver_time');
+				        				$arrive_over_time = $this->Common->filterEmptyField($value, 'UangJalan', 'arrive_lead_time');
+				        				$back_orver_time = $this->Common->filterEmptyField($value, 'UangJalan', 'back_lead_time');
 
 				        				$customTglBerangkat = $this->Common->formatDate($tgljam_berangkat, 'd/m/Y H:i:s');
 				        				$customTglTiba = $this->Common->formatDate($tgljam_tiba, 'd/m/Y H:i:s');
