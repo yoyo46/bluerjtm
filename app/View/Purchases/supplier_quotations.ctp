@@ -1,34 +1,29 @@
 <?php 
         $dataColumns = array(
+            'transaction_date' => array(
+                'name' => __('Tgl Quotation'),
+            ),
             'code' => array(
                 'name' => __('No Dokumen'),
                 'field_model' => 'SupplierQuotation.nodoc',
-                'display' => true,
             ),
             'supplier' => array(
                 'name' => __('Supplier'),
-                'field_model' => false,
-                'display' => true,
             ),
             'available_date' => array(
                 'name' => __('Tgl Berlaku'),
-                'field_model' => false,
-                'display' => true,
             ),
             'note' => array(
                 'name' => __('Keterangan'),
-                'field_model' => false,
-                'display' => true,
             ),
             'status' => array(
                 'name' => __('Status'),
                 'field_model' => 'SupplierQuotation.status',
-                'display' => true,
+                'class' => 'text-center',
             ),
             'action' => array(
                 'name' => __('Action'),
-                'field_model' => false,
-                'display' => true,
+                'class' => 'text-center',
             ),
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
@@ -65,10 +60,11 @@
                             $transactionDate = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'transaction_date');
                             $note = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'note');
 
-                            $Vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
+                            $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
 
-                            $customAvailable = $this->Common->combineDate($availableFrom, $availableTo );
-                            $customDate = $this->Common->formatDate($transactionDate);
+                            $customStatus = $this->Purchase->_callStatusQuotation($value);
+                            $customAvailable = $this->Common->getCombineDate($availableFrom, $availableTo );
+                            $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
                             $customAction = $this->Html->link('Edit', array(
                                 'controller' => 'purchases',
                                 'action' => 'supplier_quotation_edit',
@@ -88,14 +84,16 @@
             ?>
             <tr>
                 <?php 
-                        echo $this->Html->tag('td', $code);
-                        echo $this->Html->tag('td', $name);
-                        echo $this->Html->tag('td', $unit);
-                        echo $this->Html->tag('td', $group);
-                        echo $this->Html->tag('td', $customType);
-                        echo $this->Html->tag('td', $customStatus);
+                        echo $this->Html->tag('td', $customDate);
+                        echo $this->Html->tag('td', $nodoc);
+                        echo $this->Html->tag('td', $vendor);
+                        echo $this->Html->tag('td', $customAvailable);
+                        echo $this->Html->tag('td', $note);
+                        echo $this->Html->tag('td', $customStatus, array(
+                            'class' => 'text-center',
+                        ));
                         echo $this->Html->tag('td', $customAction, array(
-                            'class' => 'action',
+                            'class' => 'action text-center',
                         ));
                 ?>
             </tr>

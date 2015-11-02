@@ -59,6 +59,12 @@ class SupplierQuotation extends AppModel {
                 'message' => 'Tgl quotation harap dipilih'
             ),
         ),
+        'available_date' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl berlaku quotation harap dipilih'
+            ),
+        ),
 	);
 
 	function getData( $find, $options = false, $elements = false ){
@@ -130,7 +136,7 @@ class SupplierQuotation extends AppModel {
             $data['SupplierQuotation']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             if( !empty($nodoc) ) {
-                $defaul_msg = sprintf(__('%s %s'), $defaul_msg, $nodoc);
+                $defaul_msg = sprintf(__('%s #%s'), $defaul_msg, $nodoc);
             }
 
             if( empty($id) ) {
@@ -141,14 +147,16 @@ class SupplierQuotation extends AppModel {
                 $defaul_msg = sprintf(__('mengubah %s'), $defaul_msg);
             }
 
-            $validates = $this->validates();
-            $detailValidates = $this->SupplierQuotationDetail->doSave($data, false, true);
             $this->set($data);
-            debug($data);die();
+            $validates = $this->validates();
+
+            $detailValidates = $this->SupplierQuotationDetail->doSave($data, false, true);
 
             if( $validates && $detailValidates ) {
                 if( $this->save($data) ) {
                     $id = $this->id;
+                    
+                    $this->SupplierQuotationDetail->doSave($data, $id);
                     $defaul_msg = sprintf(__('Berhasil %s'), $defaul_msg);
 
                     $result = array(
@@ -212,14 +220,14 @@ class SupplierQuotation extends AppModel {
         return $default_options;
     }
 
-    function _callRatePrice ( $product_id = false, $empty = 0 ) {
-        $this->SupplierQuotationDetail->virtualFields['min_price'] = 'MIN(SupplierQuotationDetail.price)';
+    function _callRatePrice ( $product_id = false, $quotation_id = false, $empty = 0 ) {
         $value = $this->SupplierQuotationDetail->getData('first', array(
             'conditions' => array(
                 'SupplierQuotationDetail.product_id' => $product_id,
+                'SupplierQuotationDetail.supplier_quotation_id <>' => $quotation_id,
             ),
-            'group' => array(
-                'SupplierQuotationDetail.product_id',
+            'order' => array(
+                'SupplierQuotationDetail.price' => 'ASC',
             ),
         ));
 

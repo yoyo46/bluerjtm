@@ -28,7 +28,7 @@
 				echo $this->Common->buildInputForm('vendor_id', __('Supplier *'), array(
 					'empty' => __('- Pilih Supplier -'),
 				));
-				echo $this->Common->buildInputForm('available_date', __('Tgl Berlaku'), array(
+				echo $this->Common->buildInputForm('available_date', __('Tgl Berlaku *'), array(
 					'type' => 'text',
                     'textGroup' => $this->Common->icon('calendar'),
                     'positionGroup' => 'right',

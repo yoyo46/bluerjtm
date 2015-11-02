@@ -2925,7 +2925,7 @@ class AjaxController extends AppController {
 
                 $value = $this->Product->ProductUnit->getMerge($value, $product_unit_id);
                 $value = $this->Product->ProductCategory->getMerge($value, $product_category_id);
-                $value['Product']['rate'] = $this->Product->SupplierQuotationDetail->SupplierQuotation->_callRatePrice($id, '-');
+                $value['Product']['rate'] = $this->Product->SupplierQuotationDetail->SupplierQuotation->_callRatePrice($id, false, '-');
                 $values[$key] = $value;
             }
         }

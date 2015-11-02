@@ -787,11 +787,23 @@
         }, options );
 
         if( settings.obj.length > 0 ) {
-            settings.obj.off('keyup');
-            settings.obj.keyup(function(){
+            settings.obj.off('blur');
+            settings.obj.blur(function(){
                 var self = $(this);
                 var parent = self.parents('.pick-document');
-                calculate(parent);
+                var objTotal = parent.find('.total');
+                var objGrandTotal = $('.temp-document-picker .grandtotal .total');
+                var grandtotal = 0;
+
+                total = calculate(parent);
+                objTotal.html( $.formatDecimal(total) );
+
+                $.each( $('.pick-document'), function( i, val ) {
+                    var self = $(this);
+                    grandtotal += calculate(self);
+                });
+
+                objGrandTotal.html( $.formatDecimal(grandtotal) );
             });
         }
 
@@ -799,10 +811,10 @@
             var price = $.convertNumber(parent.find('.price').val());
             var disc = $.convertNumber(parent.find('.disc').val());
             var ppn = $.convertNumber(parent.find('.ppn').val());
-            var objTotal = parent.find('.total');
 
             total = ( price - disc ) + ppn;
-            objTotal.html( $.formatDecimal(total) );
+
+            return total;
         }
     }
 

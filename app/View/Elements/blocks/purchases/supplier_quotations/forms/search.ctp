@@ -34,8 +34,8 @@
         <?php 
                 echo $this->element('blocks/common/searchs/box_action', array(
                     '_url' => array(
-                        'controller' => 'products', 
-                        'action' => 'categories', 
+                        'controller' => 'purchases', 
+                        'action' => 'supplier_quotations', 
                     ),
                 ));
                 echo $this->Form->end();

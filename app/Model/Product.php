@@ -100,17 +100,41 @@ class Product extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id ){
-        $data_merge = $this->getData('first', array(
-            'conditions' => array(
-                'Product.id' => $id
-            ),
-        ), array(
-            'status' => 'all',
-        ));
+    function getMerge( $data, $id = false, $modelName  = 'SupplierQuotationDetail', $quotation_id = false ){
+        if( !empty($data[0]) ) {
+            foreach ($data as $key => $value) {
+                $id = !empty($value[$modelName]['product_id'])?$value[$modelName]['product_id']:false;
 
-        if(!empty($data_merge)){
-            $data = array_merge($data, $data_merge);
+                $value = $this->getData('first', array(
+                    'conditions' => array(
+                        'Product.id' => $id,
+                    ),
+                ));
+
+                if( !empty($value) ) {
+                    $product_unit_id = !empty($value['Product']['product_unit_id'])?$value['Product']['product_unit_id']:false;
+                    $product_category_id = !empty($value['Product']['product_category_id'])?$value['Product']['product_category_id']:false;
+                    $value = $this->ProductUnit->getMerge($value, $product_unit_id);
+
+                    if( $modelName == 'SupplierQuotationDetail' ) {
+                        $value['Product']['rate'] = $this->SupplierQuotationDetail->SupplierQuotation->_callRatePrice($id, $quotation_id);
+                    }
+
+                    $data[$key] = array_merge($data[$key], $value);
+                }
+            }
+        } else if( empty($data['Product']) && !empty($id) ) {
+            $value = $this->getData('first', array(
+                'conditions' => array(
+                    'Product.id' => $id
+                ),
+            ), array(
+                'status' => 'all',
+            ));
+
+            if(!empty($value)){
+                $data = array_merge($data, $value);
+            }
         }
 
         return $data;

@@ -34,12 +34,6 @@ class SupplierQuotationDetail extends AppModel {
                 'message' => 'Harga barang harus berupa angka'
             ),
         ),
-        'available_from' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tgl berlaku quotation harap dipilih'
-            ),
-        ),
         'disc' => array(
             'numeric' => array(
                 'allowEmpty' => true,
@@ -65,6 +59,7 @@ class SupplierQuotationDetail extends AppModel {
                 'SupplierQuotationDetail.id' => 'ASC',
             ),
             'fields' => array(),
+            'group' => array(),
         );
 
         switch ($status) {
@@ -77,13 +72,16 @@ class SupplierQuotationDetail extends AppModel {
             $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
         }
         if(!empty($options['order'])){
-            $default_options['order'] = array_merge($default_options['order'], $options['order']);
+            $default_options['order'] = $options['order'];
         }
         if(!empty($options['fields'])){
             $default_options['fields'] = $options['fields'];
         }
         if(!empty($options['limit'])){
             $default_options['limit'] = $options['limit'];
+        }
+        if(!empty($options['group'])){
+            $default_options['group'] = $options['group'];
         }
 
         if( $find == 'paginate' ) {
@@ -95,22 +93,23 @@ class SupplierQuotationDetail extends AppModel {
     }
 
     function getMerge( $data, $id ){
-        $data_merge = $this->getData('all', array(
+        $values = $this->getData('all', array(
             'conditions' => array(
-                'SupplierQuotationDetail.id' => $id
+                'SupplierQuotationDetail.supplier_quotation_id' => $id
             ),
         ), array(
             'status' => 'all',
         ));
 
-        if(!empty($data_merge)){
-            $data['SupplierQuotationDetail'] = $data_merge;
+        if(!empty($values)){
+            $values = $this->Product->getMerge($values, false, 'SupplierQuotationDetail', $id);
+            $data['SupplierQuotationDetail'] = $values;
         }
 
         return $data;
     }
 
-    function doSave( $data, $quotation_id, $is_validate = false ) {
+    function doSave( $datas, $quotation_id, $is_validate = false ) {
         $result = false;
         $msg = __('Gagal menambahkan quotation');
 
@@ -119,11 +118,9 @@ class SupplierQuotationDetail extends AppModel {
                 'SupplierQuotationDetail.supplier_quotation_id' => $quotation_id,
             ));
         }
-        $data = $this->getDataModel($data);
 
-        if ( !empty($datas) ) {
-            debug($datas);die();
-            foreach ($datas as $key => $data) {
+        if ( !empty($datas['SupplierQuotationDetail']) ) {
+            foreach ($datas['SupplierQuotationDetail'] as $key => $data) {
                 $this->create();
 
                 if( !empty($quotation_id) ) {
@@ -140,43 +137,17 @@ class SupplierQuotationDetail extends AppModel {
                     }
 
                     if( !$flagSave ) {
-                        $result = array(
-                            'msg' => $msg,
-                            'status' => 'error',
-                            'Log' => array(
-                                'activity' => $msg,
-                                'old_data' => $value,
-                                'error' => 1,
-                            ),
-                        );
+                        $result = false;
                     }
                 } else {
-                    $result = array(
-                        'msg' => $msg,
-                        'status' => 'error',
-                        'Log' => array(
-                            'activity' => $msg,
-                            'old_data' => $value,
-                            'error' => 1,
-                        ),
-                    );
+                    $result = false;
                 }
             }
 
             if( empty($result) ) {
                 $msg = __('Berhasil menambahkan quotation');
-                $result = array(
-                    'msg' => $msg,
-                    'status' => 'success',
-                    'Log' => array(
-                        'activity' => $msg,
-                        'old_data' => $value,
-                        'document_id' => $quotation_id,
-                    ),
-                );
+                $result = true;
             }
-        } else if( !empty($value) ) {
-            $result['data'] = $value;
         }
 
         return $result;

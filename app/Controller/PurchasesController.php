@@ -2,10 +2,13 @@
 App::uses('AppController', 'Controller');
 class PurchasesController extends AppController {
 	public $uses = array(
-        'Product'
+        'SupplierQuotation',
     );
     public $components = array(
         'RjPurchase'
+    );
+    public $helpers = array(
+        'Purchase'
     );
 
     function beforeFilter() {
@@ -60,18 +63,52 @@ class PurchasesController extends AppController {
         $this->set('sub_module_title', __('Tambah Supplier Quotation'));
 
         $data = $this->request->data;
-        $data = $this->RjPurchase->_callBeforeSaveDetailQuotation($data);
-        $result = $this->Product->SupplierQuotationDetail->SupplierQuotation->doSave($this->request->data);
+        $data = $this->RjPurchase->_callBeforeSaveQuotation($data);
+        $result = $this->SupplierQuotation->doSave($data);
         $this->MkCommon->setProcessParams($result, array(
             'controller' => 'purchases',
             'action' => 'supplier_quotations',
             'admin' => false,
         ));
+        $this->request->data = $this->RjPurchase->_callBeforeRenderQuotation($this->request->data);
 
-        $vendors = $this->Product->SupplierQuotationDetail->SupplierQuotation->Vendor->getData('list');
+        $vendors = $this->SupplierQuotation->Vendor->getData('list');
         $this->set('active_menu', 'Supplier Quotation');
         $this->set(compact(
             'vendors'
         ));
+    }
+
+    public function supplier_quotation_edit( $id = false ) {
+        $this->set('sub_module_title', __('Edit Supplier Quotation'));
+
+        $value = $this->SupplierQuotation->getData('first', array(
+            'conditions' => array(
+                'SupplierQuotation.id' => $id,
+            ),
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->SupplierQuotation->SupplierQuotationDetail->getMerge($value, $id);
+
+            $data = $this->request->data;
+            $data = $this->RjPurchase->_callBeforeSaveQuotation($data);
+            $result = $this->SupplierQuotation->doSave($data, $value, $id);
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'purchases',
+                'action' => 'supplier_quotations',
+                'admin' => false,
+            ));
+            $this->request->data = $this->RjPurchase->_callBeforeRenderQuotation($this->request->data);
+
+            $vendors = $this->SupplierQuotation->Vendor->getData('list');
+            $this->set('active_menu', 'Supplier Quotation');
+            $this->set(compact(
+                'vendors'
+            ));
+            $this->render('supplier_quotation_add');
+        } else {
+            $this->MkCommon->setCustomFlash(__('Quotation tidak ditemukan.'), 'error');
+        }
     }
 }

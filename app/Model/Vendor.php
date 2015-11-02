@@ -95,10 +95,10 @@ class Vendor extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id = false ){
+    function getMerge( $data, $id = false, $modelName = 'SupplierQuotation' ){
         if( !empty($data[0]) ) {
-            foreach ($data[0] as $key => $value) {
-                $id = !empty($value['Vendor']['id'])?$value['Vendor']['id']:false;
+            foreach ($data as $key => $value) {
+                $id = !empty($value[$modelName]['vendor_id'])?$value[$modelName]['vendor_id']:false;
                 $value = $this->getData('first', array(
                     'conditions' => array(
                         'Vendor.id' => $id,

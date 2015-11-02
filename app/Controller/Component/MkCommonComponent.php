@@ -1422,6 +1422,39 @@ class MkCommonComponent extends Component {
         return $params;
     }
 
+    function _callSplitDate ( $date ) {
+        $result = array();
+
+        if( !empty($date) ) {
+            $dateStr = urldecode($date);
+            $date = explode('-', $dateStr);
+
+            if( !empty($date) ) {
+                $date[0] = urldecode($date[0]);
+                $date[1] = urldecode($date[1]);
+                $dateFrom = $this->getDate($date[0]);
+                $dateTo = $this->getDate($date[1]);
+                $result['DateFrom'] = $dateFrom;
+                $result['DateTo'] = $dateTo;
+            }
+        }
+        
+        return $result;
+    }
+
+    function _callUnSplitDate ( $fromDate, $toDate ) {
+        if( !empty($fromDate) && !empty($toDate) ) {
+            $fromDate = $this->customDate($fromDate, 'd/m/Y');
+            $toDate = $this->customDate($toDate, 'd/m/Y');
+
+            $date = sprintf('%s - %s', $fromDate, $toDate);
+        } else {
+            $date = false;
+        }
+
+        return $date;
+    }
+
     function _callRefineParams ( $data, $options = array() ) {
         $result['named'] = $this->filterEmptyField($data, 'named');
 

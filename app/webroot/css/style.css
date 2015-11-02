@@ -163,6 +163,9 @@ body > .header {
   width: 100%;
   padding: 3px 5px;
 }
+.temp-document-picker .grandtotal td {
+  font-weight: bold;
+}
 
 @media screen and (min-width: 992px) {
   .left-side {

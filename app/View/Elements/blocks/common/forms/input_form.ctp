@@ -24,6 +24,7 @@
 
             $optionsInput = array(
                 'class' => $class,
+                'required' => false,
                 'label' => false,
                 'div' => false,
                 'disabled' => $disabled,

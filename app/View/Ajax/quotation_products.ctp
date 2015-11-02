@@ -49,18 +49,19 @@
                                 $group = $this->Common->filterEmptyField($value, 'ProductCategory', 'name');
 
                                 $customType = $this->Common->unSlug($type);
+                                $customRate = $this->Common->getFormatPrice($rate, '-');
                 ?>
                 <tr class="pick-document" rel="<?php echo $id; ?>">
                     <?php
-                            echo $this->Html->tag('td', $this->Form->checkbox('document_id.', array(
+                            echo $this->Html->tag('td', $this->Form->checkbox('document_id.'.$id, array(
                                 'class' => 'check-option',
-                                'value' => $id,
-                            )).$this->Form->hidden('SupplierQuotationDetail.product_id.'.$id, array(
                                 'value' => $id,
                             )), array(
                                 'class' => 'removed check-box text-center',
                             ));
-                            echo $this->Html->tag('td', $code);
+                            echo $this->Html->tag('td', $code.$this->Form->hidden('SupplierQuotationDetail.product_id.'.$id, array(
+                                'value' => $id,
+                            )));
                             echo $this->Html->tag('td', $name);
                             echo $this->Html->tag('td', $unit);
                             echo $this->Html->tag('td', $group, array(
@@ -69,7 +70,7 @@
                             echo $this->Html->tag('td', $customType, array(
                                 'class' => 'removed',
                             ));
-                            echo $this->Html->tag('td', $rate, array(
+                            echo $this->Html->tag('td', $customRate, array(
                                 'class' => 'text-right',
                             ));
                             echo $this->Html->tag('td', $this->Common->buildInputForm('SupplierQuotationDetail.price.'.$id, false, array(
