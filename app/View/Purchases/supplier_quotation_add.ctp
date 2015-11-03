@@ -5,6 +5,8 @@
 			'action' => 'supplier_quotations',
 			'admin' => false,
 		);
+		$value = !empty($value)?$value:false;
+        $status = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'status');
 
 		$this->Html->addCrumb($title, $urlRoot);
 		$this->Html->addCrumb($sub_module_title);
@@ -54,11 +56,14 @@
     ?>
     <div class="box-footer text-center action">
     	<?php
-	    		echo $this->Form->button(__('Simpan'), array(
-					'div' => false, 
-					'class'=> 'btn btn-success',
-					'type' => 'submit',
-				));
+    			if( !empty($status) || empty($value) ) {
+		    		echo $this->Form->button(__('Simpan'), array(
+						'div' => false, 
+						'class'=> 'btn btn-success',
+						'type' => 'submit',
+					));
+		    	}
+		    	
 	    		echo $this->Html->link(__('Kembali'), $urlRoot, array(
 					'class'=> 'btn btn-default',
 				));

@@ -13,7 +13,7 @@ class PurchaseHelper extends AppHelper {
             ));
         } else {
             $customStatus = $this->Html->tag('span', __('Non-Aktif'), array(
-                'class' => 'label label-default',
+                'class' => 'label label-danger',
             ));
         }
 

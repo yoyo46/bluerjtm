@@ -59,13 +59,21 @@
                             $availableTo = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'available_to');
                             $transactionDate = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'transaction_date');
                             $note = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'note');
+                            $status = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'status');
 
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
 
                             $customStatus = $this->Purchase->_callStatusQuotation($value);
                             $customAvailable = $this->Common->getCombineDate($availableFrom, $availableTo );
                             $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
-                            $customAction = $this->Html->link('Edit', array(
+
+                            if( !empty($status) ) {
+                                $lblEdit = __('Edit');
+                            } else {
+                                $lblEdit = __('Detail');
+                            }
+
+                            $customAction = $this->Html->link($lblEdit, array(
                                 'controller' => 'purchases',
                                 'action' => 'supplier_quotation_edit',
                                 $id,

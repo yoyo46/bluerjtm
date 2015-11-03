@@ -68,23 +68,24 @@ class SupplierQuotation extends AppModel {
 	);
 
 	function getData( $find, $options = false, $elements = false ){
-        $status = isset($elements['status'])?$elements['status']:'active';
+        // $status = isset($elements['status'])?$elements['status']:'active';
         $branch = isset($elements['branch'])?$elements['branch']:true;
 
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
+                'SupplierQuotation.status' => 'DESC',
                 'SupplierQuotation.created' => 'DESC',
                 'SupplierQuotation.id' => 'DESC',
             ),
             'fields' => array(),
         );
 
-        switch ($status) {
-            case 'active':
-                $default_options['conditions']['SupplierQuotation.status'] = 1;
-                break;
-        }
+        // switch ($status) {
+        //     case 'active':
+        //         $default_options['conditions']['SupplierQuotation.status'] = 1;
+        //         break;
+        // }
 
         if( !empty($branch) ) {
             $default_options['conditions']['SupplierQuotation.branch_id'] = Configure::read('__Site.config_branch_id');
@@ -232,6 +233,53 @@ class SupplierQuotation extends AppModel {
         ));
 
         return !empty($value['SupplierQuotationDetail']['price'])?$value['SupplierQuotationDetail']['price']:$empty;
+    }
+
+    function doDelete( $id ) {
+        $result = false;
+        $value = $this->getData('first', array(
+            'conditions' => array(
+                'SupplierQuotation.id' => $id,
+            ),
+        ));
+
+        if ( !empty($value) ) {
+            $nodoc = !empty($value['SupplierQuotation']['nodoc'])?$value['SupplierQuotation']['nodoc']:false;
+            $default_msg = sprintf(__('menghapus quotation #%s'), $nodoc);
+
+            $this->id = $id;
+            $this->set('status', 0);
+
+            if( $this->save() ) {
+                $msg = sprintf(__('Berhasil %s'), $default_msg);
+                $result = array(
+                    'msg' => $msg,
+                    'status' => 'success',
+                    'Log' => array(
+                        'activity' => $msg,
+                        'old_data' => $value,
+                    ),
+                );
+            } else {
+                $msg = sprintf(__('Gagal %s'), $default_msg);
+                $result = array(
+                    'msg' => $msg,
+                    'status' => 'error',
+                    'Log' => array(
+                        'activity' => $msg,
+                        'old_data' => $value,
+                        'error' => 1,
+                    ),
+                );
+            }
+        } else {
+            $result = array(
+                'msg' => __('Gagal menghapus quotation. Data tidak ditemukan'),
+                'status' => 'error',
+            );
+        }
+
+        return $result;
     }
 }
 ?>

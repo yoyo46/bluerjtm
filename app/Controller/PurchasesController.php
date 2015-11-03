@@ -104,11 +104,16 @@ class PurchasesController extends AppController {
             $vendors = $this->SupplierQuotation->Vendor->getData('list');
             $this->set('active_menu', 'Supplier Quotation');
             $this->set(compact(
-                'vendors'
+                'vendors', 'value'
             ));
             $this->render('supplier_quotation_add');
         } else {
             $this->MkCommon->setCustomFlash(__('Quotation tidak ditemukan.'), 'error');
         }
+    }
+
+    public function supplier_quotation_toggle( $id ) {
+        $result = $this->SupplierQuotation->doDelete( $id );
+        $this->MkCommon->setProcessParams($result);
     }
 }

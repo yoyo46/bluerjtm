@@ -1134,7 +1134,7 @@
 
                     $dataMenu = array(
                         'settings' => array(
-                            'perlengkapan', 'coas', 'banks',
+                            'perlengkapan', 'banks',
                             'cities', 'companies', 'vendors',
                             'jenis_sim', 'classifications',
                             'calendar_colors', 'calendar_icons',
@@ -1147,7 +1147,7 @@
                         $activeSetting = false;
                         $settingMenu = array(
                             'cities', 'vendors', 'companies',
-                            'perlengkapan', 'coas', 'branches', 
+                            'perlengkapan', 'branches', 
                             'classifications', 'banks', 'calendar_colors',
                             'calendar_icons', 'settings', 'jenis_sim',
                             'parts_motor', 'approval_setting'
