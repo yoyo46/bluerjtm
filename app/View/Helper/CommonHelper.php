@@ -1163,9 +1163,7 @@ class CommonHelper extends AppHelper {
     function filterEmptyField ( $value, $modelName, $fieldName = false, $empty = false, $removeTag = true ) {
         $result = '';
         
-        if( empty($modelName) ) {
-            $result = !empty($value)?$value:$empty;
-        } else if( empty($fieldName) ) {
+        if( empty($fieldName) ) {
             $result = !empty($value[$modelName])?$value[$modelName]:$empty;
         } else {
             $result = !empty($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
@@ -1817,5 +1815,24 @@ class CommonHelper extends AppHelper {
         }
 
         return $result;
+    }
+
+    function groupMotorTable ( $data, $options = false ) {
+        $cnt = $this->filterEmptyField($options, 'cnt', false, 0);
+
+        $value = $this->filterEmptyField($options, 'data');
+        $modelName = $this->filterEmptyField($options, 'modelName');
+        $fieldName = $this->filterEmptyField($options, 'fieldName');
+
+        for ($i=1; $i <= $cnt; $i++) {
+            $key = $i-1;
+            $groupMotorName = !empty($value[$key]['GroupMotor']['name'])?$value[$key]['GroupMotor']['name']:'';
+            $cost = !empty($value[$key][$modelName][$fieldName])?$value[$key][$modelName][$fieldName]:'';
+
+            $data[] = $groupMotorName;
+            $data[] = $cost;
+        }
+
+        return $data;
     }
 }

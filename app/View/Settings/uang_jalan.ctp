@@ -12,6 +12,14 @@
                             'data-toggle' => 'dropdown',
                             'class' => 'btn btn-app btn-success dropdown-toggle'
                         ));
+                        echo $this->Html->link($this->Common->icon('file-o').__(' Download Excel'), array(
+                            'controller' => 'settings',
+                            'action' => 'download_uang_jalan',
+                            'admin' => false,
+                        ), array(
+                            'escape' => false,
+                            'class' => 'btn btn-app',
+                        ));
                 ?>
                 <ul class="dropdown-menu" role="menu">
                     <?php 

@@ -20,7 +20,14 @@ class AsdpGroupMotor extends AppModel {
         ),
 	);
 
-    function getMerge ( $data = false, $uang_jalan_id = false ) {
+    var $belongsTo = array(
+        'GroupMotor' => array(
+            'className' => 'GroupMotor',
+            'foreignKey' => 'group_motor_id',
+        ),
+    );
+
+    function getMerge ( $data = false, $uang_jalan_id = false, $with_count = false ) {
         if( empty($data['AsdpGroupMotor']) ) {
             $default_options = array(
                 'conditions' => array(
@@ -37,6 +44,13 @@ class AsdpGroupMotor extends AppModel {
 
             if( !empty($conditions) ) {
                 $default_options['conditions'] = $conditions;
+            }
+
+            if( !empty($with_count) ) {
+                $cnt = $this->find('count', $default_options);
+                $data['AsdpGroupMotorCnt'] = $cnt;
+                
+                $default_options['contain'][] = 'GroupMotor';
             }
 
             $asdpGroupMotor = $this->find('all', $default_options);

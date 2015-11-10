@@ -49,9 +49,13 @@ class UangJalanTipeMotor extends AppModel {
             'className' => 'UangJalan',
             'foreignKey' => 'uang_jalan_id',
         ),
+        'GroupMotor' => array(
+            'className' => 'GroupMotor',
+            'foreignKey' => 'group_motor_id',
+        ),
     );
 
-    function getMerge ( $data = false, $uang_jalan_id = false ) {
+    function getMerge ( $data = false, $uang_jalan_id = false, $with_count = false ) {
         if( empty($data['UangJalanTipeMotor']) ) {
             $default_options = array(
                 'conditions' => array(
@@ -67,7 +71,15 @@ class UangJalanTipeMotor extends AppModel {
                 $default_options['conditions'] = $conditions;
             }
 
+            if( !empty($with_count) ) {
+                $cnt = $this->find('count', $default_options);
+                $data['UangJalanTipeMotorCnt'] = $cnt;
+
+                $default_options['contain'][] = 'GroupMotor';
+            }
+
             $uangJalanTipeMotor = $this->find('all', $default_options);
+
             $data['UangJalanTipeMotor'] = $uangJalanTipeMotor;
         }
 

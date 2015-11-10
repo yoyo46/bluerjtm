@@ -20,7 +20,14 @@ class CommissionGroupMotor extends AppModel {
         ),
 	);
 
-    function getMerge ( $data = false, $uang_jalan_id = false ) {
+    var $belongsTo = array(
+        'GroupMotor' => array(
+            'className' => 'GroupMotor',
+            'foreignKey' => 'group_motor_id',
+        ),
+    );
+
+    function getMerge ( $data = false, $uang_jalan_id = false, $with_count = false ) {
         if( empty($data['CommissionGroupMotor']) ) {
             $default_options = array(
                 'conditions' => array(
@@ -34,6 +41,13 @@ class CommissionGroupMotor extends AppModel {
 
             if( !empty($conditions) ) {
                 $default_options['conditions'] = $conditions;
+            }
+
+            if( !empty($with_count) ) {
+                $cnt = $this->find('count', $default_options);
+                $data['CommissionGroupMotorCnt'] = $cnt;
+                
+                $default_options['contain'][] = 'GroupMotor';
             }
 
             $commissionGroupMotor = $this->find('all', $default_options);

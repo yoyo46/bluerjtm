@@ -1009,6 +1009,59 @@ class SettingsController extends AppController {
         ));
     }
 
+    public function download_uang_jalan() {
+        $this->loadModel('UangJalan');
+        $this->loadModel('City');
+        $this->loadModel('GroupClassification');
+
+        $values = $this->UangJalan->getData('all', array(
+            // 'conditions' => array(
+            //     'UangJalan.id' => array( 745 ),
+            // ),
+            // 'limit' => 20,
+            'order' => array(
+                'UangJalan.id' => 'ASC',
+            ),
+        ), true, array(
+            'branch' => false,
+        ));
+        $groupClassifications = $this->GroupClassification->getData('list', array(
+            'fields' => array(
+                'GroupClassification.id', 'GroupClassification.name',
+            ),
+        ));
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'UangJalan', 'id');
+                $from_city_id = $this->MkCommon->filterEmptyField($value, 'UangJalan', 'from_city_id');
+                $to_city_id = $this->MkCommon->filterEmptyField($value, 'UangJalan', 'to_city_id');
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'UangJalan', 'branch_id');
+
+                $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
+                $value = $this->City->getMerge($value, $to_city_id, 'ToCity');
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                $value = $this->UangJalan->gerMergeBiaya( $value, $id, true );
+                $values[$key] = $value;
+            }
+        }
+
+        $UangJalanTipeMotorCnt = max(Set::extract('/UangJalanTipeMotorCnt', $values));
+        $CommissionGroupMotorCnt = max(Set::extract('/CommissionGroupMotorCnt', $values));
+        $AsdpGroupMotorCnt = max(Set::extract('/AsdpGroupMotorCnt', $values));
+        $UangKawalGroupMotorCnt = max(Set::extract('/UangKawalGroupMotorCnt', $values));
+        $UangKeamananGroupMotorCnt = max(Set::extract('/UangKeamananGroupMotorCnt', $values));
+
+        $this->set('module_title', __('List Uang Jalan'));
+        $this->set(compact(
+            'values', 'groupClassifications',
+            'UangJalanTipeMotorCnt', 'CommissionGroupMotorCnt',
+            'AsdpGroupMotorCnt', 'UangKawalGroupMotorCnt',
+            'UangKeamananGroupMotorCnt'
+        ));
+        $this->layout = 'ajax';
+    }
+
     public function uang_jalan_add() {
         $this->loadModel('UangJalan');
         $this->set('sub_module_title', 'Tambah Uang Jalan');
@@ -4049,6 +4102,7 @@ class SettingsController extends AppController {
                                 }
 
                                 if(array_filter($datavar)) {
+                                    $id = !empty($id)?$id:false;
                                     $branch = $this->GroupBranch->Branch->getData('first', array(
                                         'conditions' => array(
                                             'Branch.code' => $kode_cabang,
@@ -4126,6 +4180,7 @@ class SettingsController extends AppController {
                                     $branch_id = !empty($branch['Branch']['id'])?$branch['Branch']['id']:false;
                                     $requestData['ROW'.($x-1)] = array(
                                         'UangJalan' => array(
+                                            'id' => $id,
                                             'title' => !empty($nama)?$nama:false,
                                             'group_classification_1_id' => $group_classification_1_id,
                                             'group_classification_2_id' => $group_classification_2_id,
@@ -4312,6 +4367,36 @@ class SettingsController extends AppController {
                                     $this->UangJalan->create();
                                     
                                     if( $saveGroupMotor && $saveCommissionGroupMotor && $saveAsdpGroupMotor && $saveUangKawalGroupMotor && $saveUangKeamananGroupMotor && $this->UangJalan->save($data) ){
+                                        $id = $this->UangJalan->id;
+                                        
+                                        if( !empty($id) ) {
+                                            $this->UangJalan->UangJalanTipeMotor->updateAll( array(
+                                                'UangJalanTipeMotor.status' => 0,
+                                            ), array(
+                                                'UangJalanTipeMotor.uang_jalan_id' => $id,
+                                            ));
+                                            $this->UangJalan->CommissionGroupMotor->updateAll( array(
+                                                'CommissionGroupMotor.status' => 0,
+                                            ), array(
+                                                'CommissionGroupMotor.uang_jalan_id' => $id,
+                                            ));
+                                            $this->UangJalan->AsdpGroupMotor->updateAll( array(
+                                                'AsdpGroupMotor.status' => 0,
+                                            ), array(
+                                                'AsdpGroupMotor.uang_jalan_id' => $id,
+                                            ));
+                                            $this->UangJalan->UangKawalGroupMotor->updateAll( array(
+                                                'UangKawalGroupMotor.status' => 0,
+                                            ), array(
+                                                'UangKawalGroupMotor.uang_jalan_id' => $id,
+                                            ));
+                                            $this->UangJalan->UangKeamananGroupMotor->updateAll( array(
+                                                'UangKeamananGroupMotor.status' => 0,
+                                            ), array(
+                                                'UangKeamananGroupMotor.uang_jalan_id' => $id,
+                                            ));
+                                        }
+
                                         if( !empty($data['UangJalan']['uang_jalan_per_unit']) ) {
                                             $this->saveGroupMotor($data, $this->UangJalan->id);
                                         }

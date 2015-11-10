@@ -417,12 +417,12 @@ class UangJalan extends AppModel {
         return $uangJalan;
     }
 
-    function gerMergeBiaya ( $data, $id ) {
-        $data = $this->UangJalanTipeMotor->getMerge( $data, $id );
-        $data = $this->CommissionGroupMotor->getMerge( $data, $id );
-        $data = $this->AsdpGroupMotor->getMerge( $data, $id );
-        $data = $this->UangKawalGroupMotor->getMerge( $data, $id );
-        $data = $this->UangKeamananGroupMotor->getMerge( $data, $id );
+    function gerMergeBiaya ( $data, $id, $with_count = false ) {
+        $data = $this->UangJalanTipeMotor->getMerge( $data, $id, $with_count );
+        $data = $this->CommissionGroupMotor->getMerge( $data, $id, $with_count );
+        $data = $this->AsdpGroupMotor->getMerge( $data, $id, $with_count );
+        $data = $this->UangKawalGroupMotor->getMerge( $data, $id, $with_count );
+        $data = $this->UangKeamananGroupMotor->getMerge( $data, $id, $with_count );
 
         return $data;
     }

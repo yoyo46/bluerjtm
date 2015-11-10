@@ -30,7 +30,7 @@ class City extends AppModel {
 		'TruckAlocation' => array(
 			'className' => 'TruckAlocation',
 			'foreignKey' => 'city_id',
-		)
+		),
 	);
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
