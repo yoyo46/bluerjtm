@@ -1708,17 +1708,18 @@ class AjaxController extends AppController {
 	}
 
 	function getInfoDriver($id = false){
-		$this->loadModel('Truck');
 		$this->loadModel('Ttuj');
 
-		$driver = $this->Truck->getData('first', array(
+		$driver = $this->Ttuj->Truck->getData('first', array(
 			'conditions' => array(
 				'Truck.id' => $id
 			),
 			'contain' => array(
 				'Driver'
 			)
-		));
+		), true, array(
+            'plant' => true,
+        ));
 		$driver_name = $this->MkCommon->filterEmptyField($driver, 'Driver', 'name');
 		$no_sim = $this->MkCommon->filterEmptyField($driver, 'Driver', 'no_sim');
 		$ttujs = $this->Ttuj->getData('list', array(

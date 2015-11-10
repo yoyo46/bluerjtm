@@ -299,7 +299,7 @@ class LakasController extends AppController {
                         $this->Log->logActivity( sprintf(__('Berhasil %s LAKA #%s'), $msg, $laka_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $laka_id );
                         
                         $this->redirect(array(
-                            'controller' => 'Lakas',
+                            'controller' => 'lakas',
                             'action' => 'index',
                         ));
                     } else {
