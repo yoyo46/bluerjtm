@@ -171,6 +171,29 @@
 							));
 					?>
 		        </div>
+		        <div class="form-group">
+			        <?php 
+			        		echo $this->Form->label('annual_interest', __('Bunga Pertahun *'));
+			        ?>
+                    <div class="row">
+                    	<div class="col-sm-4">
+                    		<div class="input-group">
+					        	<?php 
+										echo $this->Form->input('annual_interest',array(
+											'type' => 'text',
+											'label'=> false, 
+											'class'=>'form-control input_number annual-interest',
+											'required' => false,
+											'placeholder' => __('Bunga Pertahun'),
+										));
+		                                echo $this->Html->tag('span', __('%'), array(
+		                                    'class' => 'input-group-addon'
+		                                ));
+								?>
+				        	</div>
+                    	</div>
+                    </div>
+		        </div>
     		</div>
     	</div>
     </div>

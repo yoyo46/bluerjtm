@@ -260,7 +260,9 @@ var add_custom_field = function( obj ){
                     
                     choose_item_info();
                     input_number();
-                    input_price($('.lku-detail-'+lku_detail_len+' .input_price'));
+                    $.inputPrice({
+                        obj: $('.lku-detail-'+lku_detail_len+' .input_price'),
+                    });
                     price_tipe_motor();
                     delete_custom_field($('.lku-detail-'+lku_detail_len+' .delete-custom-field'));
                     part_motor_lku();
@@ -280,7 +282,9 @@ var add_custom_field = function( obj ){
                     
                     choose_item_info();
                     input_number();
-                    input_price($('.ksu-detail-'+ksu_detail_len+' .input_price'));
+                    $.inputPrice({
+                        obj: $('.ksu-detail-'+ksu_detail_len+' .input_price'),
+                    });
                     price_perlengkapan();
                     delete_custom_field($('.ksu-detail-'+ksu_detail_len+' .delete-custom-field'));
 
@@ -370,7 +374,10 @@ var add_custom_field = function( obj ){
                         </a> \
                     </div> \
                 </div>');
-                input_price( $('#box-field-input .list-uang-jalan:last-child .input_price') );
+                
+                $.inputPrice({
+                    obj: $('#box-field-input .list-uang-jalan:last-child .input_price'),
+                });
                 delete_custom_field( $('#box-field-input .list-uang-jalan:last-child .delete-custom-field') );
 
                 if( $('.chk-uang-jalan').is(':checked') ) {
@@ -418,7 +425,10 @@ var add_custom_field = function( obj ){
                         </a> \
                     </div> \
                 </div>');
-                input_price( $('#box-field-input-extra .list-uang-jalan-extra:last-child .input_price') );
+                
+                $.inputPrice({
+                    obj: $('#box-field-input-extra .list-uang-jalan-extra:last-child .input_price'),
+                });
                 delete_custom_field( $('#box-field-input-extra .list-uang-jalan-extra:last-child .delete-custom-field') );
               break;
             case 'commission':
@@ -450,7 +460,10 @@ var add_custom_field = function( obj ){
                         </a> \
                     </div> \
                 </div>');
-                input_price( $('#box-field-input-commission .list-commission:last-child .input_price') );
+
+                $.inputPrice({
+                    obj: $('#box-field-input-commission .list-commission:last-child .input_price'),
+                });
                 delete_custom_field( $('#box-field-input-commission .list-commission:last-child .delete-custom-field') );
               break;
             case 'commission_extra':
@@ -492,7 +505,10 @@ var add_custom_field = function( obj ){
                         </a> \
                     </div> \
                 </div>');
-                input_price( $('#box-field-input-commission-extra .list-commission-extra:last-child .input_price') );
+
+                $.inputPrice({
+                    obj: $('#box-field-input-commission-extra .list-commission-extra:last-child .input_price'),
+                });
                 delete_custom_field( $('#box-field-input-commission-extra .list-commission-extra:last-child .delete-custom-field') );
               break;
             case 'asdp':
@@ -524,7 +540,10 @@ var add_custom_field = function( obj ){
                         </a> \
                     </div> \
                 </div>');
-                input_price( $('#box-field-input-asdp .list-asdp:last-child .input_price') );
+
+                $.inputPrice({
+                    obj: $('#box-field-input-asdp .list-asdp:last-child .input_price'),
+                });
                 delete_custom_field( $('#box-field-input-asdp .list-asdp:last-child .delete-custom-field') );
               break;
             case 'uang_kawal':
@@ -556,7 +575,10 @@ var add_custom_field = function( obj ){
                         </a> \
                     </div> \
                 </div>');
-                input_price( $('#box-field-input-uang-kawal .list-uang-kawal:last-child .input_price') );
+
+                $.inputPrice({
+                    obj: $('#box-field-input-uang-kawal .list-uang-kawal:last-child .input_price'),
+                });
                 delete_custom_field( $('#box-field-input-uang-kawal .list-uang-kawal:last-child .delete-custom-field') );
               break;
             case 'uang_keamanan':
@@ -588,7 +610,10 @@ var add_custom_field = function( obj ){
                         </a> \
                     </div> \
                 </div>');
-                input_price( $('#box-field-input-uang-keamanan .list-uang-keamanan:last-child .input_price') );
+
+                $.inputPrice({
+                    obj: $('#box-field-input-uang-keamanan .list-uang-keamanan:last-child .input_price'),
+                });
                 delete_custom_field( $('#box-field-input-uang-keamanan .list-uang-keamanan:last-child .delete-custom-field') );
               break;
             case 'uang_kuli':
@@ -620,7 +645,10 @@ var add_custom_field = function( obj ){
                         </a> \
                     </div> \
                 </div>');
-                input_price( $('#box-uang-kuli .list-uang-kuli:last-child .input_price') );
+
+                $.inputPrice({
+                    obj: $('#box-uang-kuli .list-uang-kuli:last-child .input_price'),
+                });
                 delete_custom_field( $('#box-uang-kuli .list-uang-kuli:last-child .delete-custom-field') );
               break;
             case 'uang_kuli_capacity':
@@ -650,7 +678,10 @@ var add_custom_field = function( obj ){
                         </a> \
                     </div> \
                 </div>');
-                input_price( $('#box-uang-kuli-capacity .list-uang-kuli-capacity:last-child .input_price') );
+
+                $.inputPrice({
+                    obj: $('#box-uang-kuli-capacity .list-uang-kuli-capacity:last-child .input_price'),
+                });
                 input_number( $('#box-uang-kuli-capacity .list-uang-kuli-capacity:last-child .input_number') );
                 delete_custom_field( $('#box-uang-kuli-capacity .list-uang-kuli-capacity:last-child .delete-custom-field') );
               break;
@@ -674,7 +705,10 @@ var add_custom_field = function( obj ){
                 '</tr>';
 
                 $('.leasing-body #field-grand-total-leasing').before(content_clone);
-                input_price( $('#table-leasing tbody.leasing-body tr.child-'+length+' .input_price') );
+
+                $.inputPrice({
+                    obj: $('#table-leasing tbody.leasing-body tr.child-'+length+' .input_price'),
+                });
                 delete_custom_field( $('#table-leasing tbody.leasing-body tr.child-'+length+' .delete-custom-field') );
                 leasing_action();
 
@@ -746,8 +780,10 @@ var add_custom_field = function( obj ){
                 delete_custom_field( $(objParentTr+' .delete-custom-field') );
                 add_custom_field( $(objParentTable+' .add-custom-field') );
                 ajaxModal( $(objParentTr+' .ajaxModal') );
-                input_price( $(objParentTable+' .input_price') );
                 pickData();
+                $.inputPrice({
+                    obj: $(objParentTable+' .input_price'),
+                });
 
                 $(objParentTable+' [data-widget="remove"]').click(function() {
                     //Find the box parent        
@@ -911,7 +947,10 @@ var add_custom_field = function( obj ){
                         </a> \
                     </div> \
                 </div>');
-                input_price( $('#box-branch-city .list-branch-city:last-child .input_price') );
+
+                $.inputPrice({
+                    obj: $('#box-branch-city .list-branch-city:last-child .input_price'),
+                });
                 delete_custom_field( $('#box-branch-city .list-branch-city:last-child .delete-custom-field') );
               break;
         }
@@ -1657,7 +1696,10 @@ var choose_item_info = function(){
                 self.parents('tr').find('td.qty-perlengkapan').html($(response).filter('#form-qty').html());
 
                 price_perlengkapan();
-                input_price(self.parents('tr').find('td.qty-perlengkapan .input_price'));
+
+                $.inputPrice({
+                    obj: self.parents('tr').find('td.qty-perlengkapan .input_price'),
+                });
                 getTotalKSU(self.parents('tr').find('td.qty-perlengkapan .input_price'));
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -2728,6 +2770,10 @@ var get_document_cashbank = function(){
 }
 
 var convert_number = function ( num, type ) {
+    if( typeof type == 'undefined' ) {
+        type = 'int';
+    }
+
     if( typeof num != 'undefined' ) {
         num = num.replace(/,/gi, "").replace(/ /gi, "").replace(/IDR/gi, "").replace(/Rp/gi, "");
 
@@ -3076,7 +3122,7 @@ var _callMonthInstallment = function () {
         var a = new Date(year, month),
         b = new Date(year_last_date, month_last_date),
 
-        months = Math.floor((b-a)/2628000000);;
+        months = Math.ceil((b-a)/2628000000);
 
         $('.month-leasing').val(months);
     }
@@ -3090,6 +3136,7 @@ var calc_pokok_leasing = function () {
     var leasing_dp = convert_number($('.leasing-dp').val());
     var grand_total = convert_number($('#grand-total-leasing').html());
     var total_leasing = convert_number($('.total-leasing').val());
+    var annual_interest = convert_number($('.annual-interest').val(), 'float');
 
     // var month = false;
     // var year = false;
@@ -3110,8 +3157,13 @@ var calc_pokok_leasing = function () {
     // }
 
     if( !isNaN(months) && !isNaN(leasing_dp) && !isNaN(grand_total) && !isNaN(total_leasing) ) {
-        var pokok = Math.ceil((grand_total-leasing_dp)/months);
-        var bunga = Math.ceil((total_leasing/months)-pokok);
+        var year = months/12;
+        var loan = grand_total-leasing_dp;
+        var pokok = Math.ceil(loan/months);
+
+        var rate_annual_interest = annual_interest/100;
+        var bunga = Math.ceil(rate_annual_interest*year*loan);
+        // var bunga = Math.ceil((total_leasing/months)-pokok);
 
         $('.total-installment').val(formatNumber( pokok, 0 ));
         $('.bunga-leasing').val(formatNumber( bunga, 0 ));
@@ -3486,7 +3538,7 @@ $(function() {
                     choose_item_info();
                     add_custom_field();
                     input_number();
-                    input_price();
+                    $.inputPrice();
                     price_tipe_motor();
                     delete_custom_field();
                     part_motor_lku();
@@ -3523,7 +3575,7 @@ $(function() {
                     price_perlengkapan();
                     add_custom_field();
                     input_number();
-                    input_price();
+                    $.inputPrice();
                     delete_custom_field();
                     choose_item_info();
                 },
@@ -4124,7 +4176,7 @@ $(function() {
     datepicker();
     $.callChoosen();
 
-    $('.leasing-dp,.total-leasing,.month-leasing,.leasing-dp,.price-leasing-truck').blur(function(){
+    $('.leasing-dp,.total-leasing,.month-leasing,.leasing-dp,.price-leasing-truck,.annual-interest').blur(function(){
         calc_pokok_leasing();
     });
 
