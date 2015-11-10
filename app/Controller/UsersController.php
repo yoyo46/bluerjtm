@@ -867,7 +867,8 @@ class UsersController extends AppController {
             $this->loadModel('BranchModule');
             $options = array(
                 'order' => array(
-                    'BranchModule.id' => 'ASC',
+                    'BranchModule.created' => 'DESC',
+                    'BranchModule.id' => 'DESC',
                 ),
             );
 

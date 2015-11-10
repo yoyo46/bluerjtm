@@ -396,6 +396,7 @@ class RevenuesController extends AppController {
 
         $allowUpdate = false;
         $allowEditTtujBranch = false;
+        $allowClosingTtuj = false;
 
         if( !empty($_allowModule[$current_branch_id][$paramController]['action']) ) {
             $allowAction = $_allowModule[$current_branch_id][$paramController]['action'];
@@ -403,9 +404,13 @@ class RevenuesController extends AppController {
             if( in_array('ttuj_edit_branch', $allowAction) ) {
                 $allowEditTtujBranch = true;
             }
+            if( in_array('closing_ttuj', $allowAction) ) {
+                $allowClosingTtuj = true;
+            }
         }
         if( $group_id == 1 ) {
             $allowEditTtujBranch = true;
+            $allowClosingTtuj = true;
         }
 
         $is_plant = Configure::read('__Site.config_branch_plant');
@@ -1209,7 +1214,8 @@ class RevenuesController extends AppController {
             'colors', 'tipeMotorTemps',
             'groupTipeMotors', 'uangKuli',
             'id', 'tmpCities', 'branches',
-            'allowEditTtujBranch', 'converterUjs'
+            'allowEditTtujBranch', 'converterUjs',
+            'allowClosingTtuj'
         ));
         $this->render('ttuj_form');
     }

@@ -801,7 +801,7 @@
 				<div id="informasi-sj"></div>
 			</div>
 			<?php 
-					if(!empty($id)){
+					if( !empty($id) && !empty($allowClosingTtuj) ){
 			?>
 			<div class="col-sm-6">
 				<div class="box box-primary">
