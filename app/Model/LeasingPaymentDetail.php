@@ -214,6 +214,14 @@ class LeasingPaymentDetail extends AppModel {
 
     function doSave( $datas, $value = false, $id = false, $leasing_payment_id, $is_validate = false ) {
         $result = false;
+        $coa_id = !empty($value['LeasingPayment']['coa_id'])?$value['LeasingPayment']['coa_id']:false;
+        $payment_date = !empty($value['LeasingPayment']['payment_date'])?$value['LeasingPayment']['payment_date']:false;
+        $vendor_id = !empty($value['LeasingPayment']['vendor_id'])?$value['LeasingPayment']['vendor_id']:false;
+        $no_doc = !empty($value['LeasingPayment']['no_doc'])?$value['LeasingPayment']['no_doc']:false;
+        
+        $vendor = $this->Leasing->Vendor->getMerge(array(), $vendor_id);
+        $vendor_name = !empty($vendor['Vendor']['name'])?$vendor['Vendor']['name']:false;
+        $title = sprintf(__('Pembayaran Leasing #%s kepada vendor %s'), $no_doc, $vendor_name);
 
         if( !empty($leasing_payment_id) && empty($is_validate) ) {
             $this->deleteAll(array(
@@ -221,9 +229,18 @@ class LeasingPaymentDetail extends AppModel {
             ));
         }
 
-        if ( !empty($datas) ) {            
+
+        if ( !empty($datas) ) {
+            $installment = 0;
+            $installment_rate = 0;
+            $denda = 0;
+
             foreach ($datas as $key => $data) {
                 $this->create();
+
+                $installment += !empty($data['LeasingPaymentDetail']['installment'])?$data['LeasingPaymentDetail']['installment']:0;
+                $installment_rate += !empty($data['LeasingPaymentDetail']['installment_rate'])?$data['LeasingPaymentDetail']['installment_rate']:0;
+                $denda += !empty($data['LeasingPaymentDetail']['denda'])?$data['LeasingPaymentDetail']['denda']:0;
 
                 if( !empty($leasing_payment_id) ) {
                     $data['LeasingPaymentDetail']['leasing_payment_id'] = $leasing_payment_id;
@@ -282,6 +299,47 @@ class LeasingPaymentDetail extends AppModel {
                         'status' => 'error',
                         'validationErrors' => $this->validationErrors,
                     );
+                }
+            }
+
+            if( !$is_validate ) {
+                $this->Journal = ClassRegistry::init('Journal');
+
+                if( !empty($installment) ) {
+                    $this->Journal->setJournal($installment, array(
+                        'credit' => $coa_id,
+                        'debit' => 'leasing_installment_coa_id',
+                    ), array(
+                        'date' => $payment_date,
+                        'document_id' => $leasing_payment_id,
+                        'title' => $title,
+                        'document_no' => $no_doc,
+                        'type' => 'leasing_payment',
+                    ));
+                }
+                if( !empty($installment_rate) ) {
+                    $this->Journal->setJournal($installment_rate, array(
+                        'credit' => $coa_id,
+                        'debit' => 'leasing_installment_rate_coa_id',
+                    ), array(
+                        'date' => $payment_date,
+                        'document_id' => $leasing_payment_id,
+                        'title' => $title,
+                        'document_no' => $no_doc,
+                        'type' => 'leasing_payment',
+                    ));
+                }
+                if( !empty($denda) ) {
+                    $this->Journal->setJournal($denda, array(
+                        'credit' => $coa_id,
+                        'debit' => 'leasing_denda_coa_id',
+                    ), array(
+                        'date' => $payment_date,
+                        'document_id' => $leasing_payment_id,
+                        'title' => $title,
+                        'document_no' => $no_doc,
+                        'type' => 'leasing_payment',
+                    ));
                 }
             }
 

@@ -9,7 +9,7 @@
 ?>
 <div class="box">
     <div class="box-header">
-        <h3 class="box-title"><?php echo __('Pengaturan COA'); ?></h3>
+        <h3 class="box-title"><?php echo __('Uang Jalan'); ?></h3>
     </div>
     <div class="box-body">
         <div class="form-group">
@@ -248,6 +248,13 @@
 				</div>
 			</div>
         </div>
+    </div>
+</div>
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title"><?php echo __('TTUJ'); ?></h3>
+    </div>
+    <div class="box-body">
         <div class="form-group">
 			<div class="row">
 				<div class="col-sm-4">
@@ -429,6 +436,140 @@
 				<div class="col-sm-4">
 		        	<?php 
 							echo $this->Form->input('biaya_ttuj_payment_coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+					?>
+				</div>
+			</div>
+        </div>
+    </div>
+</div>
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title"><?php echo __('Dokumen'); ?></h3>
+    </div>
+    <div class="box-body">
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('kir_payment_coa_id', __('Pembayaran KIR'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('kir_payment_coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+					?>
+				</div>
+			</div>
+        </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('siup_payment_coa_id', __('Pembayaran Ijin Usaha'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('siup_payment_coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+					?>
+				</div>
+			</div>
+        </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('stnk_payment_coa_id', __('Pembayaran STNK'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('stnk_payment_coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+					?>
+				</div>
+			</div>
+        </div>
+    </div>
+</div>
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title"><?php echo __('Leasing'); ?></h3>
+    </div>
+    <div class="box-body">
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('leasing_installment_coa_id', __('Angsuran Pokok'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('leasing_installment_coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+					?>
+				</div>
+			</div>
+        </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('leasing_installment_rate_coa_id', __('Angsuran Bunga'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('leasing_installment_rate_coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+					?>
+				</div>
+			</div>
+        </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('leasing_denda_coa_id', __('Denda'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('leasing_denda_coa_id',array(
 								'label'=> false, 
 								'class'=>'form-control',
 								'required' => false,

@@ -985,7 +985,7 @@ class MkCommonComponent extends Component {
         $days_in_month_leap = array(31, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
         $days_in_month = array(31, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 
-        $this->_date_range_limit(1, 13, 12, "m", "y", &$base);
+        $this->_date_range_limit(1, 13, 12, "m", "y",   $base);
 
         $year = $base["y"];
         $month = $base["m"];
@@ -1029,7 +1029,7 @@ class MkCommonComponent extends Component {
         $result = $this->_date_range_limit(0, 24, 24, "h", "d", $result);
         $result = $this->_date_range_limit(0, 12, 12, "m", "y", $result);
 
-        $result = $this->_date_range_limit_days(&$base, &$result);
+        $result = $this->_date_range_limit_days($base, $result);
 
         $result = $this->_date_range_limit(0, 12, 12, "m", "y", $result);
 
@@ -1061,9 +1061,9 @@ class MkCommonComponent extends Component {
         $result["days"] = intval(abs(($one - $two)/86400));
 
         if ($invert) {
-            $this->_date_normalize(&$a, &$result);
+            $this->_date_normalize($a, $result);
         } else {
-            $this->_date_normalize(&$b, &$result);
+            $this->_date_normalize($b, $result);
         }
 
         return $result;

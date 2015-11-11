@@ -655,6 +655,14 @@ class LeasingsController extends AppController {
 
         if( !empty($value) ){
             $value = $this->Leasing->LeasingPayment->LeasingPaymentDetail->getMerge($value, $id);
+            $no_doc = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'no_doc');
+            $coa_id = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'coa_id');
+            $payment_date = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'payment_date');
+            $vendor_id = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'vendor_id');
+            
+            $value = $this->Leasing->Vendor->getMerge($value, $vendor_id);
+            $vendor_name = $this->MkCommon->filterEmptyField($value, 'Vendor', 'name');
+            $title = sprintf(__('Pembatalan Pembayaran Leasing #%s kepada vendor %s'), $no_doc, $vendor_name);
 
             if(!empty($this->request->data)){
                 $data = $this->request->data;
@@ -669,9 +677,17 @@ class LeasingsController extends AppController {
 
                     if($this->Leasing->LeasingPayment->save()){
                         if( !empty($value['LeasingPaymentDetail']) ) {
+                            $installment = 0;
+                            $installment_rate = 0;
+                            $denda = 0;
+
                             foreach ($value['LeasingPaymentDetail'] as $key => $detail) {
                                 $leasing_payment_id = $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'leasing_installment_id');
                                 $leasing_id = $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'leasing_id');
+
+                                $installment += $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'installment', 0);
+                                $installment_rate += $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'installment_rate', 0);
+                                $denda += $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'denda', 0);
 
                                 $totalInstallmentPaid = $this->Leasing->LeasingPayment->LeasingPaymentDetail->getData('count', array(
                                     'conditions' => array(
@@ -703,6 +719,43 @@ class LeasingsController extends AppController {
                                 $this->Leasing->LeasingInstallment->id = $leasing_payment_id;
                                 $this->Leasing->LeasingInstallment->set('payment_status', $statusInstallmentPayment);
                                 $this->Leasing->LeasingInstallment->save();
+                            }
+
+                            if( !empty($installment) ) {
+                                $this->User->Journal->setJournal($installment, array(
+                                    'credit' => 'leasing_installment_coa_id',
+                                    'debit' => $coa_id,
+                                ), array(
+                                    'date' => $payment_date,
+                                    'document_id' => $id,
+                                    'title' => $title,
+                                    'document_no' => $no_doc,
+                                    'type' => 'leasing_payment',
+                                ));
+                            }
+                            if( !empty($installment_rate) ) {
+                                $this->User->Journal->setJournal($installment_rate, array(
+                                    'credit' => 'leasing_installment_rate_coa_id',
+                                    'debit' => $coa_id,
+                                ), array(
+                                    'date' => $payment_date,
+                                    'document_id' => $id,
+                                    'title' => $title,
+                                    'document_no' => $no_doc,
+                                    'type' => 'leasing_payment',
+                                ));
+                            }
+                            if( !empty($denda) ) {
+                                $this->User->Journal->setJournal($denda, array(
+                                    'credit' => 'leasing_denda_coa_id',
+                                    'debit' => $coa_id,
+                                ), array(
+                                    'date' => $payment_date,
+                                    'document_id' => $id,
+                                    'title' => $title,
+                                    'document_no' => $no_doc,
+                                    'type' => 'leasing_payment',
+                                ));
                             }
                         }
 
