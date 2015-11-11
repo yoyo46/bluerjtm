@@ -152,6 +152,11 @@ class CashbanksController extends AppController {
             $prepayment_status = false;
             $document_no = !empty($data['CashBank']['nodoc'])?$data['CashBank']['nodoc']:false;
             $document_coa_id = !empty($data['CashBank']['coa_id'])?$data['CashBank']['coa_id']:false;
+
+            $receiver_id = $this->MkCommon->filterEmptyField($data, 'CashBank', 'receiver_id');
+            $receiver_type = $this->MkCommon->filterEmptyField($data, 'CashBank', 'receiver_type');
+            $tgl_cash_bank = $this->MkCommon->filterEmptyField($data, 'CashBank', 'tgl_cash_bank');
+
             $data['CashBank']['is_revised'] = 0;
             $data['CashBank']['branch_id'] = Configure::read('__Site.config_branch_id');
             $data['CashBank']['user_id'] = $this->user_id;
@@ -272,6 +277,16 @@ class CashbanksController extends AppController {
                     }
 
                     if(!empty($data['CashBankDetail'])){
+                        $documentType = Configure::read('__Site.Journal.Documents');
+                        $documentType = $this->MkCommon->filterEmptyField($documentType, $receiving_cash_type);
+                        $receiver_name = $this->RjCashBank->_callReceiverName($receiver_id, $receiver_type);
+
+                        if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
+                            $title = sprintf(__('%s kepada %s'), $documentType, $receiver_name);
+                        } else {
+                            $title = sprintf(__('%s dari %s'), $documentType, $receiver_name);
+                        }
+
                         foreach ($data['CashBankDetail'] as $key => $value) {
                             $value['cash_bank_id'] = $cash_bank_id;
                             $coa_id = $value['coa_id'];
@@ -290,6 +305,46 @@ class CashbanksController extends AppController {
                                     ));
                                 }
                             }
+
+                            if( empty($allowApprovals) ) {
+                                if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
+                                    $coaArr = array(
+                                        'debit' => $coa_id
+                                    );
+                                } else {
+                                    $coaArr = array(
+                                        'credit' => $coa_id
+                                    );
+                                }
+
+                                $this->User->Journal->setJournal($total, $coaArr, array(
+                                    'document_id' => $cash_bank_id,
+                                    'title' => $title,
+                                    'document_no' => $document_no,
+                                    'type' => $receiving_cash_type,
+                                    'date' => $tgl_cash_bank,
+                                ));
+                            }
+                        }
+
+                        if( empty($allowApprovals) ) {
+                            if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
+                                $coaArr = array(
+                                    'credit' => $document_coa_id,
+                                );
+                            } else {
+                                $coaArr = array(
+                                    'debit' => $document_coa_id,
+                                );
+                            }
+
+                            $this->User->Journal->setJournal($debit_total, $coaArr, array(
+                                'document_id' => $cash_bank_id,
+                                'title' => $title,
+                                'document_no' => $document_no,
+                                'type' => $receiving_cash_type,
+                                'date' => $tgl_cash_bank,
+                            ));
                         }
                     }
 
@@ -671,12 +726,12 @@ class CashbanksController extends AppController {
                                                 if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
                                                     $title = sprintf(__('%s kepada %s'), $documentType, $receiver_name);
                                                     $coaArr = array(
-                                                        'credit' => $coa_id
+                                                        'debit' => $coa_id
                                                     );
                                                 } else {
                                                     $title = sprintf(__('%s dari %s'), $documentType, $receiver_name);
                                                     $coaArr = array(
-                                                        'debit' => $coa_id
+                                                        'credit' => $coa_id
                                                     );
                                                 }
 
@@ -692,11 +747,11 @@ class CashbanksController extends AppController {
 
                                         if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
                                             $coaArr = array(
-                                                'debit' => $document_coa_id,
+                                                'credit' => $document_coa_id,
                                             );
                                         } else {
                                             $coaArr = array(
-                                                'credit' => $document_coa_id,
+                                                'debit' => $document_coa_id,
                                             );
                                         }
 
