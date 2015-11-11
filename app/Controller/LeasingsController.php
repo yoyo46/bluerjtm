@@ -730,7 +730,7 @@ class LeasingsController extends AppController {
                                     'document_id' => $id,
                                     'title' => $title,
                                     'document_no' => $no_doc,
-                                    'type' => 'leasing_payment',
+                                    'type' => 'leasing_payment_void',
                                 ));
                             }
                             if( !empty($installment_rate) ) {
@@ -742,7 +742,7 @@ class LeasingsController extends AppController {
                                     'document_id' => $id,
                                     'title' => $title,
                                     'document_no' => $no_doc,
-                                    'type' => 'leasing_payment',
+                                    'type' => 'leasing_payment_void',
                                 ));
                             }
                             if( !empty($denda) ) {
@@ -754,7 +754,7 @@ class LeasingsController extends AppController {
                                     'document_id' => $id,
                                     'title' => $title,
                                     'document_no' => $no_doc,
-                                    'type' => 'leasing_payment',
+                                    'type' => 'leasing_payment_void',
                                 ));
                             }
                         }
