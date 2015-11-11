@@ -987,7 +987,7 @@ class CashbanksController extends AppController {
 
             if(!empty($refine['document_no'])){
                 $value = urldecode($refine['document_no']);
-                $this->request->data['CashBank']['document_no'] = $value;
+                $this->request->data['Journal']['document_no'] = $value;
                 $conditions['Journal.document_no LIKE'] = '%'.$value.'%';
             }
 
