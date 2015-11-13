@@ -59,7 +59,7 @@ class CashBankDetail extends AppModel {
 
     function totalPrepaymentDibayarPerCoa ( $prepayment_id, $coa_id, $cash_bank_id = false ) {
         $conditions = array(
-            'CashBank.document_id' => $cash_bank_id,
+            'CashBank.document_id' => $prepayment_id,
             'CashBankDetail.coa_id' => $coa_id,
             'CashBank.status' => 1,
             'CashBank.prepayment_status <>' => 'full_paid',

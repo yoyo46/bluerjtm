@@ -1375,7 +1375,7 @@ class TrucksController extends AppController {
                         $id = $document_id = $this->KirPayment->id;
                         $document_no = str_pad($this->KirPayment->id, 5, '0', STR_PAD_LEFT);
 
-                        if( !empty($data['KirPayment']['total_pembayaran']) ) {
+                        if( !empty($data['Kir']['paid']) && !empty($data['KirPayment']['total_pembayaran']) ) {
                             $total = $data['KirPayment']['total_pembayaran'];
                             $title = sprintf(__('Pembayaran KIR Truk %s'), $nopol);
 
@@ -1486,8 +1486,10 @@ class TrucksController extends AppController {
             $total = $this->MkCommon->filterEmptyField($value, 'KirPayment', 'total_pembayaran');
             $coa_id = $this->MkCommon->filterEmptyField($value, 'KirPayment', 'coa_id');
             $kir_payment_date = $this->MkCommon->filterEmptyField($value, 'KirPayment', 'kir_payment_date');
+
             $nopol = $this->MkCommon->filterEmptyField($value, 'Kir', 'no_pol');
             $truck_id = $this->MkCommon->filterEmptyField($value, 'Kir', 'truck_id');
+            $paid = $this->MkCommon->filterEmptyField($value, 'Kir', 'paid');
             $document_no = str_pad($id, 5, '0', STR_PAD_LEFT);
 
             $this->KirPayment->id = $id;
@@ -1505,20 +1507,22 @@ class TrucksController extends AppController {
                     $this->Truck->save();
                 }
 
-                $title = sprintf(__('Pembatalan pembayaran KIR Truk %s'), $nopol);
+                if( !empty($paid) ) {
+                    $title = sprintf(__('Pembatalan pembayaran KIR Truk %s'), $nopol);
 
-                $this->User->Journal->setJournal($total, array(
-                    'credit' => 'kir_payment_coa_id',
-                    'debit' => $coa_id,
-                ), array(
-                    'date' => $kir_payment_date,
-                    'document_id' => $id,
-                    'truck_id' => $truck_id,
-                    'nopol' => $nopol,
-                    'title' => $title,
-                    'document_no' => $document_no,
-                    'type' => 'kir_void',
-                ));
+                    $this->User->Journal->setJournal($total, array(
+                        'credit' => 'kir_payment_coa_id',
+                        'debit' => $coa_id,
+                    ), array(
+                        'date' => $kir_payment_date,
+                        'document_id' => $id,
+                        'truck_id' => $truck_id,
+                        'nopol' => $nopol,
+                        'title' => $title,
+                        'document_no' => $document_no,
+                        'type' => 'kir_void',
+                    ));
+                }
 
                 $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $value['Kir']['no_pol']), 'success');
                 $this->Log->logActivity( sprintf(__('Pembayaran KIR Truk %s telah berhasil dibatalkan'), $value['Kir']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, 'kir_payment_void' );
@@ -1859,7 +1863,7 @@ class TrucksController extends AppController {
                         $id = $document_id = $this->SiupPayment->id;
                         $document_no = str_pad($this->SiupPayment->id, 5, '0', STR_PAD_LEFT);
                         
-                        if( !empty($data['SiupPayment']['total_pembayaran']) ) {
+                        if( !empty($data['Siup']['paid']) && !empty($data['SiupPayment']['total_pembayaran']) ) {
                             $total = $data['SiupPayment']['total_pembayaran'];
                             $title = sprintf(__('Pembayaran ijin usaha Truk %s'), $nopol);
 
@@ -1963,8 +1967,10 @@ class TrucksController extends AppController {
             $total = $this->MkCommon->filterEmptyField($value, 'SiupPayment', 'total_pembayaran');
             $coa_id = $this->MkCommon->filterEmptyField($value, 'SiupPayment', 'coa_id');
             $siup_payment_date = $this->MkCommon->filterEmptyField($value, 'SiupPayment', 'siup_payment_date');
+
             $nopol = $this->MkCommon->filterEmptyField($value, 'Siup', 'no_pol');
             $truck_id = $this->MkCommon->filterEmptyField($value, 'Siup', 'truck_id');
+            $paid = $this->MkCommon->filterEmptyField($value, 'Siup', 'paid');
             $document_no = str_pad($id, 5, '0', STR_PAD_LEFT);
 
             $this->SiupPayment->id = $id;
@@ -1982,20 +1988,22 @@ class TrucksController extends AppController {
                     $this->Truck->save();
                 }
 
-                $title = sprintf(__('Pembatalan pembayaran ijin usaha Truk %s'), $nopol);
+                if( !empty($paid) ) {
+                    $title = sprintf(__('Pembatalan pembayaran ijin usaha Truk %s'), $nopol);
 
-                $this->User->Journal->setJournal($total, array(
-                    'credit' => 'siup_payment_coa_id',
-                    'debit' => $coa_id,
-                ), array(
-                    'date' => $siup_payment_date,
-                    'document_id' => $id,
-                    'truck_id' => $truck_id,
-                    'nopol' => $nopol,
-                    'title' => $title,
-                    'document_no' => $document_no,
-                    'type' => 'siup_void',
-                ));
+                    $this->User->Journal->setJournal($total, array(
+                        'credit' => 'siup_payment_coa_id',
+                        'debit' => $coa_id,
+                    ), array(
+                        'date' => $siup_payment_date,
+                        'document_id' => $id,
+                        'truck_id' => $truck_id,
+                        'nopol' => $nopol,
+                        'title' => $title,
+                        'document_no' => $document_no,
+                        'type' => 'siup_void',
+                    ));
+                }
 
                 $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $value['Siup']['no_pol']), 'success');
                 $this->Log->logActivity( sprintf(__('Pembayaran Ijin usaha Truk %s telah berhasil dibatalkan'), $value['Siup']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, 'siup_payment_void' );
@@ -2737,9 +2745,11 @@ class TrucksController extends AppController {
             $total = $this->MkCommon->filterEmptyField($value, 'StnkPayment', 'total_pembayaran');
             $coa_id = $this->MkCommon->filterEmptyField($value, 'StnkPayment', 'coa_id');
             $stnk_payment_date = $this->MkCommon->filterEmptyField($value, 'StnkPayment', 'stnk_payment_date');
+
             $nopol = $this->MkCommon->filterEmptyField($value, 'Stnk', 'no_pol');
             $truck_id = $this->MkCommon->filterEmptyField($value, 'Stnk', 'truck_id');
             $is_change_plat = $this->MkCommon->filterEmptyField($value, 'Stnk', 'is_change_plat');
+            $paid = $this->MkCommon->filterEmptyField($value, 'Stnk', 'paid');
             $document_no = str_pad($id, 5, '0', STR_PAD_LEFT);
 
             if( !empty($is_change_plat) ) {
@@ -2767,20 +2777,22 @@ class TrucksController extends AppController {
                     $this->Truck->save();
                 }
 
-                $title = sprintf(__('Pembatalan pembayaran STNK %sTruk %s'), $additionalTitle, $nopol);
+                if( !empty($paid) ) {
+                    $title = sprintf(__('Pembatalan pembayaran STNK %sTruk %s'), $additionalTitle, $nopol);
 
-                $this->User->Journal->setJournal($total, array(
-                    'credit' => 'stnk_payment_coa_id',
-                    'debit' => $coa_id,
-                ), array(
-                    'date' => $stnk_payment_date,
-                    'document_id' => $id,
-                    'truck_id' => $truck_id,
-                    'nopol' => $nopol,
-                    'title' => $title,
-                    'document_no' => $document_no,
-                    'type' => 'stnk_void',
-                ));
+                    $this->User->Journal->setJournal($total, array(
+                        'credit' => 'stnk_payment_coa_id',
+                        'debit' => $coa_id,
+                    ), array(
+                        'date' => $stnk_payment_date,
+                        'document_id' => $id,
+                        'truck_id' => $truck_id,
+                        'nopol' => $nopol,
+                        'title' => $title,
+                        'document_no' => $document_no,
+                        'type' => 'stnk_void',
+                    ));
+                }
 
                 $this->MkCommon->setCustomFlash(sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $value['Stnk']['no_pol']), 'success');
                 $this->Log->logActivity( sprintf(__('Pembayaran STNK Truk %s telah berhasil dibatalkan'), $value['Stnk']['no_pol']), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id, 'stnk_payment_void' );
@@ -2951,7 +2963,7 @@ class TrucksController extends AppController {
                         $id = $document_id = $this->StnkPayment->id;
                         $document_no = str_pad($this->StnkPayment->id, 5, '0', STR_PAD_LEFT);
                         
-                        if( !empty($data['StnkPayment']['total_pembayaran']) ) {
+                        if( !empty($data['Stnk']['paid']) && !empty($data['StnkPayment']['total_pembayaran']) ) {
                             $total = $data['StnkPayment']['total_pembayaran'];
                             $title = sprintf(__('Pembayaran STNK %sTruk %s'), $additionalTitle, $nopol);
 

@@ -338,7 +338,7 @@ class CashbanksController extends AppController {
                                 );
                             }
 
-                            $this->User->Journal->setJournal($debit_total, $coaArr, array(
+                            $this->User->Journal->setJournal($totalCashBank, $coaArr, array(
                                 'document_id' => $cash_bank_id,
                                 'title' => $title,
                                 'document_no' => $document_no,
@@ -755,7 +755,7 @@ class CashbanksController extends AppController {
                                             );
                                         }
 
-                                        $this->User->Journal->setJournal($debit_total, $coaArr, array(
+                                        $this->User->Journal->setJournal($grand_total, $coaArr, array(
                                             'document_id' => $id,
                                             'title' => $title,
                                             'document_no' => $nodoc,

@@ -168,6 +168,7 @@ class CashBank extends AppModel {
         $options = array(
             'conditions' => array(
                 'CashBank.is_rejected' => 0,
+                'CashBank.completed',
                 'CashBank.receiving_cash_type' => $document_type,
             ),
         );

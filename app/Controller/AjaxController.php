@@ -2064,6 +2064,7 @@ class AjaxController extends AppController {
 
 		$options = array(
             'conditions' => array(
+                'CashBank.completed' => 1,
                 'CashBank.is_rejected' => 0,
                 'CashBank.receiving_cash_type' => 'prepayment_out',
 	        ),

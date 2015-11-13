@@ -440,13 +440,13 @@ table.text-center th {
 .table.table-no-border td {
   border: none;
 }
-.table.red > thead > tr {
+/*.table.red > thead > tr {
   background-color: #ff3e3b;
 }
 .table.red > thead > tr > th,
 .table.red > thead > tr > th > a {
   color: white;
-}
+}*/
 
 .text-bold,
 .text-bold.table td,
