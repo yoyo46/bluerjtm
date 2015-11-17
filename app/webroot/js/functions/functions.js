@@ -1865,8 +1865,17 @@ var timepicker = function( obj ){
     }
 
     if( obj.length > 0 ) {
+        var timeDefault = obj.attr('data-default');
+
+        if( timeDefault == 'false' ) {
+            timeDefault = false;
+        } else {
+            timeDefault = 'current';
+        }
+
         obj.timepicker({
-            showMeridian: false
+            showMeridian: false,
+            defaultTime: timeDefault,
         });
     }
 }

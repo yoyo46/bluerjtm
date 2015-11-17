@@ -190,6 +190,48 @@
 							?>
 				        </div>
 				        <div class="form-group">
+		        			<?php 
+		                            $attrBrowse = array(
+		                                'class' => 'ajaxModal visible-xs browse-docs',
+		                                'escape' => false,
+										'title' => __('Supir Pengganti'),
+										'data-action' => 'browse-form',
+										'data-change' => 'driverID',
+		                            );
+		                            $urlBrowse = array(
+		                                'controller'=> 'ajax', 
+										'action' => 'getDrivers',
+										!empty($data_local['Ttuj']['driver_penganti_id'])?$data_local['Ttuj']['driver_penganti_id']:0,
+										'pengganti',
+		                            );
+									echo $this->Form->label('driver_penganti_id', sprintf(__('Supir Pengganti %s'), $this->Html->tag('small', '', array(
+										'class' => 'sj_outstanding_pengganti'
+									))).$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+							?>
+				        	<div class="row">
+				        		<div class="col-sm-10">
+						        	<?php 
+											echo $this->Form->input('driver_penganti_id',array(
+												'label'=> false, 
+												'class'=>'form-control driver-penganti chosen-select',
+												'required' => false,
+												'empty' => __('Pilih Supir Pengganti --'),
+												'id' => 'driverID',
+											));
+									?>
+				        		</div>
+		        				<div class="col-sm-2 hidden-xs">
+			                        <?php 
+		        							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+			                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+			                        ?>
+			                    </div>
+				        	</div>
+				        </div>
+				        <?php 
+								if( $data_action != 'retail' ) {
+				        ?>
+				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->label('tgljam_berangkat', __('Tgl & Jam Berangkat'));
 							?>
@@ -231,45 +273,6 @@
 				        	?>
 				        </div>
 				        <div class="form-group">
-		        			<?php 
-		                            $attrBrowse = array(
-		                                'class' => 'ajaxModal visible-xs browse-docs',
-		                                'escape' => false,
-										'title' => __('Supir Pengganti'),
-										'data-action' => 'browse-form',
-										'data-change' => 'driverID',
-		                            );
-		                            $urlBrowse = array(
-		                                'controller'=> 'ajax', 
-										'action' => 'getDrivers',
-										!empty($data_local['Ttuj']['driver_penganti_id'])?$data_local['Ttuj']['driver_penganti_id']:0,
-										'pengganti',
-		                            );
-									echo $this->Form->label('driver_penganti_id', sprintf(__('Supir Pengganti %s'), $this->Html->tag('small', '', array(
-										'class' => 'sj_outstanding_pengganti'
-									))).$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
-							?>
-				        	<div class="row">
-				        		<div class="col-sm-10">
-						        	<?php 
-											echo $this->Form->input('driver_penganti_id',array(
-												'label'=> false, 
-												'class'=>'form-control driver-penganti chosen-select',
-												'required' => false,
-												'empty' => __('Pilih Supir Pengganti --'),
-												'id' => 'driverID',
-											));
-									?>
-				        		</div>
-		        				<div class="col-sm-2 hidden-xs">
-			                        <?php 
-		        							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-			                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
-			                        ?>
-			                    </div>
-				        	</div>
-				        </div>
-				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('note',array(
 										'label'=> __('Keterangan'), 
@@ -278,64 +281,12 @@
 									));
 							?>
 				        </div>
+				        <?php 
+				        		}
+				        ?>
 				    </div>
 				</div>
 			</div>
-			<?php 
-					/*
-					if( !empty($data_local) ) {
-			?>
-			<div class="col-sm-6">
-				<div class="box box-primary">
-				    <div class="box-header">
-				        <h3 class="box-title"><?php echo __('Surat Jalan Kembali'); ?></h3>
-				    </div>
-				    <div class="box-body">
-		    			<?php echo $this->Html->tag('p', __('Centang apabila semua Surat Jalan telah diterima'));?>
-				        <div class="checkbox">
-			                <label>
-			                    <?php 
-									echo $this->Form->checkbox('getting_sj',array(
-										'label'=> false, 
-										'required' => false,
-										'id' => 'sj-handle',
-									)).__('SJ sudah diterima??');
-								?>
-			                </label>
-			            </div>
-			            <div class="sj-date <?php echo (!empty($datForm['Ttuj']['getting_sj'])) ? '' : 'hide'; ?>">
-							<div class="row">
-								<div class="col-sm-9">
-									<div class="form-group">
-										<?php 
-												echo $this->Form->input('date_sj',array(
-													'label'=> __('Tgl SJ diterima'), 
-													'class'=>'form-control custom-date',
-													'type' => 'text'
-												));
-										?>
-									</div>
-								</div>
-								<div class="col-sm-3">
-									<div class="form-group">
-										<?php 
-												echo $this->Form->input('qty_sj',array(
-													'label'=> __('Qty SJ'), 
-													'class'=>'form-control',
-													'type' => 'text'
-												));
-										?>
-									</div>
-								</div>
-							</div>
-			            </div>
-				    </div>
-				</div>
-			</div>
-			<?php 
-					}
-		            */
-			?>
 			<div class="col-sm-6">
 				<div class="box box-primary">
 				    <div class="box-header">
@@ -436,88 +387,6 @@
 								</div>
 							</div>
 						</div>
-						<?php
-						/*
-				        <table class="table table-bordered table-striped" id="ttujDetail">
-							<tbody>
-								<?php 
-										if( !empty($datForm['TtujTipeMotor']['tipe_motor_id']) ) {
-											foreach ($datForm['TtujTipeMotor']['tipe_motor_id'] as $key => $tipe_motor_id) {
-												$qty = !empty($datForm['TtujTipeMotor']['qty'][$key])?$datForm['TtujTipeMotor']['qty'][$key]:false;
-												$color_motor_id = !empty($datForm['TtujTipeMotor']['color_motor_id'][$key])?$datForm['TtujTipeMotor']['color_motor_id'][$key]:false;
-												$totalUnitMuatan += $qty;
-								?>
-								<tr>
-									<?php
-											if( $data_action == 'retail' ) {
-												$city_id = !empty($datForm['TtujTipeMotor']['city_id'][$key])?$datForm['TtujTipeMotor']['city_id'][$key]:false;
-
-												echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.city_id.',array(
-													'label'=> false, 
-													'class'=>'form-control city-retail-id chosen-select',
-													'required' => false,
-													'empty' => __('Pilih Tujuan --'),
-													'options' => !empty($tmpCities)?$tmpCities:false,
-													'value' => $city_id,
-												)));
-											}
-
-											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.tipe_motor_id.', array(
-												'class' => 'form-control tipe_motor_id chosen-select',
-												'label' => false,
-												'empty' => __('Tipe Motor'),
-												'options' => $tipeMotors,
-												'value' => $tipe_motor_id,
-												'required' => false,
-												'rel' => $key,
-											)));
-											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.color_motor_id.', array(
-												'class' => 'form-control',
-												'label' => false,
-												'empty' => __('Warna Motor'),
-												'options' => $colors,
-												'value' => $color_motor_id,
-												'required' => false,
-												'rel' => $key,
-											)));
-											echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.qty.', array(
-												'class' => 'form-control qty-muatan',
-												'label' => false,
-												'required' => false,
-												'div' => false,
-												'value' => $qty,
-												'rel' => $key,
-											)));
-											echo $this->Html->tag('td', $this->Html->link('<i class="fa fa-times"></i> ', 'javascript:', array(
-												'class' => 'delete-custom-field btn btn-danger btn-xs',
-												'action_type' => 'ttuj',
-												'escape' => false
-											)), array(
-												'class' => 'text-center',
-											));
-									?>
-								</tr>
-								<?php
-											}
-										}
-								?>
-							</tbody>
-							<tfoot>
-								<tr>
-									<?php 
-											echo $this->Html->tag('th', __('Total'), array(
-												'colspan' => $colSpan,
-												'class' => 'text-right',
-											));
-											echo $this->Html->tag('th', $totalUnitMuatan, array(
-												'class' => 'total-unit-muatan',
-											));
-									?>
-								</tr>
-							</tfoot>
-						</table>
-						*/
-						?>
 				    </div>
 				</div>
 			</div>
@@ -560,6 +429,11 @@
 				</div>
 			</div>
 			<?php 
+					}
+
+					if( $data_action == 'retail' ) {
+						echo $this->Common->clearfix();
+	        			echo $this->element('blocks/ttuj/forms/ttuj_lanjutan');
 					}
 			?>
 			<div class="col-sm-6">

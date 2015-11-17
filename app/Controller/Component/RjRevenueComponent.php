@@ -336,5 +336,84 @@ class RjRevenueComponent extends Component {
 
         return $value;
     }
+
+    function _callGenerateDateTime ( $data, $field = 'tiba' ) {
+    	$fieldTgl = 'tgl_'.$field;
+    	$fieldJam = 'jam_'.$field;
+
+    	$tgl = $this->MkCommon->filterEmptyField($data, 'Ttuj', $fieldTgl);
+    	$jam = $this->MkCommon->filterEmptyField($data, 'Ttuj', $fieldJam);
+    	$result = '';
+
+    	if( !empty($tgl) ) {
+            $tgl = $this->MkCommon->getDate($tgl);
+            $data['Ttuj'][$fieldTgl] = $tgl;
+
+            if( !empty($jam) ) {
+                $jam = date('H:i', strtotime($jam));
+
+                $data['Ttuj'][$fieldJam] = $jam;
+                $result = sprintf('%s %s', $tgl, $jam);
+            }
+
+            switch ($field) {
+            	case 'tiba':
+                	$data['Ttuj']['is_arrive'] = 1;
+            		break;
+            	case 'bongkaran':
+                	$data['Ttuj']['is_bongkaran'] = 1;
+            		break;
+            	case 'balik':
+                	$data['Ttuj']['is_balik'] = 1;
+            		break;
+            	case 'pool':
+                	$data['Ttuj']['is_pool'] = 1;
+            		break;
+            }
+        }
+
+        $data['Ttuj']['tgljam_'.$field] = $result;
+
+        return $data;
+    }
+
+    function _callDataTtujLanjutan ( $data ) {
+    	$data['Ttuj']['is_arrive'] = 0;
+    	$data['Ttuj']['is_bongkaran'] = 0;
+    	$data['Ttuj']['is_balik'] = 0;
+    	$data['Ttuj']['is_pool'] = 0;
+
+        $data = $this->_callGenerateDateTime($data, 'tiba');
+        $data = $this->_callGenerateDateTime($data, 'bongkaran');
+        $data = $this->_callGenerateDateTime($data, 'balik');
+        $data = $this->_callGenerateDateTime($data, 'pool');
+
+        return $data;
+    }
+
+    function _callShowTglTtuj ( $data ) {
+        if( !empty($data['Ttuj']['tgljam_berangkat']) && $data['Ttuj']['tgljam_berangkat'] != '0000-00-00 00:00:00' ) {
+	        $data['Ttuj']['tgl_berangkat'] = date('d/m/Y', strtotime($data['Ttuj']['tgljam_berangkat']));
+	        $data['Ttuj']['jam_berangkat'] = date('H:i', strtotime($data['Ttuj']['tgljam_berangkat']));
+	    }
+	    if( !empty($data['Ttuj']['tgljam_tiba']) && $data['Ttuj']['tgljam_tiba'] != '0000-00-00 00:00:00' ) {
+	        $data['Ttuj']['tgl_tiba'] = date('d/m/Y', strtotime($data['Ttuj']['tgljam_tiba']));
+	        $data['Ttuj']['jam_tiba'] = date('H:i', strtotime($data['Ttuj']['tgljam_tiba']));
+	    }
+	    if( !empty($data['Ttuj']['tgljam_bongkaran']) && $data['Ttuj']['tgljam_bongkaran'] != '0000-00-00 00:00:00' ) {
+	        $data['Ttuj']['tgl_bongkaran'] = date('d/m/Y', strtotime($data['Ttuj']['tgljam_bongkaran']));
+	        $data['Ttuj']['jam_bongkaran'] = date('H:i', strtotime($data['Ttuj']['tgljam_bongkaran']));
+	    }
+	    if( !empty($data['Ttuj']['tgljam_balik']) && $data['Ttuj']['tgljam_balik'] != '0000-00-00 00:00:00' ) {
+	        $data['Ttuj']['tgl_balik'] = date('d/m/Y', strtotime($data['Ttuj']['tgljam_balik']));
+	        $data['Ttuj']['jam_balik'] = date('H:i', strtotime($data['Ttuj']['tgljam_balik']));
+	    }
+	    if( !empty($data['Ttuj']['tgljam_pool']) && $data['Ttuj']['tgljam_pool'] != '0000-00-00 00:00:00' ) {
+	        $data['Ttuj']['tgl_pool'] = date('d/m/Y', strtotime($data['Ttuj']['tgljam_pool']));
+	        $data['Ttuj']['jam_pool'] = date('H:i', strtotime($data['Ttuj']['tgljam_pool']));
+	    }
+
+        return $data;
+    }
 }
 ?>

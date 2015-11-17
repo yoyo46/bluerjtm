@@ -1835,4 +1835,10 @@ class CommonHelper extends AppHelper {
 
         return $data;
     }
+
+    function clearfix () {
+        return $this->Html->tag('div', '', array(
+            'class' => 'clear',
+        ));
+    }
 }

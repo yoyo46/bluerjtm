@@ -541,6 +541,14 @@ class RevenuesController extends AppController {
 
             if( $data_action == 'retail' ) {
                 $data['Ttuj']['is_retail'] = 1;
+                $data['Ttuj']['allow_date_ttuj'] = true;
+
+                $data = $this->RjRevenue->_callDataTtujLanjutan($data);
+
+                $this->Ttuj->validator()->remove('tgljam_tiba', 'notempty');
+                $this->Ttuj->validator()->remove('tgljam_bongkaran', 'notempty');
+                $this->Ttuj->validator()->remove('tgljam_balik', 'notempty');
+                $this->Ttuj->validator()->remove('tgljam_pool', 'notempty');
             }
 
             $this->Ttuj->set($data);
@@ -1092,10 +1100,7 @@ class RevenuesController extends AppController {
                     $uangKuli = $this->UangKuli->getUangKuli( $data_local['Ttuj']['from_city_id'], $data_local['Ttuj']['to_city_id'], $data_local['Ttuj']['customer_id'], $data_local['Ttuj']['truck_capacity'] );
                 }
 
-                if( !empty($data_local['Ttuj']['tgljam_berangkat']) ) {
-                    $data_local['Ttuj']['tgl_berangkat'] = date('d/m/Y', strtotime($data_local['Ttuj']['tgljam_berangkat']));
-                    $data_local['Ttuj']['jam_berangkat'] = date('H:i', strtotime($data_local['Ttuj']['tgljam_berangkat']));
-                }
+                $data_local = $this->RjRevenue->_callShowTglTtuj($data_local);
 
                 if( !empty($data_local['Ttuj']['completed_date']) ) {
                     $data_local['Ttuj']['completed_date'] = $this->MkCommon->getDate($data_local['Ttuj']['completed_date'], true);
