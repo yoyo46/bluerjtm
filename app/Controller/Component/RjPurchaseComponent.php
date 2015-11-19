@@ -77,5 +77,56 @@ class RjPurchaseComponent extends Component {
 
         return $data;
     }
+
+    function _callBeforeSavePO ( $data ) {
+        if( !empty($data) ) {
+            $dataSave = array();
+            $transaction_date = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'transaction_date');
+            $dataDetail = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderDetail');
+            $dataDetailPrice = $this->MkCommon->filterEmptyField($dataDetail, 'price');
+
+            $dateArr = $this->MkCommon->_callSplitDate($available_date);
+            $transaction_date = $this->MkCommon->getDate($transaction_date);
+            $transaction_date = $this->MkCommon->getDate($transaction_date);
+
+            $data['PurchaseOrder']['user_id'] = Configure::read('__Site.config_user_id');
+            $data['PurchaseOrder']['transaction_date'] = $transaction_date;
+
+            if( !empty($dataDetailPrice) ) {
+                $values = array_filter($dataDetailPrice);
+                unset($data['PurchaseOrderDetail']);
+
+                foreach ($values as $key => $price) {
+                    $product_id = $this->MkCommon->filterEmptyField($dataDetail, 'product_id', $key);
+                    $disc = $this->MkCommon->filterEmptyField($dataDetail, 'disc', $key);
+                    $ppn = $this->MkCommon->filterEmptyField($dataDetail, 'ppn', $key);
+
+                    $ppn = $this->MkCommon->_callPriceConverter($ppn);
+                    $disc = $this->MkCommon->_callPriceConverter($disc);
+                    $price = $this->MkCommon->_callPriceConverter($price);
+
+                    $dataSave[]['PurchaseOrderDetail'] = array(
+                        'product_id' => $product_id,
+                        'price' => $price,
+                        'ppn' => $ppn,
+                        'disc' => $disc,
+                    );
+                }
+            }
+
+            if( !empty($dataSave) ) {
+                $data['PurchaseOrderDetail'] = $dataSave;
+            }
+        }
+
+        return $data;
+    }
+
+    function _callBeforeRenderPO ( $data ) {
+        $transaction_date = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'transaction_date', date('Y-m-d'));
+        $data['PurchaseOrder']['transaction_date'] = $this->MkCommon->getDate($transaction_date, true);
+
+        return $data;
+    }
 }
 ?>

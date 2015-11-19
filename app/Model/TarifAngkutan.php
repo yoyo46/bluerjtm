@@ -78,10 +78,10 @@ class TarifAngkutan extends AppModel {
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
+
         $default_options = array(
-            'conditions'=> array(
-                'TarifAngkutan.branch_id' => Configure::read('__Site.config_branch_id'),
-            ),
+            'conditions'=> array(),
             'order'=> array(
                 'TarifAngkutan.name_tarif' => 'ASC'
             ),
@@ -90,6 +90,10 @@ class TarifAngkutan extends AppModel {
             //     'GroupMotor',
             // ),
         );
+
+        if( !empty($branch) ) {
+            $default_options['TarifAngkutan.branch_id'] = Configure::read('__Site.config_branch_id');
+        }
 
         switch ($status) {
             case 'all':
@@ -158,6 +162,8 @@ class TarifAngkutan extends AppModel {
         $group_motor_id = !empty($group_motor_id)?$group_motor_id:false;
         $results = $this->getData('all', array(
             'conditions' => $conditions,
+        ), true, array(
+            'branch' => false,
         ));
 
         if(!empty($results)){

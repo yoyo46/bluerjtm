@@ -2,7 +2,7 @@
 App::uses('AppController', 'Controller');
 class PurchasesController extends AppController {
 	public $uses = array(
-        'SupplierQuotation',
+        'SupplierQuotation', 'PurchaseOrder',
     );
     public $components = array(
         'RjPurchase'
@@ -114,6 +114,87 @@ class PurchasesController extends AppController {
 
     public function supplier_quotation_toggle( $id ) {
         $result = $this->SupplierQuotation->doDelete( $id );
+        $this->MkCommon->setProcessParams($result);
+    }
+
+    public function purchase_orders() {
+        $this->set('sub_module_title', 'Purchase Order');
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->PurchaseOrder->_callRefineParams($params);
+        $this->paginate = $this->PurchaseOrder->getData('paginate', $options);
+        $values = $this->paginate('PurchaseOrder');
+        $values = $this->PurchaseOrder->Vendor->getMerge($values);
+
+        $vendors = $this->PurchaseOrder->Vendor->getData('list');
+
+        $this->set('active_menu', 'Purchase Order');
+        $this->set(compact(
+            'values', 'vendors'
+        ));
+    }
+
+    function purchase_order_add(){
+        $this->set('sub_module_title', __('Tambah PO'));
+
+        $data = $this->request->data;
+        $data = $this->RjPurchase->_callBeforeSavePO($data);
+        $result = $this->PurchaseOrder->doSave($data);
+        $this->MkCommon->setProcessParams($result, array(
+            'controller' => 'purchases',
+            'action' => 'purchase_orders',
+            'admin' => false,
+        ));
+        $this->request->data = $this->RjPurchase->_callBeforeRenderPO($this->request->data);
+
+        $vendors = $this->PurchaseOrder->Vendor->getData('list');
+        $this->set('active_menu', 'Purchase Order');
+        $this->set(compact(
+            'vendors'
+        ));
+    }
+
+    public function purchase_order_edit( $id = false ) {
+        $this->set('sub_module_title', __('Edit PO'));
+
+        $value = $this->PurchaseOrder->getData('first', array(
+            'conditions' => array(
+                'PurchaseOrder.id' => $id,
+            ),
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->PurchaseOrder->PurchaseOrderDetail->getMerge($value, $id);
+
+            $data = $this->request->data;
+            $data = $this->RjPurchase->_callBeforeSavePO($data);
+            $result = $this->PurchaseOrder->doSave($data, $value, $id);
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'purchases',
+                'action' => 'purchase_orders',
+                'admin' => false,
+            ));
+            $this->request->data = $this->RjPurchase->_callBeforeRenderPO($this->request->data);
+
+            $vendors = $this->PurchaseOrder->Vendor->getData('list');
+            $this->set('active_menu', 'Purchase Order');
+            $this->set(compact(
+                'vendors', 'value'
+            ));
+            $this->render('purchase_order_add');
+        } else {
+            $this->MkCommon->setCustomFlash(__('PO tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function purchase_order_toggle( $id ) {
+        $result = $this->PurchaseOrder->doDelete( $id );
         $this->MkCommon->setProcessParams($result);
     }
 }

@@ -57,6 +57,10 @@ class RevenueDetail extends AppModel {
             'className' => 'Invoice',
             'foreignKey' => 'invoice_id',
         ),
+        'TarifAngkutan' => array(
+            'className' => 'TarifAngkutan',
+            'foreignKey' => 'tarif_angkutan_id',
+        ),
     );
 
 	function getData( $find, $options = false, $elements = array(), $is_merge = true ){

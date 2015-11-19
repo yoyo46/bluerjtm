@@ -1092,16 +1092,17 @@
 
                     $dataMenu = array(
                         'purchases' => array(
-                            'supplier_quotations',
+                            'supplier_quotations', 'purchase_orders',
                         ),
                     );
 
                     if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeSetting = false;
                         $lblQuotation = __('Supplier Quotation');
+                        $lblPO = __('Purchase Order');
                         
                         $settingMenu = array(
-                            $lblQuotation,
+                            $lblQuotation, $lblPO,
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1120,6 +1121,15 @@
                             echo $this->Common->link($lblQuotation , array(
                                 'controller' => 'purchases',
                                 'action' => 'supplier_quotations',
+                                'admin' => false,
+                            ), array(
+                                'data-wrapper' => 'li',
+                                'data-icon' => 'angle-double-right',
+                                'data-active' => $active_menu,
+                            ));
+                            echo $this->Common->link($lblPO , array(
+                                'controller' => 'purchases',
+                                'action' => 'purchase_orders',
                                 'admin' => false,
                             ), array(
                                 'data-wrapper' => 'li',

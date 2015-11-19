@@ -764,7 +764,6 @@ class AjaxController extends AppController {
 
 	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $detail_city_id = false, $group_motor_id = false, $is_charge = false, $main_city_id = false, $qty = 0, $jenis_unit = '', $from_city_id = false, $truck_id = false, $from_ttuj = false ){
 		$this->loadModel('Ttuj');
-		$this->loadModel('TarifAngkutan');
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
@@ -774,11 +773,10 @@ class AjaxController extends AppController {
 		), true, array(
 			'status' => 'all',
 		));
-		$from_city_id = !empty($data_ttuj['Ttuj']['from_city_id'])?$data_ttuj['Ttuj']['from_city_id']:$from_city_id;
+		$from_city_id = $this->MkCommon->filterEmptyField($data_ttuj, 'Ttuj', 'from_city_id', $from_city_id);
 
 		if( !empty($truck_id) ) {
-			$this->loadModel('Truck');
-			$truck = $this->Truck->getData('first', array(
+			$truck = $this->Ttuj->Truck->getData('first', array(
                 'conditions' => array(
                     'Truck.id' => $truck_id,
                 ),
@@ -787,14 +785,13 @@ class AjaxController extends AppController {
                     'Truck.capacity'
                 ),
             ));
-			$truck_capacity = !empty($truck['Truck']['capacity'])?$truck['Truck']['capacity']:false;
+			$truck_capacity = $this->MkCommon->filterEmptyField($truck, 'Truck', 'capacity');
 		} else {
-			$truck_capacity = !empty($data_ttuj['Ttuj']['truck_capacity'])?$data_ttuj['Ttuj']['truck_capacity']:false;
+			$truck_capacity = $this->MkCommon->filterEmptyField($data_ttuj, 'Ttuj', 'truck_capacity');
 		}
 
 		if( !empty($group_motor_id) ) {
-			$this->loadModel('GroupMotor');
-			$groupMotor = $this->GroupMotor->getData('first', array(
+			$groupMotor = $this->Ttuj->Revenue->RevenueDetail->GroupMotor->getData('first', array(
 				'conditions' => array(
 					'GroupMotor.id' => $group_motor_id,
 				),
@@ -805,7 +802,7 @@ class AjaxController extends AppController {
 			}
 		}
 
-		$tarif = $this->TarifAngkutan->getTarifAngkut( $from_city_id, $main_city_id, $detail_city_id, $customer_id, $truck_capacity, $group_motor_id );
+		$tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $main_city_id, $detail_city_id, $customer_id, $truck_capacity, $group_motor_id );
 		$this->set(compact(
 			'is_charge', 'tarif',
 			'qty', 'jenis_unit', 'truck',

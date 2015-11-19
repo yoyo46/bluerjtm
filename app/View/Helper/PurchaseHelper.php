@@ -4,8 +4,8 @@ class PurchaseHelper extends AppHelper {
         'Html', 'Common',
     );
 
-    function _callStatusQuotation ( $data ) {
-        $status = $this->Common->filterEmptyField($data, 'SupplierQuotation', 'status');
+    function _callStatus ( $data, $modelName = 'SupplierQuotation' ) {
+        $status = $this->Common->filterEmptyField($data, $modelName, 'status');
 
         if( !empty($status) ) {
             $customStatus = $this->Html->tag('span', __('Aktif'), array(
