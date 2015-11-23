@@ -111,6 +111,9 @@ class PurchaseOrder extends AppModel {
 
         if ( !empty($data) ) {
             $nodoc = !empty($data['PurchaseOrder']['nodoc'])?$data['PurchaseOrder']['nodoc']:false;
+            $no_sq = !empty($data['PurchaseOrder']['no_sq'])?$data['PurchaseOrder']['no_sq']:false;
+
+            $data['PurchaseOrder']['supplier_quotation_id'] = $this->SupplierQuotation->getDataCustom('SupplierQuotation.nodoc', $no_sq, 'id');
             $data['PurchaseOrder']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             if( !empty($nodoc) ) {
@@ -137,6 +140,12 @@ class PurchaseOrder extends AppModel {
                     $this->PurchaseOrderDetail->doSave($data, $id);
                     $defaul_msg = sprintf(__('Berhasil %s'), $defaul_msg);
 
+                    $sq_id = $data['PurchaseOrder']['supplier_quotation_id'];
+
+                    $this->SupplierQuotation->id = $sq_id;
+                    $this->SupplierQuotation->set('is_po', 1);
+                    $this->SupplierQuotation->save();
+
                     $result = array(
                         'msg' => $defaul_msg,
                         'status' => 'success',
@@ -157,6 +166,7 @@ class PurchaseOrder extends AppModel {
                             'document_id' => $id,
                             'error' => 1,
                         ),
+                        'data' => $data,
                     );
                 }
             } else {
@@ -164,6 +174,7 @@ class PurchaseOrder extends AppModel {
                 $result = array(
                     'msg' => $defaul_msg,
                     'status' => 'error',
+                    'data' => $data,
                 );
             }
         } else if( !empty($value) ) {
@@ -221,6 +232,7 @@ class PurchaseOrder extends AppModel {
         ));
 
         if ( !empty($value) ) {
+            $sq_id = !empty($value['PurchaseOrder']['supplier_quotation_id'])?$value['PurchaseOrder']['supplier_quotation_id']:false;
             $nodoc = !empty($value['PurchaseOrder']['nodoc'])?$value['PurchaseOrder']['nodoc']:false;
             $default_msg = sprintf(__('menghapus PO #%s'), $nodoc);
 
@@ -228,6 +240,10 @@ class PurchaseOrder extends AppModel {
             $this->set('status', 0);
 
             if( $this->save() ) {
+                $this->SupplierQuotation->id = $sq_id;
+                $this->SupplierQuotation->set('is_po', 0);
+                $this->SupplierQuotation->save();
+
                 $msg = sprintf(__('Berhasil %s'), $default_msg);
                 $result = array(
                     'msg' => $msg,

@@ -259,7 +259,7 @@ var add_custom_field = function( obj ){
                     $('.tipe-motor-table #field-grand-total-lku').before(html_tr);
                     
                     choose_item_info();
-                    input_number();
+                    $.inputNumber();
                     $.inputPrice({
                         obj: $('.lku-detail-'+lku_detail_len+' .input_price'),
                     });
@@ -281,7 +281,7 @@ var add_custom_field = function( obj ){
                     $('.perlengkapan-table #field-grand-total-ksu').before(html_tr);
                     
                     choose_item_info();
-                    input_number();
+                    $.inputNumber();
                     $.inputPrice({
                         obj: $('.ksu-detail-'+ksu_detail_len+' .input_price'),
                     });
@@ -303,7 +303,7 @@ var add_custom_field = function( obj ){
                 if( length_option > tipe_motor_table-1 ){
                     $('.ttuj-info-table #field-grand-total-document').before(html_tr);
                     choose_item_info();
-                    input_number();
+                    $.inputNumber();
                     price_tipe_motor();
                     delete_custom_field($('.lku-detail-'+tipe_motor_table+' .delete-custom-field'));
                 }
@@ -318,7 +318,7 @@ var add_custom_field = function( obj ){
                 if( length_option > tipe_motor_table-1 ){
                     $('.ttuj-info-table #field-grand-total-document').before(html_tr);
                     choose_item_info();
-                    input_number();
+                    $.inputNumber();
                     price_tipe_motor();
                     delete_custom_field($('.ksu-detail-'+tipe_motor_table+' .delete-custom-field'));
                 }
@@ -682,7 +682,7 @@ var add_custom_field = function( obj ){
                 $.inputPrice({
                     obj: $('#box-uang-kuli-capacity .list-uang-kuli-capacity:last-child .input_price'),
                 });
-                input_number( $('#box-uang-kuli-capacity .list-uang-kuli-capacity:last-child .input_number') );
+                $.inputNumber();
                 delete_custom_field( $('#box-uang-kuli-capacity .list-uang-kuli-capacity:last-child .delete-custom-field') );
               break;
             case 'file-laka':
@@ -1106,40 +1106,6 @@ var delete_custom_field = function( obj ) {
 
         return false;
     });
-}
-
-var input_number = function ( obj ) {
-    if( typeof obj == 'undefined' ) {
-        obj = $('.input_number');
-    }
-
-    obj.keypress(function(event) {    
-        if( (this.value.length == 0 && event.which == 46) || event.keyCode == 33 || event.keyCode == 64 || event.keyCode == 35 || event.keyCode == 36 || event.keyCode == 37 || event.keyCode == 94 || event.keyCode == 38 || event.keyCode == 42 || event.keyCode == 40 || event.keyCode == 41
-            ){
-            return false;
-        } else {
-            if (
-                event.keyCode == 8 ||  /*backspace*/
-                event.keyCode == 46 || /*point*/
-                event.keyCode == 9 || /*Tab*/
-                event.keyCode == 27 || /*esc*/
-                event.keyCode == 13 || /*enter*/
-                // event.keyCode == 97 || 
-                // Allow: Ctrl+A
-                // (event.keyCode == 65 && event.ctrlKey === true) ||
-                // Allow: home, end, left, right
-                (event.keyCode >= 35 && event.keyCode < 39) || ( event.which >= 48 && event.which <= 57 )
-                ) 
-            {
-                return true;
-            }else if (          
-                (event.which != 46 || ($(this).val().indexOf('.') != -1)) || 
-                (event.which < 48 || event.which > 57)) 
-            {
-                event.preventDefault();
-            }
-        }
-    });     
 }
 
 var duplicate_row = function(){
@@ -1917,6 +1883,9 @@ var pickData = function () {
         var vthis = $(this);
         var data_value = vthis.attr('data-value');
         var data_change = vthis.attr('data-change');
+        var data_ajax = vthis.attr('href');
+        var data_change_extra = vthis.attr('data-change-extra');
+        var data_extra_text = $.filterEmptyField(vthis.attr('data-extra-text'));
 
         if(data_change == '.cash-bank-auth-user'){
             data_change = vthis.attr('data-rel')+' '+data_change;
@@ -1941,6 +1910,16 @@ var pickData = function () {
             
             $('#tag-receiver-type').html('('+receiver_type+')');
             $('#hid-receiver-type').val(receiver_type);
+        }
+
+        if( typeof data_ajax != 'undefined' ) {
+            $.directAjaxLink({
+                obj: vthis,
+            });
+        }
+
+        if( typeof data_change_extra != 'undefined' ) {
+            $(data_change_extra).html(data_extra_text);
         }
 
         $('#myModal').modal('hide');
@@ -1994,7 +1973,13 @@ var ajaxModal = function ( obj, prettyPhoto ) {
 
         var goAjax = true;
         if( vthis.attr('data-action') !== undefined ) {
+            var data_check = vthis.attr('data-check');
+            var data_check_title = vthis.attr('data-check-title');
             type_action = vthis.attr('data-action');
+
+            if( typeof data_check_title == 'undefined' ) {
+                data_check_title = '';
+            }
 
             if(type_action == 'browse-invoice'){
                 var dataTrigger = vthis.attr('data-trigger');
@@ -2010,8 +1995,15 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                 } else if(typeof $('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu, #id-choosen').val() == 'undefined' || $('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu, #id-choosen').val() == ''){
                     goAjax = false;
                     alert('Mohon pilih customer terlebih dahulu');
-                }else{
+                } else {
                     url += '/'+$('#customer-val, #getTtujCustomerInfo, #getTtujCustomerInfoKsu, #id-choosen').val()+'/not-list'
+                }
+            } else if( typeof data_check != 'undefined' && $(data_check).length > 0 ) {
+                if( $(data_check).val() == '' ){
+                    goAjax = false;
+                    alert('Mohon pilih '+data_check_title+' terlebih dahulu');
+                } else {
+                    url += '/'+$(data_check).val()+'/';
                 }
             }
         }
@@ -3531,8 +3523,6 @@ $(function() {
         return false;
     });
 
-    input_number();
-
     $('#getTtujInfo').change(function() {
         var self = $(this);
 
@@ -3546,7 +3536,7 @@ $(function() {
 
                     choose_item_info();
                     add_custom_field();
-                    input_number();
+                    $.inputNumber();
                     $.inputPrice();
                     price_tipe_motor();
                     delete_custom_field();
@@ -3583,7 +3573,7 @@ $(function() {
 
                     price_perlengkapan();
                     add_custom_field();
-                    input_number();
+                    $.inputNumber();
                     $.inputPrice();
                     delete_custom_field();
                     choose_item_info();
@@ -4247,5 +4237,6 @@ $(function() {
     });
 
     $.inputPrice();
+    $.inputNumber();
     $.rebuildFunction();
 });

@@ -245,6 +245,10 @@ class Truck extends AppModel {
             'className' => 'TruckPerlengkapan',
             'foreignKey' => 'truck_id',
         ),
+        'Ttuj' => array(
+            'className' => 'Ttuj',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
     function uniqueUpdate($data, $id = false){

@@ -100,7 +100,10 @@
         }
     }
 
-    $.convertNumber = function(num, type){
+    $.convertNumber = function(num, type, empty){
+        if( typeof num != 'undefined' ) {
+        }
+
         if( typeof num != 'undefined' ) {
             num = num.replace(/,/gi, "").replace(/ /gi, "").replace(/IDR/gi, "").replace(/Rp/gi, "");
 
@@ -528,6 +531,7 @@
         }, options );
 
         if( settings.obj.length > 0 ) {
+            settings.obj.off('keypress');
             settings.obj.keypress(function(event) {
                 var charCode = (event.which) ? event.which : event.keyCode;
 
@@ -775,6 +779,7 @@
                         $.inputPrice({
                             obj: temp_picker.find('.input_price'),
                         });
+                        $.inputNumber();
                     }
                 }
             }
@@ -783,8 +788,40 @@
 
     $.calcTotal = function(options){
         var settings = $.extend({
-            obj: $('.document-calc .price,.document-calc .disc,.document-calc .ppn,.document-calc .total'),
+            obj: $('.document-calc .price,.document-calc .disc,.document-calc .ppn,.document-calc .total,.document-calc .qty'),
+            objClick: $('.ppn_include'),
+            objDelete: $('.delete-document'),
         }, options );
+
+        function calcGrandTotal () {
+            var objGrandTotal = $('.temp-document-picker .grandtotal .total');
+            var grandtotal = 0;
+
+            $.each( $('.pick-document'), function( i, val ) {
+                var self = $(this);
+                grandtotal += calculate(self);
+            });
+
+            if( objGrandTotal.length > 0 ) {
+                objGrandTotal.html( $.formatDecimal(grandtotal) );
+            }
+        }
+
+        function calculate(parent){
+            var price = $.convertNumber(parent.find('.price').val());
+            var disc = $.convertNumber(parent.find('.disc').val());
+            var ppn = $.convertNumber(parent.find('.ppn').val());
+            var qty = $.convertNumber(parent.find('.qty').val(), 'int', 1);
+            var ppn_include = $('.ppn_include:checked').val();
+
+            total = ( ( price * qty ) - disc );
+
+            if( ppn_include != 1 ) {
+                total += ppn;
+            }
+
+            return total;
+        }
 
         if( settings.obj.length > 0 ) {
             settings.obj.off('blur');
@@ -792,33 +829,61 @@
                 var self = $(this);
                 var parent = self.parents('.pick-document');
                 var objTotal = parent.find('.total');
-                var objGrandTotal = $('.temp-document-picker .grandtotal .total');
-                var grandtotal = 0;
 
                 total = calculate(parent);
                 objTotal.html( $.formatDecimal(total) );
-
-                $.each( $('.pick-document'), function( i, val ) {
-                    var self = $(this);
-                    grandtotal += calculate(self);
-                });
-
-                objGrandTotal.html( $.formatDecimal(grandtotal) );
+                calcGrandTotal();
             });
         }
 
-        function calculate(parent){
-            var price = $.convertNumber(parent.find('.price').val());
-            var disc = $.convertNumber(parent.find('.disc').val());
-            var ppn = $.convertNumber(parent.find('.ppn').val());
+        if( settings.objClick.length > 0 ) {
+            settings.objClick.off('click');
+            settings.objClick.click(function(){
+                $.each( $('.pick-document'), function( i, val ) {
+                    var parent = $(this);
+                    var objTotal = parent.find('.total');
 
-            total = ( price - disc ) + ppn;
+                    total = calculate(parent);
+                    objTotal.html( $.formatDecimal(total) );
+                });
+                
+                calcGrandTotal();
+            });
+        }
 
-            return total;
+        if( settings.objDelete.length > 0 ) {
+            settings.objDelete.off('click');
+            settings.objDelete.click(function(){
+                var self = $(this);
+                var parent = self.parents('.pick-document');
+
+                if ( confirm('Hapus dokumen ini?') ) { 
+                    parent.remove();
+                    calcGrandTotal();
+                }
+
+                return false;
+            });
         }
     }
 
-    $.convertNumber = function(num, type){
+    $.filterEmptyField = function(num, empty){
+        if( typeof empty == 'undefined' ) {
+            empty = '';
+        }
+
+        if( typeof num == 'undefined' ) {
+            num = empty;
+        }
+
+        return num;
+    }
+
+    $.convertNumber = function(num, type, empty){
+        if( typeof empty == 'undefined' ) {
+            empty = 0;
+        }
+
         if( typeof num != 'undefined' ) {
             num = num.replace(/,/gi, "").replace(/ /gi, "").replace(/IDR/gi, "").replace(/Rp/gi, "");
 
@@ -836,7 +901,7 @@
                 num = 0;
             }
         } else {
-            num = 0;
+            num = empty;
         }
 
         return num;
@@ -887,6 +952,135 @@
         $.rebuildFunction();
         $.inputPrice({
             obj: obj.find('.input_price'),
+        });
+        $.inputNumber({
+            obj: obj.find('.input_number'),
+        });
+    }
+
+    $.ajaxLink = function( options ) {
+        var settings = $.extend({
+            obj: $('.ajax-link'),
+        }, options );
+
+        settings.obj.click(function(){
+            var self = $(this);
+            
+            $.directAjaxLink({
+                obj: self,
+            });
+
+            return false;
+        });
+    }
+
+    $.directAjaxLink = function( options ) {
+        var settings = $.extend({
+            obj: $('.ajax-link'),
+        }, options );
+
+        var url = settings.obj.attr('href');
+        var parents = settings.obj.parents('.ajax-parent');
+        var type = settings.obj.attr('data-type');
+        var flag_alert = settings.obj.attr('data-alert');
+        var data_ajax_type = settings.obj.attr('data-ajax-type');
+        var data_wrapper_write = settings.obj.attr('data-wrapper-write');
+        var data_action = settings.obj.attr('data-action');
+        var data_pushstate = settings.obj.attr('data-pushstate');
+        var data_url_pushstate = settings.obj.attr('data-url-pushstate');
+        var data_form = settings.obj.attr('data-form');
+        var data_scroll = settings.obj.attr('data-scroll');
+        var data_show = settings.obj.attr('data-show');
+        var formData = false; 
+
+        if( flag_alert != null ) {
+            if ( !confirm(flag_alert) ) { 
+                return false;
+            }
+        }
+
+        if(typeof data_ajax_type == 'undefined' ) {
+            data_ajax_type = 'html';
+        }
+
+        if(typeof data_wrapper_write == 'undefined' ) {
+            data_wrapper_write = '#wrapper-write';
+        }
+
+        if(typeof data_pushstate == 'undefined' ) {
+            data_pushstate = false;
+        }
+
+        if(typeof data_url_pushstate == 'undefined' ) {
+            data_url_pushstate = url;
+        }
+
+        if(typeof data_form != 'undefined' ) {
+            var formData = $(data_form).serialize(); 
+        }
+
+        if(typeof type == 'undefined' ) {
+            type = 'content';
+        }
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: data_ajax_type,
+            data: formData,
+            success: function(result) {
+                var msg = result.msg;
+                var status = result.status;
+
+                if( type == 'content' ) {
+                    var contentHtml = $(result).filter(data_wrapper_write).html();
+
+                    if( data_pushstate != false ) {
+                        window.history.pushState('data', '', data_url_pushstate);
+                    }
+
+                    if(typeof contentHtml == 'undefined' ) {
+                        contentHtml = $(result).find(data_wrapper_write).html();
+                    }
+                        
+                    if(typeof data_scroll != 'undefined' ) {
+                        var theOffset = $(data_scroll).offset();
+                        $('html, body').animate({
+                            scrollTop: theOffset.top
+                        }, 2000);
+                    }
+
+                    if( $(data_wrapper_write).length > 0 ) {
+                        $(data_wrapper_write).html(contentHtml);
+                        $.rebuildFunctionAjax( $(data_wrapper_write) );
+
+                        if(data_action == 'messages' ) {
+                            var current_active = settings.obj.parents('li');
+                            var data_active = $('.list-inbox li');
+
+                            data_active.removeClass('active');
+                            current_active.addClass('active');
+                            current_active.removeClass('unread');
+                        }else if(data_action == 'input-file' ) {
+                            $.handle_input_file();
+                            $.option_image_ebrosur();
+                            $.generateLocation();
+                            $.updateLiveBanner();
+                            $.limit_word_package();
+                        }
+                    }
+
+                    if(typeof data_show != 'undefined' ) {
+                        $(data_show).show().removeClass('hide');
+                    }
+                }
+
+                return false;
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
         });
     }
 }( jQuery ));

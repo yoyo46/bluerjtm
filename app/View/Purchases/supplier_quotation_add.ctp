@@ -7,6 +7,7 @@
 		);
 		$value = !empty($value)?$value:false;
         $status = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'status');
+        $is_po = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'is_po');
 
 		$this->Html->addCrumb($title, $urlRoot);
 		$this->Html->addCrumb($sub_module_title);
@@ -40,7 +41,7 @@
 
                 echo $this->Html->tag('div', $this->Html->link($this->Common->icon('plus-square').__(' Ambil Barang'), $this->Html->url( array(
                         'controller'=> 'ajax', 
-                        'action' => 'quotation_products',
+                        'action' => 'products',
                         'admin' => false,
                     )), array(
 	                    'escape' => false,
@@ -56,7 +57,7 @@
     ?>
     <div class="box-footer text-center action">
     	<?php
-    			if( !empty($status) || empty($value) ) {
+    			if( ( !empty($status) && empty($is_po) ) || empty($value) ) {
 		    		echo $this->Form->button(__('Simpan'), array(
 						'div' => false, 
 						'class'=> 'btn btn-success',

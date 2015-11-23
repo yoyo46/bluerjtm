@@ -58,16 +58,10 @@
 
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
 
-                            $customStatus = $this->Purchase->_callStatus($value);
+                            $customStatus = $this->Purchase->_callStatus($value, 'PurchaseOrder');
                             $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
 
-                            if( !empty($status) ) {
-                                $lblEdit = __('Edit');
-                            } else {
-                                $lblEdit = __('Detail');
-                            }
-
-                            $customAction = $this->Html->link($lblEdit, array(
+                            $customAction = $this->Html->link(__('Detail'), array(
                                 'controller' => 'purchases',
                                 'action' => 'purchase_order_edit',
                                 $id,

@@ -34,13 +34,12 @@ class Vendor extends AppModel {
         )
 	);
 
-    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+    function getData( $find, $options = false, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
         
         $default_options = array(
-            'conditions'=> array(
-                'Vendor.branch_id' => Configure::read('__Site.config_branch_id'),
-            ),
+            'conditions'=> array(),
             'order'=> array(
                 'Vendor.name' => 'ASC'
             ),
@@ -62,29 +61,29 @@ class Vendor extends AppModel {
                 break;
         }
 
-        if($is_merge){
-            if(!empty($options['conditions'])){
-                $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
-            }
-            if(!empty($options['order'])){
-                $default_options['order'] = $options['order'];
-            }
-            if( isset($options['contain']) && empty($options['contain']) ) {
-                $default_options['contain'] = false;
-            } else if(!empty($options['contain'])){
-                $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
-            }
-            if(!empty($options['fields'])){
-                $default_options['fields'] = $options['fields'];
-            }
-            if(!empty($options['limit'])){
-                $default_options['limit'] = $options['limit'];
-            }
-            if(!empty($options['group'])){
-                $default_options['group'] = $options['group'];
-            }
-        }else{
-            $default_options = $options;
+        if( !empty($branch) ) {
+            $default_options['conditions']['Vendor.branch_id'] = Configure::read('__Site.config_branch_id');
+        }
+
+        if(!empty($options['conditions'])){
+            $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
+        }
+        if(!empty($options['order'])){
+            $default_options['order'] = $options['order'];
+        }
+        if( isset($options['contain']) && empty($options['contain']) ) {
+            $default_options['contain'] = false;
+        } else if(!empty($options['contain'])){
+            $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
+        }
+        if(!empty($options['fields'])){
+            $default_options['fields'] = $options['fields'];
+        }
+        if(!empty($options['limit'])){
+            $default_options['limit'] = $options['limit'];
+        }
+        if(!empty($options['group'])){
+            $default_options['group'] = $options['group'];
         }
 
         if( $find == 'paginate' ) {
@@ -103,6 +102,8 @@ class Vendor extends AppModel {
                     'conditions' => array(
                         'Vendor.id' => $id,
                     ),
+                ), array(
+                    'branch' => false,
                 ));
 
                 if( !empty($value) ) {
@@ -114,6 +115,8 @@ class Vendor extends AppModel {
                 'conditions' => array(
                     'Vendor.id' => $id,
                 ),
+            ), array(
+                'branch' => false,
             ));
 
             if( !empty($value) ) {

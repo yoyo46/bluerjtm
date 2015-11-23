@@ -19,6 +19,10 @@ class UangJalan extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Kota asal harap dipilih'
             ),
+            'checkDuplicate' => array(
+                'rule' => array('checkDuplicate'),
+                'message' => 'Uang jalan telah terdaftar'
+            ),
         ),
         'to_city_id' => array(
             'notempty' => array(
@@ -444,6 +448,32 @@ class UangJalan extends AppModel {
         }
 
         return $data;
+    }
+
+    function checkDuplicate () {
+        $branch_id = !empty($this->data['UangJalan']['branch_id'])?$this->data['UangJalan']['branch_id']:false;
+        $from_city_id = !empty($this->data['UangJalan']['from_city_id'])?$this->data['UangJalan']['from_city_id']:false;
+        $to_city_id = !empty($this->data['UangJalan']['to_city_id'])?$this->data['UangJalan']['to_city_id']:false;
+        $capacity = !empty($this->data['UangJalan']['capacity'])?$this->data['UangJalan']['capacity']:false;
+        $id = $this->id;
+
+        $value = $this->getData('count', array(
+            'conditions' => array(
+                'UangJalan.branch_id' => $branch_id,
+                'UangJalan.from_city_id' => $from_city_id,
+                'UangJalan.to_city_id' => $to_city_id,
+                'UangJalan.capacity' => $capacity,
+                'UangJalan.id <>' => $id,
+            ),
+        ), true, array(
+            'branch' => false,
+        ));
+        
+        if( !empty($value) ) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
 ?>

@@ -1095,9 +1095,7 @@ class AjaxController extends AppController {
         );
 
         if( in_array($action_type, array( 'ttuj', 'revenue' )) ) {
-			$this->loadModel('Ttuj');
-
-    		$ttuj = $this->Ttuj->getData('first', array(
+    		$ttuj = $this->Truck->Ttuj->getData('first', array(
                 'conditions' => array(
                     'Ttuj.id' => $action_id,
                 ),
@@ -1108,15 +1106,15 @@ class AjaxController extends AppController {
 
             $options['contain'][] = 'Ttuj';
 
-            if( $action_type == 'ttuj' ) {
+            // if( $action_type == 'ttuj' ) {
         		$plantCityId = Configure::read('__Site.Branch.Plant.id');
 
         		if( !empty($plantCityId) ) {
             		$options['conditions']['Truck.branch_id'] = $plantCityId;
             	}
-            } else {
-            	$plantCityId = false;
-            }
+            // } else {
+            // 	$plantCityId = false;
+            // }
 
 			$addConditions = $this->Truck->getListTruck( $ttuj_truck_id, true, false, $plantCityId );
             $options['conditions'] = array_merge($options['conditions'], $addConditions);
@@ -2906,14 +2904,26 @@ class AjaxController extends AppController {
 		}
 	}
 
-	function quotation_products () {
+	function products ( $action_type = 'sq' ) {
         $this->loadModel('Product');
         $options =  $this->Product->_callRefineParams($this->params, array(
         	'limit' => 10,
     	));
         $this->MkCommon->_callRefineParams($this->params);
 
-        $this->paginate = $this->Product->getData('paginate', $options);
+        switch ($action_type) {
+        	case 'po':
+        		$status = 'no-sq';
+        		break;
+        	
+        	default:
+        		$status = 'active';
+        		break;
+        }
+
+        $this->paginate = $this->Product->getData('paginate', $options, array(
+        	'status' => $status,
+    	));
         $values = $this->paginate('Product');
 
         if( !empty($values) ) {
@@ -2932,8 +2942,47 @@ class AjaxController extends AppController {
         $groups = $this->Product->ProductCategory->getData('list');
         $this->set('module_title', __('Barang'));
         $this->set(compact(
-        	'values', 'groups'
+        	'values', 'groups', 'action_type'
     	));
+	}
+
+	function supplier_quotations () {
+        $this->loadModel('SupplierQuotation');
+        $options =  $this->SupplierQuotation->_callRefineParams($this->params, array(
+        	'limit' => 10,
+    	));
+        $this->MkCommon->_callRefineParams($this->params);
+
+        $this->paginate = $this->SupplierQuotation->getData('paginate', $options, array(
+        	'status' => 'available',
+    	));
+        $values = $this->paginate('SupplierQuotation');
+
+        $this->set('module_title', __('Supplier Quotation'));
+        $this->set(compact(
+        	'values'
+    	));
+	}
+
+	function getSupplierQuotation ( $id = false ) {
+        $this->loadModel('SupplierQuotation');
+        $values = $this->SupplierQuotation->SupplierQuotationDetail->getData('all', array(
+        	'conditions' => array(
+        		'SupplierQuotationDetail.supplier_quotation_id' => $id,
+    		),
+    	), array(
+        	'status' => 'available',
+    	));
+
+    	if( !empty($values) ) {
+            $values = $this->SupplierQuotation->SupplierQuotationDetail->Product->getMerge($values, false, 'SupplierQuotationDetail', $id);
+    	}
+
+        $this->set('module_title', __('Supplier Quotation'));
+        $this->set(compact(
+        	'values'
+    	));
+    	$this->render('/Elements/blocks/ajax/purchases/purchase_orders/tables/detail_products');
 	}
 }
 ?>

@@ -6,13 +6,14 @@
         $disabled = !empty($disabled)?$disabled:false;
         $readonly = !empty($readonly)?$readonly:false;
 
-        $frameClass = !empty($frameClass)?$frameClass:false;
+        $frameClass = isset($frameClass)?$frameClass:false;
         $class = isset($class)?$class:false;
         $divClass = !empty($divClass)?$divClass:false;
         $fieldName = !empty($fieldName)?$fieldName:false;
         $textGroup = !empty($textGroup)?$textGroup:false;
         $positionGroup = !empty($positionGroup)?$positionGroup:'right';
         $inputText = !empty($inputText)?$inputText:false;
+        $column = !empty($column)?$column:false;
 ?>
 <div class="<?php echo $frameClass; ?>">
     <?php 
@@ -91,6 +92,14 @@
                 ));
             }
 
-            echo $content;
+            if( !empty($column) ) {
+                echo $this->Html->tag('div', $this->Html->tag('div', $content, array(
+                    'class' => $column,
+                )), array(
+                    'class' => 'row',
+                ));
+            } else {
+                echo $content;
+            }
     ?>
 </div>

@@ -19,7 +19,6 @@ class RjPurchaseComponent extends Component {
 
             $dateArr = $this->MkCommon->_callSplitDate($available_date);
             $transaction_date = $this->MkCommon->getDate($transaction_date);
-            $transaction_date = $this->MkCommon->getDate($transaction_date);
 
             $data['SupplierQuotation']['user_id'] = Configure::read('__Site.config_user_id');
             $data['SupplierQuotation']['transaction_date'] = $transaction_date;
@@ -47,12 +46,14 @@ class RjPurchaseComponent extends Component {
                     $disc = $this->MkCommon->_callPriceConverter($disc);
                     $price = $this->MkCommon->_callPriceConverter($price);
 
-                    $dataSave[]['SupplierQuotationDetail'] = array(
+                    $dataSQDetail['SupplierQuotationDetail'] = array(
                         'product_id' => $product_id,
                         'price' => $price,
                         'ppn' => $ppn,
                         'disc' => $disc,
                     );
+                    $dataSQDetail = $this->controller->PurchaseOrder->PurchaseOrderDetail->Product->getMerge($dataSQDetail, $product_id);
+                    $dataSave[] = $dataSQDetail;
                 }
             }
 
@@ -83,34 +84,54 @@ class RjPurchaseComponent extends Component {
             $dataSave = array();
             $transaction_date = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'transaction_date');
             $dataDetail = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderDetail');
-            $dataDetailPrice = $this->MkCommon->filterEmptyField($dataDetail, 'price');
+            $dataDetailProduct = $this->MkCommon->filterEmptyField($dataDetail, 'product_id');
 
-            $dateArr = $this->MkCommon->_callSplitDate($available_date);
-            $transaction_date = $this->MkCommon->getDate($transaction_date);
             $transaction_date = $this->MkCommon->getDate($transaction_date);
 
             $data['PurchaseOrder']['user_id'] = Configure::read('__Site.config_user_id');
             $data['PurchaseOrder']['transaction_date'] = $transaction_date;
 
-            if( !empty($dataDetailPrice) ) {
-                $values = array_filter($dataDetailPrice);
+            if( !empty($dataDetailProduct) ) {
+                $values = array_filter($dataDetailProduct);
                 unset($data['PurchaseOrderDetail']);
 
-                foreach ($values as $key => $price) {
-                    $product_id = $this->MkCommon->filterEmptyField($dataDetail, 'product_id', $key);
-                    $disc = $this->MkCommon->filterEmptyField($dataDetail, 'disc', $key);
-                    $ppn = $this->MkCommon->filterEmptyField($dataDetail, 'ppn', $key);
+                foreach ($values as $key => $product_id) {
+                    $dataPODetail = array();
+                    $supplier_quotation_detail_id = $this->MkCommon->filterEmptyField($dataDetail, 'supplier_quotation_detail_id', $key);
+                    $qty = $this->MkCommon->filterEmptyField($dataDetail, 'qty', $key);
+
+                    if( !empty($supplier_quotation_detail_id) ) {
+                        $sqDetail = $this->controller->User->SupplierQuotation->SupplierQuotationDetail->getData('first', array(
+                            'conditions' => array(
+                                'SupplierQuotationDetail.id' => $supplier_quotation_detail_id
+                            ),
+                        ), array(
+                            'status' => 'all',
+                        ));
+
+                        $price = $this->MkCommon->filterEmptyField($sqDetail, 'SupplierQuotationDetail', 'price');
+                        $disc = $this->MkCommon->filterEmptyField($sqDetail, 'SupplierQuotationDetail', 'disc');
+                        $ppn = $this->MkCommon->filterEmptyField($sqDetail, 'SupplierQuotationDetail', 'ppn');
+                    } else {
+                        $price = $this->MkCommon->filterEmptyField($dataDetail, 'price', $key);
+                        $disc = $this->MkCommon->filterEmptyField($dataDetail, 'disc', $key);
+                        $ppn = $this->MkCommon->filterEmptyField($dataDetail, 'ppn', $key);
+                    }
 
                     $ppn = $this->MkCommon->_callPriceConverter($ppn);
                     $disc = $this->MkCommon->_callPriceConverter($disc);
                     $price = $this->MkCommon->_callPriceConverter($price);
 
-                    $dataSave[]['PurchaseOrderDetail'] = array(
+                    $dataPODetail['PurchaseOrderDetail'] = array(
                         'product_id' => $product_id,
+                        'supplier_quotation_detail_id' => $supplier_quotation_detail_id,
                         'price' => $price,
                         'ppn' => $ppn,
                         'disc' => $disc,
+                        'qty' => $qty,
                     );
+                    $dataPODetail = $this->controller->PurchaseOrder->PurchaseOrderDetail->Product->getMerge($dataPODetail, $product_id);
+                    $dataSave[] = $dataPODetail;
                 }
             }
 

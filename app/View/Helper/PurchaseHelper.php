@@ -4,6 +4,29 @@ class PurchaseHelper extends AppHelper {
         'Html', 'Common',
     );
 
+    function _callStatusSQ ( $data ) {
+        $status = $this->Common->filterEmptyField($data, 'SupplierQuotation', 'status');
+        $is_po = $this->Common->filterEmptyField($data, 'SupplierQuotation', 'is_po');
+
+        if( !empty($status) ) {
+            if( !empty($is_po) ) {
+                $customStatus = $this->Html->tag('span', __('PO'), array(
+                    'class' => 'label label-success',
+                ));
+            } else {
+                $customStatus = $this->Html->tag('span', __('Aktif'), array(
+                    'class' => 'label label-primary',
+                ));
+            }
+        } else {
+            $customStatus = $this->Html->tag('span', __('Non-Aktif'), array(
+                'class' => 'label label-danger',
+            ));
+        }
+
+        return $customStatus;
+    }
+
     function _callStatus ( $data, $modelName = 'SupplierQuotation' ) {
         $status = $this->Common->filterEmptyField($data, $modelName, 'status');
 
@@ -18,5 +41,20 @@ class PurchaseHelper extends AppHelper {
         }
 
         return $customStatus;
+    }
+
+    function calculate ( $value, $ppn_include = false, $modelName = 'PurchaseOrderDetail' ) {
+        $price = $this->Common->filterEmptyField($value, $modelName, 'price');
+        $qty = $this->Common->filterEmptyField($value, $modelName, 'qty');
+        $disc = $this->Common->filterEmptyField($value, $modelName, 'disc');
+        $ppn = $this->Common->filterEmptyField($value, $modelName, 'ppn');
+
+        $total = ( $price * $qty ) - $disc;
+
+        if( empty($ppn_include) ) {
+            $total += $ppn;
+        }
+
+        return $total;
     }
 }

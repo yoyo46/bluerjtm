@@ -68,12 +68,13 @@ class SupplierQuotation extends AppModel {
 	);
 
 	function getData( $find, $options = false, $elements = false ){
-        // $status = isset($elements['status'])?$elements['status']:'active';
+        $status = isset($elements['status'])?$elements['status']:'active';
         $branch = isset($elements['branch'])?$elements['branch']:true;
 
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
+                'SupplierQuotation.is_po' => 'ASC',
                 'SupplierQuotation.status' => 'DESC',
                 'SupplierQuotation.created' => 'DESC',
                 'SupplierQuotation.id' => 'DESC',
@@ -81,11 +82,24 @@ class SupplierQuotation extends AppModel {
             'fields' => array(),
         );
 
-        // switch ($status) {
-        //     case 'active':
-        //         $default_options['conditions']['SupplierQuotation.status'] = 1;
-        //         break;
-        // }
+        switch ($status) {
+            case 'active':
+                $default_options['conditions']['SupplierQuotation.status'] = 1;
+                break;
+            case 'available':
+                $default_options['conditions']['SupplierQuotation.status'] = 1;
+                $default_options['conditions']['DATE_FORMAT(SupplierQuotation.available_from, \'%Y-%m-%d\') <='] = date('Y-m-d');
+                $default_options['conditions']['DATE_FORMAT(SupplierQuotation.available_to, \'%Y-%m-%d\') >='] = date('Y-m-d');
+                break;
+            case 'po':
+                $default_options['conditions']['SupplierQuotation.status'] = 1;
+                $default_options['conditions']['SupplierQuotation.is_po'] = 1;
+                break;
+            case 'pending-po':
+                $default_options['conditions']['SupplierQuotation.status'] = 1;
+                $default_options['conditions']['SupplierQuotation.is_po'] = 0;
+                break;
+        }
 
         if( !empty($branch) ) {
             $default_options['conditions']['SupplierQuotation.branch_id'] = Configure::read('__Site.config_branch_id');
@@ -180,6 +194,7 @@ class SupplierQuotation extends AppModel {
                             'document_id' => $id,
                             'error' => 1,
                         ),
+                        'data' => $data,
                     );
                 }
             } else {
@@ -187,6 +202,7 @@ class SupplierQuotation extends AppModel {
                 $result = array(
                     'msg' => $defaul_msg,
                     'status' => 'error',
+                    'data' => $data,
                 );
             }
         } else if( !empty($value) ) {
@@ -280,6 +296,20 @@ class SupplierQuotation extends AppModel {
         }
 
         return $result;
+    }
+
+    function getDataCustom ( $fieldName, $id, $resultFieldName = false ) {
+        $value = $this->getData('first', array(
+            'conditions' => array(
+                $fieldName => $id,
+            ),
+        ));
+
+        if( !empty($resultFieldName) ) {
+            return !empty($value['SupplierQuotation'][$resultFieldName])?$value['SupplierQuotation'][$resultFieldName]:false;
+        } else {
+            return $value;
+        }
     }
 }
 ?>

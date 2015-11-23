@@ -65,6 +65,7 @@ class Product extends AppModel {
 
 	function getData( $find, $options = false, $elements = false ){
         $status = isset($elements['status'])?$elements['status']:'active';
+
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
@@ -76,6 +77,14 @@ class Product extends AppModel {
         switch ($status) {
             case 'active':
                 $default_options['conditions']['Product.status'] = 1;
+                break;
+            case 'sq':
+                $default_options['conditions']['Product.status'] = 1;
+                $default_options['conditions']['Product.is_supplier_quotation'] = 1;
+                break;
+            case 'no-sq':
+                $default_options['conditions']['Product.status'] = 1;
+                $default_options['conditions']['Product.is_supplier_quotation'] = 0;
                 break;
         }
 
@@ -133,6 +142,9 @@ class Product extends AppModel {
             ));
 
             if(!empty($value)){
+                $product_unit_id = !empty($value['Product']['product_unit_id'])?$value['Product']['product_unit_id']:false;
+                $value = $this->ProductUnit->getMerge($value, $product_unit_id);
+
                 $data = array_merge($data, $value);
             }
         }

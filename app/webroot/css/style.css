@@ -157,6 +157,20 @@ body > .header {
 .radio label > label {
   padding-left: 0;
 }
+.radio-line {
+  padding-left: 0;
+}
+.radio-line li {
+  list-style-type: none;
+  display: inline-block;
+  margin-right: 15px;
+}
+.radio-line li:last-child {
+  padding-right: 0;
+}
+.radio-line li label {
+  font-weight: normal;
+}
 
 /*Document Picker*/
 .temp-document-picker tbody input {

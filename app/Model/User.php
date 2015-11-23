@@ -32,6 +32,10 @@ class User extends AppModel {
             'className' => 'Notification',
             'foreignKey' => 'user_id',
         ),
+        'SupplierQuotation' => array(
+            'className' => 'SupplierQuotation',
+            'foreignKey' => 'user_id',
+        ),
     );
     
     var $validate = array(

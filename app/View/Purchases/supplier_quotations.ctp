@@ -60,14 +60,15 @@
                             $transactionDate = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'transaction_date');
                             $note = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'note');
                             $status = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'status');
+                            $is_po = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'is_po');
 
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
 
-                            $customStatus = $this->Purchase->_callStatus($value);
+                            $customStatus = $this->Purchase->_callStatusSQ($value);
                             $customAvailable = $this->Common->getCombineDate($availableFrom, $availableTo );
                             $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
 
-                            if( !empty($status) ) {
+                            if( !empty($status) && empty($is_po) ) {
                                 $lblEdit = __('Edit');
                             } else {
                                 $lblEdit = __('Detail');

@@ -102,7 +102,7 @@ class PurchaseOrderDetail extends AppModel {
         ));
 
         if(!empty($values)){
-            $values = $this->Product->getMerge($values, false, 'PurchaseOrderDetail', $id);
+            $values = $this->Product->getMerge($values, false, 'PurchaseOrderDetail', false);
             $data['PurchaseOrderDetail'] = $values;
         }
 

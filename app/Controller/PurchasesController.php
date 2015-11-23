@@ -90,9 +90,15 @@ class PurchasesController extends AppController {
 
         if( !empty($value) ) {
             $value = $this->SupplierQuotation->SupplierQuotationDetail->getMerge($value, $id);
+            $is_po = $this->MkCommon->filterEmptyField($value, 'SupplierQuotation', 'is_po');
 
-            $data = $this->request->data;
-            $data = $this->RjPurchase->_callBeforeSaveQuotation($data);
+            if( empty($is_po) ) {
+                $data = $this->request->data;
+                $data = $this->RjPurchase->_callBeforeSaveQuotation($data);
+            } else {
+                $data = false;
+            }
+            
             $result = $this->SupplierQuotation->doSave($data, $value, $id);
             $this->MkCommon->setProcessParams($result, array(
                 'controller' => 'purchases',
@@ -130,7 +136,7 @@ class PurchasesController extends AppController {
         $options =  $this->PurchaseOrder->_callRefineParams($params);
         $this->paginate = $this->PurchaseOrder->getData('paginate', $options);
         $values = $this->paginate('PurchaseOrder');
-        $values = $this->PurchaseOrder->Vendor->getMerge($values);
+        $values = $this->PurchaseOrder->Vendor->getMerge($values, false, 'PurchaseOrder');
 
         $vendors = $this->PurchaseOrder->Vendor->getData('list');
 

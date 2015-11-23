@@ -1,5 +1,6 @@
 <div id="wrapper-write">
     <?php 
+            $modelName = false;
             $dataColumns = array(
                 'check-box' => array(
                     'name' => '',
@@ -20,10 +21,22 @@
                 'type' => array(
                     'name' => __('Tipe'),
                 ),
-                'rate-price' => array(
-                    'name' => __('Ref. Harga'),
-                ),
             );
+
+            switch ($action_type) {
+                case 'sq':
+                    $dataColumns = array_merge($dataColumns, array(
+                        'rate-price' => array(
+                            'name' => __('Ref. Harga'),
+                        ),
+                    ));
+                    $modelName = 'SupplierQuotationDetail';
+                    break;
+                case 'po':
+                    $modelName = 'PurchaseOrderDetail';
+                    break;
+            }
+
             $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
             echo $this->element('blocks/ajax/forms/searchs/quotation_products');
@@ -59,7 +72,7 @@
                             )), array(
                                 'class' => 'removed check-box text-center',
                             ));
-                            echo $this->Html->tag('td', $code.$this->Form->hidden('SupplierQuotationDetail.product_id.'.$id, array(
+                            echo $this->Html->tag('td', $code.$this->Form->hidden(sprintf('%s.product_id.%s', $modelName, $id), array(
                                 'value' => $id,
                             )));
                             echo $this->Html->tag('td', $name);
@@ -70,24 +83,39 @@
                             echo $this->Html->tag('td', $customType, array(
                                 'class' => 'removed',
                             ));
-                            echo $this->Html->tag('td', $customRate, array(
-                                'class' => 'text-right',
-                            ));
-                            echo $this->Html->tag('td', $this->Common->buildInputForm('SupplierQuotationDetail.price.'.$id, false, array(
+
+                            switch ($action_type) {
+                                case 'sq':
+                                    echo $this->Html->tag('td', $customRate, array(
+                                        'class' => 'text-right',
+                                    ));
+                                    break;
+                                case 'po':
+                                    echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.qty.%s', $modelName, $id), false, array(
+                                        'type' => 'text',
+                                        'frameClass' => false,
+                                        'class' => 'input_number text-right qty',
+                                    )), array(
+                                        'class' => 'hide',
+                                    ));
+                                    break;
+                            }
+
+                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.price.%s', $modelName, $id), false, array(
                                 'type' => 'text',
                                 'frameClass' => false,
                                 'class' => 'input_price text-right price',
                             )), array(
                                 'class' => 'hide',
                             ));
-                            echo $this->Html->tag('td', $this->Common->buildInputForm('SupplierQuotationDetail.disc.'.$id, false, array(
+                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.disc.%s', $modelName, $id), false, array(
                                 'type' => 'text',
                                 'frameClass' => false,
                                 'class' => 'disc input_price text-right',
                             )), array(
                                 'class' => 'hide',
                             ));
-                            echo $this->Html->tag('td', $this->Common->buildInputForm('SupplierQuotationDetail.ppn.'.$id, false, array(
+                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.ppn.%s', $modelName, $id), false, array(
                                 'type' => 'text',
                                 'frameClass' => false,
                                 'class' => 'ppn input_price text-right',
