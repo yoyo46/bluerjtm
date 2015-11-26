@@ -1014,11 +1014,13 @@ class SettingsController extends AppController {
         $this->loadModel('City');
         $this->loadModel('GroupClassification');
 
+        $data = $this->request->data;
+        $branch_id = $this->MkCommon->filterEmptyField($data, 'GroupBranch', 'group_branch');
+
         $values = $this->UangJalan->getData('all', array(
-            // 'conditions' => array(
-            //     'UangJalan.id' => array( 745 ),
-            // ),
-            // 'limit' => 20,
+            'conditions' => array(
+                'UangJalan.branch_id' => $branch_id,
+            ),
             'order' => array(
                 'UangJalan.id' => 'ASC',
             ),
@@ -1059,6 +1061,11 @@ class SettingsController extends AppController {
             'AsdpGroupMotorCnt', 'UangKawalGroupMotorCnt',
             'UangKeamananGroupMotorCnt'
         ));
+        $this->layout = 'ajax';
+    }
+
+    public function pick_uang_jalan() {
+        $this->set('module_title', __('Download Uang Jalan'));
         $this->layout = 'ajax';
     }
 

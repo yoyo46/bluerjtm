@@ -14,11 +14,13 @@
                         ));
                         echo $this->Html->link($this->Common->icon('file-o').__(' Download Excel'), array(
                             'controller' => 'settings',
-                            'action' => 'download_uang_jalan',
+                            'action' => 'pick_uang_jalan',
                             'admin' => false,
                         ), array(
                             'escape' => false,
-                            'class' => 'btn btn-app',
+                            'class' => 'btn btn-app ajaxCustomModal',
+                            'title' => __('Download Uang Jalan'),
+                            'data-size' => 'modal-sm',
                         ));
                 ?>
                 <ul class="dropdown-menu" role="menu">

@@ -4089,19 +4089,6 @@ $(function() {
         });
     });
 
-    $('.columnDropdown').on({
-        "shown.bs.dropdown": function() { this.closable = false; },
-        "click":             function(e) { 
-            var target = $(e.target);
-
-            if( target.parents('ul.dropdown-menu').length == 0 ) 
-                this.closable = true;
-            else 
-                this.closable = false; 
-        },
-        "hide.bs.dropdown":  function() { return this.closable; }
-    });
-
     $(document).click(function(e){
         var target = $(e.target);
         
@@ -4156,18 +4143,6 @@ $(function() {
         } else {
             fieldName.attr('disabled', true);
             self.html('<i class="fa fa-angle-double-right "></i>');
-        }
-    });
-
-    $('.check-all').click(function(){
-        var self = $(this);
-        var parent = self.parents('.parent-check-branch');
-        var target = parent.find('.check-branch');
-
-        if(self.is(':checked')){
-            target.prop('checked', true);
-        } else {
-            target.prop('checked', false);
         }
     });
 
