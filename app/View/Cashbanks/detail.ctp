@@ -10,6 +10,8 @@
         $description = $this->Common->filterEmptyField($cashbank, 'CashBank', 'description', '-');
         $grand_total = $this->Common->filterEmptyField($cashbank, 'CashBank', 'grand_total', 0);
         $completed = $this->Common->filterEmptyField($cashbank, 'CashBank', 'completed');
+        
+        $coa_name = $this->Common->filterEmptyField($cashbank, 'Coa', 'coa_name', '-');
 
         $revenue_id = $this->Common->filterEmptyField($cashbank, 'Revenue', 'id');
         $customDate = $this->Common->formatDate($tgl, 'd/m/Y');
@@ -56,8 +58,13 @@
                         ?>
                     </dt>
                     <dd><?php echo $receiver;?></dd>
+
+                    <dt><?php echo __('Account Kas/Bank')?></dt>
+                    <dd><?php echo $coa_name;?></dd>
+
                     <dt><?php echo __('Tgl Kas/Bank')?></dt>
                     <dd><?php echo $customDate;?></dd>
+
                     <dt><?php echo __('Keterangan')?></dt>
                     <dd><?php echo $description;?></dd>
                     <dt><?php echo __('Status')?></dt>

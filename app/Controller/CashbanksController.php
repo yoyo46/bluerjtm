@@ -554,6 +554,7 @@ class CashbanksController extends AppController {
             $grand_total = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'grand_total', 0);
             
             $cashbank = $this->User->getMerge($cashbank, $user_id);
+            $cashbank = $this->CashBank->Coa->getMerge($cashbank, $document_coa_id);
             $cashbank = $this->CashBank->CashBankDetail->getMerge($cashbank, $id, array(
                 'contain' => array(
                     'Coa'
