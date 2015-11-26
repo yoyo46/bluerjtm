@@ -225,7 +225,6 @@ class CashbanksController extends AppController {
                         'CashBank.id' => $document_id,
                     ),
                 ));
-                $totalCashBank = $debit_total + $credit_total;
                 $totalTagihanDebit = !empty($cashBankTagihan['CashBank']['debit_total'])?$cashBankTagihan['CashBank']['debit_total']:0;
                 $totalTagihanCredit = !empty($cashBankTagihan['CashBank']['credit_total'])?$cashBankTagihan['CashBank']['credit_total']:0;
                 $totalDibayar = $this->CashBank->totalPrepaymentDibayar($document_id);
@@ -238,6 +237,7 @@ class CashbanksController extends AppController {
                 }
             }
 
+            $totalCashBank = $debit_total + $credit_total;
             $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval(1, $total_coa);
 
             if( empty($allowApprovals) ) {
