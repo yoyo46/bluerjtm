@@ -1022,6 +1022,7 @@ class SettingsController extends AppController {
                 'UangJalan.branch_id' => $branch_id,
             ),
             'order' => array(
+                'UangJalan.branch_id' => 'ASC',
                 'UangJalan.id' => 'ASC',
             ),
         ), true, array(
