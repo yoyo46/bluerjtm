@@ -218,10 +218,16 @@ class LeasingPaymentDetail extends AppModel {
         $payment_date = !empty($value['LeasingPayment']['payment_date'])?$value['LeasingPayment']['payment_date']:false;
         $vendor_id = !empty($value['LeasingPayment']['vendor_id'])?$value['LeasingPayment']['vendor_id']:false;
         $no_doc = !empty($value['LeasingPayment']['no_doc'])?$value['LeasingPayment']['no_doc']:false;
+        $note = !empty($value['LeasingPayment']['note'])?$value['LeasingPayment']['note']:false;
         
         $vendor = $this->Leasing->Vendor->getMerge(array(), $vendor_id);
         $vendor_name = !empty($vendor['Vendor']['name'])?$vendor['Vendor']['name']:false;
-        $title = sprintf(__('Pembayaran Leasing #%s kepada vendor %s'), $no_doc, $vendor_name);
+
+        if( !empty($note) ) {
+            $title = $note;
+        } else {
+            $title = sprintf(__('Pembayaran Leasing #%s kepada vendor %s'), $no_doc, $vendor_name);
+        }
 
         if( !empty($leasing_payment_id) && empty($is_validate) ) {
             $this->deleteAll(array(

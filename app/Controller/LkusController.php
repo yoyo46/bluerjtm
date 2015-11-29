@@ -715,8 +715,9 @@ class LkusController extends AppController {
                     $lku_payment_id = $this->LkuPayment->id;
 
                     if( !empty($total_price) ) {
-                        $document_no = !empty($data['LkuPayment']['no_doc'])?$data['LkuPayment']['no_doc']:false;
                         $title = sprintf(__('Pembayaran LKU kepada customer %s'), $customer_name);
+                        $title = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'description', $title);
+                        $document_no = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'no_doc');
 
                         $this->User->Journal->setJournal($total_price, array(
                             'credit' => $coa_id,
@@ -1628,6 +1629,7 @@ class LkusController extends AppController {
                     if( !empty($total_price) ) {
                         $document_no = !empty($data['KsuPayment']['no_doc'])?$data['KsuPayment']['no_doc']:false;
                         $title = sprintf(__('Pembayaran KSU kepada customer %s'), $customer_name);
+                        $title = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'description', $title);
 
                         $this->User->Journal->setJournal($total_price, array(
                             'credit' => $coa_id,
@@ -1983,7 +1985,8 @@ class LkusController extends AppController {
             ));
 
             if($this->LkuPayment->save()){
-                $title = sprintf(__('Pembatalan pembayaran LKU kepada customer %s'), $customer_name);
+                $title = sprintf(__('pembayaran LKU kepada customer %s'), $customer_name);
+                $title = sprintf(__('Pembatalan %s'), $this->MkCommon->filterEmptyField($payments, 'LkuPayment', 'description', $title));
 
                 $this->User->Journal->setJournal($grandtotal, array(
                     'credit' => 'lku_payment_coa_id',
@@ -2084,7 +2087,8 @@ class LkusController extends AppController {
             ));
 
             if($this->KsuPayment->save()){
-                $title = sprintf(__('Pembatalan pembayaran KSU kepada customer %s'), $customer_name);
+                $title = sprintf(__('pembayaran KSU kepada customer %s'), $customer_name);
+                $title = sprintf(__('Pembatalan %s'), $this->MkCommon->filterEmptyField($payments, 'KsuPayment', 'description', $title));
 
                 $this->User->Journal->setJournal($grandtotal, array(
                     'credit' => 'ksu_payment_coa_id',

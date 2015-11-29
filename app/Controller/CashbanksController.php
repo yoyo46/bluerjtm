@@ -141,8 +141,6 @@ class CashbanksController extends AppController {
         if(!empty($this->request->data)){
             $data = $this->request->data;
             $data['CashBank']['tgl_cash_bank'] = $this->MkCommon->getDate($data['CashBank']['tgl_cash_bank']);
-            $document_id = !empty($data['CashBank']['document_id'])?$data['CashBank']['document_id']:false;
-            $document_type = !empty($data['CashBank']['document_type'])?$data['CashBank']['document_type']:false;
             $coas_validate = true;
             $totalTagihanCredit = 0;
             $totalTagihanDebit = 0;
@@ -150,8 +148,12 @@ class CashbanksController extends AppController {
             $credit_total = 0;
             $total_coa = 0;
             $prepayment_status = false;
-            $document_no = !empty($data['CashBank']['nodoc'])?$data['CashBank']['nodoc']:false;
-            $document_coa_id = !empty($data['CashBank']['coa_id'])?$data['CashBank']['coa_id']:false;
+
+            $document_id = $this->MkCommon->filterEmptyField($data, 'CashBank', 'document_id');
+            $document_type = $this->MkCommon->filterEmptyField($data, 'CashBank', 'document_type');
+            $document_no = $this->MkCommon->filterEmptyField($data, 'CashBank', 'nodoc');
+            $document_coa_id = $this->MkCommon->filterEmptyField($data, 'CashBank', 'coa_id');
+            $description = $this->MkCommon->filterEmptyField($data, 'CashBank', 'description');
 
             $receiver_id = $this->MkCommon->filterEmptyField($data, 'CashBank', 'receiver_id');
             $receiver_type = $this->MkCommon->filterEmptyField($data, 'CashBank', 'receiver_type');
@@ -281,10 +283,14 @@ class CashbanksController extends AppController {
                         $documentType = $this->MkCommon->filterEmptyField($documentType, $receiving_cash_type);
                         $receiver_name = $this->RjCashBank->_callReceiverName($receiver_id, $receiver_type);
 
-                        if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
-                            $title = sprintf(__('%s kepada %s'), $documentType, $receiver_name);
+                        if( !empty($description) ) {
+                            $title = $description;
                         } else {
-                            $title = sprintf(__('%s dari %s'), $documentType, $receiver_name);
+                            if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
+                                $title = sprintf(__('%s kepada %s'), $documentType, $receiver_name);
+                            } else {
+                                $title = sprintf(__('%s dari %s'), $documentType, $receiver_name);
+                            }
                         }
 
                         foreach ($data['CashBankDetail'] as $key => $value) {
