@@ -3136,7 +3136,7 @@ var calc_pokok_leasing = function () {
     var months = $('.month-leasing').val();
     var leasing_dp = convert_number($('.leasing-dp').val());
     var grand_total = convert_number($('#grand-total-leasing').html());
-    var total_leasing = convert_number($('.total-leasing').val());
+    // var total_leasing = convert_number($('.total-leasing').val());
     var annual_interest = convert_number($('.annual-interest').val(), 'float');
 
     // var month = false;
@@ -3157,13 +3157,13 @@ var calc_pokok_leasing = function () {
     //     months = Math.floor((b-a)/2628000000);;
     // }
 
-    if( !isNaN(months) && !isNaN(leasing_dp) && !isNaN(grand_total) && !isNaN(total_leasing) ) {
+    if( !isNaN(months) && !isNaN(leasing_dp) && !isNaN(grand_total) ) {
         var year = months/12;
         var loan = grand_total-leasing_dp;
         var pokok = Math.ceil(loan/months);
 
         var rate_annual_interest = annual_interest/100;
-        var bunga = Math.ceil(rate_annual_interest*year*loan);
+        var bunga = Math.ceil((rate_annual_interest*year*loan)/months);
         // var bunga = Math.ceil((total_leasing/months)-pokok);
 
         $('.total-installment').val(formatNumber( pokok, 0 ));

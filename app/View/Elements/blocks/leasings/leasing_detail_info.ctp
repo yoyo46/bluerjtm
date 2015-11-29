@@ -111,14 +111,21 @@
                 <tr>
                     <td align="right" colspan="1"><?php echo __('Bunga *')?></td>
                     <td align="right">
+                        <div class="input-group">
+                            <?php 
+                                    echo $this->Form->input('installment_rate',array(
+                                        'type' => 'text',
+                                        'label'=> false, 
+                                        'class'=>'form-control input_price bunga-leasing text-right',
+                                        'required' => false,
+                                        'error' => false,
+                                    ));
+                                    echo $this->Html->tag('span', __('/ Bln'), array(
+                                        'class' => 'input-group-addon'
+                                    ));
+                            ?>
+                        </div>
                         <?php 
-                                echo $this->Form->input('installment_rate',array(
-                                    'type' => 'text',
-                                    'label'=> false, 
-                                    'class'=>'form-control input_price bunga-leasing text-right',
-                                    'required' => false,
-                                    'error' => false,
-                                ));
                                 echo $this->Form->error('installment_rate');
                         ?>
                     </td>
@@ -127,14 +134,20 @@
                 <tr>
                     <td align="right" colspan="1"><?php echo __('Denda')?></td>
                     <td align="right">
-                        <?php 
-                                echo $this->Form->input('denda',array(
-                                    'type' => 'text',
-                                    'label'=> false, 
-                                    'class'=>'form-control input_price denda-leasing text-right',
-                                    'required' => false,
-                                ));
-                        ?>
+                        <div class="input-group">
+                            <?php 
+                                    echo $this->Form->input('denda',array(
+                                        'type' => 'text',
+                                        'label'=> false, 
+                                        'class'=>'form-control input_price denda-leasing text-right',
+                                        'required' => false,
+                                        'error' => false,
+                                    ));
+                                    echo $this->Html->tag('span', __('%'), array(
+                                        'class' => 'input-group-addon'
+                                    ));
+                            ?>
+                        </div>
                     </td>
                     <td>&nbsp;</td>
                 </tr>

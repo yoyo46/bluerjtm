@@ -131,17 +131,17 @@
 		        </div>
     		</div>
     		<div class="col-sm-6">
-		        <div class="form-group">
+		        <!-- <div class="form-group">
 		        	<?php 
-							echo $this->Form->input('total_leasing',array(
-								'type' => 'text',
-								'label'=> __('Total Leasing *'), 
-								'class'=>'form-control input_price total-leasing',
-								'required' => false,
-								'placeholder' => __('Total Leasing'),
-							));
+							// echo $this->Form->input('total_leasing',array(
+							// 	'type' => 'text',
+							// 	'label'=> __('Total Leasing *'), 
+							// 	'class'=>'form-control input_price total-leasing',
+							// 	'required' => false,
+							// 	'placeholder' => __('Total Leasing'),
+							// ));
 					?>
-		        </div>
+		        </div> -->
 		        <div class="form-group">
 		        	<?php 
 		     //    			$months = array();
