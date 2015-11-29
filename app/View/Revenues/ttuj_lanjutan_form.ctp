@@ -1,6 +1,24 @@
 <?php
 		$classJamBongkaran = 'timepicker';
 		$truck_tiba = true;
+
+		$is_retail = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_retail');
+		$is_pool = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_pool');
+		$is_balik = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_balik');
+		$is_bongkaran = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_bongkaran');
+		$is_arrive = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_arrive');
+
+		if( !empty($is_retail) ) {
+			if( !empty($is_pool) ) {
+				$action_type = 'pool';
+			} else if( !empty($is_balik) ) {
+				$action_type = 'balik';
+			} else if( !empty($is_bongkaran) ) {
+				$action_type = 'bongkaran';
+			} else if( !empty($is_arrive) ) {
+				$action_type = 'truck_tiba';
+			}
+		}
 		
 		switch ($action_type) {
 			case 'bongkaran':
@@ -77,6 +95,14 @@
 				$truck_tiba = false;
 				break;
 		}
+
+		if( !empty($is_retail) ) {
+			$backUrl = array(
+				'controller' => 'revenues',
+				'action' => 'ttuj'
+			);
+		}
+		
 		$this->Html->addCrumb($sub_module_title);
 
 		echo $this->Form->create('Ttuj', array(

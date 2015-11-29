@@ -1,3 +1,11 @@
+<?php 
+		$data = !empty($this->request->data)?$this->request->data:false;
+		$this->request->data['Ttuj']['tgl_berangkat'] = $this->Common->filterEmptyField($data, 'Ttuj', 'tgl_berangkat', date('d/m/Y'));
+		$this->request->data['Ttuj']['tgl_tiba'] = $this->Common->filterEmptyField($data, 'Ttuj', 'tgl_tiba', date('d/m/Y'));
+		$this->request->data['Ttuj']['tgl_bongkaran'] = $this->Common->filterEmptyField($data, 'Ttuj', 'tgl_bongkaran', date('d/m/Y'));
+		$this->request->data['Ttuj']['tgl_balik'] = $this->Common->filterEmptyField($data, 'Ttuj', 'tgl_balik', date('d/m/Y'));
+		$this->request->data['Ttuj']['tgl_pool'] = $this->Common->filterEmptyField($data, 'Ttuj', 'tgl_pool', date('d/m/Y'));
+?>
 <div class="col-sm-6">
     <div class="box-header">
         <h3 class="box-title"><?php echo __('Waktu Perjalanan');?></h3>
@@ -30,7 +38,6 @@
 										'class'=>'form-control pull-right timepicker',
 										'required' => false,
 										'type' => 'text',
-										'data-default' => 'false',
 									));
 							?>
 			            </div>
@@ -80,7 +87,6 @@
 										'class'=>'form-control pull-right timepicker',
 										'required' => false,
 										'type' => 'text',
-										'data-default' => 'false',
 									));
 							?>
 			            </div>
@@ -130,7 +136,6 @@
 										'label'=> false, 
 										'class'=>'form-control pull-right timepicker',
 										'required' => false,
-										'data-default' => 'false',
 									));
 							?>
 			            </div>
@@ -189,7 +194,6 @@
 										'class'=>'form-control pull-right timepicker',
 										'required' => false,
 										'type' => 'text',
-										'data-default' => 'false',
 									));
 							?>
 			            </div>
@@ -239,7 +243,6 @@
 										'label'=> false, 
 										'class'=>'form-control pull-right timepicker',
 										'required' => false,
-										'data-default' => 'false',
 									));
 							?>
 			            </div>

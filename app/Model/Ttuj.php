@@ -165,7 +165,7 @@ class Ttuj extends AppModel {
         $allow = !empty($this->data['Ttuj']['allow_date_ttuj'])?$this->data['Ttuj']['allow_date_ttuj']:false;
 
         if( !empty($this->data['Ttuj'][$target_date]) && !empty($this->data['Ttuj'][$input_date]) ) {
-            if( $this->data['Ttuj'][$input_date] > $this->data['Ttuj'][$target_date] ) {
+            if( $this->data['Ttuj'][$input_date] >= $this->data['Ttuj'][$target_date] ) {
                 return true;
             } else {
                 return false;
