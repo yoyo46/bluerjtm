@@ -3726,6 +3726,7 @@ class RevenuesController extends AppController {
                 ),
             ));
 
+            $this->MkCommon->_layout_file('select');
             $this->set(compact(
                 'trucks'
             ));

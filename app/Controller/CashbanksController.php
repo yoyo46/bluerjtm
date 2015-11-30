@@ -220,6 +220,8 @@ class CashbanksController extends AppController {
             }else{
                 $coas_validate = false;
             }
+            
+            $totalCashBank = $debit_total + $credit_total;
 
             if( !empty($document_id) && $data['CashBank']['document_type'] == 'prepayment' ) {
                 $cashBankTagihan = $this->CashBank->getData('first', array(
@@ -239,7 +241,6 @@ class CashbanksController extends AppController {
                 }
             }
 
-            $totalCashBank = $debit_total + $credit_total;
             $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval(1, $total_coa);
 
             if( empty($allowApprovals) ) {

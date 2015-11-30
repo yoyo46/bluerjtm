@@ -2,6 +2,7 @@
 		$classJamBongkaran = 'timepicker';
 		$truck_tiba = true;
 		$demo = Configure::read('__Site.Demo.Version');
+		$data_local = !empty($data_local)?$data_local:false;
 
 		$is_retail = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_retail', $demo);
 		$is_pool = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_pool');

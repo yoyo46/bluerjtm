@@ -230,7 +230,7 @@
 				        	</div>
 				        </div>
 				        <?php 
-								if( $data_action != 'retail' ) {
+   								if( !in_array($data_action, array( 'retail', 'demo' )) ) {
 				        ?>
 				        <div class="form-group">
 				        	<?php 

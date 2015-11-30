@@ -70,7 +70,7 @@
 						<?php 
 								echo $this->Form->input('Revenue.customer_id',array(
 									'label'=> __('Customer'), 
-									'class'=>'form-control',
+									'class'=>'form-control chosen-select',
 									'required' => false,
 									'options' => $customers,
 									'empty' => __('Pilih Customer'),
@@ -120,7 +120,7 @@
 						        	<?php 
 											echo $this->Form->input('truck_id',array(
 												'label'=> false, 
-												'class'=>'form-control truck-revenue-id',
+												'class'=>'form-control truck-revenue-id chosen-select',
 												'required' => false,
 												'empty' => __('Pilih No. Pol --'),
 												'id' => 'truckID',
@@ -155,7 +155,7 @@
 									<?php 
 											echo $this->Form->input('from_city_id',array(
 												'label'=> false, 
-												'class'=>'form-control',
+												'class'=>'form-control chosen-select',
 												'required' => false,
 												'empty' => __('Dari Kota --'),
 												'options' => !empty($toCities)?$toCities:false,
@@ -167,7 +167,7 @@
 									<?php 
 											echo $this->Form->input('to_city_id',array(
 												'label'=> false, 
-												'class'=>'form-control',
+												'class'=>'form-control chosen-select',
 												'required' => false,
 												'empty' => __('Kota Tujuan --'),
 												'options' => !empty($toCities)?$toCities:false,
