@@ -5365,4 +5365,212 @@ class SettingsController extends AppController {
             $this->MkCommon->redirectReferer(__('Cabang tidak ditemukan'), 'error');
         }
     }
+
+    public function coa_import( $download = false ) {
+        if(!empty($download)){
+            $link_url = FULL_BASE_URL . '/files/coas.xls';
+            $this->redirect($link_url);
+            exit;
+        } else {
+            App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+
+            $this->set('module_title', 'COA');
+            $this->set('active_menu', 'coas');
+            $this->set('sub_module_title', __('Import Excel'));
+
+            if(!empty($this->request->data)) { 
+                $Zipped = $this->request->data['Import']['importdata'];
+
+                if($Zipped["name"]) {
+                    $filename = $Zipped["name"];
+                    $source = $Zipped["tmp_name"];
+                    $type = $Zipped["type"];
+                    $name = explode(".", $filename);
+                    $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
+
+                    if(!empty($accepted_types)) {
+                        foreach($accepted_types as $mime_type) {
+                            if($mime_type == $type) {
+                                $okay = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+
+                    if(!$continue) {
+                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
+                        $this->redirect(array('action'=>'coas'));
+                    } else {
+                        $path = APP.'webroot'.DS.'files'.DS.date('Y').DS.date('m').DS;
+                        $filenoext = basename ($filename, '.xls');
+                        $filenoext = basename ($filenoext, '.XLS');
+                        $fileunique = uniqid() . '_' . $filenoext;
+
+                        if( !file_exists($path) ) {
+                            mkdir($path, 0755, true);
+                        }
+
+                        $targetdir = $path . $fileunique . $filename;
+                         
+                        ini_set('memory_limit', '96M');
+                        ini_set('post_max_size', '64M');
+                        ini_set('upload_max_filesize', '64M');
+
+                        if(!move_uploaded_file($source, $targetdir)) {
+                            $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                            $this->redirect(array('action'=>'coa_import'));
+                        }
+                    }
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                    $this->redirect(array('action'=>'coa_import'));
+                }
+
+                $xls_files = glob( $targetdir );
+
+                if(empty($xls_files)) {
+                    $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                    $this->redirect(array('action'=>'coa_import'));
+                } else {
+                    $uploadedXls = $this->MkCommon->addToFiles('xls', $xls_files[0]);
+                    $uploaded_file = $uploadedXls['xls'];
+                    $file = explode(".", $uploaded_file['name']);
+                    $extension = array_pop($file);
+                    
+                    if($extension == 'xls') {
+                        $dataimport = new Spreadsheet_Excel_Reader();
+                        $dataimport->setUTFEncoder('iconv');
+                        $dataimport->setOutputEncoding('UTF-8');
+                        $dataimport->read($uploaded_file['tmp_name']);
+                        
+                        if(!empty($dataimport)) {
+                            $data = $dataimport;
+                            $row_submitted = 1;
+                            $successfull_row = 0;
+                            $failed_row = 0;
+                            $error_message = '';
+                            $cnt = 0;
+
+                            for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
+                                $datavar = array();
+                                $flag = true;
+                                $i = 1;
+
+                                while ($flag) {
+                                    if( !empty($data->sheets[0]["cells"][1][$i]) ) {
+                                        $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
+                                        $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
+                                        $$variable = $thedata;
+                                        $datavar[] = $thedata;
+                                    } else {
+                                        $flag = false;
+                                    }
+                                    $i++;
+                                }
+
+                                if(array_filter($datavar)) {
+                                    $id = !empty($id)?$id:false;
+                                    $code = !empty($code)?$code:false;
+                                    $parent = !empty($parent)?$parent:false;
+                                    $name = !empty($name)?$name:false;
+                                    $nameen = !empty($nameen)?$nameen:false;
+                                    $type_name = !empty($type_name)?strtolower($type_name):false;
+                                    $cash_bank = !empty($cash_bank)?$cash_bank:false;
+                                    $level = !empty($level)?$level:false;
+
+                                    if( !empty($name) ) {
+                                        if( !empty($parent) ) {
+                                            $dataParent = $this->User->Coa->getData('first', array(
+                                                'conditions' => array(
+                                                    'LOWER(Coa.name)' => strtolower($parent),
+                                                    'Coa.level <>' => 4,
+                                                ),
+                                                'order' => array(
+                                                    'Coa.id' => 'DESC',
+                                                ),
+                                            ));
+
+                                            $parent_id = $this->MkCommon->filterEmptyField($dataParent, 'Coa', 'id');
+                                            $parent_code = $this->MkCommon->filterEmptyField($dataParent, 'Coa', 'code');
+                                            $type_name = $this->MkCommon->filterEmptyField($dataParent, 'Coa', 'type');
+
+                                            if( !empty($parent_code) ) {
+                                                $with_parent_code = sprintf('%s-%s', $parent_code, $code);
+                                            } else {
+                                                $with_parent_code = false;
+                                            }
+                                        } else {
+                                            $parent_id = false;
+                                            $with_parent_code = false;
+                                        }
+
+                                        $dataSave = array(
+                                            'Coa' => array(
+                                                'parent_id' => $parent_id,
+                                                'with_parent_code' => $with_parent_code,
+                                                'code' => $code,
+                                                'name' => $name,
+                                                'name_en' => $nameen,
+                                                'type' => $type_name,
+                                                'is_cash_bank' => $cash_bank,
+                                                'level' => $level,
+                                            ),
+                                        );
+
+                                        $this->User->Coa->create();
+                                        $this->User->Coa->set($dataSave);
+                                        
+                                        if( $this->User->Coa->save($dataSave) ){                                        
+                                            $this->Log->logActivity( __('Sukses upload COA by Import Excel'), $this->user_data, $this->RequestHandler, $this->params );
+                                            $successfull_row++;
+                                        } else {
+                                            $validationErrors = $this->User->Coa->validationErrors;
+                                            $textError = array();
+                                        debug($parent);
+                                        debug($validationErrors);
+                                        debug($dataSave);die();
+
+                                            if( !empty($validationErrors) ) {
+                                                foreach ($validationErrors as $key => $validationError) {
+                                                    if( !empty($validationError) ) {
+                                                        foreach ($validationError as $key => $error) {
+                                                            $textError[] = $error;
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            if( !empty($textError) ) {
+                                                $textError = implode(', ', $textError);
+                                            } else {
+                                                $textError = '';
+                                            }
+
+                                            $failed_row++;
+                                            $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. %s'), $row_submitted, $textError) . '<br>';
+                                        }
+
+                                        $row_submitted++;
+                                        $cnt++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(!empty($successfull_row)) {
+                    $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $cnt);
+                    $this->MkCommon->setCustomFlash(__($message_import1), 'success');
+                }
+                
+                if(!empty($error_message)) {
+                    $this->MkCommon->setCustomFlash(__($error_message), 'error');
+                }
+                $this->redirect(array('action'=>'coa_import'));
+            }
+        }
+    }
 }

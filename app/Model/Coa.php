@@ -135,8 +135,6 @@ class Coa extends AppModel {
         if( empty($this->data['Coa']['code']) ) {
             if( !empty($this->data['Coa']['level']) && $this->data['Coa']['level'] == 4 ) {
                 return false;
-            } else if( !empty($this->data['Coa']['level']) && $this->data['Coa']['level'] == 3 ) {
-                return false;
             } else {
                 return true;
             }
