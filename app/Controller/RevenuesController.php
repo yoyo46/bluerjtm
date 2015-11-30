@@ -136,7 +136,6 @@ class RevenuesController extends AppController {
     }
 
     function ttuj_edit( $id ){
-        $this->loadModel('Revenue');
         $ttuj = $this->Ttuj->getData('first', array(
             'conditions' => array(
                 'Ttuj.id' => $id,
@@ -149,6 +148,7 @@ class RevenuesController extends AppController {
         ));
 
         if(!empty($ttuj)){
+            $demo = Configure::read('__Site.Demo.Version');
             $is_draft = $this->MkCommon->filterEmptyField( $ttuj, 'Ttuj', 'is_draft' );
 
             if( empty($is_draft) ) {
@@ -160,10 +160,12 @@ class RevenuesController extends AppController {
             }
 
             $ttuj = $this->Ttuj->getMergeContain( $ttuj, $id );
-            $ttuj = $this->Revenue->getPaid( $ttuj, $ttuj['Ttuj']['id'] );
+            $ttuj = $this->Ttuj->Revenue->getPaid( $ttuj, $ttuj['Ttuj']['id'] );
             $data_action = false;
 
-            if( !empty($ttuj['Ttuj']['is_retail']) ) {
+            if( !empty($demo) ) {
+                $data_action = 'demo';
+            } else if( !empty($ttuj['Ttuj']['is_retail']) ) {
                 $data_action = 'retail';
             }
 
@@ -539,7 +541,7 @@ class RevenuesController extends AppController {
                 $data['Ttuj']['completed_date'] = $this->MkCommon->getDate($data['Ttuj']['completed_date']);
             }
 
-            if( $data_action == 'retail' ) {
+            if( in_array($data_action, array( 'retail', 'demo' )) ) {
                 $data['Ttuj']['is_retail'] = 1;
                 $data['Ttuj']['allow_date_ttuj'] = true;
 
@@ -1157,13 +1159,16 @@ class RevenuesController extends AppController {
 
         $customer_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'customer_id');
         $from_city_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'from_city_id');
-        $customerConditions = array(
-            'Customer.customer_type_id' => 2,
-        );
+        $customerConditions = array();
 
-        if( $data_action == 'retail' ) {
-            $customerConditions['Customer.customer_type_id'] = 1;
+        if( in_array($data_action, array( 'retail', 'demo' )) ) {
             $tmpCities = $this->City->getData('list');
+
+            if( $data_action == 'retail' ) {
+                $customerConditions['Customer.customer_type_id'] = 1;
+            }
+        } else {
+            $customerConditions['Customer.customer_type_id'] = 2;
         }
 
         $customers = $this->Ttuj->Customer->getInclude($customerConditions, $customer_id);
@@ -1803,7 +1808,7 @@ class RevenuesController extends AppController {
 
         $conditions = array(
             'Ttuj.id' => $ttuj_id,
-            'Ttuj.is_draft' => 0,
+            // 'Ttuj.is_draft' => 0,
             'Ttuj.status' => 1,
             'Ttuj.branch_id' => $allow_branch_id,
         );
@@ -1844,7 +1849,7 @@ class RevenuesController extends AppController {
                 break;
             
             default:
-                $conditions['Ttuj.is_draft'] = 0;
+                // $conditions['Ttuj.is_draft'] = 0;
 
                 $module_title = __('Info TTUJ');
                 $this->set('active_menu', 'ttuj');

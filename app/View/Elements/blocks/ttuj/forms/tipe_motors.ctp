@@ -6,7 +6,7 @@
 		$color_motor_id = !empty($color_motor_id)?$color_motor_id:false;
 		$content = '';
 
-		if( $data_action == 'retail' ) {
+		if( in_array($data_action, array( 'retail', 'demo' )) ) {
 			$content .= $this->Html->tag('div', $this->Form->input('TtujTipeMotor.city_id.',array(
 				'label'=> false, 
 				'class'=>'form-control city-retail-id chosen-select',

@@ -1,4 +1,6 @@
 <?php 
+        $demo_version = Configure::read('__Site.Demo.Version');
+
         $this->Html->addCrumb($sub_module_title);
         echo $this->element('blocks/ttuj/search_ttuj');
 ?>
@@ -53,6 +55,16 @@
                             break;
                         
                         default:
+                            if( !empty($demo_version) ) {
+                                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
+                                    'controller' => 'revenues',
+                                    'action' => 'ttuj_add',
+                                    'demo',
+                                ), array(
+                                    'escape' => false,
+                                    'class' => 'btn btn-app btn-success pull-right'
+                                ));
+                            } else {
             ?>
             <div class="btn-group pull-right">
                 <?php 
@@ -83,6 +95,7 @@
                 </ul>
             </div>
             <?php
+                                }
                             break;
                     }
             ?>

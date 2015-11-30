@@ -595,6 +595,8 @@ class MkCommonComponent extends Component {
             'prepayment_out' => __('Pembayaran Prepayment'),
             'prepayment_in' => __('Penerimaan Prepayment'),
         ));
+
+        Configure::write('__Site.Demo.Version', $this->_callDemoVersion());
     }
 
     function allowPage ( $branchs, $no_exact = false ) {
@@ -1494,6 +1496,14 @@ class MkCommonComponent extends Component {
         }
 
         return $result;
+    }
+
+    function _callDemoVersion () {
+        if( in_array(FULL_BASE_URL, array( 'http://ww.erprjtm.com', 'http://erp.rjtm.co.id' )) ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 ?>

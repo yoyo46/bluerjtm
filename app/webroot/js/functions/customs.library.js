@@ -975,6 +975,7 @@
     }
 
     $.rebuildFunction = function() {
+        $.ajaxLink();
         $.ajaxForm();
         $.rowAdded();
         $.ajaxModal();
@@ -1000,7 +1001,6 @@
     }
 
     $.rebuildFunctionAjax = function( obj ) {
-        $.rebuildFunction();
         $.inputPrice({
             obj: obj.find('.input_price'),
         });
@@ -1011,16 +1011,46 @@
             obj: obj.find('.columnDropdown'),
         });
         $.checkAll();
+
+        datepicker(obj.find('.custom-date'));
+        timepicker(obj.find('.timepicker'));
+        
+        $.rebuildFunction();
     }
 
     $.ajaxLink = function( options ) {
         var settings = $.extend({
             obj: $('.ajax-link'),
+            objChange: $('.ajax-change'),
+            objBlur: $('.ajax-blur'),
         }, options );
 
+        settings.obj.off('click');
         settings.obj.click(function(){
             var self = $(this);
             
+            $.directAjaxLink({
+                obj: self,
+            });
+
+            return false;
+        });
+
+        settings.objChange.off('change');
+        settings.objChange.change(function(){
+            var self = $(this);
+            
+            $.directAjaxLink({
+                obj: self,
+            });
+
+            return false;
+        });
+
+        settings.objBlur.off('blur');
+        settings.objBlur.blur(function(){
+            var self = $(this);
+
             $.directAjaxLink({
                 obj: self,
             });

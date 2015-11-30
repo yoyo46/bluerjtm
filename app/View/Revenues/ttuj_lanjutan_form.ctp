@@ -1,8 +1,9 @@
 <?php
 		$classJamBongkaran = 'timepicker';
 		$truck_tiba = true;
+		$demo = Configure::read('__Site.Demo.Version');
 
-		$is_retail = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_retail');
+		$is_retail = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_retail', $demo);
 		$is_pool = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_pool');
 		$is_balik = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_balik');
 		$is_bongkaran = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_bongkaran');
@@ -585,7 +586,7 @@
 							<thead>
 								<tr>
 									<?php 
-											if( $data_action == 'retail' ) {
+											if( in_array($data_action, array( 'retail', 'demo' )) ) {
 												echo $this->Html->tag('th', __('Tujuan'));
 											}
 											echo $this->Html->tag('th', __('Tipe Motor'));
@@ -604,7 +605,7 @@
 								?>
 								<tr>
 									<?php
-											if( $data_action == 'retail' ) {
+											if( in_array($data_action, array( 'retail', 'demo' )) ) {
 												echo $this->Html->tag('td', $this->Form->input('TtujTipeMotor.city_id.'.$key,array(
 													'label'=> false, 
 													'class'=>'form-control',

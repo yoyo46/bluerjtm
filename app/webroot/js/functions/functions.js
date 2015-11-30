@@ -49,6 +49,11 @@ var getUangjalan = function ( response ) {
     var total_muatan = 0;
     var qtyLen = $('#ttujDetail .tbody > div').length;
 
+    var lead_time = $(response).find('#ttuj-lanjutan-lead-time').html();
+    $('#ttuj-lanjutan-lead-time').html(lead_time);
+    datepicker( $('#ttuj-lanjutan-lead-time .custom-date') );
+    timepicker( $('#ttuj-lanjutan-lead-time .timepicker') );
+
     // if( uang_jalan_1 != 0 ) {
         var uang_jalan_1_ori = uang_jalan_1;
         var uang_jalan_2 = $(response).filter('#uang_jalan_2').html().replace(/,/gi, "");
@@ -1819,6 +1824,7 @@ var datepicker = function( obj ){
         obj = $( ".custom-date" );
     }
 
+    $('.datepicker.datepicker-dropdown').remove();
     obj.datepicker({
         format: 'dd/mm/yyyy',
         todayHighlight: true,
@@ -1839,6 +1845,7 @@ var timepicker = function( obj ){
             timeDefault = 'current';
         }
 
+        $('.bootstrap-timepicker-widget').remove();
         obj.timepicker({
             showMeridian: false,
             defaultTime: timeDefault,

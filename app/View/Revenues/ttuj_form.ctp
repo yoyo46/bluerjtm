@@ -11,6 +11,7 @@
 			'inputDefaults' => array('div' => false),
     		'autocomplete'=> 'off', 
     		'novalidate' => true,
+			'id' => 'ttuj-form',
 		));
 
 		$datForm = !empty($this->request->data)?$this->request->data:false;
@@ -298,7 +299,7 @@
 									$totalUnitMuatan = '';
 									$colSpan = 2;
 
-									if( $data_action == 'retail' ) {
+       								if( in_array($data_action, array( 'retail', 'demo' )) ) {
 										$colSpan ++;
 									}
 
@@ -312,7 +313,7 @@
 							<div class="thead">
 								<div class="row">
 									<?php 
-											if( $data_action == 'retail' ) {
+       										if( in_array($data_action, array( 'retail', 'demo' )) ) {
 												echo $this->Html->tag('div', __('Tujuan'), array(
 													'class' => 'col-sm-3 th',
 												));
@@ -431,7 +432,7 @@
 			<?php 
 					}
 
-					if( $data_action == 'retail' ) {
+					if( in_array($data_action, array( 'retail', 'demo' )) ) {
 						echo $this->Common->clearfix();
 	        			echo $this->element('blocks/ttuj/forms/ttuj_lanjutan');
 					}

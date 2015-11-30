@@ -50,22 +50,21 @@ class AjaxController extends AppController {
 	}
 
 	function getInfoTruck( $from_city_id = false, $to_city_id = false, $truck_id = false, $customer_id = false ) {
-		$this->loadModel('Truck');
+		$this->loadModel('Ttuj');
 		$this->loadModel('City');
 
         $plantCityId = Configure::read('__Site.Branch.Plant.id');
-		$result = $this->Truck->getInfoTruck($truck_id, $plantCityId);
+		$isAjax = $this->RequestHandler->isAjax();
+		$result = $this->Ttuj->Truck->getInfoTruck($truck_id, $plantCityId);
 
 		if( !empty($result) ) {
-			$this->loadModel('UangJalan');
 			$this->loadModel('UangKuli');
-			$this->loadModel('Ttuj');
 
 			if( !empty($result['Truck']['driver_id']) ) {
 				$sjOutstanding = $this->Ttuj->getSJOutstanding( $result['Truck']['driver_id'] );
 			}
 			
-			$uangJalan = $this->UangJalan->getNopol( $from_city_id, $to_city_id, $result['Truck']['capacity'] );
+			$uangJalan = $this->Ttuj->UangJalan->getNopol( $from_city_id, $to_city_id, $result['Truck']['capacity'] );
 			$uangKuli = $this->UangKuli->getUangKuli( $from_city_id, $to_city_id, $customer_id, $result['Truck']['capacity'] );
 			$converterUjs = $this->Ttuj->TtujTipeMotor->TipeMotor->getData('all', array(
 				'contain' => false,
@@ -80,7 +79,7 @@ class AjaxController extends AppController {
 		$this->set(compact(
 			'result', 'uangJalan', 'uangKuliMuat',
 			'uangKuliBongkar', 'sjOutstanding',
-			'converterUjs'
+			'converterUjs', 'isAjax'
 		));
 		$this->render('get_nopol');
 	}
@@ -1176,6 +1175,7 @@ class AjaxController extends AppController {
 
 	function getDataTruck ( $truck_id = false ) {
 		$this->loadModel('Truck');
+
 		$options = array(
             'conditions' => array(
 	            'Truck.id' => $truck_id,
@@ -2983,6 +2983,29 @@ class AjaxController extends AppController {
         	'values'
     	));
     	$this->render('/Elements/blocks/ajax/purchases/purchase_orders/tables/detail_products');
+	}
+
+	function change_lead_time () {
+		$isAjax = $this->RequestHandler->isAjax();
+		$data = $this->request->data;
+		$data = $this->MkCommon->dataConverter($data, array(
+            'date' => array(
+                'Ttuj' => array(
+                    'tgl_berangkat',
+                ),
+            )
+        ));
+
+		$tgl_berangkat = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'tgl_berangkat');
+		$jam_berangkat = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'jam_berangkat');
+
+        $tgl_jam_berangkat = sprintf('%s %s', $tgl_berangkat, $jam_berangkat);
+		$this->request->data['Ttuj']['tgl_berangkat'] = false;
+
+        $this->set(compact(
+        	'isAjax', 'tgl_jam_berangkat'
+    	));
+    	$this->render('/Elements/blocks/ttuj/forms/ttuj_lanjutan');
 	}
 }
 ?>
