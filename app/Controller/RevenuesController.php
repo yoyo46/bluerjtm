@@ -3748,7 +3748,16 @@ class RevenuesController extends AppController {
         ));
 
         if($locale){
+            $date_revenue = $this->MkCommon->filterEmptyField($locale, 'Revenue', 'date_revenue');
+            $no_doc = $this->MkCommon->filterEmptyField($locale, 'Revenue', 'no_doc');
+            $customer_id = $this->MkCommon->filterEmptyField($locale, 'Revenue', 'customer_id');
+            $total = $this->MkCommon->filterEmptyField($locale, 'Revenue', 'total', 0);
+
+            $locale = $this->Ttuj->Customer->getMerge($locale, $customer_id);
+            $customer_name = $this->MkCommon->filterEmptyField($locale, 'Customer', 'customer_name_code');
+
             $value = true;
+
             if($locale['Revenue']['status']){
                 $value = false;
             }
@@ -3760,6 +3769,18 @@ class RevenuesController extends AppController {
                 $this->Ttuj->set('is_revenue', 0);
                 $this->Ttuj->id = $locale['Revenue']['ttuj_id'];
                 $this->Ttuj->save();
+
+                $titleJournal = sprintf(__('Revenue untuk customer %s'), $customer_name);
+                $this->User->Journal->setJournal($total, array(
+                    'credit' => 'revenue_coa_debit_id',
+                    'debit' => 'revenue_coa_credit_id',
+                ), array(
+                    'date' => $date_revenue,
+                    'document_id' => $id,
+                    'title' => $titleJournal,
+                    'document_no' => $no_doc,
+                    'type' => 'revenue',
+                ));
 
                 $this->MkCommon->setCustomFlash(__('Revenue berhasil dibatalkan.'), 'success');
                 $this->Log->logActivity( sprintf(__('Revenue ID #%s berhasil dibatalkan.'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
@@ -5193,6 +5214,8 @@ class RevenuesController extends AppController {
                     'fields'=> array(
                         'RevenueDetail.revenue_id', 
                         'SUM(RevenueDetail.total_price_unit) as total',
+                        'Revenue.date_revenue', 'Revenue.no_doc',
+                        'Revenue.customer_id',
                     ),
                 ), true, array(
                     'branch' => false,
@@ -5200,12 +5223,30 @@ class RevenuesController extends AppController {
 
                 if( !empty($revenues) ) {
                     foreach ($revenues as $key => $revenue) {
+                        $date_revenue = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'date_revenue');
+                        $no_doc = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'no_doc');
+                        $customer_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'customer_id');
+
                         $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'RevenueDetail', 'revenue_id');
+                        $revenue = $this->Ttuj->Customer->getMerge($revenue, $customer_id);
                         $total = !empty($revenue[0]['total'])?$revenue[0]['total']:0;
+                        $customer_name = $this->MkCommon->filterEmptyField($revenue, 'Customer', 'customer_name_code');
 
                         $this->Revenue->set('total', $total);
                         $this->Revenue->id = $revenue_id;
                         $this->Revenue->save();
+
+                        $titleJournal = sprintf(__('Revenue untuk customer %s'), $customer_name);
+                        $this->User->Journal->setJournal($total, array(
+                            'credit' => 'revenue_coa_credit_id',
+                            'debit' => 'revenue_coa_debit_id',
+                        ), array(
+                            'date' => $date_revenue,
+                            'document_id' => $revenue_id,
+                            'title' => $titleJournal,
+                            'document_no' => $no_doc,
+                            'type' => 'revenue',
+                        ));
                     }
                 }
             }

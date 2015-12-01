@@ -259,6 +259,37 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
+							echo $this->Form->label('revenue_coa_debit_id', __('Revenue'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('revenue_coa_debit_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('revenue_coa_credit_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+					?>
+				</div>
+			</div>
+        </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
 							echo $this->Form->label('invoice_coa_debit_id', __('Invoice'));
 					?>
 				</div>

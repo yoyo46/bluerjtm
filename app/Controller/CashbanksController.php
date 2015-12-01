@@ -1136,8 +1136,7 @@ class CashbanksController extends AppController {
                         'Journal.id' => 'ASC',
                     ),
                 ));
-                $values = $this->User->Journal->getData('paginate', $options);
-                debug($values);die();
+                $values = $this->User->Journal->getData('all', $options);
             } else {
                 $this->MkCommon->redirectReferer(__('Mohon pilih COA terlebih dahulu'), 'error', array(
                     'action' => 'ledger_report',

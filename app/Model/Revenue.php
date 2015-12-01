@@ -580,6 +580,11 @@ class Revenue extends AppModel {
         $dataRevenue['Revenue']['total_without_tax'] = $totalWithoutTax;
         $dataRevenue['Revenue']['branch_id'] = Configure::read('__Site.config_branch_id');
 
+        $transaction_status = !empty($dataRevenue['Revenue']['transaction_status'])?$dataRevenue['Revenue']['transaction_status']:false;
+        $date_revenue = !empty($dataRevenue['Revenue']['date_revenue'])?$dataRevenue['Revenue']['date_revenue']:false;
+        $customer_id = !empty($dataRevenue['Revenue']['customer_id'])?$dataRevenue['Revenue']['customer_id']:false;
+        $no_doc = !empty($dataRevenue['Revenue']['no_doc'])?$dataRevenue['Revenue']['no_doc']:false;
+
         $this->set($dataRevenue);
         $validate_qty = true;
         $qtyReview = $this->checkQtyUsed( $ttuj_id, $id );
@@ -632,6 +637,25 @@ class Revenue extends AppModel {
                 $revenue_id = $this->id;
                 $this->TtujTipeMotorUse = ClassRegistry::init('TtujTipeMotorUse');
                 $this->Log = ClassRegistry::init('Log');
+
+                if( $transaction_status == 'posting' ) {
+                    $this->Journal = ClassRegistry::init('Journal');
+
+                    $dataCustomer = $this->Ttuj->Customer->getMerge(array(), $customer_id);
+                    $customer_name = !empty($dataCustomer['Customer']['customer_name_code'])?$dataCustomer['Customer']['customer_name_code']:false;
+                    $titleJournal = sprintf(__('Revenue untuk customer %s'), $customer_name);
+
+                    $this->Journal->setJournal($total_revenue, array(
+                        'credit' => 'revenue_coa_credit_id',
+                        'debit' => 'revenue_coa_debit_id',
+                    ), array(
+                        'date' => $date_revenue,
+                        'document_id' => $revenue_id,
+                        'title' => $titleJournal,
+                        'document_no' => $no_doc,
+                        'type' => 'revenue',
+                    ));
+                }
 
                 if($id && $data_local){
                     $this->RevenueDetail->updateAll(array(
