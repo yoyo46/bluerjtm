@@ -60,7 +60,7 @@ class Coa extends AppModel {
 
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
-        $this->virtualFields['coa_name'] = sprintf('CASE WHEN %s.with_parent_code IS NULL THEN %s.name ELSE CONCAT(%s.with_parent_code, \' - \', %s.name) END', $this->alias, $this->alias, $this->alias, $this->alias);
+        $this->virtualFields['coa_name'] = 'CASE WHEN Coa.with_parent_code IS NOT NULL AND Coa.with_parent_code <> \'\' THEN CONCAT(Coa.with_parent_code, \' - \', Coa.name) WHEN Coa.code <> \'\' THEN CONCAT(Coa.code, \' - \', Coa.name) ELSE Coa.name END';
     }
 
     function getData( $find, $options = false, $elements = array() ){
