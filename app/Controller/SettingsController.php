@@ -3556,6 +3556,7 @@ class SettingsController extends AppController {
             ),
         ));
 
+        $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'banks');
         $this->set('coas', $coas);
         $this->render('bank_form');

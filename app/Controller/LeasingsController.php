@@ -576,6 +576,7 @@ class LeasingsController extends AppController {
             'status' => 'unpaid',
         ));
 
+        $this->MkCommon->_layout_file('select');
         $this->set(compact(
             'coas', 'vendors'
         ));

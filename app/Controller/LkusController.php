@@ -973,6 +973,7 @@ class LkusController extends AppController {
             'status' => 'cash_bank_child',
         ));
 
+        $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'lku_payments');
         $this->set(compact(
             'list_customer', 'id', 'action',
@@ -1906,6 +1907,7 @@ class LkusController extends AppController {
             'status' => 'cash_bank_child',
         ));
 
+        $this->MkCommon->_layout_file('select');
         $this->set(compact(
             'list_customer', 'id', 'action',
             'coas', 'ttujs'

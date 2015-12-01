@@ -1433,6 +1433,7 @@ class TrucksController extends AppController {
             'status' => 'cash_bank_child',
         ));
 
+        $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'kir_payments');
         $this->set(compact(
             'id', 'kir', 'sub_module_title',
@@ -1922,6 +1923,7 @@ class TrucksController extends AppController {
             'status' => 'cash_bank_child',
         ));
 
+        $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'siup_payments');
         $this->set(compact(
             'id', 'siup', 'sub_module_title',
@@ -3030,6 +3032,7 @@ class TrucksController extends AppController {
             'status' => 'cash_bank_child',
         ));
 
+        $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'stnk_payments');
         $this->set(compact(
             'id', 'stnk', 'sub_module_title',

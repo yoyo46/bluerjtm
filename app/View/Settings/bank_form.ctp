@@ -60,7 +60,7 @@
         	<?php 
 					echo $this->Form->input('coa_id',array(
 						'label'=> __('No. Akun'), 
-						'class'=>'form-control',
+						'class'=>'form-control chosen-select',
 						'required' => false,
 						'empty' => __('Pilih No. Akun'),
 					));

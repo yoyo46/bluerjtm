@@ -35,7 +35,7 @@
 						<?php
 								echo $this->Html->tag('div', $this->Form->input('coa_id',array(
 									'label'=> __('Account Kas/Bank *'), 
-									'class'=>'form-control',
+									'class'=>'form-control chosen-select',
 									'required' => false,
 									'empty' => __('Pilih Kas/Bank '),
 									'options' => !empty($coas)?$coas:false,
