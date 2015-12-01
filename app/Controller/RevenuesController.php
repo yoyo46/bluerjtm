@@ -823,6 +823,7 @@ class RevenuesController extends AppController {
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj, Silahkan masukan muatan truk.'), $msg), 'error');  
                 }
             }else{
+                debug($this->Ttuj->validationErrors);die();
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj'), $msg), 'error');
             }
 
@@ -1921,6 +1922,7 @@ class RevenuesController extends AppController {
                     ),
                 ));
 
+                $this->set('info_truk', true);
                 $this->set('sub_module_title', $module_title);
                 $this->set(compact(
                     'ttujs', 'data_local', 'perlengkapans', 

@@ -943,11 +943,11 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'ksu_payments' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Asuransi', '#', array(
-                                'escape' => false
-                            )), array(
-                                // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
-                            ));
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Asuransi', '#', array(
+                            //     'escape' => false
+                            // )), array(
+                            //     // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
+                            // ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Leasing', array(
                                 'controller' => 'leasings',
@@ -985,11 +985,11 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'siup_payments' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LAKA', '#', array(
-                                'escape' => false
-                            )), array(
-                                // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
-                            ));
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LAKA', '#', array(
+                            //     'escape' => false
+                            // )), array(
+                            //     // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
+                            // ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Prepayment', array(
                                 'controller' => 'cashbanks',

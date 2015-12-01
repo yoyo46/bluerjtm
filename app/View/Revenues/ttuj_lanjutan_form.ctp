@@ -3,6 +3,7 @@
 		$truck_tiba = true;
 		$demo = Configure::read('__Site.Demo.Version');
 		$data_local = !empty($data_local)?$data_local:false;
+		$info_truk = !empty($info_truk)?$info_truk:false;
 
 		$is_retail = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_retail', $demo);
 		$is_pool = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_pool');
@@ -10,7 +11,7 @@
 		$is_bongkaran = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_bongkaran');
 		$is_arrive = $this->Common->filterEmptyField($data_local, 'Ttuj', 'is_arrive');
 
-		if( !empty($is_retail) ) {
+		if( !empty($is_retail) && !empty($info_truk) ) {
 			if( !empty($is_pool) ) {
 				$action_type = 'pool';
 			} else if( !empty($is_balik) ) {
