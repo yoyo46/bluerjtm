@@ -42,7 +42,7 @@
 		        	<?php 
 							echo $this->Form->input('uang_jalan_coa_debit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -53,7 +53,7 @@
 		        	<?php 
 							echo $this->Form->input('uang_jalan_coa_credit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -73,7 +73,7 @@
 		        	<?php 
 							echo $this->Form->input('commission_coa_debit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -84,7 +84,7 @@
 		        	<?php 
 							echo $this->Form->input('commission_coa_credit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -104,7 +104,7 @@
 		        	<?php 
 							echo $this->Form->input('uang_kuli_muat_coa_debit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -115,7 +115,7 @@
 		        	<?php 
 							echo $this->Form->input('uang_kuli_muat_coa_credit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -135,7 +135,7 @@
 		        	<?php 
 							echo $this->Form->input('uang_kuli_bongkar_coa_debit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -146,7 +146,7 @@
 		        	<?php 
 							echo $this->Form->input('uang_kuli_bongkar_coa_credit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -166,7 +166,7 @@
 		        	<?php 
 							echo $this->Form->input('asdp_coa_debit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -177,7 +177,7 @@
 		        	<?php 
 							echo $this->Form->input('asdp_coa_credit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -197,7 +197,7 @@
 		        	<?php 
 							echo $this->Form->input('uang_kawal_coa_debit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -208,7 +208,7 @@
 		        	<?php 
 							echo $this->Form->input('uang_kawal_coa_credit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -228,7 +228,7 @@
 		        	<?php 
 							echo $this->Form->input('uang_keamanan_coa_debit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -239,7 +239,7 @@
 		        	<?php 
 							echo $this->Form->input('uang_keamanan_coa_credit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -266,7 +266,7 @@
 		        	<?php 
 							echo $this->Form->input('invoice_coa_debit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -277,7 +277,7 @@
 		        	<?php 
 							echo $this->Form->input('invoice_coa_credit_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -297,7 +297,7 @@
 		        	<?php 
 							echo $this->Form->input('pembayaran_invoice_coa_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -317,7 +317,7 @@
 		        	<?php 
 							echo $this->Form->input('lku_payment_coa_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -337,7 +337,7 @@
 		        	<?php 
 							echo $this->Form->input('ksu_payment_coa_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -357,7 +357,7 @@
 		        	<?php 
 							echo $this->Form->input('uang_Jalan_commission_payment_coa_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -377,7 +377,7 @@
 		        	<?php 
 							echo $this->Form->input('biaya_ttuj_payment_coa_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -404,7 +404,7 @@
 		        	<?php 
 							echo $this->Form->input('kir_payment_coa_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -424,7 +424,7 @@
 		        	<?php 
 							echo $this->Form->input('siup_payment_coa_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -444,7 +444,7 @@
 		        	<?php 
 							echo $this->Form->input('stnk_payment_coa_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -471,7 +471,7 @@
 		        	<?php 
 							echo $this->Form->input('leasing_installment_coa_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -491,7 +491,7 @@
 		        	<?php 
 							echo $this->Form->input('leasing_installment_rate_coa_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
@@ -511,7 +511,7 @@
 		        	<?php 
 							echo $this->Form->input('leasing_denda_coa_id',array(
 								'label'=> false, 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih COA'),
 								'options' => $coas,

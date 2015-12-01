@@ -475,6 +475,7 @@ class CashbanksController extends AppController {
         $this->set('active_menu', 'cash_bank');
         $this->set('module_title', 'Kas/Bank');
 
+        $this->MkCommon->_layout_file('select');
         $this->set(compact(
             'coas', 'document_id', 'receiving_cash_type',
             'docs', 'urlBrowseDocument', 'prepayment_out_id',
@@ -1032,6 +1033,8 @@ class CashbanksController extends AppController {
                 'Coa.id', 'Coa.coa_name'
             ),
         ));
+        
+        $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'coa_setting');
         $this->set(compact('coas'));
     }
@@ -1133,7 +1136,8 @@ class CashbanksController extends AppController {
                         'Journal.id' => 'ASC',
                     ),
                 ));
-                $values = $this->User->Journal->getData('all', $options);
+                $values = $this->User->Journal->getData('paginate', $options);
+                debug($values);die();
             } else {
                 $this->MkCommon->redirectReferer(__('Mohon pilih COA terlebih dahulu'), 'error', array(
                     'action' => 'ledger_report',
