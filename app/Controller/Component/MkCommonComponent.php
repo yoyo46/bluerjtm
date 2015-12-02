@@ -1121,10 +1121,56 @@ class MkCommonComponent extends Component {
         return trim(str_replace(array( ',', '.' ), array( '', '' ), $price));
     }
 
+    function _callDateRangeConverter ( $date ) {
+        $result = array();
+
+        if(!empty($date)){
+            $dateStr = urldecode($date);
+            $date = explode('-', $dateStr);
+
+            if( !empty($date) ) {
+                $date[0] = urldecode($date[0]);
+                $date[1] = urldecode($date[1]);
+                $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+                $dateFrom = $this->getDate($date[0]);
+                $dateTo = $this->getDate($date[1]);
+                $result['dateFrom'] = $dateFrom;
+                $result['dateTo'] = $dateTo;
+            }
+        }
+
+        return $result;
+    }
+
     function dataConverter ( $data, $fields, $reverse = false ) {
         if( !empty($fields) ) {
             foreach ($fields as $type => $models) {
                 switch ($type) {
+                    case 'daterange':
+                        if( !empty($models) ) {
+                            if( is_array($models) ) {
+                                foreach ($models as $modelName => $model) {
+                                    if( !empty($model) ) {
+                                        if( is_array($model) ) {
+                                            foreach ($model as $key => $fieldName) {
+                                                if( !empty($data[$modelName][$fieldName]) ) {
+                                                    $data[$modelName] = array_merge($data[$modelName], $this->_callDateRangeConverter($data[$modelName][$fieldName]));
+                                                }
+                                            }
+                                        } else {
+                                            if( !empty($data[$model]) ) {
+                                                $data = array_merge($data, $this->_callDateRangeConverter($data[$model]));
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                if( !empty($data[$models]) ) {
+                                    $data = array_merge($data, $this->_callDateRangeConverter($data, $data[$models]));
+                                }
+                            }
+                        }
+                        break;
                     case 'date':
                         if( !empty($models) ) {
                             if( is_array($models) ) {

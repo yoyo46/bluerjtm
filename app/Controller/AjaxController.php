@@ -2080,29 +2080,15 @@ class AjaxController extends AppController {
             $options['conditions']['CashBank.prepayment_status <>'] = 'full_paid';
         }
 
-        if(!empty($this->request->data)){
-        	$refine = $this->request->data['CashBank'];
-
-        	if(!empty($refine['nodoc'])){
-                $nodoc = urldecode($refine['nodoc']);
-                $options['conditions']['CashBank.nodoc LIKE '] = '%'.$nodoc.'%';
-            }
-
-            if(!empty($refine['date'])){
-                $dateStr = urldecode($refine['date']);
-                $date = explode('-', $dateStr);
-
-                if( !empty($date) ) {
-                    $date[0] = urldecode($date[0]);
-                    $date[1] = urldecode($date[1]);
-                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                    $dateFrom = $this->MkCommon->getDate($date[0]);
-                    $dateTo = $this->MkCommon->getDate($date[1]);
-                    $options['conditions']['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') >='] = $dateFrom;
-                    $options['conditions']['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') <='] = $dateTo;
-                }
-            }
-        }
+        $data = $this->request->data;
+        $data = $this->MkCommon->dataConverter($data, array(
+            'daterange' => array(
+                'CashBank' => array(
+                    'date',
+                ),
+            )
+        ));
+        $options =  $this->CashBank->_callDataParams($data, $options);
 
 		$this->paginate = $this->CashBank->getData('paginate', $options);
         $cashBanks = $this->paginate('CashBank');

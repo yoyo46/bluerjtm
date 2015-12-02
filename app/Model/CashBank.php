@@ -332,5 +332,70 @@ class CashBank extends AppModel {
         
         return $default_options;
     }
+
+    public function _callDataParams( $data = '', $options = false ) {
+        $nodoc = !empty($data['CashBank']['nodoc'])?urldecode($data['CashBank']['nodoc']):false;
+        $dateFrom = !empty($data['CashBank']['dateFrom'])?urldecode($data['CashBank']['dateFrom']):false;
+        $dateTo = !empty($data['CashBank']['dateTo'])?urldecode($data['CashBank']['dateTo']):false;
+        $name = !empty($data['CashBank']['name'])?urldecode($data['CashBank']['name']):false;
+        $description = !empty($data['CashBank']['description'])?urldecode($data['CashBank']['description']):false;
+
+        if(!empty($nodoc)){
+            $options['conditions']['CashBank.nodoc LIKE'] = '%'.$nodoc.'%';
+        }
+        if(!empty($dateFrom) && !empty($dateTo)){
+            $options['conditions']['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') >='] = $dateFrom;
+            $options['conditions']['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') <='] = $dateTo;
+        }
+        if(!empty($name)){
+            $vendors = $this->Vendor->getData('list', array(
+                'conditions' => array(
+                    'Vendor.name LIKE' => '%'.$name.'%',
+                ),
+                'fields' => array(
+                    'Vendor.id', 'Vendor.id',
+                ),
+                'limit' => 100,
+            ));
+            $employes = $this->Employe->getData('list', array(
+                'conditions' => array(
+                    'Employe.name LIKE' => '%'.$name.'%',
+                ),
+                'fields' => array(
+                    'Employe.id', 'Employe.id',
+                ),
+                'limit' => 100,
+            ));
+            $customers = $this->Customer->getData('list', array(
+                'conditions' => array(
+                    'Customer.name LIKE' => '%'.$name.'%',
+                ),
+                'fields' => array(
+                    'Customer.id', 'Customer.id',
+                ),
+                'limit' => 100,
+            ));
+
+            $options['conditions']['OR'] = array(
+                array(
+                    'CashBank.receiver_type' => 'Vendor',
+                    'CashBank.receiver_id' => $vendors,
+                ),
+                array(
+                    'CashBank.receiver_type' => 'Employe',
+                    'CashBank.receiver_id' => $employes,
+                ),
+                array(
+                    'CashBank.receiver_type' => 'Customer',
+                    'CashBank.receiver_id' => $customers,
+                ),
+            );
+        }
+        if(!empty($description)){
+            $options['conditions']['CashBank.description LIKE'] = '%'.$description.'%';
+        }
+        
+        return $options;
+    }
 }
 ?>

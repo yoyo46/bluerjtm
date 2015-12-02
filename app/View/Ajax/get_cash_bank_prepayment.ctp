@@ -1,4 +1,20 @@
 <?php 
+        $dataColumns = array(
+            'nodoc' => array(
+                'name' => __('No Dokumen'),
+            ),
+            'name' => array(
+                'name' => __('Diterima/Dibayar kepada'),
+            ),
+            'date' => array(
+                'name' => __('Tgl Kas/Bank'),
+            ),
+            'description' => array(
+                'name' => __('Keterangan'),
+            ),
+        );
+        $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
+
         echo $this->Form->create('CashBank', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
@@ -19,20 +35,15 @@
                     ));
             ?>
         </div>
-    </div>
-    <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                echo $this->Form->input('nodoc',array(
-                    'label'=> __('No. Dokumen'),
+                echo $this->Form->input('name',array(
+                    'label'=> __('Diterima/Dibayar kepada'),
                     'class'=>'form-control',
                     'required' => false,
-                    'placeholder' => __('No. Dokumen')
                 ));
             ?>
         </div>
-    </div>
-    <div class="col-sm-6">
         <div class="form-group action">
             <?php
                     echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
@@ -54,38 +65,67 @@
             ?>
         </div>
     </div>
+    <div class="col-sm-6">
+        <div class="form-group">
+            <?php 
+                echo $this->Form->input('nodoc',array(
+                    'label'=> __('No. Dokumen'),
+                    'class'=>'form-control',
+                    'required' => false,
+                    'placeholder' => __('No. Dokumen')
+                ));
+            ?>
+        </div>
+        <div class="form-group">
+            <?php 
+                echo $this->Form->input('description',array(
+                    'type' => 'text',
+                    'label'=> __('Keterangan'),
+                    'class'=>'form-control',
+                    'required' => false,
+                ));
+            ?>
+        </div>
+    </div>
 </div>
 <?php 
         echo $this->Form->end();
 ?>
 <div class="box-body table-responsive browse-form">
     <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>No Dokumen</th>
-                <th>Diterima/Dibayar kepada</th>
-                <th>Tgl Kas/Bank</th>
-            </tr>
-        </thead>
         <?php
-            if(!empty($cashBanks)){
-                foreach ($cashBanks as $key => $value) {
-                    $content = $this->Html->tag('td', $value['CashBank']['nodoc']);
-                    $content .= $this->Html->tag('td', !empty($value['name_cash']) ? $value['name_cash'] : '-');
-                    $content .= $this->Html->tag('td', $this->Common->customDate($value['CashBank']['tgl_cash_bank'], 'd/m/Y'));
-
-                    echo $this->Html->tag('tr', $content, array(
-                        'data-value' => $value['CashBank']['id'],
-                        'data-change' => '#'.$data_change,
-                    ));
+                if( !empty($fieldColumn) ) {
+                    echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
                 }
-            }else{
-                $content = $this->Html->tag('td', __('Data tidak ditemukan.'), array(
-                    'colspan' => 6,
-                    'class' => 'alert alert-danger'
-                ));
-                echo $this->Html->tag('tr', $content);
-            }
+        ?>
+        <?php
+                if(!empty($cashBanks)){
+                    foreach ($cashBanks as $key => $value) {
+                        $id = $this->Common->filterEmptyField($value, 'CashBank', 'id');
+                        $nodoc = $this->Common->filterEmptyField($value, 'CashBank', 'nodoc');
+                        $name = $this->Common->filterEmptyField($value, 'name_cash', false, '-');
+                        $tgl_cash_bank = $this->Common->filterEmptyField($value, 'CashBank', 'tgl_cash_bank');
+                        $description = $this->Common->filterEmptyField($value, 'CashBank', 'description');
+
+                        $customDate = $this->Common->customDate($tgl_cash_bank, 'd/m/Y');
+
+                        $content = $this->Html->tag('td', $nodoc);
+                        $content .= $this->Html->tag('td', $name);
+                        $content .= $this->Html->tag('td', $customDate);
+                        $content .= $this->Html->tag('td', $description);
+
+                        echo $this->Html->tag('tr', $content, array(
+                            'data-value' => $id,
+                            'data-change' => '#'.$data_change,
+                        ));
+                    }
+                }else{
+                    $content = $this->Html->tag('td', __('Data tidak ditemukan.'), array(
+                        'colspan' => 6,
+                        'class' => 'alert alert-danger'
+                    ));
+                    echo $this->Html->tag('tr', $content);
+                }
         ?>
     </table>
 </div><!-- /.box-body -->
