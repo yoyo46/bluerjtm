@@ -1769,6 +1769,8 @@ class AjaxController extends AppController {
 
 		if(!empty($this->request->data['UserCashBank']['model'])){
 			$model = ucwords($this->request->data['UserCashBank']['model']);
+		} else if(!empty($this->params['named']['model'])){
+			$model = ucwords($this->params['named']['model']);
 		}
 
 		$this->loadModel($model);
