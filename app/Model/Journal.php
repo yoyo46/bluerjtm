@@ -168,7 +168,7 @@ class Journal extends AppModel {
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
             if( isset($options['contain']) && empty($options['contain']) ) {
                 $default_options['contain'] = false;
