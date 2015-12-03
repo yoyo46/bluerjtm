@@ -12,6 +12,9 @@
             'description' => array(
                 'name' => __('Keterangan'),
             ),
+            'total' => array(
+                'name' => __('Total'),
+            ),
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
@@ -106,13 +109,16 @@
                         $name = $this->Common->filterEmptyField($value, 'name_cash', false, '-');
                         $tgl_cash_bank = $this->Common->filterEmptyField($value, 'CashBank', 'tgl_cash_bank');
                         $description = $this->Common->filterEmptyField($value, 'CashBank', 'description');
+                        $grand_total = $this->Common->filterEmptyField($value, 'CashBank', 'grand_total');
 
                         $customDate = $this->Common->customDate($tgl_cash_bank, 'd/m/Y');
+                        $customGrandTotal = $this->Common->getFormatPrice($grand_total);
 
                         $content = $this->Html->tag('td', $nodoc);
                         $content .= $this->Html->tag('td', $name);
                         $content .= $this->Html->tag('td', $customDate);
                         $content .= $this->Html->tag('td', $description);
+                        $content .= $this->Html->tag('td', $customGrandTotal);
 
                         echo $this->Html->tag('tr', $content, array(
                             'data-value' => $id,
