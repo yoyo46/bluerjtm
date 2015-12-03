@@ -132,11 +132,11 @@ class Customer extends AppModel {
         }
 
         // Custom Otorisasi
-        if( !empty($plant) && !empty($branch_is_plant) ) {
-            $default_options['conditions']['Customer.branch_id'] = Configure::read('__Site.Branch.Plant.id');
-        } else if( !empty($branch) ) {
-            $default_options['conditions']['Customer.branch_id'] = Configure::read('__Site.config_branch_id');
-        }
+        // if( !empty($plant) && !empty($branch_is_plant) ) {
+        //     $default_options['conditions']['Customer.branch_id'] = Configure::read('__Site.Branch.Plant.id');
+        // } else if( !empty($branch) ) {
+        //     $default_options['conditions']['Customer.branch_id'] = Configure::read('__Site.config_branch_id');
+        // }
 
         if( !empty($options) && $is_merge ){
             if(!empty($options['conditions'])){

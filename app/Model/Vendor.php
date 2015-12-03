@@ -61,9 +61,9 @@ class Vendor extends AppModel {
                 break;
         }
 
-        if( !empty($branch) ) {
-            $default_options['conditions']['Vendor.branch_id'] = Configure::read('__Site.config_branch_id');
-        }
+        // if( !empty($branch) ) {
+        //     $default_options['conditions']['Vendor.branch_id'] = Configure::read('__Site.config_branch_id');
+        // }
 
         if(!empty($options['conditions'])){
             $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);

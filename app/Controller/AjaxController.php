@@ -2081,6 +2081,13 @@ class AjaxController extends AppController {
         }
 
         $data = $this->request->data;
+
+		if( empty($data['CashBank']['date']) ) {
+			$dateFrom = date('d/m/Y', strtotime('-1 Month'));
+			$dateTo = date('d/m/Y');
+			$this->request->data['CashBank']['date'] = sprintf('%s-%s', $dateFrom, $dateTo);
+		}
+
         $data = $this->MkCommon->dataConverter($data, array(
             'daterange' => array(
                 'CashBank' => array(
