@@ -103,7 +103,7 @@
             <?php 
                     echo $this->Html->tag('th', __('Nama'));
                     echo $this->Html->tag('th', __('Alamat'));
-                    echo $this->Html->tag('th', __('Tipe'));
+                    echo $this->Html->tag('th', __('Kategori'));
             ?>
         </tr>
         <?php
