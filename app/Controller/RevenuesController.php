@@ -1294,7 +1294,7 @@ class RevenuesController extends AppController {
                 if( $deleteJournal && empty($locale['Ttuj']['is_draft']) ) {
                     if( !empty($locale['Ttuj']['commission']) ) {
                         $commissionJournal = $locale['Ttuj']['commission'];
-                        $titleJournalKomisi = sprintf(__('Pembatalan komisi untuk supir %s'), $driver_name);
+                        $titleJournalKomisi = sprintf(__('<i>Pembatalan</i> komisi untuk supir %s'), $driver_name);
 
                         if( !empty($locale['Ttuj']['commission_extra']) ) {
                             $commissionJournal += $locale['Ttuj']['commission_extra'];
@@ -1316,7 +1316,7 @@ class RevenuesController extends AppController {
 
                     if( !empty($locale['Ttuj']['uang_jalan_1']) ) {
                         $uangJalanJournal = $locale['Ttuj']['uang_jalan_1'];
-                        $titleJournalUj = sprintf(__('Pembatalan biaya uang jalan %s tujuan %s'), $nopol, $to_city_name);
+                        $titleJournalUj = sprintf(__('<i>Pembatalan</i> biaya uang jalan %s tujuan %s'), $nopol, $to_city_name);
 
                         if( !empty($locale['Ttuj']['uang_jalan_2']) ) {
                             $uangJalanJournal += $locale['Ttuj']['uang_jalan_2'];
@@ -1341,7 +1341,7 @@ class RevenuesController extends AppController {
                     }
 
                     if( !empty($locale['Ttuj']['uang_kuli_muat']) ) {
-                        $titleJournalKuliMuat = sprintf(__('Pembatalan biaya kuli muat %s tujuan %s'), $nopol, $to_city_name);
+                        $titleJournalKuliMuat = sprintf(__('<i>Pembatalan</i> biaya kuli muat %s tujuan %s'), $nopol, $to_city_name);
                         $uangKuli = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'uang_kuli_muat');
 
                         $this->User->Journal->setJournal($uangKuli, array(
@@ -1359,7 +1359,7 @@ class RevenuesController extends AppController {
                     }
 
                     if( !empty($locale['Ttuj']['uang_kuli_bongkar']) ) {
-                        $titleJournalKuliBongkar = sprintf(__('Pembatalan biaya kuli bongkar %s tujuan %s'), $nopol, $to_city_name);
+                        $titleJournalKuliBongkar = sprintf(__('<i>Pembatalan</i> biaya kuli bongkar %s tujuan %s'), $nopol, $to_city_name);
                         $uangKuliBongkar = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'uang_kuli_bongkar');
 
                         $this->User->Journal->setJournal($uangKuliBongkar, array(
@@ -1377,7 +1377,7 @@ class RevenuesController extends AppController {
                     }
 
                     if( !empty($locale['Ttuj']['asdp']) ) {
-                        $titleJournalAsdp = sprintf(__('Pembatalan biaya penyebrangan %s tujuan %s'), $nopol, $to_city_name);
+                        $titleJournalAsdp = sprintf(__('<i>Pembatalan</i> biaya penyebrangan %s tujuan %s'), $nopol, $to_city_name);
                         $asdp = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'asdp');
 
                         $this->User->Journal->setJournal($asdp, array(
@@ -1395,7 +1395,7 @@ class RevenuesController extends AppController {
                     }
 
                     if( !empty($locale['Ttuj']['uang_kawal']) ) {
-                        $titleJournalUangKawal = sprintf(__('Pembatalan biaya uang kawal %s tujuan %s'), $nopol, $to_city_name);
+                        $titleJournalUangKawal = sprintf(__('<i>Pembatalan</i> biaya uang kawal %s tujuan %s'), $nopol, $to_city_name);
                         $uangKawal = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'uang_kawal');
 
                         $this->User->Journal->setJournal($uangKawal, array(
@@ -1413,7 +1413,7 @@ class RevenuesController extends AppController {
                     }
 
                     if( !empty($locale['Ttuj']['uang_keamanan']) ) {
-                        $titleJournalUangKeamanan = sprintf(__('Pembatalan biaya uang keamanan %s tujuan %s'), $nopol, $to_city_name);
+                        $titleJournalUangKeamanan = sprintf(__('<i>Pembatalan</i> biaya uang keamanan %s tujuan %s'), $nopol, $to_city_name);
                         $uangKeamanan = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'uang_keamanan');
 
                         $this->User->Journal->setJournal($uangKeamanan, array(
@@ -5121,7 +5121,7 @@ class RevenuesController extends AppController {
                         $grandTotal = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'grand_total_payment');
 
                         $titleJournalInv = sprintf(__('pembayaran invoice oleh customer %s'), $customer_name_code);
-                        $titleJournalInv = sprintf(__('Pembatalan %s'), $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'description', $titleJournalInv));
+                        $titleJournalInv = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'description', $titleJournalInv));
 
                         $this->User->Journal->setJournal($grandTotal, array(
                             'credit' => $coa_id,
@@ -5530,7 +5530,7 @@ class RevenuesController extends AppController {
                     if($this->Invoice->save()){
                         if( !empty($invoice['Invoice']['total']) ) {
                             $document_no = !empty($invoice['Invoice']['no_invoice'])?$invoice['Invoice']['no_invoice']:false;
-                            $titleJournalInv = sprintf(__('Pembatalan invoice untuk customer %s'), $customer_name_code);
+                            $titleJournalInv = sprintf(__('<i>Pembatalan</i> invoice untuk customer %s'), $customer_name_code);
                             $total = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'total');
 
                             $this->User->Journal->setJournal($total, array(
@@ -7240,7 +7240,7 @@ class RevenuesController extends AppController {
                             switch ($action_type) {
                                 case 'biaya_ttuj':
                                     $titleJournalInv = sprintf(__('pembayaran biaya %s kepada %s %s'), $paidType, $receiver_type, $receiver_name);
-                                    $titleJournalInv = sprintf(__('Pembatalan %s'), $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'description', $titleJournalInv));
+                                    $titleJournalInv = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'description', $titleJournalInv));
                                     $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment');
 
                                     $this->User->Journal->setJournal($totalPayment, array(
@@ -7257,7 +7257,7 @@ class RevenuesController extends AppController {
                                 
                                 default:
                                     $titleJournalInv = sprintf(__('pembayaran biaya %s'), $paidType);
-                                    $titleJournalInv = sprintf(__('Pembatalan %s'), $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'description', $titleJournalInv));
+                                    $titleJournalInv = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'description', $titleJournalInv));
                                     $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment');
 
                                     $this->User->Journal->setJournal($totalPayment, array(

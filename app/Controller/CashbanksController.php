@@ -545,9 +545,9 @@ class CashbanksController extends AppController {
                             );
 
                             if( !empty($description) ) {
-                                $title = __('Pembatalan ').$description;
+                                $title = __('<i>Pembatalan</i> ').$description;
                             } else {
-                                $title = sprintf(__('Pembatalan %s kepada %s'), $documentType, $receiver_name);
+                                $title = sprintf(__('<i>Pembatalan</i> %s kepada %s'), $documentType, $receiver_name);
                             }
                         } else {
                             $coaArr = array(
@@ -555,9 +555,9 @@ class CashbanksController extends AppController {
                             );
 
                             if( !empty($description) ) {
-                                $title = __('Pembatalan ').$description;
+                                $title = __('<i>Pembatalan</i> ').$description;
                             } else {
-                                $title = sprintf(__('Pembatalan %s dari %s'), $documentType, $receiver_name);
+                                $title = sprintf(__('<i>Pembatalan</i> %s dari %s'), $documentType, $receiver_name);
                             }
                         }
 

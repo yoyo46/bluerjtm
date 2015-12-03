@@ -9,7 +9,7 @@
         foreach ($values as $key => $value) {
             $document_no = $this->Common->filterEmptyField($value, 'Journal', 'document_no');
             $document_id = $this->Common->filterEmptyField($value, 'Journal', 'document_id');
-            $title = $this->Common->filterEmptyField($value, 'Journal', 'title');
+            $title = $this->Common->filterEmptyField($value, 'Journal', 'title', false, false);
             $date = $this->Common->filterEmptyField($value, 'Journal', 'date');
             $type = $this->Common->filterEmptyField($value, 'Journal', 'type');
             $debit = $this->Common->filterEmptyField($value, 'Journal', 'debit');

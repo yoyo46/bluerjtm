@@ -1511,7 +1511,7 @@ class TrucksController extends AppController {
 
                 if( !empty($paid) ) {
                     $title = sprintf(__('pembayaran KIR Truk %s'), $nopol);
-                    $title = sprintf(__('Pembatalan %s'), $this->MkCommon->filterEmptyField($value, 'KirPayment', 'note', $title));
+                    $title = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($value, 'KirPayment', 'note', $title));
 
                     $this->User->Journal->setJournal($total, array(
                         'credit' => 'kir_payment_coa_id',
@@ -1995,7 +1995,7 @@ class TrucksController extends AppController {
 
                 if( !empty($paid) ) {
                     $title = sprintf(__('pembayaran ijin usaha Truk %s'), $nopol);
-                    $title = sprintf(__('Pembatalan %s'), $this->MkCommon->filterEmptyField($value, 'SiupPayment', 'note', $title));
+                    $title = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($value, 'SiupPayment', 'note', $title));
 
                     $this->User->Journal->setJournal($total, array(
                         'credit' => 'siup_payment_coa_id',
@@ -2785,7 +2785,7 @@ class TrucksController extends AppController {
 
                 if( !empty($paid) ) {
                     $title = sprintf(__('pembayaran STNK %sTruk %s'), $additionalTitle, $nopol);
-                    $title = sprintf(__('Pembatalan %s'), $this->MkCommon->filterEmptyField($value, 'StnkPayment', 'note', $title));
+                    $title = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($value, 'StnkPayment', 'note', $title));
 
                     $this->User->Journal->setJournal($total, array(
                         'credit' => 'stnk_payment_coa_id',

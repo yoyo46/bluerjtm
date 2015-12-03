@@ -1988,7 +1988,7 @@ class LkusController extends AppController {
 
             if($this->LkuPayment->save()){
                 $title = sprintf(__('pembayaran LKU kepada customer %s'), $customer_name);
-                $title = sprintf(__('Pembatalan %s'), $this->MkCommon->filterEmptyField($payments, 'LkuPayment', 'description', $title));
+                $title = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($payments, 'LkuPayment', 'description', $title));
 
                 $this->User->Journal->setJournal($grandtotal, array(
                     'credit' => 'lku_payment_coa_id',
@@ -2090,7 +2090,7 @@ class LkusController extends AppController {
 
             if($this->KsuPayment->save()){
                 $title = sprintf(__('pembayaran KSU kepada customer %s'), $customer_name);
-                $title = sprintf(__('Pembatalan %s'), $this->MkCommon->filterEmptyField($payments, 'KsuPayment', 'description', $title));
+                $title = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($payments, 'KsuPayment', 'description', $title));
 
                 $this->User->Journal->setJournal($grandtotal, array(
                     'credit' => 'ksu_payment_coa_id',

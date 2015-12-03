@@ -665,7 +665,7 @@ class LeasingsController extends AppController {
             $vendor_name = $this->MkCommon->filterEmptyField($value, 'Vendor', 'name');
 
             $title = sprintf(__('Pembayaran Leasing #%s kepada vendor %s'), $no_doc, $vendor_name);
-            $title = sprintf(__('Pembatalan %s'), $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'note', $title));
+            $title = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'note', $title));
 
             if(!empty($this->request->data)){
                 $data = $this->request->data;
