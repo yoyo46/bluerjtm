@@ -16,12 +16,11 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('model',array(
-                        'label'=> __('Tipe User'),
+                    echo $this->Form->input('name',array(
+                        'label'=> __('Nama'),
                         'class'=>'form-control',
                         'required' => false,
-                        'empty' => __('Pilih Tipe User'),
-                        'options' => $listReceivers,
+                        'placeholder' => __('Nama'),
                     ));
             ?>
         </div>
@@ -53,15 +52,8 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('name',array(
-                        'label'=> __('Nama'),
-                        'class'=>'form-control',
-                        'required' => false,
-                        'placeholder' => __('Nama'),
-                    ));
+                    echo $this->Html->tag('label', '&nbsp;');
             ?>
-        </div>
-        <div class="form-group">
             <div class="row">
                 <?php 
                         echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_employee', array(

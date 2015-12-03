@@ -82,7 +82,7 @@ class Client extends AppModel {
 
 		if( !empty($conditionsQuery) ) {
 			foreach ($conditionsQuery as $key => $con) {
-				$default_conditions = ' AND '.$con;
+				$default_conditions .= ' AND '.$con;
 			}
 		}
 
@@ -175,7 +175,7 @@ class Client extends AppModel {
 
 		if( !empty($conditionsQuery) ) {
 			foreach ($conditionsQuery as $key => $con) {
-				$default_conditions = ' AND '.$con;
+				$default_conditions .= ' AND '.$con;
 			}
 		}
 
