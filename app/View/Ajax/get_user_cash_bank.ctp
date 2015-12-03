@@ -25,6 +25,27 @@
                     ));
             ?>
         </div>
+        <div class="form-group action">
+            <?php
+                    echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
+                        'div' => false, 
+                        'class'=> 'btn btn-success btn-sm ajaxModal',
+                        'data-action' => $data_action,
+                        'data-parent' => true,
+                        'title' => $title,
+                    ));
+                    echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                        'controller' => 'ajax',
+                        'action' => 'getUserCashBank',
+                        $action_type,
+                    ), array(
+                        'escape' => false, 
+                        'class'=> 'btn btn-default btn-sm ajaxModal',
+                        'data-action' => $data_action,
+                        'title' => $title,
+                    ));
+            ?>
+        </div>
     </div>
     <?php 
             }
@@ -40,28 +61,46 @@
                     ));
             ?>
         </div>
+        <div class="form-group">
+            <div class="row">
+                <?php 
+                        echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_employee', array(
+                            'type' => 'checkbox',
+                            'label'=> false,
+                            'required' => false,
+                            'value' => 1,
+                            'div' => false,
+                        )).__('Karyawan')), array(
+                            'class' => 'checkbox',
+                        )), array(
+                            'class' => 'col-sm-4',
+                        ));
+                        echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_customer', array(
+                            'type' => 'checkbox',
+                            'label'=> false,
+                            'required' => false,
+                            'value' => 1,
+                            'div' => false,
+                        )).__('Customer')), array(
+                            'class' => 'checkbox',
+                        )), array(
+                            'class' => 'col-sm-4',
+                        ));
+                        echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_vendor', array(
+                            'type' => 'checkbox',
+                            'label'=> false,
+                            'required' => false,
+                            'value' => 1,
+                            'div' => false,
+                        )).__('Vendor')), array(
+                            'class' => 'checkbox',
+                        )), array(
+                            'class' => 'col-sm-4',
+                        ));
+                ?>
+            </div>
+        </div>
     </div>
-</div>
-<div class="form-group action">
-    <?php
-            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
-                'div' => false, 
-                'class'=> 'btn btn-success btn-sm ajaxModal',
-                'data-action' => $data_action,
-                'data-parent' => true,
-                'title' => $title,
-            ));
-            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                'controller' => 'ajax',
-                'action' => 'getUserCashBank',
-                $action_type,
-            ), array(
-                'escape' => false, 
-                'class'=> 'btn btn-default btn-sm ajaxModal',
-                'data-action' => $data_action,
-                'title' => $title,
-            ));
-    ?>
 </div>
 <?php 
     echo $this->Form->end();
@@ -72,26 +111,26 @@
             <?php 
                     echo $this->Html->tag('th', __('Nama'));
                     echo $this->Html->tag('th', __('Alamat'));
+                    echo $this->Html->tag('th', __('Tipe'));
             ?>
         </tr>
         <?php
                 if(!empty($values)){
                     foreach ($values as $key => $value) {
-                        if( !empty($value[$model]['customer_name_code']) ) {
-                            $receiver_name = $value[$model]['customer_name_code'];
-                        } else if( !empty($value[$model]['driver_name']) ) {
-                            $receiver_name = $value[$model]['driver_name'];
-                        } else {
-                            $receiver_name = $value[$model]['name'];
-                        }
+                        $id = $this->Common->filterEmptyField($value, 'Client', 'id');
+                        $receiver_name = $this->Common->filterEmptyField($value, 'Client', 'name');
+                        $address = $this->Common->filterEmptyField($value, 'Client', 'address');
+                        $type = $this->Common->filterEmptyField($value, 'Client', 'type');
+                        $dataModel = $this->Common->filterEmptyField($value, 'Client', 'model');
         ?>
-        <tr data-value="<?php echo $value[$model]['id'];?>" data-text="<?php echo $receiver_name;?>" data-type="<?php echo $model;?>" data-change="#<?php echo $data_change;?>">
+        <tr data-value="<?php echo $id;?>" data-text="<?php echo $receiver_name;?>" data-type="<?php echo $dataModel;?>" data-change="#<?php echo $data_change;?>">
             <td>
                 <?php
                         echo $receiver_name;
                 ?>
             </td>
-            <td><?php echo $value[$model]['address'];?></td>
+            <td><?php echo $address;?></td>
+            <td><?php echo $type;?></td>
         </tr>
         <?php
                     }
@@ -110,5 +149,6 @@
                 'data-action' => $data_action,
                 'class' => 'ajaxModal',
             ),
+            'model' => false,
         ));
 ?>

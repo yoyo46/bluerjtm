@@ -77,6 +77,8 @@ class RjCashBankComponent extends Component {
 	}
 
 	function _callReceiverName ( $receiver_id, $model ) {
+		$fieldName = 'name';
+
         switch ($model) {
             case 'Vendor':
                 $value = $this->controller->CashBank->Vendor->getData('first', array(
@@ -86,6 +88,7 @@ class RjCashBankComponent extends Component {
                 ));
                 break;
             case 'Employe':
+				$fieldName = 'full_name';
                 $value = $this->controller->CashBank->Employe->getData('first', array(
                     'conditions' => array(
                         'Employe.id' => $receiver_id,
@@ -94,6 +97,7 @@ class RjCashBankComponent extends Component {
 
                 break;
             default:
+				$fieldName = 'customer_code';
                 $value = $this->controller->CashBank->Customer->getData('first', array(
                     'conditions' => array(
                         'Customer.id' => $receiver_id,
@@ -103,7 +107,7 @@ class RjCashBankComponent extends Component {
                 break;
         }
 
-		return $this->MkCommon->filterEmptyField($value, $model, 'name');
+		return $this->MkCommon->filterEmptyField($value, $model, $fieldName);
 	}
 }
 ?>

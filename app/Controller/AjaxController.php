@@ -1736,6 +1736,7 @@ class AjaxController extends AppController {
 	}
 
 	function getUserCashBank( $action_type = 'cash_bank' ){
+		$this->loadModel('Client');
 		$data_action = 'browse-form';
 		$data_change = 'receiver-id';
 		
@@ -1744,7 +1745,7 @@ class AjaxController extends AppController {
         	'Vendor' => __('Vendor'),
         	'Employe' => __('karyawan')
         );
-        $branch_plant_id = Configure::read('__Site.Branch.Plant.id');
+        $default_conditions = array();
 
 		switch ($action_type) {
 			case 'ttuj':
@@ -1767,36 +1768,33 @@ class AjaxController extends AppController {
 				break;
 		}
 
-		if(!empty($this->request->data['UserCashBank']['model'])){
-			$model = ucwords($this->request->data['UserCashBank']['model']);
-		} else if(!empty($this->params['named']['model'])){
-			$model = ucwords($this->params['named']['model']);
-		}
+		if( !empty($this->request->data) ) {
+			$data = $this->request->data;
 
-		$this->loadModel($model);
-		$default_conditions = array(
-			$model.'.status' => 1
-		);
-
-		if(!empty($this->request->data['UserCashBank']['name'])){
-			if( $model == 'Customer' ) {
-				$default_conditions[$model.'.customer_name_code LIKE'] = '%'.$this->request->data['UserCashBank']['name'].'%';
-			} else if( $model == 'Driver' ) {
-				$default_conditions[$model.'.driver_name LIKE'] = '%'.$this->request->data['UserCashBank']['name'].'%';
-			} else {
-				$default_conditions[$model.'.name LIKE'] = '%'.$this->request->data['UserCashBank']['name'].'%';
+			if(!empty($data['UserCashBank']['model'])){
+				$model = ucwords($data['UserCashBank']['model']);
+			} else if(!empty($this->params['named']['model'])){
+				$model = ucwords($this->params['named']['model']);
+			}
+			if(!empty($data['UserCashBank']['name'])){
+				$default_conditions['Client.name LIKE'] = '%'.$data['UserCashBank']['name'].'%';
+			}
+			if(!empty($data['UserCashBank']['is_employee'])){
+				$default_conditions['Client.type'][] = 'Karyawan';
+			}
+			if(!empty($data['UserCashBank']['is_customer'])){
+				$default_conditions['Client.type'][] = 'Customer';
+			}
+			if(!empty($data['UserCashBank']['is_vendor'])){
+				$default_conditions['Client.type'][] = 'Vendor';
 			}
 		}
 
-		if( !empty($branch_plant_id) ) {
-            $default_conditions[$model.'.branch_id'] = $branch_plant_id;
-        }
-
-		$this->paginate = $this->$model->getData('paginate', array(
-			'conditions' => $default_conditions
-		));
-		$values = $this->paginate($model);
-
+		$this->paginate = array(
+			'limit' => 20,
+			'conditions' => $default_conditions,
+		);
+		$values = $this->paginate('Client');
 		$this->request->data['UserCashBank']['model'] = $model;
 
 		$this->set(compact(
