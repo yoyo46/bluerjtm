@@ -1156,8 +1156,8 @@ class CashbanksController extends AppController {
             $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
         }
 
-        $conditions['DATE_FORMAT(Journal.created, \'%Y-%m-%d\') >='] = $dateFrom;
-        $conditions['DATE_FORMAT(Journal.created, \'%Y-%m-%d\') <='] = $dateTo;
+        $conditions['DATE_FORMAT(Journal.date, \'%Y-%m-%d\') >='] = $dateFrom;
+        $conditions['DATE_FORMAT(Journal.date, \'%Y-%m-%d\') <='] = $dateTo;
 
         $values = $this->User->Journal->getData('all', array(
             'conditions' => $conditions,
@@ -1207,7 +1207,7 @@ class CashbanksController extends AppController {
                         'Journal.type',
                     ),
                     'order' => array(
-                        'Journal.created' => 'ASC',
+                        'Journal.date' => 'ASC',
                         'Journal.id' => 'ASC',
                     ),
                 ));
@@ -1227,6 +1227,10 @@ class CashbanksController extends AppController {
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
             $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+
+        if( !empty($data_action) ) {
+            $module_title .= '<br>'.$coa_name;
         }
 
         $this->set('active_menu', 'journal_report');

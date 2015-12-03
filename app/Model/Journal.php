@@ -151,7 +151,7 @@ class Journal extends AppModel {
                 'Journal.status' => 1,
             ),
             'order'=> array(
-                'Journal.created' => 'DESC',
+                'Journal.date' => 'DESC',
                 'Journal.document_id' => 'ASC',
                 'Journal.type' => 'ASC',
                 'Journal.id' => 'DESC',
@@ -200,14 +200,15 @@ class Journal extends AppModel {
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $coa = !empty($data['named']['coa'])?$data['named']['coa']:false;
+        $sort = !empty($data['named']['sort'])?$data['named']['sort']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
-                $default_options['conditions']['DATE_FORMAT(Journal.created, \'%Y-%m-%d\') >='] = $dateFrom;
+                $default_options['conditions']['DATE_FORMAT(Journal.date, \'%Y-%m-%d\') >='] = $dateFrom;
             }
 
             if( !empty($dateTo) ) {
-                $default_options['conditions']['DATE_FORMAT(Journal.created, \'%Y-%m-%d\') <='] = $dateTo;
+                $default_options['conditions']['DATE_FORMAT(Journal.date, \'%Y-%m-%d\') <='] = $dateTo;
             }
         }
         if( !empty($coa) ) {
@@ -215,6 +216,32 @@ class Journal extends AppModel {
             $tmpId = Set::extract('/Coa/id', $allChildren);
             $tmpId[] = $coa;
             $default_options['conditions']['Journal.coa_id'] = $tmpId;
+        }
+        if( !empty($sort) ) {
+            switch ($sort) {
+                case 'by-date-desc':
+                    $default_options['order'] = array(
+                        'Journal.date' => 'DESC',
+                    );
+                    break;
+                case 'by-date-asc':
+                    $default_options['order'] = array(
+                        'Journal.date' => 'ASC',
+                    );
+                    break;
+                case 'by-date-by-nodoc-desc':
+                    $default_options['order'] = array(
+                        'Journal.date' => 'DESC',
+                        'Journal.document_no' => 'DESC',
+                    );
+                    break;
+                case 'by-date-by-nodoc-asc':
+                    $default_options['order'] = array(
+                        'Journal.date' => 'ASC',
+                        'Journal.document_no' => 'ASC',
+                    );
+                    break;
+            }
         }
         
         return $default_options;

@@ -50,6 +50,22 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
+                            echo $this->Form->input('sort',array(
+                                'label'=> __('Urutkan'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Urutan'),
+                                'options' => array(
+                                    'by-date-desc' => __('Per Tanggal Baru ke Lama'),
+                                    'by-date-asc' => __('Per Tanggal Lama ke Baru'),
+                                    'by-date-by-nodoc-desc' => __('Per Tanggal & No. Dokumen Baru ke Lama'),
+                                    'by-date-by-nodoc-asc' => __('Per Tanggal & No. Dokumen Lama ke Baru'),
+                                ),
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
                             // Custom Otorisasi
                             echo $this->Common->getCheckboxBranch();
                     ?>

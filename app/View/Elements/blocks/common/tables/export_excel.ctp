@@ -4,7 +4,7 @@
         header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
 ?>
 <section class="content invoice">
-    <h2 class="page-header">
+    <h2 class="page-header" style="text-align: center;">
         <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
     </h2>
     <table style="width: 100%;" singleSelect="true" border="1">
