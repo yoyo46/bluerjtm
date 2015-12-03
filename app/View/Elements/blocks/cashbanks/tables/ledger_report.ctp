@@ -3,6 +3,8 @@
         $beginningBalance = 0;
         $totalDebit = 0;
         $totalCredit = 0;
+        $saldo_awal = $this->Common->filterEmptyField($coa, 'Coa', 'balance');
+        $customBalance = $saldo_awal;
 
         foreach ($values as $key => $value) {
             $document_no = $this->Common->filterEmptyField($value, 'Journal', 'document_no');
@@ -13,7 +15,7 @@
             $debit = $this->Common->filterEmptyField($value, 'Journal', 'debit');
             $credit = $this->Common->filterEmptyField($value, 'Journal', 'credit');
             $nopol = $this->Common->filterEmptyField($value, 'Journal', 'nopol');
-            $saldo_awal = $this->Common->filterEmptyField($value, 'Journal', 'saldo_awal');
+            // $saldo_awal = $this->Common->filterEmptyField($value, 'Journal', 'saldo_awal');
 
             $coa = $this->Common->filterEmptyField($value, 'Coa', 'coa_name');
             $balance = $this->CashBank->_callCalcSaldo($value);
@@ -23,10 +25,14 @@
             $customDebit = $this->Common->getFormatPrice($debit, false);
             $customCredit = $this->Common->getFormatPrice($credit, false);
             $customSaldoAwal = $this->Common->getFormatPrice($saldo_awal);
-            $customBalance = $this->Common->getFormatPrice($balance);
 
             $totalDebit += $debit;
             $totalCredit += $credit;
+
+            $customBalance += $debit;
+            $customBalance -= $credit;
+
+            $customFormatBalance = $this->Common->getFormatPrice($customBalance);
 
             if( $no == 1 ) {
                 $beginningBalance = $saldo_awal;
@@ -56,7 +62,7 @@
             echo $this->Html->tag('td', $customCredit, array(
                 'style' => 'text-align:right;'
             ));
-            echo $this->Html->tag('td', $customBalance, array(
+            echo $this->Html->tag('td', $customFormatBalance, array(
                 'style' => 'text-align:right;'
             ));
     ?>
@@ -96,10 +102,12 @@
 </tr>
 <tr class="ending">
     <?php
+            $customFormatBalance = $this->Common->getFormatPrice($customBalance);
+            
             echo $this->Html->tag('td', $this->Html->tag('strong', __('Ending Balance:')), array(
                 'colspan' => 2,
             ));
-            echo $this->Html->tag('td', $customBalance, array(
+            echo $this->Html->tag('td', $customFormatBalance, array(
                 'style' => 'text-align:right;'
             ));
             echo $this->Html->tag('td', __('Change:'), array(

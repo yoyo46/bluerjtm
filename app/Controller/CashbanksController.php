@@ -1158,7 +1158,8 @@ class CashbanksController extends AppController {
         $this->set('active_menu', 'journal_report');
         $this->set(compact(
             'coas', 'values', 'module_title',
-            'coa_name', 'data_action'
+            'coa_name', 'data_action',
+            'coa'
         ));
 
         if($data_action == 'pdf'){
