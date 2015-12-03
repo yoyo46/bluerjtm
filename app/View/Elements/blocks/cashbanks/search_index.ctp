@@ -54,12 +54,21 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                        echo $this->Form->input('nodoc',array(
-                            'label'=> __('No. Dokumen'),
-                            'class'=>'form-control',
-                            'required' => false,
-                            'placeholder' => __('No. Dokumen')
-                        ));
+                            echo $this->Form->input('nodoc',array(
+                                'label'=> __('No. Dokumen'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('No. Dokumen')
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('note',array(
+                                'label'=> __('Keterangan'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
                     ?>
                 </div>
                 <div class="form-group action">

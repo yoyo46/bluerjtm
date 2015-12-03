@@ -3,35 +3,35 @@
             'nodoc' => array(
                 'name' => __('No Dokumen'),
                 'field_model' => 'CashBank.nodoc',
-                'display' => true,
             ),
             'receiver' => array(
                 'name' => __('Diterima/Dibayar kepada'),
-                'field_model' => false,
-                'display' => true,
+                'style' => 'width: 25%;'
             ),
             'tgl_cash_bank' => array(
                 'name' => __('Tgl Transaksi'),
                 'field_model' => 'CashBank.tgl_cash_bank',
                 'class' => 'text-center',
-                'display' => true,
             ),
             'receiving_cash_type' => array(
                 'name' => __('Tipe Kas'),
                 'field_model' => 'CashBank.receiving_cash_type',
                 'class' => 'text-center',
-                'display' => true,
+            ),
+            'description' => array(
+                'name' => __('Keterangan'),
+            ),
+            'grand_total' => array(
+                'name' => __('Total'),
+                'class' => 'text-center',
+                'style' => 'width: 15%;'
             ),
             'status' => array(
                 'name' => __('Status'),
-                'field_model' => false,
                 'class' => 'text-center',
-                'display' => true,
             ),
             'action' => array(
                 'name' => __('Action'),
-                'field_model' => false,
-                'display' => true,
             ),
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
@@ -72,6 +72,9 @@
                             $nodoc = $this->Common->filterEmptyField($value, 'CashBank', 'nodoc');
                             $tgl = $this->Common->filterEmptyField($value, 'CashBank', 'tgl_cash_bank');
                             $type = $this->Common->filterEmptyField($value, 'CashBank', 'receiving_cash_type');
+                            $grand_total = $this->Common->filterEmptyField($value, 'CashBank', 'grand_total');
+                            $description = $this->Common->filterEmptyField($value, 'CashBank', 'description');
+
                             $is_revised = $this->Common->filterEmptyField($value, 'CashBank', 'is_revised');
                             $completed = $this->Common->filterEmptyField($value, 'CashBank', 'completed');
                             $is_rejected = $this->Common->filterEmptyField($value, 'CashBank', 'is_rejected');
@@ -80,6 +83,7 @@
                             $customDate = $this->Common->formatDate($tgl, 'd/m/Y');
                             $customType = strtoupper(str_replace('_', ' ', $type));
                             $customStatus = $this->CashBank->_callStatus($value);
+                            $customGrandTotal = $this->Common->getFormatPrice($grand_total);
 
                             $content = $this->Html->tag('td', $nodoc);
                             $content .= $this->Html->tag('td', $name_cash);
@@ -88,6 +92,10 @@
                             ));
                             $content .= $this->Html->tag('td', $customType, array(
                                 'class' => 'text-center',
+                            ));
+                            $content .= $this->Html->tag('td', $description);
+                            $content .= $this->Html->tag('td', $customGrandTotal, array(
+                                'class' => 'text-right',
                             ));
                             $content .= $this->Html->tag('td', $customStatus, array(
                                 'class' => 'text-center',

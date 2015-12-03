@@ -313,6 +313,7 @@ class CashBank extends AppModel {
         $type = !empty($data['named']['type'])?$data['named']['type']:false;
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $note = !empty($data['named']['note'])?$data['named']['note']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -328,6 +329,9 @@ class CashBank extends AppModel {
         }
         if(!empty($type)){
             $default_options['conditions']['CashBank.receiving_cash_type LIKE'] = '%'.$type.'%';
+        }
+        if(!empty($note)){
+            $default_options['conditions']['CashBank.description LIKE'] = '%'.$note.'%';
         }
         
         return $default_options;
