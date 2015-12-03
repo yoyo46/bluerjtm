@@ -2,6 +2,7 @@
         if( !empty($customer) ) {
             $customer_id = !empty($customer['CustomerNoType']['id'])?$customer['CustomerNoType']['id']:false;
             $customer_name = !empty($customer['CustomerNoType']['name'])?$customer['CustomerNoType']['name']:false;
+            $model = !empty($model)?$model:'Customer';
 
             if( !empty($prepayment_id) && !empty($customer['CashBankDetail']) ) {
                 $contentTr = '';
@@ -82,7 +83,7 @@
             echo $this->Html->tag('div', $customer_name, array(
                 'id' => 'customer-name',
             ));
-            echo $this->Html->tag('div', 'Customer', array(
+            echo $this->Html->tag('div', $model, array(
                 'id' => 'receiver-type',
             ));
         }

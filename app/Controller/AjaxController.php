@@ -2248,7 +2248,7 @@ class AjaxController extends AppController {
 
         $this->set(compact(
         	'customer', 'coaSetting', 'revenue_id',
-        	'prepayment_id'
+        	'prepayment_id', 'model'
     	));
 		$this->render('get_customer');
 	}
