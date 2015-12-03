@@ -500,7 +500,8 @@ class CashbanksController extends AppController {
             }
 
             $this->CashBank->id = $id;
-            $this->CashBank->set('status', $value);
+            $this->CashBank->set('is_rejected', 1);
+
             if($this->CashBank->save()){
                 $document_id = !empty($locale['CashBank']['document_id'])?$locale['CashBank']['document_id']:false;
                 $document_type = !empty($locale['CashBank']['document_type'])?$locale['CashBank']['document_type']:false;

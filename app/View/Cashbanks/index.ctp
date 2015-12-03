@@ -74,6 +74,7 @@
                             $type = $this->Common->filterEmptyField($value, 'CashBank', 'receiving_cash_type');
                             $is_revised = $this->Common->filterEmptyField($value, 'CashBank', 'is_revised');
                             $completed = $this->Common->filterEmptyField($value, 'CashBank', 'completed');
+                            $is_rejected = $this->Common->filterEmptyField($value, 'CashBank', 'is_rejected');
 
                             $name_cash = $this->Common->filterEmptyField($value, 'name_cash', false, '-');
                             $customDate = $this->Common->formatDate($tgl, 'd/m/Y');
@@ -112,15 +113,16 @@
                                 ));
                             }
 
-                            if( empty($completed) ) {
-                                $link .= $this->Html->link('Hapus', array(
+                            // if( empty($completed) ) {
+                            if( empty($is_rejected) ) {
+                                $link .= $this->Html->link(__('Void'), array(
                                     'controller' => 'cashbanks',
                                     'action' => 'cashbank_delete',
                                     $id
                                 ), array(
                                     'escape' => false,
                                     'class' => 'btn btn-danger btn-xs'
-                                ), __('Anda yakin ingin menghapus data ini?'));
+                                ), __('Anda yakin ingin void data ini?'));
                             }
 
                             $content .= $this->Html->tag('td', $link, array(

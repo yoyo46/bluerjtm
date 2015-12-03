@@ -32,16 +32,16 @@ class CashBankHelper extends AppHelper {
         $is_revised = $this->Common->filterEmptyField($data, 'CashBank', 'is_revised');
         $is_rejected = $this->Common->filterEmptyField($data, 'CashBank', 'is_rejected');
 
-        if(!empty($completed)){
+        if(!empty($is_rejected)){
+            $status = __('Void');
+            $class = 'danger';
+        } else if(!empty($completed)){
             $status = __('Approve');
             $class = 'success';
         }else if(!empty($is_revised)){
             $status = __('Revisi');
             $class = 'primary';
-        }else if(!empty($is_rejected)){
-            $status = __('Ditolak');
-            $class = 'danger';
-        } else {
+        }else {
             $status = __('Pending');
             $class = 'info';
         }
