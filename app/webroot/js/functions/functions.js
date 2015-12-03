@@ -967,6 +967,7 @@ var delete_custom_field = function( obj ) {
         obj = $('.delete-custom-field');
     }
 
+    obj.off('click');
     obj.click(function (e) {
         var self = $(this);
         var action_type = self.attr('action_type');
@@ -2519,7 +2520,7 @@ var check_all_checkbox = function(){
 
         if( $('#field-grand-total-document').length > 0 ) {
             $('.document-pick-info-detail').removeClass('hide');
-            
+
             if(self.is(':checked')){
                 if( $('.child-'+rel_id).length <= 0 ){
                     var html_content = '<tr class="child child-'+rel_id+'" rel="'+rel_id+'">'+parent.html()+'</tr>';

@@ -101,12 +101,15 @@
                     <tbody>
                         <?php
                                 if(!empty($cashbank['CashBankDetail'])){
+                                    $grand_total = 0;
+
                                     foreach ($cashbank['CashBankDetail'] as $key => $value) {
                                         $coa_code = $this->Common->filterEmptyField($value, 'Coa', 'code', '-');
                                         $coa_name = $this->Common->filterEmptyField($value, 'Coa', 'name', '-');
                                         $total = $this->Common->filterEmptyField($value, 'CashBankDetail', 'total');
 
                                         $customTotal = $this->Common->getFormatPrice($total);
+                                        $grand_total += $total;
                         ?>
                         <tr>
                             <?php
@@ -125,7 +128,8 @@
                             <td align="right" colspan="2" style="font-weight: bold;">Total</td>
                             <td align="right" style="font-weight: bold;">
                                 <?php
-                                        echo $customTotal;
+                                        $customGrandTotal = $this->Common->getFormatPrice($grand_total);
+                                        echo $customGrandTotal;
                                 ?>
                             </td>
                         </tr>
