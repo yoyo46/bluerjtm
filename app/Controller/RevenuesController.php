@@ -823,7 +823,6 @@ class RevenuesController extends AppController {
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj, Silahkan masukan muatan truk.'), $msg), 'error');  
                 }
             }else{
-                debug($this->Ttuj->validationErrors);die();
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj'), $msg), 'error');
             }
 
@@ -1552,7 +1551,7 @@ class RevenuesController extends AppController {
 
         $conditions = array(
             'Ttuj.id' => $id,
-            'Ttuj.is_draft' => 0,
+            // 'Ttuj.is_draft' => 0,
             'Ttuj.status' => 1,
         );
 
@@ -7532,7 +7531,6 @@ class RevenuesController extends AppController {
                                                     $failed_row++;
                                                 }
                                             } else {
-                                                debug($tarifNotFound);die();
                                                 if( !empty($tarifNotFound) ) {
                                                     $error_message .= sprintf(__('Gagal pada baris ke %s : Tarif tidak ditemukan, silahkan buat tarif angkutan terlebih dahulu'), $row_submitted+1) . '<br>';
                                                 } else {

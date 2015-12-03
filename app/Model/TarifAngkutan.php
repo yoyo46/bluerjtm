@@ -259,6 +259,7 @@ class TarifAngkutan extends AppModel {
                 } else {
                     $group_motor_id = !empty($this->data['TarifAngkutan']['group_motor_id'])?$this->data['TarifAngkutan']['group_motor_id']:0;
                     $conditions['TarifAngkutan.group_motor_id'] = $group_motor_id;
+                    $conditions['TarifAngkutan.capacity'] = $this->data['TarifAngkutan']['capacity'];
 
                     $tarifAngkutan = $this->getData('first', array(
                         'conditions' => $conditions,
