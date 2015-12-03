@@ -504,6 +504,7 @@ class CashbanksController extends AppController {
             $document_coa_id = $this->MkCommon->filterEmptyField($locale, 'CashBank', 'coa_id');
             $grand_total = $this->MkCommon->filterEmptyField($locale, 'CashBank', 'grand_total');
             $description = $this->MkCommon->filterEmptyField($locale, 'CashBank', 'description');
+            $completed = $this->MkCommon->filterEmptyField($locale, 'CashBank', 'completed');
 
             if($locale['CashBank']['status']){
                 $value = false;
@@ -530,38 +531,60 @@ class CashbanksController extends AppController {
                     }
                 }
 
-                if( !empty($locale['CashBankDetail']) ) {
-                    foreach ($locale['CashBankDetail'] as $key => $value) {
-                        $coa_id = $this->MkCommon->filterEmptyField($value, 'CashBankDetail', 'coa_id');
-                        $total = $this->MkCommon->filterEmptyField($value, 'CashBankDetail', 'total');
+                if( !empty($completed) ) {
+                    if( !empty($locale['CashBankDetail']) ) {
+                        foreach ($locale['CashBankDetail'] as $key => $value) {
+                            $coa_id = $this->MkCommon->filterEmptyField($value, 'CashBankDetail', 'coa_id');
+                            $total = $this->MkCommon->filterEmptyField($value, 'CashBankDetail', 'total');
 
-                        $documentType = Configure::read('__Site.Journal.Documents');
-                        $documentType = $this->MkCommon->filterEmptyField($documentType, $receiving_cash_type);
-                        $receiver_name = $this->RjCashBank->_callReceiverName($receiver_id, $receiver_type);
+                            $documentType = Configure::read('__Site.Journal.Documents');
+                            $documentType = $this->MkCommon->filterEmptyField($documentType, $receiving_cash_type);
+                            $receiver_name = $this->RjCashBank->_callReceiverName($receiver_id, $receiver_type);
 
+                            if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
+                                $coaArr = array(
+                                    'credit' => $coa_id,
+                                );
+
+                                if( !empty($description) ) {
+                                    $title = __('<i>Pembatalan</i> ').$description;
+                                } else {
+                                    $title = sprintf(__('<i>Pembatalan</i> %s kepada %s'), $documentType, $receiver_name);
+                                }
+                            } else {
+                                $coaArr = array(
+                                    'debit' => $coa_id,
+                                );
+
+                                if( !empty($description) ) {
+                                    $title = __('<i>Pembatalan</i> ').$description;
+                                } else {
+                                    $title = sprintf(__('<i>Pembatalan</i> %s dari %s'), $documentType, $receiver_name);
+                                }
+                            }
+
+                            $this->User->Journal->setJournal($total, $coaArr, array(
+                                'document_id' => $id,
+                                'title' => $title,
+                                'document_no' => $nodoc,
+                                'type' => 'void_'.$receiving_cash_type,
+                                'date' => $tgl_cash_bank,
+                            ));
+                        }
+                    }
+
+                    if( !empty($title) ) {
                         if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
                             $coaArr = array(
-                                'credit' => $coa_id,
+                                'debit' => $document_coa_id,
                             );
-
-                            if( !empty($description) ) {
-                                $title = __('<i>Pembatalan</i> ').$description;
-                            } else {
-                                $title = sprintf(__('<i>Pembatalan</i> %s kepada %s'), $documentType, $receiver_name);
-                            }
                         } else {
                             $coaArr = array(
-                                'debit' => $coa_id,
+                                'credit' => $document_coa_id,
                             );
-
-                            if( !empty($description) ) {
-                                $title = __('<i>Pembatalan</i> ').$description;
-                            } else {
-                                $title = sprintf(__('<i>Pembatalan</i> %s dari %s'), $documentType, $receiver_name);
-                            }
                         }
 
-                        $this->User->Journal->setJournal($total, $coaArr, array(
+                        $this->User->Journal->setJournal($grand_total, $coaArr, array(
                             'document_id' => $id,
                             'title' => $title,
                             'document_no' => $nodoc,
@@ -569,26 +592,6 @@ class CashbanksController extends AppController {
                             'date' => $tgl_cash_bank,
                         ));
                     }
-                }
-
-                if( !empty($title) ) {
-                    if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
-                        $coaArr = array(
-                            'debit' => $document_coa_id,
-                        );
-                    } else {
-                        $coaArr = array(
-                            'credit' => $document_coa_id,
-                        );
-                    }
-
-                    $this->User->Journal->setJournal($grand_total, $coaArr, array(
-                        'document_id' => $id,
-                        'title' => $title,
-                        'document_no' => $nodoc,
-                        'type' => 'void_'.$receiving_cash_type,
-                        'date' => $tgl_cash_bank,
-                    ));
                 }
 
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
