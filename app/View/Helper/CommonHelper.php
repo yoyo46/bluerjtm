@@ -654,7 +654,8 @@ class CommonHelper extends AppHelper {
 
                 $content  = $this->Html->tag('td', $this->Form->checkbox('CashBankDetail.coa_id.', array(
                     'class' => 'check-option',
-                    'value' => $id
+                    'data-allow-multiple' => 'true',
+                    'value' => $id,
                 )), array(
                     'class' => 'checkbox-detail'
                 ));

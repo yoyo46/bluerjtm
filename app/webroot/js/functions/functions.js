@@ -2515,47 +2515,52 @@ var check_all_checkbox = function(){
 
     function check_option(self){
         var parent = self.parents('.child-search');
-        $('.document-pick-info-detail').removeClass('hide');
         var rel_id = parent.attr('rel');
 
-        if(self.is(':checked')){
-            if($('.child-'+rel_id).length <= 0){
-                var html_content = '<tr class="child child-'+rel_id+'" rel="'+rel_id+'">'+parent.html()+'</tr>';
-                $('#field-grand-total-document').before(html_content);
+        if( $('#field-grand-total-document').length > 0 ) {
+            $('.document-pick-info-detail').removeClass('hide');
+            
+            if(self.is(':checked')){
+                if( $('.child-'+rel_id).length <= 0 ){
+                    var html_content = '<tr class="child child-'+rel_id+'" rel="'+rel_id+'">'+parent.html()+'</tr>';
+                    $('#field-grand-total-document').before(html_content);
 
 
-                $('.child-'+rel_id).find('.action-search').removeClass('hide');
-                $('.child-'+rel_id).find('.on-show').removeClass('hide');
+                    $('.child-'+rel_id).find('.action-search').removeClass('hide');
+                    $('.child-'+rel_id).find('.on-show').removeClass('hide');
 
-                $('.child-'+rel_id).find('.checkbox-detail').remove();
-                $('.child-'+rel_id).find('.on-remove').remove();
+                    $('.child-'+rel_id).find('.checkbox-detail').remove();
+                    $('.child-'+rel_id).find('.on-remove').remove();
 
-                $.inputPrice({
-                    obj: $('.child-'+rel_id+' .input_price'),
-                });
-                input_price_min($('.child-'+rel_id+' .input_price_min'));
-                delete_custom_field($('.child-'+rel_id+' .delete-custom-field'));
+                    $.inputPrice({
+                        obj: $('.child-'+rel_id+' .input_price'),
+                    });
+                    input_price_min($('.child-'+rel_id+' .input_price_min'));
+                    delete_custom_field($('.child-'+rel_id+' .delete-custom-field'));
 
-                invoice_price_payment();
+                    invoice_price_payment();
+                    getTotalPick();
+                    $.getLeasingPayment({
+                        obj: $('.child-'+rel_id).find('.leasing-trigger'),
+                    });
+                    _callLeasingExpired(rel_id);
+                }
+            }else{
+                $('.child-'+rel_id).remove();
                 getTotalPick();
-                $.getLeasingPayment({
-                    obj: $('.child-'+rel_id).find('.leasing-trigger'),
-                });
-                _callLeasingExpired(rel_id);
-            }
-        }else{
-            $('.child-'+rel_id).remove();
-            getTotalPick();
-        } 
+            } 
+        }
     }
 
     function check_option_coa(self){
         var parent = self.parents('.child-search');
-        $('.cashbank-info-detail').removeClass('hide');
+        var allow_multiple = self.attr('data-allow-multiple');
         var rel_id = parent.attr('rel');
 
-        if(self.is(':checked')){
-            if($('.child-'+rel_id).length <= 0){
+        $('.cashbank-info-detail').removeClass('hide');
+
+        if( self.is(':checked') ){
+            if( $('.child-'+rel_id).length <= 0 || allow_multiple == 'true' ){
                 var html_content = '<tr class="child child-'+rel_id+'" rel="'+rel_id+'">'+parent.html()+'</tr>';
                 $('.cashbanks-info-table').append(html_content);
 
@@ -2568,7 +2573,7 @@ var check_all_checkbox = function(){
                 input_price_min($('.child-'+rel_id+' .input_price_min'));
                 delete_custom_field($('.child-'+rel_id+' .delete-custom-field'));
             }
-        }else{
+        } else if( allow_multiple != 'true' ) {
             $('.child-'+rel_id).remove();
         } 
     }
