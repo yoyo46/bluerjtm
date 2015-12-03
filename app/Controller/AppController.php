@@ -51,6 +51,7 @@ class AppController extends Controller {
 		// Configure Default
 		$this->MkCommon->configureDefaultApp();
 
+    	$isAjax = $this->RequestHandler->isAjax();
 	    $logged_in = $this->MkCommon->loggedIn();
 	    $this->user_id = false;
 	    $GroupId = false;
@@ -419,7 +420,8 @@ class AppController extends Controller {
 	    $this->set(compact(
 	    	'logged_in', 'GroupId', 'User',
 	    	'invStatus', 'postingUnposting', 'notifications',
-	    	'list_branches', 'current_branch_id'
+	    	'list_branches', 'current_branch_id',
+	    	'isAjax'
     	));
 	}
 

@@ -1,6 +1,7 @@
 <?php 
         $checkbox = isset($checkbox)?$checkbox:true;
 		$alias = sprintf('child-%s-%s', $ttuj['Ttuj']['id'], $data_type);
+        $addClass = !empty($isAjax)?'hide':'';
 
         if( !empty($checkbox) ) {
             printf('<tr data-value="%s" data-type="%s" class="child %s">', $alias, $data_type, $alias);
@@ -79,7 +80,7 @@
                 ));
 		?>
 	</td>
-    <td class="ttuj-payment-action hide">
+    <td class="ttuj-payment-action <?php echo $addClass; ?>">
         <?php
                 echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
                     'class' => 'delete-biaya btn btn-danger btn-xs',

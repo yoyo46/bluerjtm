@@ -207,7 +207,7 @@
 			                        'width' => '15%',
 			                    ));
 			                    echo $this->Html->tag('th', __('Action'), array(
-			                    	'class' => 'hide action-biaya-ttuj',
+			                    	'class' => 'action-biaya-ttuj',
 		                    	));
 			            ?>
 	        		</tr>

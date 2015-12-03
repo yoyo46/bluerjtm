@@ -2845,6 +2845,7 @@ var delete_biaya_ttuj = function ( obj ) {
         
         if( confirm('Anda ingin menghapus biaya ini?') ) {
             parent.remove();
+            calcTotalBiayaTtuj();
         }
     });
 }
@@ -3196,7 +3197,10 @@ $(function() {
     part_motor_lku();
     price_tipe_motor();
     price_perlengkapan();
+    
     sisa_ttuj();
+    delete_biaya_ttuj();
+
     auth_form_open();
     action_child_module();
     accordion_toggle();
