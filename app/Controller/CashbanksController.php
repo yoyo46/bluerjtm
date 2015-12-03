@@ -503,6 +503,7 @@ class CashbanksController extends AppController {
             $tgl_cash_bank = $this->MkCommon->filterEmptyField($locale, 'CashBank', 'tgl_cash_bank');
             $document_coa_id = $this->MkCommon->filterEmptyField($locale, 'CashBank', 'coa_id');
             $grand_total = $this->MkCommon->filterEmptyField($locale, 'CashBank', 'grand_total');
+            $description = $this->MkCommon->filterEmptyField($locale, 'CashBank', 'description');
 
             if($locale['CashBank']['status']){
                 $value = false;
@@ -539,15 +540,25 @@ class CashbanksController extends AppController {
                         $receiver_name = $this->RjCashBank->_callReceiverName($receiver_id, $receiver_type);
 
                         if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
-                            $title = sprintf(__('Pembatalan %s kepada %s'), $documentType, $receiver_name);
                             $coaArr = array(
                                 'credit' => $coa_id,
                             );
+
+                            if( !empty($description) ) {
+                                $title = __('Pembatalan ').$description;
+                            } else {
+                                $title = sprintf(__('Pembatalan %s kepada %s'), $documentType, $receiver_name);
+                            }
                         } else {
-                            $title = sprintf(__('Pembatalan %s dari %s'), $documentType, $receiver_name);
                             $coaArr = array(
                                 'debit' => $coa_id,
                             );
+
+                            if( !empty($description) ) {
+                                $title = __('Pembatalan ').$description;
+                            } else {
+                                $title = sprintf(__('Pembatalan %s dari %s'), $documentType, $receiver_name);
+                            }
                         }
 
                         $this->User->Journal->setJournal($total, $coaArr, array(
