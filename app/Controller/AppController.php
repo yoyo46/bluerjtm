@@ -169,7 +169,7 @@ class AppController extends Controller {
 				),
 				'revenues' => array(
 					'search', 'ttuj_edit', 'info_truk',
-					'surat_jalan_outstanding'
+					'surat_jalan_outstanding', 'ttuj_payments'
 				),
 				'cashbanks' => array(
 					'search'

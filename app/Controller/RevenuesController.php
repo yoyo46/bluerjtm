@@ -442,12 +442,6 @@ class RevenuesController extends AppController {
             $to_city_id = !empty($data['Ttuj']['to_city_id'])?$data['Ttuj']['to_city_id']:false;
             $truck_id = !empty($data['Ttuj']['truck_id'])?$data['Ttuj']['truck_id']:false;
 
-            $uangJalan = $this->Ttuj->UangJalan->getData('first', array(
-                'conditions' => array(
-                    'UangJalan.from_city_id' => $from_city_id,
-                    'UangJalan.to_city_id' => $to_city_id,
-                ),
-            ));
             $customer = $this->Ttuj->Customer->getData('first', array(
                 'conditions' => array(
                     'Customer.id' => $customer_id,
@@ -464,11 +458,20 @@ class RevenuesController extends AppController {
             $truck = $this->Ttuj->Truck->getData('first', array(
                 'conditions' => $conditionsTruck,
             ));
+            $capacity = $this->MkCommon->filterEmptyField($truck, 'Truck', 'capacity', 0);
 
             if( !empty($truck) ) {
                 $company_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'company_id');
                 $truck = $this->Ttuj->Truck->Company->getMerge($truck, $company_id);
             }
+
+            $uangJalan = $this->Ttuj->UangJalan->getData('first', array(
+                'conditions' => array(
+                    'UangJalan.from_city_id' => $from_city_id,
+                    'UangJalan.to_city_id' => $to_city_id,
+                    'UangJalan.capacity' => $capacity,
+                ),
+            ));
 
             if( !empty($uangJalan) ) {
                 $uangJalan = $this->City->getMerge($uangJalan, $from_city_id, 'FromCity');
