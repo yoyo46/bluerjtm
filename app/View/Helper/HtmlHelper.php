@@ -393,7 +393,7 @@ class HtmlHelper extends AppHelper {
 			$extend_param = !empty($url[0]) ? $url[0] : '';
 
 			if( !empty($extend_param) && !empty($extend_name) ) {
-				if( !empty($allowPage) && $extend_name == $extend_param ) {
+				if( !empty($allowPage) && in_array($extend_param, $extend_name) ) {
 					$is_show = true;
 				}
 			} else if( !empty($allowPage) ){

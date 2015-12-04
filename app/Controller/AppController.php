@@ -169,7 +169,7 @@ class AppController extends Controller {
 				),
 				'revenues' => array(
 					'search', 'ttuj_edit', 'info_truk',
-					'surat_jalan_outstanding', 'ttuj_payments'
+					'surat_jalan_outstanding',
 				),
 				'cashbanks' => array(
 					'search'
@@ -221,7 +221,7 @@ class AppController extends Controller {
 								$_allowModule[$_branch_id][$controllerName]['action'][] = $actionName;
 
 								if( !empty($extend_action) ) {
-									$_allowModule[$_branch_id][$controllerName]['extends'][$actionName] = $extend_action;
+									$_allowModule[$_branch_id][$controllerName]['extends'][$actionName][] = $extend_action;
 								}
 								if( !empty($allow_function) ) {
 									$allow_function = explode(',', $allow_function);
