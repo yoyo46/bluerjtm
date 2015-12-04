@@ -358,14 +358,16 @@
                                         'idx' => $key,
                                     ));
                                 }
-                                if( !empty($ttujTemp['Ttuj']['commission']) && !empty($ttuj['Ttuj']['commission']) && $ttuj['Ttuj']['paid_commission'] != 'full' && !empty($ttuj['Ttuj']['is_sj_completed']) ) {
+                                // if( !empty($ttujTemp['Ttuj']['commission']) && !empty($ttuj['Ttuj']['commission']) && $ttuj['Ttuj']['paid_commission'] != 'full' && !empty($ttuj['Ttuj']['is_sj_completed']) ) {
+                                if( !empty($ttujTemp['Ttuj']['commission']) && !empty($ttuj['Ttuj']['commission']) && $ttuj['Ttuj']['paid_commission'] != 'full' ) {
                                     echo $this->element('blocks/ajax/biaya_uang_jalan', array(
                                         'ttuj' => $ttuj,
                                         'data_type' => 'commission',
                                         'idx' => $key,
                                     ));
                                 }
-                                if( !empty($ttujTemp['Ttuj']['commission_extra']) && !empty($ttuj['Ttuj']['commission_extra']) && $ttuj['Ttuj']['paid_commission_extra'] != 'full' && !empty($ttuj['Ttuj']['is_sj_completed']) ) {
+                                // if( !empty($ttujTemp['Ttuj']['commission_extra']) && !empty($ttuj['Ttuj']['commission_extra']) && $ttuj['Ttuj']['paid_commission_extra'] != 'full' && !empty($ttuj['Ttuj']['is_sj_completed']) ) {
+                                if( !empty($ttujTemp['Ttuj']['commission_extra']) && !empty($ttuj['Ttuj']['commission_extra']) && $ttuj['Ttuj']['paid_commission_extra'] != 'full' ) {
                                     echo $this->element('blocks/ajax/biaya_uang_jalan', array(
                                         'ttuj' => $ttuj,
                                         'data_type' => 'commission_extra',
