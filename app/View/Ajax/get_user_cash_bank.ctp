@@ -126,7 +126,7 @@
                         $type = $this->Common->filterEmptyField($value, 'Client', 'type');
                         $dataModel = $this->Common->filterEmptyField($value, 'Client', 'model');
         ?>
-        <tr data-value="<?php echo $id;?>" data-text="<?php echo $receiver_name;?>" data-type="<?php echo $dataModel;?>" data-change="#<?php echo $data_change;?>">
+        <tr data-value="<?php echo $id;?>" data-text="<?php echo sprintf('%s (%s)', $receiver_name, $type);?>" data-type="<?php echo $dataModel;?>" data-change="#<?php echo $data_change;?>">
             <td>
                 <?php
                         echo $receiver_name;
