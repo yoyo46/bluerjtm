@@ -287,8 +287,3 @@ tr.expired .red {
 	margin-top: 5px;
 	display: block;
 }
-
-/*Pembayaran Uang Jalan*/
-#checkbox-info-table tr:first-child .ttuj-payment-action a {
-	display: none;
-}
