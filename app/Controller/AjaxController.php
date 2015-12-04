@@ -5,7 +5,8 @@ class AjaxController extends AppController {
 	public $name = 'Ajax';
 	public $uses = array();
 	public $components = array(
-		'RjLku', 'RjRevenue'
+		'RjLku', 'RjRevenue',
+		'RjCashBank'
 	);
 	
 	function beforeFilter() {
@@ -2107,37 +2108,7 @@ class AjaxController extends AppController {
             foreach ($cashBanks as $key => $value) {
                 $model = $value['CashBank']['receiver_type'];
                 $receiver_id = $value['CashBank']['receiver_id'];
-                $this->loadModel($model);
-
-                switch ($model) {
-                    case 'Vendor':
-                        $list_result = $this->Vendor->getData('first', array(
-                            'conditions' => array(
-                                'Vendor.id' => $receiver_id,
-                            ),
-                        ));
-                        break;
-                    case 'Employe':
-                        $list_result = $this->Employe->getData('first', array(
-                            'conditions' => array(
-                                'Employe.id' => $receiver_id,
-                            ),
-                        ));
-
-                        break;
-                    default:
-                        $list_result = $this->Customer->getData('first', array(
-                            'conditions' => array(
-                                'Customer.id' => $receiver_id,
-                            ),
-                        ));
-
-                        break;
-                }
-
-                if(!empty($list_result)){
-                    $cashBanks[$key]['name_cash'] = $list_result[$model]['name'];
-                }
+                $cashBanks[$key]['name_cash'] = $this->RjCashBank->_callReceiverName($receiver_id, $model);;
             }
         }
 
@@ -2169,7 +2140,9 @@ class AjaxController extends AppController {
 			if( !empty($customer) ) {
 				$model = $customer['CashBank']['receiver_type'];
                 $receiver_id = $customer['CashBank']['receiver_id'];
-                $this->loadModel($model);
+                
+                $customer['CustomerNoType']['id'] = $receiver_id;
+                $customer['CustomerNoType']['name'] = $this->RjCashBank->_callReceiverName($receiver_id, $model);
 
 				if( !empty($customer['CashBankDetail']) ) {
 					foreach ($customer['CashBankDetail'] as $key => $cashBankDetail) {
@@ -2185,36 +2158,6 @@ class AjaxController extends AppController {
 						}
 					}
 				}
-
-                switch ($model) {
-                    case 'Vendor':
-                        $list_result = $this->Vendor->getData('first', array(
-                            'conditions' => array(
-                                'Vendor.id' => $receiver_id,
-                            ),
-                        ));
-                        break;
-                    case 'Employe':
-                        $list_result = $this->Employe->getData('first', array(
-                            'conditions' => array(
-                                'Employe.id' => $receiver_id,
-                            ),
-                        ));
-
-                        break;
-                    default:
-                        $list_result = $this->Customer->getData('first', array(
-                            'conditions' => array(
-                                'Customer.id' => $receiver_id,
-                            ),
-                        ));
-
-                        break;
-                }
-
-                if(!empty($list_result)){
-                	$customer['CustomerNoType'] = $list_result[$model];
-                }
             }
 		} else {
         	$this->loadModel('CoaSetting');

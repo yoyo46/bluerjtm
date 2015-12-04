@@ -1261,7 +1261,7 @@ class CashbanksController extends AppController {
         // Diterima/Dibayar Kepada
         $receiver_id = $this->MkCommon->filterEmptyField($prepayment, 'CashBank', 'receiver_id');
         $receiver_type = $this->MkCommon->filterEmptyField($prepayment, 'CashBank', 'receiver_type');
-        $prepayment['Receiver']['name'] = $this->CashBank->getReceiver( $receiver_type, $receiver_id );
+        $prepayment['Receiver']['name'] = $this->RjCashBank->_callReceiverName($receiver_id, $receiver_type);;
 
         // Get Data COA
         $coa_id = $this->MkCommon->filterEmptyField($prepayment, 'CashBank', 'coa_id');
@@ -1300,6 +1300,8 @@ class CashbanksController extends AppController {
                 $receivers = $this->CashBank->getReceiver('Customer', $value, 'search' );
                 $receivers = array_merge($receivers, $this->CashBank->getReceiver('Vendor', $value, 'search' ));
                 $receivers = array_merge($receivers, $this->CashBank->getReceiver('Employe', $value, 'search' ));
+                $receivers = array_merge($receivers, $this->CashBank->getReceiver('Driver', $value, 'search' ));
+
                 $conditions['CashBank.receiver_id'] = $receivers;
                 $this->request->data['CashBank']['receiver'] = $value;
             }

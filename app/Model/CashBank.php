@@ -292,22 +292,11 @@ class CashBank extends AppModel {
                     'fields' => array(
                         $model.'.id', $model.'.id',
                     ),
+                ), true, array(
+                    'branch' => false,
                 ));
 
                 return $result;
-                break;
-            
-            default:
-                // If call by id
-                if( !empty($receiver) ) {
-                    $conditions[$model.'.id'] = $receiver;
-                }
-
-                $result = $this->{$model}->getData('first', array(
-                    'conditions' => $conditions,
-                ));
-
-                return !empty($result[$model]['name'])?$result[$model]['name']:false;
                 break;
         }
     }
