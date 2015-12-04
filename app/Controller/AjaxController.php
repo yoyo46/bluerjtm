@@ -1743,7 +1743,8 @@ class AjaxController extends AppController {
 		$listReceivers = array(
         	'Customer' => __('Customer'),
         	'Vendor' => __('Vendor'),
-        	'Employe' => __('karyawan')
+        	'Employe' => __('karyawan'),
+        	'Driver' => __('Supir'),
         );
         $default_conditions = array();
 
@@ -1754,6 +1755,7 @@ class AjaxController extends AppController {
 				$listReceivers = array_merge(array(
 					'Driver' => __('Supir'),
 				), $listReceivers);
+				$default_conditions['Client.type'] = 'Driver';
 				break;
 
 			case 'driver':
@@ -1787,6 +1789,9 @@ class AjaxController extends AppController {
 			}
 			if(!empty($data['UserCashBank']['is_vendor'])){
 				$default_conditions['Client.type'][] = 'Vendor';
+			}
+			if(!empty($data['UserCashBank']['is_driver'])){
+				$default_conditions['Client.type'][] = 'Supir';
 			}
 		}
 

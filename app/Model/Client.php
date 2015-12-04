@@ -7,6 +7,7 @@ class Client extends AppModel {
         $this->Employe = ClassRegistry::init('Employe');
         $this->Customer = ClassRegistry::init('Customer');
         $this->Vendor = ClassRegistry::init('Vendor');
+        $this->Driver = ClassRegistry::init('Driver');
 
 		$page = !empty($page)?$page:1;
 	    $recursive = -1;
@@ -74,6 +75,27 @@ class Client extends AppModel {
 		        'group'      => null
 		    ),
 		    $this->Vendor
+		);
+
+		$db = $this->Driver->getDataSource();
+		$venQuery = $db->buildStatement(
+		    array(
+		        'fields'     => array(
+		        	'Client.id', 'CASE WHEN Client.alias = \'\' THEN Client.name ELSE CONCAT(Client.name, \' ( \', Client.alias, \' )\') END AS name', 
+		        	'Client.address', "'Supir' AS type", "'Driver' AS model",
+	        	),
+		        'table'      => $db->fullTableName($this->Driver),
+		        'alias'      => 'Client',
+		        'limit'      => null,
+		        'offset'     => null,
+		        'joins'      => array(),
+		        'conditions' => array(
+		        	'Client.status' => 1,
+	        	),
+		        'order'      => null,
+		        'group'      => null
+		    ),
+		    $this->Driver
 		);
 
 		$db = $this->Vendor->getDataSource();
@@ -167,6 +189,27 @@ class Client extends AppModel {
 		        'group'      => null
 		    ),
 		    $this->Vendor
+		);
+
+		$db = $this->Driver->getDataSource();
+		$venQuery = $db->buildStatement(
+		    array(
+		        'fields'     => array(
+		        	'Client.id', 'CASE WHEN Client.alias = \'\' THEN Client.name ELSE CONCAT(Client.name, \' ( \', Client.alias, \' )\') END AS name', 
+		        	'Client.address', "'Supir' AS type", "'Driver' AS model",
+	        	),
+		        'table'      => $db->fullTableName($this->Driver),
+		        'alias'      => 'Client',
+		        'limit'      => null,
+		        'offset'     => null,
+		        'joins'      => array(),
+		        'conditions' => array(
+		        	'Client.status' => 1,
+	        	),
+		        'order'      => null,
+		        'group'      => null
+		    ),
+		    $this->Driver
 		);
 
 		$db = $this->Vendor->getDataSource();

@@ -389,7 +389,7 @@ class HtmlHelper extends AppHelper {
 
 			$allowAction = !empty($allowed_module[$controllerName]['action'])?$allowed_module[$controllerName]['action']:array();
 			$allowPage = in_array($actionName, $allowAction)?true:false;
-			$extend_name = !empty($allowed_module[$controllerName]['extends'][$actionName])?$allowed_module[$controllerName]['extends'][$actionName]:false;
+			$extend_name = !empty($allowed_module[$controllerName]['extends'][$actionName])?$allowed_module[$controllerName]['extends'][$actionName]:array();
 			$extend_param = !empty($url[0]) ? $url[0] : '';
 
 			if( !empty($extend_param) && !empty($extend_name) ) {

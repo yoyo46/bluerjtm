@@ -65,7 +65,7 @@
                         )).__('Karyawan')), array(
                             'class' => 'checkbox',
                         )), array(
-                            'class' => 'col-sm-4',
+                            'class' => 'col-sm-3',
                         ));
                         echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_customer', array(
                             'type' => 'checkbox',
@@ -76,7 +76,7 @@
                         )).__('Customer')), array(
                             'class' => 'checkbox',
                         )), array(
-                            'class' => 'col-sm-4',
+                            'class' => 'col-sm-3',
                         ));
                         echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_vendor', array(
                             'type' => 'checkbox',
@@ -87,7 +87,18 @@
                         )).__('Vendor')), array(
                             'class' => 'checkbox',
                         )), array(
-                            'class' => 'col-sm-4',
+                            'class' => 'col-sm-3',
+                        ));
+                        echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_driver', array(
+                            'type' => 'checkbox',
+                            'label'=> false,
+                            'required' => false,
+                            'value' => 1,
+                            'div' => false,
+                        )).__('Supir')), array(
+                            'class' => 'checkbox',
+                        )), array(
+                            'class' => 'col-sm-3',
                         ));
                 ?>
             </div>
@@ -129,7 +140,7 @@
                 }else{
                     echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                         'class' => 'alert alert-warning text-center',
-                        'colspan' => '2'
+                        'colspan' => '3'
                     )));
                 }
         ?>

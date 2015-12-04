@@ -53,17 +53,6 @@ class CashBank extends AppModel {
             'className' => 'User',
             'foreignKey' => 'user_id',
         ),
-	);
-
-    var $hasMany = array(
-        'CashBankDetail' => array(
-            'className' => 'CashBankDetail',
-            'foreignKey' => 'cash_bank_id',
-        ),
-        'CashBankAuth' => array(
-            'className' => 'CashBankAuth',
-            'foreignKey' => 'cash_bank_id',
-        ),
         'Vendor' => array(
             'className' => 'Vendor',
             'foreignKey' => 'receiver_id',
@@ -75,6 +64,21 @@ class CashBank extends AppModel {
         'Customer' => array(
             'className' => 'Customer',
             'foreignKey' => 'receiver_id',
+        ),
+        'Driver' => array(
+            'className' => 'Driver',
+            'foreignKey' => 'receiver_id',
+        ),
+	);
+
+    var $hasMany = array(
+        'CashBankDetail' => array(
+            'className' => 'CashBankDetail',
+            'foreignKey' => 'cash_bank_id',
+        ),
+        'CashBankAuth' => array(
+            'className' => 'CashBankAuth',
+            'foreignKey' => 'cash_bank_id',
         ),
     );
 

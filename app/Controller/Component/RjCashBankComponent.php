@@ -78,21 +78,38 @@ class RjCashBankComponent extends Component {
 
 	function _callReceiverName ( $receiver_id, $model ) {
 		$fieldName = 'name';
+		$labelName = 'Customer';
 
         switch ($model) {
             case 'Vendor':
+				$labelName = 'Vendor';
                 $value = $this->controller->CashBank->Vendor->getData('first', array(
                     'conditions' => array(
                         'Vendor.id' => $receiver_id,
                     )
+                ), true, array(
+                	'branch' => false,
                 ));
                 break;
             case 'Employe':
+				$labelName = 'Karyawan';
 				$fieldName = 'full_name';
                 $value = $this->controller->CashBank->Employe->getData('first', array(
                     'conditions' => array(
                         'Employe.id' => $receiver_id,
                     )
+                ));
+
+                break;
+            case 'Driver':
+				$labelName = 'Supir';
+				$fieldName = 'driver_name';
+                $value = $this->controller->CashBank->Driver->getData('first', array(
+                    'conditions' => array(
+                        'Driver.id' => $receiver_id,
+                    )
+                ), true, array(
+                	'branch' => false,
                 ));
 
                 break;
@@ -102,12 +119,14 @@ class RjCashBankComponent extends Component {
                     'conditions' => array(
                         'Customer.id' => $receiver_id,
                     )
+                ), true, array(
+                	'branch' => false,
                 ));
 
                 break;
         }
 
-		return $this->MkCommon->filterEmptyField($value, $model, $fieldName);
+		return sprintf('%s (%s)', $this->MkCommon->filterEmptyField($value, $model, $fieldName), $labelName);
 	}
 }
 ?>
