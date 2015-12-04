@@ -98,10 +98,10 @@ class UangJalan extends AppModel {
             ),
         ),
         'commission' => array(
-            'checkCommission' => array(
-                'rule' => array('checkCommission'),
-                'message' => 'Komisi harap diisi'
-            ),
+            // 'checkCommission' => array(
+            //     'rule' => array('checkCommission'),
+            //     'message' => 'Komisi harap diisi'
+            // ),
             'numeric' => array(
                 'rule' => array('numeric'),
                 'allowEmpty' => true,
