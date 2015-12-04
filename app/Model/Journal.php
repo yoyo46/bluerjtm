@@ -229,16 +229,16 @@ class Journal extends AppModel {
                         'Journal.date' => 'ASC',
                     );
                     break;
-                case 'by-date-by-nodoc-desc':
+                case 'by-nodoc-desc':
                     $default_options['order'] = array(
-                        'Journal.date' => 'DESC',
                         'Journal.document_no' => 'DESC',
+                        'Journal.date' => 'DESC',
                     );
                     break;
-                case 'by-date-by-nodoc-asc':
+                case 'by-nodoc-asc':
                     $default_options['order'] = array(
-                        'Journal.date' => 'ASC',
                         'Journal.document_no' => 'ASC',
+                        'Journal.date' => 'DESC',
                     );
                     break;
             }

@@ -58,8 +58,8 @@
                                 'options' => array(
                                     'by-date-desc' => __('Per Tanggal Baru ke Lama'),
                                     'by-date-asc' => __('Per Tanggal Lama ke Baru'),
-                                    'by-date-by-nodoc-desc' => __('Per Tanggal & No. Dokumen Baru ke Lama'),
-                                    'by-date-by-nodoc-asc' => __('Per Tanggal & No. Dokumen Lama ke Baru'),
+                                    'by-nodoc-asc' => __('No. Dokumen A ke Z'),
+                                    'by-nodoc-desc' => __('No. Dokumen Z ke A'),
                                 ),
                             ));
                     ?>
