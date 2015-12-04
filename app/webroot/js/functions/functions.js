@@ -2743,6 +2743,7 @@ var get_document_cashbank = function(){
                             $.inputPrice({
                                 obj: $('.cashbanks-info-table .child .input_price'),
                             });
+                            delete_custom_field();
                         } else {
                             var html_content = '<tr class="child child-'+coa_id+'" rel="'+coa_id+'"> \
                                 <td>\
@@ -3451,7 +3452,6 @@ $(function() {
         });
     });
 
-    
     delete_custom_field();
 
     $('.submit-form').click(function() {

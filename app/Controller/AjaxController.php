@@ -2108,7 +2108,14 @@ class AjaxController extends AppController {
             foreach ($cashBanks as $key => $value) {
                 $model = $value['CashBank']['receiver_type'];
                 $receiver_id = $value['CashBank']['receiver_id'];
-                $cashBanks[$key]['name_cash'] = $this->RjCashBank->_callReceiverName($receiver_id, $model);;
+
+				$id = !empty($value['CashBank']['id'])?$value['CashBank']['id']:false;
+				$grand_total = !empty($value['CashBank']['grand_total'])?$value['CashBank']['grand_total']:0;
+				$totalDibayar = $this->CashBank->CashBankDetail->totalPrepaymentDibayarPerCoa($id);
+
+				$value['CashBank']['grand_total'] = $grand_total-$totalDibayar;
+                $value['name_cash'] = $this->RjCashBank->_callReceiverName($receiver_id, $model);;
+                $cashBanks[$key] = $value;
             }
         }
 
@@ -2146,8 +2153,10 @@ class AjaxController extends AppController {
 
 				if( !empty($customer['CashBankDetail']) ) {
 					foreach ($customer['CashBankDetail'] as $key => $cashBankDetail) {
+						$id = !empty($cashBankDetail['id'])?$cashBankDetail['id']:false;
 						$coa_id = !empty($cashBankDetail['coa_id'])?$cashBankDetail['coa_id']:false;
-						$totalDibayar = $this->CashBank->CashBankDetail->totalPrepaymentDibayarPerCoa($prepayment_id, $coa_id, $cash_bank_id);
+
+						$totalDibayar = $this->CashBank->CashBankDetail->totalPrepaymentDibayarPerCoa($prepayment_id, $coa_id, $cash_bank_id, $id);
 						$totalTagihan = !empty($customer['CashBankDetail'][$key]['total'])?$customer['CashBankDetail'][$key]['total']:0;
 						$totalSisaTagihan = $totalTagihan - $totalDibayar;
 

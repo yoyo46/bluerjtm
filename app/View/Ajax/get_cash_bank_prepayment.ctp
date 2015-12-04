@@ -100,8 +100,7 @@
                 if( !empty($fieldColumn) ) {
                     echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
                 }
-        ?>
-        <?php
+                
                 if(!empty($cashBanks)){
                     foreach ($cashBanks as $key => $value) {
                         $id = $this->Common->filterEmptyField($value, 'CashBank', 'id');

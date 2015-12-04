@@ -4914,6 +4914,10 @@ class SettingsController extends AppController {
                                         $group_motor_id = 0;
                                     }
 
+                                    if( !in_array($jenis_tarif, array( 'per_unit', 'per_truck' )) ) {
+                                        $jenis_tarif = false;
+                                    }
+
                                     $branch_id = !empty($branch['Branch']['id'])?$branch['Branch']['id']:false;
                                     $requestData['ROW'.($x-1)] = array(
                                         'TarifAngkutan' => array(

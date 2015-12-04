@@ -1,16 +1,20 @@
 <?php
-    if(!empty($coa_data['CashBankDetail'])){
-        foreach ($coa_data['CashBankDetail'] as $key => $value) {
-        	$id = $value['coa_id'];
+      if(!empty($coa_data['CashBankDetail'])){
+          foreach ($coa_data['CashBankDetail'] as $key => $value) {
+            $id = $value['coa_id'];
+          	$document_detail_id = $value['document_detail_id'];
 ?>
 <tr class="child child-<?php echo $id;?>" rel="<?php echo $id;?>">
     <td>
     	<?php
-    		echo $value['code_coa'];
-
-    		echo $this->Form->input('CashBankDetail.coa_id.', array(
+        		echo $value['code_coa'];
+        		echo $this->Form->input('CashBankDetail.coa_id.', array(
                 'type' => 'hidden',
                 'value' => $id
+            ));
+            echo $this->Form->input('CashBankDetail.document_detail_id.', array(
+                'type' => 'hidden',
+                'value' => $document_detail_id,
             ));
     	?>
     </td>
@@ -20,32 +24,6 @@
     	?>
     </td>
 	<?php
-		// $form = $this->Form->input('CashBankDetail.debit.', array(
-  //           'type' => 'text',
-  //           'class' => 'form-control input_price',
-  //           'label' => false,
-  //           'div' => false,
-  //           'required' => false,
-  //           'value' => $value['debit']
-  //       ));
-
-  //       echo $this->Html->tag('td', $form, array(
-  //           'class' => 'action-search'
-  //       ));
-
-  //       $form = $this->Form->input('CashBankDetail.credit.', array(
-  //           'type' => 'text',
-  //           'class' => 'form-control input_price',
-  //           'label' => false,
-  //           'div' => false,
-  //           'required' => false,
-  //           'value' => $value['credit']
-  //       ));
-
-  //       echo $this->Html->tag('td', $form, array(
-  //           'class' => 'action-search'
-  //       ));
-
         $form = $this->Form->input('CashBankDetail.total.', array(
             'type' => 'text',
             'class' => 'form-control input_price',

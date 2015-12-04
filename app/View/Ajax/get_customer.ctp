@@ -12,33 +12,13 @@
                     $coa_code = !empty($cashBankDetail['Coa']['code'])?$cashBankDetail['Coa']['code']:false;
                     $coa_name = !empty($cashBankDetail['Coa']['name'])?$cashBankDetail['Coa']['name']:false;
                     $total = !empty($cashBankDetail['total'])?$cashBankDetail['total']:false;
-                    // $content = $this->Html->tag('td', $coa_code.$this->Form->input('CashBankDetail.coa_id.',array(
-                    //     'type'=> 'hidden', 
-                    //     'value' => $coa_id,
-                    // )));
-                    // $content .= $this->Html->tag('td', $coa_name);
-                    // $content .= $this->Html->tag('td', $coa_code.$this->Form->input('CashBankDetail.total.',array(
-                    //     'label' => false,
-                    //     'div' => false,
-                    //     'class'=> 'form-control input_price', 
-                    //     'value' => $total,
-                    // )), array(
-                    //     'class' => 'action-search',
-                    // ));
-                    // $content .= $this->Html->tag('td', $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
-                    //     'class' => 'delete-custom-field btn btn-danger btn-xs',
-                    //     'action_type' => 'cashbank_first',
-                    // )), array(
-                    //     'class' => 'action-search',
-                    // ));
-                    // $contentTr .= $this->Html->tag('tr', $content, array(
-                    //     'class' => 'child child-'.$coa_id,
-                    //     'rel' => $coa_id,
-                    // ));
+                    $detail_id = !empty($cashBankDetail['id'])?$cashBankDetail['id']:false;
+
                     $contentTr .= '<opentr class="child child-'.$coa_id.'" rel="'.$coa_id.'">
                         <opentd>
                             '.$coa_code.'
                             <input type="hidden" name="data[CashBankDetail][coa_id][]" value="'.$coa_id.'" id="CashBankDetailCoaId">
+                            <input type="hidden" name="data[CashBankDetail][document_detail_id][]" value="'.$detail_id.'" id="CashBankDetailDocumentDetailId">
                         <closetd>
                         <opentd>
                             '.$coa_name.'

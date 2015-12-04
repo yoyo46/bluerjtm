@@ -180,6 +180,7 @@ class CashbanksController extends AppController {
 
                 foreach ($data['CashBankDetail']['coa_id'] as $key => $coa_id) {
                     $total_coa_detail = (!empty($data['CashBankDetail']['total'][$key])) ? str_replace(',', '', $data['CashBankDetail']['total'][$key]) : 0;
+                    $document_detail_id = (!empty($data['CashBankDetail']['document_detail_id'][$key])) ? $data['CashBankDetail']['document_detail_id'][$key] : false;
                     $paid = false;
 
                     if( strstr($data['CashBank']['receiving_cash_type'], 'out') ){
@@ -195,7 +196,9 @@ class CashbanksController extends AppController {
                                 'CashBankDetail.coa_id' => $coa_id,
                             ),
                         ));
-                        $totalDibayar = $this->CashBank->CashBankDetail->totalPrepaymentDibayarPerCoa($document_id, $coa_id);
+                        $detail_id = !empty($cashBankDetail['CashBankDetail']['id'])?$cashBankDetail['CashBankDetail']['id']:false;
+                        $totalDibayar = $this->CashBank->CashBankDetail->totalPrepaymentDibayarPerCoa($document_id, $coa_id, false, $detail_id);
+
                         $totalTagihanDetail = !empty($cashBankDetail['CashBankDetail']['total'])?$cashBankDetail['CashBankDetail']['total']-$totalDibayar:0;
 
                         if( $totalTagihanDetail > $total_coa_detail ) {
@@ -206,6 +209,7 @@ class CashbanksController extends AppController {
                     }
 
                     $arr_list[] = array(
+                        'document_detail_id' => $document_detail_id,
                         'coa_id' => $coa_id,
                         'total' => $total_coa_detail,
                         'paid' => $paid,

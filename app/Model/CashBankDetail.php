@@ -57,31 +57,34 @@ class CashBankDetail extends AppModel {
         return $result;
     }
 
-    function totalPrepaymentDibayarPerCoa ( $prepayment_id, $coa_id, $cash_bank_id = false ) {
+    function totalPrepaymentDibayarPerCoa ( $prepayment_id, $coa_id = false, $cash_bank_id = false, $id = false ) {
         $conditions = array(
             'CashBank.document_id' => $prepayment_id,
-            'CashBankDetail.coa_id' => $coa_id,
-            'CashBank.status' => 1,
             'CashBank.prepayment_status <>' => 'full_paid',
-            'CashBank.is_rejected' => 0,
             'CashBank.receiving_cash_type' => 'prepayment_in',
+            'CashBank.status' => 1,
+            'CashBank.is_rejected' => 0,
         );
 
+        if( !empty($id) ) {
+            $conditions['CashBankDetail.document_detail_id'] = $id;
+        }
+        if( !empty($coa_id) ) {
+            $conditions['CashBankDetail.coa_id'] = $coa_id;
+        }
         if( !empty($cash_bank_id) ) {
-            $options['conditions']['CashBank.id <>'] = $cash_bank_id;
+            $conditions['CashBank.id <>'] = $cash_bank_id;
         }
 
+        $this->virtualFields['total'] = 'SUM(CashBankDetail.total)';
         $docPaid = $this->getData('first', array(
             'conditions' => $conditions,
             'contain' => array(
                 'CashBank',
             ),
-            'fields' => array(
-                'SUM(CashBankDetail.total) AS total'
-            ),
         ), false);
 
-        return !empty($docPaid[0]['total'])?$docPaid[0]['total']:0;
+        return !empty($docPaid['CashBankDetail']['total'])?$docPaid['CashBankDetail']['total']:0;
     }
 
     function getMerge ( $data = false, $id = false, $options = false ) {
