@@ -74,9 +74,10 @@
                         ));
                         echo $this->Html->tag('th', $input_all);
                 ?>
-                <th width="20%"><?php echo __('No KSU');?></th>
+                <th><?php echo __('No KSU');?></th>
                 <th><?php echo __('Tgl KSU');?></th>
                 <th><?php echo __('TTUJ');?></th>
+                <th><?php echo __('Supir');?></th>
                 <th><?php echo __('Nopol');?></th>
                 <th><?php echo __('Perlengkapan');?></th>
                 <th><?php echo __('Total');?></th>
@@ -89,6 +90,8 @@
 
                     foreach ($ksu_details as $key => $value) {
                         $ksu = $value['Ksu'];
+                        
+                        $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
             ?>
             <tr class="child-search child-search-<?php echo $value['KsuDetail']['id'];?>" rel="<?php echo $value['KsuDetail']['id'];?>">
                 <td class="checkbox-detail">
@@ -117,6 +120,11 @@
                 <td>
                     <?php
                         echo $value['Ttuj']['no_ttuj'];
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        echo $driver_name;
                     ?>
                 </td>
                 <td>

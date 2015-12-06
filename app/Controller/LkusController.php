@@ -2145,6 +2145,9 @@ class LkusController extends AppController {
 
                         if(!empty($lku)){
                             $part_motor = array();
+                            $ttuj_id = $this->MkCommon->filterEmptyField($lku, 'Lku', 'ttuj_id');
+                            $lku = $this->LkuPayment->LkuPaymentDetail->LkuDetail->Lku->Ttuj->getMerge($lku, $ttuj_id);
+
                             if(!empty($lku['LkuDetail']['part_motor_id'])){
                                 $part_motor = $this->PartsMotor->getData('first', array(
                                     'conditions' => array(
@@ -2166,6 +2169,7 @@ class LkusController extends AppController {
 
                             $LkuPayment['LkuPaymentDetail'][$key]['LkuDetail'] = $lku['LkuDetail'];
                             $LkuPayment['LkuPaymentDetail'][$key]['Lku'] = $lku['Lku'];
+                            $LkuPayment['LkuPaymentDetail'][$key]['Ttuj'] = $this->MkCommon->filterEmptyField($lku, 'Ttuj');
                         }
                     }
                 }
@@ -2207,6 +2211,9 @@ class LkusController extends AppController {
 
                         if(!empty($ksu)){
                             $Perlengkapan = array();
+                            $ttuj_id = $this->MkCommon->filterEmptyField($ksu, 'Ksu', 'ttuj_id');
+                            $ksu = $this->KsuPayment->KsuPaymentDetail->KsuDetail->Ksu->Ttuj->getMerge($ksu, $ttuj_id);
+
                             if(!empty($ksu['KsuDetail']['perlengkapan_id'])){
                                 $Perlengkapan = $this->Perlengkapan->getData('first', array(
                                     'conditions' => array(
@@ -2217,6 +2224,7 @@ class LkusController extends AppController {
                             $KsuPayment['KsuPaymentDetail'][$key]['Perlengkapan'] = !empty($Perlengkapan['Perlengkapan']) ? $Perlengkapan['Perlengkapan'] : array();
                             $KsuPayment['KsuPaymentDetail'][$key]['KsuDetail'] = $ksu['KsuDetail'];
                             $KsuPayment['KsuPaymentDetail'][$key]['Ksu'] = $ksu['Ksu'];
+                            $KsuPayment['KsuPaymentDetail'][$key]['Ttuj'] = $this->MkCommon->filterEmptyField($ksu, 'Ttuj');
                         }
                     }
                 }

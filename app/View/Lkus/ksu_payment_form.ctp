@@ -106,10 +106,11 @@
 			        <table class="table table-hover">
 			        	<thead>
 			        		<tr>
-			        			<th width="20%"><?php echo __('No KSU');?></th>
+			        			<th><?php echo __('No KSU');?></th>
 			        			<th><?php echo __('Tgl KSU');?></th>
 				                <th><?php echo __('TTUJ');?></th>
-				                <th><?php echo __('Nopol Truk');?></th>
+				                <th><?php echo __('Supir');?></th>
+				                <th><?php echo __('Nopol');?></th>
 				                <th><?php echo __('Perlengkapan');?></th>
 				                <th><?php echo __('Total');?></th>
 				                <th><?php echo __('Telah Dibayar');?></th>

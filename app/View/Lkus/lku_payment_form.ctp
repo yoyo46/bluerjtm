@@ -109,7 +109,8 @@
 			        			<th width="20%"><?php echo __('No LKU');?></th>
 			        			<th><?php echo __('Tgl LKU');?></th>
 				                <th><?php echo __('TTUJ');?></th>
-				                <th><?php echo __('Nopol Truk');?></th>
+				                <th><?php echo __('Supir');?></th>
+				                <th><?php echo __('Nopol');?></th>
 				                <th><?php echo __('Tipe Motor');?></th>
 				                <th><?php echo __('Parts Motor');?></th>
 				                <th><?php echo __('Total');?></th>

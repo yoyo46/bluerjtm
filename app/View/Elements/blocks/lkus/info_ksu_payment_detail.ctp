@@ -4,20 +4,11 @@
     if(!empty($ksu_details)){
         foreach ($ksu_details as $key => $value) {
             $Ksu = $value['KsuDetail'];
+            $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
 ?>
 <tr class="child child-<?php echo $Ksu['id'];?>" rel="<?php echo $Ksu['id'];?>">
     <td>
         <?php
-            // echo $this->Form->input('KsuPaymentDetail.ksu_id.', array(
-            //     'options' => $ksus,
-            //     'class' => 'form-control ksu-choose-ttuj',
-            //     'label' => false,
-            //     'empty' => __('Pilih Tgl TTUJ'),
-            //     'required' => false,
-            //     'value' => (isset($this->request->data['KsuPaymentDetail'][$key]['ksu_id']) && !empty($this->request->data['KsuPaymentDetail'][$key]['ksu_id'])) ? $this->request->data['KsuPaymentDetail'][$key]['ksu_id'] : ''
-            // ));
-
-            // printf('%s (%s)', date('d F Y', strtotime($value['Ttuj']['ttuj_date'])), $value['Ttuj']['no_ttuj']);
             echo $value['Ksu']['no_doc'];
 
             $keyd = (isset($this->request->data['KsuPaymentDetail'][$Ksu['id']]['ksu_detail_id']) && !empty($this->request->data['KsuPaymentDetail'][$Ksu['id']]['ksu_detail_id'])) ? $this->request->data['KsuPaymentDetail'][$Ksu['id']]['ksu_detail_id'] : '';
@@ -40,6 +31,11 @@
             }else{
                 echo '-';
             }
+        ?>
+    </td>
+    <td>
+        <?php
+                echo $driver_name;
         ?>
     </td>
     <td class="data-from-city">
@@ -113,7 +109,7 @@
 }
 ?>
 <tr id="field-grand-total-document">
-    <td align="right" colspan="7"><?php echo __('Grand Total')?></td>
+    <td align="right" colspan="8"><?php echo $this->Html->tag('strong', __('Grand Total'));?></td>
     <td align="right" id="grand-total-payment">
         <?php 
             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
@@ -121,61 +117,3 @@
     </td>
     <td>&nbsp;</td>
 </tr>
-<!-- <tr class="additional-input-invoice" id="ppn-grand-total-invoice">
-    <td align="right" colspan="6" class="relative">
-        <?php 
-            echo $this->Form->input('KsuPayment.ppn', array(
-                'type' => 'text',
-                'label' => __('PPN'),
-                'class' => 'input_number invoice-ppn',
-                'required' => false,
-                'div' => false
-            )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
-        ?>
-    </td>
-    <td align="right" id="ppn-total-invoice">
-        <?php 
-                $ppn = !empty($this->request->data['KsuPayment']['ppn'])?$this->request->data['KsuPayment']['ppn']:0;
-                $ppn = $this->Common->calcFloat($total, $ppn);
-                echo $this->Number->currency($ppn, Configure::read('__Site.config_currency_code'), array('places' => 0));
-        ?>
-    </td>
-    <td>&nbsp;</td>
-</tr>
-<tr class="additional-input-invoice" id="pph-grand-total-invoice">
-    <td align="right" colspan="6" class="relative">
-        <?php 
-                echo $this->Form->input('KsuPayment.pph', array(
-                    'type' => 'text',
-                    'label' => __('PPh'),
-                    'class' => 'input_number invoice-pph',
-                    'required' => false,
-                    'div' => false
-                )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
-        ?>
-    </td>
-    <td align="right" id="pph-total-invoice">
-        <?php 
-                $pph = !empty($this->request->data['KsuPayment']['pph'])?$this->request->data['KsuPayment']['pph']:0;
-                $pph = $this->Common->calcFloat($total, $pph);
-                echo $this->Number->currency($pph, Configure::read('__Site.config_currency_code'), array('places' => 0));
-        ?>
-    </td>
-    <td>&nbsp;</td>
-</tr>
-<tr id="grand-total-invoice-payemnt">
-    <td align="right" colspan="6"><?php echo __('Grand Total')?></td>
-    <td align="right" id="all-total-invoice">
-        <?php 
-            if($pph > 0){
-                $total -= $pph;
-            }
-            if($ppn > 0){
-                $total += $ppn;
-            }
-
-            echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
-        ?>
-    </td>
-    <td>&nbsp;</td>
-</tr> -->

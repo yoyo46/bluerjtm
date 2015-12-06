@@ -64,11 +64,14 @@
 		<table class="table table-hover">
 			<thead class="header-LkuPayment-print">
 				<tr>
-					<th width="20%" class="text-center"><?php echo __('No LKU');?></th>
-					<th width="20%" class="text-center"><?php echo __('Tgl LKU');?></th>
-					<th width="20%" class="text-center"><?php echo __('Tipe Motor');?></th>
-					<th width="20%" class="text-center"><?php echo __('Part Motor');?></th>
-					<th width="20%" class="text-right"><?php echo __('Jumlah Pembayaran.');?></th>
+					<th class="text-center"><?php echo __('No LKU');?></th>
+					<th class="text-center"><?php echo __('Tgl LKU');?></th>
+	                <th><?php echo __('TTUJ');?></th>
+	                <th><?php echo __('Supir');?></th>
+	                <th class="text-center"><?php echo __('Nopol');?></th>
+					<th class="text-center"><?php echo __('Tipe Motor');?></th>
+					<th class="text-center"><?php echo __('Part Motor');?></th>
+					<th class="text-right"><?php echo __('Jumlah Pembayaran.');?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -78,6 +81,10 @@
 							$grandTotal = 0;
 
 							foreach ($LkuPayment['LkuPaymentDetail'] as $key => $value) {
+            					$no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
+            					$nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
+            					$driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
+
 								$grandTotal += $value['total_biaya_klaim'];
 
 								$link_lku = $this->Html->link($value['Lku']['no_doc'], array(
@@ -92,6 +99,11 @@
 									'class' => 'text-center'
 								));
 								$colom .= $this->Html->tag('td', $this->Common->customDate($value['Lku']['tgl_lku']), array(
+									'class' => 'text-center'
+								));
+								$colom .= $this->Html->tag('td', $no_ttuj);
+								$colom .= $this->Html->tag('td', $driver_name);
+								$colom .= $this->Html->tag('td', $nopol, array(
 									'class' => 'text-center'
 								));
 
@@ -110,7 +122,7 @@
 							}
 
 							$colom = $this->Html->tag('td', __('Total '), array(
-								'colspan' => 4,
+								'colspan' => 7,
 								'align' => 'right'
 							));
 							$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
@@ -122,7 +134,7 @@
 							));
 						}else{
 							$colom = $this->Html->tag('td', __('Data tidak ditemukan.'), array(
-								'colspan' => 5
+								'colspan' => 8
 							));
 
 							echo $this->Html->tag('tr', $colom);
