@@ -446,7 +446,7 @@ class Revenue extends AppModel {
         $customer_id = !empty($data['Revenue']['customer_id'])?$data['Revenue']['customer_id']:false;
         $total_revenue = !empty($data['Revenue']['total'])?$data['Revenue']['total']:0;
         $date_revenue = !empty($data['Revenue']['date_revenue'])?$data['Revenue']['date_revenue']:false;
-        $no_doc = !empty($data['Revenue']['no_doc'])?$data['Revenue']['no_doc']:false;
+        $no_doc = str_pad($revenue_id, 5, '0', STR_PAD_LEFT);
 
         $dataCustomer = $this->Ttuj->Customer->getMerge(array(), $customer_id);
         $customer_name = !empty($dataCustomer['Customer']['customer_name_code'])?$dataCustomer['Customer']['customer_name_code']:false;
