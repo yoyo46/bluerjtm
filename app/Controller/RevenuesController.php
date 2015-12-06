@@ -6921,7 +6921,7 @@ class RevenuesController extends AppController {
                     $ttuj_id = !empty($ttujPaymentDetail['ttuj_id'])?$ttujPaymentDetail['ttuj_id']:false;
                     $dataTtujType = !empty($ttujPaymentDetail['type'])?$ttujPaymentDetail['type']:false;
                     $amount = !empty($ttujPaymentDetail['amount'])?$ttujPaymentDetail['amount']:0;
-                    $resultTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $dataTtujType);
+                    $resultTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $dataTtujType, 'UangJalanKomisiPayment');
                     $this->request->data['Ttuj'][] = $resultTtuj;
                     $this->request->data['TtujPayment']['amount_payment'][] = $amount;
                     $this->request->data['TtujPayment']['ttuj_id'][] = $ttuj_id;
@@ -6974,7 +6974,7 @@ class RevenuesController extends AppController {
                 $data_type = !empty($this->request->data['TtujPayment']['data_type'][$key])?$this->request->data['TtujPayment']['data_type'][$key]:false;
                 $amount = !empty($amount)?$this->MkCommon->convertPriceToString($amount, 0):0;
 
-                $dataTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $data_type);
+                $dataTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $data_type, 'UangJalanKomisiPayment');
                 $dataTtujPaymentDetail = array(
                     'TtujPaymentDetail' => array(
                         'ttuj_id' => $ttuj_id,

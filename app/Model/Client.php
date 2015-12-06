@@ -78,7 +78,7 @@ class Client extends AppModel {
 		);
 
 		$db = $this->Driver->getDataSource();
-		$venQuery = $db->buildStatement(
+		$driverQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'Client.id', 'CASE WHEN Client.alias = \'\' THEN Client.name ELSE CONCAT(Client.name, \' ( \', Client.alias, \' )\') END AS name', 
@@ -108,7 +108,7 @@ class Client extends AppModel {
 			}
 		}
 
-		$sql = $empQuery . ' UNION ' . $custQuery . ' UNION '. $venQuery;
+		$sql = $empQuery . ' UNION ' . $custQuery . ' UNION '. $venQuery . ' UNION '. $driverQuery;
 		$sql = 'SELECT Client.id, Client.name, Client.address, Client.type, Client.model
 	    		FROM (
 	                '.$sql.'
@@ -192,7 +192,7 @@ class Client extends AppModel {
 		);
 
 		$db = $this->Driver->getDataSource();
-		$venQuery = $db->buildStatement(
+		$driverQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'Client.id', 'CASE WHEN Client.alias = \'\' THEN Client.name ELSE CONCAT(Client.name, \' ( \', Client.alias, \' )\') END AS name', 
@@ -222,7 +222,7 @@ class Client extends AppModel {
 			}
 		}
 
-		$sql = $empQuery . ' UNION ' . $custQuery . ' UNION '. $venQuery . (!empty($order)?' '.$order:'');
+		$sql = $empQuery . ' UNION ' . $custQuery . ' UNION '. $venQuery . ' UNION '. $driverQuery . (!empty($order)?' '.$order:'');
 		$sql = 'SELECT Client.id, Client.name, Client.address, Client.type, Client.model
 	    		FROM (
 	                '.$sql.'

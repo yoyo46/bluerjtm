@@ -1,6 +1,20 @@
 <?php 
+        $id = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'id');
+        $no_ttuj = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'no_ttuj');
+        $ttuj_date = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'ttuj_date');
+        $nopol = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'nopol');
+        $from_city_name = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'from_city_name');
+        $to_city_name = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'to_city_name');
+
+        $data_type = !empty($data_type)?$data_type:false;
+        $data_type = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'data_type', $data_type);
+
+        $customer_name_code = $this->Common->filterEmptyField($ttuj, 'Customer', 'customer_name_code');
+        $driver_name = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'driver_name');
+        $driver_name = $this->Common->filterEmptyField($ttuj, 'DriverPenganti', 'driver_name', $driver_name);
+
         $checkbox = isset($checkbox)?$checkbox:true;
-		$alias = sprintf('child-%s-%s', $ttuj['Ttuj']['id'], $data_type);
+		$alias = sprintf('child-%s-%s', $id, $data_type);
         $addClass = !empty($isAjax)?'hide':'';
 
         if( !empty($checkbox) ) {
@@ -8,11 +22,11 @@
 
 			$checkboxContent = $this->Form->checkbox('ttuj_checked.', array(
                 'class' => 'check-option',
-                'value' => $ttuj['Ttuj']['id'],
+                'value' => $id,
             ));
             $checkboxContent .= $this->Form->input('TtujPayment.ttuj_id.', array(
                 'type' => 'hidden',
-                'value' => $ttuj['Ttuj']['id'],
+                'value' => $id,
             ));
 
             echo $this->Html->tag('td', $checkboxContent, array(
@@ -22,19 +36,15 @@
             printf('<tr class="child child-%s">', $alias);
         }
 ?>
-    <td><?php echo $ttuj['Ttuj']['no_ttuj'];?></td>
-    <td><?php echo date('d M Y', strtotime($ttuj['Ttuj']['ttuj_date']));?></td>
-    <td><?php echo $ttuj['Ttuj']['nopol'];?></td>
-    <td><?php echo !empty($ttuj['Customer']['customer_name_code'])?$ttuj['Customer']['customer_name_code']:false;?></td>
-    <td><?php echo $ttuj['Ttuj']['from_city_name'];?></td>
-    <td><?php echo $ttuj['Ttuj']['to_city_name'];?></td>
+    <td><?php echo $no_ttuj;?></td>
+    <td><?php echo date('d M Y', strtotime($ttuj_date));?></td>
+    <td><?php echo $nopol;?></td>
+    <td><?php echo $customer_name_code;?></td>
+    <td><?php echo $from_city_name;?></td>
+    <td><?php echo $to_city_name;?></td>
     <td>
     	<?php
-    			if( !empty($ttuj['DriverPenganti']['driver_name']) ) {
-    				echo $ttuj['DriverPenganti']['driver_name'];
-    			} else {
-    				echo $ttuj['Ttuj']['driver_name'];
-    			}
+    			echo $driver_name;
 		?>
 	</td>
     <td class="text-center">
@@ -73,7 +83,7 @@
                     'value' => !empty($this->request->data['TtujPayment']['amount_payment'][$idx])?$this->request->data['TtujPayment']['amount_payment'][$idx]:$sisaAmount,
                 ));
                 echo $this->Form->hidden('TtujPayment.ttuj_id.',array(
-                    'value'=> $ttuj['Ttuj']['id'],
+                    'value'=> $id,
                 ));
                 echo $this->Form->hidden('TtujPayment.data_type.',array(
                     'value'=> $data_type,

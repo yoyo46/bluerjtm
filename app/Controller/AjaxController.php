@@ -1755,10 +1755,6 @@ class AjaxController extends AppController {
 			case 'ttuj':
 				$model = 'Driver';
 				$title = __('Dibayar Kepada');
-				$listReceivers = array_merge(array(
-					'Driver' => __('Supir'),
-				), $listReceivers);
-				$default_conditions['Client.type'] = 'Driver';
 				break;
 
 			case 'driver':
@@ -2235,41 +2231,14 @@ class AjaxController extends AppController {
 
 	function getBiayaTtuj( $action_type = false ){
 		$this->loadModel('Ttuj');
-    	$this->loadModel('Driver');
+		$this->loadModel('UangJalanKomisiPayment');
     	$this->loadModel('City');
 
 		$document_type = false;
-		$conditions = array(
-            'Ttuj.is_draft' => 0,
-            'Ttuj.is_rjtm' => 1,
-        );
-        $head_office = Configure::read('__Site.config_branch_head_office');
 
         switch ($action_type) {
         	case 'biaya_ttuj':
 				$title = __('Detail Biaya TTUJ');
-        		$conditions['OR'] = array(
-	            	array(
-		            	'Ttuj.paid_uang_kuli_muat <>' => 'full',
-		            	'Ttuj.uang_kuli_muat <>' => 0,
-	            	),
-	            	array(
-		            	'Ttuj.paid_uang_kuli_bongkar <>' => 'full',
-		            	'Ttuj.uang_kuli_bongkar <>' => 0,
-	            	),
-	            	array(
-		            	'Ttuj.paid_asdp <>' => 'full',
-		            	'Ttuj.asdp <>' => 0,
-	            	),
-	            	array(
-		            	'Ttuj.paid_uang_kawal <>' => 'full',
-		            	'Ttuj.uang_kawal <>' => 0,
-	            	),
-	            	array(
-		            	'Ttuj.paid_uang_keamanan <>' => 'full',
-		            	'Ttuj.uang_keamanan <>' => 0,
-	            	),
-	        	);
 	        	$jenisBiaya = array(
 	        		'uang_kuli_muat' => __('Uang Kuli Muat'),
 	        		'uang_kuli_bongkar' => __('Uang Kuli Bongkar'),
@@ -2277,31 +2246,19 @@ class AjaxController extends AppController {
 	        		'uang_kawal' => __('Uang Kawal'),
 	        		'uang_keamanan' => __('Uang Keamanan'),
         		);
+        		$conditions = array(
+        			'UangJalanKomisiPayment.data_type' => array(
+        				'uang_kuli_muat',
+		        		'uang_kuli_bongkar',
+		        		'asdp',
+		        		'uang_kawal',
+		        		'uang_keamanan',
+    				),
+    			);
         		break;
         	
         	default:
 				$title = __('Detail Biaya Uang Jalan / Komisi');
-        		$conditions['OR'] = array(
-	            	array(
-		            	'Ttuj.paid_commission <>' => 'full',
-		            	'Ttuj.commission <>' => 0,
-	            	),
-	            	array(
-		            	'Ttuj.paid_uang_jalan <>' => 'full',
-	            	),
-	            	array(
-		            	'Ttuj.paid_uang_jalan_2 <>' => 'full',
-		            	'Ttuj.uang_jalan_2 <>' => 0,
-	            	),
-	            	array(
-		            	'Ttuj.paid_uang_jalan_extra <>' => 'full',
-		            	'Ttuj.uang_jalan_extra <>' => 0,
-	            	),
-	            	array(
-		            	'Ttuj.paid_commission_extra <>' => 'full',
-		            	'Ttuj.commission_extra <>' => 0,
-	            	),
-	        	);
 	        	$jenisBiaya = array(
 	        		'uang_jalan' => __('Uang Jalan'),
 	        		'uang_jalan_2' => __('Uang Jalan ke 2'),
@@ -2309,13 +2266,22 @@ class AjaxController extends AppController {
 	        		'commission' => __('Komisi'),
 	        		'commission_extra' => __('Komisi Extra'),
         		);
+        		$conditions = array(
+        			'UangJalanKomisiPayment.data_type' => array(
+		        		'uang_jalan',
+		        		'uang_jalan_2',
+		        		'uang_jalan_extra',
+		        		'commission',
+		        		'commission_extra',
+    				),
+    			);
         		break;
         }
 
         if(!empty($this->request->data)){
             if(!empty($this->request->data['Ttuj']['nottuj'])){
                 $nottuj = urldecode($this->request->data['Ttuj']['nottuj']);
-                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
+                $conditions['UangJalanKomisiPayment.no_ttuj LIKE '] = '%'.$nottuj.'%';
             }
             if(!empty($this->request->data['Ttuj']['nopol'])){
                 $nopol = urldecode($this->request->data['Ttuj']['nopol']);
@@ -2340,11 +2306,11 @@ class AjaxController extends AppController {
                     'status' => 'all',
                     'branch' => false,
                 ));
-                $conditions['Ttuj.truck_id'] = $truckSearch;
+                $conditions['UangJalanKomisiPayment.truck_id'] = $truckSearch;
             }
             if(!empty($this->request->data['Driver']['name'])){
                 $name = urldecode($this->request->data['Driver']['name']);
-                $driverId = $this->Driver->getData('list', array(
+                $driverId = $this->Ttuj->Truck->Driver->getData('list', array(
                 	'conditions' => array(
                 		'Driver.name LIKE' => '%'.$name.'%',
             		),
@@ -2355,8 +2321,8 @@ class AjaxController extends AppController {
             		'branch' => false,
             	));
                 $conditions['AND']['OR'] = array(
-                	'Ttuj.driver_id' => $driverId,
-                	'Ttuj.driver_penganti_id' => $driverId,
+                	'UangJalanKomisiPayment.driver_id' => $driverId,
+                	'UangJalanKomisiPayment.driver_penganti_id' => $driverId,
             	);
             }
             if(!empty($this->request->data['Customer']['name'])){
@@ -2371,19 +2337,19 @@ class AjaxController extends AppController {
             	), true, array(
                     'status' => 'all',
                 ));
-                $conditions['Ttuj.customer_id'] = $customers;
+                $conditions['UangJalanKomisiPayment.customer_id'] = $customers;
             }
             if(!empty($this->request->data['City']['name'])){
                 $name = urldecode($this->request->data['City']['name']);
-                $conditions['Ttuj.to_city_name LIKE '] = '%'.$name.'%';
+                $conditions['UangJalanKomisiPayment.to_city_name LIKE '] = '%'.$name.'%';
             }
             if(!empty($this->request->data['Ttuj']['from_city'])){
                 $name = urldecode($this->request->data['Ttuj']['from_city']);
-                $conditions['Ttuj.from_city_id'] = $name;
+                $conditions['UangJalanKomisiPayment.from_city_id'] = $name;
             }
             if(!empty($this->request->data['Ttuj']['to_city'])){
                 $name = urldecode($this->request->data['Ttuj']['to_city']);
-                $conditions['Ttuj.to_city_id'] = $name;
+                $conditions['UangJalanKomisiPayment.to_city_id'] = $name;
             }
             if(!empty($this->request->data['Ttuj']['date'])){
                 $date = urldecode($this->request->data['Ttuj']['date']);
@@ -2392,13 +2358,13 @@ class AjaxController extends AppController {
                 if( !empty($date[0]) ) {
                 	$from_date = trim($date[0]);
             		$from_date = $this->MkCommon->getDate($from_date);
-                	$conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $from_date;
+                	$conditions['DATE_FORMAT(UangJalanKomisiPayment.ttuj_date, \'%Y-%m-%d\') >='] = $from_date;
                 }
 
                 if( !empty($date[1]) ) {
                 	$to_date = trim($date[1]);
             		$to_date = $this->MkCommon->getDate($to_date);
-                	$conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $to_date;
+                	$conditions['DATE_FORMAT(UangJalanKomisiPayment.ttuj_date, \'%Y-%m-%d\') <='] = $to_date;
                 }
             }
 
@@ -2409,52 +2375,43 @@ class AjaxController extends AppController {
         	}
 
             if(!empty($this->request->data['Ttuj']['uang_jalan_1'])){
-        		$conditions['OR'][$idx]['Ttuj.paid_uang_jalan <>'] = 'full';
+        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'uang_jalan';
         		$idx++;
         	}
             if(!empty($this->request->data['Ttuj']['uang_jalan_2'])){
-        		$conditions['OR'][$idx]['Ttuj.paid_uang_jalan_2 <>'] = 'full';
-        		$conditions['OR'][$idx]['Ttuj.uang_jalan_2 <>'] = 0;
+        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'uang_jalan_2';
         		$idx++;
         	}
             if(!empty($this->request->data['Ttuj']['uang_jalan_extra'])){
-        		$conditions['OR'][$idx]['Ttuj.paid_uang_jalan_extra <>'] = 'full';
-        		$conditions['OR'][$idx]['Ttuj.uang_jalan_extra <>'] = 0;
+        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'uang_jalan_extra';
         		$idx++;
         	}
             if(!empty($this->request->data['Ttuj']['commission'])){
-        		$conditions['OR'][$idx]['Ttuj.paid_commission <>'] = 'full';
-        		$conditions['OR'][$idx]['Ttuj.commission <>'] = 0;
+        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'commission';
         		$idx++;
         	}
             if(!empty($this->request->data['Ttuj']['commission_extra'])){
-        		$conditions['OR'][$idx]['Ttuj.paid_commission_extra <>'] = 'full';
-        		$conditions['OR'][$idx]['Ttuj.commission_extra <>'] = 0;
+        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'commission_extra';
         		$idx++;
         	}
             if(!empty($this->request->data['Ttuj']['uang_kuli_muat'])){
-        		$conditions['OR'][$idx]['Ttuj.paid_uang_kuli_muat <>'] = 'full';
-        		$conditions['OR'][$idx]['Ttuj.uang_kuli_muat <>'] = 0;
+        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'uang_kuli_muat';
         		$idx++;
         	}
             if(!empty($this->request->data['Ttuj']['uang_kuli_bongkar'])){
-        		$conditions['OR'][$idx]['Ttuj.paid_uang_kuli_bongkar <>'] = 'full';
-        		$conditions['OR'][$idx]['Ttuj.uang_kuli_bongkar <>'] = 0;
+        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'uang_kuli_bongkar';
         		$idx++;
         	}
             if(!empty($this->request->data['Ttuj']['asdp'])){
-        		$conditions['OR'][$idx]['Ttuj.paid_asdp <>'] = 'full';
-        		$conditions['OR'][$idx]['Ttuj.asdp <>'] = 0;
+        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'asdp';
         		$idx++;
         	}
             if(!empty($this->request->data['Ttuj']['uang_kawal'])){
-        		$conditions['OR'][$idx]['Ttuj.paid_uang_kawal <>'] = 'full';
-        		$conditions['OR'][$idx]['Ttuj.uang_kawal <>'] = 0;
+        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'uang_kawal';
         		$idx++;
         	}
             if(!empty($this->request->data['Ttuj']['uang_keamanan'])){
-        		$conditions['OR'][$idx]['Ttuj.paid_uang_keamanan <>'] = 'full';
-        		$conditions['OR'][$idx]['Ttuj.uang_keamanan <>'] = 0;
+        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'uang_keamanan';
         		$idx++;
             }
         }
@@ -2462,58 +2419,44 @@ class AjaxController extends AppController {
         if( empty($this->request->data['Ttuj']['date']) ){
         	$from_date = date('Y-m-d', strtotime('-1 month'));
         	$to_date = date('Y-m-d');
-        	$conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $from_date;
-        	$conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $to_date;
+        	$conditions['DATE_FORMAT(UangJalanKomisiPayment.ttuj_date, \'%Y-%m-%d\') >='] = $from_date;
+        	$conditions['DATE_FORMAT(UangJalanKomisiPayment.ttuj_date, \'%Y-%m-%d\') <='] = $to_date;
 
         	$this->request->data['Ttuj']['date'] = sprintf('%s - %s', $this->MkCommon->getDate($from_date, true), $this->MkCommon->getDate($to_date, true));
         }
 
-        if( !empty($head_office) ) {
-        	$element = array(
-        		'branch' => false,
-    		);
-        } else {
-        	$element = false;
-        }
-
-        $this->paginate = $this->Ttuj->getData('paginate', array(
-            'conditions' => $conditions,
-            'order' => array(
-                'Ttuj.created' => 'ASC',
-                'Ttuj.id' => 'ASC',
-            ),
+        $this->paginate = array(
+        	'conditions' => $conditions,
             'limit' => Configure::read('__Site.config_pagination'),
-        ), true, $element);
-        $ttujs = $this->paginate('Ttuj');
+        );
+        $ttujs = $this->paginate('UangJalanKomisiPayment');
 
         if( !empty($ttujs) ) {
-        	$this->loadModel('Customer');
-        	$this->loadModel('TtujPaymentDetail');
-
         	foreach ($ttujs as $key => $ttuj) {
-        		$customer_id = !empty($ttuj['Ttuj']['customer_id'])?$ttuj['Ttuj']['customer_id']:'';
-            	$driver_id = !empty($ttuj['Ttuj']['driver_id'])?$ttuj['Ttuj']['driver_id']:'';
-            	$ttuj_id = !empty($ttuj['Ttuj']['id'])?$ttuj['Ttuj']['id']:'';
-            	$driver_penganti_id = !empty($ttuj['Ttuj']['driver_penganti_id'])?$ttuj['Ttuj']['driver_penganti_id']:'';
-        		$ttuj = $this->Customer->getMerge($ttuj, $customer_id);
-            	$ttuj = $this->Driver->getMerge($ttuj, $driver_id);
-            	$ttuj = $this->Driver->getMerge($ttuj, $driver_penganti_id, 'DriverPenganti');
+        		$customer_id = $this->MkCommon->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'customer_id');
+            	$driver_id = $this->MkCommon->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'driver_id');
+            	$ttuj_id = $this->MkCommon->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'id');
+            	$driver_penganti_id = $this->MkCommon->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'driver_penganti_id');
+
+        		$ttuj = $this->Ttuj->Customer->getMerge($ttuj, $customer_id);
+            	$ttuj = $this->Ttuj->Truck->Driver->getMerge($ttuj, $driver_id);
+            	$ttuj = $this->Ttuj->Truck->Driver->getMerge($ttuj, $driver_penganti_id, 'DriverPenganti');
 
             	switch ($action_type) {
 		        	case 'biaya_ttuj':
-            				$ttuj['uang_kuli_muat_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kuli_muat');
-            				$ttuj['uang_kuli_bongkar_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kuli_bongkar');
-            				$ttuj['asdp_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'asdp');
-            				$ttuj['uang_keamanan_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_keamanan');
-            				$ttuj['uang_kawal_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kawal');
+            				$ttuj['uang_kuli_muat_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kuli_muat');
+            				$ttuj['uang_kuli_bongkar_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kuli_bongkar');
+            				$ttuj['asdp_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'asdp');
+            				$ttuj['uang_keamanan_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_keamanan');
+            				$ttuj['uang_kawal_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kawal');
 		        		break;
 		        	
 		        	default:
-		            	$ttuj['uang_jalan_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan');
-		            	$ttuj['commission_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'commission');
-		            	$ttuj['uang_jalan_2_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan_2');
-		            	$ttuj['uang_jalan_extra_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan_extra');
-		            	$ttuj['commission_extra_dibayar'] = $this->TtujPaymentDetail->getTotalPayment($ttuj_id, 'commission_extra');
+		            	$ttuj['uang_jalan_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan');
+		            	$ttuj['commission_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'commission');
+		            	$ttuj['uang_jalan_2_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan_2');
+		            	$ttuj['uang_jalan_extra_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan_extra');
+		            	$ttuj['commission_extra_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'commission_extra');
 		        		break;
 		        }
 

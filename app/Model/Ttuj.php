@@ -352,7 +352,7 @@ class Ttuj extends AppModel {
         return $data;
     }
 
-    function getTtujPayment ( $ttuj_id, $data_action ) {
+    function getTtujPayment ( $ttuj_id, $data_action, $modelName = 'Ttuj' ) {
         $data_ttuj = $this->getData('first', array(
             'conditions' => array(
                 'Ttuj.id' => $ttuj_id,
@@ -413,6 +413,11 @@ class Ttuj extends AppModel {
                     $total = $uang_jalan_1;
                     break;
             }
+        }
+
+        if( empty($data_ttuj[$modelName]) && !empty($data_ttuj['Ttuj']) ) {
+            $data_ttuj[$modelName] = $data_ttuj['Ttuj'];
+            unset($data_ttuj['Ttuj']);
         }
 
         $data_ttuj['total'] = $total;
