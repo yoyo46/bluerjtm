@@ -92,6 +92,7 @@
                             <?php 
                                     echo $this->Html->tag('th', __('Kode Acc'));
                                     echo $this->Html->tag('th', __('Nama Acc'));
+                                    echo $this->Html->tag('th', __('Truk'));
                                     echo $this->Html->tag('th', __('Total'), array(
                                         'class' => 'text-center'
                                     ));
@@ -106,6 +107,7 @@
                                     foreach ($cashbank['CashBankDetail'] as $key => $value) {
                                         $coa_code = $this->Common->filterEmptyField($value, 'Coa', 'code', '-');
                                         $coa_name = $this->Common->filterEmptyField($value, 'Coa', 'name', '-');
+                                        $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol', '-');
                                         $total = $this->Common->filterEmptyField($value, 'CashBankDetail', 'total');
 
                                         $customTotal = $this->Common->getFormatPrice($total);
@@ -115,6 +117,7 @@
                             <?php
                                     echo $this->Html->tag('td', $coa_code);
                                     echo $this->Html->tag('td', $coa_name);
+                                    echo $this->Html->tag('td', $nopol);
                                     echo $this->Html->tag('td', $customTotal, array(
                                         'align' => 'right'
                                     ));

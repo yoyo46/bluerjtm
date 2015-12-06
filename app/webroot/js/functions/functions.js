@@ -1943,6 +1943,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
         prettyPhoto = false;
     }
 
+    obj.off('click');
     obj.click(function(msg) {
         var type_action = '';
         var vthis = $(this);
@@ -1951,6 +1952,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
         var url_attr = vthis.attr('url');
         var parent = vthis.attr('data-parent');
         var custom_backdrop_modal = vthis.attr('backdrop-modal');
+        var data_change = vthis.attr('data-change');
         var data = false;
         
         $('#myModal .modal-body').html('');
@@ -2541,10 +2543,14 @@ var check_all_checkbox = function(){
 
                     invoice_price_payment();
                     getTotalPick();
+                    _callLeasingExpired(rel_id);
+
                     $.getLeasingPayment({
                         obj: $('.child-'+rel_id).find('.leasing-trigger'),
                     });
-                    _callLeasingExpired(rel_id);
+                    $.ajaxModal({
+                        obj: $('.child-'+rel_id+' .ajaxModal'),
+                    });
                 }
             }else{
                 $('.child-'+rel_id).remove();
@@ -2561,18 +2567,37 @@ var check_all_checkbox = function(){
         $('.cashbank-info-detail').removeClass('hide');
 
         if( self.is(':checked') ){
-            if( $('.child-'+rel_id).length <= 0 || allow_multiple == 'true' ){
-                var html_content = '<tr class="child child-'+rel_id+'" rel="'+rel_id+'">'+parent.html()+'</tr>';
+            var leng_exists = $('.child-'+rel_id).length;
+
+            if( leng_exists <= 0 || allow_multiple == 'true' ){
+                var id_child = rel_id;
+
+                if( leng_exists > 0 ) {
+                    rel_id += '-' + leng_exists;
+                }
+
+                var html_content = '<tr class="child child-'+id_child+'" rel="'+rel_id+'">'+parent.html()+'</tr>';
+
                 $('.cashbanks-info-table').append(html_content);
 
-                $('.child-'+rel_id).find('.action-search').removeClass('hide');
-                $('.child-'+rel_id).find('.checkbox-detail').remove();
+                var truck_obj = $('.child-'+id_child+'[rel="'+rel_id+'"]').find('.pick-truck input[type="text"]');
+                var truck_browse_obj = $('.child-'+id_child+'[rel="'+rel_id+'"]').find('.pick-truck a.browse-docs');
+
+                var truck_id = truck_obj.attr('id');
+                var truck_href = truck_browse_obj.attr('href');
+
+                $('.child-'+id_child+'[rel="'+rel_id+'"]').find('.action-search').removeClass('hide');
+                $('.child-'+id_child+'[rel="'+rel_id+'"]').find('.checkbox-detail').remove();
+
+                truck_obj.attr('id', truck_id + '-' + leng_exists);
+                truck_browse_obj.attr('href', truck_href + '-' + leng_exists).attr('data-change', truck_id + '-' + rel_id);
 
                 $.inputPrice({
-                    obj: $('.child-'+rel_id+' .input_price'),
+                    obj: $('.child-'+id_child+'[rel="'+rel_id+'"] .input_price'),
                 });
-                input_price_min($('.child-'+rel_id+' .input_price_min'));
-                delete_custom_field($('.child-'+rel_id+' .delete-custom-field'));
+                input_price_min($('.child-'+id_child+'[rel="'+rel_id+'"] .input_price_min'));
+                delete_custom_field($('.child-'+id_child+'[rel="'+rel_id+'"] .delete-custom-field'));
+                ajaxModal($('.child-'+id_child+'[rel="'+rel_id+'"] .ajaxModal'));
             }
         } else if( allow_multiple != 'true' ) {
             $('.child-'+rel_id).remove();
@@ -2738,12 +2763,14 @@ var get_document_cashbank = function(){
 
                         if(doc_type == 'prepayment_in'){
                             content_table = content_table.replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/opentd/gi, "td").replace(/closetd/gi, "/td").replace(/opentr/gi, "tr").replace(/closetr/gi, "/tr");
+
                             $('.cashbanks-info-table').empty();
                             $('.cashbanks-info-table').html(content_table);
                             $.inputPrice({
                                 obj: $('.cashbanks-info-table .child .input_price'),
                             });
                             delete_custom_field();
+                            ajaxModal($('.cashbanks-info-table .child .ajaxModal'));
                         } else {
                             var html_content = '<tr class="child child-'+coa_id+'" rel="'+coa_id+'"> \
                                 <td>\

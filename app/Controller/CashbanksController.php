@@ -181,7 +181,11 @@ class CashbanksController extends AppController {
                 foreach ($data['CashBankDetail']['coa_id'] as $key => $coa_id) {
                     $total_coa_detail = (!empty($data['CashBankDetail']['total'][$key])) ? str_replace(',', '', $data['CashBankDetail']['total'][$key]) : 0;
                     $document_detail_id = (!empty($data['CashBankDetail']['document_detail_id'][$key])) ? $data['CashBankDetail']['document_detail_id'][$key] : false;
+                    $nopol = (!empty($data['CashBankDetail']['nopol'][$key])) ? $data['CashBankDetail']['nopol'][$key] : false;
                     $paid = false;
+
+                    $valueTruck = $this->CashBank->CashBankDetail->Truck->getByNopol(array(), $nopol);
+                    $truck_id = $this->MkCommon->filterEmptyField($valueTruck, 'Truck', 'id');
 
                     if( strstr($data['CashBank']['receiving_cash_type'], 'out') ){
                         $debit_total += $total_coa_detail;
@@ -211,6 +215,8 @@ class CashbanksController extends AppController {
                     $arr_list[] = array(
                         'document_detail_id' => $document_detail_id,
                         'coa_id' => $coa_id,
+                        'truck_id' => $truck_id,
+                        'nopol' => $nopol,
                         'total' => $total_coa_detail,
                         'paid' => $paid,
                     );
@@ -644,7 +650,8 @@ class CashbanksController extends AppController {
             $cashbank = $this->CashBank->Coa->getMerge($cashbank, $document_coa_id);
             $cashbank = $this->CashBank->CashBankDetail->getMerge($cashbank, $id, array(
                 'contain' => array(
-                    'Coa'
+                    'Coa',
+                    'Truck',
                 ),
             ));
 

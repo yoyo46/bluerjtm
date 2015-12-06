@@ -511,5 +511,19 @@ class Truck extends AppModel {
 
         return $data;
     }
+
+    function getByNopol( $data, $nopol = false ) {
+        $result = $this->find('first', array(
+            'conditions' => array(
+                'Truck.nopol' => $nopol,
+            ),
+        ));
+
+        if( !empty($result) ) {
+            $data = array_merge($data, $result);
+        }
+
+        return $data;
+    }
 }
 ?>

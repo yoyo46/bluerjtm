@@ -1,7 +1,7 @@
 <?php
 class CashBankHelper extends AppHelper {
 	var $helpers = array(
-        'Common', 'Html'
+        'Common', 'Html', 'Form'
     );
 
     function _callCalcSaldo( $data ) {
@@ -83,5 +83,32 @@ class CashBankHelper extends AppHelper {
         }
 
         return $status;
+    }
+
+    function getTruckCashbank ( $value = false ) {
+        $uuid = sprintf('truck-%s', String::uuid());
+
+        return $this->Form->input('CashBankDetail.nopol.', array(
+            'type' => 'text',
+            'id' => $uuid,
+            'class' => 'form-control',
+            'label' => false,
+            'div' => false,
+            'required' => false,
+            'readonly' => true,
+            'value' => $value,
+        )).$this->Html->link($this->Common->icon('plus-square'), array(
+            'controller'=> 'ajax', 
+            'action' => 'getTrucks',
+            'cashbank',
+            $uuid,
+            'admin' => false,
+        ), array(
+            'escape' => false,
+            'class' => 'ajaxModal browse-docs',
+            'title' => __('Data Truk'),
+            'data-action' => 'browse-form',
+            'data-change' => $uuid,
+        ));
     }
 }

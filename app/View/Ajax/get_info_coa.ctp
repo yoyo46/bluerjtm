@@ -64,17 +64,18 @@
                         ));
                         echo $this->Html->tag('th', $input_all);
                 ?>
-                <th><?php echo __('Kode Acc');?></th>
+                <th><?php echo __('Kode Acc');?>    </th>
                 <th><?php echo __('Nama Acc');?></th>
             </tr>
         </thead>
         <tbody>
             <?php
-                if(!empty($coas)){
-                	echo $this->Common->getRowCoa($coas);
-                }else{
-                    echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan')) );
-                }
+                    if(!empty($coas)){
+                        $trucks = !empty($trucks)?$trucks:false;
+                    	echo $this->Common->getRowCoa($coas, false, $trucks);
+                    }else{
+                        echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan')) );
+                    }
             ?>
         </tbody>
     </table>

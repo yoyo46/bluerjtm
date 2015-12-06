@@ -19,6 +19,10 @@ class CashBankDetail extends AppModel {
             'className' => 'CashBank',
             'foreignKey' => 'cash_bank_id',
         ),
+        'Truck' => array(
+            'className' => 'Truck',
+            'foreignKey' => 'truck_id',
+        ),
 	);
 
 	function getData( $find, $options = false, $is_merge = true ){

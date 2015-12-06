@@ -6,15 +6,30 @@
 
             if( !empty($prepayment_id) && !empty($customer['CashBankDetail']) ) {
                 $contentTr = '';
+                $tmpCOA = array();
 
                 foreach ($customer['CashBankDetail'] as $key => $cashBankDetail) {
                     $coa_id = !empty($cashBankDetail['Coa']['id'])?$cashBankDetail['Coa']['id']:false;
+                    $rel_id = $coa_id;
+                    
                     $coa_code = !empty($cashBankDetail['Coa']['code'])?$cashBankDetail['Coa']['code']:false;
                     $coa_name = !empty($cashBankDetail['Coa']['name'])?$cashBankDetail['Coa']['name']:false;
                     $total = !empty($cashBankDetail['total'])?$cashBankDetail['total']:false;
                     $detail_id = !empty($cashBankDetail['id'])?$cashBankDetail['id']:false;
 
-                    $contentTr .= '<opentr class="child child-'.$coa_id.'" rel="'.$coa_id.'">
+                    $nopol = $this->Common->filterEmptyField($cashBankDetail, 'Truck', 'nopol');
+
+                    $truck_form = $this->CashBank->getTruckCashbank($nopol);
+            
+                    if( isset($tmpCOA[$coa_id]) ) {
+                        $tmpCOA[$coa_id]++;
+
+                        $rel_id .= sprintf('-%s', $tmpCOA[$coa_id]);
+                    } else {
+                        $tmpCOA[$coa_id] = 0;
+                    }
+
+                    $contentTr .= '<opentr class="child child-'.$coa_id.'" rel="'.$rel_id.'">
                         <opentd>
                             '.$coa_code.'
                             <input type="hidden" name="data[CashBankDetail][coa_id][]" value="'.$coa_id.'" id="CashBankDetailCoaId">
@@ -22,6 +37,9 @@
                         <closetd>
                         <opentd>
                             '.$coa_name.'
+                        <closetd>
+                        <opentd class="action-search pick-truck">
+                            '.$truck_form.'
                         <closetd>
                         <opentd class="action-search">
                             <input name="data[CashBankDetail][total][]" class="form-control input_price" type="text" id="CashBankDetailTotal" value="'.$total.'">

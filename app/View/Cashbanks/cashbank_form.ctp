@@ -136,7 +136,7 @@
                             );
         					$urlBrowse = array(
                                 'controller'=> 'ajax', 
-                                'action' => 'getUserCashBank'
+                                'action' => 'getUserCashBank',
                             );
 							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
                             echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
@@ -187,6 +187,7 @@
                     	<?php 
 	                    		echo $this->Html->tag('th', __('Kode Acc'));
 	                    		echo $this->Html->tag('th', __('Nama Acc'));
+	                    		echo $this->Html->tag('th', __('Truk'));
 	                    		echo $this->Html->tag('th', __('Total'), array(
 	                    			'width' => '30%'
 	                    		));

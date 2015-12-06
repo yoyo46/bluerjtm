@@ -287,3 +287,15 @@ tr.expired .red {
 	margin-top: 5px;
 	display: block;
 }
+
+/*CashBank*/
+.cashbank-info-detail table tr td.pick-truck .form-control,
+.cashbank-info-detail table tr td.pick-truck a {
+	display: inline-block;
+}
+.cashbank-info-detail table tr td.pick-truck .form-control {
+	width: 50%;
+}
+.cashbank-info-detail table tr td.pick-truck a {
+	color: #FFFFFF;
+}

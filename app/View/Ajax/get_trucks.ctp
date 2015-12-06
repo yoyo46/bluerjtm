@@ -16,18 +16,30 @@
         <?php
                 if(!empty($trucks)){
                     foreach ($trucks as $key => $value) {
-                        $value_truck = $value['Truck'];
-                        $id = $value_truck['id'];
+                        $id = $this->Common->filterEmptyField($value, 'Truck', 'id');
+                        $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
+                        $capacity = $this->Common->filterEmptyField($value, 'Truck', 'capacity');
+
                         $branch = $this->Common->filterEmptyField($value, 'City', 'name');
+
+                        switch ($action_type) {
+                            case 'cashbank':
+                                $result = $nopol;
+                                break;
+                            
+                            default:
+                                $result = $id;
+                                break;
+                        }
         ?>
-        <tr data-value="<?php echo $id;?>" data-change="#<?php echo $data_change;?>">
+        <tr data-value="<?php echo $result;?>" data-change="#<?php echo $data_change;?>">
             <td><?php echo $id;?></td>
             <td><?php echo $branch;?></td>
-            <td><?php echo $value_truck['nopol'];?></td>
+            <td><?php echo $nopol;?></td>
             <td><?php echo !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:'-';?></td>
             <td><?php echo !empty($value['TruckBrand']['name'])?$value['TruckBrand']['name']:'-';?></td>
             <td><?php echo !empty($value['TruckCategory']['name'])?$value['TruckCategory']['name']:'-';?></td>
-            <td><?php echo $value_truck['capacity'];?></td>
+            <td><?php echo $capacity;?></td>
             <td><?php echo !empty($value['Company']['name'])?$value['Company']['name']:'-';?></td>
         </tr>
         <?php

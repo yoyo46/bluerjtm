@@ -633,13 +633,14 @@ class CommonHelper extends AppHelper {
         }
     }
 
-    function getRowCoa ( $coas, $parent = false ) {
+    function getRowCoa ( $coas, $parent = false, $trucks = false ) {
         $dataTree = '';
         if( !empty($coas) ) {
             foreach ($coas as $key => $coa) {
                 $id = $coa['Coa']['id'];
                 $coa_title = '';
                 $codeCoa = '-';
+                $uuid = sprintf('truck-%s', String::uuid());
 
                 if(!empty($coa['Coa']['with_parent_code'])){
                     $codeCoa = $coa['Coa']['with_parent_code'];
@@ -665,16 +666,30 @@ class CommonHelper extends AppHelper {
                 )));
                 $content .= $this->Html->tag('td', $coa_title);
                 
-                // $debit_form = $this->Form->input('CashBankDetail.debit.', array(
-                //     'type' => 'text',
-                //     'class' => 'form-control input_price',
-                //     'label' => false,
-                //     'div' => false,
-                //     'required' => false,
-                // ));
-                // $content .= $this->Html->tag('td', $debit_form, array(
-                //     'class' => 'action-search hide'
-                // ));
+                $truck_form = $this->Form->input('CashBankDetail.nopol.', array(
+                    'type' => 'text',
+                    'class' => 'form-control',
+                    'label' => false,
+                    'div' => false,
+                    'required' => false,
+                    'readonly' => true,
+                    'id' => $uuid,
+                )).$this->Html->link($this->icon('plus-square'), array(
+                    'controller'=> 'ajax', 
+                    'action' => 'getTrucks',
+                    'cashbank',
+                    $uuid,
+                    'admin' => false,
+                ), array(
+                    'escape' => false,
+                    'class' => 'ajaxModal browse-docs',
+                    'title' => __('Data Truk'),
+                    'data-action' => 'browse-form',
+                    'data-change' => $uuid,
+                ));
+                $content .= $this->Html->tag('td', $truck_form, array(
+                    'class' => 'action-search pick-truck hide'
+                ));
 
                 // $credit_form = $this->Form->input('CashBankDetail.credit.', array(
                 //     'type' => 'text',

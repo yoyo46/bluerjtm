@@ -1130,6 +1130,8 @@ class AjaxController extends AppController {
                 )
             );
             $options['contain'][] = 'Laka';
+        } else if( $action_type == 'cashbank' ) {
+    		$data_change = $action_id;
         }
 
         if(!empty($this->request->data)){
@@ -2137,7 +2139,8 @@ class AjaxController extends AppController {
 				),
 				'contain' => array(
 					'CashBankDetail' => array(
-						'Coa'
+						'Coa',
+						'Truck',
 					),
 				),
 			), array(
