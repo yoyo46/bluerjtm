@@ -280,11 +280,8 @@ class RevenueDetail extends AppModel {
     }
 
     function getSumUnit($data, $id, $data_action = 'invoice'){
-        $options = array(
-            'fields' => array(
-                'SUM(RevenueDetail.qty_unit) AS qty_unit',
-            ),
-        );
+        $this->virtualFields['qty_unit'] = 'SUM(RevenueDetail.qty_unit)';
+        $options = array();
 
         switch ($data_action) {
             case 'revenue':
@@ -297,12 +294,13 @@ class RevenueDetail extends AppModel {
 
                 $data_merge = $this->getData('first', $options, false);
 
-                if(!empty($data_merge[0])){
-                    $data['qty_unit'] = $data_merge[0]['qty_unit'];
+                if(!empty($data_merge['RevenueDetail']['qty_unit'])){
+                    $data['qty_unit'] = $data_merge['RevenueDetail']['qty_unit'];
                 }
                 break;
 
             case 'revenue_price':
+                $this->virtualFields['total_price'] = 'SUM(RevenueDetail.price_unit*RevenueDetail.qty_unit)';
                 $options = array(
                     'conditions' => array(
                         'RevenueDetail.invoice_id' => $id,
@@ -310,30 +308,36 @@ class RevenueDetail extends AppModel {
                     'group' => array(
                         'RevenueDetail.revenue_id',
                     ),
-                    'fields' => array(
-                        'SUM(RevenueDetail.price_unit*RevenueDetail.qty_unit) AS total_price',
-                    ),
                 );
 
                 $data_merge = $this->getData('first', $options, false);
 
-                if(!empty($data_merge[0])){
-                    $data['total_price'] = $data_merge[0]['total_price'];
+                if(!empty($data_merge['RevenueDetail']['total_price'])){
+                    $data['total_price'] = $data_merge['RevenueDetail']['total_price'];
                 }
                 break;
             
             default:
-                $options['conditions'] = array(
-                    'RevenueDetail.invoice_id' => $id,
-                );
-                $options['group'] = array(
-                    'RevenueDetail.invoice_id',
+                $options = array(
+                    'contain' => array(
+                        'Revenue',
+                    ),
+                    'conditions' => array(
+                        'RevenueDetail.invoice_id' => $id,
+                    ),
+                    'group' => array(
+                        'RevenueDetail.invoice_id',
+                    ),
                 );
 
+                $this->virtualFields['sum_pph'] = 'SUM(Revenue.total * (Revenue.pph/100))';
                 $data_merge = $this->getData('first', $options, false);
 
-                if(!empty($data_merge[0])){
-                    $data['RevenueDetail']['qty_unit'] = $data_merge[0]['qty_unit'];
+                if(!empty($data_merge['RevenueDetail']['qty_unit'])){
+                    $data['qty_unit'] = $data_merge['RevenueDetail']['qty_unit'];
+                }
+                if(!empty($data_merge['RevenueDetail']['sum_pph'])){
+                    $data['total_pph'] = $data_merge['RevenueDetail']['sum_pph'];
                 }
                 break;
         }

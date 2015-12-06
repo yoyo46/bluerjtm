@@ -200,6 +200,12 @@
                                 'align' => 'right',
                                 'mainalign' => 'center',
                             ));
+                            echo $this->Html->tag('th', __('Total PPH'), array(
+                                'style' => 'text-align: center;width: 100px;vertical-align: middle;',
+                                'data-options' => 'field:\'total_pph\',width:150',
+                                'align' => 'right',
+                                'mainalign' => 'center',
+                            ));
                             echo $this->Html->tag('th', __('Periode Tanggal'), array(
                                 'style' => 'text-align: center;width: 100px;vertical-align: middle;',
                                 'data-options' => 'field:\'period\',width:100',
@@ -253,15 +259,19 @@
                             $totalTransfer = 0;
                             $totalVoidTransfer = 0;
                             $totalVoid = 0;
+                            $totalPPH = 0;
+                            $grandtotalPPH = 0;
 
                             foreach ($invoices as $key => $invoice) {
-                                $totalUnit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
+                                $totalUnit = !empty($invoice['qty_unit'])?$invoice['qty_unit']:0;
+                                $totalPPH = !empty($invoice['total_pph'])?$invoice['total_pph']:0;
                                 $dateTOP = !empty($invoice['Invoice']['term_of_payment'])?date('d/m/Y', strtotime(sprintf('+%s day', $invoice['Invoice']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']))):'-';
                                 $datePayment = array();
                                 $totalPaid = 0;
                                 $invoiceStatus = $this->Common->getInvoiceStatus( $invoice );
                                 $totalTagihan += $invoice['Invoice']['total'];
                                 $totalQty += $totalUnit;
+                                $grandtotalPPH += $totalPPH;
 
                                 if( !empty($invoice['InvoicePaymentDate']) ) {
                                     foreach ($invoice['InvoicePaymentDate'] as $key => $dtPaid) {
@@ -301,6 +311,9 @@
                                 'style' => 'text-align: left;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                                'style' => 'text-align: right;vertical-align: middle;',
+                            ));
+                            echo $this->Html->tag('td', $this->Number->currency($totalPPH, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to']), array(
@@ -346,6 +359,9 @@
                             $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalTagihan, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
+                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($grandtotalPPH, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                                'style' => 'text-align: right;vertical-align: middle;',
+                            ));
                             $tdContent .= $this->Html->tag('td', '');
                             $tdContent .= $this->Html->tag('td', '');
                             $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $totalQty), array(
@@ -375,6 +391,7 @@
                             $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalVoid, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
+                            $tdContent .= $this->Html->tag('td', '');
                             $tdContent .= $this->Html->tag('td', '');
                             $tdContent .= $this->Html->tag('td', '');
                             $tdContent .= $this->Html->tag('td', '');
@@ -444,15 +461,19 @@
                 $totalTransfer = 0;
                 $totalVoidTransfer = 0;
                 $totalVoid = 0;
+                $totalPPH = 0;
+                $grandtotalPPH = 0;
 
                 foreach ($invoices as $key => $invoice) {
-                    $totalUnit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
+                    $totalUnit = !empty($invoice['qty_unit'])?$invoice['qty_unit']:0;
+                    $totalPPH = !empty($invoice['total_pph'])?$invoice['total_pph']:0;
                     $dateTOP = !empty($invoice['Invoice']['term_of_payment'])?date('d/m/Y', strtotime(sprintf('+%s day', $invoice['Invoice']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']))):'-';
                     $datePayment = array();
                     $totalPaid = 0;
                     $invoiceStatus = $this->Common->getInvoiceStatus( $invoice );
                     $totalTagihan += $invoice['Invoice']['total'];
                     $totalQty += $totalUnit;
+                    $grandtotalPPH += $totalPPH;
 
                     if( !empty($invoice['InvoicePaymentDate']) ) {
                         foreach ($invoice['InvoicePaymentDate'] as $key => $dtPaid) {
@@ -472,7 +493,7 @@
                     }
 
                     $content = $this->Html->tag('td', $no, array(
-                        'style' => 'text-align: center;vertical-align: middle;width: 5%;',
+                        'style' => 'text-align: center;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $this->Common->customDate($invoice['Invoice']['invoice_date'], 'd/m/Y'), array(
                         'style' => 'text-align: center;vertical-align: middle;',
@@ -484,7 +505,10 @@
                         'style' => 'text-align: left;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
-                        'style' => 'text-align: right;width: 10%;vertical-align: middle;',
+                        'style' => 'text-align: right;vertical-align: middle;',
+                    ));
+                    $content .= $this->Html->tag('td', $this->Number->currency($totalPPH, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                        'style' => 'text-align: right;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to']), array(
                         'style' => 'text-align: center;vertical-align: middle;',
@@ -505,7 +529,7 @@
                         'style' => 'text-align: center;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $this->Number->currency($totalPaid, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
-                        'style' => 'text-align: right;width: 10%;vertical-align: middle;',
+                        'style' => 'text-align: right;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $invoiceStatus['text'].$invoiceStatus['void_date'], array(
                         'style' => 'text-align: center;vertical-align: middle;',
@@ -522,6 +546,9 @@
                     'colspan' => 4,
                 ));
                 $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalTagihan, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                    'style' => 'text-align: right;vertical-align: middle;',
+                ));
+                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($grandtotalPPH, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
                     'style' => 'text-align: right;vertical-align: middle;',
                 ));
                 $tdContent .= $this->Html->tag('td', '', array(
@@ -548,7 +575,7 @@
                 ));
                 $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalVoidTransfer, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
                     'style' => 'text-align: right;vertical-align: middle;',
-                    'colspan' => 7,
+                    'colspan' => 8,
                 ));
                 $tdContent .= $this->Html->tag('td', '');
                 $each_loop_message .= $this->Html->tag('tr', $tdContent);
@@ -566,18 +593,19 @@ $tbl = <<<EOD
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <thead>
                 <tr style="$table_tr_head">
-                    <th style="text-align: center;vertical-align: middle;width: 5%;">No.</th>
+                    <th style="text-align: center;vertical-align: middle;">No.</th>
                     <th style="text-align: center;vertical-align: middle;">Tgl Kwitansi</th>
                     <th style="text-align: center;vertical-align: middle;">Customer</th>
                     <th style="text-align: center;vertical-align: middle;">No. Invoice</th>
-                    <th style="text-align: center;vertical-align: middle;width: 10%;">Total Tagihan</th>
+                    <th style="text-align: center;vertical-align: middle;">Total Tagihan</th>
+                    <th style="text-align: center;vertical-align: middle;">Total PPH</th>
                     <th style="text-align: center;vertical-align: middle;">Periode Tanggal</th>
                     <th style="text-align: center;vertical-align: middle;">Periode Bulan</th>
                     <th style="text-align: center;vertical-align: middle;">Qty Unit</th>
                     <th style="text-align: center;vertical-align: middle;">Jenis</th>
                     <th style="text-align: center;vertical-align: middle;">Tgl J.Tempo</th>
                     <th style="text-align: center;vertical-align: middle;">Tgl Bayar</th>
-                    <th style="text-align: center;vertical-align: middle;width: 10%;">Total Transfer</th>
+                    <th style="text-align: center;vertical-align: middle;">Total Transfer</th>
                     <th style="text-align: center;vertical-align: middle;">Status</th>
                 </tr>
             </thead>

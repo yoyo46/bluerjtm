@@ -5455,6 +5455,7 @@ class RevenuesController extends AppController {
             foreach ($invoices as $key => $invoice) {
                 $invoice = $this->Revenue->RevenueDetail->getSumUnit($invoice, $invoice['Invoice']['id']);
                 $invoice = $this->Invoice->getMergePayment($invoice, $invoice['Invoice']['id'] );
+
                 $invoices[$key] = $invoice;
             }
         }
