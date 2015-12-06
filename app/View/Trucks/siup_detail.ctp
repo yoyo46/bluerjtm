@@ -27,6 +27,9 @@
                     <dd><?php echo $this->Common->customDate($siup['Siup']['to_date'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Estimasi Biaya')?></dt>
                     <dd><?php echo $this->Number->currency($siup['Siup']['price_estimate'], Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></dd>
+                    <dt><?php echo __('Keterangan')?></dt>
+                    <dd><?php echo !empty($siup['Siup']['note'])?str_replace(PHP_EOL, '<br>', $siup['Siup']['note']):'-';?></dd>
+                    <hr>
                     <dt><?php echo __('Biaya Perpanjang')?></dt>
                     <dd><?php echo $this->Number->currency($siup['Siup']['price'], Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></dd>
                     <dt><?php echo __('Denda')?></dt>
@@ -56,8 +59,6 @@
                             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code').' ', array('places' => 0));
                         ?>
                     </dd>
-                    <dt><?php echo __('Keterangan')?></dt>
-                    <dd><?php echo !empty($siup['Siup']['note'])?str_replace(PHP_EOL, '<br>', $siup['Siup']['note']):'-';?></dd>
                 </dl>
             </div>
         </div>
