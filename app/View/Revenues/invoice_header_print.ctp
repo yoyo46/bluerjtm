@@ -1,5 +1,5 @@
 <?php
-		$qty_unit = !empty($invoice['RevenueDetail']['qty_unit'])?$invoice['RevenueDetail']['qty_unit']:0;
+		$qty_unit = !empty($invoice['qty_unit'])?$invoice['qty_unit']:0;
         $full_name = $this->Common->filterEmptyField($invoice, 'Employe', 'full_name');
 
 if($action_print == 'pdf'){
