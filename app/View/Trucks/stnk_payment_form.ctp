@@ -15,7 +15,7 @@
     <div class="col-sm-6">
         <div class="box box-primary">
             <div class="box-header">
-                <h3 class="box-title"><?php echo __('Biaya STNK'); ?></h3>
+                <h3 class="box-title"><?php echo __('Informasi STNK'); ?></h3>
             </div>
             <div class="box-body">
                 <div class="form-group">
@@ -90,6 +90,16 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Stnk.note', array(
+                                'label'=> __('Keterangan'), 
+                                'class'=>'form-control',
+                                'required' => false,
+                                'disabled' => true,
+                            ));
+                    ?>
+                </div>
                 <?php 
                         if( !empty($stnk['Stnk']['is_change_plat']) ) {
                 ?>
@@ -120,6 +130,15 @@
                 <?php 
                         }
                 ?>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title"><?php echo __('Biaya STNK'); ?></h3>
+            </div>
+            <div class="box-body">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->label('price_estimate', __('Estimasi Biaya STNK')); 

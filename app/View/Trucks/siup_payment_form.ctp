@@ -92,26 +92,6 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->label('price_estimate', __('Estimasi Biaya Ijin Usaha')); 
-                    ?>
-                    <div class="input-group">
-                        <?php 
-                                echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-                                    'class' => 'input-group-addon'
-                                ));
-                                echo $this->Form->input('price_estimate', array(
-                                    'type' => 'text',
-                                    'label'=> false, 
-                                    'class'=>'form-control input_price',
-                                    'required' => false,
-                                    'placeholder' => __('Estimasi Biaya Ijin Usaha'),
-                                    'disabled' => true,
-                                ));
-                        ?>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <?php 
                             echo $this->Form->input('tgl_siup', array(
                                 'label'=> __('Tgl Perpanjang'), 
                                 'class'=>'form-control',
@@ -121,6 +101,25 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Siup.note', array(
+                                'label'=> __('Keterangan'), 
+                                'class'=>'form-control',
+                                'required' => false,
+                                'disabled' => true,
+                            ));
+                    ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title"><?php echo __('Biaya Ijin Usaha'); ?></h3>
+            </div>
+            <div class="box-body">
                 <div class="form-group">
                     <?php 
                         echo $this->Form->label('price', __('Biaya Perpanjang Ijin Usaha')); 
@@ -150,6 +149,25 @@
                                 'class' => 'input-group-addon'
                             ));
                             echo $this->Form->input('denda', array(
+                                'type' => 'text',
+                                'class'=>'form-control input_price',
+                                'disabled' => true,
+                                'required' => false,
+                                'label'=> false, 
+                            ));
+                        ?>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <?php 
+                        echo $this->Form->label('biaya_lain', __('Biaya Lain')); 
+                    ?>
+                    <div class="input-group">
+                        <?php 
+                            echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+                                'class' => 'input-group-addon'
+                            ));
+                            echo $this->Form->input('biaya_lain', array(
                                 'type' => 'text',
                                 'class'=>'form-control input_price',
                                 'disabled' => true,

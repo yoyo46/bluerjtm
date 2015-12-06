@@ -20,11 +20,11 @@
                     <dt><?php echo __('Account Kas/Bank')?></dt>
                     <dd><?php echo $coa_name;?></dd>
                     <dt><?php echo __('Tgl Perpanjang')?></dt>
-                    <dd><?php echo $this->Common->customDate($stnk['Stnk']['tgl_bayar']);?></dd>
+                    <dd><?php echo $this->Common->customDate($stnk['Stnk']['tgl_bayar'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Tgl Berakhir STNK')?></dt>
-                    <dd><?php echo $this->Common->customDate($stnk['Stnk']['from_date']);?></dd>
+                    <dd><?php echo $this->Common->customDate($stnk['Stnk']['from_date'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Berlaku Sampai')?></dt>
-                    <dd><?php echo $this->Common->customDate($stnk['Stnk']['to_date']);?></dd>
+                    <dd><?php echo $this->Common->customDate($stnk['Stnk']['to_date'], 'd/m/Y');?></dd>
                     <hr>
                     <dt><?php echo __('Ganti Plat?')?></dt>
                     <dd>
@@ -41,9 +41,9 @@
                             if( !empty($stnk['Stnk']['is_change_plat']) ) {
                     ?>
                     <dt><?php echo __('Tgl Ganti Plat')?></dt>
-                    <dd><?php echo $this->Common->customDate($stnk['Stnk']['plat_from_date']);?></dd>
+                    <dd><?php echo $this->Common->customDate($stnk['Stnk']['plat_from_date'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Plat Berlaku Sampai')?></dt>
-                    <dd><?php echo $this->Common->customDate($stnk['Stnk']['plat_to_date']);?></dd>
+                    <dd><?php echo $this->Common->customDate($stnk['Stnk']['plat_to_date'], 'd/m/Y');?></dd>
                     <?php
                             }
                     ?>
@@ -62,13 +62,25 @@
                             echo $this->Number->currency($denda, Configure::read('__Site.config_currency_code').' ', array('places' => 0));
                         ?>
                     </dd>
+                    <dt><?php echo __('Biaya Lain')?></dt>
+                    <dd>
+                        <?php 
+                                $biaya_lain = 0;
+                                if(!empty($stnk['Stnk']['biaya_lain'])){
+                                    $biaya_lain = $stnk['Stnk']['biaya_lain'];
+                                }
+                                echo $this->Number->currency($biaya_lain, Configure::read('__Site.config_currency_code').' ', array('places' => 0));
+                        ?>
+                    </dd>
                     <dt><?php echo __('Total Pembayaran')?></dt>
                     <dd>
                         <?php 
-                            $total = $stnk['Stnk']['price'] + $denda;
+                            $total = $stnk['Stnk']['price'] + $denda + $biaya_lain;
                             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code').' ', array('places' => 0));
                         ?>
                     </dd>
+                    <dt><?php echo __('Keterangan')?></dt>
+                    <dd><?php echo !empty($stnk['Stnk']['note'])?str_replace(PHP_EOL, '<br>', $stnk['Stnk']['note']):'-';?></dd>
                 </dl>
             </div>
         </div>
@@ -81,9 +93,9 @@
             <div class="box-body">
                 <dl class="dl-horizontal">
                     <dt><?php echo __('Tgl Dibayar')?></dt>
-                    <dd><?php echo $this->Common->customDate($stnk['StnkPayment']['stnk_payment_date']);?></dd>
+                    <dd><?php echo $this->Common->customDate($stnk['StnkPayment']['stnk_payment_date'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Tgl Dokumen Dibuat')?></dt>
-                    <dd><?php echo $this->Common->customDate($stnk['StnkPayment']['created']);?></dd>
+                    <dd><?php echo $this->Common->customDate($stnk['StnkPayment']['created'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Keterangan')?></dt>
                     <dd><?php echo !empty($stnk['StnkPayment']['note'])?str_replace(PHP_EOL, '<br>', $stnk['StnkPayment']['note']):'-';?></dd>
                     <dt><?php echo __('Status')?></dt>

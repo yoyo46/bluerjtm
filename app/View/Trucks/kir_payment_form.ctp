@@ -15,7 +15,7 @@
     <div class="col-sm-6">
         <div class="box box-primary">
             <div class="box-header">
-                <h3 class="box-title"><?php echo __('Biaya KIR'); ?></h3>
+                <h3 class="box-title"><?php echo __('Informasi KIR'); ?></h3>
             </div>
             <div class="box-body">
                 <div class="form-group">
@@ -92,35 +92,23 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->label('price_estimate', __('Estimasi Biaya KIR')); 
-                    ?>
-                    <div class="input-group">
-                        <?php 
-                                echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
-                                    'class' => 'input-group-addon'
-                                ));
-                                echo $this->Form->input('price_estimate', array(
-                                    'type' => 'text',
-                                    'label'=> false, 
-                                    'class'=>'form-control input_price',
-                                    'required' => false,
-                                    'placeholder' => __('Estimasi Biaya KIR'),
-                                    'disabled' => true,
-                                ));
-                        ?>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->input('tgl_kir', array(
-                                'label'=> __('Tgl Perpanjang'), 
+                            echo $this->Form->input('Kir.note', array(
+                                'label'=> __('Keterangan'), 
                                 'class'=>'form-control',
-                                'type' => 'text',
                                 'required' => false,
                                 'disabled' => true,
                             ));
                     ?>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title"><?php echo __('Biaya KIR'); ?></h3>
+            </div>
+            <div class="box-body">
                 <div class="form-group">
                     <?php 
                         echo $this->Form->label('price', __('Biaya Perpanjang KIR')); 
@@ -150,6 +138,25 @@
                                 'class' => 'input-group-addon'
                             ));
                             echo $this->Form->input('denda', array(
+                                'type' => 'text',
+                                'class'=>'form-control input_price',
+                                'disabled' => true,
+                                'required' => false,
+                                'label'=> false, 
+                            ));
+                        ?>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <?php 
+                        echo $this->Form->label('biaya_lain', __('Biaya Lain')); 
+                    ?>
+                    <div class="input-group">
+                        <?php 
+                            echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+                                'class' => 'input-group-addon'
+                            ));
+                            echo $this->Form->input('biaya_lain', array(
                                 'type' => 'text',
                                 'class'=>'form-control input_price',
                                 'disabled' => true,

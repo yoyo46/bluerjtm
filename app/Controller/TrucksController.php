@@ -1162,6 +1162,7 @@ class TrucksController extends AppController {
             $data['Kir']['price_estimate'] = !empty($truck['Truck']['kir'])?$this->MkCommon->convertPriceToString($truck['Truck']['kir']):0;
             $data['Kir']['price'] = !empty($data['Kir']['price'])?$this->MkCommon->convertPriceToString($data['Kir']['price']):0;
             $data['Kir']['denda'] = (!empty($data['Kir']['denda'])) ? $this->MkCommon->convertPriceToString($data['Kir']['denda']) : 0;
+            $data['Kir']['biaya_lain'] = (!empty($data['Kir']['biaya_lain'])) ? $this->MkCommon->convertPriceToString($data['Kir']['biaya_lain']) : 0;
             $data['Kir']['branch_id'] = Configure::read('__Site.config_branch_id');
             $this->Kir->set($data);
 
@@ -1361,7 +1362,8 @@ class TrucksController extends AppController {
 
                 $data['KirPayment']['biaya_perpanjang'] = $this->MkCommon->convertPriceToString($kir['Kir']['price']);
                 $data['KirPayment']['denda'] = $this->MkCommon->convertPriceToString($kir['Kir']['denda']);
-                $data['KirPayment']['total_pembayaran'] = intval($data['KirPayment']['biaya_perpanjang']) + intval($data['KirPayment']['denda']);
+                $data['KirPayment']['biaya_lain'] = $this->MkCommon->convertPriceToString($kir['Kir']['biaya_lain']);
+                $data['KirPayment']['total_pembayaran'] = intval($data['KirPayment']['biaya_perpanjang']) + intval($data['KirPayment']['denda']) + intval($data['KirPayment']['biaya_lain']);
                 $data['KirPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
 
                 $this->KirPayment->set($data);
@@ -1423,6 +1425,8 @@ class TrucksController extends AppController {
             $this->request->data['KirPayment']['price'] = $kir['Kir']['price'];
             $this->request->data['KirPayment']['price_estimate'] = $this->MkCommon->convertPriceToString($kir['Kir']['price_estimate']);
             $this->request->data['KirPayment']['denda'] = $this->MkCommon->convertPriceToString($kir['Kir']['denda']);
+            $this->request->data['KirPayment']['biaya_lain'] = $this->MkCommon->convertPriceToString($kir['Kir']['biaya_lain']);
+            $this->request->data['Kir']['note'] = $this->MkCommon->filterEmptyField($kir, 'Kir', 'note');
         }
 
         $coas = $this->KirPayment->Coa->getData('list', array(
@@ -1668,6 +1672,7 @@ class TrucksController extends AppController {
             $data['Siup']['price_estimate'] = !empty($truck['Truck']['siup'])?$this->MkCommon->convertPriceToString($truck['Truck']['siup']):false;
             $data['Siup']['price'] = !empty($data['Siup']['price'])?$this->MkCommon->convertPriceToString($data['Siup']['price']):false;
             $data['Siup']['denda'] = (!empty($data['Siup']['denda'])) ? $this->MkCommon->convertPriceToString($data['Siup']['denda']) : 0;
+            $data['Siup']['biaya_lain'] = (!empty($data['Siup']['biaya_lain'])) ? $this->MkCommon->convertPriceToString($data['Siup']['biaya_lain']) : 0;
             $data['Siup']['branch_id'] = Configure::read('__Site.config_branch_id');
             $this->Siup->set($data);
 
@@ -1852,7 +1857,8 @@ class TrucksController extends AppController {
 
                 $data['SiupPayment']['biaya_perpanjang'] = $this->MkCommon->convertPriceToString($siup['Siup']['price']);
                 $data['SiupPayment']['denda'] = $this->MkCommon->convertPriceToString($siup['Siup']['denda']);
-                $data['SiupPayment']['total_pembayaran'] = intval($data['SiupPayment']['biaya_perpanjang']) + intval($data['SiupPayment']['denda']);
+                $data['SiupPayment']['biaya_lain'] = $this->MkCommon->convertPriceToString($siup['Siup']['biaya_lain']);
+                $data['SiupPayment']['total_pembayaran'] = intval($data['SiupPayment']['biaya_perpanjang']) + intval($data['SiupPayment']['denda']) + intval($data['SiupPayment']['biaya_lain']);
                 $data['SiupPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
 
                 $this->SiupPayment->set($data);
@@ -1913,6 +1919,8 @@ class TrucksController extends AppController {
             $this->request->data['SiupPayment']['price'] = $siup['Siup']['price'];
             $this->request->data['SiupPayment']['price_estimate'] = $this->MkCommon->convertPriceToString($siup['Siup']['price_estimate']);
             $this->request->data['SiupPayment']['denda'] = $this->MkCommon->convertPriceToString($siup['Siup']['denda']);
+            $this->request->data['SiupPayment']['biaya_lain'] = $this->MkCommon->convertPriceToString($siup['Siup']['biaya_lain']);
+            $this->request->data['Siup']['note'] = $siup['Siup']['note'];
         }
 
         $coas = $this->SiupPayment->Coa->getData('list', array(
@@ -2643,6 +2651,7 @@ class TrucksController extends AppController {
             $data['Stnk']['price_estimate'] = !empty($truck['Truck'])?$this->MkCommon->convertPriceToString($truck['Truck']['bbnkb']+$truck['Truck']['pkb'], 0):0;
             $data['Stnk']['price'] = $this->MkCommon->convertPriceToString($data['Stnk']['price']);
             $data['Stnk']['denda'] = (!empty($data['Stnk']['denda'])) ? $this->MkCommon->convertPriceToString($data['Stnk']['denda']) : 0;
+            $data['Stnk']['biaya_lain'] = (!empty($data['Stnk']['biaya_lain'])) ? $this->MkCommon->convertPriceToString($data['Stnk']['biaya_lain']) : 0;
             $data['Stnk']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             if( $this->Stnk->validates($data) ){
@@ -2956,7 +2965,8 @@ class TrucksController extends AppController {
 
                 $data['StnkPayment']['biaya_perpanjang'] = $this->MkCommon->convertPriceToString($stnk['Stnk']['price']);
                 $data['StnkPayment']['denda'] = $this->MkCommon->convertPriceToString($stnk['Stnk']['denda']);
-                $data['StnkPayment']['total_pembayaran'] = intval($data['StnkPayment']['biaya_perpanjang']) + intval($data['StnkPayment']['denda']);
+                $data['StnkPayment']['biaya_lain'] = $this->MkCommon->convertPriceToString($stnk['Stnk']['biaya_lain']);
+                $data['StnkPayment']['total_pembayaran'] = intval($data['StnkPayment']['biaya_perpanjang']) + intval($data['StnkPayment']['denda']) + intval($data['StnkPayment']['biaya_lain']);
                 $data['StnkPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
 
                 $this->StnkPayment->set($data);
@@ -3017,6 +3027,8 @@ class TrucksController extends AppController {
             $this->request->data['StnkPayment']['price'] = $stnk['Stnk']['price'];
             $this->request->data['StnkPayment']['price_estimate'] = $this->MkCommon->convertPriceToString($stnk['Stnk']['price_estimate']);
             $this->request->data['StnkPayment']['denda'] = $this->MkCommon->convertPriceToString($stnk['Stnk']['denda']);
+            $this->request->data['StnkPayment']['biaya_lain'] = $this->MkCommon->convertPriceToString($stnk['Stnk']['biaya_lain']);
+            $this->request->data['Stnk']['note'] = $stnk['Stnk']['note'];
 
             if( !empty($stnk['Stnk']['is_change_plat']) ) {
                 $this->request->data['StnkPayment']['plat_from_date'] = date('d/m/Y', strtotime($stnk['Stnk']['plat_from_date']));

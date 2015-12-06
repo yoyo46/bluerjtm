@@ -200,6 +200,33 @@
 						?>
 					</div>
 		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->label('biaya_lain', __('Biaya Lain')); 
+					?>
+					<div class="input-group">
+						<?php 
+								echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+				    				'class' => 'input-group-addon'
+			    				));
+								echo $this->Form->input('biaya_lain', array(
+									'type' => 'text',
+									'label'=> false, 
+									'class'=>'form-control input_price',
+									'required' => false,
+								));
+						?>
+					</div>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('note', array(
+								'label'=> __('Keterangan'), 
+								'class'=>'form-control',
+								'required' => false,
+							));
+					?>
+		        </div>
 		    </div>
 		</div>
 	</div>

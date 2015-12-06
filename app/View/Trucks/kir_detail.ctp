@@ -20,11 +20,11 @@
                     <dt><?php echo __('Account Kas/Bank')?></dt>
                     <dd><?php echo $coa_name;?></dd>
                     <dt><?php echo __('Tgl Perpanjang')?></dt>
-                    <dd><?php echo $this->Common->customDate($kir['Kir']['tgl_kir']);?></dd>
+                    <dd><?php echo $this->Common->customDate($kir['Kir']['tgl_kir'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Tgl Berakhir KIR')?></dt>
-                    <dd><?php echo $this->Common->customDate($kir['Kir']['from_date']);?></dd>
+                    <dd><?php echo $this->Common->customDate($kir['Kir']['from_date'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Berlaku Sampai')?></dt>
-                    <dd><?php echo $this->Common->customDate($kir['Kir']['to_date']);?></dd>
+                    <dd><?php echo $this->Common->customDate($kir['Kir']['to_date'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Estimasi Biaya')?></dt>
                     <dd><?php echo $this->Number->currency($kir['Kir']['price_estimate'], Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></dd>
                     <dt><?php echo __('Biaya Perpanjang')?></dt>
@@ -32,20 +32,32 @@
                     <dt><?php echo __('Denda')?></dt>
                     <dd>
                         <?php 
-                            $denda = 0;
-                            if(!empty($kir['Kir']['denda'])){
-                                $denda = $kir['Kir']['denda'];
-                            }
-                            echo $this->Number->currency($denda, Configure::read('__Site.config_currency_code').' ', array('places' => 0));
+                                $denda = 0;
+                                if(!empty($kir['Kir']['denda'])){
+                                    $denda = $kir['Kir']['denda'];
+                                }
+                                echo $this->Number->currency($denda, Configure::read('__Site.config_currency_code').' ', array('places' => 0));
+                        ?>
+                    </dd>
+                    <dt><?php echo __('Biaya Lain')?></dt>
+                    <dd>
+                        <?php 
+                                $biaya_lain = 0;
+                                if(!empty($kir['Kir']['biaya_lain'])){
+                                    $biaya_lain = $kir['Kir']['biaya_lain'];
+                                }
+                                echo $this->Number->currency($biaya_lain, Configure::read('__Site.config_currency_code').' ', array('places' => 0));
                         ?>
                     </dd>
                     <dt><?php echo __('Total Pembayaran')?></dt>
                     <dd>
                         <?php 
-                            $total = $kir['Kir']['price'] + $denda;
+                            $total = $kir['Kir']['price'] + $denda + $biaya_lain;
                             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code').' ', array('places' => 0));
                         ?>
                     </dd>
+                    <dt><?php echo __('Keterangan')?></dt>
+                    <dd><?php echo !empty($kir['Kir']['note'])?str_replace(PHP_EOL, '<br>', $kir['Kir']['note']):'-';?></dd>
                 </dl>
             </div>
         </div>
@@ -58,9 +70,9 @@
             <div class="box-body">
                 <dl class="dl-horizontal">
                     <dt><?php echo __('Tgl Dibayar')?></dt>
-                    <dd><?php echo $this->Common->customDate($kir['KirPayment']['kir_payment_date']);?></dd>
+                    <dd><?php echo $this->Common->customDate($kir['KirPayment']['kir_payment_date'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Tgl Dokumen Dibuat')?></dt>
-                    <dd><?php echo $this->Common->customDate($kir['KirPayment']['created']);?></dd>
+                    <dd><?php echo $this->Common->customDate($kir['KirPayment']['created'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Keterangan')?></dt>
                     <dd><?php echo !empty($kir['KirPayment']['note'])?str_replace(PHP_EOL, '<br>', $kir['KirPayment']['note']):'-';?></dd>
                     <dt><?php echo __('Status')?></dt>
