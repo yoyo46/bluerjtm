@@ -788,6 +788,7 @@ class RevenuesController extends AppController {
                                         $this->Revenue->save($dataRevenue);
 
                                         if( !empty($revenue_id) ) {
+                                            $this->Revenue->_callSetJournal($revenue_id, $dataRevenue);
                                             $this->Log->logActivity( sprintf(__('Berhasil mengubah Revenue #%s dari TTUJ #%s'), $revenue_id, $document_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $revenue_id, 'revenue_ttuj_edit' );
                                         } else {
                                             $revenue_id = $this->Revenue->id;
