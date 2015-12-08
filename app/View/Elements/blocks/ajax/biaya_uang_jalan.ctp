@@ -69,11 +69,17 @@
                 }
 		?>
 	</td>
-    <td>
+    <?php 
+            if( !empty($checkbox) ) {
+    ?>
+    <td class="on-remove">
         <?php
                 echo $note;
         ?>
     </td>
+    <?php 
+            }
+    ?>
     <td class="total-ttuj">
     	<?php
     			echo $this->Common->getBiayaTtuj( $ttuj, $data_type, true, false );

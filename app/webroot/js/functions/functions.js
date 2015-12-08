@@ -2636,6 +2636,7 @@ var popup_checkbox = function(){
                     $('#checkbox-info-table').append(html_content);
                     $('#checkbox-info-table .child-'+id+' .sisa-ttuj').val(sisa);
                     $('.child-'+id).find('.checkbox-action').remove();
+                    $('.child-'+id).find('.on-remove').remove();
                     $('#checkbox-info-table .child-'+id+' .ttuj-payment-action').removeClass('hide');
                     $('.action-biaya-ttuj').removeClass('hide');
 
