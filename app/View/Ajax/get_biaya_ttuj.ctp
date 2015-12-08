@@ -282,6 +282,7 @@
                         'width' => '15%',
                         'class' => 'text-center',
                     ));
+                    echo $this->Html->tag('th', __('Keterangan'));
                     echo $this->Html->tag('th', __('Total'));
                     echo $this->Html->tag('th', __('Sisa'), array(
                         'width' => '25%',

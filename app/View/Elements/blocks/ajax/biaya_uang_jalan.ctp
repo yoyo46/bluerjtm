@@ -5,11 +5,12 @@
         $nopol = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'nopol');
         $from_city_name = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'from_city_name');
         $to_city_name = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'to_city_name');
+        $note = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'note');
 
         $data_type = !empty($data_type)?$data_type:false;
         $data_type = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'data_type', $data_type);
 
-        $customer_name_code = $this->Common->filterEmptyField($ttuj, 'Customer', 'customer_name_code');
+        $customer_name_code = $this->Common->filterEmptyField($ttuj, 'Customer', 'code');
         $driver_name = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'driver_name');
         $driver_name = $this->Common->filterEmptyField($ttuj, 'DriverPenganti', 'driver_name', $driver_name);
 
@@ -68,6 +69,11 @@
                 }
 		?>
 	</td>
+    <td>
+        <?php
+                echo $note;
+        ?>
+    </td>
     <td class="total-ttuj">
     	<?php
     			echo $this->Common->getBiayaTtuj( $ttuj, $data_type, true, false );
