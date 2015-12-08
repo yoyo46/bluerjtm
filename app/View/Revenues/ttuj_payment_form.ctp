@@ -202,6 +202,7 @@
 			                    echo $this->Html->tag('th', __('Jenis'), array(
 			                        'width' => '5%',
 			                    ));
+			                    echo $this->Html->tag('th', __('Keterangan'));
 			                    echo $this->Html->tag('th', __('Total'));
 			                    echo $this->Html->tag('th', __('Biaya Dibayar'), array(
 			                        'width' => '15%',

@@ -21,7 +21,7 @@
 <tr>
 	<?php 
 			echo $this->Html->tag('td', __('Total'), array(
-				'colspan' => 9,
+				'colspan' => 10,
 				'class' => 'bold text-right',
 			));
 			echo $this->Html->tag('td', $this->Number->format($grandTotal, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
