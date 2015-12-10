@@ -455,16 +455,19 @@ class Revenue extends AppModel {
         $this->Journal->deleteJournal($revenue_id, array(
             'revenue',
         ));
-        $this->Journal->setJournal($total_revenue, array(
-            'credit' => 'revenue_coa_credit_id',
-            'debit' => 'revenue_coa_debit_id',
-        ), array(
-            'date' => $date_revenue,
-            'document_id' => $revenue_id,
-            'title' => $titleJournal,
-            'document_no' => $no_doc,
-            'type' => 'revenue',
-        ));
+
+        if( !empty($total_revenue) ) {
+            $this->Journal->setJournal($total_revenue, array(
+                'credit' => 'revenue_coa_credit_id',
+                'debit' => 'revenue_coa_debit_id',
+            ), array(
+                'date' => $date_revenue,
+                'document_id' => $revenue_id,
+                'title' => $titleJournal,
+                'document_no' => $no_doc,
+                'type' => 'revenue',
+            ));
+        }
     }
 
     function saveRevenue ( $id, $data_local, $data, $controller ) {
