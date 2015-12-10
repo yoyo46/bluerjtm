@@ -331,11 +331,18 @@ class RevenuesController extends AppController {
                 }
             }
 
-            if( !empty($tarifDefault['tarif']) && $tarifDefault['tarif'] == 'per_unit' && !empty($revenue_id) && !empty($totalTarif) ) {
-                $this->Revenue->set('total', $totalTarif);
-                $this->Revenue->set('total_without_tax', $totalTarif);
-                $this->Revenue->id = $revenue_id;
-                $this->Revenue->save();
+            if( !empty($revenue_id) ) {
+                if( !empty($tarifDefault['jenis_unit']) && $tarifDefault['jenis_unit'] == 'per_unit' && !empty($totalTarif) ) {
+                    $dataRevenue['Revenue']['total'] = $totalTarif;
+                    $dataRevenue['Revenue']['total_without_tax'] = $totalTarif;
+
+                    $this->Revenue->set('total', $totalTarif);
+                    $this->Revenue->set('total_without_tax', $totalTarif);
+                    $this->Revenue->id = $revenue_id;
+                    $this->Revenue->save();
+                }
+
+                $this->Revenue->_callSetJournal($revenue_id, $dataRevenue);
             }
         }
 
@@ -788,7 +795,6 @@ class RevenuesController extends AppController {
                                         $this->Revenue->save($dataRevenue);
 
                                         if( !empty($revenue_id) ) {
-                                            $this->Revenue->_callSetJournal($revenue_id, $dataRevenue);
                                             $this->Log->logActivity( sprintf(__('Berhasil mengubah Revenue #%s dari TTUJ #%s'), $revenue_id, $document_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $revenue_id, 'revenue_ttuj_edit' );
                                         } else {
                                             $revenue_id = $this->Revenue->id;

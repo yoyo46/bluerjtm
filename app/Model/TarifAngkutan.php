@@ -219,6 +219,13 @@ class TarifAngkutan extends AppModel {
                     'tarif_angkutan_id' => $result['TarifAngkutan']['id'],
                     'tarif_angkutan_type' => $result['TarifAngkutan']['type'],
                 );
+            } else if( !empty($results[0]) ) {
+               return array(
+                    'jenis_unit' => !empty($results[0]['TarifAngkutan']['jenis_unit'])?$results[0]['TarifAngkutan']['jenis_unit']:'per_truck',
+                    'tarif' => !empty($results[0]['TarifAngkutan']['tarif'])?$results[0]['TarifAngkutan']['tarif']:0,
+                    'tarif_angkutan_id' => !empty($results[0]['TarifAngkutan']['id'])?$results[0]['TarifAngkutan']['id']:false,
+                    'tarif_angkutan_type' => !empty($results[0]['TarifAngkutan']['type'])?$results[0]['TarifAngkutan']['type']:'angkut',
+                );
             }
         }else{
             return false;
