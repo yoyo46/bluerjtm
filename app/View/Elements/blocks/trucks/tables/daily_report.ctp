@@ -14,8 +14,9 @@
                 $from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
                 $to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
                 $total_unit = $this->Common->filterEmptyField($value, 'Ttuj', 'total_unit', '-');
-                $uang_jalan_2 = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_2', 0);
-                $uang_jalan = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_1', 0) + $uang_jalan_2;
+                // $uang_jalan_2 = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_2', 0);
+                // $uang_jalan = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_1', 0) + $uang_jalan_2;
+                $uang_jalan = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_1', 0);
                 $uang_jalan_extra = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_extra', 0);
                 $total_uang_jalan = $uang_jalan + $uang_jalan_extra;
 

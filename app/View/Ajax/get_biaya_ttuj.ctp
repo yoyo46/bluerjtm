@@ -283,9 +283,11 @@
                         'class' => 'text-center',
                     ));
                     echo $this->Html->tag('th', __('Keterangan'));
-                    echo $this->Html->tag('th', __('Total'));
+                    echo $this->Html->tag('th', __('Total'), array(
+                        'class' => 'text-center',
+                    ));
                     echo $this->Html->tag('th', __('Sisa'), array(
-                        'width' => '25%',
+                        'class' => 'text-center',
                     ));
             ?>
         </tr>
@@ -309,7 +311,7 @@
                 }else{
                     echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                         'class' => 'alert alert-warning text-center',
-                        'colspan' => '11'
+                        'colspan' => '12'
                     )));
                 }
         ?>
