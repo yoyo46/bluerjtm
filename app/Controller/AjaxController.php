@@ -1093,6 +1093,7 @@ class AjaxController extends AppController {
             ),
             'limit' => 10,
         );
+        $element = array();
 
         if( in_array($action_type, array( 'ttuj', 'revenue' )) ) {
     		$ttuj = $this->Truck->Ttuj->getData('first', array(
@@ -1132,6 +1133,9 @@ class AjaxController extends AppController {
             $options['contain'][] = 'Laka';
         } else if( $action_type == 'cashbank' ) {
     		$data_change = $action_id;
+        	$element = array(
+        		'branch' => false,
+    		);
         }
 
         if(!empty($this->request->data)){
@@ -1153,7 +1157,7 @@ class AjaxController extends AppController {
             }
         }
 
-		$this->paginate = $this->Truck->getData('paginate', $options);
+		$this->paginate = $this->Truck->getData('paginate', $options, true, $element);
         $trucks = $this->paginate('Truck');
 
         if(!empty($trucks)){
