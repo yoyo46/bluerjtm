@@ -72,6 +72,16 @@
                 </div>
             </div>
         </div>
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->input('Ttuj.note',array(
+                        'type' => 'text',
+                        'label'=> __('Keterangan'),
+                        'class'=>'form-control',
+                        'required' => false,
+                    ));
+            ?>
+        </div>
     </div>
     <div class="col-sm-6">
         <!-- <div class="form-group">

@@ -2414,6 +2414,10 @@ class AjaxController extends AppController {
         		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'uang_keamanan';
         		$idx++;
             }
+            if(!empty($this->request->data['Ttuj']['note'])){
+                $note = urldecode($this->request->data['Ttuj']['note']);
+                $conditions['UangJalanKomisiPayment.note LIKE '] = '%'.$note.'%';
+            }
         }
 
         if( empty($this->request->data['Ttuj']['date']) ){
