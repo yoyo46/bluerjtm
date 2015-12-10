@@ -32,14 +32,14 @@
 					'empty' => __('Pilih Grup Motor'),
 					'options' => $group_motors
 				));
-				echo $this->Common->buildInputForm('converter', __('Converter UJ Extra'), array(
-					'type' => 'text',
-					'labelClass' => 'col-sm-2 control-label',
-					'divClass' => 'col-sm-4',
-					'textGroup' => __('Kali Lipat'),
-					'class' => 'input_number form-control',
-					'title' => __('Converter Uang Jalan'),
-				));
+				// echo $this->Common->buildInputForm('converter', __('Converter UJ Extra'), array(
+				// 	'type' => 'text',
+				// 	'labelClass' => 'col-sm-2 control-label',
+				// 	'divClass' => 'col-sm-4',
+				// 	'textGroup' => __('Kali Lipat'),
+				// 	'class' => 'input_number form-control',
+				// 	'title' => __('Converter Uang Jalan'),
+				// ));
 				echo $this->element('blocks/common/forms/submit_action', array(
 					'frameClass' => 'form-group action',
 					'divClass' => 'col-sm-offset-2 col-sm-4',

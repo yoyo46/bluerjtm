@@ -931,15 +931,19 @@ class RevenuesController extends AppController {
                                                 'TipeMotor.status' => 1,
                                             ),
                                         ));
-                                        $converterUJExtra = $this->Ttuj->TtujTipeMotor->TipeMotor->getData('first', array(
+                                        if( !empty($groupMotor) ) {
+                                            $group_motor_id = $groupMotor['TipeMotor']['group_motor_id'];
+                                        }
+
+                                        $converterUJExtra = $this->Ttuj->TtujTipeMotor->TipeMotor->GroupMotor->getData('first', array(
                                             'conditions' => array(
-                                                'TipeMotor.id' => $tipe_motor_id,
+                                                'GroupMotor.id' => $group_motor_id,
                                             ),
                                             'contain' => false,
                                         ), true, array(
                                             'converter' => true,
                                         ));
-                                        $qtyConverterUJExtra = $this->MkCommon->filterEmptyField($converterUJExtra, 'TipeMotor', 'converter');
+                                        $qtyConverterUJExtra = $this->MkCommon->filterEmptyField($converterUJExtra, 'GroupMotor', 'converter');
 
                                         $totalMuatan += $qty;
 
@@ -947,10 +951,6 @@ class RevenuesController extends AppController {
                                             $totalMuatanExtra += $qty * $qtyConverterUJExtra;
                                         } else {
                                             $totalMuatanExtra = $totalMuatan;
-                                        }
-
-                                        if( !empty($groupMotor) ) {
-                                            $group_motor_id = $groupMotor['TipeMotor']['group_motor_id'];
                                         }
 
                                         if( !empty($uangJalanTipeMotor['UangJalan'][$group_motor_id]) ) {
@@ -1154,13 +1154,13 @@ class RevenuesController extends AppController {
                 } else {
                     $this->request->data['Ttuj']['ttuj_date'] = '';
                 }
-
-                $converterUjs = $this->Ttuj->TtujTipeMotor->TipeMotor->getData('all', array(
-                    'contain' => false,
-                ), true, array(
-                    'converter' => true,
-                ));
             }
+
+            $converterUjs = $this->Ttuj->TtujTipeMotor->TipeMotor->GroupMotor->getData('all', array(
+                'contain' => false,
+            ), true, array(
+                'converter' => true,
+            ));
 
             if( !empty($this->request->data['Ttuj']['from_city_id']) ) {
                 $toCities = $this->Ttuj->UangJalan->getKotaTujuan($this->request->data['Ttuj']['from_city_id']);

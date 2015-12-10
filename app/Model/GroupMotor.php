@@ -17,6 +17,8 @@ class GroupMotor extends AppModel {
 
     function getData( $find, $options = false, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $converter = isset($element['converter'])?$element['converter']:false;
+
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
@@ -25,6 +27,13 @@ class GroupMotor extends AppModel {
             'contain' => array(),
             'fields' => array(),
         );
+
+        if( !empty($converter) ) {
+            $default_options['conditions'] = array_merge($default_options['conditions'], array(
+                'GroupMotor.converter <>' => 0,
+                'GroupMotor.converter NOT' => NULL,
+            ));
+        }
 
         switch ($status) {
             case 'all':

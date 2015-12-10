@@ -182,7 +182,7 @@
             var tipe_motor_id = tipeMotorObj[i].value;
             var group_motor_id = parseInt($('#group_tipe_motor_id option[value="'+tipe_motor_id+'"]').text());
             var qtyMuatan = $.convertNumber(qtyMuatanObj[i].value, 'int');
-            var converter_uang_jalan_extra = $.convertNumber($('#converter-uang-jalan-extra-'+tipe_motor_id).html(), 'int');
+            var converter_uang_jalan_extra = $.convertNumber($('#converter-uang-jalan-extra-'+group_motor_id).html(), 'int');
 
             total_muatan += qtyMuatan;
 

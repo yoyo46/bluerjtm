@@ -5,8 +5,8 @@
 
 		if( !empty($values) ) {
 			foreach ($values as $key => $value) {
-				$id = $this->Common->filterEmptyField($value, 'TipeMotor', 'id');
-				$converter = $this->Common->filterEmptyField($value, 'TipeMotor', 'converter');
+				$id = $this->Common->filterEmptyField($value, 'GroupMotor', 'id');
+				$converter = $this->Common->filterEmptyField($value, 'GroupMotor', 'converter');
 
 				$content .= $this->Html->tag('div', $converter, array(
 					'id' => sprintf('converter-uang-jalan-extra-%s', $id),

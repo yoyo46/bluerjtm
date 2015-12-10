@@ -67,7 +67,7 @@ class AjaxController extends AppController {
 			
 			$uangJalan = $this->Ttuj->UangJalan->getNopol( $from_city_id, $to_city_id, $result['Truck']['capacity'] );
 			$uangKuli = $this->UangKuli->getUangKuli( $from_city_id, $to_city_id, $customer_id, $result['Truck']['capacity'] );
-			$converterUjs = $this->Ttuj->TtujTipeMotor->TipeMotor->getData('all', array(
+			$converterUjs = $this->Ttuj->TtujTipeMotor->TipeMotor->GroupMotor->getData('all', array(
 				'contain' => false,
 			), true, array(
 				'converter' => true,
