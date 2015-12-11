@@ -766,12 +766,14 @@ class CashbanksController extends AppController {
                                             'is_rejected' => 0
                                         );
                                         break;
+                                        $msgRevision = sprintf(__('Kas/Bank dengan No Dokumen %s telah disetujui'), $nodoc);
                                     case 'revise':
                                         $data_arr = array(
                                             'completed' => 0,
                                             'is_revised' => 1,
                                             'is_rejected' => 0
                                         );
+                                        $msgRevision = sprintf(__('Kas/Bank dengan No Dokumen %s memerlukan resivisi Anda'), $nodoc);
                                         break;
                                     case 'reject':
                                         $data_arr = array(
@@ -779,12 +781,14 @@ class CashbanksController extends AppController {
                                             'is_revised' => 0,
                                             'is_rejected' => 1
                                         );
+                                        $msgRevision = sprintf(__('Kas/Bank dengan No Dokumen %s telah ditolak'), $nodoc);
                                         break;
                                 }
                             }else if($status_document == 'revise'){
                                 $data_arr = array(
                                     'is_revised' => 1,
                                 );
+                                $msgRevision = sprintf(__('Kas/Bank dengan No Dokumen %s memerlukan resivisi Anda'), $nodoc);
                             }
 
                             if( !empty($data_arr) ) {
@@ -856,6 +860,21 @@ class CashbanksController extends AppController {
                                             'document_no' => $nodoc,
                                             'type' => $receiving_cash_type,
                                             'date' => $tgl_cash_bank,
+                                        ));
+                                    }
+
+                                    if( !empty($msgRevision) ) {
+                                        $this->MkCommon->_saveNotification(array(
+                                            'action' => __('Kas/Bank'),
+                                            'name' => $msgRevision,
+                                            'user_id' => $user_id,
+                                            'document_id' => $id, 
+                                            'url' => array(
+                                                'controller' => 'cashbanks',
+                                                'action' => 'cashbank_edit',
+                                                $id,
+                                                'admin' => false,
+                                            ),
                                         ));
                                     }
                                 }

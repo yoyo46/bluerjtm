@@ -40,7 +40,7 @@ class CashBankHelper extends AppHelper {
             $class = 'success';
         }else if(!empty($is_revised)){
             $status = __('Revisi');
-            $class = 'primary';
+            $class = 'warning';
         }else {
             $status = __('Pending');
             $class = 'info';
@@ -61,18 +61,22 @@ class CashBankHelper extends AppHelper {
         if( $status != '-' ) {
             switch ($status) {
                 case 'approve':
+                    $status = __('Disetujui');
                     $labelClass = 'success';
                     break;
 
                 case 'reject':
+                    $status = __('Ditolak');
                     $labelClass = 'danger';
                     break;
 
                 case 'revise':
+                    $status = __('Revisi');
                     $labelClass = 'warning';
                     break;
                 
                 default:
+                    $status = __('Pending');
                     $labelClass = 'default';
                     break;
             }
