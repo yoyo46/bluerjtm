@@ -1,8 +1,10 @@
 <?php 
-        echo $this->Form->create('Coa', array(
+        echo $this->Form->create('Search', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
-                'action' => 'getInfoCoa'
+                'action' => 'search',
+                'getInfoCoa',
+                'admin' => false,
             )), 
             'role' => 'form',
             'inputDefaults' => array('div' => false),
@@ -80,3 +82,11 @@
         </tbody>
     </table>
 </div>
+<?php
+        echo $this->element('pagination', array(
+            'options' => array(
+                'data-action' => $data_action,
+                'class' => 'ajaxModal',
+            ),
+        ));
+?>

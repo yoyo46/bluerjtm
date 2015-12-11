@@ -234,5 +234,31 @@ class Client extends AppModel {
 
 	    return count($results);
 	}
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $name = !empty($data['named']['name'])?urldecode($data['named']['name']):false;
+        $is_employee = !empty($data['named']['is_employee'])?urldecode($data['named']['is_employee']):false;
+        $is_customer = !empty($data['named']['is_customer'])?urldecode($data['named']['is_customer']):false;
+        $is_vendor = !empty($data['named']['is_vendor'])?urldecode($data['named']['is_vendor']):false;
+        $is_driver = !empty($data['named']['is_driver'])?urldecode($data['named']['is_driver']):false;
+
+		if(!empty($name)){
+			$default_options['conditions']['Client.name LIKE'] = '%'.$name.'%';
+		}
+		if(!empty($is_employee)){
+			$default_options['conditions']['Client.type'][] = 'Karyawan';
+		}
+		if(!empty($is_customer)){
+			$default_options['conditions']['Client.type'][] = 'Customer';
+		}
+		if(!empty($is_vendor)){
+			$default_options['conditions']['Client.type'][] = 'Vendor';
+		}
+		if(!empty($is_driver)){
+			$default_options['conditions']['Client.type'][] = 'Supir';
+		}
+        
+        return $default_options;
+    }
 }
 ?>

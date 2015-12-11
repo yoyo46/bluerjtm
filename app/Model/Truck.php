@@ -525,5 +525,25 @@ class Truck extends AppModel {
 
         return $data;
     }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $nopol = !empty($data['named']['nopol'])?urldecode($data['named']['nopol']):false;
+        $type = !empty($data['named']['type'])?urldecode($data['named']['type']):1;
+        $driver = !empty($data['named']['driver'])?urldecode($data['named']['driver']):false;
+
+        if(!empty($nopol)){
+            if( $type == 2 ) {
+                $default_options['conditions']['Truck.id'] = $nopol;
+            } else {
+                $default_options['conditions']['Truck.nopol LIKE'] = '%'.$nopol.'%';
+            }
+        }
+        if(!empty($driver)){
+            $default_options['conditions']['Driver.name LIKE '] = '%'.$driver.'%';
+            $default_options['contain'][] = 'Driver';
+        }
+        
+        return $default_options;
+    }
 }
 ?>

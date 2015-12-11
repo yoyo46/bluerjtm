@@ -128,7 +128,7 @@
                                 }
                         ?>
                         <tr>
-                            <td align="right" colspan="2" style="font-weight: bold;">Total</td>
+                            <td align="right" colspan="3" style="font-weight: bold;">Total</td>
                             <td align="right" style="font-weight: bold;">
                                 <?php
                                         $customGrandTotal = $this->Common->getFormatPrice($grand_total);

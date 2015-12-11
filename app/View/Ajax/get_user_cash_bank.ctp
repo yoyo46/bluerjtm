@@ -1,9 +1,11 @@
 <?php 
-        echo $this->Form->create('UserCashBank', array(
+        echo $this->Form->create('Search', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
-                'action' => 'getUserCashBank',
-                $action_type,
+                'action' => 'search',
+                'getUserCashBank',
+                'action_type' => $action_type,
+                'admin' => false,
             )), 
             'role' => 'form',
             'inputDefaults' => array('div' => false),
@@ -151,6 +153,7 @@
             'options' => array(
                 'data-action' => $data_action,
                 'class' => 'ajaxModal',
+                'title' => __('Data User Kas/Bank'),
             ),
             'model' => false,
         ));

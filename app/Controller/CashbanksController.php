@@ -765,8 +765,8 @@ class CashbanksController extends AppController {
                                             'is_revised' => 0,
                                             'is_rejected' => 0
                                         );
-                                        break;
                                         $msgRevision = sprintf(__('Kas/Bank dengan No Dokumen %s telah disetujui'), $nodoc);
+                                        break;
                                     case 'revise':
                                         $data_arr = array(
                                             'completed' => 0,

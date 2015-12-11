@@ -1,10 +1,12 @@
 <?php 
-        echo $this->Form->create('Truck', array(
+        echo $this->Form->create('Search', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
-                'action' => 'getTrucks',
-                $action_type,
-                $action_id,
+                'action' => 'search',
+                'getTrucks',
+                'action_type' => $action_type,
+                'action_id' => $action_id,
+                'admin' => false,
             )), 
             'role' => 'form',
             'inputDefaults' => array('div' => false),
@@ -46,7 +48,7 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('Driver.name',array(
+                    echo $this->Form->input('driver',array(
                         'label'=> __('Nama Supir'),
                         'class'=>'form-control',
                         'required' => false,

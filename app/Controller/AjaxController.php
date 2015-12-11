@@ -17,11 +17,18 @@ class AjaxController extends AppController {
     function search( $index = 'index' ){
         if(!empty($this->request->data)) {
             $data = $this->request->data;
+            $named = $this->MkCommon->filterEmptyField($this->params, 'named');
             $params = array(
                 'controller' => 'ajax',
                 'action' => $index,
                 'false' => false,
             );
+            
+            if( !empty($named) ) {
+            	foreach ($named as $key => $value) {
+            		$params[] = $value;
+            	}
+            }
 
             $result = $this->MkCommon->processFilter($data);
             $params = array_merge($params, $result);
@@ -1083,6 +1090,7 @@ class AjaxController extends AppController {
 		$title = __('Data Truk');
 		$data_action = 'browse-form';
 		$data_change = 'truckID';
+
 		$options = array(
             'conditions' => array(),
             'contain' => array(
@@ -1138,24 +1146,8 @@ class AjaxController extends AppController {
     		);
         }
 
-        if(!empty($this->request->data)){
-        	$data = $this->request->data;
-
-            if(!empty($data['Truck']['nopol'])){
-                $nopol = urldecode($data['Truck']['nopol']);
-                $typeTruck = !empty($data['Truck']['type'])?$data['Truck']['type']:1;
-
-                if( $typeTruck == 2 ) {
-                	$options['conditions']['Truck.id'] = $nopol;
-                } else {
-                	$options['conditions']['Truck.nopol LIKE'] = '%'.$nopol.'%';
-                }
-            }
-            if(!empty($data['Driver']['name'])){
-                $name = urldecode($data['Driver']['name']);
-                $options['conditions']['Driver.name LIKE '] = '%'.$name.'%';
-            }
-        }
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Truck->_callRefineParams($params, $options);
 
 		$this->paginate = $this->Truck->getData('paginate', $options, true, $element);
         $trucks = $this->paginate('Truck');
@@ -1753,7 +1745,6 @@ class AjaxController extends AppController {
         	'Employe' => __('karyawan'),
         	'Driver' => __('Supir'),
         );
-        $default_conditions = array();
 
 		switch ($action_type) {
 			case 'ttuj':
@@ -1773,35 +1764,22 @@ class AjaxController extends AppController {
 				break;
 		}
 
-		if( !empty($this->request->data) ) {
-			$data = $this->request->data;
-
-			if(!empty($data['UserCashBank']['model'])){
-				$model = ucwords($data['UserCashBank']['model']);
-			} else if(!empty($this->params['named']['model'])){
-				$model = ucwords($this->params['named']['model']);
-			}
-			if(!empty($data['UserCashBank']['name'])){
-				$default_conditions['Client.name LIKE'] = '%'.$data['UserCashBank']['name'].'%';
-			}
-			if(!empty($data['UserCashBank']['is_employee'])){
-				$default_conditions['Client.type'][] = 'Karyawan';
-			}
-			if(!empty($data['UserCashBank']['is_customer'])){
-				$default_conditions['Client.type'][] = 'Customer';
-			}
-			if(!empty($data['UserCashBank']['is_vendor'])){
-				$default_conditions['Client.type'][] = 'Vendor';
-			}
-			if(!empty($data['UserCashBank']['is_driver'])){
-				$default_conditions['Client.type'][] = 'Supir';
-			}
-		}
-
-		$this->paginate = array(
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Client->_callRefineParams($params, array(
 			'limit' => 20,
-			'conditions' => $default_conditions,
-		);
+    	));
+
+		// if( !empty($this->request->data) ) {
+		// 	$data = $this->request->data;
+
+		// 	if(!empty($data['UserCashBank']['model'])){
+		// 		$model = ucwords($data['UserCashBank']['model']);
+		// 	} else if(!empty($this->params['named']['model'])){
+		// 		$model = ucwords($this->params['named']['model']);
+		// 	}
+		// }
+
+		$this->paginate = $options;
 		$values = $this->paginate('Client');
 		$this->request->data['UserCashBank']['model'] = $model;
 
@@ -1815,23 +1793,17 @@ class AjaxController extends AppController {
 	function getInfoCoa(){
 		$this->loadModel('Coa');
 
-		$default_conditions = array(
-            'Coa.status' => 1,
-            'Coa.level' => 4
-        );
-
-        if(!empty($this->request->data['Coa']['name'])){
-			$default_conditions['Coa.name LIKE'] = '%'.$this->request->data['Coa']['name'].'%';
-		}
-		if(!empty($this->request->data['Coa']['code'])){
-			$code = trim($this->request->data['Coa']['code']);
-			$default_conditions['OR']['Coa.code LIKE'] = '%'.$code.'%';
-			$default_conditions['OR']['Coa.with_parent_code LIKE'] = '%'.$code.'%';
-		}
-
-		$coas = $this->Coa->getData('all', array(
-            'conditions' => $default_conditions,
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Coa->_callRefineParams($params, array(
+            'conditions' => array(
+	            'Coa.status' => 1,
+	            'Coa.level' => 4
+	        ),
+            'limit' => Configure::read('__Site.config_pagination'),
         ));
+
+		$this->paginate = $this->Coa->getData('paginate', $options);
+		$coas = $this->paginate('Coa');
         
         $this->set('coas', $coas);
 

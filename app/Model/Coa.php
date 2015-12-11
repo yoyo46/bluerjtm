@@ -249,5 +249,21 @@ class Coa extends AppModel {
 
         return $result;
     }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $name = !empty($data['named']['name'])?urldecode($data['named']['name']):false;
+        $code = !empty($data['named']['code'])?urldecode($data['named']['code']):false;
+
+        if(!empty($name)){
+            $default_options['conditions']['Coa.name LIKE'] = '%'.$name.'%';
+        }
+        if(!empty($code)){
+            $code = trim($code);
+            $default_options['conditions']['OR']['Coa.code LIKE'] = '%'.$code.'%';
+            $default_options['conditions']['OR']['Coa.with_parent_code LIKE'] = '%'.$code.'%';
+        }
+        
+        return $default_options;
+    }
 }
 ?>
