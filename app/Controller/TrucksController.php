@@ -193,7 +193,7 @@ class TrucksController extends AppController {
                     ),
                     'contain' => array(
                         'Leasing' => array(
-                            'LeasingCompany'
+                            'Vendor'
                         )
                     )
                 ));

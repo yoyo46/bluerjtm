@@ -24,8 +24,8 @@ class RjLeasingComponent extends Component {
 				if( !empty($refine['Leasing']['no_contract']) ) {
 					$refine_conditions['Leasing']['nocontract'] = $refine['Leasing']['no_contract'];
 				}
-				if( !empty($refine['LeasingCompany']['name']) ) {
-					$refine_conditions['LeasingCompany']['name'] = $refine['LeasingCompany']['name'];
+				if( !empty($refine['Vendor']['name']) ) {
+					$refine_conditions['Vendor']['name'] = $refine['Vendor']['name'];
 				}
 				if( !empty($refine['LeasingPayment']['no_doc']) ) {
 					$refine_conditions['LeasingPayment']['no_doc'] = $refine['LeasingPayment']['no_doc'];
@@ -82,8 +82,8 @@ class RjLeasingComponent extends Component {
 				}
 			}
 		}
-		if(isset($refine['LeasingCompany']) && !empty($refine['LeasingCompany'])) {
-			foreach($refine['LeasingCompany'] as $param => $value) {
+		if(isset($refine['Vendor']) && !empty($refine['Vendor'])) {
+			foreach($refine['Vendor'] as $param => $value) {
 				if($value) {
 					$parameters[trim($param)] = rawurlencode($value);
 				}

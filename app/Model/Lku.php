@@ -85,23 +85,15 @@ class Lku extends AppModel {
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
+
         $default_options = array(
-            'conditions'=> array(
-                'Lku.branch_id' => Configure::read('__Site.config_branch_id'),
-            ),
+            'conditions'=> array(),
             'order'=> array(
                 'Lku.created' => 'DESC',
                 'Lku.id' => 'DESC',
             ),
             'contain' => array(),
-            // 'contain' => array(
-            //     'LkuDetail' => array(
-            //         'order'=> array(
-            //             'LkuDetail.id' => 'ASC',
-            //             'LkuDetail.created' => 'ASC',
-            //         ),
-            //     ),
-            // ),
             'fields' => array(),
             'group' => array(),
         );
@@ -118,6 +110,10 @@ class Lku extends AppModel {
             default:
                 $default_options['conditions']['Lku.status'] = 1;
                 break;
+        }
+
+        if( !empty($branch) ) {
+            $default_options['conditions']['Lku.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         if(!empty($options) && $is_merge){

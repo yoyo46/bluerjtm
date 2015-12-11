@@ -163,6 +163,14 @@ class Ttuj extends AppModel {
             'className' => 'TtujPaymentDetail',
             'foreignKey' => 'ttuj_id',
         ),
+        'Lku' => array(
+            'className' => 'Lku',
+            'foreignKey' => 'ttuj_id',
+        ),
+        'Ksu' => array(
+            'className' => 'Ksu',
+            'foreignKey' => 'ttuj_id',
+        ),
     );
 
     function validateDateTtuj ( $data, $target_date, $input_date ) {

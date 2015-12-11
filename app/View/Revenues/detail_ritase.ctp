@@ -154,6 +154,9 @@
 			        				
 			        				$label = $this->Html->tag('label', 'NG Unit');
 				        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $total_lku));
+
+				        			$label = $this->Html->tag('label', 'KSU Unit');
+				        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $total_ksu));
 			        		?>
 		        		</ul>
 		        	</div>
@@ -242,6 +245,12 @@
 					                'class' => 'text-center',
 					                'display' => true,
 					            ),
+					            'ksu' => array(
+					                'name' => __('KSU'),
+					                'field_model' => false,
+					                'class' => 'text-center',
+					                'display' => true,
+					            ),
 					        );
         					$fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 		    	?>
@@ -258,6 +267,7 @@
 				        			foreach ($truk_ritase as $key => $value) {
 				        				$qty = $this->Common->filterEmptyField($value, 'qty_ritase');
 				        				$lku_qty = $this->Common->filterEmptyField($value, 'Lku', 'qty');
+				        				$ksu_qty = $this->Common->filterEmptyField($value, 'Ksu', 'qty');
 
 				        				$from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
 				        				$to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
@@ -330,6 +340,22 @@
 				        				} else {
 				        					$customLku = '-';
 				        				}
+
+				        				if( !empty($ksu_qty) ) {
+				        					$customKsu = $this->Html->link($ksu_qty, array(
+				        						'controller' => 'ksus',
+				        						'action' => 'index',
+				        						'nopol' => $nopol,
+			        						), array(
+			        							'class' => 'white',
+			        							'target' => '_blank',
+			        						));
+					        				$customKsu = $this->Html->tag('span', $customKsu, array(
+					        					'class' => 'label label-warning block',
+				        					));
+				        				} else {
+				        					$customKsu = '-';
+				        				}
 			        		?>
 			        		<tr>
 			        			<?php
@@ -362,6 +388,9 @@
 				        					'class' => 'text-center',
 			        					));
 				        				echo $this->Html->tag('td', $customLku, array(
+				        					'class' => 'text-center',
+			        					));
+			        					echo $this->Html->tag('td', $customKsu, array(
 				        					'class' => 'text-center',
 			        					));
 			        			?>

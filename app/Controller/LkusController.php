@@ -1106,15 +1106,15 @@ class LkusController extends AppController {
             $Ksu = $this->Ksu->getKsu($id);
 
             if(!empty($Ksu)){
-                $this->loadModel('Customer');
-
                 $customer_id = $this->MkCommon->filterEmptyField($Ksu, 'Ttuj', 'customer_id');
-                $Ksu = $this->Customer->getMerge($Ksu, $customer_id);
+                $driver_penganti_id = $this->MkCommon->filterEmptyField($Ksu, 'Ttuj', 'driver_penganti_id');
+
+                $Ksu = $this->Ksu->Ttuj->Customer->getMerge($Ksu, $customer_id);
+                $Ksu = $this->Ksu->Ttuj->Truck->Driver->getMerge($Ksu, $driver_penganti_id, 'DriverPengganti');
 
                 if(!empty($Ksu['KsuDetail'])){
-                    $this->loadModel('Perlengkapan');
                     foreach ($Ksu['KsuDetail'] as $key => $value) {
-                        $Perlengkapan = $this->Perlengkapan->getData('first', array(
+                        $Perlengkapan = $this->Ksu->KsuDetail->Perlengkapan->getData('first', array(
                             'conditions' => array(
                                 'Perlengkapan.id' => $value['perlengkapan_id']
                             ),
@@ -1168,7 +1168,6 @@ class LkusController extends AppController {
 
     function DoKsu($id = false, $data_local = false){
         $this->loadModel('Ttuj');
-        $this->loadModel('Perlengkapan');
         $this->loadModel('TtujPerlengkapan');
 
         if(!empty($this->request->data)){
@@ -1285,7 +1284,7 @@ class LkusController extends AppController {
 
             if(!empty($this->request->data['KsuDetail'])){
                 foreach ($this->request->data['KsuDetail'] as $key => $value) {
-                    $perlengkapan = $this->Perlengkapan->getData('first', array(
+                    $perlengkapan = $this->Ksu->KsuDetail->Perlengkapan->getData('first', array(
                         'conditions' => array(
                             'Perlengkapan.id' => $value['KsuDetail']['perlengkapan_id']
                         ),
@@ -1322,7 +1321,7 @@ class LkusController extends AppController {
                         'note' => (!empty($data['KsuDetail']['note'][$key])) ? $data['KsuDetail']['note'][$key] : '',
                     );
 
-                    $perlengkapan = $this->Perlengkapan->getData('first', array(
+                    $perlengkapan = $this->Ksu->KsuDetail->Perlengkapan->getData('first', array(
                         'conditions' => array(
                             'Perlengkapan.id' => $value,
                             'Perlengkapan.jenis_perlengkapan_id' => 2
@@ -1391,7 +1390,7 @@ class LkusController extends AppController {
 
                 if(!empty($data_ttuj['TtujPerlengkapan'])){
                     foreach ($data_ttuj['TtujPerlengkapan'] as $key => $value) {
-                        $perlengkapan_data = $this->Perlengkapan->getData('first', array(
+                        $perlengkapan_data = $this->Ksu->KsuDetail->Perlengkapan->getData('first', array(
                             'conditions' => array(
                                 'Perlengkapan.id' => $value['TtujPerlengkapan']['perlengkapan_id'],
                             )
@@ -1406,7 +1405,7 @@ class LkusController extends AppController {
             }
         }
 
-        $perlengkapans = $this->Perlengkapan->getListPerlengkapan(2);
+        $perlengkapans = $this->Ksu->KsuDetail->Perlengkapan->getListPerlengkapan(2);
         $this->set('active_menu', 'ksus');
         $this->set(compact(
             'perlengkapans', 'perlengkapan_list', 'ttujs',
@@ -1454,7 +1453,6 @@ class LkusController extends AppController {
 
     function ksu_payments() {
         $this->loadModel('KsuPayment');
-        $this->loadModel('Customer');
 
         $this->set('active_menu', 'ksu_payments');
         $this->set('sub_module_title', __('Data Pembayaran KSU'));
@@ -1484,16 +1482,15 @@ class LkusController extends AppController {
         $payments = $this->paginate('KsuPayment');
 
         if( !empty($payments) ) {
-            $this->loadModel('Customer');
             foreach ($payments as $key => $payment) {
-                $payment = $this->Customer->getMerge($payment, $payment['KsuPayment']['customer_id']);
+                $payment = $this->KsuPayment->Customer->getMerge($payment, $payment['KsuPayment']['customer_id']);
                 $payments[$key] = $payment;
             }
         }
 
         $this->set('payments', $payments);
 
-        $customers = $this->Customer->getData('list', array(
+        $customers = $this->KsuPayment->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -2190,7 +2187,6 @@ class LkusController extends AppController {
     function detail_ksu_payment($id = false){
         if(!empty($id)){
             $this->loadModel('KsuPayment');
-            $this->loadModel('Perlengkapan');
 
             $KsuPayment = $this->KsuPayment->getKsuPayment($id);
             
@@ -2215,7 +2211,7 @@ class LkusController extends AppController {
                             $ksu = $this->KsuPayment->KsuPaymentDetail->KsuDetail->Ksu->Ttuj->getMerge($ksu, $ttuj_id);
 
                             if(!empty($ksu['KsuDetail']['perlengkapan_id'])){
-                                $Perlengkapan = $this->Perlengkapan->getData('first', array(
+                                $Perlengkapan = $this->KsuPayment->KsuPaymentDetail->KsuDetail->Perlengkapan->getData('first', array(
                                     'conditions' => array(
                                         'Perlengkapan.id' => $ksu['KsuDetail']['perlengkapan_id']
                                     )

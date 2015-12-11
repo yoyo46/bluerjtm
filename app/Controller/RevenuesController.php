@@ -3942,32 +3942,45 @@ class RevenuesController extends AppController {
                 ));
                 $truk_ritase = $this->paginate('Ttuj');
                 $total_lku = 0;
+                $total_ksu = 0;
 
                 if(!empty($truk_ritase)){
-                    $this->loadModel('Lku');
                     $this->loadModel('TtujTipeMotor');
 
                     foreach ($truk_ritase as $key => $value) {
+                        $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
+
                         $qty_ritase = $this->TtujTipeMotor->getData('first', array(
                             'conditions' => array(
-                                'TtujTipeMotor.ttuj_id' => $value['Ttuj']['id'],
+                                'TtujTipeMotor.ttuj_id' => $ttuj_id,
                                 'TtujTipeMotor.status' => 1
                             ),
                             'fields' => array(
                                 'sum(TtujTipeMotor.qty) as qty_ritase'
                             )
                         ));
-                        $lkus = $this->Lku->getData('first', array(
+
+                        $this->Ttuj->Lku->virtualFields['qty'] = 'SUM(Lku.total_klaim)';
+                        $lkus = $this->Ttuj->Lku->getData('first', array(
                             'conditions' => array(
-                                'Lku.ttuj_id' => $value['Ttuj']['id']
+                                'Lku.ttuj_id' => $ttuj_id
                             ),
-                            'fields' => array(
-                                'SUM(Lku.total_klaim) as qty_lku'
-                            )
+                        ), true, array(
+                            'branch' => false,
+                        ));
+
+
+                        $this->Ttuj->Ksu->virtualFields['qty'] = 'SUM(Ksu.total_klaim)';
+                        $ksus = $this->Ttuj->Ksu->getData('first', array(
+                            'conditions' => array(
+                                'Ksu.ttuj_id' => $ttuj_id
+                            ),
+                        ), true, array(
+                            'branch' => false,
                         ));
 
                         $uang_jalan_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'uang_jalan_id');
-                                                $from_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_berangkat');
+                        $from_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_berangkat');
                         $to_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_tiba');
                         $leadTimeArrive = $this->MkCommon->dateDiff($from_time, $to_time, 'day', true);
 
@@ -3979,11 +3992,16 @@ class RevenuesController extends AppController {
                         $truk_ritase[$key]['ArriveLeadTime'] = $leadTimeArrive;
                         $truk_ritase[$key]['BackLeadTime'] = $leadTimeBack;
 
-                        $qty_lku = !empty($lkus[0]['qty_lku'])?$lkus[0]['qty_lku']:0;
                         $truk_ritase[$key]['qty_ritase'] = $qty_ritase[0]['qty_ritase'];
+
+                        $qty_lku = $this->MkCommon->filterEmptyField($lkus, 'Lku', 'qty', 0);
+                        $qty_ksu = $this->MkCommon->filterEmptyField($ksus, 'Ksu', 'qty', 0);
+
                         $truk_ritase[$key]['Lku']['qty'] = $qty_lku;
+                        $truk_ritase[$key]['Ksu']['qty'] = $qty_ksu;
 
                         $total_lku += $qty_lku;
+                        $total_ksu += $qty_ksu;
                     }
                 }
 
@@ -3991,7 +4009,8 @@ class RevenuesController extends AppController {
                 $this->set('active_menu', 'ritase_report');
                 $this->set(compact(
                     'id', 'truk', 'truk_ritase', 'sub_module_title', 
-                    'total_ritase', 'total_unit', 'total_lku'
+                    'total_ritase', 'total_unit', 'total_lku',
+                    'total_ksu'
                 ));
             }else{
                 $this->MkCommon->setCustomFlash(__('Truk tidak ditemukan'), 'error');

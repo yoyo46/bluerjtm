@@ -313,15 +313,7 @@ class LeasingsController extends AppController {
             unset($this->request->data['LeasingDetail']);
             $this->request->data['LeasingDetail'] = $temp_arr;
         }
-
-        // $leasing_companies = $this->LeasingCompany->find('list', array(
-        //     'conditions' => array(
-        //         'LeasingCompany.status' => 1
-        //     ),
-        //     'fields' => array(
-        //         'LeasingCompany.id', 'LeasingCompany.name'
-        //     )
-        // ));
+        
         $leasing_companies = $this->Leasing->Vendor->getData('list', array(
             'fields' => array(
                 'Vendor.id', 'Vendor.name'
@@ -334,98 +326,6 @@ class LeasingsController extends AppController {
         ));
         $this->render('leasing_form');
     }
-
-    // function leasing_companies(){
-    //     $this->loadModel('LeasingCompany');
-    //     $options = array();
-
-    //     if(!empty($this->params['named'])){
-    //         $refine = $this->params['named'];
-
-    //         if(!empty($refine['name'])){
-    //             $name = urldecode($refine['name']);
-    //             $this->request->data['LeasingCompany']['name'] = $name;
-    //             $options['conditions']['LeasingCompany.name LIKE '] = '%'.$name.'%';
-    //         }
-    //     }
-
-    //     $this->paginate = $this->LeasingCompany->getData('paginate', $options);
-    //     $leasing_companies = $this->paginate('LeasingCompany');
-
-    //     $this->set('active_menu', 'view_leasing');
-    //     $this->set('sub_module_title', 'Perusahaan Leasing');
-    //     $this->set('leasing_companies', $leasing_companies);
-    // }
-
-    // function leasing_company_add(){
-    //     $this->set('sub_module_title', 'Tambah Perusahaan Leasing');
-    //     $this->doLeasingCompany();
-    // }
-
-    // function leasing_company_edit($id){
-    //     $this->loadModel('LeasingCompany');
-    //     $this->set('sub_module_title', 'Rubah Perusahaan Leasing');
-    //     $type_property = $this->LeasingCompany->getData('first', array(
-    //         'conditions' => array(
-    //             'LeasingCompany.id' => $id
-    //         )
-    //     ));
-
-    //     if(!empty($type_property)){
-    //         $this->doLeasingCompany($id, $type_property);
-    //     }else{
-    //         $this->MkCommon->setCustomFlash(__('Perusahaan Leasing tidak ditemukan'), 'error');  
-    //         $this->redirect(array(
-    //             'controller' => 'settings',
-    //             'action' => 'citys'
-    //         ));
-    //     }
-    // }
-
-    // function doLeasingCompany($id = false, $data_local = false){
-    //     if(!empty($this->request->data)){
-    //         $data = $this->request->data;
-    //         if($id && $data_local){
-    //             $this->LeasingCompany->id = $id;
-    //             $msg = 'merubah';
-    //         }else{
-    //             $this->loadModel('LeasingCompany');
-    //             $this->LeasingCompany->create();
-    //             $msg = 'menambah';
-    //         }
-    //         $this->LeasingCompany->set($data);
-
-    //         if($this->LeasingCompany->validates($data)){
-    //             if($this->LeasingCompany->save($data)){
-    //                 $transaction_id = $this->LeasingCompany->id;
-
-    //                 $this->params['old_data'] = $data_local;
-    //                 $this->params['data'] = $data;
-
-    //                 $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Perusahaan Leasing'), $msg), 'success');
-    //                 $this->Log->logActivity( sprintf(__('Sukses %s Perusahaan Leasing #%s'), $msg, $this->LeasingCompany->id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $transaction_id );
-    //                 $this->redirect(array(
-    //                     'controller' => 'leasings',
-    //                     'action' => 'leasing_companies'
-    //                 ));
-    //             }else{
-    //                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Perusahaan Leasing'), $msg), 'error'); 
-    //                 $this->Log->logActivity( sprintf(__('Gagal %s Perusahaan Leasing #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
-    //             }
-    //         }else{
-    //             $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Perusahaan Leasing'), $msg), 'error');
-    //         }
-    //     }else{
-            
-    //         if($id && $data_local){
-                
-    //             $this->request->data = $data_local;
-    //         }
-    //     }
-        
-    //     $this->set('active_menu', 'view_leasing');
-    //     $this->render('leasing_company_form');
-    // }
 
     function toggle($id){
         $locale = $this->Leasing->getData('first', array(
@@ -459,36 +359,6 @@ class LeasingsController extends AppController {
         
         $this->redirect($this->referer());
     }
-
-    // function leasing_company_toggle($id){
-    //     $this->loadModel('LeasingCompany');
-    //     $locale = $this->LeasingCompany->getData('first', array(
-    //         'conditions' => array(
-    //             'LeasingCompany.id' => $id
-    //         )
-    //     ));
-
-    //     if($locale){
-    //         $value = true;
-    //         if($locale['LeasingCompany']['status']){
-    //             $value = false;
-    //         }
-
-    //         $this->LeasingCompany->id = $id;
-    //         $this->LeasingCompany->set('status', $value);
-    //         if($this->LeasingCompany->save()){
-    //             $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-    //             $this->Log->logActivity( sprintf(__('Sukses merubah status Perusahaan Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
-    //         }else{
-    //             $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-    //             $this->Log->logActivity( sprintf(__('Gagal merubah status Perusahaan Leasing ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
-    //         }
-    //     }else{
-    //         $this->MkCommon->setCustomFlash(__('Perusahaan Leasing tidak ditemukan.'), 'error');
-    //     }
-
-    //     $this->redirect($this->referer());
-    // }
 
     function payments() {
         $this->set('active_menu', 'leasing_payments');

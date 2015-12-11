@@ -184,16 +184,31 @@
                         ?>
                     </td>
                     <td class="action">
+                        <div class="dropdown">
+                            <button class="btn btn-info dropdown-toggle btn-xs" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                                Lihat Detil
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                <?php
+                                        echo $this->Html->tag('li', $this->Html->link(__('Info Truk'), array(
+                                            'controller' => 'trucks',
+                                            'action' => 'detail',
+                                            $id,
+                                        ), array(
+                                            'allow' => true,
+                                        )));
+                                        echo $this->Html->tag('li', $this->Html->link(__('Info Ritase'), array(
+                                            'controller' => 'revenues',
+                                            'action' => 'detail_ritase',
+                                            $id,
+                                        ), array(
+                                            'allow' => true,
+                                        )));
+                                ?>
+                            </ul>
+                        </div>
                         <?php
-                                echo $this->Html->link('Detail', array(
-                                    'controller' => 'trucks',
-                                    'action' => 'detail',
-                                    $id,
-                                ), array(
-                                    'class' => 'btn btn-info btn-xs',
-                                    'allow' => true,
-                                ));
-
                                 echo $this->Html->link('Edit', array(
                                     'controller' => 'trucks',
                                     'action' => 'edit',

@@ -6,6 +6,12 @@
 		$completed_nodoc = $this->Common->filterEmptyField($Ksu, 'Ksu', 'completed_nodoc', '-');
 		$completed = $this->Common->filterEmptyField($Ksu, 'Ksu', 'completed');
 
+		$no_ttuj = $this->Common->filterEmptyField($Ksu, 'Ttuj', 'no_ttuj');
+		$nopol = $this->Common->filterEmptyField($Ksu, 'Ttuj', 'nopol');
+
+		$driver_name = $this->Common->filterEmptyField($Ksu, 'Ttuj', 'driver_name');
+        $driver_name = $this->Common->filterEmptyField($Ksu, 'DriverPenganti', 'driver_name', $driver_name);
+
 		$customCompletedDate = $this->Common->customDate($completed_date, 'd/m/Y');
 ?>
 <div class="row">
@@ -26,7 +32,15 @@
 					</tr>
 					<tr>
 						<th width="30%"><?php echo __('Ttuj');?></th>
-						<td><?php echo $Ksu['Ttuj']['no_ttuj'];?></td>
+						<td><?php echo $no_ttuj;?></td>
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Truk');?></th>
+						<td><?php echo $nopol;?></td>
+					</tr>
+					<tr>
+						<th width="30%"><?php echo __('Supir');?></th>
+						<td><?php echo $driver_name;?></td>
 					</tr>
 					<tr>
 						<th width="30%"><?php echo __('Customer');?></th>

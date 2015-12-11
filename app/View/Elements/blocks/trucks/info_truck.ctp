@@ -231,20 +231,30 @@
             <div class="box-body">
                 <dl class="dl-horizontal">
                     <?php 
-                        echo $this->Html->tag('dt', 'No. Kontrak');
-                        echo $this->Html->tag('dd', $leasing['Leasing']['no_contract']);
+                            $dataLeasing = $this->Common->filterEmptyField($leasing, 'Leasing');
+                            $no_contract = $this->Common->filterEmptyField($leasing, 'Leasing', 'no_contract');
+                            $date_last_installment = $this->Common->filterEmptyField($leasing, 'Leasing', 'date_last_installment');
 
-                        echo $this->Html->tag('dt', 'Perusahaan Leasing');
-                        echo $this->Html->tag('dd', $leasing['Leasing']['LeasingCompany']['name']);
+                            $vendor = $this->Common->filterEmptyField($dataLeasing, 'Vendor', 'name');
+                            $vendor_phone = $this->Common->filterEmptyField($dataLeasing, 'Vendor', 'phone_number');
+                            $vendor_address = $this->Common->filterEmptyField($dataLeasing, 'Vendor', 'address');
 
-                        echo $this->Html->tag('dt', 'Telepon');
-                        echo $this->Html->tag('dd', $leasing['Leasing']['LeasingCompany']['phone']);
+                            $customDateLeasing = $this->Common->customDate($date_last_installment, 'd M Y');
 
-                        echo $this->Html->tag('dt', 'Alamat');
-                        echo $this->Html->tag('dd', $leasing['Leasing']['LeasingCompany']['address']);
+                            echo $this->Html->tag('dt', 'No. Kontrak');
+                            echo $this->Html->tag('dd', $no_contract);
 
-                        echo $this->Html->tag('dt', 'Tgl Angsuran Terakhir');
-                        echo $this->Html->tag('dd', $this->Common->customDate($leasing['Leasing']['date_last_installment']));
+                            echo $this->Html->tag('dt', 'Perusahaan Leasing');
+                            echo $this->Html->tag('dd', $vendor);
+
+                            echo $this->Html->tag('dt', 'Telepon');
+                            echo $this->Html->tag('dd', $vendor_phone);
+
+                            echo $this->Html->tag('dt', 'Alamat');
+                            echo $this->Html->tag('dd', $vendor_address);
+
+                            echo $this->Html->tag('dt', 'Tgl Angsuran Terakhir');
+                            echo $this->Html->tag('dd', $customDateLeasing);
                     ?>
                 </dl>
             </div>
