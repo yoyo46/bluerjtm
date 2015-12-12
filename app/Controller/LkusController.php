@@ -1140,6 +1140,7 @@ class LkusController extends AppController {
     }
 
     function ksu_add(){
+        $this->loadModel('Ksu');
         $this->set('sub_module_title', __('Tambah KSU'));
         $this->DoKsu();
     }

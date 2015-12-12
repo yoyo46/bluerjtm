@@ -343,8 +343,8 @@
 
 				        				if( !empty($ksu_qty) ) {
 				        					$customKsu = $this->Html->link($ksu_qty, array(
-				        						'controller' => 'ksus',
-				        						'action' => 'index',
+				        						'controller' => 'lkus',
+				        						'action' => 'ksus',
 				        						'nopol' => $nopol,
 			        						), array(
 			        							'class' => 'white',
