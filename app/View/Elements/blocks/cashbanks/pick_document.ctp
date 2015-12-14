@@ -1,4 +1,5 @@
 <?php 
+		$label = !empty($label)?$label:false;
 		$document_type = !empty($this->request->data['CashBank']['document_type'])?$this->request->data['CashBank']['document_type']:false;
 ?>
 <div class="form-group">
@@ -25,6 +26,7 @@
                         'escape' => false,
                         'data-action' => 'browse-form',
                         'data-change' => 'document-id',
+                        'title' => $label,
                     );
 					$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
                     echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowseDocument, $attrBrowse);

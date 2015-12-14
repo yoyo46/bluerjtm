@@ -332,6 +332,7 @@ class Revenue extends AppModel {
         $docTmps = $this->getData('all', array(
             'conditions' => array(
                 'Revenue.paid_ppn' => 0,
+                'Revenue.ppn <>' => 0,
                 'Revenue.transaction_status <>' => 'unposting',
             ),
             'order' => array(
@@ -749,6 +750,66 @@ class Revenue extends AppModel {
         }
 
         return $result;
+    }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
+        $type = !empty($data['named']['type'])?$data['named']['type']:1;
+        $customer = !empty($data['named']['customer'])?$data['named']['customer']:false;
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
+        $nottuj = !empty($data['named']['nottuj'])?$data['named']['nottuj']:false;
+        $status = !empty($data['named']['status'])?$data['named']['status']:false;
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+        if(!empty($nopol)){
+            if( $type == 2 ) {
+                $default_options['conditions']['Ttuj.truck_id'] = $nopol;
+            } else {
+                $default_options['conditions']['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
+            }
+        }
+        if(!empty($customer)){
+            $default_options['conditions']['Revenue.customer_id'] = $customer;
+        }
+        if(!empty($nodoc)){
+            $default_options['conditions']['Revenue.no_doc LIKE'] = '%'.$nodoc.'%';
+        }
+        if(!empty($nottuj)){
+            $default_options['conditions']['Ttuj.no_ttuj LIKE'] = '%'.$nottuj.'%';
+        }
+        if(!empty($noref)){
+            $default_options['conditions']['LPAD(Revenue.id, 5, 0) LIKE'] = '%'.$noref.'%';
+        }
+        if(!empty($status)){
+            if( $status == 'paid' ) {
+                $revenueList = $this->getData('list', array(
+                    'conditions' => $default_options['conditions'],
+                    'contain' => array(
+                        'Ttuj',
+                    ),
+                    'fields' => array(
+                        'Revenue.id', 'Revenue.id'
+                    ),
+                ));
+                $paidList = $this->InvoiceDetail->getInvoicedRevenueList($revenueList);
+                $default_options['conditions']['Revenue.id'] = $paidList;
+            } else {
+                $default_options['conditions']['Revenue.transaction_status'] = $status;
+            }
+        }
+        
+        return $default_options;
     }
 }
 ?>

@@ -18,10 +18,11 @@
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
-        echo $this->Form->create('CashBank', array(
+        echo $this->Form->create('Search', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
-                'action' => 'getCashBankPrepayment',
+                'action' => 'search',
+                'getCashBankPrepayment',
             )), 
             'role' => 'form',
             'inputDefaults' => array('div' => false),
@@ -63,7 +64,7 @@
                         'escape' => false, 
                         'class'=> 'btn btn-default btn-sm ajaxModal',
                         'data-action' => $data_action,
-                        'title' => $title,
+                        'title' => __('Prepayment IN'),
                     ));
             ?>
         </div>
@@ -81,7 +82,7 @@
         </div>
         <div class="form-group">
             <?php 
-                echo $this->Form->input('description',array(
+                echo $this->Form->input('note',array(
                     'type' => 'text',
                     'label'=> __('Keterangan'),
                     'class'=>'form-control',

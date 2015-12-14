@@ -1,8 +1,10 @@
 <?php 
-        echo $this->Form->create('Revenue', array(
+        echo $this->Form->create('Search', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
-                'action' => 'getCashBankPpnRevenue',
+                'action' => 'search',
+                'getCashBankPpnRevenue',
+                'admin' => false,
             )), 
             'role' => 'form',
             'inputDefaults' => array('div' => false),
@@ -12,7 +14,7 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('no_doc',array(
+                    echo $this->Form->input('nodoc',array(
                         'label'=> __('No. Doc'),
                         'class'=>'form-control',
                         'required' => false,
@@ -31,7 +33,7 @@
         </div>
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('transaction_status',array(
+                    echo $this->Form->input('status',array(
                         'label'=> __('Status Revenue'),
                         'class'=>'form-control',
                         'required' => false,
@@ -79,7 +81,7 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('no_ttuj',array(
+                    echo $this->Form->input('nottuj',array(
                         'label'=> __('No. TTUJ'),
                         'class'=>'form-control',
                         'required' => false,
@@ -89,7 +91,7 @@
         </div>
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('customer_id',array(
+                    echo $this->Form->input('customer',array(
                         'label'=> __('Customer'),
                         'class'=>'form-control',
                         'required' => false,
@@ -100,7 +102,7 @@
         </div>
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('no_reference',array(
+                    echo $this->Form->input('noref',array(
                         'label'=> __('No. Reference'),
                         'class'=>'form-control',
                         'required' => false,
@@ -124,7 +126,7 @@
                         'escape' => false, 
                         'class'=> 'btn btn-default btn-sm ajaxModal',
                         'data-action' => $data_action,
-                        'title' => $title,
+                        'title' => __('PPN IN'),
                     ));
             ?>
         </div>
@@ -144,6 +146,7 @@
                     echo $this->Html->tag('th', __('No. TTUJ'));
                     echo $this->Html->tag('th', __('Truk'));
                     echo $this->Html->tag('th', __('Customer'));
+                    echo $this->Html->tag('th', __('PPN'));
                     echo $this->Html->tag('th', __('Status'));
                     echo $this->Html->tag('th', __('Dibuat'));
             ?>
@@ -152,6 +155,10 @@
                 if(!empty($revenues)){
                     foreach ($revenues as $key => $value) {
                         $id = $value['Revenue']['id'];
+                        $total = $this->Common->filterEmptyField($value, 'Revenue', 'total_without_tax', 0);
+                        $ppn = $this->Common->filterEmptyField($value, 'Revenue', 'ppn', 0);
+                        
+                        $ppn_amount = $this->Common->calcFloat($total, $ppn);
         ?>
         <tr data-value="<?php echo $id;?>" data-change="#<?php echo $data_change;?>">
             <td><?php echo str_pad($value['Revenue']['id'], 5, '0', STR_PAD_LEFT);?></td>
@@ -161,6 +168,7 @@
             <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
             <td><?php echo !empty($value['Ttuj']['nopol'])?$value['Ttuj']['nopol']:'-';?></td>
             <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';?></td>
+            <td><?php echo $ppn_amount;?></td>
             <td>
                 <?php 
                         $class_status = 'label label-warning';

@@ -307,6 +307,7 @@ class CashBank extends AppModel {
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $note = !empty($data['named']['note'])?$data['named']['note']:false;
+        $name = !empty($data['named']['name'])?$data['named']['name']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -325,6 +326,50 @@ class CashBank extends AppModel {
         }
         if(!empty($note)){
             $default_options['conditions']['CashBank.description LIKE'] = '%'.$note.'%';
+        }
+        if(!empty($name)){
+            $vendors = $this->Vendor->getData('list', array(
+                'conditions' => array(
+                    'Vendor.name LIKE' => '%'.$name.'%',
+                ),
+                'fields' => array(
+                    'Vendor.id', 'Vendor.id',
+                ),
+                'limit' => 100,
+            ));
+            $employes = $this->Employe->getData('list', array(
+                'conditions' => array(
+                    'Employe.name LIKE' => '%'.$name.'%',
+                ),
+                'fields' => array(
+                    'Employe.id', 'Employe.id',
+                ),
+                'limit' => 100,
+            ));
+            $customers = $this->Customer->getData('list', array(
+                'conditions' => array(
+                    'Customer.name LIKE' => '%'.$name.'%',
+                ),
+                'fields' => array(
+                    'Customer.id', 'Customer.id',
+                ),
+                'limit' => 100,
+            ));
+
+            $default_options['conditions']['OR'] = array(
+                array(
+                    'CashBank.receiver_type' => 'Vendor',
+                    'CashBank.receiver_id' => $vendors,
+                ),
+                array(
+                    'CashBank.receiver_type' => 'Employe',
+                    'CashBank.receiver_id' => $employes,
+                ),
+                array(
+                    'CashBank.receiver_type' => 'Customer',
+                    'CashBank.receiver_id' => $customers,
+                ),
+            );
         }
         
         return $default_options;

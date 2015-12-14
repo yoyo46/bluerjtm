@@ -1,9 +1,11 @@
 <?php 
-        echo $this->Form->create('Ttuj', array(
+        echo $this->Form->create('Search', array(
             'url'=> $this->Html->url(array(
                 'controller' => 'ajax',
-                'action' => 'getBiayaTtuj',
-                $action_type,
+                'action' => 'search',
+                'getBiayaTtuj',
+                'action_type' => $action_type,
+                'admin' => false,
             )), 
             'role' => 'form',
             'inputDefaults' => array('div' => false),
@@ -17,13 +19,13 @@
                         'label'=> __('Tanggal'),
                         'class'=>'form-control date-range',
                         'required' => false,
-                        'placeholder' => __('Dari')
+                        'placeholder' => __('Tanggal')
                     ));
             ?>
         </div>
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('nottuj',array(
+                    echo $this->Form->input('nodoc',array(
                         'label'=> __('No. Doc'),
                         'class'=>'form-control',
                         'required' => false,
@@ -33,7 +35,7 @@
         </div>
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('Ttuj.from_city',array(
+                    echo $this->Form->input('from_city',array(
                         'label'=> __('Kota Asal'),
                         'class'=>'form-control',
                         'required' => false,
@@ -74,7 +76,7 @@
         </div>
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('Ttuj.note',array(
+                    echo $this->Form->input('note',array(
                         'type' => 'text',
                         'label'=> __('Keterangan'),
                         'class'=>'form-control',
@@ -84,19 +86,9 @@
         </div>
     </div>
     <div class="col-sm-6">
-        <!-- <div class="form-group">
-            <?php 
-                    // echo $this->Form->input('City.name',array(
-                    //     'label'=> __('Tujuan'),
-                    //     'class'=>'form-control',
-                    //     'required' => false,
-                    //     'placeholder' => __('Tujuan')
-                    // ));
-            ?>
-        </div> -->
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('Driver.name',array(
+                    echo $this->Form->input('driver',array(
                         'label'=> __('Nama Supir'),
                         'class'=>'form-control',
                         'required' => false,
@@ -106,7 +98,7 @@
         </div>
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('Customer.name',array(
+                    echo $this->Form->input('customer',array(
                         'label'=> __('Customer'),
                         'class'=>'form-control',
                         'required' => false,
@@ -116,7 +108,7 @@
         </div>
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('Ttuj.to_city',array(
+                    echo $this->Form->input('to_city',array(
                         'label'=> __('Kota Tujuan'),
                         'class'=>'form-control',
                         'required' => false,

@@ -2753,6 +2753,7 @@ var get_document_cashbank = function(){
                     var coa_code = $(response).filter('#coa_code').html();
                     var coa_id = $(response).filter('#coa_id').html();
                     var coa_name = $(response).filter('#coa_name').html();
+                    var truck_options = $(response).filter('#truck-options').html();
                     var ppn = $(response).filter('#ppn').html();
                     var content_table = $(response).filter('#content-table').html();
 
@@ -2781,6 +2782,9 @@ var get_document_cashbank = function(){
                                 <td> \
                                     '+coa_name+' \
                                 </td> \
+                                <td class="action-search pick-truck"> \
+                                    '+truck_options+' \
+                                </td> \
                                 <td class="action-search"> \
                                     <input name="data[CashBankDetail][total][]" class="form-control input_price" type="text" id="CashBankDetailTotal" value="'+ppn+'"> \
                                 </td> \
@@ -2792,6 +2796,7 @@ var get_document_cashbank = function(){
                             $.inputPrice({
                                 obj: $('.cashbanks-info-table .child:last-child .input_price'),
                             });
+                            ajaxModal($('.cashbanks-info-table .child .ajaxModal'));
                         }
                     } else {
                         $('#receiver-type').val('');

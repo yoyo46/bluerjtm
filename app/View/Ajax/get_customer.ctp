@@ -18,7 +18,6 @@
                     $detail_id = !empty($cashBankDetail['id'])?$cashBankDetail['id']:false;
 
                     $nopol = $this->Common->filterEmptyField($cashBankDetail, 'Truck', 'nopol');
-
                     $truck_form = $this->CashBank->getTruckCashbank($nopol);
             
                     if( isset($tmpCOA[$coa_id]) ) {
@@ -60,6 +59,7 @@
                 $ppn = !empty($customer['Revenue']['ppn'])?$customer['Revenue']['ppn']:0;
                 $total = !empty($customer['Revenue']['total_without_tax'])?$customer['Revenue']['total_without_tax']:0;
                 $ppn = $this->Common->calcFloat($total, $ppn);
+                $truck_form = $this->CashBank->getTruckCashbank($nopol);
 
                 echo $this->Html->tag('div', $coa_code, array(
                     'id' => 'coa_code',
@@ -72,6 +72,9 @@
                 ));
                 echo $this->Html->tag('div', $ppn, array(
                     'id' => 'ppn',
+                ));
+                echo $this->Html->tag('div', $truck_form, array(
+                    'id' => 'truck-options',
                 ));
             }
 

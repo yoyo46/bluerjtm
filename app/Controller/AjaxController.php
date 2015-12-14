@@ -1879,6 +1879,7 @@ class AjaxController extends AppController {
                     'controller'=> 'ajax', 
                     'action' => 'getCashBankPpnRevenue',
                 );
+                $label = __('PPN IN');
                 break;
             
             case 'prepayment_in':
@@ -1888,6 +1889,7 @@ class AjaxController extends AppController {
                     'controller'=> 'ajax', 
                     'action' => 'getCashBankPrepayment',
                 );
+                $label = __('Prepayment IN');
                 break;
         }
 
@@ -1896,6 +1898,7 @@ class AjaxController extends AppController {
 			$this->request->data['CashBank']['document_type'] = $result['docs_type'];
 		}
 
+		$this->set('label', $label);
 		$this->set('docs', $docs);
 		$this->set('urlBrowseDocument', $urlBrowseDocument);
 		$this->render('get_cashbank_doc');
@@ -1911,6 +1914,7 @@ class AjaxController extends AppController {
 		$options = array(
             'conditions' => array(
 	            'Revenue.paid_ppn' => 0,
+				'Revenue.ppn <>' => 0,
 				'Revenue.transaction_status <>' => 'unposting',
 	        ),
             'limit' => 10,
@@ -1923,90 +1927,9 @@ class AjaxController extends AppController {
 			),
         );
 
-        if(!empty($this->request->data)){
-        	$refine = $this->request->data['Revenue'];
-
-            if(!empty($refine['no_doc'])){
-                $nodoc = urldecode($refine['no_doc']);
-                $options['conditions']['Revenue.no_doc LIKE '] = '%'.$nodoc.'%';
-            }
-            if(!empty($refine['no_ttuj'])){
-                $no_ttuj = urldecode($refine['no_ttuj']);
-                $options['conditions']['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
-            }
-            if(!empty($refine['customer_id'])){
-                $customer = urldecode($refine['customer_id']);
-                $options['conditions']['Revenue.customer_id'] = $customer;
-            }
-            if(!empty($refine['no_reference'])){
-                $no_ref = urldecode($refine['no_reference']);
-
-                if( is_numeric($no_ref) ) {
-                    $no_ref = intval($no_ref);
-                }
-
-                $options['conditions']['LPAD(Revenue.id, 5, 0) LIKE'] = '%'.$no_ref.'%';
-            }
-
-            if(!empty($refine['date'])){
-                $dateStr = urldecode($refine['date']);
-                $date = explode('-', $dateStr);
-
-                if( !empty($date) ) {
-                    $date[0] = urldecode($date[0]);
-                    $date[1] = urldecode($date[1]);
-                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                    $dateFrom = $this->MkCommon->getDate($date[0]);
-                    $dateTo = $this->MkCommon->getDate($date[1]);
-                    $options['conditions']['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') >='] = $dateFrom;
-                    $options['conditions']['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') <='] = $dateTo;
-                }
-            }
-
-            if(!empty($refine['nopol'])){
-				$this->loadModel('Truck');
-                $nopol = urldecode($refine['nopol']);
-                $typeTruck = !empty($refine['Ttuj']['type'])?$refine['Ttuj']['type']:1;
-
-                if( $typeTruck == 2 ) {
-                	$conditionsNopol = array(
-	            		'Truck.id' => $nopol,
-	        		);
-                } else {
-                	$conditionsNopol = array(
-	            		'Truck.nopol LIKE' => '%'.$nopol.'%',
-	        		);
-                }
-
-                $truckSearch = $this->Truck->getData('list', array(
-                	'conditions' => $conditionsNopol,
-            		'fields' => array(
-            			'Truck.id', 'Truck.id',
-        			),
-            	));
-                $options['conditions']['Ttuj.truck_id'] = $truckSearch;
-            }
-
-            if(!empty($refine['transaction_status'])){
-                $status = urldecode($refine['transaction_status']);
-
-                if( $status == 'paid' ) {
-                    $revenueList = $this->Revenue->getData('list', array(
-                        'conditions' => $options['conditions'],
-                        'contain' => array(
-                            'Ttuj',
-                        ),
-                        'fields' => array(
-                            'Revenue.id', 'Revenue.id'
-                        ),
-                    ));
-                    $paidList = $this->Revenue->InvoiceDetail->getInvoicedRevenueList($revenueList);
-                    $options['conditions']['Revenue.id'] = $paidList;
-                } else {
-                    $options['conditions']['Revenue.transaction_status'] = $status;
-                }
-            }
-        }
+        $named = $this->MkCommon->filterEmptyField($this->params, 'named');
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Revenue->_callRefineParams($params, $options);
 
 		$this->paginate = $this->Revenue->getData('paginate', $options);
         $revenues = $this->paginate('Revenue');
@@ -2059,13 +1982,6 @@ class AjaxController extends AppController {
         }
 
         $data = $this->request->data;
-
-		if( empty($data['CashBank']['date']) ) {
-			$dateFrom = date('d/m/Y', strtotime('-1 Month'));
-			$dateTo = date('d/m/Y');
-			$this->request->data['CashBank']['date'] = sprintf('%s-%s', $dateFrom, $dateTo);
-		}
-
         $data = $this->MkCommon->dataConverter($data, array(
             'daterange' => array(
                 'CashBank' => array(
@@ -2073,7 +1989,9 @@ class AjaxController extends AppController {
                 ),
             )
         ));
-        $options =  $this->CashBank->_callDataParams($data, $options);
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->CashBank->_callRefineParams($params, $options);
 
 		$this->paginate = $this->CashBank->getData('paginate', $options);
         $cashBanks = $this->paginate('CashBank');
@@ -2254,161 +2172,19 @@ class AjaxController extends AppController {
         		break;
         }
 
-        if(!empty($this->request->data)){
-            if(!empty($this->request->data['Ttuj']['nottuj'])){
-                $nottuj = urldecode($this->request->data['Ttuj']['nottuj']);
-                $conditions['UangJalanKomisiPayment.no_ttuj LIKE '] = '%'.$nottuj.'%';
-            }
-            if(!empty($this->request->data['Ttuj']['nopol'])){
-                $nopol = urldecode($this->request->data['Ttuj']['nopol']);
-                $typeTruck = !empty($this->request->data['Ttuj']['type'])?$this->request->data['Ttuj']['type']:1;
-
-                if( $typeTruck == 2 ) {
-                	$conditionsNopol = array(
-	            		'Truck.id' => $nopol,
-	        		);
-                } else {
-                	$conditionsNopol = array(
-	            		'Truck.nopol LIKE' => '%'.$nopol.'%',
-	        		);
-                }
-
-                $truckSearch = $this->Ttuj->Truck->getData('list', array(
-                	'conditions' => $conditionsNopol,
-            		'fields' => array(
-            			'Truck.id', 'Truck.id',
-        			),
-            	), true, array(
-                    'status' => 'all',
-                    'branch' => false,
-                ));
-                $conditions['UangJalanKomisiPayment.truck_id'] = $truckSearch;
-            }
-            if(!empty($this->request->data['Driver']['name'])){
-                $name = urldecode($this->request->data['Driver']['name']);
-                $driverId = $this->Ttuj->Truck->Driver->getData('list', array(
-                	'conditions' => array(
-                		'Driver.name LIKE' => '%'.$name.'%',
-            		),
-            		'fields' => array(
-            			'Driver.id', 'Driver.id'
-        			),
-            	), true, array(
-            		'branch' => false,
-            	));
-                $conditions['AND']['OR'] = array(
-                	'UangJalanKomisiPayment.driver_id' => $driverId,
-                	'UangJalanKomisiPayment.driver_penganti_id' => $driverId,
-            	);
-            }
-            if(!empty($this->request->data['Customer']['name'])){
-                $name = urldecode($this->request->data['Customer']['name']);
-                $customers = $this->Ttuj->Customer->getData('list', array(
-                	'conditions' => array(
-                		'Customer.customer_name LIKE' => '%'.$name.'%',
-            		),
-            		'fields' => array(
-            			'Customer.id', 'Customer.id'
-        			),
-            	), true, array(
-                    'status' => 'all',
-                ));
-                $conditions['UangJalanKomisiPayment.customer_id'] = $customers;
-            }
-            if(!empty($this->request->data['City']['name'])){
-                $name = urldecode($this->request->data['City']['name']);
-                $conditions['UangJalanKomisiPayment.to_city_name LIKE '] = '%'.$name.'%';
-            }
-            if(!empty($this->request->data['Ttuj']['from_city'])){
-                $name = urldecode($this->request->data['Ttuj']['from_city']);
-                $conditions['UangJalanKomisiPayment.from_city_id'] = $name;
-            }
-            if(!empty($this->request->data['Ttuj']['to_city'])){
-                $name = urldecode($this->request->data['Ttuj']['to_city']);
-                $conditions['UangJalanKomisiPayment.to_city_id'] = $name;
-            }
-            if(!empty($this->request->data['Ttuj']['date'])){
-                $date = urldecode($this->request->data['Ttuj']['date']);
-                $date = explode('-', $date);
-
-                if( !empty($date[0]) ) {
-                	$from_date = trim($date[0]);
-            		$from_date = $this->MkCommon->getDate($from_date);
-                	$conditions['DATE_FORMAT(UangJalanKomisiPayment.ttuj_date, \'%Y-%m-%d\') >='] = $from_date;
-                }
-
-                if( !empty($date[1]) ) {
-                	$to_date = trim($date[1]);
-            		$to_date = $this->MkCommon->getDate($to_date);
-                	$conditions['DATE_FORMAT(UangJalanKomisiPayment.ttuj_date, \'%Y-%m-%d\') <='] = $to_date;
-                }
-            }
-
-            if(!empty($this->request->data['Ttuj']['uang_jalan_1']) || !empty($this->request->data['Ttuj']['uang_jalan_2']) || !empty($this->request->data['Ttuj']['uang_jalan_extra']) || !empty($this->request->data['Ttuj']['commission']) || !empty($this->request->data['Ttuj']['commission_extra']) || !empty($this->request->data['Ttuj']['uang_kuli_muat']) || !empty($this->request->data['Ttuj']['uang_kuli_bongkar']) || !empty($this->request->data['Ttuj']['asdp']) || !empty($this->request->data['Ttuj']['uang_kawal']) || !empty($this->request->data['Ttuj']['uang_keamanan'])){
-            	unset($conditions['OR']);
-            	$idx = 0;
-                $document_type = true;
-        	}
-
-            if(!empty($this->request->data['Ttuj']['uang_jalan_1'])){
-        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'uang_jalan';
-        		$idx++;
-        	}
-            if(!empty($this->request->data['Ttuj']['uang_jalan_2'])){
-        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'uang_jalan_2';
-        		$idx++;
-        	}
-            if(!empty($this->request->data['Ttuj']['uang_jalan_extra'])){
-        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'uang_jalan_extra';
-        		$idx++;
-        	}
-            if(!empty($this->request->data['Ttuj']['commission'])){
-        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'commission';
-        		$idx++;
-        	}
-            if(!empty($this->request->data['Ttuj']['commission_extra'])){
-        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'commission_extra';
-        		$idx++;
-        	}
-            if(!empty($this->request->data['Ttuj']['uang_kuli_muat'])){
-        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'uang_kuli_muat';
-        		$idx++;
-        	}
-            if(!empty($this->request->data['Ttuj']['uang_kuli_bongkar'])){
-        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'uang_kuli_bongkar';
-        		$idx++;
-        	}
-            if(!empty($this->request->data['Ttuj']['asdp'])){
-        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'asdp';
-        		$idx++;
-        	}
-            if(!empty($this->request->data['Ttuj']['uang_kawal'])){
-        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'uang_kawal';
-        		$idx++;
-        	}
-            if(!empty($this->request->data['Ttuj']['uang_keamanan'])){
-        		$conditions['OR'][$idx]['UangJalanKomisiPayment.data_type'] = 'uang_keamanan';
-        		$idx++;
-            }
-            if(!empty($this->request->data['Ttuj']['note'])){
-                $note = urldecode($this->request->data['Ttuj']['note']);
-                $conditions['UangJalanKomisiPayment.note LIKE '] = '%'.$note.'%';
-            }
-        }
-
-        if( empty($this->request->data['Ttuj']['date']) ){
-        	$from_date = date('Y-m-d', strtotime('-1 month'));
-        	$to_date = date('Y-m-d');
-        	$conditions['DATE_FORMAT(UangJalanKomisiPayment.ttuj_date, \'%Y-%m-%d\') >='] = $from_date;
-        	$conditions['DATE_FORMAT(UangJalanKomisiPayment.ttuj_date, \'%Y-%m-%d\') <='] = $to_date;
-
-        	$this->request->data['Ttuj']['date'] = sprintf('%s - %s', $this->MkCommon->getDate($from_date, true), $this->MkCommon->getDate($to_date, true));
-        }
-
-        $this->paginate = array(
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->UangJalanKomisiPayment->_callRefineParams($params, array(
         	'conditions' => $conditions,
             'limit' => Configure::read('__Site.config_pagination'),
-        );
+    	));
+
+        if(!empty($this->params)){
+            if(!empty($this->params['named']['uang_jalan_1']) || !empty($this->params['named']['uang_jalan_2']) || !empty($this->params['named']['uang_jalan_extra']) || !empty($this->params['named']['commission']) || !empty($this->params['named']['commission_extra']) || !empty($this->params['named']['uang_kuli_muat']) || !empty($this->params['named']['uang_kuli_bongkar']) || !empty($this->params['named']['asdp']) || !empty($this->params['named']['uang_kawal']) || !empty($this->params['named']['uang_keamanan'])){
+                $document_type = true;
+        	}
+        }
+
+        $this->paginate = $options;
         $ttujs = $this->paginate('UangJalanKomisiPayment');
 
         if( !empty($ttujs) ) {
