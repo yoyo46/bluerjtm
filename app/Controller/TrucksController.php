@@ -5247,6 +5247,9 @@ class TrucksController extends AppController {
         ));
         $options =  $this->Ttuj->_callRefineParams($params, $options);
 
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+        $DateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
             $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $options );
@@ -5298,7 +5301,6 @@ class TrucksController extends AppController {
         }
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
-            $this->request->data['Truck']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
             $periode = sprintf('%s - %s', date('d M Y', strtotime($dateFrom)), date('d M Y', strtotime($dateTo)));
         } else {
             $periode = '-';
