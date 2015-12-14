@@ -95,7 +95,7 @@
                 $tdStyle = 'text-align: center;';
             } else {
                 $this->Html->addCrumb($sub_module_title);
-                echo $this->element('blocks/trucks/search_daily_report');
+                echo $this->element('blocks/trucks/search_ttuj_report');
         }
 ?>
 <section class="content invoice">
