@@ -730,5 +730,40 @@ class Ttuj extends AppModel {
         
         return $format_id;
     }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
+        $type = !empty($data['named']['type'])?$data['named']['type']:1;
+        $company = !empty($data['named']['company'])?$data['named']['company']:false;
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+        if(!empty($nopol)){
+            if( $type == 2 ) {
+                $default_options['conditions']['Ttuj.truck_id'] = $nopol;
+            } else {
+                $default_options['conditions']['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
+            }
+        }
+        if(!empty($company)){
+            $default_options['conditions']['Truck.company_id'] = $company;
+            $default_options['contain'][] = 'Truck';
+        }
+        if(!empty($nodoc)){
+            $default_options['conditions']['Ttuj.no_ttuj LIKE'] = '%'.$nodoc.'%';
+        }
+        
+        return $default_options;
+    }
 }
 ?>

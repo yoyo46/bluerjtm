@@ -7,11 +7,11 @@
     </div>
     <div class="box-body">
         <?php 
-                echo $this->Form->create('Truck', array(
+                echo $this->Form->create('Search', array(
                     'url'=> $this->Html->url( array(
                         'controller' => 'trucks',
                         'action' => 'search',
-                        'daily_report'
+                        'ttuj_report'
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
@@ -39,7 +39,7 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('Ttuj.no_ttuj',array(
+                            echo $this->Form->input('nodoc',array(
                                 'label'=> __('No TTUJ'),
                                 'class'=>'form-control',
                                 'required' => false,
@@ -48,7 +48,7 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('Truck.company_id',array(
+                            echo $this->Form->input('company',array(
                                 'label'=> __('Pemilik Truk'),
                                 'class'=>'form-control',
                                 'required' => false,
@@ -64,7 +64,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'daily_report', 
+                                'action' => 'ttuj_report', 
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',

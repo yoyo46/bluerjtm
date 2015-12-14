@@ -217,7 +217,7 @@
                         ),
                         'revenues' => array(
                             'ritase_report', 'achievement_report',
-                            'monitoring_truck'
+                            'monitoring_truck', 'ttuj_report',
                         ),
                     );
 
@@ -230,7 +230,8 @@
                             'monitoring_truck', 'capacity_report',
                             'point_perday_report', 'point_perplant_report',
                             'view_leasing', 'licenses_report', 'truck_import',
-                            'daily_report', 'mutations', 'driver_reports'
+                            'daily_report', 'mutations', 'driver_reports',
+                            'ttuj_report',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -416,6 +417,15 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'daily_report' )?'active':'',
                             ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Biaya Uang Jalan', array(
+                                'controller' => 'trucks',
+                                'action' => 'ttuj_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'ttuj_report' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>
@@ -428,7 +438,7 @@
                         ),
                         'revenues' => array(
                             'ttuj', 'truk_tiba', 'bongkaran',
-                            'balik', 'pool'
+                            'balik', 'pool',
                         ),
                     );
 
