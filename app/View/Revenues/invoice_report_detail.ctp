@@ -36,6 +36,7 @@
 
         if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
             $tdStyle = '';
+            $tableStyle = '';
             $border = 0;
 
             if( $data_action == 'excel' ) {
@@ -43,13 +44,14 @@
                 header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
                 $tdStyle = 'text-align: center;';
+                $tableStyle = 'width: 100%;';
             } else {
                 $this->Html->addCrumb($sub_module_title);
                 echo $this->element('blocks/revenues/search_invoice_report_detail');
         }
 ?>
 <section class="content invoice">
-    <h2 class="page-header">
+    <h2 class="page-header" style="<?php echo $tdStyle; ?>">
         <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
         <?php
                 echo $this->Html->tag('div', $periode, array(
@@ -69,7 +71,7 @@
             }
     ?>
     <div class="table-responsive center-table">
-        <table class="table table-bordered sorting" border="<?php echo $border; ?>">
+        <table class="table table-bordered sorting" border="<?php echo $border; ?>" style="<?php echo $tableStyle; ?>">
             <thead>
                 <tr>
                     <?php
@@ -137,8 +139,11 @@ $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), d
 $tbl = <<<EOD
 
       <div class="clearfix container_16" id="content">
-        <h2 style="text-align: center;">$sub_module_title</h2>
-        <p style="text-align: left;font-size: 24px;">$periode</p>
+        <h2 style="text-align: center;">
+            $sub_module_title
+            <br>
+            $periode
+        </h2>
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <tbody>
                 <tr style="$table_tr_head">

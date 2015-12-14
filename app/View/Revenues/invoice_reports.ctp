@@ -1,38 +1,42 @@
 <?php
         if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
+            $tdStyle = '';
             $border = 0;
+            $tableStyle = '';
 
             if( $data_action == 'excel' ) {
                 header('Content-type: application/ms-excel');
                 header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
+                $tdStyle = 'text-align: center;';
+                $tableStyle = 'width: 100%;';
             } else {
             	$this->Html->addCrumb($sub_module_title);
                 echo $this->element('blocks/revenues/search_report_invoice');
+            }
 ?>
 <section class="content invoice">
-    <h2 class="page-header">
+    <h2 class="page-header" style="<?php echo $tdStyle; ?>">
         <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
-    </h2>
-    <div class="row no-print print-action">
-        <div class="col-xs-12 action">
-            <?php
-                    echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $this->here.'/excel', array(
-                        'escape' => false,
-                        'class' => 'btn btn-success pull-right'
-                    ));
-                    echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $this->here.'/pdf', array(
-                        'escape' => false,
-                        'class' => 'btn btn-primary pull-right'
-                    ));
-            ?>
-        </div>
-    </div>
-    <div class="table-responsive">
-        <?php 
-                }
+        <?php
+                echo $this->Html->tag('div', $periode, array(
+                    'class' => 'pull-right',
+                ));
         ?>
-        <table class="table table-bordered" border="<?php echo $border; ?>">
+        <div class="clear"></div>
+    </h2>
+    <?php 
+            if( $data_action != 'excel' ) {
+                echo $this->Common->_getPrint(array(
+                    '_attr' => array(
+                        'class' => 'ajaxLink',
+                        'data-request' => '#form-report',
+                    ),
+                ));
+            }
+    ?>
+    <div class="table-responsive">
+        <table class="table table-bordered sorting" border="<?php echo $border; ?>" style="<?php echo $tableStyle; ?>">
             <thead>
     			<tr>
     				<th rowspan="2" class="text-center text-middle">
@@ -88,11 +92,11 @@
                                 'target' => '_blank',
                             )));
                     ?>
-                    <td class="text-right"><?php echo $this->Number->currency($total_pituang, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
-                    <td class="text-right"><?php echo $this->Number->currency($current, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
-                    <td class="text-right"><?php echo $this->Number->currency($current_rev1to15, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
-                    <td class="text-right"><?php echo $this->Number->currency($current_rev16to30, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
-                    <td class="text-right"><?php echo $this->Number->currency($current_rev30, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
+                    <td class="text-right"><?php echo $this->Common->getFormatPrice($total_pituang);?></td>
+                    <td class="text-right"><?php echo $this->Common->getFormatPrice($current);?></td>
+                    <td class="text-right"><?php echo $this->Common->getFormatPrice($current_rev1to15);?></td>
+                    <td class="text-right"><?php echo $this->Common->getFormatPrice($current_rev16to30);?></td>
+                    <td class="text-right"><?php echo $this->Common->getFormatPrice($current_rev30);?></td>
                 </tr>
                 <?php
                             }
@@ -102,19 +106,19 @@
                         echo $this->Html->tag('td', $this->Html->tag('strong', __('Total')), array(
                             'align' => 'right'
                         ));
-                        echo $this->Html->tag('td', $this->Number->currency($total_saldo, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                        echo $this->Html->tag('td', $this->Common->getFormatPrice($total_saldo), array(
                             'align' => 'right'
                         ));
-                        echo $this->Html->tag('td', $this->Number->currency($total_current, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                        echo $this->Html->tag('td', $this->Common->getFormatPrice($total_current), array(
                             'align' => 'right'
                         ));
-                        echo $this->Html->tag('td', $this->Number->currency($total_rev1to15, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                        echo $this->Html->tag('td', $this->Common->getFormatPrice($total_rev1to15), array(
                             'align' => 'right'
                         ));
-                        echo $this->Html->tag('td', $this->Number->currency($total_rev16to30, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                        echo $this->Html->tag('td', $this->Common->getFormatPrice($total_rev16to30), array(
                             'align' => 'right'
                         ));
-                        echo $this->Html->tag('td', $this->Number->currency($total_rev30, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                        echo $this->Html->tag('td', $this->Common->getFormatPrice($total_rev30), array(
                             'align' => 'right'
                         ));
                     ?>
@@ -182,19 +186,19 @@
                     $content = $this->Html->tag('td', $value['Customer']['customer_name_code'], array(
                         'style' => 'text-align: left; width: 120px;'
                     ));
-                    $content .= $this->Html->tag('td', $this->Number->currency($total_pituang, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                    $content .= $this->Html->tag('td', $this->Common->getFormatPrice($total_pituang), array(
                         'style' => 'text-align: right;'
                     ));
-                    $content .= $this->Html->tag('td', $this->Number->currency($current, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                    $content .= $this->Html->tag('td', $this->Common->getFormatPrice($current), array(
                         'style' => 'text-align: right;'
                     ));
-                    $content .= $this->Html->tag('td', $this->Number->currency($current_rev1to15, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                    $content .= $this->Html->tag('td', $this->Common->getFormatPrice($current_rev1to15), array(
                         'style' => 'text-align: right;'
                     ));
-                    $content .= $this->Html->tag('td', $this->Number->currency($current_rev16to30, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                    $content .= $this->Html->tag('td', $this->Common->getFormatPrice($current_rev16to30), array(
                         'style' => 'text-align: right;'
                     ));
-                    $content .= $this->Html->tag('td', $this->Number->currency($current_rev30, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                    $content .= $this->Html->tag('td', $this->Common->getFormatPrice($current_rev30), array(
                         'style' => 'text-align: right;'
                     ));
 
@@ -205,19 +209,19 @@
                 $content = $this->Html->tag('td',  __('Total'), array(
                     'style' => 'text-align: left; width: 120px;'
                 ));
-                $content .= $this->Html->tag('td', $this->Number->currency($total_saldo, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                $content .= $this->Html->tag('td', $this->Common->getFormatPrice($total_saldo), array(
                     'style' => 'text-align: right;'
                 ));
-                $content .= $this->Html->tag('td', $this->Number->currency($total_current, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                $content .= $this->Html->tag('td', $this->Common->getFormatPrice($total_current), array(
                     'style' => 'text-align: right;'
                 ));
-                $content .= $this->Html->tag('td', $this->Number->currency($total_rev1to15, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                $content .= $this->Html->tag('td', $this->Common->getFormatPrice($total_rev1to15), array(
                     'style' => 'text-align: right;'
                 ));
-                $content .= $this->Html->tag('td', $this->Number->currency($total_rev16to30, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                $content .= $this->Html->tag('td', $this->Common->getFormatPrice($total_rev16to30), array(
                     'style' => 'text-align: right;'
                 ));
-                $content .= $this->Html->tag('td', $this->Number->currency($total_rev30, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                $content .= $this->Html->tag('td', $this->Common->getFormatPrice($total_rev30), array(
                     'style' => 'text-align: right;'
                 ));
                 $each_loop_message .= $this->Html->tag('tr', $content);
@@ -233,7 +237,11 @@ $tbl = <<<EOD
 
       <div class="clearfix container_16" id="content">
 
-        <h2 class="grid_8" style="text-align: center;">$date_title</h2>
+        <h2 class="grid_8" style="text-align: center;">
+            $date_title
+            <br>
+            $periode
+        </h2>
         <h4>Total Customer : $total_data</h4>
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <thead>

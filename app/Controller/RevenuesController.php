@@ -4656,13 +4656,14 @@ class RevenuesController extends AppController {
         }
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
-            $sub_module_title = sprintf('%s %s - %s', $sub_module_title, date('d M Y', strtotime($dateFrom)), date('d M Y', strtotime($dateTo)));
+            $periode = $this->MkCommon->getCombineDate($dateFrom, $dateTo);
         }
 
         $this->set('active_menu', 'invoice_reports');
         $this->set(compact(
             'customers', 'list_customer', 'data_action',
-            'dateFrom', 'dateTo', 'sub_module_title'
+            'dateFrom', 'dateTo', 'sub_module_title',
+            'periode'
         ));
     }
 
