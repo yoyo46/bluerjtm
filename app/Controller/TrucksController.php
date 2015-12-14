@@ -5248,7 +5248,7 @@ class TrucksController extends AppController {
         $options =  $this->Ttuj->_callRefineParams($params, $options);
 
         $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
-        $DateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];

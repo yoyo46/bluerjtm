@@ -26,6 +26,7 @@ class RevenuesController extends AppController {
             $refine = $this->RjRevenue->processRefine($data);
             $params = $this->RjRevenue->generateSearchURL($refine);
             $params = $this->MkCommon->getRefineGroupBranch($params, $data);
+            $result = $this->MkCommon->processFilter($data);
 
             if(!empty($id)){
                 array_push($params, $id);
@@ -33,6 +34,8 @@ class RevenuesController extends AppController {
             if(!empty($data_action)){
                 array_push($params, $data_action);
             }
+
+            $params = array_merge($params, $result);
             $params['action'] = $index;
 
             $this->redirect($params);
@@ -4400,14 +4403,16 @@ class RevenuesController extends AppController {
         $this->loadModel('Invoice');
         $this->loadModel('Customer');
 
-        $this->set('active_menu', 'revenue');
-        $this->set('sub_module_title', __('Account Receivable Aging Report'));
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+        $sub_module_title = __('Account Receivable Aging Report');
 
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
-        $default_conditions = array(
-            'Customer.branch_id' => $allow_branch_id,
+        $options = array(
+            'conditions' => array(
+                'Customer.branch_id' => $allow_branch_id,
+            ),
         );
-        $invoice_conditions = array();
         $customer_id = '';
         $customer_collect_id = array();
         $due_30= false;
@@ -4423,7 +4428,7 @@ class RevenuesController extends AppController {
                 $this->request->data['Invoice']['customer_id'] = $keyword;
                 $customer_id = $keyword;
 
-                $default_conditions['Customer.id'] = $customer_id;
+                $options['conditions']['Customer.id'] = $customer_id;
             }
 
             if(!empty($refine['due_15'])){
@@ -4510,46 +4515,52 @@ class RevenuesController extends AppController {
                 $due_above_30 = true;
             }
 
-            if(!empty($refine['date'])){
-                $dateStr = urldecode($refine['date']);
-                $date = explode('-', $dateStr);
+            // if(!empty($refine['date'])){
+            //     $dateStr = urldecode($refine['date']);
+            //     $date = explode('-', $dateStr);
 
-                if( !empty($date) ) {
-                    $date[0] = urldecode($date[0]);
-                    $date[1] = urldecode($date[1]);
-                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                    $dateFrom = $this->MkCommon->getDate($date[0]);
-                    $dateTo = $this->MkCommon->getDate($date[1]);
-                    $invoice_conditions['DATE_FORMAT(Invoice.period_from, \'%Y-%m-%d\') >='] = $dateFrom;
-                    $invoice_conditions['DATE_FORMAT(Invoice.period_to, \'%Y-%m-%d\') <='] = $dateTo;
-                }
-                $this->request->data['Invoice']['date'] = $dateStr;
-            }
+            //     if( !empty($date) ) {
+            //         $date[0] = urldecode($date[0]);
+            //         $date[1] = urldecode($date[1]);
+            //         $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+            //         $dateFrom = $this->MkCommon->getDate($date[0]);
+            //         $dateTo = $this->MkCommon->getDate($date[1]);
+            //         $invoice_conditions['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m-%d\') >='] = $dateFrom;
+            //         $invoice_conditions['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m-%d\') <='] = $dateTo;
+            //     }
+            //     $this->request->data['Invoice']['date'] = $dateStr;
+            // }
 
             // Custom Otorisasi
-            $default_conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Customer', $default_conditions, 'conditions' );
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Customer', $options );
         }
 
         if(!empty($customer_collect_id)){
-            $default_conditions['Customer.id'] = $customer_collect_id;
+            $options['conditions']['Customer.id'] = $customer_collect_id;
         }else if(empty($customer_collect_id) && ($due_30 || $due_15 || $due_above_30) ){
-            $default_conditions['Customer.id'] = false;
+            $options['conditions']['Customer.id'] = false;
         }
 
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $invOptions =  $this->Invoice->_callRefineParams($params);
+        $invoice_conditions = $this->MkCommon->filterEmptyField($invOptions, 'conditions');
+
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+
         if(empty($data_action)){
-            $this->paginate = $this->Customer->getData('paginate', array(
-                'conditions' => $default_conditions,
-                'limit' => 20,
-            ), array(
+            $options['limit'] = Configure::read('__Site.config_pagination');
+            $this->paginate = $this->Customer->getData('paginate', $options, array(
                 'plant' => false,
                 'branch' => false,
             ));
 
             $customers = $this->paginate('Customer');
         }else{
-            $customers = $this->Customer->getData('all', array(
-                'conditions' => $default_conditions,
-            ), array(
+            $customers = $this->Customer->getData('all', $options, array(
                 'plant' => false,
                 'branch' => false,
             ));
@@ -4616,7 +4627,7 @@ class RevenuesController extends AppController {
             if(!empty($invoice_conditions)){
                 $default_conditions = array_merge($default_conditions, $invoice_conditions);
             }
-            $customers[$key]['current_rev30'] = $this->Invoice->getData('paginate', array(
+            $customers[$key]['current_rev30'] = $this->Invoice->getData('all', array(
                 'conditions' => $default_conditions,
                 'fields' => array(
                     'SUM(Invoice.total) as current_rev30'
@@ -4625,7 +4636,6 @@ class RevenuesController extends AppController {
                 'branch' => false,
             ));
         }
-        $this->set('active_menu', 'invoice_reports');
 
         $list_customer = $this->Customer->getData('list', array(
             'fields' => array(
@@ -4645,8 +4655,14 @@ class RevenuesController extends AppController {
             $this->layout = 'ajax';
         }
 
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $sub_module_title = sprintf('%s %s - %s', $sub_module_title, date('d M Y', strtotime($dateFrom)), date('d M Y', strtotime($dateTo)));
+        }
+
+        $this->set('active_menu', 'invoice_reports');
         $this->set(compact(
-            'customers', 'list_customer', 'data_action'
+            'customers', 'list_customer', 'data_action',
+            'dateFrom', 'dateTo', 'sub_module_title'
         ));
     }
 
@@ -7608,6 +7624,65 @@ class RevenuesController extends AppController {
                     ));
                 }
             }
+        }
+    }
+
+    public function invoice_report_detail( $id = false, $data_action = false ) {
+        $this->loadModel('Invoice');
+        $customer = $this->Ttuj->Customer->getData('all', array(
+            'conditions' => array(
+                'Customer.id' => $id,
+            ),
+        ), array(
+            'plant' => false,
+            'branch' => false,
+        ));
+
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+        
+        if( !empty($customer) ) {
+            $name = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
+            $options = array(
+                'conditions' => array(
+                    'Invoice.paid' => 0,
+                    'Invoice.customer_id' => $id,
+                ),
+                'limit' => Configure::read('__Site.config_pagination'),
+            );
+
+            $params = $this->MkCommon->_callRefineParams($this->params, array(
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo,
+            ));
+            $options =  $this->Invoice->_callRefineParams($params, $options);
+
+            $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+            $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+
+            $this->paginate = $this->Invoice->getData('paginate', $options, true, array(
+                'branch' => false,
+            ));
+            $values = $this->paginate('Invoice');
+            $sub_module_title = sprintf(__('Account Receivable Aging %s'), $name);
+
+            if( !empty($dateFrom) && !empty($dateTo) ) {
+                $periode = $this->MkCommon->getCombineDate($dateFrom, $dateTo);
+            }
+
+            $this->set('active_menu', 'invoice_reports');
+            $this->set(compact(
+                'sub_module_title', 'values',
+                'data_action', 'id', 'periode'
+            ));
+
+            if($data_action == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($data_action == 'excel'){
+                $this->layout = 'ajax';
+            }
+        } else {
+            $this->MkCommon->redirectReferer(__('Customer tidak ditemukan'), 'error');
         }
     }
 }

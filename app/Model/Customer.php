@@ -234,5 +234,15 @@ class Customer extends AppModel {
             'branch' => false,
         ));
     }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $customer_id = !empty($data['named']['customer_id'])?$data['named']['customer_id']:false;
+
+        if(!empty($customer_id)){
+            $default_options['conditions']['Customer.id'] = $customer_id;
+        }
+        
+        return $default_options;
+    }
 }
 ?>

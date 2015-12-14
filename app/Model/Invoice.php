@@ -213,5 +213,26 @@ class Invoice extends AppModel {
 
         return $data;
     }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+        if(!empty($nodoc)){
+            $default_options['conditions']['Invoice.no_invoice LIKE'] = '%'.$nodoc.'%';
+        }
+        
+        return $default_options;
+    }
 }
 ?>

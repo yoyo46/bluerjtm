@@ -65,14 +65,29 @@
                                 $current_rev30 = !empty($value['current_rev30'][0][0]['current_rev30'])?$value['current_rev30'][0][0]['current_rev30']:0;
                                 $current = $total_pituang - $current_rev1to15 - $current_rev16to30 - $current_rev30;
 
+                                $id = $this->Common->filterEmptyField($value, 'Customer', 'id');
+                                $customer = $this->Common->filterEmptyField($value, 'Customer', 'customer_name_code');
+
                                 $total_saldo += $total_pituang;
                                 $total_current += $current;
                                 $total_rev1to15 += $current_rev1to15;
                                 $total_rev16to30 += $current_rev16to30;
                                 $total_rev30 += $current_rev30;
+
+                                $periodDate = rawurlencode(urlencode($this->Common->filterEmptyField($this->request->data, 'Search', 'date')));
                 ?>
                 <tr>
-                    <td><?php echo $value['Customer']['customer_name_code'];?></td>
+                    <?php 
+                            echo $this->Html->tag('td', $this->Html->link($customer, array(
+                                'controller' => 'revenues',
+                                'action' => 'invoice_report_detail',
+                                $id,
+                                'date' => $periodDate,
+                                'admin' => false,
+                            ), array(
+                                'target' => '_blank',
+                            )));
+                    ?>
                     <td class="text-right"><?php echo $this->Number->currency($total_pituang, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                     <td class="text-right"><?php echo $this->Number->currency($current, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                     <td class="text-right"><?php echo $this->Number->currency($current_rev1to15, Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>

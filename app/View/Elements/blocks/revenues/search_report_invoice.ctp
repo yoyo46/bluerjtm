@@ -21,13 +21,10 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('customer_id',array(
-                                'label'=> __('Customer'),
-                                'class'=>'form-control',
+                            echo $this->Form->input('Search.date',array(
+                                'label'=> __('Tgl Piutang'),
+                                'class'=>'form-control date-range',
                                 'required' => false,
-                                'placeholder' => __('Customer'),
-                                'options' => $list_customer,
-                                'empty' => __('Pilih customer')
                             ));
                     ?>
                 </div>
@@ -76,10 +73,13 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('date',array(
-                                'label'=> __('Tanggal Laporan'),
-                                'class'=>'form-control date-range',
+                            echo $this->Form->input('customer_id',array(
+                                'label'=> __('Customer'),
+                                'class'=>'form-control',
                                 'required' => false,
+                                'placeholder' => __('Customer'),
+                                'options' => $list_customer,
+                                'empty' => __('Pilih customer')
                             ));
                     ?>
                 </div>
