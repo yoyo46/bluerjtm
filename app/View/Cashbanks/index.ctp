@@ -1,12 +1,18 @@
 <?php 
         $dataColumns = array(
+            'noref' => array(
+                'name' => __('No Referensi'),
+                'field_model' => 'CashBank.id',
+                'class' => 'text-center',
+            ),
             'nodoc' => array(
                 'name' => __('No Dokumen'),
                 'field_model' => 'CashBank.nodoc',
+                'class' => 'text-center',
             ),
             'receiver' => array(
                 'name' => __('Diterima/Dibayar kepada'),
-                'style' => 'width: 25%;'
+                'style' => 'width: 20%;'
             ),
             'tgl_cash_bank' => array(
                 'name' => __('Tgl Transaksi'),
@@ -79,13 +85,15 @@
                             $completed = $this->Common->filterEmptyField($value, 'CashBank', 'completed');
                             $is_rejected = $this->Common->filterEmptyField($value, 'CashBank', 'is_rejected');
 
+                            $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                             $name_cash = $this->Common->filterEmptyField($value, 'name_cash', false, '-');
                             $customDate = $this->Common->formatDate($tgl, 'd/m/Y');
                             $customType = strtoupper(str_replace('_', ' ', $type));
                             $customStatus = $this->CashBank->_callStatus($value);
                             $customGrandTotal = $this->Common->getFormatPrice($grand_total);
 
-                            $content = $this->Html->tag('td', $nodoc);
+                            $content = $this->Html->tag('td', $noref);
+                            $content .= $this->Html->tag('td', $nodoc);
                             $content .= $this->Html->tag('td', $name_cash);
                             $content .= $this->Html->tag('td', $customDate, array(
                                 'class' => 'text-center',

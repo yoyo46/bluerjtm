@@ -3,6 +3,7 @@
             'action' => 'index'
         ));
         $this->Html->addCrumb($sub_module_title);
+        $id = $this->Common->filterEmptyField($cashbank, 'CashBank', 'id');
         $nodoc = $this->Common->filterEmptyField($cashbank, 'CashBank', 'nodoc');
         $receiver = $this->Common->filterEmptyField($cashbank, 'CashBank', 'receiver');
         $tgl = $this->Common->filterEmptyField($cashbank, 'CashBank', 'tgl_cash_bank');
@@ -17,6 +18,7 @@
         $customDate = $this->Common->formatDate($tgl, 'd/m/Y');
         $customTotal = $this->Common->getFormatPrice($grand_total);
         $customStatus = $this->CashBank->_callStatus($cashbank);
+        $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
 ?>
 <div class="row">
     <div class="col-sm-6">
@@ -30,6 +32,8 @@
             </div>
             <div class="box-body">
                 <dl class="dl-horizontal">
+                    <dt><?php echo __('No. Referensi')?></dt>
+                    <dd><?php echo $noref;?></dd>
                     <dt><?php echo __('No. Dokumen')?></dt>
                     <dd><?php echo $nodoc;?></dd>
                     <?php 
