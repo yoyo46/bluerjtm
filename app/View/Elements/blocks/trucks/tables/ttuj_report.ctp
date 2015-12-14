@@ -96,7 +96,7 @@
 
             $content = $this->Html->tag('td', __('Total'), array(
                 'style' => 'text-align: right;',
-                'colspan' => 6,
+                'colspan' => 7,
             ));
             $content .= $this->Html->tag('td', $grandtotal_unit, array(
                 'style' => 'text-align: center;',
