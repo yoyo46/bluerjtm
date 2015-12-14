@@ -17,6 +17,7 @@
                 $from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
                 $to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
                 $total_unit = $this->Common->filterEmptyField($value, 'Ttuj', 'total_unit', '-');
+                $note = $this->Common->filterEmptyField($value, 'Ttuj', 'note');
 
                 $uang_kuli_muat = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_kuli_muat', 0);
                 $uang_kuli_bongkar = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_kuli_bongkar', 0);
@@ -51,6 +52,9 @@
                 ));
                 $content .= $this->Common->_getDataColumn($to_city, 'Ttuj', 'to_city_name', array(
                     'class' => 'to_city',
+                ));
+                $content .= $this->Common->_getDataColumn($note, 'Ttuj', 'note', array(
+                    'class' => 'note',
                 ));
                 $content .= $this->Common->_getDataColumn($total_unit, 'Ttuj', 'total_unit', array(
                     'class' => 'unit',

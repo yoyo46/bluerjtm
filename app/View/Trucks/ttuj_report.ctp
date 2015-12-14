@@ -38,6 +38,12 @@
                 'style' => 'text-align: center',
                 'display' => true,
             ),
+            'note' => array(
+                'name' => __('Keterangan Muat'),
+                'field_model' => false,
+                'style' => 'text-align: center',
+                'display' => true,
+            ),
             'unit' => array(
                 'name' => __('Unit'),
                 'field_model' => false,
