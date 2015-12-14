@@ -1,4 +1,6 @@
 <?php
+        $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
+
         if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
             $tdStyle = '';
             $border = 0;
@@ -129,6 +131,10 @@
             </tbody>
         </table>
         <?php 
+                echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
+                    'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'
+                ));
+
                 if( $data_action != 'excel' ) {
                     if(empty($customers)){
                         echo $this->Html->tag('p', __('Data belum tersedia.'), array(
@@ -137,7 +143,11 @@
                     }
         ?>
     </div><!-- /.box-body -->
-    <?php echo $this->element('pagination');?>
+    <?php            
+            echo $this->Html->tag('div', $this->element('pagination'), array(
+                'class' => 'pagination-report'
+            ));
+    ?>
 </section>
 <?php
             }
@@ -163,6 +173,9 @@
             
             $each_loop_message = '';
             $no = 1;
+            $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
+                'style' => 'font-size: 24px;font-style: italic;margin-top: 10px;'
+            ));
 
             if(!empty($customers)){
                 $total_saldo = 0;
@@ -261,6 +274,8 @@ $tbl = <<<EOD
                 $each_loop_message
             </tbody>
         </table> 
+        <br>
+        $print_label
       </div>
 EOD;
 
