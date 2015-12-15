@@ -1032,7 +1032,7 @@ class CommonHelper extends AppHelper {
             if( !empty($options['options']) ) {
                 $value = !empty($options['options'][$value])?$options['options'][$value]:$value;
             } else if( !empty($currency) ) {
-                $value = $this->getCurrencyPrice($value);
+                $value = $this->getFormatPrice($value);
             }
 
             $result = $this->Html->tag('td', $value, $options);

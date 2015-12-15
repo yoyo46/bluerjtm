@@ -146,37 +146,37 @@
             $content .= $this->Html->tag('td', $grandtotal_unit, array(
                 'style' => 'text-align: center;',
             ));
-            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_jalan), array(
+            $content .= $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_uang_jalan), array(
                 'style' => 'text-align: right;',
             ));
-            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_jalan_2), array(
+            $content .= $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_uang_jalan_2), array(
                 'style' => 'text-align: right;',
             ));
-            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_jalan_extra), array(
+            $content .= $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_uang_jalan_extra), array(
                 'style' => 'text-align: right;',
             ));
-            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_commission), array(
+            $content .= $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_commission), array(
                 'style' => 'text-align: right;',
             ));
-            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_commission_extra), array(
+            $content .= $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_commission_extra), array(
                 'style' => 'text-align: right;',
             ));
-            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_kuli_muat), array(
+            $content .= $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_uang_kuli_muat), array(
                 'style' => 'text-align: right;',
             ));
-            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_kuli_bongkar), array(
+            $content .= $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_uang_kuli_bongkar), array(
                 'style' => 'text-align: right;',
             ));
-            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_asdp), array(
+            $content .= $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_asdp), array(
                 'style' => 'text-align: right;',
             ));
-            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_kawal), array(
+            $content .= $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_uang_kawal), array(
                 'style' => 'text-align: right;',
             ));
-            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_keamanan), array(
+            $content .= $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_uang_keamanan), array(
                 'style' => 'text-align: right;',
             ));
-            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal), array(
+            $content .= $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal), array(
                 'style' => 'text-align: right;',
             ));
 

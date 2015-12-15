@@ -74,13 +74,13 @@
             $content .= $this->Html->tag('td', $grandtotal_unit, array(
                 'style' => 'text-align: center;',
             ));
-            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_jalan), array(
+            $content .= $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_uang_jalan), array(
                 'style' => 'text-align: right;',
             ));
-            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_jalan_extra), array(
+            $content .= $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_uang_jalan_extra), array(
                 'style' => 'text-align: right;',
             ));
-            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_total_uang_jalan), array(
+            $content .= $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_total_uang_jalan), array(
                 'style' => 'text-align: right;',
             ));
 
