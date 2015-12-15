@@ -20,7 +20,7 @@
                         $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
                         $capacity = $this->Common->filterEmptyField($value, 'Truck', 'capacity');
 
-                        $branch = $this->Common->filterEmptyField($value, 'City', 'name');
+                        $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
 
                         switch ($action_type) {
                             case 'cashbank':

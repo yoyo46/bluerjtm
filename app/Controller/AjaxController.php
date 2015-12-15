@@ -1130,7 +1130,7 @@ class AjaxController extends AppController {
                 $truck = $this->Truck->TruckCategory->getMerge($truck, $data['truck_category_id']);
                 $truck = $this->Truck->TruckBrand->getMerge($truck, $data['truck_brand_id']);
                 $truck = $this->Truck->Company->getMerge($truck, $data['company_id']);
-                $truck = $this->City->getMerge($truck, $branch_id);
+                $truck = $this->GroupBranch->Branch->getMerge($truck, $branch_id);
 
                 $trucks[$key] = $truck;
             }
